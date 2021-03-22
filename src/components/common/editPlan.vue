@@ -76,6 +76,7 @@
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
                                     <el-button plain @click="dialogOneKeyPoint = true"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
+                                    <el-button plain @click="dialogOneKeyPoint = true">智能配点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -1147,14 +1148,16 @@
                 <el-button size="small" type="primary" @click="selectMap" >确 定</el-button>
             </div>
         </el-dialog>
+        <!--智能配点-->
+        <add-point></add-point>
     </div>
 </template>
 
 <script>
-    import {
+    /* import {
         Input, Dialog, Button, Tabs, TabPane, Table, TableColumn, Cascader, DatePicker,
         Select, Option, Form, FormItem, Steps, Step, Badge, Checkbox, Message, InputNumber
-    } from 'element-ui';
+    } from 'element-ui'; */
     import api from '../../api/api'
     import areaArr from '../../commonFun/areaPackage_new'
     import commaFormat from '../../commonFun/commaFormat'
@@ -1167,11 +1170,13 @@
     import sheetExcel from "../../commonFun/sheetExcel.js";
     // 方案导入结果
     import importResult from './components/importResult.vue'
+    // 配点
+    import addPoint from './components/addPoint.vue'
 
     export default {
         name: "createPlan",
         components: {
-            elInput: Input,
+            /* elInput: Input,
             elDialog: Dialog,
             elButton: Button,
             elTabs: Tabs,
@@ -1188,9 +1193,10 @@
             elStep: Step,
             elBadge: Badge,
             elCheckbox: Checkbox,
-            elInputNumber: InputNumber,
+            elInputNumber: InputNumber, */
             apQuotation,
             importResult,
+            addPoint
         },
         data() {
             let validateNum = (rule, value, callback) => {
@@ -5337,7 +5343,6 @@
                             ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
-                            // this.setCityAndArea(this.FAInfo.cityList)
                             this.getCityList()
                         }
                         this.computeConnectAdData()
@@ -5362,7 +5367,6 @@
             // 设置该方案的销售为全国的城市数组
             setAllCityAndArea(citys){
                 let cityArr = citys
-                // console.log('城市数组', cityArr)
                 let cityList = []
                 for (let i = 0; i < cityArr.length; i++) {
                     let CityRid = areaArr.TextToCode(cityArr[i])
@@ -5373,7 +5377,6 @@
                 this.city.sort(this.compareFun)
                 this.activeCityData = this.city[0]
                 this.activeRName = this.activeCityData.rName
-                // console.log('构建城市', this.city)
                 let areaList = []
                 for (let j = 0; j < cityList.length; j++) {
                     let area_Arr = areaArr.findArea(cityList[j].rid)
@@ -5381,7 +5384,6 @@
                     areaList.push(area_Arr)
                 }
                 this.area = areaList
-                // console.log('构建城市区域', this.area)
                 this.cityOptions = areaArr.province()
             },
             // 根据方案详情的rIDs，例如: "广州市,深圳市",构建城市区域
@@ -5469,17 +5471,6 @@
                 // 使用es6的set数据结构特性
                 let new_arr =  [...new Set(arr)]
                 return new_arr
-                //利用空对象来记录新数组中已经存储过的元素
-                // let o = {};
-                // let new_arr = []
-                // for (let i = 0; i < arr.length; i++) {
-                //     let k = arr[i]
-                //     if (!o[k]) {
-                //         o[k] = true;
-                //         new_arr.push(k)
-                //     }
-                // }
-                // return new_arr
             },
             // 时间戳转换成日期格式 2018-06-18 10:33:24
             timestampToTime(timestamp) {

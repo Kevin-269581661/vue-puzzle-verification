@@ -32,8 +32,16 @@ const createAccount = () => import('../components/common/createAccount.vue')
 const accountList = () => import('../components/common/accountList.vue')
 const orderList = () => import('../components/common/orderList.vue')
 const clientDetail = () => import('../components/common/clientDetail.vue')
+// 直营销售创建意向方案
 const createPlan = () => import('../components/common/createPlan.vue')
+// 加盟销售和媒介或直营媒介创建方案（保持原逻辑）
+const createPlanJoin = () => import('../components/common/createPlanJoin.vue')
+// 加盟销售和媒介编辑方案或直营媒介编辑非意向方案（保持原逻辑）
+const editPlanJion = () => import('../components/common/editPlanJoin.vue')
+// 直营媒介编辑已配点意向方案或者给未配点意向方案进行配点或者编辑非意向方案点位（原逻辑增加配点组件并根据是否有意向方案加以权限控制）
 const editPlan = () => import('../components/common/editPlan.vue')
+// 直营媒介或销售编辑未配点意向方案的意向
+const editEmptyPointPlan = () => import('../components/common/editEmptyPointPlan.vue')
 const planDetail = () => import('../components/common/planDetail.vue')
 const orderDetail = () => import('../components/common/orderDetail.vue')
 const photoGallery = () => import('../components/common/photoGallery.vue')
@@ -75,11 +83,19 @@ const projectList = () => import('../components/common/projectList.vue')
 const projectDetail = () => import('../components/common/projectDetail.vue')
 const paintedCount = () => import('../components/common/paintedCount.vue')
 
+//加盟公司媒介
+/* const joinMediaIndex = () => import('../components/joinMedia/media_index.vue')
+const joinMediaCommon = () => import('../components/joinMedia/mediaCommon.vue') */
+
 //销售
 const saleIndex = () => import('../components/sale/sale_index.vue')
 const createClient = () => import('../components/sale/createClient.vue')
 const editClient = () => import('../components/sale/editClient.vue')
 const saleCommon = () => import('../components/sale/saleCommon.vue')
+
+// 加盟公司销售
+const joinSaleIndex = () => import('../components/saleJoin/sale_index.vue')
+const joinSaleCommon = () => import('../components/saleJoin/saleCommon.vue')
 
 //广告主
 const adOwnerIndex = () => import('../components/adOwner/adOwner_index.vue')
@@ -202,7 +218,45 @@ export default new Router({
                 {path: '/operate/compact', component: compact},
             ]
         },
-        //媒介
+        //加盟媒介
+        {
+            path: '/',
+            component: mediaCommon,
+            children: [
+                {path: '/joinMedia', component: mediaIndex},
+                {path: '/joinMedia/mediaList', component: mediaList},
+                {path: '/joinMedia/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                {path: '/joinMedia/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
+                {path: '/joinMedia/mediaDetail', component: mediaDetail},
+                {path: '/joinMedia/planList', component: planList},
+                {path: '/joinMedia/publishPriceList', component: publishPriceList},
+                {path: '/joinMedia/orderList', component: orderList},
+                {path: '/joinMedia/createPlanJoin', component: createPlanJoin, meta:{title: '创建方案'}},
+                {path: '/joinMedia/editPlanJion', component: editPlanJion, meta:{title: '编辑方案'}},
+                {path: '/joinMedia/planDetail', component: planDetail},
+                {path: '/joinMedia/orderDetail', component: orderDetail},
+                {path: '/joinMedia/photoGallery', component: photoGallery},
+                {path: '/joinMedia/changePwd', component: changePwd},
+                {path: '/joinMedia/questionAndAnswer', component: questionAndAnswer},
+                {path: '/joinMedia/advertTV', component: advertTV},
+                {path: '/joinMedia/tvOrderList', component: tvOrderList},
+                {path: '/joinMedia/tvOrderDetail', component: tvOrderDetail},
+                {path: '/joinMedia/mapMessage', component: mapMessage},
+                {path: '/joinMedia/maintainList', component: maintainList},
+                {path: '/joinMedia/myInfo', component: myInfo},
+                {path: '/joinMedia/compact', component: compact},
+                {path: '/joinMedia/paintedPath', component: paintedPath},
+                {path: '/joinMedia/adsDialPlate', component: adsDialPlate},
+                {path: '/joinMedia/projectList', component: projectList},
+                {path: '/joinMedia/projectDetail', component: projectDetail},
+                {path: '/joinMedia/paintedCount', component: paintedCount},
+                {path: '/joinMedia/messageList', component: messageList},
+                {path: '/joinMedia/communityPortrait',component: communityPortrait},
+                {path: '/joinMedia/communityRank',component: communityRank},
+                {path: '/joinMedia/portraitDetail',component: portraitDetail},
+            ]
+        },
+        //直营媒介
         {
             path: '/',
             component: mediaCommon,
@@ -215,8 +269,10 @@ export default new Router({
                 {path: '/media/planList', component: planList},
                 {path: '/media/publishPriceList', component: publishPriceList},
                 {path: '/media/orderList', component: orderList},
-                {path: '/media/createPlan', component: createPlan, meta:{title: '创建方案'}},
+                {path: '/media/createPlanJoin', component: createPlanJoin, meta:{title: '创建方案'}},
                 {path: '/media/editPlan', component: editPlan, meta:{title: '编辑方案'}},
+                {path: '/media/editPlanJion', component: editPlanJion, meta:{title: '编辑方案'}},
+                {path: '/media/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}},
                 {path: '/media/planDetail', component: planDetail},
                 {path: '/media/orderDetail', component: orderDetail},
                 {path: '/media/photoGallery', component: photoGallery},
@@ -240,7 +296,41 @@ export default new Router({
                 {path: '/media/portraitDetail',component: portraitDetail},
             ]
         },
-        //销售
+        // 加盟销售
+        {
+            path: '/',
+            component: joinSaleCommon,
+            children: [
+                {path: '/joinSale', component: joinSaleIndex},
+                {path: '/joinSale/createClient', component: createClient},
+                {path: '/joinSale/editClient', component: editClient},
+                {path: '/joinSale/clientList', component: clientList},
+                {path: '/joinSale/planList', component: planList},
+                {path: '/joinSale/publishPriceList', component: publishPriceList},
+                {path: '/joinSale/orderList', component: orderList},
+                {path: '/joinSale/clientDetail', component: clientDetail},
+                {path: '/joinSale/createPlanJoin', component: createPlanJoin, meta:{title: '创建方案'}},
+                {path: '/joinSale/editPlanJion', component: editPlanJion, meta:{title: '编辑方案'}},
+                {path: '/joinSale/planDetail', component: planDetail},
+                {path: '/joinSale/orderDetail', component: orderDetail},
+                {path: '/joinSale/photoGallery', component: photoGallery},
+                {path: '/joinSale/changePwd', component: changePwd},
+                {path: '/joinSale/ADqinlinzk', component: ADqinlinzk},
+                {path: '/joinSale/questionAndAnswer', component: questionAndAnswer},
+                {path: '/joinSale/advertTV', component: advertTV},
+                {path: '/joinSale/tvOrderList', component: tvOrderList},
+                {path: '/joinSale/tvOrderDetail', component: tvOrderDetail},
+                {path: '/joinSale/mapMessage', component: mapMessage},
+                {path: '/joinSale/myInfo', component: myInfo},
+                {path: '/joinSale/compact', component: compact},
+                {path: '/joinSale/communityPortrait',component: communityPortrait},
+                {path: '/joinSale/communityRank',component: communityRank},
+                {path: '/joinSale/portraitDetail',component: portraitDetail},
+                {path: '/joinSale/messageList', component: messageList},
+                {path: '/joinSale/adsDialPlate', component: adsDialPlate},
+            ]
+        },
+        //直营销售
         {
             path: '/',
             component: saleCommon,
@@ -255,6 +345,7 @@ export default new Router({
                 {path: '/sale/clientDetail', component: clientDetail},
                 {path: '/sale/createPlan', component: createPlan, meta:{title: '创建方案'}},
                 {path: '/sale/editPlan', component: editPlan, meta:{title: '编辑方案'}},
+                {path: '/sale/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}},
                 {path: '/sale/planDetail', component: planDetail},
                 {path: '/sale/orderDetail', component: orderDetail},
                 {path: '/sale/photoGallery', component: photoGallery},

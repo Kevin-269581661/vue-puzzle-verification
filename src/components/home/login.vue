@@ -237,7 +237,13 @@ export default {
               this.$router.push('/media')
             } else if (userMsg.uType === 'BD') {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
-              this.$router.push('/sale')
+              if(['1', '2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
+                // 判断直营销售
+                this.$router.push('/sale')
+              } else {
+                // 判断加盟销售
+                this.$router.push('/joinSale')
+              }
             } else if (userMsg.uType === 'AD') {
               this.$router.push('/adOwner')
             } else if (userMsg.uType === 'OP') {

@@ -112,18 +112,88 @@
       :tableData="intentionTableData"
       :tableColumn="intentionTableColumn"
       :visible="showDialogTable"
-      @resetVisible="showDialogTable = false"
+      @closeDialog="handleDialogClose('showDialogTable')"
       title="意向投放小区"
       width="83%"
     >
-      <el-table-column slot="otherColumn" fixed="right" label="操作">
+      <div slot="topTip" class="table-top-tip">
+        <i class="el-icon-info" style="color: #1890ff"></i>
+        <h4>
+          <span>
+            意向小区共
+            <span class="tip-active">{{tipObj.intentionNeighbourhood}}</span>
+            个，选1面的小区
+            <span class="tip-active">{{tipObj.selectLab1}}</span>
+            个，选2面的小区
+            <span class="tip-active">{{tipObj.selectLab2}}</span>
+            个，选3面的小区
+            <span class="tip-active">{{tipObj.selectLab3}}</span>
+            个，更多面的小区 
+            <span class="tip-active">{{tipObj.selectLabOther}}</span>
+            个
+          </span>
+        </h4>
+        <span class="tip-active right">下载</span>
+      </div>
+      <template slot="dialogFooter" class="dialog-footer">
+        <el-button @click="handleDialogClose('showDialogTable')">关 闭</el-button>
+      </template>
+    </dialog-table>
+    <dialog-table
+      :tableData="asignPointTableData"
+      :tableColumn="asignPointTableColumn"
+      :visible="showAsignPointTableData"
+      @closeDialog="handleDialogClose('showAsignPointTableData')"
+      title="配点结果详情"
+      width="83%"
+    >
+      <template slot="aheadColumn">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+              <el-form label-position="left" inline>
+                <el-form-item label="商圈：">
+                    <div class="cell-ellipsis" style="width: 80px;">
+                        <span class="cell-ellipsis">{{ props.row.resource}}</span>
+                    </div>
+                </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+      </template>
+      <el-table-column slot="otherColumn" label="操作" align="left">
         <template slot-scope="scope">
-          <el-button type="text" size="small"
-            >查看</el-button
-          >
-          <el-button type="text" size="small">编辑</el-button>
+          <el-button style="text-align: left;" type="text" size="small" @click="deleteAsignItem(scope.row)">删除</el-button>
         </template>
       </el-table-column>
+      <template slot="dialogFooter" class="dialog-footer">
+        <el-button @click="handleDialogClose('showAsignPointTableData')">关 闭</el-button>
+        <el-button type="primary" @click="handleDialogClose('showAsignPointTableData')">确定并添加到购物车</el-button>
+      </template>
+    </dialog-table>
+    <dialog-table
+      :tableData="failTableData"
+      :tableColumn="failTableColumn"
+      :visible="showFailDialogTable"
+      @closeDialog="handleDialogClose('showFailDialogTable')"
+      title="配点失败小区"
+      width="83%"
+    >
+      <template slot="aheadColumn">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+              <el-form label-position="left" inline>
+                <el-form-item label="商圈：">
+                    <div class="cell-ellipsis" style="width: 80px;">
+                        <span class="cell-ellipsis">{{ props.row.resource}}</span>
+                    </div>
+                </el-form-item>
+            </el-form>
+          </template>
+      </el-table-column>
+      </template>
+      <template slot="dialogFooter" class="dialog-footer">
+        <el-button @click="handleDialogClose('showFailDialogTable')">取 消</el-button>
+      </template>
     </dialog-table>
   </div>
 </template>
@@ -143,6 +213,8 @@ export default {
     return {
       dialogVisible: true,
       showDialogTable: false,
+      showFailDialogTable: false,
+      showAsignPointTableData: true,
       formDataObj: {
         planName: "",
         pointDemand: [],
@@ -155,69 +227,251 @@ export default {
           value: "排斥方案value",
         },
       ],
+      tipObj: {
+        intentionNeighbourhood: 10,
+        selectLab1: 10,
+        selectLab2: 20,
+        selectLab3: 30,
+        selectLabOther: 60
+      },
       intentionTableData: [
         {
           rowKey: 1,
-          resource: '尚东峰景雅苑二期',
-          city: '广州市',
-          area: '海珠区',
-          period: '2021/03/20 ~ 2021/04/23',
+          resource: "尚东峰景雅苑二期",
+          city: "广州市",
+          area: "海珠区",
+          period: "2021/03/20 ~ 2021/04/23",
           mediaNum: 3,
-          pointNum: 1
+          pointNum: 1,
         },
         {
           rowKey: 2,
-          resource: '尚东峰景雅苑二期',
-          city: '北京市',
-          area: '海淀区',
-          period: '2021/03/10 ~ 2021/06/23',
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
           mediaNum: 6,
-          pointNum: 3
-        }
+          pointNum: 3,
+        },
+        {
+          rowKey: 3,
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
+          mediaNum: 6,
+          pointNum: 3,
+        },
       ],
       intentionTableColumn: [
         {
-          label: '序号',
-          prop: 'rowKey',
-          width: '50px'
+          label: "序号",
+          prop: "rowKey",
+          width: "92px",
         },
         {
-          label: '资源',
-          prop: 'resource',
-          minWidth: '100px',
+          label: "资源",
+          prop: "resource",
+          minWidth: "100px",
+          tip: true,
+        },
+        {
+          label: "城市",
+          prop: "city",
+          minWidth: "100px",
+          tip: true,
+        },
+        {
+          label: "区域",
+          prop: "area",
+          minWidth: "100px",
+          tip: true,
+        },
+        {
+          label: "排期",
+          prop: "period",
+          minWidth: "160px",
+          tip: true,
+        },
+        {
+          label: "媒体数量（门）",
+          prop: "mediaNum",
+          width: "120px",
+          align: "right",
+        },
+        {
+          label: "计划投放数量（面）",
+          prop: "pointNum",
+          width: "160px",
+          align: "right",
+        },
+      ],
+      failTableData: [
+        {
+          rowKey: 1,
+          resource: "尚东峰景雅苑二期",
+          city: "广州市",
+          area: "海珠区",
+          period: "2021/03/20 ~ 2021/04/23",
+          mediaNum: 3,
+          pointNum: 1,
+        },
+        {
+          rowKey: 2,
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
+          mediaNum: 6,
+          pointNum: 3,
+        },
+        {
+          rowKey: 3,
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
+          mediaNum: 6,
+          pointNum: 3,
+        },
+      ],
+      failTableColumn: [
+        {
+          label: "序号",
+          prop: "rowKey",
+          width: "92px"
+        },
+        {
+          label: "资源",
+          prop: "resource",
+          minWidth: "100px",
           tip: true
         },
         {
-          label: '城市',
-          prop: 'city',
-          minWidth: '100px',
+          label: "城市",
+          prop: "city",
+          minWidth: "100px",
           tip: true
         },
         {
-          label: '区域',
-          prop: 'area',
-          minWidth: '100px',
+          label: "区域",
+          prop: "area",
+          minWidth: "100px",
           tip: true
         },
         {
-          label: '排期',
-          prop: 'period',
-          minWidth: '160px',
+          label: "排期",
+          prop: "period",
+          minWidth: "160px",
           tip: true
         },
         {
-          label: '媒体数量（门）',
-          prop: 'mediaNum',
-          width: '120px',
-          align: 'right'
+          label: "总媒体数(门)",
+          prop: "mediaNum",
+          width: "120px",
+          align: "right"
         },
         {
-          label: '计划投放数量（面）',
-          prop: 'pointNum',
-          width: '160px',
-          align: 'right'
-        }
-      ]
+          label: "计划投放点位(面)",
+          prop: "pointNum",
+          width: "160px",
+          align: "right"
+        },
+        {
+          label: "已配点位(面)",
+          prop: "pointNum",
+          width: "160px",
+          align: "right"
+        },
+        {
+          label: "失败原因",
+          prop: "pointNum",
+          width: "160px",
+        },
+      ],
+      asignPointTableData: new Map([
+        [1, {
+          rowKey: 1,
+          resource: "尚东峰景雅苑二期",
+          city: "广州市",
+          area: "海珠区",
+          period: "2021/03/20 ~ 2021/04/23",
+          mediaNum: 3,
+          pointNum: 1,
+        }],
+        [2, {
+          rowKey: 2,
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
+          mediaNum: 6,
+          pointNum: 3,
+        }],
+        [3, {
+          rowKey: 3,
+          resource: "尚东峰景雅苑二期",
+          city: "北京市",
+          area: "海淀区",
+          period: "2021/03/10 ~ 2021/06/23",
+          mediaNum: 6,
+          pointNum: 3,
+        }],
+      ]),
+      asignPointTableColumn: [
+        {
+          label: "序号",
+          prop: "rowKey",
+          width: "92px"
+        },
+        {
+          label: "资源",
+          prop: "resource",
+          minWidth: "100px",
+          tip: true
+        },
+        {
+          label: "城市",
+          prop: "city",
+          minWidth: "100px",
+          tip: true
+        },
+        {
+          label: "区域",
+          prop: "area",
+          minWidth: "100px",
+          tip: true
+        },
+        {
+          label: "排期",
+          prop: "period",
+          minWidth: "160px",
+          tip: true
+        },
+        {
+          label: "已配/计划",
+          prop: "mediaNum",
+          width: "120px",
+          align: "right"
+        },
+        {
+          label: "媒体名称",
+          prop: "pointNum",
+          width: "160px",
+          align: "right"
+        },
+        {
+          label: "投放面",
+          prop: "pointNum",
+          width: "160px",
+          align: "right"
+        },
+        {
+          label: "近3月上刊率",
+          prop: "pointNum",
+          width: "160px",
+        },
+      ],
     };
   },
   mounted() {},
@@ -229,6 +483,16 @@ export default {
         })
         .catch((_) => {});
     },
+    handleDialogClose(dialogName) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          this[dialogName] = false;
+        })
+        .catch((_) => {});
+    },
+    deleteAsignItem(row) {
+      this.asignPointTableData()
+    }
   },
 };
 </script>
@@ -308,5 +572,38 @@ export default {
       }
     }
   }
+}
+.table-top-tip {
+  display: flex;
+  align-items: baseline;
+  margin: 0 0 16px;
+  padding: 9.5px;
+  border: 1px solid #bae7ff;
+  border-radius: 4px;
+  background: #e6f7ff;
+  .el-icon-info {
+    color: #1890ff;
+    margin-right: 4px;
+  }
+  h4 {
+    font-size: 14px;
+    display: inline-block;
+  }
+  .tip-active {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0 6px;
+    cursor: pointer;
+    color: #1890ff;
+    &.right {
+      margin-left: auto;
+    }
+  }
+}
+.cell-ellipsis{
+  width: 132px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }
 </style>

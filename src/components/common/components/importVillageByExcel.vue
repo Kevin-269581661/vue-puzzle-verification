@@ -74,8 +74,16 @@
         <h4 class="container">
           <div>
             <i class="el-icon-info" style="color: #1890ff"></i>
-            <span><em>100</em>个导入成功，</span>
-            <span><em class="orange">10</em>个导入失败个</span>
+            <span
+              ><em>{{ successList.length ? successList.length : 0 }}</em
+              >个导入成功，</span
+            >
+            <span
+              ><em class="orange">{{
+                errorList.length ? errorList.length : 0
+              }}</em
+              >个导入失败个</span
+            >
           </div>
           <div>
             <span><em @click="openUnsuccessful">查看失败小区</em></span>
@@ -83,13 +91,8 @@
         </h4>
       </div>
       <!-- 表格部分 -->
-      <el-table
-        :data="errorPointList"
-        border
-        max-height="500"
-        style="width: 100%"
-      >
-        <el-table-column prop="index" label="序号" min-width="6%">
+      <el-table :data="successList" border max-height="500" style="width: 100%">
+        <el-table-column type="index" label="序号" min-width="6%" width="50">
         </el-table-column>
         <el-table-column prop="resName" label="资源" min-width="6%">
         </el-table-column>
@@ -99,16 +102,16 @@
         </el-table-column>
         <el-table-column prop="date" label="排期" min-width="6%">
         </el-table-column>
-        <el-table-column prop="date" label="媒体数量（门）" min-width="6%">
+        <el-table-column prop="num" label="媒体数量（门）" min-width="6%">
         </el-table-column
-        ><el-table-column prop="date" label="计划投放数量" min-width="6%">
+        ><el-table-column prop="planNum" label="计划投放数量" min-width="6%">
         </el-table-column>
       </el-table>
       <!-- 分页 -->
       <el-pagination
         @size-change="handleErrorSizeChange"
         @current-change="handleErrorCurrentChange"
-        current-page="1"
+        :current-page="successCurrentPage"
         :page-sizes="[10, 20, 30, 40]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
@@ -120,7 +123,7 @@
         <el-button
           type="primary"
           size="medium "
-          @click="export2Excel"
+          @click="addShoppingCart"
           :disabled="isDown"
           style="padding: 0 4px"
           >确定并且添加到购物车</el-button
@@ -137,13 +140,8 @@
       :center="false"
       custom-class="error-point-dialog"
     >
-      <el-table
-        :data="errorPointList"
-        border
-        max-height="500"
-        style="width: 100%"
-      >
-        <el-table-column prop="index" label="序号" min-width="6%">
+      <el-table :data="errorList" border max-height="500" style="width: 100%">
+        <el-table-column type="index" label="序号" min-width="6%" width="50">
         </el-table-column>
         <el-table-column prop="city" label="资源" min-width="6%">
         </el-table-column>
@@ -166,7 +164,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        current-page="1"
+        :current-page="errorCurrentPage"
         :page-sizes="[10, 20, 30, 40]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
@@ -197,22 +195,37 @@ export default {
       type: Boolean,
       default: false,
     },
+    successList: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+    errorList: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+    importAction: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
+      //成功小区第几页
+      successCurrentPage: 1,
+      // 失败小区
+      errorCurrentPage: 1,
       fileList: [],
       //失败小区弹窗
       dialogErrorPoint: false,
       //导入结果弹窗
       dialogResult: false,
-      errorPointList: [],
       // 登录信息
-      sessionData: {},
-      // 成功小区
-      successList: [],
-      // 失败小区数据
-      errorList: [],
-      importAction: "/advertisement/UpdateOrderAdsWithExcel",
+      // sessionData: {},
+      // importAction: "/advertisement/UpdateOrderAdsWithExcel",
       importFileData: [],
       // 失败点位下载按钮状态
       isDown: false,
@@ -227,9 +240,9 @@ export default {
     //清除组件保留的数据
     // 取消导入
     cancelImport() {
-      this.isDialogImport = false;
+      // this.isDialogImport = false;
+      this.$emit("update:isDialogImport", false);
       this.uploadLoading = false;
-      this.$emit("closeDialogImport");
       this.importFileRemove();
     },
     // 导入模版下载, 阻止冒泡事件
@@ -237,15 +250,19 @@ export default {
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
+      console.log("fileList: ", fileList);
       this.importFileData = fileList;
     },
     importFileRemove(file, fileList) {
       this.importFileData = [];
     },
     commitFile() {
-      this.$emit("closeDialogImport");
+      this.$emit("update:isDialogImport", false);
+      //执行上传小区excel文件
+      this.$emit("submitBtn", this.importFileData);
+
       this.importFileRemove();
-      this.dialogResult = true;
+      // this.dialogResult = true;
       return;
       if (
         Array.isArray(this.importFileData) &&
@@ -313,7 +330,7 @@ export default {
                 .then((action) => {})
                 .catch((action) => {
                   if (action === "cancel") {
-                    this.errorPointList = resData.errorList || [];
+                    this.errorList = resData.errorList || [];
                     this.dialogErrorPoint = true;
                   }
                 });
@@ -363,6 +380,11 @@ export default {
           this.uploadLoading = false;
         });
     },
+    //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
+    addShoppingCart() {
+      this.dialogResult = false;
+      this.$emit("skipAndAddShopping", this.successList);
+    },
     // 导出失败excel
     export2Excel() {
       this.isDown = true;
@@ -370,28 +392,17 @@ export default {
         const {
           export_json_to_excel,
         } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = [
-          "资源名称",
-          "城市",
-          "区县",
-          "媒体名称",
-          "投放面",
-          "资产编号",
-          "排期",
-          "失败原因",
-        ];
+        const tHeader = ["资源", "城市", "区域", "排期", "投放面", "失败原因"];
         const filterVal = [
           "resName",
           "city",
           "district",
-          "mTitle",
-          "asLab",
-          "assetTag",
           "date",
+          "asLab",
           "failReason",
         ];
 
-        const list = this.errorPointList;
+        const list = this.errorList;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, "导入失败点位");
         this.isDown = false;

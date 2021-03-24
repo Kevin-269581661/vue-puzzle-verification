@@ -74,7 +74,8 @@ export default {
       default: () => [],
     },
     tableData: {
-      type: Map
+      type: Array,
+      default: () => []
     },
   },
   data() {
@@ -89,11 +90,14 @@ export default {
   },
   computed: {
     currentPagination() {
-      this.totalNum = this.tableData.size;
-      return [...this.tableData.values()].slice(
+      console.time('Pagination')
+      this.totalNum = this.tableData.length;
+      let temp = this.tableData.slice(
         (this.currentPage - 1) * this.currentPageSize,
         this.currentPage * this.currentPageSize
       );
+      console.timeEnd('Pagination')
+      return temp
     },
   },
   mounted() {},

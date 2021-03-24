@@ -5189,9 +5189,6 @@
                     }
                 }
             },
-            clearData() {
-                Object.assign(this.$data, this.$options.data()) // vue data恢复初始化数据
-            },
             // 时间格式规范
             formatTime(val) {
                 return timeFormat.toDate(val, "/");

@@ -147,6 +147,39 @@
       title="配点结果详情"
       width="83%"
     >
+      <div slot="topTip">
+        <span>
+          意向投放小区：<span class="tip-active">{{tipObj.intentionNeighbourhood}}</span>
+          <span class="active" @click="showDialogTable = true">查看</span>
+          计划投放点位：<span class="tip-active">{{tipObj.selectLab1}}</span>个
+          客户预算：<span class="tip-active">{{tipObj.selectLab2}}</span>
+          客户要求：<span class="tip-active">{{tipObj.selectLab3}}</span>
+        </span>
+        <div class="table-top-tip">
+          <i class="el-icon-info" style="color: #1890ff"></i>
+          <h4>
+            <span>
+              小区:<span class="tip-active">{{tipObj.intentionNeighbourhood}}</span>
+              (选1面:<span class="tip-active">{{tipObj.selectLab1}}</span>
+              选2面:<span class="tip-active">{{tipObj.selectLab2}}</span>
+              选择3面:<span class="tip-active">{{tipObj.selectLab3}}</span>)
+              <div class="divide-border"></div>
+              媒体:<span class="tip-active">{{tipObj.selectLabOther}}</span>
+              <div class="divide-border"></div>
+              点位:<span class="tip-active">{{tipObj.selectLabOther}}</span>
+              (A面:<span class="tip-active">{{tipObj.selectLabOther}}</span>
+              B面:<span class="tip-active">{{tipObj.selectLabOther}}</span>)
+              <div class="divide-border"></div>
+              上刊率50%以上的点位:<span class="tip-active">{{tipObj.selectLabOther}}</span>
+              <div class="divide-border"></div>
+              配点失败小区<span class="tip-active warn">{{tipObj.selectLabOther}}</span>个
+            </span>
+          </h4>
+          <span class="tip-active right" @click="showFailDialogTable=true">失败小区</span>
+          <div class="divide-border"></div>
+          <span class="tip-active">下载结果</span>
+        </div>
+      </div>
       <template slot="aheadColumn">
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -162,7 +195,7 @@
       </template>
       <el-table-column slot="otherColumn" label="操作" align="left">
         <template slot-scope="scope">
-          <el-button style="text-align: left;" type="text" size="small" @click="deleteAsignItem(scope.row)">删除</el-button>
+          <el-button style="text-align: left;" type="text" size="small" @click="deleteAsignItem(scope)">删除</el-button>
         </template>
       </el-table-column>
       <template slot="dialogFooter" class="dialog-footer">
@@ -389,35 +422,31 @@ export default {
           width: "160px",
         },
       ],
-      asignPointTableData: new Map([
-        [1, {
-          rowKey: 1,
-          resource: "尚东峰景雅苑二期",
-          city: "广州市",
-          area: "海珠区",
-          period: "2021/03/20 ~ 2021/04/23",
-          mediaNum: 3,
-          pointNum: 1,
-        }],
-        [2, {
-          rowKey: 2,
-          resource: "尚东峰景雅苑二期",
-          city: "北京市",
-          area: "海淀区",
-          period: "2021/03/10 ~ 2021/06/23",
-          mediaNum: 6,
-          pointNum: 3,
-        }],
-        [3, {
-          rowKey: 3,
-          resource: "尚东峰景雅苑二期",
-          city: "北京市",
-          area: "海淀区",
-          period: "2021/03/10 ~ 2021/06/23",
-          mediaNum: 6,
-          pointNum: 3,
-        }],
-      ]),
+      asignPointTableData: [{
+        rowKey: 1,
+        resource: "尚东峰景雅苑二期",
+        city: "广州市",
+        area: "海珠区",
+        period: "2021/03/20 ~ 2021/04/23",
+        mediaNum: 3,
+        pointNum: 1,
+      }, {
+        rowKey: 2,
+        resource: "尚东峰景雅苑二期",
+        city: "北京市",
+        area: "海淀区",
+        period: "2021/03/10 ~ 2021/06/23",
+        mediaNum: 6,
+        pointNum: 3,
+      }, {
+        rowKey: 3,
+        resource: "尚东峰景雅苑二期",
+        city: "北京市",
+        area: "海淀区",
+        period: "2021/03/10 ~ 2021/06/23",
+        mediaNum: 6,
+        pointNum: 3,
+      }],
       asignPointTableColumn: [
         {
           label: "序号",
@@ -474,8 +503,83 @@ export default {
       ],
     };
   },
-  mounted() {},
+  mounted() {
+    this.testBigData()
+  },
   methods: {
+    testBigData() {
+      console.time('生成array')
+      let temp = [] 
+      for(let i=0; i<100000; i++) {
+        temp.push({
+          rowKey: i,
+          resource: "尚东峰景雅苑二期",
+          city: "广州市",
+          area: "海珠区",
+          period: "2021/03/20 ~ 2021/04/23",
+          mediaNum: 3,
+          pointNum: 1,
+        })
+      }
+      this.asignPointTableData = temp
+      console.timeEnd('生成array')
+      
+      console.time('arr2map')
+      let tempMap = new Map(temp)
+      console.timeEnd('arr2map')
+      console.time('-delete-map')
+      tempMap.delete('100')
+      console.timeEnd('-delete-map')
+
+      console.time('setShopingTable')
+      for(let i=0; i<temp.length; i++) {
+        this.setShopingTable(temp[i])
+      }
+      console.timeEnd('setShopingTable')
+    },
+    setShopingTable(info,letter){
+      let selectInfo = {
+        rid: info.rid,
+        mID: info.mID,
+        mVehicle: info.mVehicle,
+        asID: info.asIDs,
+        asIDs: info.asIDs,
+        asLabs: info.asLabs,
+        resName: info.resName,
+        resID: info.resID,
+        city: info.city,
+        origin: info.origin,
+        buildType: info.buildType,
+        houseNum: info.houseNum,
+        buildPrice: info.buildPrice,
+        mediaName: info.mediaName,
+        buildNum: info.buildNum,
+        schedules: info.schedules,
+        tradingArea: info.tradingArea,
+        assetTag: info.assetTag,
+        liveYear: info.liveYear,
+        adLimit: info.adLimit,
+        mapCenter: info.reference ||'',      // 地图中心点名称
+        reference: info.reference ||'',
+        address: info.address || '',
+        dNum: info.dNum || '',              // 出入口数
+        A_B: letter,
+        // checkBox: {A: info.checkBox.A||false, B: info.checkBox.B||false,ABC:  info.checkBox.ABC||false},
+        // box: {A:info.box.A||false,B:info.box.B||false},
+        connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
+        connID: info.connID,        // 连排门id
+        industryInfos: info.industryInfos,   // 同行业资源回避
+        adPrice: info.adPrice,               // 点位价格
+        mediaLevel: info.mediaLevel,        // 媒体等级
+        asrID: info.asrID,                // 所属公司id
+        asName: info.asName,                // 所属公司名称
+        asName: info.asName,
+        remark: info.remark,
+        trafficState: info.trafficState || '',
+        electrifyState: info.electrifyState || '',
+    }
+    return selectInfo
+  },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {
@@ -490,8 +594,11 @@ export default {
         })
         .catch((_) => {});
     },
-    deleteAsignItem(row) {
-      this.asignPointTableData()
+    deleteAsignItem(scope) {
+      console.log('deleteAsignItem', scope)
+      console.time('splice')
+      this.asignPointTableData.splice(scope.$index, 1)
+      console.timeEnd('splice')
     }
   },
 };
@@ -598,6 +705,17 @@ export default {
     &.right {
       margin-left: auto;
     }
+    &.warn {
+      color: rgba(250, 102, 20, 1);
+    }
+  }
+  .divide-border {
+    display: inline-block;
+    vertical-align: middle;
+    width: 1px;
+    height: 14px;
+    margin: 0 12px;
+    background: rgba(0, 0, 0, 0.1);
   }
 }
 .cell-ellipsis{

@@ -253,7 +253,7 @@ export default new Router({
                 {path: '/joinMedia/messageList', component: messageList},
                 {path: '/joinMedia/communityPortrait',component: communityPortrait},
                 {path: '/joinMedia/communityRank',component: communityRank},
-                {path: '/joinMedia/portraitDetail',component: portraitDetail},
+                {path: '/joinMedia/portraitDetail',component: portraitDetail}
             ]
         },
         //直营媒介

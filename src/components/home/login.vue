@@ -234,7 +234,13 @@ export default {
             if (userMsg.uType === 'SM') {
               this.$router.push('/superOperate')
             } else if (userMsg.uType === 'MD') {
-              this.$router.push('/media')
+              if(['1', '2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
+                // 判断直营媒介
+                this.$router.push('/media')
+              } else {
+                // 判断加盟媒介
+                this.$router.push('/joinMedia')
+              }
             } else if (userMsg.uType === 'BD') {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
               if(['1', '2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {

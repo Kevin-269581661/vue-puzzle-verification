@@ -20,7 +20,7 @@
             <el-submenu index="6" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
                 <el-menu-item index="/sale/planList">方案列表</el-menu-item>
-                <el-menu-item index="/sale/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>
+                <!-- <el-menu-item index="/sale/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item> -->
             </el-submenu>
             <el-menu-item index="/sale/orderList">订单管理</el-menu-item>
             <!--<el-menu-item index="/sale/adsDialPlate">点位表盘</el-menu-item>-->

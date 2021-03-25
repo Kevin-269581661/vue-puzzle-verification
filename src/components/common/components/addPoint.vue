@@ -102,8 +102,8 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary" @click="showAsignPointTableData=true"
           >配 点</el-button
         >
       </span>
@@ -207,7 +207,7 @@
       :tableData="failTableData"
       :tableColumn="failTableColumn"
       :visible="showFailDialogTable"
-      @closeDialog="handleDialogClose('showFailDialogTable')"
+      @closeDialog="showFailDialogTable=false"
       title="配点失败小区"
       width="83%"
     >
@@ -225,7 +225,7 @@
       </el-table-column>
       </template>
       <template slot="dialogFooter" class="dialog-footer">
-        <el-button @click="handleDialogClose('showFailDialogTable')">取 消</el-button>
+        <el-button @click="showFailDialogTable=false">关 闭</el-button>
       </template>
     </dialog-table>
   </div>
@@ -239,15 +239,20 @@ import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "./dialogTable.vue";
 export default {
   name: "addPoint",
+  props: {
+    dialogVisible: {
+      type: Boolean,
+      default: () => false,
+    }
+  },
   components: {
     dialogTable,
   },
   data() {
     return {
-      dialogVisible: true,
       showDialogTable: false,
       showFailDialogTable: false,
-      showAsignPointTableData: true,
+      showAsignPointTableData: false,
       formDataObj: {
         planName: "",
         pointDemand: [],
@@ -583,7 +588,8 @@ export default {
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {
-          done();
+          // done();
+          this.$emit('closeAddPoint')
         })
         .catch((_) => {});
     },

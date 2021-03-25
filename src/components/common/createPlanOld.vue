@@ -1308,7 +1308,7 @@
 
 
     export default {
-        name: "createPlan",
+        name: "createPlanOld",
         components: {
             elInput: Input,
             elDialog: Dialog,

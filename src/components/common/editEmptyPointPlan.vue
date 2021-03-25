@@ -1169,7 +1169,7 @@
     import importResult from './components/importResult.vue'
 
     export default {
-        name: "createPlan",
+        name: "editEmptyPointPlan",
         components: {
             elInput: Input,
             elDialog: Dialog,

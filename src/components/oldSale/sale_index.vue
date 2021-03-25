@@ -227,22 +227,22 @@
                     {
                         imgurl: require('../../assets/images/fangan.png'),
                         title: '新建方案',
-                        link: './joinSale/createPlan',
+                        link: './sale/createPlan',
                     },
                     {
                         imgurl: require('../../assets/images/img.png'),
                         title: '行业图片',
-                        link: './joinSale/photoGallery',
+                        link: './sale/photoGallery',
                     },
                     {
                         imgurl: require('../../assets/images/client.png'),
                         title: '新建客户',
-                        link: './joinSale/createClient'
+                        link: './sale/createClient'
                     },
                     {
                         imgurl: require('../../assets/images/gua.png'),
                         title: '点位表盘',
-                        link: './joinSale/adsDialPlate'
+                        link: './sale/adsDialPlate'
                     },
                 ],
                 userInfo: {

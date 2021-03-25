@@ -76,7 +76,7 @@
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
                                     <el-button plain @click="dialogOneKeyPoint = true"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
-                                    <el-button plain @click="dialogOneKeyPoint = true">智能配点</el-button>
+                                    <el-button plain @click="addPointDialogVisible = true">智能配点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -1134,7 +1134,7 @@
             </span>
         </el-dialog>
         <!--智能配点-->
-        <add-point></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" @closeAddPoint="addPointDialogVisible=false"></add-point>
     </div>
 </template>
 
@@ -1209,7 +1209,7 @@
                 }
             }
             return {
-                // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
+                addPointDialogVisible: false,
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 shopLoading: true,  // 购物车加载中
                 loading: true,//加载中

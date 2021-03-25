@@ -125,7 +125,7 @@
 import { Checkbox, MessageBox, Message } from 'element-ui';
 import utils from '../../commonFun/utils.js';
 import api from '../../api/api'
-
+import {addRoutes} from '../../router'
 export default {
   name: "login",
   components: {
@@ -219,8 +219,6 @@ export default {
         }
         loginParams = { username: name, pwd: pass, };
       }
-
-      // api.getApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
       api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
         let userMsg = res.data;
         console.log('登录返回的数据', res.data)
@@ -229,34 +227,40 @@ export default {
             // 储存行业信息
             this.getIndustry();
             userMsg.username = name
-            sessionStorage.setItem("session_data", JSON.stringify(userMsg));//userMsg.realName
-            // this.loading.close()
+            sessionStorage.setItem("session_data", JSON.stringify(userMsg));
             if (userMsg.uType === 'SM') {
+              addRoutes('SM')
               this.$router.push('/superOperate')
             } else if (userMsg.uType === 'MD') {
               if(['1', '2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
                 // 判断直营媒介
-                this.$router.push('/media')
+                addRoutes('MD')
               } else {
-                // 判断加盟媒介
-                this.$router.push('/joinMedia')
+                // 判断加盟媒介(旧权限)
+                addRoutes('MD', true)
               }
+              this.$router.push('/media')
             } else if (userMsg.uType === 'BD') {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
               if(['1', '2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
                 // 判断直营销售
-                this.$router.push('/sale')
+                addRoutes('BD')
               } else {
-                // 判断加盟销售
-                this.$router.push('/joinSale')
+                // 判断加盟销售(旧权限)
+                addRoutes('BD', true)
               }
+              this.$router.push('/sale')
             } else if (userMsg.uType === 'AD') {
+              addRoutes('AD')
               this.$router.push('/adOwner')
             } else if (userMsg.uType === 'OP') {
+              addRoutes('OP')
               this.$router.push('/operate')
             } else if (userMsg.uType === 'SA') {
+              addRoutes('SA')
               this.$router.push('/admin')
             } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
+              addRoutes('EP')
               this.$router.push('/f_engineer/orderList')
             } else {
               Message({
@@ -386,18 +390,37 @@ export default {
           sessionStorage.setItem("session_data", JSON.stringify(isLogin));// isLogin.realName
           this.codeLoading.close()
           if (isLogin.uType === 'SM') {
+            addRoutes('SM')
             this.$router.push('/superOperate')
           } else if (isLogin.uType === 'MD') {
+            if(['1', '2', '3', '4', '5', '6', '7'].includes(isLogin.asrID)) {
+              // 判断直营媒介
+              addRoutes('MD')
+            } else {
+              // 判断加盟媒介(旧权限)
+              addRoutes('MD', true)
+            }
             this.$router.push('/media')
           } else if (isLogin.uType === 'BD') {
+            if(['1', '2', '3', '4', '5', '6', '7'].includes(isLogin.asrID)) {
+              // 判断直营销售
+              addRoutes('BD')
+            } else {
+              // 判断加盟销售(旧权限)
+              addRoutes('BD', true)
+            }
             this.$router.push('/sale')
           } else if (isLogin.uType === 'OP') {
+            addRoutes('OP')
             this.$router.push('/operate')
           } else if (isLogin.uType === 'AD') {
+            addRoutes('AD')
             this.$router.push('/adOwner')
           } else if (isLogin.uType === 'SA') {
+            addRoutes('SA')
             this.$router.push('/admin')
           } else if (isLogin.uType === 'EP') {
+            addRoutes('EP')
             // 是否开通后台权限由小程序端判断
             this.$router.push('/f_engineer/orderList')
           } else {

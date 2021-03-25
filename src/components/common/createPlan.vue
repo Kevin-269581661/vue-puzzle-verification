@@ -2289,7 +2289,7 @@
       </template>
     </el-dialog> -->
     <!-- 复制方案弹出框 -->
-    <el-dialog :visible.sync="isCopy" title="复制方案" width="450px">
+    <!-- <el-dialog :visible.sync="isCopy" title="复制方案" width="450px">
       <el-select
         v-model="orderName"
         size="small"
@@ -2313,7 +2313,7 @@
           >确 定</el-button
         >
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!--地图选择（无忧地图、亲邻地图）-->
     <el-dialog :visible.sync="isMapKind" title="地图选择" width="450px">
       <p>
@@ -2961,6 +2961,7 @@ export default {
       }
     },
     //在购物车里删除行，改变总表前面的check
+    //TODO:需要修改多选框逻辑
     changeCheck(rows) {
       if (this.planList.length > 0 && rows.city === this.planList[0].city) {
         for (let i = 0; i < this.planList.length; i++) {
@@ -4272,69 +4273,69 @@ export default {
         sessFun.messageFun("warning", "请先选择要复制的方案");
       }
     },
-    // 构建复制方案数据格式
-    setCopyData(info) {
-      let checkBox = { A: false, B: false, ABC: false };
-      if (info.asLab === "A") {
-        checkBox.A = true;
-      } else if (info.asLab === "B") {
-        checkBox.B = true;
-      } else if (info.asLab === "ABC") {
-        checkBox.ABC = true;
-      }
-      let importInfo = {
-        mID: info.mID,
-        resType: info.resType,
-        resID: info.resID,
-        // asID: '',
-        asID: info.asID,
-        asIDs: info.asID,
-        asLabs: info.asLab,
-        resName: info.resName,
-        city: info.city,
-        rid: info.rID,
-        origin: info.rName,
-        buildType: info.cType,
-        houseNum: info.hNum,
-        buildPrice: info.hPrice / 100,
-        mediaName: info.mTitle || "",
-        mVehicle: info.mVehicle,
-        buildNum: info.fNum,
-        schedules: this.dateInput[0] + "-" + this.dateInput[1],
-        tradingArea: info.tradingArea,
-        assetTag: info.assetTag,
-        liveYear: info.chDay,
-        mediaRemark: info.mRemark || "--",
-        mapCenter: info.reference || "--", // 地图中心点
-        address: info.resAddress || "",
-        dNum: info.dNum || "", // 出入口数
-        adLimit: info.notPush || "",
-        A_B: info.asLab,
-        checkBox: checkBox,
-        connData: {
-          connectResName: "",
-          connectMedia: "",
-          commentWorkRes: "",
-          commentworkMedia: "",
-        },
-        connID: info.connID || "", // 连排门id
-        industryInfos: info.industryInfos || [], // 同行业资源回避
-        mediaLevel: info.grade || "",
-        adPrice:
-          info.mVehicle === "道闸"
-            ? info.asPrice / 100 || 0
-            : info.asPrice / 700 || 0,
-        asName: info.asName || "", // 点位所属公司名称
-        asrID: info.asrID, // 所属公司id,
-        lState: info.adlInfo ? info.adlInfo : "", // 是否被占
-      };
-      // if(info.mVehicle === '道闸'){
-      //     importInfo.asID = info.asIDs.split(',')
-      // }else if(info.mVehicle === '广告门'){
-      //     importInfo.asID = info.asID
-      // }
-      return importInfo;
-    },
+    // // 构建复制方案数据格式
+    // setCopyData(info) {
+    //   let checkBox = { A: false, B: false, ABC: false };
+    //   if (info.asLab === "A") {
+    //     checkBox.A = true;
+    //   } else if (info.asLab === "B") {
+    //     checkBox.B = true;
+    //   } else if (info.asLab === "ABC") {
+    //     checkBox.ABC = true;
+    //   }
+    //   let importInfo = {
+    //     mID: info.mID,
+    //     resType: info.resType,
+    //     resID: info.resID,
+    //     // asID: '',
+    //     asID: info.asID,
+    //     asIDs: info.asID,
+    //     asLabs: info.asLab,
+    //     resName: info.resName,
+    //     city: info.city,
+    //     rid: info.rID,
+    //     origin: info.rName,
+    //     buildType: info.cType,
+    //     houseNum: info.hNum,
+    //     buildPrice: info.hPrice / 100,
+    //     mediaName: info.mTitle || "",
+    //     mVehicle: info.mVehicle,
+    //     buildNum: info.fNum,
+    //     schedules: this.dateInput[0] + "-" + this.dateInput[1],
+    //     tradingArea: info.tradingArea,
+    //     assetTag: info.assetTag,
+    //     liveYear: info.chDay,
+    //     mediaRemark: info.mRemark || "--",
+    //     mapCenter: info.reference || "--", // 地图中心点
+    //     address: info.resAddress || "",
+    //     dNum: info.dNum || "", // 出入口数
+    //     adLimit: info.notPush || "",
+    //     A_B: info.asLab,
+    //     checkBox: checkBox,
+    //     connData: {
+    //       connectResName: "",
+    //       connectMedia: "",
+    //       commentWorkRes: "",
+    //       commentworkMedia: "",
+    //     },
+    //     connID: info.connID || "", // 连排门id
+    //     industryInfos: info.industryInfos || [], // 同行业资源回避
+    //     mediaLevel: info.grade || "",
+    //     adPrice:
+    //       info.mVehicle === "道闸"
+    //         ? info.asPrice / 100 || 0
+    //         : info.asPrice / 700 || 0,
+    //     asName: info.asName || "", // 点位所属公司名称
+    //     asrID: info.asrID, // 所属公司id,
+    //     lState: info.adlInfo ? info.adlInfo : "", // 是否被占
+    //   };
+    //   // if(info.mVehicle === '道闸'){
+    //   //     importInfo.asID = info.asIDs.split(',')
+    //   // }else if(info.mVehicle === '广告门'){
+    //   //     importInfo.asID = info.asID
+    //   // }
+    //   return importInfo;
+    // },
     // 第四步的导出方案
     downLoadFanan() {
       let arr = this.excelData(this.shopingList);
@@ -4911,6 +4912,7 @@ export default {
       }
     },
     // 获取广告点位列表
+    //TODO:获取广告列表
     getAdList() {
       console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
       this.loading = true;
@@ -4962,6 +4964,7 @@ export default {
       }, 0);
     },
     // 接口数据转成table
+    // TODO:接口数据转换成table数据
     setTableDataADDoor(ADSdata) {
       let i = 0;
       console.log("接口数据转成table当前时间", this.dateInput);
@@ -5958,6 +5961,7 @@ export default {
       this.shopXY.y = e.clientY;
     },
     // 选中A、B面的时候
+    //TODO:勾选的时候
     changeA(row) {
       console.log("row: ", row);
       let check = row;
@@ -7112,6 +7116,7 @@ export default {
     //   }
     // },
     // 添加到购物车
+    //TODO:添加到购物车
     AddShopingInfo(info, letter) {
       console.log("选中的row信息", info);
       this.currPageSelect++;

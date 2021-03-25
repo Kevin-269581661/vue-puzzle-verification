@@ -723,11 +723,458 @@
                 class="selectAdsTable"
                 height="595"
               >
+                <!-- <el-table-column
+                  fixed
+                  class-name="el-table-column-checkbox"
+                  width="110px"
+                  >
+                  :render-header="customFieldColumn"
+                  <template slot-scope="scope">
+                    <div v-if="isOccupied">
+                      <div class="adDoor" v-if="mediaType === '广告门'">
+                        <el-popover
+                          v-if="scope.row.box.A"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.A"
+                            label="A面"
+                            @change="changeA(scope.row)"
+                            :disabled="scope.row.box.A"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.A"
+                          label="A面"
+                          @change="changeA(scope.row)"
+                          :disabled="scope.row.box.A"
+                        >
+                        </el-checkbox>
+                        <el-popover
+                          v-if="scope.row.box.B"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.B"
+                            label="B面"
+                            @change="changeB(scope.row)"
+                            :disabled="scope.row.box.B"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.B"
+                          label="B面"
+                          @change="changeB(scope.row)"
+                          :disabled="scope.row.box.B"
+                        >
+                        </el-checkbox>
+                      </div>
+                      <div class="roadGate" v-else>
+                        <el-checkbox
+                          v-model="scope.row.checkBox.ABC"
+                          label="ABC面"
+                          @change="changeABC(scope.row)"
+                        >
+                        </el-checkbox>
+                      </div>
+                    </div>
+                    <div v-else>{{ scope.row.asLabs }}面</div>
+                  </template>
+                </el-table-column> -->
+
+                <!-- <el-table-column
+                  fixed
+                  class-name="el-table-column-checkbox"
+                  width="110px"
+                  >
+                  :render-header="customFieldColumn"
+                  <template slot-scope="scope">
+                    <div v-if="isOccupied">
+                      <div class="adDoor" v-if="mediaType === '广告门'">
+                        <el-popover
+                          v-if="scope.row.box.A"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.A"
+                            label="A面"
+                            @change="changeA(scope.row)"
+                            :disabled="scope.row.box.A"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.A"
+                          label="A面"
+                          @change="changeA(scope.row)"
+                          :disabled="scope.row.box.A"
+                        >
+                        </el-checkbox>
+                        <el-popover
+                          v-if="scope.row.box.B"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.B"
+                            label="B面"
+                            @change="changeB(scope.row)"
+                            :disabled="scope.row.box.B"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.B"
+                          label="B面"
+                          @change="changeB(scope.row)"
+                          :disabled="scope.row.box.B"
+                        >
+                        </el-checkbox>
+                      </div>
+                      <div class="roadGate" v-else>
+                        <el-checkbox
+                          v-model="scope.row.checkBox.ABC"
+                          label="ABC面"
+                          @change="changeABC(scope.row)"
+                        >
+                        </el-checkbox>
+                      </div>
+                    </div>
+                    <div v-else>{{ scope.row.asLabs }}面</div>
+                  </template>
+                </el-table-column> -->
+
+                <!-- <el-table-column
+                  fixed
+                  class-name="el-table-column-checkbox"
+                  width="110px"
+                  >
+                  :render-header="customFieldColumn"
+                  <template slot-scope="scope">
+                    <div v-if="isOccupied">
+                      <div class="adDoor" v-if="mediaType === '广告门'">
+                        <el-popover
+                          v-if="scope.row.box.A"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.A"
+                            label="A面"
+                            @change="changeA(scope.row)"
+                            :disabled="scope.row.box.A"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.A"
+                          label="A面"
+                          @change="changeA(scope.row)"
+                          :disabled="scope.row.box.A"
+                        >
+                        </el-checkbox>
+                        <el-popover
+                          v-if="scope.row.box.B"
+                          placement="top-start"
+                          width="310"
+                          trigger="hover"
+                        >
+                          <span v-if="scope.row.adlInfo === ''"
+                            >暂无被禁用的信息</span
+                          >
+                          <ul v-else>
+                            <li
+                              v-for="(item, index) in scope.row.adlInfo"
+                              :key="index"
+                            >
+                              <div v-if="item.asState">
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333"
+                                    >该点位：{{ item.asState }}中</span
+                                  >
+                                </p>
+                              </div>
+                              <div v-else>
+                                <p style="margin-bottom: 5px">
+                                  <span style="color: #333">占点方案：</span>
+                                  <span>
+                                    <span style="font-weight: bold">{{
+                                      sessionData.uType === "MD"
+                                        ? item.beOccupieApName
+                                        : "******"
+                                    }}</span>
+                                    方案（{{
+                                      item.lState == 0
+                                        ? "预锁"
+                                        : item.lState == 1
+                                        ? "被占"
+                                        : "强制停止"
+                                    }}）
+                                  </span>
+                                </p>
+                                <p>
+                                  <span style="color: #333">占点排期：</span
+                                  >{{ item.schedules }}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                          <el-checkbox
+                            slot="reference"
+                            v-model="scope.row.checkBox.B"
+                            label="B面"
+                            @change="changeB(scope.row)"
+                            :disabled="scope.row.box.B"
+                          >
+                          </el-checkbox>
+                        </el-popover>
+                        <el-checkbox
+                          v-else
+                          v-model="scope.row.checkBox.B"
+                          label="B面"
+                          @change="changeB(scope.row)"
+                          :disabled="scope.row.box.B"
+                        >
+                        </el-checkbox>
+                      </div>
+                      <div class="roadGate" v-else>
+                        <el-checkbox
+                          v-model="scope.row.checkBox.ABC"
+                          label="ABC面"
+                          @change="changeABC(scope.row)"
+                        >
+                        </el-checkbox>
+                      </div>
+                    </div>
+                    <div v-else>{{ scope.row.asLabs }}面</div>
+                  </template>
+                </el-table-column> -->
+                <!-- //TODO:页面方案列表的改造 -->
                 <el-table-column
                   fixed
                   class-name="el-table-column-checkbox"
                   width="110px"
-                  ><!-- :render-header="customFieldColumn"-->
+                >
                   <template slot-scope="scope">
                     <div v-if="isOccupied">
                       <div class="adDoor" v-if="mediaType === '广告门'">
@@ -870,6 +1317,7 @@
                     <div v-else>{{ scope.row.asLabs }}面</div>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   fixed
                   class-name="el-table-column-resName"
@@ -1775,7 +2223,7 @@
       </span>
     </el-dialog>
     <!-- 导入excel点位部分失败弹框 -->
-    <el-dialog
+    <!-- <el-dialog
       :visible.sync="showUploadFail"
       title="导入excel的点位信息"
       top="20vh"
@@ -1839,7 +2287,7 @@
           </el-table-column>
         </el-table>
       </template>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 复制方案弹出框 -->
     <el-dialog :visible.sync="isCopy" title="复制方案" width="450px">
       <el-select
@@ -1927,8 +2375,7 @@
       :isDialogImport.sync="isDialogImport"
       @skipAndAddShopping="handleSkipAndAdd"
       @submitBtn="submitUpload"
-      :successList="importSuccessList"
-      :errorList="importErrorList"
+      :importInfoData="importInfoData"
       :importAction="doUpload"
     ></import-village-by-excel>
   </div>
@@ -2562,6 +3009,7 @@ export default {
       successList = this.setShopDataByImport(successList);
       console.log("successList: ", successList);
       this.shopingList.push(...successList);
+
       // this.AddShopingInfo(row, "A"); // 添加到购物车
     },
     //手动选点
@@ -3309,10 +3757,6 @@ export default {
     // },
     // 确认上传
     submitUpload(importFileData) {
-      console.log(
-        "importFileDataimportFileDataimportFileDataimportFileData: ",
-        importFileData
-      );
       if (importFileData.length) {
         let rids = this.planForm.throwCity.join(",");
         let sess = this.sessionData;
@@ -3444,6 +3888,10 @@ export default {
       console.log("方案导入返回的数据---", arr);
       console.log("this.shopingList1----", this.shopingList);
       Message.success("成功导入" + arr.length + "条数据");
+      //跳转页面后自动打开购物车页面
+      setTimeout(() => {
+        this.dialogTableVisible = true;
+      }, 500);
       this.typeShopList = this.getTypeList();
       this.isImport = false;
       this.computeMedia_AD();
@@ -3467,6 +3915,7 @@ export default {
           mediaName: info.mTitle || "",
           mVehicle: info.mVehicle,
           buildNum: info.fNum,
+          //TODO:这里wt隐藏了下面几行代码，因为目前造的数据data.pbStar不存在
           // schedules:
           //         timeFormat.toDate(data.pbStar, "/") +
           //         "-" +
@@ -3677,30 +4126,30 @@ export default {
       }
       return resultarr;
     },
-    // 导出有问题的点
-    downLoadExcel() {
-      let arr = this.questionPoint(
-        this.excelDataUpload,
-        this.importInfoData.successList
-      );
-      let allHead = [
-        "资源名称",
-        "市",
-        "区",
-        "媒介载体",
-        "媒体名称",
-        "投放面",
-        "资产编号",
-        "投放排期",
-        "钼媒点位ID",
-        "失败原因",
-      ];
-      sheetExcel.toDownload(
-        allHead,
-        arr,
-        this.planForm.planName + "问题点位表"
-      );
-    },
+    // // 导出有问题的点
+    // downLoadExcel() {
+    //   let arr = this.questionPoint(
+    //     this.excelDataUpload,
+    //     this.importInfoData.successList
+    //   );
+    //   let allHead = [
+    //     "资源名称",
+    //     "市",
+    //     "区",
+    //     "媒介载体",
+    //     "媒体名称",
+    //     "投放面",
+    //     "资产编号",
+    //     "投放排期",
+    //     "钼媒点位ID",
+    //     "失败原因",
+    //   ];
+    //   sheetExcel.toDownload(
+    //     allHead,
+    //     arr,
+    //     this.planForm.planName + "问题点位表"
+    //   );
+    // },
     // 导入excel后台返回的问题点位
     questionPoint(arr, successArr) {
       let resultarr = [
@@ -6874,7 +7323,7 @@ export default {
     },
     //行被点击 beOccupiedGetList timeFormat
     rowClick(row, event, column) {
-      // console.log('row',row,event,column)
+      console.log("row", row, event, column);
       if (!this.isOccupied) {
         let star = timeFormat.toDate(row.lStar, "/");
         let end = timeFormat.toDate(row.lEnd, "/");

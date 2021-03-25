@@ -75,13 +75,11 @@
           <div>
             <i class="el-icon-info" style="color: #1890ff"></i>
             <span
-              ><em>{{ successList.length ? successList.length : 0 }}</em
+              ><em>{{ successSize }}</em
               >个导入成功，</span
             >
             <span
-              ><em class="orange">{{
-                errorList.length ? errorList.length : 0
-              }}</em
+              ><em class="orange">{{ errorSize }}</em
               >个导入失败个</span
             >
           </div>
@@ -91,8 +89,19 @@
         </h4>
       </div>
       <!-- 表格部分 -->
-      <el-table :data="successList" border max-height="500" style="width: 100%">
-        <el-table-column type="index" label="序号" min-width="6%" width="50">
+      <el-table
+        :data="successShowList"
+        border
+        max-height="500"
+        style="width: 100%"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          min-width="6%"
+          width="50"
+          :index="successPageSize * successCurrentPage - successPageSize + 1"
+        >
         </el-table-column>
         <el-table-column prop="resName" label="资源" min-width="6%">
         </el-table-column>
@@ -109,13 +118,13 @@
       </el-table>
       <!-- 分页 -->
       <el-pagination
-        @size-change="handleErrorSizeChange"
-        @current-change="handleErrorCurrentChange"
+        @size-change="handleSuccessSizeChange"
+        @current-change="handleSuccessCurrentChange"
         :current-page="successCurrentPage"
         :page-sizes="[10, 20, 30, 40]"
-        :page-size="10"
+        :page-size="successPageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="successSize"
         style="text-align: right"
       >
       </el-pagination>
@@ -140,8 +149,19 @@
       :center="false"
       custom-class="error-point-dialog"
     >
-      <el-table :data="errorList" border max-height="500" style="width: 100%">
-        <el-table-column type="index" label="序号" min-width="6%" width="50">
+      <el-table
+        :data="errorShowList"
+        border
+        max-height="500"
+        style="width: 100%"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          min-width="6%"
+          width="50"
+          :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
+          >>
         </el-table-column>
         <el-table-column prop="city" label="资源" min-width="6%">
         </el-table-column>
@@ -162,13 +182,13 @@
         </el-table-column>
       </el-table>
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        @size-change="handleErrorSizeChange"
+        @current-change="handleErrorCurrentChange"
         :current-page="errorCurrentPage"
         :page-sizes="[10, 20, 30, 40]"
-        :page-size="10"
+        :page-size="errorPageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="errorSize"
         style="text-align: right"
       >
       </el-pagination>
@@ -195,25 +215,27 @@ export default {
       type: Boolean,
       default: false,
     },
-    successList: {
-      type: Array,
-      default() {
-        return [];
-      },
-    },
-    errorList: {
-      type: Array,
-      default() {
-        return [];
-      },
-    },
+    //导入表格上传的地址
     importAction: {
       type: String,
       default: "",
     },
+    importInfoData: {
+      type: Object,
+      default() {
+        return [];
+      },
+    },
   },
   data() {
     return {
+      successList: [],
+      successSize: 0,
+      errorList: [],
+      errorSize: 0,
+      //每页显示的数据量
+      successPageSize: 10,
+      errorPageSize: 10,
       //成功小区第几页
       successCurrentPage: 1,
       // 失败小区
@@ -233,9 +255,39 @@ export default {
       handleTime: "",
     };
   },
-  computed: {},
+  computed: {
+    successShowList() {
+      if (this.successList) {
+        return this.successList.slice(
+          (this.successCurrentPage - 1) * this.successPageSize,
+          this.successCurrentPage * this.successPageSize
+        );
+      }
+    },
+    errorShowList() {
+      if (this.errorList) {
+        return this.errorList.slice(
+          (this.errorCurrentPage - 1) * this.errorPageSize,
+          this.errorCurrentPage * this.errorPageSize
+        );
+      }
+    },
+  },
   created() {},
-  watch: {},
+  watch: {
+    importInfoData: {
+      handler(newVal, oldVal) {
+        console.log("newVal: ", newVal);
+        this.successList = newVal.successList;
+        console.log("this.successList: ", this.successList);
+        this.successSize = newVal.successSize;
+        this.errorList = newVal.errorList;
+        console.log("this.errorList: ", this.errorList);
+        this.errorSize = newVal.errorSize;
+      },
+      deep: true,
+    },
+  },
   methods: {
     //清除组件保留的数据
     // 取消导入
@@ -415,17 +467,19 @@ export default {
     openUnsuccessful() {
       this.dialogErrorPoint = true;
     },
-    handleSizeChange(val) {
-      //   this.recommendationPageSize = val;
+    handleSuccessSizeChange(val) {
+      this.successPageSize = val;
     },
-    handleCurrentChange(val) {
-      //   this.recommendationCurrentPage = val;
+    handleSuccessCurrentChange(val) {
+      this.successCurrentPage = val;
     },
     handleErrorSizeChange(val) {
-      //   this.recommendationPageSize = val;
+      console.log("sizeval: ", val);
+      this.errorPageSize = val;
     },
     handleErrorCurrentChange(val) {
-      //   this.recommendationCurrentPage = val;
+      console.log("Currentval: ", val);
+      this.errorCurrentPage = val;
     },
   },
 };

@@ -29,6 +29,9 @@
           :show-overflow-tooltip="item.tip"
           :align="item.align"
         >
+          <template slot-scope="scope">
+            {{item.value?item.value(scope.row):scope.row[item.prop]}}
+          </template>
         </el-table-column>
         <slot name="otherColumn"></slot>
       </el-table>

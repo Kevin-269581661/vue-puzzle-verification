@@ -165,7 +165,7 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
-                                                          :disabled="!(isDisable || scope.row.apState !== -1)"
+                                                          :disabled="isDisable || scope.row.apState !== -1"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">配点
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"

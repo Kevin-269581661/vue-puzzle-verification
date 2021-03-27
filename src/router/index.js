@@ -143,10 +143,11 @@ let router = new Router({
         {path: '*', component: NotFountPage}
     ]
 })
-let addRoutes = function (role, old) {
+let roleRoutes = []
+function addRoutes(role, old) {
     switch (role) {
         case 'SM':
-            router.addRoutes([
+            roleRoutes = [
                 //超级运营
                 {
                     path: '/',
@@ -183,10 +184,10 @@ let addRoutes = function (role, old) {
                         {path: '/superOperate/communityRank',component: communityRank},
                         {path: '/superOperate/portraitDetail',component: portraitDetail},
                     ]
-                }])
+                }]
             break;
         case 'SA':
-            router.addRoutes([
+            roleRoutes = [
                 //admin
                 {
                     path: '/',
@@ -203,10 +204,10 @@ let addRoutes = function (role, old) {
                         {path: '/admin/ADlimitList', component: ADlimitList},
                         {path: '/admin/notice', component: notice},
                     ]
-                }])
+                }]
             break;
         case 'OP':
-            router.addRoutes([
+            roleRoutes = [
                 //普通运营
                 {
                     path: '/',
@@ -228,7 +229,7 @@ let addRoutes = function (role, old) {
                         {path: '/operate/questionAndAnswer', component: questionAndAnswer},
                         {path: '/operate/compact', component: compact},
                     ]
-                }])
+                }]
             break;
         case 'MD':
             //媒介
@@ -248,7 +249,7 @@ let addRoutes = function (role, old) {
                     {path: '/media/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
                 ]
             }
-            router.addRoutes([
+            roleRoutes = [
                 {
                     path: '/',
                     component: mediaCommon,
@@ -285,7 +286,7 @@ let addRoutes = function (role, old) {
                         {path: '/media/portraitDetail',component: portraitDetail},
                     ]
                 }
-            ])
+            ]
             break;
         case 'BD':
             let tempBD = null
@@ -304,7 +305,7 @@ let addRoutes = function (role, old) {
                     {path: '/sale/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
                 ]
             }
-            router.addRoutes([
+            roleRoutes = [
                 //销售
                 {
                     path: '/',
@@ -337,10 +338,10 @@ let addRoutes = function (role, old) {
                         {path: '/sale/adsDialPlate', component: adsDialPlate},
                     ]
                 }
-            ])
+            ]
             break;
         case 'AD':
-            router.addRoutes([
+            roleRoutes = [
                 //广告主
                 {
                     path: '/',
@@ -369,10 +370,10 @@ let addRoutes = function (role, old) {
                         {path: '/adOwner/communityRank',component: communityRank},
                         {path: '/adOwner/portraitDetail',component: portraitDetail},
                     ]
-                }])
+                }]
             break;
         case 'EP':
-            router.addRoutes([
+            roleRoutes = [
                 //工程
                 {
                     path: '/f_engineer',
@@ -386,9 +387,11 @@ let addRoutes = function (role, old) {
                         {path: '/f_engineer/questionAndAnswer', component: questionAndAnswer},
                         {path: '/f_engineer/maintainList', component: maintainList},
                     ]
-                }])
+                }]
             break;
-            
     }
+    router.addRoutes(roleRoutes)
 }
+let uType = JSON.parse(sessionStorage.getItem("session_data")||'{}').uType
+uType && addRoutes(JSON.parse(sessionStorage.getItem("session_data")).uType)
 export {router, addRoutes}

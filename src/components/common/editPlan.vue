@@ -1134,7 +1134,7 @@
             </span>
         </el-dialog>
         <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" @closeAddPoint="addPointDialogVisible=false"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :apid="apid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @merge2ShopList="merge2ShopList"></add-point>
     </div>
 </template>
 
@@ -1939,7 +1939,7 @@
                         this.isCopy = false;
                     });
                 } else {
-                    Message.warning('请先选择要复制的方案');
+                    sessFun.messageFun('warning', '请先选择要复制的方案')
                 }
             },
             // 构建复制方案数据格式
@@ -1990,11 +1990,6 @@
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                 };
-                // if(info.mVehicle === '道闸'){
-                //     importInfo.asID = info.asIDs.split(',')
-                // }else if(info.mVehicle === '广告门'){
-                //     importInfo.asID = info.asID
-                // }
                 return importInfo;
             },
             // 第四步的导出方案
@@ -2005,9 +2000,6 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                /* if(this.customPermission.patrolPermission) {
-                    allHead.push('巡点问题', '通行情况');
-                } */
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2177,8 +2169,6 @@
                     if(res.data.SysCode === 200200 ){
                         let limit = res.data.data
                         let limitArr = []
-                        // let firstObj = {value: '全部', label: '全部'}
-                        // limitArr.push(firstObj)
                         for (let i = 0; i < limit.length; i++) {
                             let limitObj = {value: limit[i].nTitle, label: limit[i].nTitle}
                             limitArr.push(limitObj)
@@ -3160,12 +3150,15 @@
                 }
             },
             // 打开购物车则计算连排门信息
-            computeConnectAdData(){
-                let date1=new Date();
+            computeConnectAdData() {
                 let shopData = this.shopingList
                 let shopDataLength = shopData.length
+                let mIDconnID = []
                 for (let i = 0; i < shopDataLength; i++) {
                     //连排门设置
+                    /* if(shopData[i].connID !== '') {
+                        mIDconnID.push() && shopData[i].mID
+                    } */
                     if(i < shopDataLength - 1){
                         for (let j = i + 1; j < shopDataLength; j++) {
                             if (shopData[i].connID !== '' && shopData[i].mID !== shopData[j].mID && shopData[i].connID === shopData[j].connID) {
@@ -3207,9 +3200,6 @@
                         }
                     }
                 }
-                let date2 = new Date();
-                let haomiao = date2.getTime() - date1.getTime();
-                console.log('打开购物车则计算连排门信息',this.shopingList,haomiao/(1000*60))
             },
             // 重置购物车连排门信息
             resetConnectAdData(){
@@ -3941,7 +3931,6 @@
                     mediaLevel: info.mediaLevel,        // 媒体等级
                     asrID: info.asrID,                // 所属公司id
                     asName: info.asName,                // 所属公司名称
-                    asName: info.asName,
                     remark: info.remark,
                     trafficState: info.trafficState || '',
                     electrifyState: info.electrifyState || '',
@@ -4835,10 +4824,8 @@
                                     LockNum += 1
                                 }
                                 let selectInfo = {
-                                    // asID: '',
                                     pbStar: data.pbStar,
                                     pbEnd: data.pbEnd,
-                                    // rid: data.rID.toString().substring(0, 4) + '00', //
                                     rid: data.cityId ? data.cityId : (data.rID.toString().substring(0, 4) + '00') ,
                                     resID: data.resID,
                                     mID: data.mID,
@@ -4898,10 +4885,7 @@
                                 }
                                 shopList.push(selectInfo)
                             }
-                            console.log('shoplist---------',shopList);
-                            // this.ADLockNum = LockNum        // 被占点位的个数
                             this.shopingList = shopList;
-                            // console.log('购物车列表数据', this.shopingList)
                         } else {
                             this.shopingList = []
                         }
@@ -5000,7 +4984,6 @@
                 this.city.sort(this.compareFun)             // 排序
                 this.activeCityData = this.city[0]        // 设置默认显示可选点城市的信息
                 this.activeRName = this.activeCityData.rName
-                // console.log('构建城市', this.city)
                 let areaList = []
                 for (let j = 0; j < cityList.length; j++) {
                     let area_Arr = areaArr.findArea(cityList[j].rid)
@@ -5008,7 +4991,6 @@
                     areaList.push(area_Arr)
                 }
                 this.area = areaList
-                // console.log('构建城市区域', this.area)
                 this.cityOptions = areaArr.province()
             },
             // 获取权限下的城市列表 saleManageLevel
@@ -5147,6 +5129,16 @@
                     MtaH5.clickStat(mtaStatIdRoadGate)
                 }
             },
+            // 配点结果合并到购物车
+            merge2ShopList(matchPoint) {
+                console.log('matchPoint', matchPoint, this.shopingList)
+                this.shopingList = this.shopingList.concat(matchPoint)
+                console.time('computeMedia_AD')
+                this.computeMedia_AD();
+                console.timeEnd('computeMedia_AD')
+
+                // this.judgeByselect();
+            }
         }
     }
 </script>

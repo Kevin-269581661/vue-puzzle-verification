@@ -64,6 +64,9 @@
                             <template slot-scope="scope">
                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
+                                <el-tooltip v-if="scope.row.planType>=0" effect="dark" :content="scope.row.relatedApName||''">
+                                    <span class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
+                                </el-tooltip>
                             </template>
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
@@ -524,7 +527,10 @@
                     realName: item.realName || '',
                     companyList: [],
                     skProgress: item.skProgress || '',
-                    xkProgress: item.xkProgress || ''
+                    xkProgress: item.xkProgress || '',
+                    planType: item.planType || '',
+                    relatedApName: item.relatedApName || '',
+                    relatedApId: item.relatedApId || '',
                 };
                 for (let data of item.companyList) {
                     let objItem = {
@@ -1118,5 +1124,15 @@
         border-radius:2px;
         color: #fff;
         font-size: 12px;
+    }
+    .plan-type {
+        float: right;
+        padding: 0 4px;
+        line-height: 18px;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #FFFFFF;
+        background: #1890FF;
     }
 </style>

@@ -6323,6 +6323,7 @@ export default {
     // },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
+      console.log("触发获取地图选点信息click");
       // 亲邻地图
       this.getMapLoading = this.$loading({
         lock: true,
@@ -7999,7 +8000,6 @@ export default {
       });
     },
     // creatAdPlan() {
-    //   debugger;
     //   console.log("creatAdPlan", this.quotation);
     //   let arr = [];
     //   let cityArea = [];

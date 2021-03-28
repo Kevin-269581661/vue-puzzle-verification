@@ -53,18 +53,19 @@
             <el-form-item label="配点要求">
               <el-checkbox-group v-model="formDataObj.pointDemand">
                 <el-checkbox
-                  label="优先选择空置久的点位"
+                  label="isSpaceTimeLongFirst"
                   name="type"
-                ></el-checkbox>
-                <el-checkbox label="1个门选择1个点位" name="type"></el-checkbox>
-                <el-checkbox label="联排门仅选1面" name="type"></el-checkbox>
+                >优先选择空置久的点位</el-checkbox>
+                <el-checkbox label="isSingleMediaChoose" name="type">1个门选择1个点位</el-checkbox>
+                <el-checkbox label="isSingleConnectChoose" name="type">联排门仅选1面</el-checkbox>
               </el-checkbox-group>
-              <el-checkbox
-                class="combination"
-                label="A面占比"
-                disabled
-                name="type"
-              ></el-checkbox>
+              <div>
+                <el-checkbox
+                  class="combination"
+                  name="type"
+                >A面占比</el-checkbox>
+                <el-input-number v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
+              </div>
             </el-form-item>
           </el-form>
         </div>
@@ -74,8 +75,10 @@
             <el-form-item label="方案名称：">
               <el-select
                 size="mini"
-                v-model="formDataObj.planName"
+                v-model="formDataObj.apExclude"
                 placeholder="请选择方案"
+                filterable
+                :clearable="true"
               >
                 <el-option
                   v-for="item in rejectAdPlan"
@@ -88,7 +91,7 @@
             </el-form-item>
             <el-form-item label="广告限制：">
               <el-select
-                v-model="formDataObj.region"
+                v-model="formDataObj.adLimits"
                 multiple
                 collapse-tags
                 placeholder="请选择广告限制"
@@ -149,7 +152,7 @@
       :tableData="asignPointTableData"
       :tableColumn="asignPointTableColumn"
       :visible="showAsignPointTableData"
-      @closeDialog="handleDialogClose('showAsignPointTableData')"
+      @closeDialog="closeAsignPointTable"
       title="配点结果详情"
       width="83%"
     >
@@ -210,7 +213,7 @@
               </el-form-item>
               <el-form-item label="楼栋数量：">
                 <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.fnum||'' }}</span>
+                  <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
                 </div>
               </el-form-item>
               <el-form-item label="资产编号：">
@@ -259,10 +262,19 @@
         </template>
       </el-table-column>
       <template slot="dialogFooter" class="dialog-footer">
-        <el-button @click="handleDialogClose('showAsignPointTableData')"
+        <el-button @click="closeAsignPointTable"
           >关 闭</el-button
         >
         <el-button
+          v-if="matched"
+          class="merge-btn"
+          type="primary"
+          @click="rematchPoint">
+          重新配点
+        </el-button>
+        <el-button
+          v-else
+          class="merge-btn"
           type="primary"
           @click="merge2ShopList">
           确定并添加到购物车
@@ -288,7 +300,7 @@
               </el-form-item>
               <el-form-item label="楼栋数量：">
                 <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.fnum||'' }}</span>
+                  <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
                 </div>
               </el-form-item>
               <el-form-item label="资产编号：">
@@ -345,6 +357,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    showMatchResult: {
+      type: Boolean,
+      default: () => false
+    },
     apid: {
       type: [String, Number]
     },
@@ -362,6 +378,7 @@ export default {
   },
   data() {
     return {
+      matched: false,
       loading: false,
       showDialogTable: false,
       showFailDialogTable: false,
@@ -375,10 +392,10 @@ export default {
         planResCount: 0
       },
       formDataObj: {
-        planName: "",
         pointDemand: [],
-        excludeAd: [],
-        excludePlan: "",
+        aFaceRate: null,
+        apExclude: "",
+        adLimits: []
       },
       tipObj: {},
       intentionTableData: [
@@ -532,6 +549,9 @@ export default {
   watch: {
     dialogVisible(val) {
       val && this.getIntentionInfo()
+    },
+    showMatchResult(val) {
+      val && (this.matched = true) && this.getSuccessPoint()
     }
   },
   created() {
@@ -540,10 +560,32 @@ export default {
   mounted() {
   },
   methods: {
+    // 重新配点
+    rematchPoint() {
+      this.$confirm('重新配点会使原购物车里的点位被覆盖',
+        "是否重新配点？", {
+        confirmButtonText: "确 定",
+        dangerouslyUseHTMLString: true,
+        type: "warning",
+        showCancelButton: true,
+        closeOnClickModal:false,
+        closeOnPressEscape: false,
+        showClose: false
+      })
+      .then((_) => {
+        this.matched = false
+        this.showAsignPointTableData = false
+        this.$emit('openAddPoint')
+      })
+      .catch(() => {
+        sessFun.messageFun('info','已取消')
+      });
+    },
     // 配点结果添加到购物车
     merge2ShopList() {
       this.$emit('merge2ShopList', this.asignPointTableData)
       this.showAsignPointTableData = false
+      this.$emit('closeAddPoint')
     },
     // 获取意向信息
     getIntentionInfo() {
@@ -574,15 +616,20 @@ export default {
     },
     // 配点
     matchRes() {
+      let params = {}
+      this.formDataObj.pointDemand.forEach(item => {
+        params[item] = true
+      });
+      console.log('formDataObj', this.formDataObj)
       new Promise((resolve, reject)=>{
-        api.postApi_json("http://192.168.1.247:8026//addsp/match/matchRes", {
+        api.postApi_json("http://192.168.1.247:8026/addsp/match/matchRes", {
           "apID":11646,
-          "isSingleMediaChoose":false,
-          "apExclude":null,
-          "adLimits": ["房地产"],
-          "isSingleConnectChoose": false,
-          "isSpaceTimeLongFirst": false,
-          "aFaceRate":0
+          "isSingleMediaChoose": params.isSingleMediaChoose||false,
+          "apExclude": this.formDataObj.apExclude,
+          "adLimits": this.formDataObj.adLimits,
+          "isSingleConnectChoose": params.isSingleConnectChoose||false,
+          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false,
+          "aFaceRate": this.formDataObj.aFaceRate||0
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
@@ -623,15 +670,18 @@ export default {
     // 查询配点成功结果
     getSuccessPoint(matchRes) {
       if(matchRes) {
+        // 首次配点
         this.tipObj = matchRes
       } else {
-        this.getMatchSummary(apid)
+        // 查看已配点方案的配点详情
+        this.getMatchSummary(this.apid)
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
       api.getApi("http://192.168.1.247:8026/addsp/match/successProposal?apID=11646&pageNo=1&pageSize=10000").then(res => {
           if (res.data.SysCode == 200200) {
             this.asignPointTableData = res.data.data||[]
+
             let getAdPrice = (data)=>{
               if(!data.asPrice) return 0
               if (data.mVehicle === '道闸') {
@@ -653,39 +703,40 @@ export default {
               }
             }
             this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
+            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
+            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
+            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
+            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
             console.time('zhihuan')
             for(let i=0; i<this.asignPointTableData.length; i++) {
               let item = this.asignPointTableData[i]
               item.asIDs = item.asID
               item.asLabs = item.asLabs
+              item.buildPrice = item.hPrice/100
               item.origin = item.region
               item.mediaName = item.mTitle
-              item.schedules = item.schedules
-              item.schedules = item.schedules
+              item.mediaLevel = item.grade || ''
+              item.schedules = item.pdStartDate + '-' + item.pdEndDate
               item.adLimit = item.notPush
-              item.mapCenter = '',      // 地图中心点名称
-              item.reference = '',
-              item.address = item.address || '',
-              item.dNum = item.dNum || '',              // 出入口数
-              item.A_B = item.asLab,
-              item.checkBox = {A: item.asLab=='A'?true:false, B: item.asLab=='B'?true:false, ABC: item.asLab=='ABC'?true:false},
-              item.box = {A: false,B: false},
-              item.connData = { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-              item.connID = item.connID,        // 连排门id
-              item.industryInfos = item.industryInfos||[],   // 同行业资源回避
-              item.adPrice = getAdPrice(item),               // 点位价格
-              item.mediaLevel = item.mediaLevel,        // 媒体等级
-              item.asrID = item.asrID,                // 所属公司id
-              item.asName = item.asName,                // 所属公司名称
-              item.remark = item.remark,
-              item.trafficState = item.trafficState || '',
+              item.mapCenter = ''     // 地图中心点名称
+              item.reference = ''
+              item.address = item.address || ''
+              item.dNum = item.dNum || ''             // 出入口数
+              item.houseNum = item.hNum
+              item.buildNum = item.fNum
+              item.liveYear = item.chDay
+              item.A_B = item.asLab
+              item.checkBox = {A: item.asLab=='A'?true:false, B: item.asLab=='B'?true:false, ABC: item.asLab=='ABC'?true:false}
+              item.box = {A: false,B: false}
+              item.connData = { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''}
+              item.connID = item.connID      // 连排门id
+              item.industryInfos = item.industryInfos||[]   // 同行业资源回避
+              item.adPrice = getAdPrice(item)               // 点位价格
+              item.mediaLevel = item.mediaLevel        // 媒体等级
+              item.asrID = item.asrID               // 所属公司id
+              item.asName = item.asName               // 所属公司名称
+              item.remark = item.remark
+              item.trafficState = item.trafficState || ''
               item.electrifyState = item.electrifyState || ''
             }
             this.asignPointTableLoading = false
@@ -712,19 +763,30 @@ export default {
     },
     
     handleClose(done) {
-      this.$confirm("确认关闭？")
+      this.$emit('closeAddPoint')
+      /* this.$confirm("确认关闭？")
         .then((_) => {
           // done();
-          this.$emit('closeAddPoint')
         })
-        .catch((_) => {});
+        .catch((_) => {}); */
     },
-    handleDialogClose(dialogName) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          this[dialogName] = false;
-        })
-        .catch((_) => {});
+    closeAsignPointTable() {
+      this.$confirm('关闭后，所配点位将被清除',
+        "是否取消配点？", {
+        confirmButtonText: "确 定",
+        dangerouslyUseHTMLString: true,
+        type: "warning",
+        showCancelButton: true,
+        closeOnClickModal:false,
+        closeOnPressEscape: false,
+        showClose: false
+      })
+      .then((_) => {
+        this.showAsignPointTableData = false;
+      })
+      .catch(() => {
+        sessFun.messageFun('info','已取消')
+      });
     },
     deleteAsignItem(scope) {
       this.asignPointTableLoading = true
@@ -812,6 +874,16 @@ export default {
     .el-form-item__content {
       line-height: 32px;
     }
+    .el-input-number {
+      width: unset;
+      line-height: 28px;
+      margin: 0;
+      .el-input__inner {
+        width: 100px;
+        height: 28px;
+        line-height: 28px;
+      }
+    }
     .combination {
     }
   }
@@ -890,6 +962,9 @@ export default {
     margin: 0 12px;
     background: rgba(0, 0, 0, 0.1);
   }
+}
+.merge-btn {
+  padding: 0 10px;
 }
 .cell-ellipsis {
   width: 132px;

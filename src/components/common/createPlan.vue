@@ -7911,7 +7911,7 @@ export default {
     /*完成*/
     //查看方案
     ToDetail() {
-      this.$router.push("./planDetail");
+      this.$router.push("./planEmptyPointDetail");
     },
     // 继续创建
     continueCreate() {

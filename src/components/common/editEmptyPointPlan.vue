@@ -5459,7 +5459,7 @@
             },
             // 编辑成功后查看方案
             ToDetail() {
-                this.$router.push("./planDetail");
+                this.$router.push("./planEmptyPointDetail");
             },
             //城市数组去重
             delCommentCity(arr){

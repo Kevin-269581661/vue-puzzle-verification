@@ -76,7 +76,7 @@
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
                                     <el-button plain @click="dialogOneKeyPoint = true"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
-                                    <el-button plain @click="addPointDialogVisible = true">智能配点</el-button>
+                                    <el-button plain @click="matchPoint">智能配点</el-button>
                                 </el-col>
                             </el-row>
                         </div>
@@ -1134,7 +1134,7 @@
             </span>
         </el-dialog>
         <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :apid="apid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @merge2ShopList="merge2ShopList"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apid="apid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="merge2ShopList"></add-point>
     </div>
 </template>
 
@@ -1210,6 +1210,7 @@
             }
             return {
                 addPointDialogVisible: false,
+                showMatchResult: false,
                 doUpload: '/advertisement/AnalysisExcelAdBaseInfo',
                 shopLoading: true,  // 购物车加载中
                 loading: true,//加载中
@@ -1530,6 +1531,21 @@
             }
         },
         methods: {
+            // 智能配点按钮
+            matchPoint() {
+                if(1==1) {
+                    // 方案已配点，显示上次配点结果
+                    this.showMatchResult = true
+                    this.$nextTick(()=>{
+                        // 重置显示参数，方便下次触发watch
+                        this.showMatchResult = false
+                    })
+                } else {
+                    // 方案未配点
+                    this.addPointDialogVisible = true
+                    
+                }
+            },
             handleSizeChange(val) {
                 this.cartPageSize = val;
             },
@@ -5136,8 +5152,7 @@
                 console.time('computeMedia_AD')
                 this.computeMedia_AD();
                 console.timeEnd('computeMedia_AD')
-
-                // this.judgeByselect();
+                this.judgeByselect();
             }
         }
     }

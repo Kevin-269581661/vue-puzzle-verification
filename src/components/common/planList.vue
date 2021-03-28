@@ -956,7 +956,12 @@
                 console.log(row.apID);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-                this.$router.push("./planDetail");
+                if(row.lState == -1) {
+                    // 未配点意向方案详情
+                    this.$router.push("./planEmptyPointDetail");
+                } else {
+                    this.$router.push("./planDetail");
+                }
             },
             // 跳转到编辑页面
             ToEdit(row) {

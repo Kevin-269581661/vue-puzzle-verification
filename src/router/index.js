@@ -43,6 +43,7 @@ const editPlan = () => import('../components/common/editPlan.vue')
 // 直营媒介或销售编辑未配点意向方案的意向
 const editEmptyPointPlan = () => import('../components/common/editEmptyPointPlan.vue')
 const planDetail = () => import('../components/common/planDetail.vue')
+const planEmptyPointDetail = () => import('../components/common/planEmptyPointDetail.vue')
 const orderDetail = () => import('../components/common/orderDetail.vue')
 const photoGallery = () => import('../components/common/photoGallery.vue')
 const advertTV = () => import('../components/common/advertTV.vue')
@@ -167,6 +168,7 @@ function addRoutes(role, old) {
                         {path: '/superOperate/orderList', component: orderList},
                         {path: '/superOperate/clientDetail', component: clientDetail},
                         {path: '/superOperate/planDetail', component: planDetail},
+                        {path: '/superOperate/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/superOperate/orderDetail', component: orderDetail},
                         {path: '/superOperate/photoGallery', component: photoGallery},
                         {path: '/superOperate/dataAnalysis', component: dataAnalysis},
@@ -221,6 +223,7 @@ function addRoutes(role, old) {
                         {path: '/operate/orderList', component: orderList},
                         {path: '/operate/clientDetail', component: clientDetail},
                         {path: '/operate/planDetail', component: planDetail},
+                        {path: '/operate/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/operate/orderDetail', component: orderDetail},
                         {path: '/operate/publishPriceList', component: publishPriceList},
                         // {path: '/operate/mediaInput', component: mediaInput},
@@ -264,6 +267,7 @@ function addRoutes(role, old) {
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
                         {path: '/media/planDetail', component: planDetail},
+                        {path: '/media/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/media/orderDetail', component: orderDetail},
                         {path: '/media/photoGallery', component: photoGallery},
                         {path: '/media/changePwd', component: changePwd},
@@ -320,6 +324,7 @@ function addRoutes(role, old) {
                         {path: '/sale/orderList', component: orderList},
                         {path: '/sale/clientDetail', component: clientDetail},
                         {path: '/sale/planDetail', component: planDetail},
+                        {path: '/sale/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/sale/orderDetail', component: orderDetail},
                         {path: '/sale/photoGallery', component: photoGallery},
                         {path: '/sale/changePwd', component: changePwd},
@@ -350,6 +355,7 @@ function addRoutes(role, old) {
                         {path: '/adOwner', component: adOwnerIndex},
                         {path: '/adOwner/planList', component: planList},
                         {path: '/adOwner/planDetail', component: planDetail},
+                        {path: '/adOwner/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/adOwner/orderList', component: orderList},
                         {path: '/adOwner/changePwd', component: changePwd},
                         {path: '/adOwner/ADReport', component: ADReport},
@@ -361,7 +367,7 @@ function addRoutes(role, old) {
                         {path: '/adOwner/residentAttr', component: residentAttr},
                         {path: '/adOwner/costPreferences', component: costPreferences},
                         {path: '/adOwner/ADorderDetail', component: ADorderDetail},
-                        {path: '/adOwner/ADplanDetail', component: planDetail},
+                        // {path: '/adOwner/ADplanDetail', component: planDetail},
                         {path: '/adOwner/visitFrequency', component: visitFrequency},
                         {path: '/adOwner/hotSource', component: hotSource},
                         {path: '/adOwner/compact', component: compact},

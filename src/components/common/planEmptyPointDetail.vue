@@ -589,7 +589,6 @@ export default {
     },
     //获取新业务逻辑数据
     getPlanResList() {
-      debugger;
       console.log("this.planDetail: ", this.planDetail);
       let params = {
         uid: this.sessionData.uID,
@@ -765,6 +764,7 @@ export default {
     // 编辑
     edit() {
       let apid = sessionStorage.getItem("plan_apid");
+      sessionStorage.setItem("planDetail",JSON.stringify(this.planDetail))
       let session = this.sessionData;
       let info = {
         uid: session.uID,
@@ -776,12 +776,7 @@ export default {
         .then((res) => {
           if (!res.data.SysCode) {
             if (!res.data.IsLock) {
-              this.$router.push({
-                path: "./editEmptyPointPlan",
-                query: {
-                  apID: this.planDetail.apID,
-                },
-              });
+              this.$router.push("./editEmptyPointPlan");
             } else {
               this.changeRoute();
             }

@@ -399,7 +399,8 @@
                 v-show="index == activeIndex"
               >
                 <dd
-                  v-for="item of list"
+                  v-for="(item, index) of list"
+                  :key="index"
                   :class="item.rName == areaName ? 'active' : ''"
                   @click="activeArea(item)"
                 >
@@ -699,7 +700,7 @@
             <div class="tip">
               <i class="el-icon-info"></i>
               <p>
-                共 <span>{{ adsCount }}</span> 个资源，已选资源
+                共 <span>{{ total ? total : 0 }}</span> 个资源，已选资源
                 <span>{{ nowPointNum > 0 ? nowPointNum : 0 }}</span> 个
               </p>
             </div>
@@ -716,13 +717,13 @@
                 element-loading-spinner="el-icon-loading"
                 border
                 :data="planList"
-                :default-sort="{ prop: 'mID', order: 'descending' }"
+                :default-sort="{ prop: 'resID', order: 'descending' }"
                 @cell-mouse-enter="mouseEnter"
-                @row-click="rowClick"
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
               >
+                <!-- @row-click="rowClick" -->
                 <!-- <el-table-column
                   fixed
                   class-name="el-table-column-checkbox"
@@ -773,7 +774,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -836,7 +837,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -922,7 +923,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -985,7 +986,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -1071,7 +1072,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -1134,7 +1135,7 @@
                                 </p>
                                 <p>
                                   <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
+                                  >{{ item.schedule }}
                                 </p>
                               </div>
                             </li>
@@ -1185,10 +1186,10 @@
                         >
                         </el-checkbox>
                       </div>
-                      <div class="roadGate" style="text-align: cennter" v-else>
+                      <div class="roadGate" v-else>
                         <el-checkbox
-                          v-model="scope.row.checkBox.ABC"
-                          @change="changeABC(scope.row)"
+                          v-model="scope.row.checkBox"
+                          @change="changeBarrierGate(scope.row)"
                         >
                         </el-checkbox>
                       </div>
@@ -1205,56 +1206,19 @@
                   prop="resName"
                 >
                 </el-table-column>
-                <!-- <el-table-column
-                  fixed
-                  class-name="el-table-column-mediaName"
-                  prop="mediaName"
-                  label="媒体名称"
-                  width="140"
-                  :show-overflow-tooltip="true"
-                >
-                </el-table-column> -->
-                <el-table-column prop="city" label="城市" min-width="110">
+                <el-table-column prop="cityName" label="城市" min-width="110">
                 </el-table-column>
-                <el-table-column prop="origin" label="区域" min-width="110">
+                <el-table-column
+                  prop="districtName"
+                  label="区域"
+                  min-width="110"
+                >
                 </el-table-column>
                 <el-table-column label="商圈" min-width="130">
                   <template slot-scope="scope">
                     {{ scope.row.tradingArea || "--" }}
                   </template>
                 </el-table-column>
-                <!-- <el-table-column
-                  label="媒体备注"
-                  min-width="140"
-                  prop="mediaRemark"
-                  class-name="el-table-column-mediaRemark"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.mediaRemark || "--" }}</span>
-                  </template>
-                </el-table-column> -->
-                <!-- <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="巡点问题"
-                  align="right"
-                  min-width="110"
-                  show-overflow-tooltip
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.remark || "--" }}
-                  </template>
-                </el-table-column> -->
-                <!-- <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="通行情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.trafficState || "--" }}
-                  </template>
-                </el-table-column> -->
                 <el-table-column
                   v-if="customPermission.patrolPermission == 2"
                   label="通电情况"
@@ -1265,29 +1229,6 @@
                     {{ scope.row.electrifyState || "--" }}
                   </template>
                 </el-table-column>
-                <!-- <el-table-column
-                  label="资产编号"
-                  min-width="160"
-                  prop="assetTag"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.assetTag || "--" }}</span>
-                  </template>
-                </el-table-column> -->
-                <!-- <el-table-column
-                  label="媒体等级"
-                  min-width="120"
-                  prop="mediaLevel"
-                >
-                  <template slot-scope="scope">
-                    {{
-                      scope.row.mediaLevel !== ""
-                        ? scope.row.mediaLevel + "级"
-                        : "--"
-                    }}
-                  </template>
-                </el-table-column> -->
                 <el-table-column
                   label="广告限制"
                   min-width="130"
@@ -1299,53 +1240,36 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  :label="recType == 1 ? '楼盘类型' : '写字楼类型'"
+                  :label="recType == '1' ? '楼盘类型' : '写字楼类型'"
                   min-width="100"
-                  prop="buildType"
+                  prop="cType"
                   :show-overflow-tooltip="true"
                 >
                   <template slot-scope="scope">
                     <span>{{ scope.row.buildType || "--" }}</span>
                   </template>
                 </el-table-column>
-                <!-- <el-table-column
-                  prop="mState"
-                  label="媒体状态"
-                  min-width="90"
-                  class="tar"
-                >
-                </el-table-column> -->
                 <el-table-column label="楼盘价格" align="right" min-width="110">
                   <template slot-scope="scope">
-                    <span>&yen;{{ scope.row.buildPrice }}</span>
+                    <span>&yen;{{ scope.row.hPrice }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="buildNum"
+                  prop="fNum"
                   label="楼栋数量"
                   align="right"
                   min-width="100"
                 >
                 </el-table-column>
-                <!-- <el-table-column label="广告尺寸" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.adSize || "--" }}
-                  </template>
-                </el-table-column> -->
-                <!-- <el-table-column label="画面尺寸" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.picSize || "--" }}
-                  </template>
-                </el-table-column> -->
                 <el-table-column
-                  prop="liveYear"
+                  prop="chDay"
                   align="right"
                   :label="recType === 1 ? '入住年份' : '建成年份'"
                   min-width="90"
                 >
                 </el-table-column>
                 <el-table-column
-                  prop="houseNum"
+                  prop="hNum"
                   align="right"
                   :label="recType === 1 ? '小区户数' : '办公室数量'"
                   min-width="90"
@@ -1368,7 +1292,7 @@
                 </el-table-column>
                 <el-table-column
                   fixed="right"
-                  prop="schedules"
+                  prop="schedule"
                   label="排期"
                   min-width="190"
                 >
@@ -1603,12 +1527,12 @@
                       </template>
                     </el-table-column>
                     <el-table-column
-                      prop="schedules"
+                      prop="schedule"
                       label="排期"
                       min-width="185"
                     >
                       <template slot-scope="scope">
-                        <span>{{ scope.row.schedules }}</span>
+                        <span>{{ scope.row.schedule }}</span>
                       </template>
                     </el-table-column>
                     <el-table-column min-width="65">
@@ -1694,14 +1618,15 @@
               :customPermission="customPermission"
               @shoppingCartdeleteRow="changeCheck"
               @shoppongCartClearData="clearShop"
-              :beOccupiedAdsData.sync="beOccupiedAdsData"
-              :ActiveConnectADList.sync="ActiveConnectADList"
               :connectAdDialogVisible.sync="connectAdDialogVisible"
               @getMapADList="getMapADList"
+              :shopMedia_ADNum="shopMedia_ADNum"
             ></shopping-cart>
+            <!-- :beOccupiedAdsData.sync="beOccupiedAdsData" -->
+            <!-- :ActiveConnectADList.sync="ActiveConnectADList" -->
           </div>
         </div>
-        <div class="step3" v-if="active == 2">
+        <!-- <div class="step3" v-if="active == 2">
           <div class="confirmBox">
             <div class="bill-title">
               <div class="bill-title-left">
@@ -1746,8 +1671,8 @@
               ></ap-quotation>
             </div>
           </div>
-        </div>
-        <div class="step4" v-if="active == 3">
+        </div> -->
+        <div class="step4" v-if="active == 2">
           <div class="createSuccess">
             <div class="successIcon">
               <img src="../../assets/images/createSuccess.png" alt="" />
@@ -1758,9 +1683,9 @@
             <div class="planPanel noShareUl">
               <ul>
                 <li><em>方案名称：</em>{{ planForm.planName }}</li>
-                <li><em>所属客户：</em>{{ cName }}</li>
+                <li><em>所属客户：</em>{{ cname }}</li>
                 <li><em>所属品牌：</em>{{ cBand || "--" }}</li>
-                <li class="money">
+                <!-- <li class="money">
                   <em>订单金额：</em>¥{{ priceFormat(totalPrice) }}
                 </li>
                 <li style="overflow: hidden; text-overflow: ellipsis">
@@ -1774,7 +1699,7 @@
                     class="urlBtn"
                     >导出方案</el-button
                   >
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -1785,7 +1710,7 @@
       <el-button
         plain
         @click="prev"
-        v-if="active == 1 || active == 2"
+        v-if="active == 1"
         type="default"
         v-qadn-mta-h5="{ id: 'a004_b009_c000_d000_bt088_ck03' }"
         >上一步
@@ -1810,7 +1735,7 @@
 
       <el-button
         @click="next"
-        v-if="active == 0 || active == 1"
+        v-if="active == 0"
         type="primary"
         v-qadn-mta-h5="{
           id:
@@ -1821,17 +1746,17 @@
       >
         下一步
       </el-button>
-      <el-button
+      <!-- <el-button
         @click="next"
         v-if="active == 2"
         type="primary"
         v-qadn-mta-h5="{ id: 'a004_b009_c000_d000_bt089_ck03' }"
         >创建方案
-      </el-button>
+      </el-button> -->
 
       <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
-      <div class="finishBtn" v-if="active == 3">
+      <div class="finishBtn" v-if="active == 2">
         <el-button type="primary" @click="continueCreate">继续创建</el-button>
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
       </div>
@@ -1844,7 +1769,7 @@
       <img src="../../assets/images/allselect.png" alt="" />
     </div>
     <!--查询被占模态框-->
-    <el-dialog
+    <!-- <el-dialog
       title="被占信息"
       :visible.sync="beOccupiedDialogVisible"
       :modal="false"
@@ -1867,12 +1792,12 @@
             >
             <span v-else>******</span>
           </p>
-          <p><span style="color: #333">占点排期：</span>{{ item.schedules }}</p>
+          <p><span style="color: #333">占点排期：</span>{{ item.schedule }}</p>
         </li>
       </ul>
-    </el-dialog>
+    </el-dialog> -->
     <!--连排门信息模态框-->
-    <el-dialog
+    <!-- <el-dialog
       title="信息提示"
       :visible.sync="connectAdDialogVisible"
       :modal="false"
@@ -1915,7 +1840,7 @@
           </p>
         </li>
       </ul>
-    </el-dialog>
+    </el-dialog> -->
     <!--一键选点模态框-->
     <el-dialog
       title="一键选点"
@@ -2145,15 +2070,15 @@
           </el-table-column>
           <el-table-column prop="assetTag" label="资产编号" min-width="130">
           </el-table-column>
-          <el-table-column prop="schedules" label="排期" min-width="160">
+          <el-table-column prop="schedule" label="排期" min-width="160">
             <template slot-scope="scope">
               <el-tooltip
                 class="item"
                 effect="dark"
-                :content="scope.row.schedules"
+                :content="scope.row.schedule"
                 placement="bottom"
               >
-                <span>{{ scope.row.schedules }}</span>
+                <span>{{ scope.row.schedule }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -2403,10 +2328,10 @@ export default {
       }
     };
     return {
-      //导入成功小区
-      // importSuccessList: [],
-      // 导入失败小区
-      // importErrorList: [],
+      //导入草稿箱子的数据
+      importDraftsList: [],
+      importDraftsType: "",
+      importDraftsConfig: {},
       //搜索旁投放面数
       surfaceNum: "",
       isDialogImport: false,
@@ -2421,7 +2346,9 @@ export default {
       isShowHalfYear: false,
       // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
       // doUpload: "/advertisement/AnalysisExcelAdBaseInfo",
-      doUpload: "/advertisement/AdPlanResImport",
+
+      // doUpload: "/advertisement/AdPlanResImport",
+      doUpload: "/addsp/proposal/importResExcel",
       // 空位导出url
       downUrl: "",
       // 是否显示空位导出弹出框
@@ -2633,9 +2560,7 @@ export default {
       },
       loadSign: true, // table滚轮
       shopMedia_ADNum: {
-        resNum: 0,
-        mediaNum: 0,
-        ADNum: 0,
+        total: 0,
         oneNum: 0,
         twoNum: 0,
         threeNum: 0,
@@ -2706,12 +2631,12 @@ export default {
           { validator: validateCale, trigger: "blur" },
         ],
       },
-      beOccupiedDialogVisible: false, // 被占模态框
-      beOccupiedNumber: 0, // 第一次搜索记录时提前保存 planList
+      // beOccupiedDialogVisible: false, // 被占模态框
+      // beOccupiedNumber: 0, // 第一次搜索记录时提前保存 planList
       isOccupied: true, // 被占搜索时隐藏过滤条件
-      beOccupiedAdsData: [], // 当前点击行的被占信息{beOccupieApName:'',lState: '',schedules: ''}
+      // beOccupiedAdsData: [], // 当前点击行的被占信息{beOccupieApName:'',lState: '',schedule: ''}
       pageNo: 1, // 页码
-      total: 1, // 总页数
+      totalPage: 1, // 总页数
       pageSize: 20, //每页条数
       getAdsParamsData: {}, //　获取点位列表的参数data
       apMinTime: "", // 方案创建的开始时间
@@ -2720,7 +2645,7 @@ export default {
       searchBtnAbled: false, // 搜索按钮禁止
       isCityPrice: false, // 判断城市最大价格是否大于2000w
       connectAdDialogVisible: false, // 连排门模态框
-      ActiveConnectADList: {}, // 购物车 - 当前点击行的连排门信息
+      // ActiveConnectADList: {}, // 购物车 - 当前点击行的连排门信息
       mediaLevelNum: { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 },
       saleManageLevel: 0, // 销售权限 0地方销售 1全国销售
       asrIDList: [], // 已选点位里存在的公司及城市
@@ -2745,7 +2670,7 @@ export default {
       mapAdsList: [],
       currPageAsLength: 0, //当前页面可选的点位总数
       currPageSelect: 0, //当前页面已选择的点位数
-      adsCount: 0, //总可选点位
+      total: 0, //总可选点位
       // 定制权限
       customPermission: {},
       // // 购物车分页时页面条目数量
@@ -2794,13 +2719,9 @@ export default {
   },
   computed: {
     nowPointNum() {
-      if (this.dialogTableVisible) {
-        // this.resetConnectAdData(); //重置购物车连门排信息
-        // this.computeConnectAdData(); //打开购物车则计算连排门信息
-      }
       // 当购物车点位数大于0时
       if (this.shopingList.length || this.isSelect) {
-        this.saveApInfo();
+        this.changeApInfo();
       }
       return this.shopingList.length;
     },
@@ -2815,7 +2736,6 @@ export default {
   methods: {
     //购物车清空购物车
     clearShop() {
-      debugger;
       if (this.shopingList.length > 0) {
         this.$confirm("此操作将删除已选的所有数据, 是否继续?", "提示", {
           confirmButtonText: "确定",
@@ -2823,12 +2743,12 @@ export default {
           type: "warning",
         })
           .then(() => {
-            debugger;
             // let arr = [];
             // this.getResultData(arr);
+            this.handleImportDrafts(0, this.shopingList);
             this.shopingList = [];
             this.allCheckboxUpdata();
-            // this.computeMedia_AD();//
+            this.computeMedia_AD(); //
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
           })
@@ -2840,31 +2760,24 @@ export default {
       }
     },
     //在购物车里删除行，改变总表前面的check
-    //TODO:需要修改多选框逻辑
+    //TODO:在购物车里删除行
     changeCheck(rows) {
+      this.handleImportDrafts(0, [rows]);
+      console.log("rows: ", rows);
       if (this.planList.length > 0 && rows.city === this.planList[0].city) {
         for (let i = 0; i < this.planList.length; i++) {
-          if (rows.mID === this.planList[i].mID) {
-            if (rows.A_B === "A") {
-              this.planList[i].checkBox.A = false;
-            } else if (rows.A_B === "B") {
-              this.planList[i].checkBox.B = false;
-            } else if (rows.A_B === "ABC") {
-              this.planList[i].checkBox.ABC = false;
-            }
+          if (rows.resID === this.planList[i].resID) {
+            this.planList[i].checkBox = false;
           }
         }
       }
-      for (let j = 0; j < this.shopingList.length; ) {
+      for (let j = 0; j < this.shopingList.length; j++) {
         if (
-          this.shopingList[j].mID === rows.mID &&
-          this.shopingList[j].A_B == rows.A_B &&
-          this.shopingList[j].schedules === rows.schedules
+          this.shopingList[j].resID === rows.resID &&
+          this.shopingList[j].schedule === rows.schedule
         ) {
           this.shopingList.splice(j, 1);
           break;
-        } else {
-          j++;
         }
       }
       // this.typeShopList = this.getTypeList();
@@ -2872,23 +2785,52 @@ export default {
       this.computeMedia_AD();
       this.allCheckboxUpdata();
     },
+
+    //   changeCheck(rows) {
+    //   if (this.planList.length > 0 && rows.city === this.planList[0].city) {
+    //     for (let i = 0; i < this.planList.length; i++) {
+    //       if (rows.mID === this.planList[i].mID) {
+    //         if (rows.A_B === "A") {
+    //           this.planList[i].checkBox.A = false;
+    //         } else if (rows.A_B === "B") {
+    //           this.planList[i].checkBox.B = false;
+    //         } else if (rows.A_B === "ABC") {
+    //           this.planList[i].checkBox.ABC = false;
+    //         }
+    //       }
+    //     }
+    //   }
+    //   for (let j = 0; j < this.shopingList.length; ) {
+    //     if (
+    //       this.shopingList[j].mID === rows.mID &&
+    //       this.shopingList[j].A_B == rows.A_B &&
+    //       this.shopingList[j].schedule === rows.schedule
+    //     ) {
+    //       this.shopingList.splice(j, 1);
+    //       break;
+    //     } else {
+    //       j++;
+    //     }
+    //   }
+    //   // this.typeShopList = this.getTypeList();
+    //   // this.getShowList();
+    //   this.computeMedia_AD();
+    //   this.allCheckboxUpdata();
+    // },
+
     //导入表格，点击确定放入购物车后的处理函数
     handleSkipAndAdd(successList) {
-      console.log(
-        "successListsuccessListsuccessListsuccessList: ",
-        successList
-      );
-
       //先从新建方案页面转变成选点页面
       if (this.active == 0) {
         this.manualSelectPoint();
       }
       console.log("点击添加到购物车后页面变更");
-      // console.log("successList: ", successList);
       // //将导入表格组件中传递出来的成功数据放入购物车
       successList = this.setShopDataByImport(successList);
-      console.log("successList: ", successList);
+      this.handleImportDrafts(1, successList);
       this.shopingList.push(...successList);
+      this.computeMedia_AD(); //统计购物车里选择小区的面数个数
+      this.judgeByselect(); //导入购物车中的数据与已有列表是否重复
 
       // this.AddShopingInfo(row, "A"); // 添加到购物车
     },
@@ -2896,16 +2838,20 @@ export default {
     manualSelectPoint() {
       this.isSelectPoint = false;
       // 初始化
+      // TODO初始化
       this.initStep2Data();
       this.active++;
       // 设置城市及对应的区域
       this.getAreaFun();
+      //设置存入草稿箱参数
+      this.importDraftsConfig.clientBudget = this.planForm.clientBudget; //客户预算
+      this.importDraftsConfig.clientRequst = this.planForm.clientRequst; //客户要求
+      this.importDraftsConfig.bID = this.planForm.companyBrand; // 公司品牌
+      this.importDraftsConfig.ownerBU = this.planForm.ownerBU; // 客户联系人
+      this.importDraftsConfig.planName = this.planForm.planName; // 意向方案名称
       this.getAdsParamsData = {
         prID: this.city[0].rid,
-        rid: "440100",
-        act: 1,
-        // dateTimeBegin: this.dateInput[0],
-        // dateTimeEnd: this.dateInput[1],
+        riD: this.city[0].rid,
         resType: this.recType,
         mVehicle: this.mediaType,
         pageNo: this.pageNo,
@@ -3021,6 +2967,7 @@ export default {
       shopAnimate.style.right = this.shopXY.x + "px";
     },
     // 跳转来源于首页地图选点-设置部分默认数据
+    // TODO跳转来源于首页地图选点-设置部分默认数据
     setDataByIndex() {
       this.indexData = JSON.parse(sessionStorage.getItem("indexData"));
       this.ActiveMapType = this.indexData.activeMapType;
@@ -3097,50 +3044,78 @@ export default {
         });
     },
     // 下一步
+    // TODO:下一步创建方案
     next() {
       if (this.active === 0) {
         console.log("planForm--", this.planForm);
         // console.log('this.dynamicTags--', this.dynamicTags)
         this.submitForm("planForm");
       } else if (this.active === 1) {
-        if (this.shopingList.length !== 0) {
-          this.active++;
-          this.getAsNameByShopingList(); // 统计购物车中存在了几个公司及城市
-          this.creatTab(); // 报价单tab
-          this.getBand(); // 获取公司品牌
-        } else {
-          sessFun.messageFun("warning", "请选择点位");
-        }
-      } else if (this.active === 2) {
-        this.isCityPrice = false;
-        this.vaildCityQuotation();
         // // 防多次点击创建
         if (!this.creating) {
           this.creating = true;
           let timer = setTimeout(() => {
             this.creating = false;
-            if (!this.isCityPrice) {
-              this.ADloading = this.$loading({
-                lock: true,
-                text: "加急创建中...",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)",
-              });
-              this.creatAdPlan(); // 创建方案 当前价格大于系统支持的最大价格
-            } else {
-              sessFun.messageFun(
-                "warning",
-                "单城市总价格大于系统支持的最大价格（2000万）"
-              );
-            }
+            this.ADloading = this.$loading({
+              lock: true,
+              text: "加急创建中...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)",
+            });
+            this.getBand(); // 获取公司品牌
+            this.creatAdPlan(); // 创建方案
             clearTimeout(timer);
           }, 500);
         }
       }
-      if (this.active > 3) {
+      if (this.active > 2) {
         this.active = 0;
       }
     },
+    // next() {
+    //   if (this.active === 0) {
+    //     console.log("planForm--", this.planForm);
+    //     // console.log('this.dynamicTags--', this.dynamicTags)
+    //     this.submitForm("planForm");
+    //   } else if (this.active === 1) {
+    //     if (this.shopingList.length !== 0) {
+    //       this.active++;
+    //       this.getAsNameByShopingList(); // 统计购物车中存在了几个公司及城市
+    //       this.creatTab(); // 报价单tab
+    //       this.getBand(); // 获取公司品牌
+    //     } else {
+    //       sessFun.messageFun("warning", "请选择点位");
+    //     }
+    //   } else if (this.active === 2) {
+    //     this.isCityPrice = false;
+    //     this.vaildCityQuotation();
+    //     // // 防多次点击创建
+    //     if (!this.creating) {
+    //       this.creating = true;
+    //       let timer = setTimeout(() => {
+    //         this.creating = false;
+    //         if (!this.isCityPrice) {
+    //           this.ADloading = this.$loading({
+    //             lock: true,
+    //             text: "加急创建中...",
+    //             spinner: "el-icon-loading",
+    //             background: "rgba(0, 0, 0, 0.7)",
+    //           });
+    //           this.creatAdPlan(); // 创建方案 当前价格大于系统支持的最大价格
+    //         } else {
+    //           sessFun.messageFun(
+    //             "warning",
+    //             "单城市总价格大于系统支持的最大价格（2000万）"
+    //           );
+    //         }
+    //         clearTimeout(timer);
+    //       }, 500);
+    //     }
+    //   }
+    //   if (this.active > 3) {
+    //     this.active = 0;
+    //   }
+    // },
     // 上一步
     prev() {
       if (this.active < 1) {
@@ -3579,15 +3554,7 @@ export default {
     importFanan(type) {
       if (type == "res") {
         this.importType = "1";
-        this.doUpload = "/advertisement/AdPlanResImport";
-      } else if (type == "ads") {
-        this.importType = "2";
-        this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";
-      } else if (type == "copy") {
-        this.orderName = "";
-        this.orderArr = [];
-        this.isCopy = true;
-        return;
+        this.doUpload = "/addsp/proposal/importResExcel";
       }
       //   this.isImport = true;
       this.isDialogImport = true;
@@ -3637,15 +3604,12 @@ export default {
     // },
     // 确认上传
     submitUpload(importFileData) {
-      debugger;
       if (importFileData.length) {
         let rids = this.planForm.throwCity.join(",");
         let sess = this.sessionData;
         let info = `?uid=${sess.uID}&token=${sess.token}&suId=${
           this.BDData.uid
-        }&rids=${rids}&excludedApId=${
-          this.activeAdPlan ? this.activeAdPlan : ""
-        }&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
+        }&rIDs=${rids}&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
         let formData = new FormData();
         formData.append("file", importFileData[0].raw);
         this.resImport(formData, info);
@@ -3653,6 +3617,22 @@ export default {
         sessFun.messageFun("warning", "请先上传文件");
       }
     },
+    // submitUpload(importFileData) {
+    //   if (importFileData.length) {
+    //     let rids = this.planForm.throwCity.join(",");
+    //     let sess = this.sessionData;
+    //     let info = `?uid=${sess.uID}&token=${sess.token}&suId=${
+    //       this.BDData.uid
+    //     }&rids=${rids}&excludedApId=${
+    //       this.activeAdPlan ? this.activeAdPlan : ""
+    //     }&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
+    //     let formData = new FormData();
+    //     formData.append("file", importFileData[0].raw);
+    //     this.resImport(formData, info);
+    //   } else {
+    //     sessFun.messageFun("warning", "请先上传文件");
+    //   }
+    // },
     // 点位导入
     // adsImport(formData, info) {
     //   // 上传文件
@@ -3686,6 +3666,7 @@ export default {
     //       console.log(res);
     //     });
     // },
+
     // // 小区导入
     // resImport(formData, info) {
     //   let Loading = this.$loading({
@@ -3712,9 +3693,10 @@ export default {
     //       Loading.close();
     //     });
     // },
+
     // 小区导入
+    // TODO:小区导入
     resImport(formData, info) {
-      debugger;
       let Loading = this.$loading({
         lock: true,
         text: "快马加鞭选点中...",
@@ -3722,9 +3704,11 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       // 上传文件
+
       api
-        .postUpload_file(this.doUpload + info, formData)
+        .postApi_new(this.doUpload + info, formData)
         .then((res) => {
+          console.log("res: ", res);
           if (res.data.SysCode == 200200) {
             let importInfo = res.data.data;
             console.log("importInfo: ", importInfo);
@@ -3743,6 +3727,35 @@ export default {
           Loading.close();
         });
     },
+    // resImport(formData, info) {
+    //   let Loading = this.$loading({
+    //     lock: true,
+    //     text: "快马加鞭选点中...",
+    //     spinner: "el-icon-loading",
+    //     background: "rgba(0, 0, 0, 0.7)",
+    //   });
+    //   // 上传文件
+    //   api
+    //     .postUpload_file(this.doUpload + info, formData)
+    //     .then((res) => {
+    //       if (res.data.SysCode == 200200) {
+    //         let importInfo = res.data.data;
+    //         console.log("importInfo: ", importInfo);
+    //         this.importInfoData = importInfo;
+    //         // this.importSuccessList = importInfo.successList;
+    //         // this.importErrorList = importInfo.errorList;
+    //         this.$refs.importexcel.dialogResult = true;
+    //         // this.showUploadFail = true;
+    //       } else {
+    //         sessFun.messageFun("warning", res.data.MSG);
+    //       }
+    //       Loading.close();
+    //     })
+    //     .catch((res) => {
+    //       console.log(res);
+    //       Loading.close();
+    //     });
+    // },
     // 取消导入
     cancelImport() {
       this.showUploadFail = false;
@@ -3767,160 +3780,171 @@ export default {
     },
     // 根据导入方案返回的数据,设置购物车所需要的数据格式
     setShopDataByImport(arr) {
-      console.log("方案导入返回的数据---", arr);
-      console.log("this.shopingList1----", this.shopingList);
       Message.success("成功导入" + arr.length + "条数据");
-      //跳转页面后自动打开购物车页面
       setTimeout(() => {
         this.dialogTableVisible = true;
       }, 500);
-      this.typeShopList = this.getTypeList();
       this.isImport = false;
-      this.computeMedia_AD();
-      this.judgeByselect();
-      //这里是现在的新业务逻辑，只需要处理数据的格式，不需要分
-      return arr.map((info) => {
-        return {
-          mID: info.mID,
-          resType: info.resType,
-          resID: info.resID,
-          asID: "",
-          asIDs: info.asID,
-          asLabs: info.asLab,
-          resName: info.resName,
-          city: info.prName,
-          rid: info.prID,
-          origin: info.rName,
-          buildType: info.cType,
-          houseNum: info.hNum,
-          buildPrice: info.hPrice / 100,
-          mediaName: info.mTitle || "",
-          mVehicle: info.mVehicle,
-          buildNum: info.fNum,
-          //TODO:这里wt隐藏了下面几行代码，因为目前造的数据data.pbStar不存在
-          // schedules:
-          //         timeFormat.toDate(data.pbStar, "/") +
-          //         "-" +
-          //         timeFormat.toDate(data.pbEnd, "/"),
-          tradingArea: info.tradingArea,
-          assetTag: info.assetTag,
-          liveYear: info.chDay,
-          mediaRemark: info.mRemark || "--",
-          mapCenter: info.reference || "--", // 地图中心点
-          address: info.resAddress || "",
-          dNum: info.dNum || "", // 出入口数
-          adLimit: info.notPush || "",
-          checkBox: { A: false, B: false, ABC: false },
-          connData: {
-            connectResName: "",
-            connectMedia: "",
-            commentWorkRes: "",
-            commentworkMedia: "",
-          },
-          connID: info.connID || "", // 连排门id
-          industryInfos: info.industryInfos || [], // 同行业资源回避
-          mediaLevel: info.grade || "",
-          adPrice:
-            info.mVehicle === "道闸"
-              ? info.asPrice / 100 || 0
-              : info.asPrice / 700 || 0,
-          asName: info.asName || "", // 点位所属公司名称
-          asrID: info.asrID, // 所属公司id
-        };
+      arr.forEach((item) => {
+        item.checkBox = false;
+        item.city = this.city[this.activeIndex].rName;
       });
-      // let j = 0
-      //TODO:这里是之前的业务逻辑，将数据分为广告门和闸道处理
-      // for (let data of arr) {
-      //   let info = data.adSInfo;
-      //   for (let i = 0; i < 2; i++) {
-      //     let importInfo = {
-      //       mID: info.mID,
-      //       resType: info.resType,
-      //       resID: info.resID,
-      //       asID: "",
-      //       asIDs: info.asID,
-      //       asLabs: info.asLab,
-      //       resName: info.resName,
-      //       city: info.prName,
-      //       rid: info.prID,
-      //       origin: info.rName,
-      //       buildType: info.cType,
-      //       houseNum: info.hNum,
-      //       buildPrice: info.hPrice / 100,
-      //       mediaName: info.mTitle || "",
-      //       mVehicle: info.mVehicle,
-      //       buildNum: info.fNum,
-      //       schedules:
-      //         timeFormat.toDate(data.pbStar, "/") +
-      //         "-" +
-      //         timeFormat.toDate(data.pbEnd, "/"),
-      //       tradingArea: info.tradingArea,
-      //       assetTag: info.assetTag,
-      //       liveYear: info.chDay,
-      //       mediaRemark: info.mRemark || "--",
-      //       mapCenter: info.reference || "--", // 地图中心点
-      //       address: info.resAddress || "",
-      //       dNum: info.dNum || "", // 出入口数
-      //       adLimit: info.notPush || "",
-      //       checkBox: { A: false, B: false, ABC: false },
-      //       connData: {
-      //         connectResName: "",
-      //         connectMedia: "",
-      //         commentWorkRes: "",
-      //         commentworkMedia: "",
-      //       },
-      //       connID: info.connID || "", // 连排门id
-      //       industryInfos: info.industryInfos || [], // 同行业资源回避
-      //       mediaLevel: info.grade || "",
-      //       adPrice:
-      //         info.mVehicle === "道闸"
-      //           ? info.asPrice / 100 || 0
-      //           : info.asPrice / 700 || 0,
-      //       asName: info.asName || "", // 点位所属公司名称
-      //       asrID: info.asrID, // 所属公司id
-      //     };
-      //     if (
-      //       this.customPermission.pptPermission &&
-      //       this.customPermission.pptPermission.gzqylPermission == "1"
-      //     ) {
-      //       importInfo.recommendReason = data.recommendReason; //  亲粤邻定制：推荐理由
-      //     }
-      //     if (info.mVehicle == "广告门") {
-      //       let asLabsArr = importInfo.asLabs.split(",");
-      //       let asIDArr = importInfo.asIDs.toString().split(",");
-      //       for (let n = 0; n < asLabsArr.length; n++) {
-      //         if (i === 0 && asLabsArr[n] === "A") {
-      //           importInfo.checkBox.A = true;
-      //           importInfo.A_B = "A";
-      //           importInfo.asID = asIDArr[n];
-      //           this.isHaveDiffPush(importInfo);
-      //           break;
-      //         } else if (i === 1 && asLabsArr[n] === "B") {
-      //           importInfo.checkBox.B = true;
-      //           importInfo.A_B = "B";
-      //           importInfo.asID = asIDArr[n];
-      //           this.isHaveDiffPush(importInfo);
-      //           break;
-      //         }
-      //       }
-      //     } else if (info.mVehicle == "道闸") {
-      //       importInfo.checkBox.ABC = true;
-      //       importInfo.A_B = "ABC";
-      //       // importInfo.asID = importInfo.asIDs.toString().split(',');
-      //       importInfo.asID = info.asID;
-      //       this.isHaveDiffPush(importInfo);
-      //       break;
-      //     }
-      //   }
-      //   // j++
-      // }
-      // console.log("this.shopingList1----", this.shopingList);
-      // Message.success("成功导入" + arr.length + "条数据");
-      // this.typeShopList = this.getTypeList();
-      // this.isImport = false;
-      // this.computeMedia_AD();
-      // this.judgeByselect();
+
+      return arr;
     },
+    // setShopDataByImport(arr) {
+    //   Message.success("成功导入" + arr.length + "条数据");
+    //   //跳转页面后自动打开购物车页面
+    //   setTimeout(() => {
+    //     this.dialogTableVisible = true;
+    //   }, 500);
+    //   this.typeShopList = this.getTypeList();
+    //   this.isImport = false;
+    //   this.computeMedia_AD();
+    //   this.judgeByselect();
+    //   //这里是现在的新业务逻辑，只需要处理数据的格式，不需要分
+    //   return arr.map((info) => {
+    //     return {
+    //       mID: info.mID,
+    //       resType: info.resType,
+    //       resID: info.resID,
+    //       asID: "",
+    //       asIDs: info.asID,
+    //       asLabs: info.asLab,
+    //       resName: info.resName,
+    //       city: info.prName,
+    //       rid: info.prID,
+    //       origin: info.rName,
+    //       buildType: info.cType,
+    //       houseNum: info.hNum,
+    //       buildPrice: info.hPrice / 100,
+    //       mediaName: info.mTitle || "",
+    //       mVehicle: info.mVehicle,
+    //       buildNum: info.fNum,
+    //       //TODO:这里wt隐藏了下面几行代码，因为目前造的数据data.pbStar不存在
+    //       // schedule:
+    //       //         timeFormat.toDate(data.pbStar, "/") +
+    //       //         "-" +
+    //       //         timeFormat.toDate(data.pbEnd, "/"),
+    //       tradingArea: info.tradingArea,
+    //       assetTag: info.assetTag,
+    //       liveYear: info.chDay,
+    //       mediaRemark: info.mRemark || "--",
+    //       mapCenter: info.reference || "--", // 地图中心点
+    //       address: info.resAddress || "",
+    //       dNum: info.dNum || "", // 出入口数
+    //       adLimit: info.notPush || "",
+    //       checkBox: false,
+    //       connData: {
+    //         connectResName: "",
+    //         connectMedia: "",
+    //         commentWorkRes: "",
+    //         commentworkMedia: "",
+    //       },
+    //       connID: info.connID || "", // 连排门id
+    //       industryInfos: info.industryInfos || [], // 同行业资源回避
+    //       mediaLevel: info.grade || "",
+    //       adPrice:
+    //         info.mVehicle === "道闸"
+    //           ? info.asPrice / 100 || 0
+    //           : info.asPrice / 700 || 0,
+    //       asName: info.asName || "", // 点位所属公司名称
+    //       asrID: info.asrID, // 所属公司id
+    //     };
+    //   });
+    //   // let j = 0
+    //   //TODO:这里是之前的业务逻辑，将数据分为广告门和闸道处理
+    //   // for (let data of arr) {
+    //   //   let info = data.adSInfo;
+    //   //   for (let i = 0; i < 2; i++) {
+    //   //     let importInfo = {
+    //   //       mID: info.mID,
+    //   //       resType: info.resType,
+    //   //       resID: info.resID,
+    //   //       asID: "",
+    //   //       asIDs: info.asID,
+    //   //       asLabs: info.asLab,
+    //   //       resName: info.resName,
+    //   //       city: info.prName,
+    //   //       rid: info.prID,
+    //   //       origin: info.rName,
+    //   //       buildType: info.cType,
+    //   //       houseNum: info.hNum,
+    //   //       buildPrice: info.hPrice / 100,
+    //   //       mediaName: info.mTitle || "",
+    //   //       mVehicle: info.mVehicle,
+    //   //       buildNum: info.fNum,
+    //   //       schedule:
+    //   //         timeFormat.toDate(data.pbStar, "/") +
+    //   //         "-" +
+    //   //         timeFormat.toDate(data.pbEnd, "/"),
+    //   //       tradingArea: info.tradingArea,
+    //   //       assetTag: info.assetTag,
+    //   //       liveYear: info.chDay,
+    //   //       mediaRemark: info.mRemark || "--",
+    //   //       mapCenter: info.reference || "--", // 地图中心点
+    //   //       address: info.resAddress || "",
+    //   //       dNum: info.dNum || "", // 出入口数
+    //   //       adLimit: info.notPush || "",
+    //   //       checkBox: { A: false, B: false, ABC: false },
+    //   //       connData: {
+    //   //         connectResName: "",
+    //   //         connectMedia: "",
+    //   //         commentWorkRes: "",
+    //   //         commentworkMedia: "",
+    //   //       },
+    //   //       connID: info.connID || "", // 连排门id
+    //   //       industryInfos: info.industryInfos || [], // 同行业资源回避
+    //   //       mediaLevel: info.grade || "",
+    //   //       adPrice:
+    //   //         info.mVehicle === "道闸"
+    //   //           ? info.asPrice / 100 || 0
+    //   //           : info.asPrice / 700 || 0,
+    //   //       asName: info.asName || "", // 点位所属公司名称
+    //   //       asrID: info.asrID, // 所属公司id
+    //   //     };
+    //   //     if (
+    //   //       this.customPermission.pptPermission &&
+    //   //       this.customPermission.pptPermission.gzqylPermission == "1"
+    //   //     ) {
+    //   //       importInfo.recommendReason = data.recommendReason; //  亲粤邻定制：推荐理由
+    //   //     }
+    //   //     if (info.mVehicle == "广告门") {
+    //   //       let asLabsArr = importInfo.asLabs.split(",");
+    //   //       let asIDArr = importInfo.asIDs.toString().split(",");
+    //   //       for (let n = 0; n < asLabsArr.length; n++) {
+    //   //         if (i === 0 && asLabsArr[n] === "A") {
+    //   //           importInfo.checkBox.A = true;
+    //   //           importInfo.A_B = "A";
+    //   //           importInfo.asID = asIDArr[n];
+    //   //           this.isHaveDiffPush(importInfo);
+    //   //           break;
+    //   //         } else if (i === 1 && asLabsArr[n] === "B") {
+    //   //           importInfo.checkBox.B = true;
+    //   //           importInfo.A_B = "B";
+    //   //           importInfo.asID = asIDArr[n];
+    //   //           this.isHaveDiffPush(importInfo);
+    //   //           break;
+    //   //         }
+    //   //       }
+    //   //     } else if (info.mVehicle == "道闸") {
+    //   //       importInfo.checkBox.ABC = true;
+    //   //       importInfo.A_B = "ABC";
+    //   //       // importInfo.asID = importInfo.asIDs.toString().split(',');
+    //   //       importInfo.asID = info.asID;
+    //   //       this.isHaveDiffPush(importInfo);
+    //   //       break;
+    //   //     }
+    //   //   }
+    //   //   // j++
+    //   // }
+    //   // console.log("this.shopingList1----", this.shopingList);
+    //   // Message.success("成功导入" + arr.length + "条数据");
+    //   // this.typeShopList = this.getTypeList();
+    //   // this.isImport = false;
+    //   // this.computeMedia_AD();
+    //   // this.judgeByselect();
+    // },
     // 判断点位是否已存在购物车(同点位同排期去重、同点位排期交叉则合并、同点位排期联系则合并)
     isHaveDiffPush(obj) {
       console.log("obj----", obj, this.shopingList);
@@ -3929,7 +3953,7 @@ export default {
       let sameMidArr = [];
       let resultArr = [];
       for (let k = 0, kLen = shopArr.length; k < shopArr.length; ) {
-        if (ADData.mID === shopArr[k].mID && ADData.A_B === shopArr[k].A_B) {
+        if (ADData.resID === shopArr[k].resID) {
           sameMidArr.push(shopArr[k]);
           shopArr.splice(k, 1);
         } else {
@@ -3938,20 +3962,20 @@ export default {
       }
       console.log("sameMidArr-----1111", sameMidArr, this.shopingList, shopArr);
       for (let data of sameMidArr) {
-        let ADScheArr = ADData.schedules.split("-");
-        let shopScheArr = data.schedules.split("-");
+        let ADScheArr = ADData.schedule.split("-");
+        let shopScheArr = data.schedule.split("-");
         if (
           ADScheArr[0] < shopScheArr[0] &&
           shopScheArr[0] <= ADScheArr[1] &&
           ADScheArr[1] < shopScheArr[1]
         ) {
           // 左相交(购物车相交选点)
-          ADData.schedules = ADScheArr[0] + "-" + shopScheArr[1];
+          ADData.schedule = ADScheArr[0] + "-" + shopScheArr[1];
         } else if (
           shopScheArr[0] <= ADScheArr[0] &&
           ADScheArr[1] <= shopScheArr[1]
         ) {
-          ADData.schedules = shopScheArr[0] + "-" + shopScheArr[1];
+          ADData.schedule = shopScheArr[0] + "-" + shopScheArr[1];
           // 购物车包含选点
         } else if (
           shopScheArr[0] < ADScheArr[0] &&
@@ -3959,13 +3983,13 @@ export default {
           shopScheArr[1] < ADScheArr[1]
         ) {
           // 右相交(购物车相交选点)
-          ADData.schedules = shopScheArr[0] + "-" + ADScheArr[1];
+          ADData.schedule = shopScheArr[0] + "-" + ADScheArr[1];
         } else if (
           ADScheArr[0] <= shopScheArr[0] &&
           shopScheArr[1] <= ADScheArr[1]
         ) {
           // 购物车被选点包含
-          ADData.schedules = ADScheArr[0] + "-" + ADScheArr[1];
+          ADData.schedule = ADScheArr[0] + "-" + ADScheArr[1];
         } else {
           let timeArr = [
             ADScheArr[0],
@@ -3977,7 +4001,7 @@ export default {
             return Date.parse(a) - Date.parse(b);
           });
           if (Date.parse(timeArr[2]) - Date.parse(timeArr[1]) == 86400000) {
-            ADData.schedules = timeArr[0] + "-" + timeArr[3];
+            ADData.schedule = timeArr[0] + "-" + timeArr[3];
           } else {
             resultArr.push(data);
           }
@@ -3988,26 +4012,92 @@ export default {
       console.log("resultArr*****", resultArr, this.shopingList);
       this.shopingList = this.shopingList.concat(resultArr);
     },
+    // isHaveDiffPush(obj) {
+    //   console.log("obj----", obj, this.shopingList);
+    //   let ADData = obj;
+    //   let shopArr = this.shopingList;
+    //   let sameMidArr = [];
+    //   let resultArr = [];
+    //   for (let k = 0, kLen = shopArr.length; k < shopArr.length; ) {
+    //     if (ADData.mID === shopArr[k].mID && ADData.A_B === shopArr[k].A_B) {
+    //       sameMidArr.push(shopArr[k]);
+    //       shopArr.splice(k, 1);
+    //     } else {
+    //       k++;
+    //     }
+    //   }
+    //   console.log("sameMidArr-----1111", sameMidArr, this.shopingList, shopArr);
+    //   for (let data of sameMidArr) {
+    //     let ADScheArr = ADData.schedule.split("-");
+    //     let shopScheArr = data.schedule.split("-");
+    //     if (
+    //       ADScheArr[0] < shopScheArr[0] &&
+    //       shopScheArr[0] <= ADScheArr[1] &&
+    //       ADScheArr[1] < shopScheArr[1]
+    //     ) {
+    //       // 左相交(购物车相交选点)
+    //       ADData.schedule = ADScheArr[0] + "-" + shopScheArr[1];
+    //     } else if (
+    //       shopScheArr[0] <= ADScheArr[0] &&
+    //       ADScheArr[1] <= shopScheArr[1]
+    //     ) {
+    //       ADData.schedule = shopScheArr[0] + "-" + shopScheArr[1];
+    //       // 购物车包含选点
+    //     } else if (
+    //       shopScheArr[0] < ADScheArr[0] &&
+    //       ADScheArr[0] <= shopScheArr[1] &&
+    //       shopScheArr[1] < ADScheArr[1]
+    //     ) {
+    //       // 右相交(购物车相交选点)
+    //       ADData.schedule = shopScheArr[0] + "-" + ADScheArr[1];
+    //     } else if (
+    //       ADScheArr[0] <= shopScheArr[0] &&
+    //       shopScheArr[1] <= ADScheArr[1]
+    //     ) {
+    //       // 购物车被选点包含
+    //       ADData.schedule = ADScheArr[0] + "-" + ADScheArr[1];
+    //     } else {
+    //       let timeArr = [
+    //         ADScheArr[0],
+    //         ADScheArr[1],
+    //         shopScheArr[0],
+    //         shopScheArr[1],
+    //       ];
+    //       timeArr.sort((a, b) => {
+    //         return Date.parse(a) - Date.parse(b);
+    //       });
+    //       if (Date.parse(timeArr[2]) - Date.parse(timeArr[1]) == 86400000) {
+    //         ADData.schedule = timeArr[0] + "-" + timeArr[3];
+    //       } else {
+    //         resultArr.push(data);
+    //       }
+    //     }
+    //   }
+    //   console.log("resultArr----ADData----", resultArr, ADData);
+    //   resultArr.push(ADData);
+    //   console.log("resultArr*****", resultArr, this.shopingList);
+    //   this.shopingList = this.shopingList.concat(resultArr);
+    // },
     // 处理有问题的点
-    checkPointFun(obj) {
-      let resultarr = [];
-      for (let data of obj.errorList) {
-        let item = {
-          resName: data.resName,
-          city: data.city,
-          origin: data.district,
-          mVehicle: data.mVehicle,
-          mediaName: data.mTitle,
-          asLab: data.asLab,
-          assetTag: data.assetTag,
-          schedules: data.date,
-          pointId: data.pointId,
-          failReason: data.failReason,
-        };
-        resultarr.push(item);
-      }
-      return resultarr;
-    },
+    // checkPointFun(obj) {
+    //   let resultarr = [];
+    //   for (let data of obj.errorList) {
+    //     let item = {
+    //       resName: data.resName,
+    //       city: data.city,
+    //       origin: data.district,
+    //       mVehicle: data.mVehicle,
+    //       mediaName: data.mTitle,
+    //       asLab: data.asLab,
+    //       assetTag: data.assetTag,
+    //       schedule: data.date,
+    //       pointId: data.pointId,
+    //       failReason: data.failReason,
+    //     };
+    //     resultarr.push(item);
+    //   }
+    //   return resultarr;
+    // },
     // // 导出有问题的点
     // downLoadExcel() {
     //   let arr = this.questionPoint(
@@ -4033,52 +4123,52 @@ export default {
     //   );
     // },
     // 导入excel后台返回的问题点位
-    questionPoint(arr, successArr) {
-      let resultarr = [
-        {
-          sheetName: "问题点位",
-          showList: [],
-        },
-        {
-          sheetName: "正常点位",
-          showList: [],
-        },
-      ];
-      for (let data of arr) {
-        let obj = {
-          resName: data.resName,
-          city: data.city,
-          origin: data.origin,
-          mVehicle: data.mVehicle,
-          mediaName: data.mediaName,
-          asLab: data.asLab,
-          assetTag: data.assetTag,
-          schedules: data.schedules,
-          pointId: data.pointId,
-          failReason: data.failReason,
-        };
-        resultarr[0].showList.push(obj);
-      }
-      for (let data of successArr) {
-        let info = data.adSInfo;
-        let obj = {
-          resName: info.resName,
-          city: info.prName,
-          origin: info.rName,
-          mVehicle: info.mVehicle,
-          mediaName: info.mTitle,
-          asLab: info.asLab,
-          assetTag: info.assetTag,
-          schedules:
-            timeFormat.toDate(data.pbStar, ".") +
-            "-" +
-            timeFormat.toDate(data.pbEnd, "."),
-          pointId: data.pointId,
-        };
-        resultarr[1].showList.push(obj);
-      }
-      return resultarr;
-    },
+    // questionPoint(arr, successArr) {
+    //   let resultarr = [
+    //     {
+    //       sheetName: "问题点位",
+    //       showList: [],
+    //     },
+    //     {
+    //       sheetName: "正常点位",
+    //       showList: [],
+    //     },
+    //   ];
+    //   for (let data of arr) {
+    //     let obj = {
+    //       resName: data.resName,
+    //       city: data.city,
+    //       origin: data.origin,
+    //       mVehicle: data.mVehicle,
+    //       mediaName: data.mediaName,
+    //       asLab: data.asLab,
+    //       assetTag: data.assetTag,
+    //       schedule: data.schedule,
+    //       pointId: data.pointId,
+    //       failReason: data.failReason,
+    //     };
+    //     resultarr[0].showList.push(obj);
+    //   }
+    //   for (let data of successArr) {
+    //     let info = data.adSInfo;
+    //     let obj = {
+    //       resName: info.resName,
+    //       city: info.prName,
+    //       origin: info.rName,
+    //       mVehicle: info.mVehicle,
+    //       mediaName: info.mTitle,
+    //       asLab: info.asLab,
+    //       assetTag: info.assetTag,
+    //       schedule:
+    //         timeFormat.toDate(data.pbStar, ".") +
+    //         "-" +
+    //         timeFormat.toDate(data.pbEnd, "."),
+    //       pointId: data.pointId,
+    //     };
+    //     resultarr[1].showList.push(obj);
+    //   }
+    //   return resultarr;
+    // },
     // 获取订单
     remoteGetOrder(query) {
       if (query !== "") {
@@ -4182,7 +4272,7 @@ export default {
     //     mediaName: info.mTitle || "",
     //     mVehicle: info.mVehicle,
     //     buildNum: info.fNum,
-    //     schedules: this.dateInput[0] + "-" + this.dateInput[1],
+    //     schedule: this.dateInput[0] + "-" + this.dateInput[1],
     //     tradingArea: info.tradingArea,
     //     assetTag: info.assetTag,
     //     liveYear: info.chDay,
@@ -4281,7 +4371,7 @@ export default {
     excelData(arr) {
       console.log("arrr------excelData", arr);
       let dateArr = [];
-      let filtersData = filterFormat(arr, "schedules");
+      let filtersData = filterFormat(arr, "schedule");
       for (let item of filtersData) {
         console.log(item);
         let dateObj = {
@@ -4332,7 +4422,7 @@ export default {
           }
         }
         for (let date of dateArr) {
-          if (data.schedules == date.sheetName) {
+          if (data.schedule == date.sheetName) {
             if (date.resIDArr.includes(data.resID)) {
               for (let item of date.showList) {
                 if (item.resID == data.resID) {
@@ -4726,9 +4816,12 @@ export default {
       }
     },
     // 设置城市区域
+    //TODO 设置城市区域
     getAreaFun() {
       this.area = [];
       let throwCityList = this.planForm.throwCity;
+      console.log("this.throwCity: ", this.throwCity);
+      console.log("throwCityList: ", throwCityList);
       let cityArr = [];
       for (let j = 0; j < throwCityList.length; j++) {
         for (let t = 0; t < this.throwCity.length; t++) {
@@ -4743,6 +4836,7 @@ export default {
         if (j >= throwCityList.length - 1) {
           console.log("cityArr", cityArr);
           this.city = cityArr;
+          console.log("this.city: ", this.city);
           this.city.sort(this.compareFun);
           console.log("this.city ", this.city);
           this.activeCityData = this.city[0]; // 设置初始选中城市信息
@@ -4794,42 +4888,56 @@ export default {
     },
     // 获取广告点位列表
     //TODO:获取广告点位列表
+    //按小区选点
     getAdList() {
-      console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
       this.loading = true;
-      this.getAdsParamsData.dateTimeBegin = this.dateInput[0];
-      this.getAdsParamsData.dateTimeEnd = this.dateInput[1];
-      this.getAdsParamsData.pageNo = this.pageNo;
-      this.getAdsParamsData.uid = this.BDData.uid;
+      this.getAdsParamsData.startDate = this.dateInput[0];
+      this.getAdsParamsData.endDate = this.dateInput[1];
+      this.getAdsParamsData.apName = this.planForm.planName;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+      this.getAdsParamsData.suID = this.BDData.uid;
+
+      //   startDate: this.dateInput[0], //开始时间  必填
+      //   endDate: this.dateInput[1], //结束时间 必填
+      //   suID: this.BDData.uid, //方案所属销售用户id 必填
+      //   apName: this.planForm.planName, //意向方案名称 必填
+      //   asrIDs: this.planForm.pointOfAsrIDs.join(","), //附属公司id拼接，逗号相隔
+      //   pageNum: this.pageNo, //第几页
+      //   pageSize: this.pageSize, //每页条数
+      //   asrIDs:"", //附属公司id拼接，逗号相隔
+      //   rID, //区域id
+      //   resType, //资源类型
+      //   mVehicle, //媒体类型
+      //   pageNum, //第几页
+      //   pageSize, //每页大小
+      //   apID, //意向方案id，编辑的时候需要带
+
       for (let i in this.getAdsParamsData) {
-        if (this.getAdsParamsData[i] === "") {
+        if (!this.getAdsParamsData[i]) {
           delete this.getAdsParamsData[i];
         }
       }
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        service: "GetAdS",
-        data: this.getAdsParamsData,
+        ...this.getAdsParamsData,
       };
       let timer = setTimeout(() => {
         // setTimeout 异步让table出现loading
-        api.postApi_new(this.apiVar.Media, params).then((res) => {
+        let url = this.apiVar.ResList;
+        api.getApi(url, params).then((res) => {
           console.log("选点列表：", res);
-          if (res.data.SysCode === 200200) {
-            if (
-              res.data.data.list !== undefined &&
-              res.data.data.list.length > 0
-            ) {
-              this.planList = [];
-              let ADList = res.data.data.list;
+          if (res.data.SysCode == 200200) {
+            if (res.data.data !== undefined && res.data.data.length > 0) {
+              // this.planList = [];
+              // this.planList = res.data.data;
+              let ADList = res.data.data;
               this.setTableDataADDoor(ADList);
-              this.total = res.data.data.total;
-              this.adsCount = res.data.data.adsCount;
+              this.totalPage = res.data.totalPage;
+              this.total = res.data.total;
               // this.pageNo++
               // console.log(' this.pageNo++', this.pageNo)
-              this.judgeByselect();
+              this.judgeByselect(); //判断购物车是否存在得到的数据
               this.searchBtnAbled = false;
             } else {
               this.planList = [];
@@ -4844,6 +4952,57 @@ export default {
         clearTimeout(timer);
       }, 0);
     },
+    //选点原逻辑
+    // getAdList() {
+    //   console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
+    //   this.loading = true;
+    //   this.getAdsParamsData.dateTimeBegin = this.dateInput[0];
+    //   this.getAdsParamsData.dateTimeEnd = this.dateInput[1];
+    //   this.getAdsParamsData.pageNo = this.pageNo;
+    //   this.getAdsParamsData.uid = this.BDData.uid;
+    //   this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+    //   for (let i in this.getAdsParamsData) {
+    //     if (this.getAdsParamsData[i] === "") {
+    //       delete this.getAdsParamsData[i];
+    //     }
+    //   }
+    //   let params = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     service: "GetAdS",
+    //     data: this.getAdsParamsData,
+    //   };
+    //   let timer = setTimeout(() => {
+    //     // setTimeout 异步让table出现loading
+    //     api.postApi_new(this.apiVar.Media, params).then((res) => {
+    //       console.log("选点列表：", res);
+    //       if (res.data.SysCode === 200200) {
+    //         if (
+    //           res.data.data.list !== undefined &&
+    //           res.data.data.list.length > 0
+    //         ) {
+    //           this.planList = [];
+    //           let ADList = res.data.data.list;
+    //           this.setTableDataADDoor(ADList);
+    //           this.total = res.data.data.total;
+    //           this.adsCount = res.data.data.total;
+    //           // this.pageNo++
+    //           // console.log(' this.pageNo++', this.pageNo)
+    //           this.judgeByselect();
+    //           this.searchBtnAbled = false;
+    //         } else {
+    //           this.planList = [];
+    //         }
+    //         this.loading = false;
+    //       } else {
+    //         sessFun.messageFun("warning", res.data.MSG);
+    //         this.loading = false;
+    //       }
+    //       this.searchBtnAbled = false;
+    //     });
+    //     clearTimeout(timer);
+    //   }, 0);
+    // },
     // 接口数据转成table
     // TODO:接口数据转换成table数据
     setTableDataADDoor(ADSdata) {
@@ -4851,95 +5010,10 @@ export default {
       console.log("接口数据转成table当前时间", this.dateInput);
       for (let key of ADSdata) {
         let adObj = {
-          mID: key.mID,
-          resType: key.resType,
-          resID: key.resID,
-          asIDs: key.asIDs,
-          asLabs: key.asLabs,
-          resName: key.resName,
-          city: this.city[this.activeIndex].rName,
-          rid: this.city[this.activeIndex].rid,
-          origin: key.rName,
-          buildType: key.cType,
-          houseNum: key.hNum,
-          buildPrice: key.hPrice / 100,
-          mediaName: key.mTitle || "",
-          mVehicle: key.mVehicle, // 媒体类型
-          mediaRemark: key.mRemark || "--",
-          parkSpaceNum: key.parkSpaceNum,
-          carFlow: key.carFlow,
-          peopleFlow: key.peopleFlow,
-          buildNum: key.fNum,
-          schedules: this.dateInput[0] + "-" + this.dateInput[1],
-          remark: key.remark || "--", // 巡点定制
-          trafficState: key.trafficState || "--", // 巡点定制
-          electrifyState: key.electrifyState || "--", // 巡点定制
-          tradingArea: key.tradingArea || "",
-          assetTag: key.assetTag || "",
-          liveYear: key.chDay,
-          adLimit: key.notPush || "",
-          mState:
-            key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
-          adSize: key.adSize || "",
-          picSize: key.picSize || "",
-          mapCenter: key.reference || "", // 地图中心点
-          address: key.resAddress || "",
-          dNum: key.dNum || "", // 出入口数
-          connID: key.connID || "", // 连排门id
-          industryInfos: key.industryInfos, // 同行业资源、媒体回避
-          mediaLevel: key.grade || "", // 媒体等级
-          asName: key.asName, // 点位所属公司名称
-          asrID: key.asrID, // 所属公司id
-          // checkBox: { A: false, B: false, ABC: false },
+          ...key,
           checkBox: false,
-          // box: { A: false, B: false },
-          box: false,
+          city: this.city[this.activeIndex].rName,
         };
-        // // 点位价格
-        // if (key.mVehicle === "道闸") {
-        //   adObj.adPrice = key.asPrice / 100;
-        // } else {
-        //   if (key.asPrice) {
-        //     adObj.adPrice = key.asPrice / 700;
-        //   } else {
-        //     adObj.adPrice = 0;
-        //   }
-        // }
-        // // A/B面
-        // if (key.asLabs.indexOf("A") === -1) {
-        //   adObj.box.A = true;
-        // } else {
-        //   //本页可选点位
-        //   i++;
-        // }
-        // if (key.asLabs.indexOf("B") === -1) {
-        //   adObj.box.B = true;
-        // } else {
-        //   //本页可选点位
-        //   i++;
-        // }
-        // 点位状态
-        // if (!!key.adlInfo && key.adlInfo.length > 0) {
-        //   let arr = [];
-        //   for (let akey of key.adlInfo) {
-        //     if (akey.asState) {
-        //       arr.push({
-        //         asState: akey.asState,
-        //       });
-        //     } else {
-        //       let star = timeFormat.toDate(akey.lStar, "/");
-        //       let end = timeFormat.toDate(akey.lEnd, "/");
-        //       arr.push({
-        //         beOccupieApName: akey.apName,
-        //         schedules: star + "-" + end,
-        //         lState: akey.lState,
-        //       });
-        //     }
-        //   }
-        //   adObj.adlInfo = arr;
-        // } else {
-        //   adObj.adlInfo = "";
-        // }
         this.planList.push(adObj);
         i++;
       }
@@ -4953,6 +5027,113 @@ export default {
         this.currPageAsLength
       );
     },
+    // setTableDataADDoor(ADSdata) {
+    //   let i = 0;
+    //   console.log("接口数据转成table当前时间", this.dateInput);
+    //   for (let key of ADSdata) {
+    //     let adObj = {
+    //       mID: key.mID,
+    //       resType: key.resType,
+    //       resID: key.resID,
+    //       asIDs: key.asIDs,
+    //       asLabs: key.asLabs,
+    //       resName: key.resName,
+    //       city: this.city[this.activeIndex].rName,
+    //       rid: this.city[this.activeIndex].rid,
+    //       origin: key.rName,
+    //       buildType: key.cType,
+    //       houseNum: key.hNum,
+    //       buildPrice: key.hPrice / 100,
+    //       mediaName: key.mTitle || "",
+    //       mVehicle: key.mVehicle, // 媒体类型
+    //       mediaRemark: key.mRemark || "--",
+    //       parkSpaceNum: key.parkSpaceNum,
+    //       carFlow: key.carFlow,
+    //       peopleFlow: key.peopleFlow,
+    //       buildNum: key.fNum,
+    //       schedule: this.dateInput[0] + "-" + this.dateInput[1],
+    //       remark: key.remark || "--", // 巡点定制
+    //       trafficState: key.trafficState || "--", // 巡点定制
+    //       electrifyState: key.electrifyState || "--", // 巡点定制
+    //       tradingArea: key.tradingArea || "",
+    //       assetTag: key.assetTag || "",
+    //       liveYear: key.chDay,
+    //       adLimit: key.notPush || "",
+    //       mState:
+    //         key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
+    //       adSize: key.adSize || "",
+    //       picSize: key.picSize || "",
+    //       mapCenter: key.reference || "", // 地图中心点
+    //       address: key.resAddress || "",
+    //       dNum: key.dNum || "", // 出入口数
+    //       connID: key.connID || "", // 连排门id
+    //       industryInfos: key.industryInfos, // 同行业资源、媒体回避
+    //       mediaLevel: key.grade || "", // 媒体等级
+    //       asName: key.asName, // 点位所属公司名称
+    //       asrID: key.asrID, // 所属公司id
+    //       // checkBox: { A: false, B: false, ABC: false },
+    //       checkBox: false,
+    //       // box: { A: false, B: false },
+    //       box: false,
+    //     };
+    //     // // 点位价格
+    //     // if (key.mVehicle === "道闸") {
+    //     //   adObj.adPrice = key.asPrice / 100;
+    //     // } else {
+    //     //   if (key.asPrice) {
+    //     //     adObj.adPrice = key.asPrice / 700;
+    //     //   } else {
+    //     //     adObj.adPrice = 0;
+    //     //   }
+    //     // }
+    //     // // A/B面
+    //     // if (key.asLabs.indexOf("A") === -1) {
+    //     //   adObj.box.A = true;
+    //     // } else {
+    //     //   //本页可选点位
+    //     //   i++;
+    //     // }
+    //     // if (key.asLabs.indexOf("B") === -1) {
+    //     //   adObj.box.B = true;
+    //     // } else {
+    //     //   //本页可选点位
+    //     //   i++;
+    //     // }
+    //     // 点位状态
+    //     // if (!!key.adlInfo && key.adlInfo.length > 0) {
+    //     //   let arr = [];
+    //     //   for (let akey of key.adlInfo) {
+    //     //     if (akey.asState) {
+    //     //       arr.push({
+    //     //         asState: akey.asState,
+    //     //       });
+    //     //     } else {
+    //     //       let star = timeFormat.toDate(akey.lStar, "/");
+    //     //       let end = timeFormat.toDate(akey.lEnd, "/");
+    //     //       arr.push({
+    //     //         beOccupieApName: akey.apName,
+    //     //         schedule: star + "-" + end,
+    //     //         lState: akey.lState,
+    //     //       });
+    //     //     }
+    //     //   }
+    //     //   adObj.adlInfo = arr;
+    //     // } else {
+    //     //   adObj.adlInfo = "";
+    //     // }
+    //     this.planList.push(adObj);
+    //     i++;
+    //   }
+    //   this.currPageAsLength = i;
+    //   this.loadScroll = true;
+
+    //   console.log(
+    //     "表格数据",
+    //     this.planList,
+    //     this.currPageSelect,
+    //     this.currPageAsLength
+    //   );
+    // },
     setPageNoAndTableData() {
       this.loadScroll = false;
       this.IsAll = false;
@@ -4968,15 +5149,19 @@ export default {
     //   this.getAdList();
     // },
     //step2搜索按钮
+    //TODOstep2搜索按钮
     searchFun() {
+      debugger;
       this.searchBtnAbled = true;
+      console.log("this.surfaceNum: ", this.surfaceNum);
       console.log("搜索排期时间", this.dateInput);
+      console.log("this.searchInput: ", this.searchInput);
       this.areaName = "全市";
       if (this.selectValue === "被占查询") {
         this.loadScroll = false;
         //    this.isOccupied = false     // 被占搜索时隐藏过滤条件
-        this.beOccupiedGetList(); // 获取被占列表接口
-        this.beOccupiedNumber++;
+        // this.beOccupiedGetList(); // 获取被占列表接口
+        // this.beOccupiedNumber++;
       } else {
         this.loadScroll = true;
         this.isOccupied = true; //  || this.dateInput !== this.beforeDate
@@ -5029,68 +5214,68 @@ export default {
       }
     },
     //  查询被占点位
-    beOccupiedGetList() {
-      let starTime = this.dateInput[0];
-      let endTime = this.dateInput[1];
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        rn: this.searchInput,
-        ls: starTime.split(".").join(""),
-        le: endTime.split(".").join(""),
-        cityIds: this.city.map((_) => _.rid),
-        saleId: this.BDData.uid,
-        asrIDs: this.planForm.pointOfAsrIDs.join(","),
-      };
-      console.log("参数", params);
-      api
-        .postApi(this.apiVar.Advertisement + "/GetResAdplanInfo", params)
-        .then((res) => {
-          console.log("查询被占点位", res);
-          this.isOccupied = false; // 被占搜索时隐藏过滤条件
-          let dataArr = res.data;
-          if (res.data === "" || res.data === null || res.data.length <= 0) {
-            this.planList = [];
-            sessFun.messageFun("warning", "暂无该小区被占信息");
-          } else {
-            let arr = [];
-            for (let key of dataArr) {
-              let AD_data = {
-                mID: key.mID,
-                resType: key.resType,
-                resID: key.resID,
-                asIDs: key.asID,
-                asLabs: key.asLab,
-                resName: key.resName,
-                city: key.cityName, //'广州',
-                origin: key.quName,
-                buildType: key.cType,
-                houseNum: key.hNum,
-                buildPrice: key.hPrice / 100,
-                mediaName: key.mTitle,
-                buildNum: key.fNum,
-                schedules: this.dateInput[0] + "-" + this.dateInput[1],
-                tradingArea: key.tradingArea || "",
-                assetTag: key.assetTag || "",
-                liveYear: key.chDay,
-                adLimit: key.notPush || "",
-                mediaRemark: key.mRemark || "--",
-                mState:
-                  key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "",
-                adSize: key.adSize || "",
-                apName: key.apName, // 被占方案名称
-                lStar: key.lStar, // 被占排期lStar，lEnd
-                lEnd: key.lEnd,
-                lState: key.lState, //点位状态 1被占，2强制停止  0 锁点
-                mediaLevel: key.grade || "",
-              };
-              arr.push(AD_data);
-            }
-            this.planList = arr;
-          }
-          this.searchBtnAbled = false;
-        });
-    },
+    // beOccupiedGetList() {
+    //   let starTime = this.dateInput[0];
+    //   let endTime = this.dateInput[1];
+    //   let params = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     rn: this.searchInput,
+    //     ls: starTime.split(".").join(""),
+    //     le: endTime.split(".").join(""),
+    //     cityIds: this.city.map((_) => _.rid),
+    //     saleId: this.BDData.uid,
+    //     asrIDs: this.planForm.pointOfAsrIDs.join(","),
+    //   };
+    //   console.log("参数", params);
+    //   api
+    //     .postApi(this.apiVar.Advertisement + "/GetResAdplanInfo", params)
+    //     .then((res) => {
+    //       console.log("查询被占点位", res);
+    //       this.isOccupied = false; // 被占搜索时隐藏过滤条件
+    //       let dataArr = res.data;
+    //       if (res.data === "" || res.data === null || res.data.length <= 0) {
+    //         this.planList = [];
+    //         sessFun.messageFun("warning", "暂无该小区被占信息");
+    //       } else {
+    //         let arr = [];
+    //         for (let key of dataArr) {
+    //           let AD_data = {
+    //             mID: key.mID,
+    //             resType: key.resType,
+    //             resID: key.resID,
+    //             asIDs: key.asID,
+    //             asLabs: key.asLab,
+    //             resName: key.resName,
+    //             city: key.cityName, //'广州',
+    //             origin: key.quName,
+    //             buildType: key.cType,
+    //             houseNum: key.hNum,
+    //             buildPrice: key.hPrice / 100,
+    //             mediaName: key.mTitle,
+    //             buildNum: key.fNum,
+    //             schedule: this.dateInput[0] + "-" + this.dateInput[1],
+    //             tradingArea: key.tradingArea || "",
+    //             assetTag: key.assetTag || "",
+    //             liveYear: key.chDay,
+    //             adLimit: key.notPush || "",
+    //             mediaRemark: key.mRemark || "--",
+    //             mState:
+    //               key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "",
+    //             adSize: key.adSize || "",
+    //             apName: key.apName, // 被占方案名称
+    //             lStar: key.lStar, // 被占排期lStar，lEnd
+    //             lEnd: key.lEnd,
+    //             lState: key.lState, //点位状态 1被占，2强制停止  0 锁点
+    //             mediaLevel: key.grade || "",
+    //           };
+    //           arr.push(AD_data);
+    //         }
+    //         this.planList = arr;
+    //       }
+    //       this.searchBtnAbled = false;
+    //     });
+    // },
     // 判断地图权限
     judgeMapSelect() {
       this.isMapKind = true;
@@ -5304,7 +5489,7 @@ export default {
     //             trafficState: key.trafficState || "--", // 巡点定制
     //             electrifyState: key.electrifyState || "--", // 巡点定制
     //             buildNum: key.fNum,
-    //             schedules: this.dateInput[0] + "-" + this.dateInput[1],
+    //             schedule: this.dateInput[0] + "-" + this.dateInput[1],
     //             tradingArea: key.tradingArea,
     //             assetTag: key.assetTag,
     //             liveYear: key.chDay,
@@ -5411,20 +5596,23 @@ export default {
       this.activeRName = item.rName;
       this.activeCityData = item;
       this.areaName = "全市";
-      this.getAdsParamsData.area = "";
+      // this.getAdsParamsData.area = "";
+      this.getAdsParamsData.rID = "";
       this.getAdsParamsData.prID = this.city[index].rid;
       this.setPageNoAndTableData();
       this.getAdList();
     },
     //  stpe2, 切换区域
+    //TODO:11切换区域
     activeArea(item) {
+      console.log("item: ", item);
       this.areaName = item.rName;
       this.areaRid = item.rID;
       this.setPageNoAndTableData();
       if (this.areaName === "全市") {
-        this.getAdsParamsData.area = "";
+        this.getAdsParamsData.rID = "";
       } else {
-        this.getAdsParamsData.area = item.rName;
+        this.getAdsParamsData.rID = item.rID;
       }
       this.getAdList();
     },
@@ -5700,19 +5888,11 @@ export default {
       let shopAD = data;
       if (this.activeRName === shopAD.city) {
         for (let key of this.planList) {
-          if (key.mID === shopAD.mID) {
-            let crossIf = this.crossSchedules(shopAD.schedules);
+          if (key.resID === shopAD.resID) {
+            let crossIf = this.crossschedule(shopAD.schedule);
             if (crossIf) {
-              if (shopAD.A_B === "A") {
-                key.checkBox.A = true;
-                this.currPageSelect++;
-              } else if (shopAD.A_B === "B") {
-                key.checkBox.B = true;
-                this.currPageSelect++;
-              } else if (shopAD.A_B === "ABC") {
-                key.checkBox.ABC = true;
-                this.currPageSelect++;
-              }
+              key.checkBox = true;
+              this.currPageSelect++;
               break;
             } else {
               console.log("排期无交叉且不相等");
@@ -5723,19 +5903,34 @@ export default {
         console.log("不同城市");
       }
     },
-    // 重置planList的勾选
+    // // 重置planList的勾选
+    // resetPlanList() {
+    //   console.log("重置planList的勾选开始");
+    //   for (let i = 0; i < this.planList.length; i++) {
+    //     if (
+    //       this.planList[i].checkBox.A ||
+    //       this.planList[i].checkBox.B ||
+    //       this.planList[i].checkBox.ABC
+    //     ) {
+    //       console.log("有勾选");
+    //       this.planList[i].checkBox.A = false;
+    //       this.planList[i].checkBox.B = false;
+    //       this.planList[i].checkBox.ABC = false;
+    //       // this.$refs.multipleTable.toggleRowSelection(this.planList[i], false)
+    //     } else {
+    //       console.log("无勾选");
+    //     }
+    //   }
+    //   console.log("重置planList的勾选结束");
+    // },
+
+    // 区选重置planList的勾选
     resetPlanList() {
       console.log("重置planList的勾选开始");
       for (let i = 0; i < this.planList.length; i++) {
-        if (
-          this.planList[i].checkBox.A ||
-          this.planList[i].checkBox.B ||
-          this.planList[i].checkBox.ABC
-        ) {
+        if (this.planList[i].checkBox) {
           console.log("有勾选");
-          this.planList[i].checkBox.A = false;
-          this.planList[i].checkBox.B = false;
-          this.planList[i].checkBox.ABC = false;
+          this.planList[i].checkBox = false;
           // this.$refs.multipleTable.toggleRowSelection(this.planList[i], false)
         } else {
           console.log("无勾选");
@@ -5745,7 +5940,7 @@ export default {
     },
     //点位有时间交叉
     // TODO:点位有时间交叉
-    crossSchedules(sche) {
+    crossschedule(sche) {
       let scheArr = sche.split("-");
       if (this.dateInput[0] == scheArr[0] && this.dateInput[1] == scheArr[1]) {
         return true;
@@ -5790,7 +5985,7 @@ export default {
       } else {
         let isCheckBox = false;
         for (let key of this.planList) {
-          if (key.checkBox.A || key.checkBox.B || key.checkBox.ABC) {
+          if (key.checkBox) {
             isCheckBox = true;
             break;
           }
@@ -5813,27 +6008,43 @@ export default {
       // this.allSelectToShop(selection)
     },
     //取消全选
+    //TODO取消全选
     cancleSelectAds() {
       console.log("取消全选", this.planList);
+      let arr1 = []; //收集被删除的项
+      let arr2 = [...this.shopingList]; //拷贝购物车
       for (let pkey of this.planList) {
         if (pkey.checkBox) {
-          for (let i = 0; i < this.shopingList.length; ) {
-            if (pkey.mID === this.shopingList[i].mID) {
-              if (pkey.checkBox) {
-                this.shopingList.splice(i, 1);
-                pkey.checkBox = false;
-              } else {
-                i++;
-              }
-            } else {
-              i++;
+          for (let i = 0; i < arr2.length; i++) {
+            if (pkey.resID === arr2[i].resID) {
+              arr1.push(arr2.splice(i, 1));
+              pkey.checkBox = false;
             }
           }
         }
       }
+      this.handleImportDrafts(0, arr1);
+      this.shopingList = arr2;
       this.currPageSelect = 0;
       // this.computeMedia_AD()
     },
+    // cancleSelectAds() {
+    //   console.log("取消全选", this.planList);
+    //   for (let pkey of this.planList) {
+    //     if (pkey.checkBox) {
+    //       for (let i = 0; i < this.shopingList.length; i++) {
+    //         if (pkey.resID === this.shopingList[i].resID) {
+    //           if (pkey.checkBox) {
+    //             this.shopingList.splice(i, 1);
+    //             pkey.checkBox = false;
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    //   this.currPageSelect = 0;
+    //   // this.computeMedia_AD()
+    // },
 
     // cancleSelectAds() {
     //   console.log("取消全选", this.planList);
@@ -5871,19 +6082,38 @@ export default {
       this.shopXY.y = e.clientY;
     },
 
-    //新业务逻辑小区替代选AB面
-    //TODO:勾选的时候
+    //新业务逻辑小区替代选AB面，勾选广告门的时候
+    //TODO:勾选广告门的时候
     ChangeCommunity(row) {
       console.log("row: ", row);
       let check = row;
       if (check.checkBox) {
         this.shopShow_hide(); // 动画效果
         // this.AddShopingInfo(row, "A"); // 添加到购物车
+        this.handleImportDrafts(1, [row]);
         this.AddShopingInfo(row); // 添加到购物车
       } else {
         this.IsAll = false;
         // this.deleteShopRow(check, "A"); //从购物车删除
+        // this.handleImportDrafts(0, [row]);
         this.deleteShopRow(check);
+      }
+    },
+    // 勾选道闸的时候
+    changeBarrierGate(row) {
+      console.log("row: ", row);
+      if (row.checkBox) {
+        // let obj = this.setShopingTable(row, "ABC");
+        // let obj = this.setShopingTable(row);
+        this.shopShow_hide();
+        // this.shopingList.push(obj);
+        this.handleImportDrafts(1, [row]);
+        this.AddShopingInfo(row); // 添加到购物车
+        // this.IsAll = true
+      } else {
+        this.IsAll = false;
+        this.handleImportDrafts(0, [row]);
+        this.deleteShopRow(row);
       }
     },
     // 选中A、B面的时候
@@ -5909,32 +6139,48 @@ export default {
     //   }
     // },
     // 道闸点位选择
-    changeABC(row) {
-      if (row.checkBox.ABC === true) {
-        // let obj = this.setShopingTable(row, "ABC");
-        let obj = this.setShopingTable(row);
-        this.shopShow_hide();
-        this.shopingList.push(obj);
-        // this.IsAll = true
-      } else {
-        this.IsAll = false;
-        this.deleteShopRow(row, "ABC");
-      }
-    },
+    // changeABC(row) {
+    //   if (row.checkBox.ABC === true) {
+    //     // let obj = this.setShopingTable(row, "ABC");
+    //     let obj = this.setShopingTable(row);
+    //     this.shopShow_hide();
+    //     this.shopingList.push(obj);
+    //     // this.IsAll = true
+    //   } else {
+    //     this.IsAll = false;
+    //     this.deleteShopRow(row, "ABC");
+    //   }
+    // },
+
     // 全选是放进购物车-广告门
     //TODO:全选
     allSelectToShop_adDoor() {
+      let arr = [];
       for (let i = 0; i < this.planList.length; i++) {
         let info = this.planList[i];
         let selectInfo = this.setShopingTable(info);
         if (!info.checkBox) {
           info.checkBox = true;
           this.currPageSelect++;
+          arr.push(selectInfo);
+        }
+      }
+      this.handleImportDrafts(1, arr);
+      this.shopingList.push(...arr);
+
+      console.log("广告门全选时购物车", this.shopingList);
+    },
+    // 全选是放进购物车-道闸
+    allSelectToShop_roadGate() {
+      for (let pkey of this.planList) {
+        if (!pkey.checkBox) {
+          pkey.checkBox = true;
+          // let selectInfo = this.setShopingTable(pkey, "ABC");
+          let selectInfo = this.setShopingTable(pkey);
           this.shopingList.push(selectInfo);
         }
       }
-
-      console.log("广告门全选时购物车", this.shopingList);
+      console.log("道闸全选时购物车", this.shopingList);
     },
 
     // allSelectToShop_adDoor() {
@@ -5979,37 +6225,56 @@ export default {
 
     //   console.log("广告门全选时购物车", this.shopingList);
     // },
+
     // 全选是放进购物车-道闸
-    allSelectToShop_roadGate() {
-      for (let pkey of this.planList) {
-        if (!pkey.checkBox.ABC) {
-          pkey.checkBox.ABC = true;
-          // let selectInfo = this.setShopingTable(pkey, "ABC");
-          let selectInfo = this.setShopingTable(pkey);
-          this.shopingList.push(selectInfo);
-        }
-      }
-      console.log("道闸全选时购物车", this.shopingList);
-    },
+    // allSelectToShop_roadGate() {
+    //   for (let pkey of this.planList) {
+    //     if (!pkey.checkBox.ABC) {
+    //       pkey.checkBox.ABC = true;
+    //       // let selectInfo = this.setShopingTable(pkey, "ABC");
+    //       let selectInfo = this.setShopingTable(pkey);
+    //       this.shopingList.push(selectInfo);
+    //     }
+    //   }
+    //   console.log("道闸全选时购物车", this.shopingList);
+    // },
     // 取消勾时,删除购物车里对应的数据行
-    deleteShopRow(row, letter) {
+    //TODO:取消勾时,删除购物车里对应的数据行
+    deleteShopRow(row) {
       this.currPageSelect--;
-      for (let j = 0; j < this.shopingList.length; j++) {
-        if (
-          this.shopingList[j].mID === row.mID &&
-          this.shopingList[j].A_B === letter
-        ) {
-          let crossIf = this.crossSchedules(this.shopingList[j].schedules);
+      let delArr = [];
+      let copyArr = [...this.shopingList];
+      for (let j = 0; j < copyArr.length; j++) {
+        if (copyArr[j].resID === row.resID) {
+          let crossIf = this.crossschedule(copyArr[j].schedule);
           if (crossIf) {
-            this.shopingList.splice(j, 1);
+            delArr.push(copyArr.splice(j, 1));
             break;
           } else {
             console.log("购物车中不存在相同点位");
           }
         }
       }
+      this.handleImportDrafts(0, delArr);
+      this.shopingList = copyArr;
       this.allCheckboxUpdata();
     },
+    // deleteShopRow(row) {
+    //   this.currPageSelect--;
+    //   for (let j = 0; j < this.shopingList.length; j++) {
+    //     if (this.shopingList[j].resID === row.resID) {
+    //       let crossIf = this.crossschedule(this.shopingList[j].schedule);
+    //       if (crossIf) {
+    //         this.shopingList.splice(j, 1);
+    //         break;
+    //       } else {
+    //         console.log("购物车中不存在相同点位");
+    //       }
+    //     }
+    //   }
+
+    //   this.allCheckboxUpdata();
+    // },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
@@ -6081,6 +6346,7 @@ export default {
       }
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（无忧地图）
+    //TODO图选点返回的数据
     setShopDataByMapAD() {
       console.log("执行了setShopDataByMapAD", this.mapADList);
       let mapADList_ = this.mapADList; // tempData
@@ -6105,7 +6371,7 @@ export default {
             mediaName: data.mTitle || "",
             mVehicle: data.mVehicle,
             buildNum: data.fNum,
-            schedules: this.mapParams.ls + "-" + this.mapParams.le,
+            schedule: this.mapParams.ls + "-" + this.mapParams.le,
             tradingArea: data.tradingArea,
             assetTag: data.assetTag,
             liveYear: data.chDay,
@@ -6115,7 +6381,8 @@ export default {
             address: data.resAddress || "",
             dNum: data.dNum || "", // 出入口数
             adLimit: data.notPush || "",
-            checkBox: { A: false, B: false, ABC: false },
+            // checkBox: { A: false, B: false, ABC: false },
+            checkBox: false,
             connData: {
               connectResName: "",
               connectMedia: "",
@@ -6210,8 +6477,8 @@ export default {
         for (let i = 0; i < shopArr.length; i++) {
           if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
             console.log("相同mid,相同面", ADData);
-            let ADScheArr = ADData.schedules.split("-");
-            let shopScheArr = shopArr[i].schedules.split("-");
+            let ADScheArr = ADData.schedule.split("-");
+            let shopScheArr = shopArr[i].schedule.split("-");
             // 全等
             if (
               ADScheArr[0] == shopScheArr[0] &&
@@ -6305,7 +6572,7 @@ export default {
           mediaName: key.mTitle || "",
           mVehicle: key.mVehicle,
           buildNum: key.fNum,
-          schedules: this.dateInput[0] + "-" + this.dateInput[1],
+          schedule: this.dateInput[0] + "-" + this.dateInput[1],
           remark: key.remark || "--", // 巡点定制
           trafficState: key.trafficState || "--", // 巡点定制
           electrifyState: key.electrifyState || "--", // 巡点定制
@@ -6377,8 +6644,8 @@ export default {
         for (let i = 0; i < shopArr.length; i++) {
           if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
             console.log("相同mid,相同面", ADData);
-            let ADScheArr = ADData.schedules.split("-");
-            let shopScheArr = shopArr[i].schedules.split("-");
+            let ADScheArr = ADData.schedule.split("-");
+            let shopScheArr = shopArr[i].schedule.split("-");
             // 全等
             if (
               ADScheArr[0] == shopScheArr[0] &&
@@ -6487,120 +6754,140 @@ export default {
     // },
     //
     // 统计购物车媒体数、面数
-    computeMedia_AD(letter) {
-      let shopList = [];
-      let currTab = this.activeName;
-      console.log("typeShopList----", this.typeShopList);
-      // this.typeShopList = this.getTypeList();
-      shopList = this.typeShopList[currTab - 1].asidList;
-      console.log("购物车统计面数媒体数shopList", shopList);
-      let mediaArr = [];
-      let mediaAD = [];
-      let resArr = [];
-      let resAsidArr = [];
-      // ANum：A面数量  BNum：B面数量
-      let mediaLevelNum = { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 };
-      for (let key of shopList) {
-        if (key.mVehicle === "广告门") {
-          // 等级ABC
-          if (key.mediaLevel === "A") {
-            mediaLevelNum.ALevel++;
-          } else if (key.mediaLevel === "B") {
-            mediaLevelNum.BLevel++;
-          } else if (key.mediaLevel === "C") {
-            mediaLevelNum.CLevel++;
-          }
-          // A\B面
-          if (key.A_B === "A") {
-            mediaLevelNum.ANum++;
-          } else if (key.A_B === "B") {
-            mediaLevelNum.BNum++;
-          }
-        }
-        if (!mediaArr.includes(key.mID)) {
-          mediaArr.push(key.mID);
-        } else {
-          // console.log('重复媒体',key.mID)
-        }
-        if (!mediaAD.includes(key.asID)) {
-          mediaAD.push(key.asID);
-        } else {
-          console.log("重复的点位", key.asID);
-        }
-        if (!resArr.includes(key.resID)) {
-          resArr.push(key.resID);
-        } else {
-          // console.log('重复的点位',key.resID)
-        }
-        // 计算各个社区面数
-        let isHad = false;
-        for (let data of resAsidArr) {
-          if (data.resID == key.resID) {
-            isHad = true;
-            if (!data.asidList.includes(key.asID)) {
-              data.asidList.push(key.asID);
-            }
-          }
-        }
-        if (!isHad) {
-          let obj = {
-            resID: key.resID,
-            asidList: [key.asID],
-          };
-          resAsidArr.push(obj);
-        }
-      }
-      console.log("resAsidArr------", resAsidArr);
-      this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
-      this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
-      this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
+    computeMedia_AD() {
+      this.shopMedia_ADNum.total = this.shopingList.length;
+      this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, this.shopingList);
+      this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, this.shopingList);
+      this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, this.shopingList);
       this.shopMedia_ADNum.moreNum =
-        resAsidArr.length -
+        this.shopingList.length -
         this.shopMedia_ADNum.oneNum -
         this.shopMedia_ADNum.twoNum -
         this.shopMedia_ADNum.threeNum;
-      // if (letter === 'mapAD') {
-      //     let stepMNum = 1
-      //     let stepADNum = 2
-      //     if (mediaArr.length - this.shopMedia_ADNum.mediaNum > 500) {
-      //         stepMNum = Math.round((mediaArr.length - this.shopMedia_ADNum.mediaNum) / 50)
-      //         stepADNum = Math.round((mediaAD.length - this.shopMedia_ADNum.ADNum) / 100)
-      //     }
-      //     let that = this
-      //     let timer = setInterval(function () {
-      //         if (that.shopMedia_ADNum.mediaNum < mediaArr.length) {
-      //             that.shopMedia_ADNum.mediaNum += stepMNum
-      //         }
-      //         if (that.shopMedia_ADNum.ADNum < mediaAD.length) {
-      //             that.shopMedia_ADNum.ADNum += stepADNum
-      //         }
-      //         if (that.shopMedia_ADNum.mediaNum >= mediaArr.length - 1 && that.shopMedia_ADNum.ADNum >= mediaAD.length - 1) {
-      //             that.shopMedia_ADNum.mediaNum = mediaArr.length
-      //             that.shopMedia_ADNum.ADNum = mediaAD.length
-      //             that.shopMedia_ADNum.resNum = resArr.length
-      //             clearInterval(timer)
-      //         }
-      //     }, 1)
-      // } else {
-      this.shopMedia_ADNum.mediaNum = mediaArr.length;
-      this.shopMedia_ADNum.ADNum = mediaAD.length;
-      this.shopMedia_ADNum.resNum = resArr.length;
-      // }
-      this.mediaLevelNum = mediaLevelNum;
-
-      console.log("shopMedia_ADNum----", this.shopMedia_ADNum);
     },
+
+    //    computeMedia_AD(letter) {
+    //   let shopList = [];
+    //   let currTab = this.activeName;
+    //   console.log("typeShopList----", this.typeShopList);
+    //   // this.typeShopList = this.getTypeList();
+    //   shopList = this.typeShopList[currTab - 1].asidList;
+    //   console.log("购物车统计面数媒体数shopList", shopList);
+    //   let mediaArr = [];
+    //   let mediaAD = [];
+    //   let resArr = [];
+    //   let resAsidArr = [];
+    //   // ANum：A面数量  BNum：B面数量
+    //   let mediaLevelNum = { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 };
+    //   for (let key of shopList) {
+    //     if (key.mVehicle === "广告门") {
+    //       // 等级ABC
+    //       if (key.mediaLevel === "A") {
+    //         mediaLevelNum.ALevel++;
+    //       } else if (key.mediaLevel === "B") {
+    //         mediaLevelNum.BLevel++;
+    //       } else if (key.mediaLevel === "C") {
+    //         mediaLevelNum.CLevel++;
+    //       }
+    //       // A\B面
+    //       if (key.A_B === "A") {
+    //         mediaLevelNum.ANum++;
+    //       } else if (key.A_B === "B") {
+    //         mediaLevelNum.BNum++;
+    //       }
+    //     }
+    //     if (!mediaArr.includes(key.mID)) {
+    //       mediaArr.push(key.mID);
+    //     } else {
+    //       // console.log('重复媒体',key.mID)
+    //     }
+    //     if (!mediaAD.includes(key.asID)) {
+    //       mediaAD.push(key.asID);
+    //     } else {
+    //       console.log("重复的点位", key.asID);
+    //     }
+    //     if (!resArr.includes(key.resID)) {
+    //       resArr.push(key.resID);
+    //     } else {
+    //       // console.log('重复的点位',key.resID)
+    //     }
+    //     // 计算各个社区面数
+    //     let isHad = false;
+    //     for (let data of resAsidArr) {
+    //       if (data.resID == key.resID) {
+    //         isHad = true;
+    //         if (!data.asidList.includes(key.asID)) {
+    //           data.asidList.push(key.asID);
+    //         }
+    //       }
+    //     }
+    //     if (!isHad) {
+    //       let obj = {
+    //         resID: key.resID,
+    //         asidList: [key.asID],
+    //       };
+    //       resAsidArr.push(obj);
+    //     }
+    //   }
+    //   console.log("resAsidArr------", resAsidArr);
+    //   this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
+    //   this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
+    //   this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
+    //   this.shopMedia_ADNum.moreNum =
+    //     resAsidArr.length -
+    //     this.shopMedia_ADNum.oneNum -
+    //     this.shopMedia_ADNum.twoNum -
+    //     this.shopMedia_ADNum.threeNum;
+    //   // if (letter === 'mapAD') {
+    //   //     let stepMNum = 1
+    //   //     let stepADNum = 2
+    //   //     if (mediaArr.length - this.shopMedia_ADNum.mediaNum > 500) {
+    //   //         stepMNum = Math.round((mediaArr.length - this.shopMedia_ADNum.mediaNum) / 50)
+    //   //         stepADNum = Math.round((mediaAD.length - this.shopMedia_ADNum.ADNum) / 100)
+    //   //     }
+    //   //     let that = this
+    //   //     let timer = setInterval(function () {
+    //   //         if (that.shopMedia_ADNum.mediaNum < mediaArr.length) {
+    //   //             that.shopMedia_ADNum.mediaNum += stepMNum
+    //   //         }
+    //   //         if (that.shopMedia_ADNum.ADNum < mediaAD.length) {
+    //   //             that.shopMedia_ADNum.ADNum += stepADNum
+    //   //         }
+    //   //         if (that.shopMedia_ADNum.mediaNum >= mediaArr.length - 1 && that.shopMedia_ADNum.ADNum >= mediaAD.length - 1) {
+    //   //             that.shopMedia_ADNum.mediaNum = mediaArr.length
+    //   //             that.shopMedia_ADNum.ADNum = mediaAD.length
+    //   //             that.shopMedia_ADNum.resNum = resArr.length
+    //   //             clearInterval(timer)
+    //   //         }
+    //   //     }, 1)
+    //   // } else {
+    //   this.shopMedia_ADNum.mediaNum = mediaArr.length;
+    //   this.shopMedia_ADNum.ADNum = mediaAD.length;
+    //   this.shopMedia_ADNum.resNum = resArr.length;
+    //   // }
+    //   this.mediaLevelNum = mediaLevelNum;
+
+    //   console.log("shopMedia_ADNum----", this.shopMedia_ADNum);
+    // },
+
     // 获取社区选一面两面三名的数据
+    // getResAsidNum(num, arr) {
+    //   let result = arr.filter((item) => {
+    //     return item.asidList.length == num;
+    //   });
+    //   return result.length;
+    // },
+
     getResAsidNum(num, arr) {
-      let result = arr.filter((item) => {
-        return item.asidList.length == num;
-      });
-      return result.length;
+      return arr.filter((item) => {
+        return item.planAdsCnt == num;
+      }).length;
+      // return result.length;
     },
     // dialog购物筐的显示全选中后添加都购物车
     dialogVisible() {
       this.dialogTableVisible = true;
-      // this.computeMedia_AD()            // 统计媒体数量和媒体面数
+      this.computeMedia_AD(); // 统计媒体数量和媒体面数
       // this.eventType = "";
       // this.typeShopList = this.getTypeList();
       // this.handleClick();
@@ -6635,13 +6922,13 @@ export default {
       return arr;
     },
     // 切换tab
-    handleClick() {
-      console.log("this.activeName----", this.activeName, this.typeShopList);
-      this.eventType = "";
-      this.getShowList();
-      this.getEventList();
-      this.computeMedia_AD();
-    },
+    // handleClick() {
+    //   console.log("this.activeName----", this.activeName, this.typeShopList);
+    //   this.eventType = "";
+    //   this.getShowList();
+    //   this.getEventList();
+    //   this.computeMedia_AD();
+    // },
     // 设置购物车表格数据
     getShowList() {
       let currTab = this.activeName;
@@ -7037,7 +7324,7 @@ export default {
     //       let end = timeFormat.toDate(key.lEnd, "/");
     //       arr.push({
     //         beOccupieApName: key.apName,
-    //         schedules: star + "-" + end,
+    //         schedule: star + "-" + end,
     //         lState: key.lState,
     //       });
     //     }
@@ -7059,7 +7346,6 @@ export default {
     //   }
     // },
     // 添加到购物车
-    //TODO:添加到购物车
     AddShopingInfo(info) {
       console.log("选中的row信息", info);
       this.currPageSelect++;
@@ -7103,62 +7389,68 @@ export default {
     },
     // 选点列表数据到购物车数据
     setShopingTable(info) {
-      let selectInfo = {
-        rid: info.rid,
-        mID: info.mID,
-        mVehicle: info.mVehicle,
-        asID: info.asIDs, //.split(','),
-        asIDs: info.asIDs,
-        asLabs: info.asLabs,
-        resName: info.resName,
-        resID: info.resID,
-        city: info.city,
-        origin: info.origin,
-        buildType: info.buildType,
-        houseNum: info.houseNum,
-        buildPrice: info.buildPrice,
-        mediaName: info.mediaName,
-        mediaRemark: info.mediaRemark,
-        buildNum: info.buildNum,
-        schedules: info.schedules,
-        remark: info.remark || "--", // 巡点定制
-        trafficState: info.trafficState || "--", // 定制巡点
-        electrifyState: info.electrifyState || "--", // 定制巡点
-        tradingArea: info.tradingArea,
-        assetTag: info.assetTag,
-        liveYear: info.liveYear,
-        adLimit: info.adLimit,
-        mapCenter: info.reference || "", // 地图中心点
-        address: info.address || "",
-        dNum: info.dNum || "", // 出入口数
-        // A_B: letter,
-        // A_B: letter,
-        // checkBox: {
-        //   A: info.checkBox.A,
-        //   B: info.checkBox.B,
-        //   ABC: info.checkBox.ABC,
-        // },
-        checkBox: info.checkBox,
-        // box: {
-        //   A: info.box.A !== undefined ? info.box.A : false,
-        //   B: info.box.B !== undefined ? info.box.B : false,
-        // },
-        box: info.box !== undefined ? info.box : false,
-        connData: {
-          connectResName: "",
-          connectMedia: "",
-          commentWorkRes: "",
-          commentworkMedia: "",
-        },
-        connID: info.connID, // 连排门id
-        industryInfos: info.industryInfos, // 同行业资源回避
-        adPrice: info.adPrice, // 点位价格
-        mediaLevel: info.mediaLevel, // 媒体等级
-        asrID: info.asrID, // 所属公司id
-        asName: info.asName, // 所属公司名称
-      };
+      console.log("info: ", info);
+      let selectInfo = info;
       return selectInfo;
     },
+
+    // setShopingTable(info) {
+    //   let selectInfo = {
+    //     rid: info.rid,
+    //     mID: info.mID,
+    //     mVehicle: info.mVehicle,
+    //     asID: info.asIDs, //.split(','),
+    //     asIDs: info.asIDs,
+    //     asLabs: info.asLabs,
+    //     resName: info.resName,
+    //     resID: info.resID,
+    //     city: info.city,
+    //     origin: info.origin,
+    //     buildType: info.buildType,
+    //     houseNum: info.houseNum,
+    //     buildPrice: info.buildPrice,
+    //     mediaName: info.mediaName,
+    //     mediaRemark: info.mediaRemark,
+    //     buildNum: info.buildNum,
+    //     schedule: info.schedule,
+    //     remark: info.remark || "--", // 巡点定制
+    //     trafficState: info.trafficState || "--", // 定制巡点
+    //     electrifyState: info.electrifyState || "--", // 定制巡点
+    //     tradingArea: info.tradingArea,
+    //     assetTag: info.assetTag,
+    //     liveYear: info.liveYear,
+    //     adLimit: info.adLimit,
+    //     mapCenter: info.reference || "", // 地图中心点
+    //     address: info.address || "",
+    //     dNum: info.dNum || "", // 出入口数
+    //     // A_B: letter,
+    //     // A_B: letter,
+    //     // checkBox: {
+    //     //   A: info.checkBox.A,
+    //     //   B: info.checkBox.B,
+    //     //   ABC: info.checkBox.ABC,
+    //     // },
+    //     checkBox: info.checkBox,
+    //     // box: {
+    //     //   A: info.box.A !== undefined ? info.box.A : false,
+    //     //   B: info.box.B !== undefined ? info.box.B : false,
+    //     // },
+    //     box: info.box !== undefined ? info.box : false,
+    //     connData: {
+    //       connectResName: "",
+    //       connectMedia: "",
+    //       commentWorkRes: "",
+    //       commentworkMedia: "",
+    //     },
+    //     connID: info.connID, // 连排门id
+    //     industryInfos: info.industryInfos, // 同行业资源回避
+    //     adPrice: info.adPrice, // 点位价格
+    //     mediaLevel: info.mediaLevel, // 媒体等级
+    //     asrID: info.asrID, // 所属公司id
+    //     asName: info.asName, // 所属公司名称
+    //   };
+    //   return selectInfo;
+    // },
     // // 自定义购物车表头-清空
     // renderHeader(h, { column }) {
     //   // console.log('********h*******',h,column)
@@ -7202,7 +7494,7 @@ export default {
     //     if (
     //       this.shopingList[j].mID === rows.mID &&
     //       this.shopingList[j].A_B == rows.A_B &&
-    //       this.shopingList[j].schedules === rows.schedules
+    //       this.shopingList[j].schedule === rows.schedule
     //     ) {
     //       this.shopingList.splice(j, 1);
     //       break;
@@ -7274,21 +7566,21 @@ export default {
       }
     },
     //行被点击 beOccupiedGetList timeFormat
-    rowClick(row, event, column) {
-      console.log("row", row, event, column);
-      if (!this.isOccupied) {
-        let star = timeFormat.toDate(row.lStar, "/");
-        let end = timeFormat.toDate(row.lEnd, "/");
-        let arr = [];
-        arr.push({
-          beOccupieApName: row.apName,
-          schedules: star + "-" + end,
-          lState: row.lState,
-        });
-        this.beOccupiedAdsData = arr;
-        this.beOccupiedDialogVisible = true;
-      }
-    },
+    // rowClick(row, event, column) {
+    //   console.log("row", row, event, column);
+    //   if (!this.isOccupied) {
+    //     let star = timeFormat.toDate(row.lStar, "/");
+    //     let end = timeFormat.toDate(row.lEnd, "/");
+    //     let arr = [];
+    //     arr.push({
+    //       beOccupieApName: row.apName,
+    //       schedule: star + "-" + end,
+    //       lState: row.lState,
+    //     });
+    //     this.beOccupiedAdsData = arr;
+    //     this.beOccupiedDialogVisible = true;
+    //   }
+    // },
     // 数组排序，城市rid从小到大排
     compareFun(obj1, obj2) {
       let val1 = obj1.rid;
@@ -7351,7 +7643,7 @@ export default {
           asName: key.asName,
           priceMsg: {
             adDoor: {
-              schedules: [], // 排期
+              schedule: [], // 排期
               GMDate: 0, // 赠送面.天
               LevelGMDate: { A: 0, B: 0, C: 0 }, // 赠送面.天
               discount: "100", // 广告费折扣
@@ -7372,7 +7664,7 @@ export default {
               remark: "", //备注信息
             },
             roadGate: {
-              schedules: [], // 排期
+              schedule: [], // 排期
               GMDate: 0, // 赠送面.天
               discount: "100", // 广告费折扣
               advertyPrice: 0, // 广告费
@@ -7422,22 +7714,22 @@ export default {
       return commaFormat.init(price);
     },
     //设置报价单
-    APQuotationArr(...data) {
-      console.log("回传报价单:", data); // data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
-      this.quotation = data[0];
-      let isBool = true;
-      for (let key of this.quotation) {
-        console.log(key.noBoolClassified);
-        if (key.noBoolClassified) {
-          this.active--;
-          isBool = false;
-          break;
-        }
-      }
-      if (isBool) {
-        this.computeTotal();
-      }
-    },
+    // APQuotationArr(...data) {
+    //   console.log("回传报价单:", data); // data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
+    //   this.quotation = data[0];
+    //   let isBool = true;
+    //   for (let key of this.quotation) {
+    //     console.log(key.noBoolClassified);
+    //     if (key.noBoolClassified) {
+    //       this.active--;
+    //       isBool = false;
+    //       break;
+    //     }
+    //   }
+    //   if (isBool) {
+    //     this.computeTotal();
+    //   }
+    // },
     // 提交前校验单城市报价单价格是否大于2000w
     vaildCityQuotation() {
       for (let key of this.quotation) {
@@ -7465,14 +7757,14 @@ export default {
     //       let minTime = "";
     //       let maxTime = "";
     //       if (
-    //         key.priceMsg[i].schedules.length > 0 &&
-    //         key.priceMsg[i].schedules !== "" &&
-    //         key.priceMsg[i].schedules !== null
+    //         key.priceMsg[i].schedule.length > 0 &&
+    //         key.priceMsg[i].schedule !== "" &&
+    //         key.priceMsg[i].schedule !== null
     //       ) {
-    //         let timeList = key.priceMsg[i].schedules.join(",");
-    //         let schedulesArr = timeFormat.returnTimeArr(timeList, ",", "-");
-    //         minTime = schedulesArr[0];
-    //         maxTime = schedulesArr[schedulesArr.length - 1];
+    //         let timeList = key.priceMsg[i].schedule.join(",");
+    //         let scheduleArr = timeFormat.returnTimeArr(timeList, ",", "-");
+    //         minTime = scheduleArr[0];
+    //         maxTime = scheduleArr[scheduleArr.length - 1];
     //       } else {
     //         minTime = this.dateInput[0];
     //         maxTime = this.dateInput[1];
@@ -7561,8 +7853,8 @@ export default {
     //           apID: cKey.apID,
     //           asID: key.asID,
     //           pdID: cKey.pdID,
-    //           pbStar: key.schedules.split("-")[0],
-    //           pbEnd: key.schedules.split("-")[1],
+    //           pbStar: key.schedule.split("-")[0],
+    //           pbEnd: key.schedule.split("-")[1],
     //           mapCenterName: key.mapCenter,
     //           resID: key.resID,
     //           pbSetTime: pbSetTime,
@@ -7639,222 +7931,249 @@ export default {
     //     });
     // },
     // 创建方案基本信息及投放城市详情(报价单数据提交)
+    // TODO:创建方案基本信息及投放城市详情(报价单数据提交)
     creatAdPlan() {
-      console.log("creatAdPlan", this.quotation);
-      let arr = [];
-      let cityArea = [];
-      for (let key of this.quotation) {
-        cityArea.push({
-          asrID: key.asrID,
-          city: key.city,
-          rid: key.rid,
-        });
-        for (let i in key.priceMsg) {
-          let minTime = "";
-          let maxTime = "";
-          if (
-            key.priceMsg[i].schedules.length > 0 &&
-            key.priceMsg[i].schedules !== "" &&
-            key.priceMsg[i].schedules !== null
-          ) {
-            let timeList = key.priceMsg[i].schedules.join(",");
-            let schedulesArr = timeFormat.returnTimeArr(timeList, ",", "-");
-            minTime = schedulesArr[0];
-            maxTime = schedulesArr[schedulesArr.length - 1];
-          } else {
-            minTime = this.dateInput[0];
-            maxTime = this.dateInput[1];
-          }
-          if (this.apMinTime === "") {
-            this.apMinTime = minTime;
-          } else {
-            if (this.apMinTime > minTime) {
-              this.apMinTime = minTime;
-            }
-          }
-          arr.push({
-            pdRemark: key.priceMsg[i].remark || "",
-            asrID: key.asrID,
-            rID: key.rid,
-            pdDays: key.priceMsg[i].tfl,
-            pdFreeNum: key.priceMsg[i].GMDate, // 赠送面*天
-            pdStar: minTime.split(".").join("-"),
-            pdEnd: maxTime.split(".").join("-"),
-            pdAdFee: parseInt(key.priceMsg[i].advertyPrice * 100), // 广告费用
-            pdNum: key.priceMsg[i].ADNumber, // 点位数
-            pdAdMake: Number((key.priceMsg[i].makePrice * 100).toFixed(0)), // 实计制作费用
-            pdTotal: Number((key.priceMsg[i].cash * 100).toFixed(0)),
-            pdSendFee: Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
-            pdOtherFee: Number((key.priceMsg[i].other * 100).toFixed(0)),
-            pdType: i === "adDoor" ? 0 : 1,
-          });
-        }
-      }
-      console.log("城市详情", arr, "cityArea", cityArea);
+      debugger;
+      // this.active++;
+      // this.ADloading.close();
+
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apname: this.planForm.planName,
-        adcid: this.planForm.ownerBU,
-        bid: this.planForm.companyBrand,
-        // rid: this.planForm.throwCity.join(','),
-        suid: this.BDData.uid,
-        saleManageLevel: this.BDData.saleManageLevel,
-        detail: JSON.stringify(arr),
       };
-      if (this.sessionData.uType === "BD") {
-        delete params.suid;
-      }
-      console.log("params", params);
-      api
-        .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)
-        .then((res) => {
-          console.log("创建方案", res);
-          if (res.data.SysCode == 200200) {
-            this.FAData.apID = res.data.Data[0].apID;
-            this.PushADBFun(res.data.Data);
-            this.CreateShareADSFun();
-            sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
-            sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
-          } else {
-            this.ADloading.close();
-            sessFun.messageFun("warning", "方案创建失败");
-          }
-        });
-    },
-    // 提交方案选点信息 7700 6700
-    PushADBFun(data) {
-      let ADBData = data;
-      console.log("shopingList", this.shopingList);
-      let cityArr = [];
-      for (let j = 0; j < ADBData.length; j++) {
-        let cityObj = {
-          city: ADBData[j].city,
-          pdID: ADBData[j].pdID,
-          pdType: ADBData[j].pdType,
-          asrID: ADBData[j].asrID,
-          apID: ADBData[j].apID,
-        };
-        cityArr.push(cityObj);
-      }
-      console.log("cityArr", cityArr);
-      let pbSetTime = this.timestampToTime(Date.parse(new Date()));
-      console.log("当前日期时间", pbSetTime);
-      let arr = [];
-      for (let key of this.shopingList) {
-        for (let cKey of cityArr) {
-          if (key.city == cKey.city && key.asrID == cKey.asrID) {
-            let adsInfo = {
-              uID: this.sessionData.uID,
-              apID: cKey.apID,
-              asID: key.asID,
-              pdID: cKey.pdID,
-              pbStar: key.schedules.split("-")[0],
-              pbEnd: key.schedules.split("-")[1],
-              mapCenterName: key.mapCenter,
-              resID: key.resID,
-              pbSetTime: pbSetTime,
-            };
-            if (
-              this.customPermission.pptPermission &&
-              this.customPermission.pptPermission.gzqylPermission == "1"
-            ) {
-              adsInfo.recommendReason = key.recommendReason || ""; //  亲粤邻定制：推荐理由
-            }
-            if (cKey.pdType == 0 && key.mVehicle === "广告门") {
-              arr.push(adsInfo);
-            } else if (cKey.pdType == 1 && key.mVehicle === "道闸") {
-              arr.push(adsInfo);
-            }
-          }
+      api.postApi_new(this.apiVar.CreatePlan, params).then((res) => {
+        console.log("创建方案", res);
+        if (res.data.SysCode == 200200) {
+          this.FAData.apID = res.data.Data[0].apID;
+          // this.PushADBFun(res.data.Data);
+          // this.CreateShareADSFun();
+          this.active++;
+          this.ADloading.close();
+          sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
+          sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
+        } else {
+          this.ADloading.close();
+          sessFun.messageFun("warning", "方案创建失败");
         }
-      }
-      console.log("PushADBFun的arr", arr);
-      let postData = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        abList: arr,
-      };
-      api
-        .postApi_json(
-          this.apiVar.Advertisement +
-            "/PushADB?uid=" +
-            this.sessionData.uID +
-            "&token=" +
-            this.sessionData.token,
-          postData
-        )
-        .then((res) => {
-          console.log("PushADB提交选点", res);
-          if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
-            this.ADloading.close();
-          } else {
-            if (res.data === "" || res.data === null) {
-              sessFun.messageFun("warning", "提交选点失败");
-            } else {
-              this.ADloading.close();
-              this.active = 3;
-              if (this.apMinTime <= this.dateTime) {
-                sessFun.messageFun(
-                  "warning",
-                  "该方案的投放期已经开始，建议立即发布该方案！"
-                );
-              } else {
-                sessFun.messageFun("success", "方案创建成功");
-              }
-              // 清除后台缓存
-              let params = {
-                uid: this.sessionData.uID,
-                token: this.sessionData.token,
-              };
-              api
-                .postApi(
-                  this.apiVar.Advertisement + "/clearAdPlanBackups",
-                  params
-                )
-                .then((res) => {
-                  console.log("清空缓存的方案", res);
-                  if (res.data.SysCode === 200200) {
-                    console.log("缓存方案清除成功");
-                  } else {
-                  }
-                });
-              // 清除前台缓存
-              cacheAdPlan.removeData(this.sessionData.uID);
-            }
-          }
-        });
+      });
     },
+    // creatAdPlan() {
+    //   debugger;
+    //   console.log("creatAdPlan", this.quotation);
+    //   let arr = [];
+    //   let cityArea = [];
+    //   for (let key of this.quotation) {
+    //     cityArea.push({
+    //       asrID: key.asrID,
+    //       city: key.city,
+    //       rid: key.rid,
+    //     });
+    //     for (let i in key.priceMsg) {
+    //       let minTime = "";
+    //       let maxTime = "";
+    //       if (
+    //         key.priceMsg[i].schedule.length > 0 &&
+    //         key.priceMsg[i].schedule !== "" &&
+    //         key.priceMsg[i].schedule !== null
+    //       ) {
+    //         let timeList = key.priceMsg[i].schedule.join(",");
+    //         let scheduleArr = timeFormat.returnTimeArr(timeList, ",", "-");
+    //         minTime = scheduleArr[0];
+    //         maxTime = scheduleArr[scheduleArr.length - 1];
+    //       } else {
+    //         minTime = this.dateInput[0];
+    //         maxTime = this.dateInput[1];
+    //       }
+    //       if (this.apMinTime === "") {
+    //         this.apMinTime = minTime;
+    //       } else {
+    //         if (this.apMinTime > minTime) {
+    //           this.apMinTime = minTime;
+    //         }
+    //       }
+    //       arr.push({
+    //         pdRemark: key.priceMsg[i].remark || "",
+    //         asrID: key.asrID,
+    //         rID: key.rid,
+    //         pdDays: key.priceMsg[i].tfl,
+    //         pdFreeNum: key.priceMsg[i].GMDate, // 赠送面*天
+    //         pdStar: minTime.split(".").join("-"),
+    //         pdEnd: maxTime.split(".").join("-"),
+    //         pdAdFee: parseInt(key.priceMsg[i].advertyPrice * 100), // 广告费用
+    //         pdNum: key.priceMsg[i].ADNumber, // 点位数
+    //         pdAdMake: Number((key.priceMsg[i].makePrice * 100).toFixed(0)), // 实计制作费用
+    //         pdTotal: Number((key.priceMsg[i].cash * 100).toFixed(0)),
+    //         pdSendFee: Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
+    //         pdOtherFee: Number((key.priceMsg[i].other * 100).toFixed(0)),
+    //         pdType: i === "adDoor" ? 0 : 1,
+    //       });
+    //     }
+    //   }
+    //   console.log("城市详情", arr, "cityArea", cityArea);
+    //   let params = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     apname: this.planForm.planName,
+    //     adcid: this.planForm.ownerBU,
+    //     bid: this.planForm.companyBrand,
+    //     // rid: this.planForm.throwCity.join(','),
+    //     suid: this.BDData.uid,
+    //     saleManageLevel: this.BDData.saleManageLevel,
+    //     detail: JSON.stringify(arr),
+    //   };
+    //   if (this.sessionData.uType === "BD") {
+    //     delete params.suid;
+    //   }
+    //   console.log("params", params);
+    //   api
+    //     .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)
+    //     .then((res) => {
+    //       console.log("创建方案", res);
+    //       if (res.data.SysCode == 200200) {
+    //         this.FAData.apID = res.data.Data[0].apID;
+    //         this.PushADBFun(res.data.Data);
+    //         this.CreateShareADSFun();
+    //         sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
+    //         sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
+    //       } else {
+    //         this.ADloading.close();
+    //         sessFun.messageFun("warning", "方案创建失败");
+    //       }
+    //     });
+    // },
+    // 提交方案选点信息 7700 6700
+    // PushADBFun(data) {
+    //   let ADBData = data;
+    //   console.log("shopingList", this.shopingList);
+    //   let cityArr = [];
+    //   for (let j = 0; j < ADBData.length; j++) {
+    //     let cityObj = {
+    //       city: ADBData[j].city,
+    //       pdID: ADBData[j].pdID,
+    //       pdType: ADBData[j].pdType,
+    //       asrID: ADBData[j].asrID,
+    //       apID: ADBData[j].apID,
+    //     };
+    //     cityArr.push(cityObj);
+    //   }
+    //   console.log("cityArr", cityArr);
+    //   let pbSetTime = this.timestampToTime(Date.parse(new Date()));
+    //   console.log("当前日期时间", pbSetTime);
+    //   let arr = [];
+    //   for (let key of this.shopingList) {
+    //     for (let cKey of cityArr) {
+    //       if (key.city == cKey.city && key.asrID == cKey.asrID) {
+    //         let adsInfo = {
+    //           uID: this.sessionData.uID,
+    //           apID: cKey.apID,
+    //           asID: key.asID,
+    //           pdID: cKey.pdID,
+    //           pbStar: key.schedule.split("-")[0],
+    //           pbEnd: key.schedule.split("-")[1],
+    //           mapCenterName: key.mapCenter,
+    //           resID: key.resID,
+    //           pbSetTime: pbSetTime,
+    //         };
+    //         if (
+    //           this.customPermission.pptPermission &&
+    //           this.customPermission.pptPermission.gzqylPermission == "1"
+    //         ) {
+    //           adsInfo.recommendReason = key.recommendReason || ""; //  亲粤邻定制：推荐理由
+    //         }
+    //         if (cKey.pdType == 0 && key.mVehicle === "广告门") {
+    //           arr.push(adsInfo);
+    //         } else if (cKey.pdType == 1 && key.mVehicle === "道闸") {
+    //           arr.push(adsInfo);
+    //         }
+    //       }
+    //     }
+    //   }
+    //   console.log("PushADBFun的arr", arr);
+    //   let postData = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     abList: arr,
+    //   };
+    //   api
+    //     .postApi_json(
+    //       this.apiVar.Advertisement +
+    //         "/PushADB?uid=" +
+    //         this.sessionData.uID +
+    //         "&token=" +
+    //         this.sessionData.token,
+    //       postData
+    //     )
+    //     .then((res) => {
+    //       console.log("PushADB提交选点", res);
+    //       if (res.data.SysCode === 100302 || res.data.MSG === "登陆超时") {
+    //         this.ADloading.close();
+    //       } else {
+    //         if (res.data === "" || res.data === null) {
+    //           sessFun.messageFun("warning", "提交选点失败");
+    //         } else {
+    //           this.ADloading.close();
+    //           this.active = 3;
+    //           if (this.apMinTime <= this.dateTime) {
+    //             sessFun.messageFun(
+    //               "warning",
+    //               "该方案的投放期已经开始，建议立即发布该方案！"
+    //             );
+    //           } else {
+    //             sessFun.messageFun("success", "方案创建成功");
+    //           }
+    //           // 清除后台缓存
+    //           let params = {
+    //             uid: this.sessionData.uID,
+    //             token: this.sessionData.token,
+    //           };
+    //           api
+    //             .postApi(
+    //               this.apiVar.Advertisement + "/clearAdPlanBackups",
+    //               params
+    //             )
+    //             .then((res) => {
+    //               console.log("清空缓存的方案", res);
+    //               if (res.data.SysCode === 200200) {
+    //                 console.log("缓存方案清除成功");
+    //               } else {
+    //               }
+    //             });
+    //           // 清除前台缓存
+    //           cacheAdPlan.removeData(this.sessionData.uID);
+    //         }
+    //       }
+    //     });
+    // },
 
     // 生成协同选点aiCode
-    CreateShareADSFun() {
-      let urlPath = location.href;
-      console.log(urlPath);
-      let aiInfo = {
-        apname: this.planForm.planName,
-        cname: this.cName,
-        cband: this.cBand,
-      };
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        apid: this.FAData.apID,
-        aiinfo: JSON.stringify(aiInfo),
-      };
-      api
-        .postApi(this.apiVar.Advertisement + "/CreateShareCode", params)
-        .then((res) => {
-          console.log("生成协同选点aiCode", res);
-          this.apAicode = res.data.aiCode; // 协同选点 aiCode
-          this.shareADUrl =
-            this.apiVar.qadnUrl +
-            "/shareADList?apid=" +
-            this.FAData.apID +
-            "&aicode=" +
-            res.data.aiCode;
-          this.active = 3;
-        });
-    },
+    // CreateShareADSFun() {
+    //   let urlPath = location.href;
+    //   console.log(urlPath);
+    //   let aiInfo = {
+    //     apname: this.planForm.planName,
+    //     cname: this.cName,
+    //     cband: this.cBand,
+    //   };
+    //   let params = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     apid: this.FAData.apID,
+    //     aiinfo: JSON.stringify(aiInfo),
+    //   };
+    //   api
+    //     .postApi(this.apiVar.Advertisement + "/CreateShareCode", params)
+    //     .then((res) => {
+    //       console.log("生成协同选点aiCode", res);
+    //       this.apAicode = res.data.aiCode; // 协同选点 aiCode
+    //       this.shareADUrl =
+    //         this.apiVar.qadnUrl +
+    //         "/shareADList?apid=" +
+    //         this.FAData.apID +
+    //         "&aicode=" +
+    //         res.data.aiCode;
+    //       this.active = 3;
+    //     });
+    // },
     /*完成*/
     //查看方案
     ToDetail() {
@@ -7866,56 +8185,98 @@ export default {
       location.reload(false);
     },
     //复制协同选点的url
-    copyUrl() {
-      let Url = document.getElementById("shareUrl").innerText;
-      console.log("url", Url);
-      let oInput = document.createElement("input");
-      oInput.value = Url;
-      document.body.appendChild(oInput);
-      oInput.select(); // 选择对象
-      document.execCommand("Copy"); // 执行浏览器复制命令
-      oInput.style.display = "none";
-      sessFun.messageFun("success", "复制成功");
-    },
+    // copyUrl() {
+    //   let Url = document.getElementById("shareUrl").innerText;
+    //   console.log("url", Url);
+    //   let oInput = document.createElement("input");
+    //   oInput.value = Url;
+    //   document.body.appendChild(oInput);
+    //   oInput.select(); // 选择对象
+    //   document.execCommand("Copy"); // 执行浏览器复制命令
+    //   oInput.style.display = "none";
+    //   sessFun.messageFun("success", "复制成功");
+    // },
     // 公用方法
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
-    // TODO:草稿箱
-    saveApInfo() {
-      console.log("this.sessionData: ", this.sessionData);
+    handleImportDrafts(type, list) {
+      this.importDraftsType = type;
+      this.importDraftsList = list;
+    },
+    // TODO:存入草稿箱, 改为更变购物车
+    changeApInfo() {
+      console.log("this.importDraftsType: ", this.importDraftsType);
+      console.log("this.importDraftsList: ", this.importDraftsList);
       this.isSelect = true;
-      let planInfo = {
-        uid: this.sessionData.uID,
-        setTime: this.timestampToTime(Date.parse(new Date())),
-        planData: {
-          suid: this.BDData.uid, // 销售uid,如果是销售自己创建方案则uid与suid相同
-          saleManageLevel: this.BDData.saleManageLevel, // 销售权限
-          baseInfo: this.planForm,
-          adsList: this.shopingList,
-          throwCity: this.throwCity,
-          companyBrand: this.companyBrand,
-        },
-      };
-      console.log(
-        "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
-        planInfo
-      );
+      this.importDraftsConfig.suID = this.BDData.uid;
+      this.importDraftsConfig.type = this.importDraftsType;
+      this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
+      // apID, 意向方案id
+      // suID
+      // type
+      // apName, //意向方案名称
+      //adcID, //客户联系人id
+      // bID, //品牌id
+      //customerBudget,//客户预算
+      //customerDemand, //客户需求
+      // resList
+      for (let i in this.importDraftsConfig == "") {
+        if (!this.importDraftsConfig[i]) {
+          delete this.importDraftsConfig[i];
+        }
+      }
+
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        adPlan: JSON.stringify(planInfo),
+        ...this.importDraftsConfig,
       };
-      api
-        .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
-        .then((res) => {
-          console.log("res创建方案缓存", res);
-          if (res.data.SysCode == 200200) {
-          } else {
-            // 后台缓存异常，则前台缓存到localStorage
-            // cacheAdPlan.setData(planInfo)
-          }
-        });
-      cacheAdPlan.setData(planInfo);
+      api.postApi(this.apiVar.CreateAdBackUp, params).then((res) => {
+        console.log("res创建方案缓存", res);
+        if (res.data.SysCode == 200200) {
+        } else {
+          // 后台缓存异常，则前台缓存到localStorage
+          // cacheAdPlan.setData(planInfo)
+          sessFun.messageFun("warning", res.data.MSG);
+        }
+      });
+      // cacheAdPlan.setData(planInfo);
     },
+    // saveApInfo() {
+    //   console.log("this.sessionData: ", this.sessionData);
+    //   this.isSelect = true;
+    //   let planInfo = {
+    //     uid: this.sessionData.uID,
+    //     setTime: this.timestampToTime(Date.parse(new Date())),
+    //     planData: {
+    //       suid: this.BDData.uid, // 销售uid,如果是销售自己创建方案则uid与suid相同
+    //       saleManageLevel: this.BDData.saleManageLevel, // 销售权限
+    //       baseInfo: this.planForm,
+    //       adsList: this.shopingList,
+    //       throwCity: this.throwCity,
+    //       companyBrand: this.companyBrand,
+    //     },
+    //   };
+    //   console.log(
+    //     "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
+    //     planInfo
+    //   );
+    //   let params = {
+    //     uid: this.sessionData.uID,
+    //     token: this.sessionData.token,
+    //     adPlan: JSON.stringify(planInfo),
+    //   };
+    //   api
+    //     .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
+    //     .then((res) => {
+    //       console.log("res创建方案缓存", res);
+    //       if (res.data.SysCode == 200200) {
+    //       } else {
+    //         // 后台缓存异常，则前台缓存到localStorage
+    //         // cacheAdPlan.setData(planInfo)
+    //       }
+    //     });
+    //   cacheAdPlan.setData(planInfo);
+    // },
     //按小区选点
     //  saveApInfo() {
     //   console.log("this.sessionData: ", this.sessionData);

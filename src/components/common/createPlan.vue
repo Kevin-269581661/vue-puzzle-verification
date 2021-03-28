@@ -4564,7 +4564,6 @@ export default {
     },
     // 选择投放城市
     handleInputConfirm() {
-      debugger;
       let inputValue = this.selectedOptions;
       console.log("inputValue: ", inputValue);
       // console.log('********',inputValue)

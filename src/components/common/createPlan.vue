@@ -2747,7 +2747,7 @@ export default {
       api.getApi(this.apiVar.GetAGdBackUp, params).then((res) => {
         console.log("获取草稿箱", res);
         if (res.data.SysCode === 200200) {
-          if (res.data.data.length) {
+          if (res.data.data) {
             this.clearDrafts();
             this.handleImportDrafts(1, res.data.data);
             this.shopingList = res.data.data;
@@ -7972,9 +7972,10 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
       };
-      api.postApi_new(this.apiVar.CreatePlan, params).then((res) => {
+      api.postApi(this.apiVar.CreatePlan, params).then((res) => {
         console.log("创建方案", res);
         if (res.data.SysCode == 200200) {
+          sessionStorage.setItem("plan_apid", res.data.data.apID);
           if (res.data.errorResNames) {
             this.ADloading.close();
             sessFun.messageFun(

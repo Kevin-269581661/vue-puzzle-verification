@@ -6383,6 +6383,7 @@ export default {
     //   this.allCheckboxUpdata();
     // },
     // 购物车-获取地图选择的点位列表
+    // TODO购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
       // 亲邻地图
@@ -6393,14 +6394,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       let params = {
-        // apID, //意向方案id
-        suID: this.BDData.uid, //方案所属销售用户id ，【必填】
-        apName: this.planForm.planName, //意向方案名称
-        // type,
-        adcID: this.planForm.ownerBU, //客户联系人id
-        bID: this.planForm.companyBrand,
-        customerBudget: +this.planForm.clientBudget,
-        customerDemand: this.planForm.clientRequst,
+        apID: this.FAInfo.apID, //意向方案id
       };
       api
         .postApi_json(this.apiVar.mapApi + "/proposal/resListByUid", params)

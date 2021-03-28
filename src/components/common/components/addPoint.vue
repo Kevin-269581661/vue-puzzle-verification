@@ -710,12 +710,13 @@ export default {
             for(let i=0; i<this.asignPointTableData.length; i++) {
               let item = this.asignPointTableData[i]
               item.asIDs = item.asID
-              item.asLabs = item.asLabs
+              item.asLabs = item.asLab
               item.buildPrice = item.hPrice/100
+              item.buildType = item.cType
               item.origin = item.region
               item.mediaName = item.mTitle
               item.mediaLevel = item.grade || ''
-              item.schedules = item.pdStartDate + '-' + item.pdEndDate
+              item.schedules = timeFormat.toDate(item.pdStartDate, '/') + '-' + timeFormat.toDate(item.pdEndDate, '/')//item.pdStartDate + '-' + item.pdEndDate
               item.adLimit = item.notPush
               item.mapCenter = ''     // 地图中心点名称
               item.reference = ''
@@ -728,7 +729,7 @@ export default {
               item.checkBox = {A: item.asLab=='A'?true:false, B: item.asLab=='B'?true:false, ABC: item.asLab=='ABC'?true:false}
               item.box = {A: false,B: false}
               item.connData = { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''}
-              item.connID = item.connID      // 连排门id
+              item.connID = item.connID || ''      // 连排门id
               item.industryInfos = item.industryInfos||[]   // 同行业资源回避
               item.adPrice = getAdPrice(item)               // 点位价格
               item.mediaLevel = item.mediaLevel        // 媒体等级

@@ -234,12 +234,7 @@
                     le: this.dateInput[1],
                 };
 
-                let url = '';
-                if(window.location.hostname == 'localhost') {
-                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
-                } else {
-                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
-                }
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}`;
                 // 角色
                 if (this.sessionData.uType === 'BD') {
                     url = url + '&flag=' + true;

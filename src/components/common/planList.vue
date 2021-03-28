@@ -1068,7 +1068,13 @@
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
                 console.log('roweedit', row)
-                this.$router.push("./editPlan");
+                if(row.planMode == 1) {
+                    // 意向方案
+                    this.$router.push("./editPlan");
+                } else {
+                    // 非意向方案
+                    this.$router.push("./editPlanOld");
+                }
             },
             // 比较两个时间大小
             compareTime(arr, sField, eField) {
@@ -1230,24 +1236,35 @@
             },
             // KA方案拆分
             splitAdPlan(row) {
-                this.checkPoin(row).then(res=>{
-                    if(res === true) {
-                        let params = {
-                            apID: row.apID
+                if(row.planMode == 1) {
+                    // 意向方案
+                    api.postApi('/addsp/proposal/splitAdPlan', {apID: row.apID}).then(res => {
+                        console.log('方案拆分res', res)
+                        if (res.data.SysCode === 200200) {
+                            sessFun.messageFun('success', '拆分成功')
+                            this.searchFun()
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG || '方案异常')
                         }
-                        api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
-                            console.log('方案拆分res', res)
-                            if (res.data.SysCode === 200200) {
-                                sessFun.messageFun('success', '拆分成功')
-                                this.searchFun()
-                            } else {
-                                sessFun.messageFun('warning', res.data.MSG || '方案异常')
-                            }
-                        })
-                    }
-                }).catch(error=> {
+                    })
+                } else {
+                    this.checkPoin(row).then(res=>{
+                        if(res === true) {
+                            api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', {apID: row.apID}).then(res => {
+                                console.log('方案拆分res', res)
+                                if (res.data.SysCode === 200200) {
+                                    sessFun.messageFun('success', '拆分成功')
+                                    this.searchFun()
+                                } else {
+                                    sessFun.messageFun('warning', res.data.MSG || '方案异常')
+                                }
+                            })
+                            
+                        }
+                    }).catch(error=> {
 
-                })
+                    })
+                }
             },
             cancelLock() {
                 this.dialogVisible = false;

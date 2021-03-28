@@ -5411,6 +5411,7 @@ export default {
           suID: this.BDData.uid,
           asrIDs: this.planForm.pointOfAsrIDs,
           planAdsCnt: this.surfaceNum ? this.surfaceNum : 1,
+          mVehicle:this.mediaType
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;

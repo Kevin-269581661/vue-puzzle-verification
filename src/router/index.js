@@ -306,7 +306,7 @@ function addRoutes(role, old) {
                 tempBD = [
                     {path: '/sale', component: saleIndex},
                     {path: '/sale/createPlan', component: createPlan, meta:{title: '创建方案'}},
-                    {path: '/sale/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
+                    {path: '/sale/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}},
                 ]
             }
             roleRoutes = [

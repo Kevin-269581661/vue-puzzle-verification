@@ -61,6 +61,7 @@
               </el-checkbox-group>
               <div>
                 <el-checkbox
+                  v-model="formDataObj.aFaceRateChecked"
                   class="combination"
                   name="type"
                 >A面占比(%)</el-checkbox>
@@ -394,6 +395,7 @@ export default {
       formDataObj: {
         pointDemand: [],
         aFaceRate: null,
+        aFaceRateChecked: false,
         apExclude: "",
         adLimits: []
       },
@@ -617,10 +619,13 @@ export default {
     // 配点
     matchRes() {
       let params = {}
+      if(this.formDataObj.aFaceRateChecked) {
+        console.log('this.formDataObj.aFaceRateChecked', this.formDataObj.aFaceRateChecked)
+        params.aFaceRate = this.formDataObj.aFaceRate||0
+      }
       this.formDataObj.pointDemand.forEach(item => {
         params[item] = true
       });
-      console.log('formDataObj', this.formDataObj)
       new Promise((resolve, reject)=>{
         api.postApi_json("/addsp/match/matchRes", {
           "apID": this.apID,

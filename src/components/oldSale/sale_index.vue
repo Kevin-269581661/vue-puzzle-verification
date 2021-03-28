@@ -227,7 +227,7 @@
                     {
                         imgurl: require('../../assets/images/fangan.png'),
                         title: '新建方案',
-                        link: './sale/createPlan',
+                        link: './sale/createPlanOld',
                     },
                     {
                         imgurl: require('../../assets/images/img.png'),

@@ -544,6 +544,7 @@ export default {
           label: "近3月上刊率",
           prop: "publishRate",
           width: "160px",
+          value: (row)=>`${(row.publishRate||0)*100}`
         },
       ],
     };
@@ -620,7 +621,6 @@ export default {
     matchRes() {
       let params = {}
       if(this.formDataObj.aFaceRateChecked) {
-        console.log('this.formDataObj.aFaceRateChecked', this.formDataObj.aFaceRateChecked)
         params.aFaceRate = this.formDataObj.aFaceRate||0
       }
       this.formDataObj.pointDemand.forEach(item => {
@@ -628,13 +628,13 @@ export default {
       });
       new Promise((resolve, reject)=>{
         api.postApi_json("/addsp/match/matchRes", {
+          ...params,
           "apID": this.apID,
           "isSingleMediaChoose": params.isSingleMediaChoose||false,
           "apExclude": this.formDataObj.apExclude,
           "adLimits": this.formDataObj.adLimits,
           "isSingleConnectChoose": params.isSingleConnectChoose||false,
-          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false,
-          "aFaceRate": this.formDataObj.aFaceRate||0
+          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
@@ -645,7 +645,6 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
-        console.log('matchRes', matchRes)
         this.$confirm(`计划投放<span style='color: #1890ff'>${matchRes.planAdSpaceCount}</span>个点位，成功<span style='color: #1890ff'>${matchRes.faceCount}</span>个，失败<span style='color: rgba(250, 173, 20, 1)'>${matchRes.planAdSpaceCount-matchRes.faceCount}</span>个`,
           "恭喜您，配点成功！", {
           confirmButtonText: "查看详情",

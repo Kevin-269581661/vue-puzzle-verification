@@ -1053,7 +1053,7 @@
             ToDetail(row) {
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-                if(row.lState == -1) {
+                if(row.apState == -1) {
                     // 未配点意向方案详情
                     this.$router.push("./planEmptyPointDetail");
                 } else if(row.planMode == 1) {

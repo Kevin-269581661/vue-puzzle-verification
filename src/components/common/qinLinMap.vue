@@ -3957,6 +3957,7 @@ export default {
         suID: this.adListParams.suID,
         asrIDs: this.adListParams.asrIDs.join(","),
         resIDList: arr,
+        mVehicle:this.adListParams.mVehicle
       };
       if (this.selectExcludeType) {
         switch (this.selectExcludeType) {

@@ -818,7 +818,6 @@
                         // console.log('arrDataRID',arrDataRID,'dataRID',dataRID)
                         let ds = dateFormat.toDate(asid.ds, "/");
                         let de = dateFormat.toDate(asid.de, "/");
-                        debugger
                         let days = this.dateToDays(ds, de);
                         let weekDay = this.dayToweeks(days);
                         let weekDays = '';

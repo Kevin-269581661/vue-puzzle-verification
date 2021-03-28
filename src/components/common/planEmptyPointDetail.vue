@@ -547,7 +547,7 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
-                        this.$router.push("./editPlan");
+                        this.$router.push("./editEmptyPointPlan");
                     }else{
                         this.changeRoute();
                     }

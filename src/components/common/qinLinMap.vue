@@ -3980,7 +3980,6 @@ export default {
         params.playSecond = this.adListParams.playSecond;
         params.playCount = this.adListParams.playCount;
       }
-      debugger;
       this.pullPoints = true;
       let url = "/adsList";
       if ("planAdsCnt" in this.adListParams) {

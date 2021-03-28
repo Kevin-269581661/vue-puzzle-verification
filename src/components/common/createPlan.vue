@@ -3796,7 +3796,6 @@ export default {
     },
     // 根据导入方案返回的数据,设置购物车所需要的数据格式
     setShopDataByImport(arr) {
-      debugger;
       console.log("arr: ", arr);
       Message.success("成功导入" + arr.length + "条数据");
       setTimeout(() => {
@@ -5167,7 +5166,6 @@ export default {
     // },
     //step2搜索按钮
     searchFun() {
-      debugger;
       this.searchBtnAbled = true;
       console.log("this.surfaceNum: ", this.surfaceNum);
       console.log("搜索排期时间", this.dateInput);
@@ -6298,7 +6296,6 @@ export default {
     // },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
-      debugger;
       console.log("触发获取地图选点信息click");
       // 亲邻地图
       this.getMapLoading = this.$loading({
@@ -7943,7 +7940,6 @@ export default {
     // 创建方案基本信息及投放城市详情(报价单数据提交)
     // TODO:创建方案
     creatAdPlan() {
-      debugger;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -7976,7 +7972,6 @@ export default {
       });
     },
     // creatAdPlan() {
-    //   debugger;
     //   console.log("creatAdPlan", this.quotation);
     //   let arr = [];
     //   let cityArea = [];

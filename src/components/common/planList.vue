@@ -274,11 +274,11 @@
             custom-class="Import_dialog"
             :show-close="false"
             width="472px">
-            <el-form>
-                <el-form-item label="合同编号" label-width="120px">
+            <el-form label-position="left">
+                <el-form-item label="合同编号" label-width="80px">
                     <el-input v-model="this.QCinfo"></el-input>
                 </el-form-item>
-                <el-form-item label="订单类型" label-width="120px">
+                <el-form-item label="订单类型" label-width="80px">
                     <el-select v-model="planType" placeholder="请选择活动区域">
                         <el-option label="常规" value="0"></el-option>
                         <el-option label="续刊" value="1"></el-option>
@@ -287,9 +287,8 @@
                         <el-option label="赠送" value="4"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="`${planType}订单`">
+                <el-form-item :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
                     <el-select
-                        size="mini"
                         v-model="relatedApId"
                         placeholder="请选择续刊的订单"
                         filterable
@@ -773,6 +772,19 @@
                 this.currPage = 1;
                 this.searchFun();
             },
+            routeSelect() {
+                if(['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                    // 直营
+                    if(this.sessionData.uType=='BD') {
+                        this.$router.push("./createPlan")
+                    } else {
+                        this.$router.push("./createPlanOld")
+                    }
+                } else {
+                    // 加盟
+                    this.$router.push("./createPlanOld")
+                }
+            },
             // 新建方案
             addOne() {
                 this.continueEditLoading = this.$loading({
@@ -791,7 +803,7 @@
                     if (res.data.SysCode == 200200) {
                         console.log('获取缓存成功', res.data)
                         if (JSON.stringify(res.data.data) === '{}') {
-                            this.$router.push("./createPlan");
+                            this.routeSelect()
                         } else {
                             let planInfo = JSON.parse(res.data.data)
                             this.showCookeAdPlan(planInfo)
@@ -804,14 +816,14 @@
                         if (returnData) {
                             this.showCookeAdPlan(returnData)
                         } else {
-                            this.$router.push("./createPlan");
+                            this.routeSelect()
                         }
                     }
                 }).catch(err => {
                     console.log('err', err)
                     this.continueEditLoading.close()
                     if (this.$route.path.includes('planList')) {
-                        this.$router.push("./createPlan");
+                        this.routeSelect()
                     }
                 })
             },
@@ -1021,6 +1033,7 @@
                                 break;
                             }
                         }
+                        this.publishPlanDialog = false
                     } else if (res.data.SysCode == 300500) {
                         if (res.data.asList) {
                             // 存在点位被占，是否立即去方案详情修改？
@@ -1052,6 +1065,7 @@
             ToEdit(row) {
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
+                console.log('roweedit', row)
                 this.$router.push("./editPlan");
             },
             // 比较两个时间大小
@@ -1505,7 +1519,7 @@
                         }
                     })
                     cacheAdPlan.removeData(this.sessionData.uID)
-                    this.$router.push("./createPlan");
+                    this.routeSelect()
                 }).catch(() => {
                     Message.info('取消成功')
                 })

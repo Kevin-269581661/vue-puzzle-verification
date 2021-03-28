@@ -3351,7 +3351,6 @@
                                 this.apMinTime = minTime
                             }
                         }
-                        debugger
                         console.log('i,key.city,key.asrID', i,key.city,key.asrID)
                         let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
                         console.log('pdid',pdid)

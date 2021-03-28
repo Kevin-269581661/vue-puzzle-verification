@@ -551,7 +551,7 @@
                 // 导出中
                 isBroundImport: false,
                 publishPlanDialog: false,
-                planType: 0,
+                planType: '0',
                 relatedApId: null,
                 apList: []
             };

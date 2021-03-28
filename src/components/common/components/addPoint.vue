@@ -17,14 +17,14 @@
             <li class="info-item">
               <span class="item-label">意向投放小区：</span>
               <span class="item-content">
-                {{ intentionInfo.planResCount }}个
+                {{ intentionInfo.planResCount||'--' }}个
                 <span class="active" @click="getIntentionList">查看</span>
               </span>
             </li>
             <li class="info-item">
               <span class="item-label">计划投放点位：</span>
               <span class="item-content">
-                {{ intentionInfo.planAdSpaceCount }} 个
+                {{ intentionInfo.planAdSpaceCount||'--' }} 个
               </span>
             </li>
             <li class="info-item">
@@ -42,7 +42,7 @@
             <li class="info-item">
               <span class="item-label">客户要求：</span>
               <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand }}
+                {{ intentionInfo.customerDemand||'' }}
               </span>
             </li>
           </ul>
@@ -361,7 +361,7 @@ export default {
       type: Boolean,
       default: () => false
     },
-    apid: {
+    apID: {
       type: [String, Number]
     },
     rejectAdPlan: {
@@ -590,7 +590,7 @@ export default {
     // 获取意向信息
     getIntentionInfo() {
       this.loading = true
-      api.getApi("http://192.168.1.247:8026//addsp/proposal/getSummarize?apID=11646").then(res => {
+      api.getApi("/addsp/proposal/getSummarize?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
             this.loading = false
             Object.assign(this.intentionInfo, res.data.data)
@@ -603,7 +603,7 @@ export default {
     },
     // 意向小区列表
     getIntentionList() {
-      api.getApi("http://192.168.1.247:8026/addsp/proposal/getProposalResInfo?apID=11646&pageNo=1&pageSize=1").then(res => {
+      api.getApi("/addsp/proposal/getProposalResInfo?apID="+this.apID+'&pageNo=1&pageSize=10').then(res => {
           if (res.data.SysCode == 200200) {
               this.showDialogTable = true
               this.intentionTableData = res.data.data
@@ -622,8 +622,8 @@ export default {
       });
       console.log('formDataObj', this.formDataObj)
       new Promise((resolve, reject)=>{
-        api.postApi_json("http://192.168.1.247:8026/addsp/match/matchRes", {
-          "apID":11646,
+        api.postApi_json("/addsp/match/matchRes", {
+          "apID": this.apID,
           "isSingleMediaChoose": params.isSingleMediaChoose||false,
           "apExclude": this.formDataObj.apExclude,
           "adLimits": this.formDataObj.adLimits,
@@ -657,7 +657,7 @@ export default {
     },
     // 查询配点结果概要
     getMatchSummary(apid) {
-      api.getApi("http://192.168.1.247:8026/addsp/match/matchSummary?apID=11646").then(res => {
+      api.getApi("/addsp/match/matchSummary?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
             this.tipObj = res.data.data
           } else {
@@ -678,7 +678,7 @@ export default {
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
-      api.getApi("http://192.168.1.247:8026/addsp/match/successProposal?apID=11646&pageNo=1&pageSize=10000").then(res => {
+      api.getApi("/addsp/match/successProposal?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
             this.asignPointTableData = res.data.data||[]
 
@@ -702,7 +702,6 @@ export default {
                 }
               }
             }
-            this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
             // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
             // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
             // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
@@ -750,7 +749,7 @@ export default {
     },
     // 查询配点失败结果
     getFailRes() {
-      api.getApi("http://192.168.1.247:8026/addsp/match/failProposal?apID=11646&pageNo=1&pageSize=1").then(res => {
+      api.getApi("/addsp/match/failProposal?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
             this.failTableData = res.data.data||[]
             this.showFailDialogTable = true
@@ -790,7 +789,7 @@ export default {
     },
     deleteAsignItem(scope) {
       this.asignPointTableLoading = true
-      api.getApi("http://192.168.1.247:8026/addsp/match/removeSpace?id="+scope.row.id).then(res => {
+      api.getApi("/addsp/match/removeSpace?id="+scope.row.id).then(res => {
           if (res.data.SysCode == 200200) {
             this.getMatchSummary(this.apid)
             console.log('deleteAsignItem', scope)

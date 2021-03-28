@@ -3609,7 +3609,7 @@
             },
             // 继续创建
             continueCreate() {
-                this.$router.push("./createPlan");
+                this.$router.push("./createPlanOld");
             },
             //复制协同选点的url
             copyUrl() {

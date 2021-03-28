@@ -1134,7 +1134,7 @@
             </span>
         </el-dialog>
         <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apid="apid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="merge2ShopList"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="editApid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="merge2ShopList"></add-point>
     </div>
 </template>
 
@@ -1533,7 +1533,7 @@
         methods: {
             // 智能配点按钮
             matchPoint() {
-                if(1==1) {
+                if(this.FAInfo.apState!==-1) {
                     // 方案已配点，显示上次配点结果
                     this.showMatchResult = true
                     this.$nextTick(()=>{
@@ -3351,6 +3351,8 @@
                                 this.apMinTime = minTime
                             }
                         }
+                        debugger
+                        console.log('i,key.city,key.asrID', i,key.city,key.asrID)
                         let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
                         console.log('pdid',pdid)
                         cityDetailList.push({
@@ -3465,7 +3467,8 @@
             },
             // 继续创建
             continueCreate() {
-                this.$router.push("./createPlan");
+                // 媒介创建方案或者是加盟销售创建方案
+                this.$router.push("./createPlanOld");
             },
             //复制协同选点的url
             copyUrl() {

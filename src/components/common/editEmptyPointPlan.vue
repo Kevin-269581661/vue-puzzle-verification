@@ -3609,7 +3609,11 @@
             },
             // 继续创建
             continueCreate() {
-                this.$router.push("./createPlan");
+                if(this.sessionData.uType=='MD') {
+                    this.$router.push("./createPlanOld");
+                } else {
+                    this.$router.push("./createPlan");
+                }
             },
             //复制协同选点的url
             copyUrl() {

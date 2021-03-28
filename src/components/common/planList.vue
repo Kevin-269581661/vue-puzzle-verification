@@ -266,6 +266,51 @@
             <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
         </el-dialog>
 
+        <!--发布方案-->
+        <el-dialog
+            title="发布方案"
+            :visible.sync="publishPlanDialog"
+            :close-on-click-modal="false"
+            custom-class="Import_dialog"
+            :show-close="false"
+            width="472px">
+            <el-form>
+                <el-form-item label="合同编号" label-width="120px">
+                    <el-input v-model="this.QCinfo"></el-input>
+                </el-form-item>
+                <el-form-item label="订单类型" label-width="120px">
+                    <el-select v-model="planType" placeholder="请选择活动区域">
+                        <el-option label="常规" value="0"></el-option>
+                        <el-option label="续刊" value="1"></el-option>
+                        <el-option label="补刊" value="2"></el-option>
+                        <el-option label="空刊" value="3"></el-option>
+                        <el-option label="赠送" value="4"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item :label="`${planType}订单`">
+                    <el-select
+                        size="mini"
+                        v-model="relatedApId"
+                        placeholder="请选择续刊的订单"
+                        filterable
+                        :clearable="true"
+                    >
+                        <el-option
+                        v-for="item in apList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                    </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="publishPlanDialog = false">取 消</el-button>
+                <el-button type="primary" @click="commitRelease">确 定</el-button>
+            </div>
+        </el-dialog>
+
         <!--周边小区导出-->
         <el-dialog
             :title="`资源导出(`+ exportResStep +`/3)` "
@@ -283,7 +328,6 @@
             <ul class="export_ul" v-show="exportResStep === 1">
                 <li>
                     <span>匹配城市：</span>
-                    <!---->
                     <el-select size="small" v-model="exportInfo.citys" filterable placeholder="请选择城市" @change="exportCityFun">
                         <el-option v-for="(key,index) in exportRescityList"
                                    :key="index"
@@ -291,18 +335,6 @@
                                    :value="key.value">
                         </el-option>
                     </el-select>
-                    <!--   <el-cascader
-                           :options="cityOptions"
-                           v-model="exportInfo.citys"
-                           separator="-"
-                           :show-all-levels="false"
-                           placeholder="请选择城市"
-                           filterable
-                           size="small"
-                           style="width: 82%"
-                           clearable
-                           @change="exportCityFun">
-                       </el-cascader>-->
                 </li>
                 <li>
                     <span>匹配范围：</span>
@@ -349,6 +381,7 @@
                 </el-button>
             </div>
         </el-dialog>
+
     </div>
 </template>
 
@@ -517,7 +550,11 @@
                 // 上传的文件
                 exportFileData: [],
                 // 导出中
-                isBroundImport: false
+                isBroundImport: false,
+                publishPlanDialog: false,
+                planType: 0,
+                relatedApId: null,
+                apList: []
             };
         },
         created() {
@@ -703,6 +740,7 @@
             stateToText(val) {
                 let state = [
                     {text: "已完成", value: 0, color: 'rgba(196,203,211,1)'},
+                    {text: "未配点", value: -1, color: 'rgba(196,203,211,1)'},
                     {text: "进行中", value: 1, color: 'rgba(250,173,20,1)'},
                     {text: "未投放", value: 2, color: 'rgba(82,196,26,1)'},
                     {text: "投放中", value: 3, color: 'rgba(24,144,255,1)'},
@@ -808,6 +846,35 @@
                 result = result + "00" + Math.round(Math.random() * 9);
                 return result;
             },
+            // 获取方案列表
+            getPlanList(apID, suID) {
+                return new Promise((resolve, reject)=>{
+                    let params = {
+                        uid:this.sessionData.uID,
+                        token: this.sessionData.token,
+                        sales_user: suID
+                    }
+                    api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
+                        console.log('销售所属方案',res)
+                        if (res.data.SysCode == 200200) {
+                            let resData =  res.data.data
+                            let tempList = []
+                            for(let key of resData){
+                                if(apID != key.apId){
+                                    tempList.push({
+                                        value: key.apId,
+                                        label: key.apName + '--' + key.cname + '--' + key.apcTime
+                                    })
+                                }
+                            }
+                            this.apList = tempList
+                            resolve()
+                        } else {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        }
+                    })
+                })
+            },
             // 发布
             release(row) {
                 // 1)	全国媒介可发布全部销售的方案
@@ -850,13 +917,17 @@
                                 } else {
                                     this.QCinfo = this.getContractNo(text.rID);
                                 }
-                                MessageBox.prompt("合同编号:", {
+                                this.getPlanList(text.apID, text.suID).then((resolve)=> {
+                                    this.publishPlanDialog = true
+                                })
+                                /* MessageBox.prompt("合同编号:", {
                                     confirmButtonText: "是",
                                     cancelButtonText: "否",
                                     inputPattern: /^[^\u4e00-\u9fa5]{0,}$/,
                                     inputErrorMessage: "只能输入数字,字母,字符",
                                     inputValue: this.QCinfo
-                                }).then(() => {
+                                })
+                                .then(() => {
                                     this.Ctrlloading = Loading.service(
                                         {
                                             text: "请耐心等待...",
@@ -865,10 +936,10 @@
                                         }
                                     );
                                     // 保存合同编号
-                                    this.saveContractNo(this.QCinfo);
+                                    this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
                                 }).catch(() => {
                                     Message.info('已取消操作');
-                                });
+                                }); */
                             } else {
                                 this.messageFun('warning', res.data.MSG);
                             }
@@ -877,8 +948,20 @@
                     this.messageFun('warning', '您没有权限发布该方案');
                 }
             },
+            // 提交
+            commitRelease() {
+                this.Ctrlloading = Loading.service(
+                    {
+                        text: "请耐心等待...",
+                        spinner: "el-icon-loading",
+                        background: "rgba(0, 0, 0, 0.7)"
+                    }
+                );
+                // 保存合同编号
+                this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
+            },
             // 保存合同编号
-            saveContractNo(contractNo) {
+            saveContractNo(contractNo, planType, relatedApId) {
                 // uid         int【必填】     当前账户UserID
                 // apid        int【必填】     方案apID
                 // qc          String【必填】  方案合同编号
@@ -888,6 +971,8 @@
                     apid: this.currentItem.apID,
                 };
                 info.qc = contractNo;
+                info.planType = planType;
+                info.relatedApId = relatedApId;
                 api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
                     .then(res => {
                         console.log(res);

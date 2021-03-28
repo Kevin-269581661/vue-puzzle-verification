@@ -415,7 +415,7 @@ export default {
         {
           imgurl: require("../../assets/images/fangan.png"),
           title: "新建方案",
-          link: "./media/createPlan",
+          link: "./media/createPlanOld",
         },
         {
           imgurl: require("../../assets/images/addMedia.png"),

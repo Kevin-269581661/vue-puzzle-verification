@@ -216,7 +216,6 @@
 // 时间格式化
 // import timeFormat from "../../../commonFun/timeFormat.js";
 import { api } from "../../../api/api.js";
-// import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
   name: "importVillageByExcel",
@@ -293,11 +292,9 @@ export default {
   watch: {
     importInfoData: {
       handler(newVal, oldVal) {
-        this.successList = newVal.successList;
-
+        this.successList = newVal.successList ? newVal.successList : [];
         this.successSize = this.successList.length;
-        this.errorList = newVal.errorList;
-
+        this.errorList = newVal.errorList ? newVal.errorList : [];
         this.errorSize = this.errorList.length;
       },
       deep: true,

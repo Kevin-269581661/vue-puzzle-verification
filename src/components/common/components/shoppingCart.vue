@@ -217,7 +217,15 @@
           </div>
           <div style="text-align: center; margin-top: 10px">
             <el-button @click="continueSelect">继续选点 </el-button>
+
             <el-button
+              v-if="this.$route.path == '/sale/editEmptyPointPlan'"
+              @click="next"
+              type="primary"
+              >编辑完成
+            </el-button>
+            <el-button
+              v-else
               @click="next"
               type="primary"
               v-qadn-mta-h5="{ id: 'a004_b008_c001_d001_bt072_ck03' }"
@@ -300,6 +308,7 @@ export default {
   methods: {
     //继续选点
     continueSelect() {
+      console.log("当前路由", this.$route.path);
       this.$emit("update:dialogTableVisible", false);
     },
     //删除购物车行

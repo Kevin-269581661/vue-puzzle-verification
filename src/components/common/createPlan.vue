@@ -3780,6 +3780,8 @@ export default {
     },
     // 根据导入方案返回的数据,设置购物车所需要的数据格式
     setShopDataByImport(arr) {
+      debugger;
+      console.log("arr: ", arr);
       Message.success("成功导入" + arr.length + "条数据");
       setTimeout(() => {
         this.dialogTableVisible = true;
@@ -3787,7 +3789,8 @@ export default {
       this.isImport = false;
       arr.forEach((item) => {
         item.checkBox = false;
-        item.city = this.city[this.activeIndex].rName;
+        // item.city = this.city[this.activeIndex].rName;
+        item.city = item.cityName;
       });
 
       return arr;

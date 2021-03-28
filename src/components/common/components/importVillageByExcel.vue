@@ -23,7 +23,7 @@
           《QADN-导入小区模板》
           <!-- TODO:更换小区模板EXCEL下载地址 -->
           <a
-            :href="apiVar.qadnUrl + '/importTemplate/adsTemplate.xlsx'"
+            :href="apiVar.qadnUrl + '/importTemplate/communityTemplate.xlsx'"
             download="点位导入模板.xlsx"
             class="downloag_btn"
             @click="dowmLoadFun"
@@ -90,6 +90,7 @@
       </div>
       <!-- 表格部分 -->
       <el-table
+        ref="successSTableRef"
         :data="successShowList"
         border
         max-height="500"
@@ -105,15 +106,19 @@
         </el-table-column>
         <el-table-column prop="resName" label="资源" min-width="6%">
         </el-table-column>
-        <el-table-column prop="city" label="城市" min-width="6%">
+        <el-table-column prop="cityName" label="城市" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="区域" min-width="6%">
+        <el-table-column prop="districtName" label="区域" min-width="6%">
         </el-table-column>
-        <el-table-column prop="date" label="排期" min-width="6%">
+        <el-table-column prop="schedule" label="排期" min-width="6%">
         </el-table-column>
-        <el-table-column prop="num" label="媒体数量（门）" min-width="6%">
+        <el-table-column
+          prop="actualMediaCnt"
+          label="媒体数量（门）"
+          min-width="6%"
+        >
         </el-table-column
-        ><el-table-column prop="planNum" label="计划投放数量" min-width="6%">
+        ><el-table-column prop="planAdsCnt" label="计划投放数量" min-width="6%">
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -150,6 +155,7 @@
       custom-class="error-point-dialog"
     >
       <el-table
+        ref="errorTableRef"
         :data="errorShowList"
         border
         max-height="500"
@@ -163,15 +169,19 @@
           :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
           >>
         </el-table-column>
-        <el-table-column prop="city" label="资源" min-width="6%">
+        <el-table-column prop="resName" label="资源" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="城市" min-width="6%">
+        <el-table-column prop="city" label="城市" min-width="6%">
         </el-table-column>
-        <el-table-column prop="mTitle" label="区域" min-width="6%">
+        <el-table-column prop="district" label="区域" min-width="6%">
         </el-table-column>
         <el-table-column prop="date" label="排期" min-width="6%">
         </el-table-column>
-        <el-table-column prop="asLab" label="计划投放数量（面）" min-width="6%">
+        <el-table-column
+          prop="planAdsCnt"
+          label="计划投放数量（面）"
+          min-width="6%"
+        >
         </el-table-column>
         <el-table-column
           prop="failReason"
@@ -206,7 +216,6 @@
 // 时间格式化
 // import timeFormat from "../../../commonFun/timeFormat.js";
 import { api } from "../../../api/api.js";
-// import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
   name: "importVillageByExcel",
@@ -258,6 +267,9 @@ export default {
   computed: {
     successShowList() {
       if (this.successList) {
+        if (this.$refs.successSTableRef) {
+          this.$refs.successSTableRef.bodyWrapper.scrollTop = 0;
+        }
         return this.successList.slice(
           (this.successCurrentPage - 1) * this.successPageSize,
           this.successCurrentPage * this.successPageSize
@@ -266,6 +278,9 @@ export default {
     },
     errorShowList() {
       if (this.errorList) {
+        if (this.$refs.errorTableRef) {
+          this.$refs.errorTableRef.bodyWrapper.scrollTop = 0;
+        }
         return this.errorList.slice(
           (this.errorCurrentPage - 1) * this.errorPageSize,
           this.errorCurrentPage * this.errorPageSize
@@ -277,13 +292,10 @@ export default {
   watch: {
     importInfoData: {
       handler(newVal, oldVal) {
-        console.log("newVal: ", newVal);
-        this.successList = newVal.successList;
-        console.log("this.successList: ", this.successList);
-        this.successSize = newVal.successSize;
-        this.errorList = newVal.errorList;
-        console.log("this.errorList: ", this.errorList);
-        this.errorSize = newVal.errorSize;
+        this.successList = newVal.successList ? newVal.successList : [];
+        this.successSize = this.successList.length;
+        this.errorList = newVal.errorList ? newVal.errorList : [];
+        this.errorSize = this.errorList.length;
       },
       deep: true,
     },
@@ -302,7 +314,6 @@ export default {
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
-      console.log("fileList: ", fileList);
       this.importFileData = fileList;
     },
     importFileRemove(file, fileList) {
@@ -425,9 +436,7 @@ export default {
             this.$message.warning(res.data.MSG);
           }
         })
-        .catch((res) => {
-          console.log(res);
-        })
+        .catch((res) => {})
         .finally((_) => {
           this.uploadLoading = false;
         });
@@ -474,11 +483,9 @@ export default {
       this.successCurrentPage = val;
     },
     handleErrorSizeChange(val) {
-      console.log("sizeval: ", val);
       this.errorPageSize = val;
     },
     handleErrorCurrentChange(val) {
-      console.log("Currentval: ", val);
       this.errorCurrentPage = val;
     },
   },

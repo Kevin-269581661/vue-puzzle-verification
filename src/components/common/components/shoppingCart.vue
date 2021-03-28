@@ -30,21 +30,25 @@
             <el-col>
               <i class="el-icon-info" style="color: #1890ff"></i>
               <span>
-                已选小区<em>xxx</em>个,选1面的小区<em>xxx</em>个，
-                选2面的小区<em>xxx</em>个， 选3面的小区<em>xxx</em>个，
-                更多面的小区<em>xxx</em>个
+                已选小区<em>{{ shopMedia_ADNum.total }}</em
+                >个,选1面的小区<em>{{ shopMedia_ADNum.oneNum }}</em
+                >个， 选2面的小区<em>{{ shopMedia_ADNum.twoNum }}</em
+                >个， 选3面的小区<em>{{ shopMedia_ADNum.threeNum }}</em
+                >个， 更多面的小区<em>{{ shopMedia_ADNum.moreNum }}</em
+                >个
               </span>
             </el-col>
           </el-row>
           <!-- 表格 -->
           <el-table
+            ref="shoppingCartRef"
             border
             :data="shoppingCartShowList"
             :default-sort="{ prop: 'mID', order: 'descending' }"
-            :row-class-name="tableRowClassName"
             @row-click="shopRowClick"
             style="width: 100%"
           >
+            <!-- :row-class-name="tableRowClassName" -->
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" inline class="demo-table-expand">
@@ -100,9 +104,9 @@
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column label="资源名称" min-width="140" prop="resName">
+            <el-table-column label="资源" min-width="60" prop="resName">
             </el-table-column>
-            <el-table-column label="媒体名称" min-width="130">
+            <!-- <el-table-column label="媒体名称" min-width="130">
               <template slot-scope="scope">
                 <el-tooltip
                   class="item"
@@ -113,30 +117,53 @@
                   <span>{{ scope.row.mediaName }}</span>
                 </el-tooltip>
               </template>
+            </el-table-column> -->
+            <el-table-column prop="cityName" label="城市" min-width="60">
             </el-table-column>
-            <el-table-column prop="city" label="城市" min-width="80">
+            <el-table-column prop="districtName" label="区域" min-width="60">
             </el-table-column>
-            <el-table-column prop="origin" label="区域" min-width="80">
+            <el-table-column prop="schedule" label="排期" min-width="180">
+              <template slot-scope="scope">
+                <span>{{ scope.row.schedule }}</span>
+              </template>
             </el-table-column>
             <el-table-column prop="scope" label="地图中心点" min-width="105">
               <template slot-scope="scope">
                 <el-tooltip
-                  v-if="scope.row.mapCenter"
-                  :content="scope.row.mapCenter"
+                  v-if="scope.row.mapCenterName"
+                  :content="scope.row.mapCenterName"
                   placement="bottom-start"
                   :visible-arrow="false"
                 >
-                  <span>{{ scope.row.mapCenter || "--" }}</span>
+                  <span>{{ scope.row.mapCenterName || "--" }}</span>
                 </el-tooltip>
-                <span v-else> {{ scope.row.mapCenter || "--" }} </span>
+                <span v-else> {{ scope.row.mapCenterName || "--" }} </span>
               </template>
             </el-table-column>
-            <el-table-column label="楼盘类型" min-width="85">
+            <el-table-column
+              prop="actualMediaCnt"
+              label="媒体数量（门）"
+              min-width="100"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="actualMediaCnt"
+              label="可投数量（面）"
+              min-width="100"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="planAdsCnt"
+              label="计划投放数（面）"
+              min-width="100"
+            >
+            </el-table-column>
+            <!-- <el-table-column label="楼盘类型" min-width="85">
               <template slot-scope="scope">
                 {{ scope.row.buildType || "--" }}
               </template>
-            </el-table-column>
-            <el-table-column prop="mediaLevel" label="媒体等级" min-width="85">
+            </el-table-column> -->
+            <!-- <el-table-column prop="mediaLevel" label="媒体等级" min-width="85">
               <template slot-scope="scope">
                 {{
                   scope.row.mediaLevel !== ""
@@ -144,17 +171,13 @@
                     : "--"
                 }}
               </template>
-            </el-table-column>
-            <el-table-column prop="schedules" label="排期" min-width="185">
-              <template slot-scope="scope">
-                <span>{{ scope.row.schedules }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column min-width="65">
+            </el-table-column> -->
+
+            <!-- <el-table-column min-width="65">
               <template slot-scope="scope">
                 <span>{{ scope.row.A_B }}面</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column min-width="50" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span
@@ -193,8 +216,16 @@
             </el-pagination>
           </div>
           <div style="text-align: center; margin-top: 10px">
-            <el-button>继续选点 </el-button>
+            <el-button @click="continueSelect">继续选点 </el-button>
+
             <el-button
+              v-if="this.$route.path == '/sale/editEmptyPointPlan'"
+              @click="next"
+              type="primary"
+              >编辑完成
+            </el-button>
+            <el-button
+              v-else
               @click="next"
               type="primary"
               v-qadn-mta-h5="{ id: 'a004_b008_c001_d001_bt072_ck03' }"
@@ -256,6 +287,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    shopMedia_ADNum: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
   },
   created() {},
   data() {
@@ -269,6 +306,11 @@ export default {
     };
   },
   methods: {
+    //继续选点
+    continueSelect() {
+      console.log("当前路由", this.$route.path);
+      this.$emit("update:dialogTableVisible", false);
+    },
     //删除购物车行
     deleteRow(event, rows) {
       console.log("购物车删除行", rows);
@@ -283,6 +325,7 @@ export default {
     //点击
     next() {
       this.$emit("next");
+      this.$emit("update:dialogTableVisible", false);
     },
     //切换分页数据条目
     handleSizeChange(val) {
@@ -293,54 +336,53 @@ export default {
       this.currentPage = val;
     },
     //指定行的样式
-    tableRowClassName({ row }) {
-      if (row.lState !== undefined && row.lState.length > 0) {
-        return "warning-row";
-      } else if (
-        row.connData.connectResName !== "" ||
-        row.connData.commentWorkRes !== "" ||
-        row.connData.connectMedia !== ""
-      ) {
-        return "warning-row-conncet";
-      } else {
-        return "";
-      }
-    },
+    // tableRowClassName({ row }) {
+    //   if (row.lState !== undefined && row.lState.length > 0) {
+    //     return "warning-row";
+    //   } else if (
+    //     row.connData.connectResName !== "" ||
+    //     row.connData.commentWorkRes !== "" ||
+    //     row.connData.connectMedia !== ""
+    //   ) {
+    //     return "warning-row-conncet";
+    //   } else {
+    //     return "";
+    //   }
+    // },
     // 购物车行被点击
     shopRowClick(row, event, column) {
       console.log("购物车行被点击row", row, column);
-      if (row.lState !== undefined && row.lState.length > 0) {
-        let dataArr = row.lState;
-        console.log("row.asID", row.asID);
-        let arr = [];
-        for (let key of dataArr) {
-          let star = timeFormat.toDate(key.lStar, "/");
-          let end = timeFormat.toDate(key.lEnd, "/");
-          arr.push({
-            beOccupieApName: key.apName,
-            schedules: star + "-" + end,
-            lState: key.lState,
-          });
-        }
-        // this.beOccupiedAdsData = arr;
-        this.$emit("update:beOccupiedAdsData", arr);
-        console.log("this.beOccupiedAdsData", this.beOccupiedAdsData);
-        if (!this.shopDelRowClick) {
-          this.beOccupiedDialogVisible = true;
-        } else {
-          this.shopDelRowClick = false;
-        }
-      } else if (
-        row.connData.connectResName !== "" ||
-        row.connData.commentWorkRes !== "" ||
-        row.connData.connectMedia !== ""
-      ) {
-        // this.ActiveConnectADList = row.connData;
-        this.$emit("update:ActiveConnectADList", row.connData);
-        console.log("this.ActiveConnectADList", this.ActiveConnectADList);
-        // this.connectAdDialogVisible = true;
-        this.$emit("update:connectAdDialogVisible", true);
-      }
+      // if (row.lState !== undefined && row.lState.length > 0) {
+      //   let dataArr = row.lState;
+      //   console.log("row.asID", row.asID);
+      //   let arr = [];
+      //   for (let key of dataArr) {
+      //     let star = timeFormat.toDate(key.lStar, "/");
+      //     let end = timeFormat.toDate(key.lEnd, "/");
+      //     arr.push({
+      //       beOccupieApName: key.apName,
+      //       schedule: star + "-" + end,
+      //       lState: key.lState,
+      //     });
+      //   }
+      //   // this.beOccupiedAdsData = arr;
+      //   this.$emit("update:beOccupiedAdsData", arr);
+      //   console.log("this.beOccupiedAdsData", this.beOccupiedAdsData);
+      //   if (!this.shopDelRowClick) {
+      //     this.beOccupiedDialogVisible = true;
+      //   } else {
+      //     this.shopDelRowClick = false;
+      //   }
+      // } else if (
+      //   row.connData.connectResName !== "" ||
+      //   row.connData.commentWorkRes !== "" ||
+      //   row.connData.connectMedia !== ""
+      // ) {
+      //   // this.ActiveConnectADList = row.connData;
+      //   this.$emit("update:ActiveConnectADList", row.connData);
+      //   // this.connectAdDialogVisible = true;
+      //   this.$emit("update:connectAdDialogVisible", true);
+      // }
     },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
@@ -452,6 +494,10 @@ export default {
   computed: {
     shoppingCartShowList() {
       this.totalNum = this.shoppingCartList.length;
+      if (this.$refs.shoppingCartRef) {
+        this.$refs.shoppingCartRef.bodyWrapper.scrollTop = 0;
+      }
+      // console.log("this.$refs.shoppingCartRef: ", this.$refs.shoppingCartRef);
       return this.shoppingCartList.slice(
         (this.currentPage - 1) * this.cartPageSize,
         this.currentPage * this.cartPageSize

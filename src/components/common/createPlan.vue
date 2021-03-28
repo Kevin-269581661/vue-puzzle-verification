@@ -2695,7 +2695,7 @@ export default {
     console.log("this.cityOptions", this.cityOptions);
 
     //获取草稿箱数据
-    this.getDrafts()
+    this.getDrafts();
   },
   // directives: {
   //     loadmore: {
@@ -2737,28 +2737,26 @@ export default {
     // },
   },
   methods: {
-      //获取草稿箱数据
-      //TODO获取草稿箱数据
-    getDrafts(){
+    //获取草稿箱数据
+    //TODO获取草稿箱数据
+    getDrafts() {
       let params = {
-              uid: this.sessionData.uID,
-              token: this.sessionData.token,
-            };
-            api.getApi(this.apiVar.GetAGdBackUp, params).then((res) => {
-              console.log("获取草稿箱", res);
-              if (res.data.SysCode === 200200) {
-                if(res.data.data.length){
-                  this.clearDrafts()
-                  this.handleImportDrafts(1,res.data.data)
-                  this.shoping=res.data.data
-                }
-              } else {
-                sessFun.messageFun("warning", "获取草稿箱失败");
-              }
-            });
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+      };
+      api.getApi(this.apiVar.GetAGdBackUp, params).then((res) => {
+        console.log("获取草稿箱", res);
+        if (res.data.SysCode === 200200) {
+          if (res.data.data.length) {
+            this.clearDrafts();
+            this.handleImportDrafts(1, res.data.data);
+            this.shopingList = res.data.data;
+          }
+        } else {
+          sessFun.messageFun("warning", "获取草稿箱失败");
+        }
+      });
     },
-
-
 
     //清空草稿箱缓存
     clearDrafts() {
@@ -4566,7 +4564,9 @@ export default {
     },
     // 选择投放城市
     handleInputConfirm() {
+      debugger;
       let inputValue = this.selectedOptions;
+      console.log("inputValue: ", inputValue);
       // console.log('********',inputValue)
       if (inputValue) {
         let cityArr = this.cityOptions;
@@ -5398,7 +5398,7 @@ export default {
         ls: this.dateInput[0],
         le: this.dateInput[1],
         planAdsCnt: this.surfaceNum,
-        mVehicle:this.mediaType
+        mVehicle: this.mediaType,
       };
       console.log("this.surfaceNum: ", this.surfaceNum);
       localStorage.setItem(
@@ -6576,13 +6576,13 @@ export default {
         item.checkBox = false;
         item.city = item.cityName;
       });
-      this.clearDrafts()
-      this.handleImportDrafts(1,mapAdsList)
+      this.clearDrafts();
+      this.handleImportDrafts(1, mapAdsList);
       this.shopingList = mapAdsList;
       if (this.getMapLoading) {
         this.getMapLoading.close();
       }
-      this.dialogTableVisible = true
+      this.dialogTableVisible = true;
       this.computeMedia_AD();
       this.judgeByselect();
     },

@@ -205,7 +205,7 @@
                 if (path.includes('/mediaDetail') || path.includes('/mediaEdit') || path.includes('/mediaInput')) {
                     // 媒体管理
                     routePath = '/media/mediaList'
-                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
+                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/planEmptyPointDetail') || path.includes('/createPlan')) {
                     // 方案管理
                     routePath = '/media/planList'
                 } else if (path.includes('/orderDetail')) {

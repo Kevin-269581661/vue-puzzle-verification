@@ -830,7 +830,6 @@ export default {
     // 跳转到客户列表页面
     routePage(row) {
       sessionStorage.setItem("plan_apid", row.apID);
-      // sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
       this.$router.push("./media/planDetail");
     },
     // 首页报表接口

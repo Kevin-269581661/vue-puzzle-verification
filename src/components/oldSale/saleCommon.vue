@@ -184,7 +184,7 @@
                 let routePath = ''
                 if (path.includes('/editClient') || path.includes('/createClient') || path.includes('/clientDetail')) {
                     routePath = '/sale/clientList'
-                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/createPlan')) {
+                } else if (path.includes('/editPlan') || path.includes('/planDetail') || path.includes('/planEmptyPointDetail') || path.includes('/createPlan')) {
                     routePath = '/sale/planList'
                 } else if (path.includes('/orderDetail')) {
                     routePath = '/sale/orderList'

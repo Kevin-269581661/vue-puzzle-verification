@@ -589,7 +589,6 @@ export default {
     },
     //获取新业务逻辑数据
     getPlanResList() {
-      debugger;
       console.log("this.planDetail: ", this.planDetail);
       let params = {
         uid: this.sessionData.uID,

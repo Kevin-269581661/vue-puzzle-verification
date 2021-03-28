@@ -5,202 +5,6 @@
     </div>
     <div class="mediaMana_content_top">
       <div class="content_top_wrap">
-        <!--填写客户信息-->
-        <div class="step1" v-show="active == 0">
-          <div class="createPlan">
-            <el-form
-              :model="planForm"
-              status-icon
-              :rules="planRules"
-              ref="planForm"
-              label-width="100px"
-              class="demo-ruleForm"
-            >
-              <el-form-item label="方案名称：" prop="planName">
-                <el-input
-                  v-model="planForm.planName"
-                  placeholder="请输入方案名称"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="所属销售：" prop="ownerSales">
-                <el-input
-                  v-if="isBD"
-                  v-model="planForm.ownerSales"
-                  disabled
-                ></el-input>
-                <el-select
-                  v-model="planForm.ownerSales"
-                  v-else
-                  filterable
-                  remote
-                  clearable
-                  placeholder="请输入关键词"
-                  :remote-method="querySearchAsync"
-                  :loading="salerListLoading"
-                  :highlight-first-item="true"
-                  @change="changeSaler"
-                >
-                  <el-option
-                    v-for="item in salerList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="公司名称：" prop="companyName">
-                <el-select
-                  v-model="planForm.companyName"
-                  @change="GetBrandByCid"
-                  placeholder="请选择公司名称"
-                  filterable
-                >
-                  <el-option
-                    v-for="item in companyName"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="公司品牌：" prop="companyBrand">
-                <el-select
-                  v-model="planForm.companyBrand"
-                  placeholder="请选择公司品牌"
-                  filterable
-                >
-                  <el-option
-                    v-for="item in companyBrand"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="联系人：" prop="ownerBU">
-                <el-select
-                  v-model="planForm.ownerBU"
-                  placeholder="请选择所属联系人"
-                  filterable
-                >
-                  <el-option
-                    v-for="item in ownerBU"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item
-                label="投放城市："
-                prop="throwCity"
-                ref="planThrowCity"
-              >
-                <div v-if="cityOther" v-model="planForm.throwCity">
-                  <el-tag
-                    :key="tag"
-                    v-for="tag in dynamicTags"
-                    closable
-                    :disable-transitions="false"
-                    @close="spliceCity(tag)"
-                  >
-                    {{ tag }}
-                  </el-tag>
-                  <el-cascader
-                    style="width: 140px"
-                    class="inputNewTag"
-                    v-if="inputVisible"
-                    v-model="selectedOptions"
-                    :options="cityOptions"
-                    ref="saveTagInput"
-                    :show-all-levels="false"
-                    size="small"
-                    @change="handleInputConfirm"
-                  >
-                  </el-cascader>
-                  <el-button
-                    v-else
-                    class="button-new-tag"
-                    size="small"
-                    @mouseover.native="showInput"
-                  >
-                    +
-                  </el-button>
-                </div>
-                <el-select
-                  v-else
-                  v-model="planForm.throwCity"
-                  size="small"
-                  filterable
-                  multiple
-                  placeholder="请选择"
-                  @remove-tag="removeCity"
-                >
-                  <el-option
-                    v-for="item in throwCity"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item
-                v-if="BDData.saleManageLevel > 0"
-                label="归属公司："
-                prop="pointOfAsrIDs"
-                ref="planPointOfAsrIDs"
-              >
-                <el-select
-                  v-model="planForm.pointOfAsrIDs"
-                  size="small"
-                  filterable
-                  multiple
-                  placeholder="请选择"
-                >
-                  <el-option
-                    v-for="item in pointOfAsrIDs"
-                    :key="item.asrID * 1"
-                    :label="item.asName"
-                    :value="item.asrID * 1"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item
-                v-if="isBD"
-                label="客户预算："
-                prop="clientBudget"
-                ref="clientBudgetRef"
-              >
-                <el-input
-                  v-model="planForm.clientBudget"
-                  placeholder="请输入预算金额"
-                >
-                </el-input>
-                <i class="unit">元</i>
-              </el-form-item>
-              <el-form-item
-                v-if="isBD"
-                label="客户要求："
-                prop="clientRequst"
-                ref="clientRequstRef"
-              >
-                <el-input
-                  v-model="planForm.clientRequst"
-                  type="textarea"
-                  placeholder="如客户对意向小区的要求等"
-                  autosize
-                  resize="none"
-                ></el-input>
-              </el-form-item>
-            </el-form>
-          </div>
-        </div>
         <!--选择点位-->
         <div class="step2" v-if="active == 1">
           <div>
@@ -1681,7 +1485,7 @@
             </div>
             <div class="planPanel noShareUl">
               <ul>
-                <li><em>方案名称：</em>{{ planForm.planName }}</li>
+                <li><em>方案名称：</em>{{ FAInfo.apName }}</li>
                 <li><em>所属客户：</em>{{ cName }}</li>
                 <li><em>所属品牌：</em>{{ cBand || "--" }}</li>
                 <!-- <li class="money">
@@ -2736,7 +2540,6 @@ export default {
   methods: {
     //获取新业务逻辑数据
     getPlanResList() {
-      debugger;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -2747,10 +2550,15 @@ export default {
         console.log("获取已选小区数据", res);
         if (res.data.SysCode === 200200) {
           this.loading = false;
-          if (res.data.data.length) {
+          if (res.data.data.resList.length) {
             // this.clearDrafts();
-            this.handleImportDrafts(1, res.data.data);
-            this.shopingList = res.data.data;
+            res.data.data.resList.forEach((item) => {
+              item.checkBox = false;
+              item.city = item.cityName;
+            });
+            this.handleImportDrafts(1, res.data.data.resList);
+
+            this.shopingList = res.data.data.resList;
           }
         } else {
           sessFun.messageFun("warning", "获取失败");
@@ -2995,7 +2803,7 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
       };
-      api.postApi_new(this.apiVar.CleanAdBackUp, params).then((res) => {
+      api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
         console.log("清空草稿箱", res);
         if (res.data.SysCode === 200200) {
           console.log("清除草稿箱失败成功");
@@ -6617,7 +6425,6 @@ export default {
       // }
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（无忧地图）
-    //TODO图选点返回的数据
     // 判断点位是否已存在购物车（无忧地图）
     judgeHaveDiffAD(data, SourceType) {
       let ADData = data;
@@ -7869,17 +7676,12 @@ export default {
         token: this.sessionData.token,
         apID: this.FAInfo.apID,
       };
-      api.postApi_new(this.apiVar.CreatePlan, params).then((res) => {
+      api.postApi(this.apiVar.CreatePlan, params).then((res) => {
+        console.log("creatAdPlancreatAdPlanres: ", res);
         if (res.data.SysCode == 200200) {
-          if (res.data.errorResNames) {
+          if (res.data.data.errorResNames) {
             this.ADloading.close();
-            sessFun.messageFun(
-              "warning",
-              errorSizeerrorResNames +
-                " 失败，共" +
-                res.data.errorSize +
-                "条数据"
-            );
+            sessFun.messageFun("warning", "存在失败小区");
             return;
           }
           // this.PushADBFun(res.data.Data);
@@ -8164,6 +7966,7 @@ export default {
       }
 
       let params = {
+        apID: this.FAInfo.apID,
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         ...this.importDraftsConfig,

@@ -1,6 +1,6 @@
 //1.引入vue
 import Vue from 'vue';
-import router from "../router";
+import {router} from "../router";
 //2.新创建一个vue实例
 let sessVue = new Vue();
 let sess = {};

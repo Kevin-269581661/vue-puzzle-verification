@@ -164,6 +164,10 @@
                                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
+                                                          :disabled="isDisable || scope.row.apState !== -1"
+                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">配点
+                                        </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
@@ -598,8 +602,7 @@
                     if (!res.data.SysCode) {
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
-                        let dataArr = dataInfo.list;
-                        this.currentPlan = this.funcData(dataArr);
+                        this.currentPlan = this.funcData(dataInfo.list);
                         this.loading = false;
                         if (dataInfo.totalpage == 0) {
                             this.messageFun('warning', '暂无数据');
@@ -957,7 +960,6 @@
             },
             // 跳转到编辑页面
             ToEdit(row) {
-                console.log(row);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
                 this.$router.push("./editPlan");
@@ -966,9 +968,16 @@
             compareTime(arr, sField, eField) {
                 return dateFormat.compareTime(arr, sField, eField);
             },
+            // 意向方案配点（直营媒介配点）
+            addPoint(row) {
+                if(this.sessionData.uType == 'MD' && ['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                    this.ToEdit(row);
+                } else {
+                    this.$message.warning('暂无权限！');
+                }
+            },
             //预锁
             preload(row) {
-                console.log('row-----', row);
                 this.$confirm('<p>锁定后，方案中的点位将被占用</p>', '是否确认锁定该方案的点位', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1190,26 +1199,7 @@
                 };
                 console.log(info);
                 api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
-                    console.log(res.data);
                     if (res.data.SysCode == 300200) {
-                        /*           for (let plandata of this.currentPlan) {
-                                       if (plandata.apID == this.currentItem.apID) {
-                                           for (let item of plandata.cityArea) {
-                                               if (info.asrIDs.includes(item.asrID)) {
-                                                   for (let ridItem of arr) {
-                                                       if (ridItem.asrID == item.asrID) {
-                                                           let RemainDay = this.countDay(ridItem.pdStar);
-                                                           item.RemainDay = RemainDay;
-                                                           this.$set(item, 'RemainDay', RemainDay);
-                                                           break;
-                                                       }
-                                                   }
-                                               }
-                                           }
-                                           break;
-                                       }
-                                   }
-                                   this.currentPlan.push();*/
                         this.searchFun();
                         this.messageFun('success', res.data.MSG);
 
@@ -1246,19 +1236,6 @@
                 api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
                     console.log(res.data);
                     this.Ctrlloading.close();
-                    /* if (res.data.SysCode == 300200) {
-                         for (let plandata of this.currentPlan) {
-                             if (plandata.apID == this.currentItem.apID) {
-                                 for (let item of plandata.cityArea) {
-                                     if (info.asrIDs.includes(item.asrID)) {
-                                         delete item.RemainDay;
-                                     }
-                                 }
-                                 break;
-                             }
-                         }
-                         this.currentPlan.push();
-                     }*/
                     this.searchFun();
                     this.messageFun('success', res.data.MSG);
                 }).catch(err => {

@@ -218,65 +218,9 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-
-    <!-- <div class="dialog_box">
-			<el-dialog
-				title=""
-				:visible.sync="isShowMedal"
-				width="340">
-				<div class="dia_con">
-					<div class="top">
-						<img :src="currentImgInfo.url" alt="">
-					</div>
-					<div class="con">
-						<p style="height:24px;line-height:24px;margin-top: 10px;">
-							<span>{{currentImgInfo.name}}达 {{currentImgInfo.num}} {{currentImgInfo.unit}}</span>
-						</p>
-						<div class="img_modal">
-							<el-row>
-								<el-col :span="7">
-									<img :src="currentImgInfo.img2" alt="">
-									<span class="line_style"></span>
-								</el-col>
-								<el-col :span="7">
-									<img :src="currentImgInfo.img3" alt="">
-									<span class="line_style"></span>
-								</el-col>
-								<el-col :span="7">
-									<img :src="currentImgInfo.img4" alt="">
-									<span class="line_style"></span>
-								</el-col>
-								<el-col :span="3">
-									<img :src="currentImgInfo.img5" alt="">
-								</el-col>
-							</el-row>
-						</div>
-					</div>
-				</div>
-			</el-dialog>
-		</div> -->
-    <!-- 年终总结弹框 -->
-    <div v-show="showYearStat == 'visible'" class="year-stat-container">
-      <div class="year-stat-box">
-        <div class="year-stat-main">
-          <img
-            class="bg-img"
-            src="../../assets/images/index/reviewBg.png"
-            alt=""
-          />
-          <div id="qrcode" ref="qrcode" class="qrcode-box"></div>
-        </div>
-        <img
-          class="close-icon"
-          src="../../assets/images/index/review_close.png"
-          @click="showYearStat = 'close'"
-          alt=""
-        />
-      </div>
-    </div>
     <!-- 媒介工作量 -->
     <div
-      v-if="showYearStat == 'disvisible' && isShowNum"
+      v-if="isShowNum"
       style="
         z-index: 2;
         background: #000000;
@@ -288,7 +232,7 @@
         left: 0;
       "
     ></div>
-    <div v-if="showYearStat == 'disvisible' && isShowNum" class="rank_box">
+    <div v-if="isShowNum" class="rank_box">
       <ul class="ul_box">
         <li>
           <div class="img_box">
@@ -459,7 +403,6 @@ export default {
       activeTabsName: "pointDistribution",
 
       isAllMedia: false,
-      showYearStat: "waiting",
       isShowNum: false,
       // 勋章弹出框
       // isShowMedal: false,
@@ -1119,53 +1062,6 @@ export default {
         })
         .finally((_) => {});
     },
-    /* 获取媒介年终总结,登录后判断，年终报告功能是否在线。
-		waiting:接口获取中或获取失败
-		visible:功能在线，且有用户数据
-		none: 功能在线，该用户无数据
-		disvisible:功能下线
-		close: 已手动关闭弹窗 */
-    getYearStat() {
-      if (!visible) return;
-      api
-        .getApi("/qadn-activity/yearReport/getUserYearReportSwitch", {
-          uid: this.sessionData.uID,
-        })
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            let result = res.data.data;
-            if (result.status == 1 && result.mdKey) {
-              // 功能在线
-              this.showYearStat = "visible";
-              // 生成二维码
-              this.qrcodeGenerate(result.mdKey);
-            } else if (result.status == 1 && !result.mdKey) {
-              // 功能在线，但该用户没有数据
-              this.showYearStat = "none";
-            } else if (result.status == 0) {
-              // 功能下线
-              this.showYearStat = "disvisible";
-            }
-          } else {
-            this.showYearStat = "waiting";
-            this.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          this.showYearStat = "waiting";
-          console.log("err", err);
-        })
-        .finally((_) => {});
-    },
-    //生成二维码
-    qrcodeGenerate(yearStatMdKey) {
-      let qrcode = new QRCode("qrcode", {
-        width: 112, // 二维码宽度
-        height: 112, // 二维码高度
-        text: `${this.apiVar.qadnUrl}/yearStatPage?yearStatMdKey=${yearStatMdKey}`,
-        // src: '../../assets/images/bi.png'
-      });
-    },
   },
   beforeRouteEnter(to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用
@@ -1180,7 +1076,6 @@ export default {
   mounted() {
     this.getSession();
     this.getContributeBox();
-    this.getYearStat();
     this.getContribute();
     let nowDate = timeFormat.toDate(new Date(), "/");
     if (indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)) {

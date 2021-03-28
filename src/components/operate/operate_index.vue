@@ -33,7 +33,6 @@
                         </div>
                     </div>
                     <div class="panel_bottom">
-                        <!--<p><router-link :to="{path:'admin/createPlan'}">创建方案</router-link></p>-->
                     </div>
                 </li>
                 <li>

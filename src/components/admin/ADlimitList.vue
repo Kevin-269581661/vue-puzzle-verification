@@ -188,18 +188,17 @@ export default {
                 return;
             }
             if (!rows.nID) {
-                // 新增广告限制
-                // uid     int【必填】     UserID
-                // nt      String          限制行业名称
-                // nd      String          限制理由或描述
-                // console.log("addRows", rows);
-                // let info = {};
-                // info.uid = JSON.parse(
-                //     sessionStorage.getItem("session_data")
-                // ).uID;
-                // info.nt = rows.typeUpdate;
-                // info.nd = rows.detailUpdate;
-                // console.log("addinfo", info);
+                /* 新增广告限制
+                uid     int【必填】     UserID
+                nt      String          限制行业名称
+                nd      String          限制理由或描述
+                console.log("addRows", rows);
+                let info = {};
+                info.uid = JSON.parse(
+                    sessionStorage.getItem("session_data")
+                ).uID;
+                info.nt = rows.typeUpdate;
+                info.nd = rows.detailUpdate; */
 
                 let info ={
                     uid: this.session_data.uID,

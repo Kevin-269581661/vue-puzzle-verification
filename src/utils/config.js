@@ -37,6 +37,8 @@ const apiVar = {
     CreateAdBackUp:'/addsp/proposal/createAdBackUp',
     //清空草稿箱
     CleanAdBackUp:"/addsp/proposal/cleanAdBackUp",
+    //获取草稿箱
+    GetAGdBackUp:"/addsp/proposal/getAdBackUp",
     //传见方案接口
     CreatePlan:"/addsp/proposal/create",
     Advertisement: '/advertisement',

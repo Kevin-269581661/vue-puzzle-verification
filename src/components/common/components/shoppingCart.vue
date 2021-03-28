@@ -352,109 +352,11 @@ export default {
     // 购物车行被点击
     shopRowClick(row, event, column) {
       console.log("购物车行被点击row", row, column);
-      // if (row.lState !== undefined && row.lState.length > 0) {
-      //   let dataArr = row.lState;
-      //   console.log("row.asID", row.asID);
-      //   let arr = [];
-      //   for (let key of dataArr) {
-      //     let star = timeFormat.toDate(key.lStar, "/");
-      //     let end = timeFormat.toDate(key.lEnd, "/");
-      //     arr.push({
-      //       beOccupieApName: key.apName,
-      //       schedule: star + "-" + end,
-      //       lState: key.lState,
-      //     });
-      //   }
-      //   // this.beOccupiedAdsData = arr;
-      //   this.$emit("update:beOccupiedAdsData", arr);
-      //   console.log("this.beOccupiedAdsData", this.beOccupiedAdsData);
-      //   if (!this.shopDelRowClick) {
-      //     this.beOccupiedDialogVisible = true;
-      //   } else {
-      //     this.shopDelRowClick = false;
-      //   }
-      // } else if (
-      //   row.connData.connectResName !== "" ||
-      //   row.connData.commentWorkRes !== "" ||
-      //   row.connData.connectMedia !== ""
-      // ) {
-      //   // this.ActiveConnectADList = row.connData;
-      //   this.$emit("update:ActiveConnectADList", row.connData);
-      //   // this.connectAdDialogVisible = true;
-      //   this.$emit("update:connectAdDialogVisible", true);
-      // }
     },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
       this.$emit("getMapADList");
-
-      // if (this.ActiveMapType === 1) {
-      //   // 无忧地图
-      //   this.getMapLoading = this.$loading({
-      //     lock: true,
-      //     text: "数据获取中...",
-      //     spinner: "el-icon-loading",
-      //     background: "rgba(0, 0, 0, 0.7)",
-      //   });
-      //   this.$emit("update:mapBtn", true);
-      //   api
-      //     .getApi(this.apiVar.Map + "/SendMap", {
-      //       uid: this.sessionData.uID,
-      //       token: this.sessionData.token,
-      //     })
-      //     .then((res) => {
-      //       console.log("地图选点", res);
-      //       if (res.data.code == "500200") {
-      //         this.mapADList = res.data.data;
-      //         if (this.mapADList.length > 0) {
-      //           this.setShopDataByMapAD();
-      //         } else {
-      //           sessFun.messageFun("warning", "数据为空");
-      //           this.getMapLoading.close();
-      //         }
-      //       } else {
-      //         this.getMapLoading.close();
-      //         sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
-      //       }
-      //     });
-      // } else {
-      //   // 亲邻地图
-      //   this.getMapLoading = this.$loading({
-      //     lock: true,
-      //     text: "数据获取中...",
-      //     spinner: "el-icon-loading",
-      //     background: "rgba(0, 0, 0, 0.7)",
-      //   });
-      //   // let params = {
-      //   //     code: localStorage.getItem(`qinlinMapCode`)
-      //   // };
-      //   // if(params.code) {adsListByUid
-      //   //     api.getApi(this.apiVar.mapApi + '/adsListByCode',params).then(res=>{
-      //   api
-      //     .getApi(this.apiVar.mapApi + "/adsListByUid", {
-      //       asrIDs: this.planForm.pointOfAsrIDs.join(","),
-      //       suID: this.BDData.uid,
-      //     })
-      //     .then((res) => {
-      //       if (res.data.SysCode === 200200) {
-      //         this.mapAdsList = res.data.data;
-      //         this.setMapAdsListInShopCar();
-      //         localStorage.removeItem("qinlinMapCode");
-      //       } else {
-      //         this.getMapLoading.close();
-      //         sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       this.getMapLoading.close();
-      //       sessFun.messageFun("warning", "数据接口异常");
-      //     });
-      //   // } else {
-      //   //     this.getMapLoading.close();
-      //   //     sessFun.messageFun('warning','请在地图选择社区并提交')
-      //   // }
-      // }
     },
     // 自定义购物车表头-清空
     renderHeader(h, { column }) {

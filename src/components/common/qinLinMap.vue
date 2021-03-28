@@ -3957,6 +3957,7 @@ export default {
         suID: this.adListParams.suID,
         asrIDs: this.adListParams.asrIDs.join(","),
         resIDList: arr,
+        mVehicle:this.adListParams.mVehicle
       };
       if (this.selectExcludeType) {
         switch (this.selectExcludeType) {
@@ -3980,7 +3981,6 @@ export default {
         params.playSecond = this.adListParams.playSecond;
         params.playCount = this.adListParams.playCount;
       }
-      debugger;
       this.pullPoints = true;
       let url = "/adsList";
       if ("planAdsCnt" in this.adListParams) {

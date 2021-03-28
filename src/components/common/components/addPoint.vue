@@ -63,7 +63,7 @@
                 <el-checkbox
                   class="combination"
                   name="type"
-                >A面占比</el-checkbox>
+                >A面占比(%)</el-checkbox>
                 <el-input-number v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
               </div>
             </el-form-item>
@@ -720,6 +720,7 @@ export default {
               item.adLimit = item.notPush
               item.mapCenter = ''     // 地图中心点名称
               item.reference = ''
+              item.rid = item.cityCode
               item.address = item.address || ''
               item.dNum = item.dNum || ''             // 出入口数
               item.houseNum = item.hNum

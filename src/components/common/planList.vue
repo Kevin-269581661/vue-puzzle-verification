@@ -1051,12 +1051,14 @@
             },
             // 跳转到详情页面
             ToDetail(row) {
-                console.log(row.apID);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
                 if(row.lState == -1) {
                     // 未配点意向方案详情
                     this.$router.push("./planEmptyPointDetail");
+                } else if(row.planMode == 1) {
+                    // 已配点意向方案
+                    this.$router.push("./planDetail");
                 } else {
                     this.$router.push("./planDetail");
                 }
@@ -1430,6 +1432,7 @@
                     apID: item.apID,
                     apName: item.apName || '',
                     apState: item.apState || '',
+                    planMode: item.planMode || 0,
                     apTotal: item.apTotal || '',
                     apcTime: item.apcTime || '',
                     bTitle: item.bTitle || '--',

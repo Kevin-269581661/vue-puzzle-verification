@@ -30,7 +30,7 @@
             <li class="info-item">
               <span class="item-label">客户预算：</span>
               <span class="item-content">
-                {{ intentionInfo.customerBudget | moneyFormat("¥") }}
+                {{ (intentionInfo.customerBudget/100) | moneyFormat("¥") }}
               </span>
             </li>
             <li class="info-item">
@@ -61,9 +61,10 @@
               </el-checkbox-group>
               <div>
                 <el-checkbox
+                  v-model="formDataObj.aFaceRateChecked"
                   class="combination"
                   name="type"
-                >A面占比</el-checkbox>
+                >A面占比(%)</el-checkbox>
                 <el-input-number v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
               </div>
             </el-form-item>
@@ -139,7 +140,7 @@
             </template>
           </span>
         </h4>
-        <span class="tip-active right">下载</span>
+        <span class="tip-active right" @click="export2Excel">下载</span>
       </div>
       <template slot="dialogFooter" class="dialog-footer">
         <el-button @click="showDialogTable=false"
@@ -163,7 +164,7 @@
           }}</span>
           <span class="active comment-item" @click="getIntentionList">查看</span>
           计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}</span
-          >个 客户预算：<span class="comment-item">{{ tipObj.customerBudget }}</span>
+          >个 客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
           客户要求：<span class="comment-item">{{ tipObj.customerDemand }}</span>
         </span>
         <div class="table-top-tip">
@@ -199,7 +200,7 @@
             >失败小区</span
           >
           <div class="divide-border"></div>
-          <span class="tip-active">下载结果</span>
+          <span class="tip-active" @click="downLoadMatchResult">下载结果</span>
         </div>
       </div>
       <template slot="aheadColumn">
@@ -393,7 +394,8 @@ export default {
       },
       formDataObj: {
         pointDemand: [],
-        aFaceRate: null,
+        aFaceRate: 50,
+        aFaceRateChecked: false,
         apExclude: "",
         adLimits: []
       },
@@ -542,6 +544,7 @@ export default {
           label: "近3月上刊率",
           prop: "publishRate",
           width: "160px",
+          value: (row)=>`${(row.publishRate||0)*100}`
         },
       ],
     };
@@ -617,19 +620,21 @@ export default {
     // 配点
     matchRes() {
       let params = {}
+      if(this.formDataObj.aFaceRateChecked) {
+        params.aFaceRate = this.formDataObj.aFaceRate||0
+      }
       this.formDataObj.pointDemand.forEach(item => {
         params[item] = true
       });
-      console.log('formDataObj', this.formDataObj)
       new Promise((resolve, reject)=>{
         api.postApi_json("/addsp/match/matchRes", {
+          ...params,
           "apID": this.apID,
           "isSingleMediaChoose": params.isSingleMediaChoose||false,
           "apExclude": this.formDataObj.apExclude,
           "adLimits": this.formDataObj.adLimits,
           "isSingleConnectChoose": params.isSingleConnectChoose||false,
-          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false,
-          "aFaceRate": this.formDataObj.aFaceRate||0
+          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
@@ -640,7 +645,6 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
-        console.log('matchRes', matchRes)
         this.$confirm(`计划投放<span style='color: #1890ff'>${matchRes.planAdSpaceCount}</span>个点位，成功<span style='color: #1890ff'>${matchRes.faceCount}</span>个，失败<span style='color: rgba(250, 173, 20, 1)'>${matchRes.planAdSpaceCount-matchRes.faceCount}</span>个`,
           "恭喜您，配点成功！", {
           confirmButtonText: "查看详情",
@@ -720,6 +724,7 @@ export default {
               item.adLimit = item.notPush
               item.mapCenter = ''     // 地图中心点名称
               item.reference = ''
+              item.rid = item.cityCode
               item.address = item.address || ''
               item.dNum = item.dNum || ''             // 出入口数
               item.houseNum = item.hNum
@@ -761,7 +766,50 @@ export default {
           console.log(err);
         })
     },
-    
+    // 下载配点结果（成功和失败）
+    downLoadMatchResult() {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      api.getApi_file("/addsp/match/export?apID="+this.apID).then(res=>{
+          let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+          let downloadElement = document.createElement('a');
+          let href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download = decodeURIComponent(res.headers['content-disposition']).split('=')[1]; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+          loading.close()
+      })
+    },
+    // 下载意向小区
+    export2Excel() {
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
+        require.ensure([], () => {
+            const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+            const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
+            const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
+            const list = this.currentSetpoint;
+            const data = this.formatJson(filterVal, list);
+            export_json_to_excel(tHeader, this.intentionTableData, '意向小区');
+            loading.close()
+        })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v =>
+        filterVal.map(j => v[j])
+      );
+    },
     handleClose(done) {
       this.$emit('closeAddPoint')
       /* this.$confirm("确认关闭？")

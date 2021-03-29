@@ -1533,6 +1533,7 @@
         methods: {
             // 智能配点按钮
             matchPoint() {
+                this.dialogTableVisible = false
                 if(this.FAInfo.apState!==-1) {
                     // 方案已配点，显示上次配点结果
                     this.showMatchResult = true
@@ -3351,7 +3352,6 @@
                                 this.apMinTime = minTime
                             }
                         }
-                        console.log('i,key.city,key.asrID', i,key.city,key.asrID)
                         let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
                         console.log('pdid',pdid)
                         cityDetailList.push({
@@ -4957,6 +4957,10 @@
                         }
                         this.getAdList()    // 获取选点列表
                         this.getRejectPlanList()    // 获取排斥方案列表
+                        // 如果未配点，弹出配点弹框
+                        if(this.FAInfo.apState == -1) {
+                            this.matchPoint()
+                        }
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }
@@ -5149,8 +5153,10 @@
             },
             // 配点结果合并到购物车
             merge2ShopList(matchPoint) {
-                console.log('matchPoint', matchPoint, this.shopingList)
-                this.shopingList = this.shopingList.concat(matchPoint)
+                for(let i=matchPoint.length-1; i>=0; i--) {
+                    this.isHaveDiffPush(matchPoint[i])
+                }
+                // this.shopingList = this.shopingList.concat(matchPoint)
                 console.time('computeMedia_AD')
                 this.computeMedia_AD();
                 console.timeEnd('computeMedia_AD')

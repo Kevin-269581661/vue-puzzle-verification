@@ -342,6 +342,7 @@ export default {
                             apID: info.apID,
                             apName: info.apName,
                             apState: info.apState,
+                            planMode: info.planMode,
                             lockStatus: info.lockStatus,
                             apTotal: info.apTotal,
                             apcTime: dateFormat.toDateTime(info.apcTime, '/'),
@@ -547,7 +548,13 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
-                        this.$router.push("./editPlan");
+                        // 意向方案
+                        if(this.planDetail.planMode == 1) {
+                            this.$router.push("./editPlan");
+                        } else {
+                            // 非意向方案
+                            this.$router.push("./editPlanOld");
+                        }
                     }else{
                         this.changeRoute();
                     }

@@ -271,15 +271,16 @@
             title="发布方案"
             :visible.sync="publishPlanDialog"
             :close-on-click-modal="false"
-            custom-class="Import_dialog"
+            custom-class="publish_dialog"
             :show-close="false"
-            width="472px">
-            <el-form label-position="left">
+            width="368px">
+            <span class="comment">完善以下信息后提交，即可完成发布</span>
+            <el-form label-position="top">
                 <el-form-item label="合同编号" label-width="80px">
-                    <el-input v-model="this.QCinfo"></el-input>
+                    <el-input size="small" v-model="this.QCinfo"></el-input>
                 </el-form-item>
                 <el-form-item label="订单类型" label-width="80px">
-                    <el-select v-model="planType" placeholder="请选择活动区域">
+                    <el-select v-model="planType" size="small" placeholder="请选择活动区域">
                         <el-option label="常规" value="0"></el-option>
                         <el-option label="续刊" value="1"></el-option>
                         <el-option label="补刊" value="2"></el-option>
@@ -287,10 +288,11 @@
                         <el-option label="赠送" value="4"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
+                <el-form-item v-if="planType==1||planType==2" :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
                     <el-select
                         v-model="relatedApId"
-                        placeholder="请选择续刊的订单"
+                        size="small"
+                        :placeholder="`请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`"
                         filterable
                         :clearable="true"
                     >
@@ -551,7 +553,7 @@
                 // 导出中
                 isBroundImport: false,
                 publishPlanDialog: false,
-                planType: 0,
+                planType: '0',
                 relatedApId: null,
                 apList: []
             };
@@ -984,7 +986,15 @@
                 };
                 info.qc = contractNo;
                 info.planType = planType;
-                info.relatedApId = relatedApId;
+                if(planType==1||planType==2) {
+                    if(!relatedApId) {
+                        this.messageFun('warning', `请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`);
+                        this.Ctrlloading.close();
+                        return
+                    }
+                    info.relatedApId = relatedApId
+
+                }
                 api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
                     .then(res => {
                         console.log(res);
@@ -1051,12 +1061,14 @@
             },
             // 跳转到详情页面
             ToDetail(row) {
-                console.log(row.apID);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
                 if(row.apState == -1) {
                     // 未配点意向方案详情
                     this.$router.push("./planEmptyPointDetail");
+                } else if(row.planMode == 1) {
+                    // 已配点意向方案
+                    this.$router.push("./planDetail");
                 } else {
                     this.$router.push("./planDetail");
                 }
@@ -1066,7 +1078,13 @@
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
                 console.log('roweedit', row)
-                this.$router.push("./editPlan");
+                if(row.planMode == 1) {
+                    // 意向方案
+                    this.$router.push("./editPlan");
+                } else {
+                    // 非意向方案
+                    this.$router.push("./editPlanOld");
+                }
             },
             // 比较两个时间大小
             compareTime(arr, sField, eField) {
@@ -1228,24 +1246,35 @@
             },
             // KA方案拆分
             splitAdPlan(row) {
-                this.checkPoin(row).then(res=>{
-                    if(res === true) {
-                        let params = {
-                            apID: row.apID
+                if(row.planMode == 1) {
+                    // 意向方案
+                    api.postApi('/addsp/proposal/splitAdPlan', {apID: row.apID}).then(res => {
+                        console.log('方案拆分res', res)
+                        if (res.data.SysCode === 200200) {
+                            sessFun.messageFun('success', '拆分成功')
+                            this.searchFun()
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG || '方案异常')
                         }
-                        api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
-                            console.log('方案拆分res', res)
-                            if (res.data.SysCode === 200200) {
-                                sessFun.messageFun('success', '拆分成功')
-                                this.searchFun()
-                            } else {
-                                sessFun.messageFun('warning', res.data.MSG || '方案异常')
-                            }
-                        })
-                    }
-                }).catch(error=> {
+                    })
+                } else {
+                    this.checkPoin(row).then(res=>{
+                        if(res === true) {
+                            api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', {apID: row.apID}).then(res => {
+                                console.log('方案拆分res', res)
+                                if (res.data.SysCode === 200200) {
+                                    sessFun.messageFun('success', '拆分成功')
+                                    this.searchFun()
+                                } else {
+                                    sessFun.messageFun('warning', res.data.MSG || '方案异常')
+                                }
+                            })
+                            
+                        }
+                    }).catch(error=> {
 
-                })
+                    })
+                }
             },
             cancelLock() {
                 this.dialogVisible = false;
@@ -1430,6 +1459,7 @@
                     apID: item.apID,
                     apName: item.apName || '',
                     apState: item.apState || '',
+                    planMode: item.planMode || 0,
                     apTotal: item.apTotal || '',
                     apcTime: item.apcTime || '',
                     bTitle: item.bTitle || '--',
@@ -1679,7 +1709,7 @@
         }
     };
 </script>
-<style scoped>
+<style lang="scss" scoped>
     a {
         color: #108ee9;
     }
@@ -1974,7 +2004,31 @@
         cursor: pointer;
         color:rgba(102,102,102,1);
     }
+    /deep/ .publish_dialog {
+        .el-dialog__header {
+            padding: 16px 24px 6px;
+        }
+        .el-dialog__body {
+            padding: 0 24px 14px;
+            .comment {
+                display: block;
+                color: rgba(0, 0, 0, 0.45);
+                line-height: 24px;
+                margin-bottom: 16px;
+            }
+            .el-form-item {
+                margin-bottom: 12px;
+            }
+            .el-form-item__label {
+                padding-bottom: 4px;
+                line-height: 24px;
+            }
+            .el-input--small, .el-select--small {
+                width: 100%;
+            }
 
+        }
+    }
     /deep/ .Import_dialog .el-upload-list__item{
         width: 100%;
     }

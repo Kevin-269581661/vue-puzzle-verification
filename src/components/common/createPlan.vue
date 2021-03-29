@@ -4540,7 +4540,6 @@ export default {
     },
     // 选择投放城市
     handleInputConfirm() {
-      debugger;
       let inputValue = this.selectedOptions;
       console.log("inputValue: ", inputValue);
       // console.log('********',inputValue)
@@ -5387,6 +5386,7 @@ export default {
           suID: this.BDData.uid,
           asrIDs: this.planForm.pointOfAsrIDs,
           planAdsCnt: this.planAdsCnt ? this.planAdsCnt : 1,
+          mVehicle:this.mediaType
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;

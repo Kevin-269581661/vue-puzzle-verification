@@ -40,7 +40,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[1, 2, 50, 100, 300]"
+        :page-sizes="[10, 20, 50, 100, 300]"
         :page-size="currentPageSize"
         :pager-count="5"
         class="pagination"

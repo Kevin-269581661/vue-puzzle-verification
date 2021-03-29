@@ -398,6 +398,6 @@ function addRoutes(role, old) {
     }
     router.addRoutes(roleRoutes)
 }
-let uType = JSON.parse(sessionStorage.getItem("session_data")||'{}').uType
-uType && addRoutes(JSON.parse(sessionStorage.getItem("session_data")).uType)
+let session_data = JSON.parse(sessionStorage.getItem("session_data")||'{}')
+session_data.uType && addRoutes(session_data.uType, !['1', '2', '3', '4', '5', '6', '7'].includes(session_data.asrID))
 export {router, addRoutes}

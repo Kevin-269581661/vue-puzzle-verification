@@ -271,15 +271,16 @@
             title="发布方案"
             :visible.sync="publishPlanDialog"
             :close-on-click-modal="false"
-            custom-class="Import_dialog"
+            custom-class="publish_dialog"
             :show-close="false"
-            width="472px">
-            <el-form label-position="left">
+            width="368px">
+            <span class="comment">完善以下信息后提交，即可完成发布</span>
+            <el-form label-position="top">
                 <el-form-item label="合同编号" label-width="80px">
-                    <el-input v-model="this.QCinfo"></el-input>
+                    <el-input size="small" v-model="this.QCinfo"></el-input>
                 </el-form-item>
                 <el-form-item label="订单类型" label-width="80px">
-                    <el-select v-model="planType" placeholder="请选择活动区域">
+                    <el-select v-model="planType" size="small" placeholder="请选择活动区域">
                         <el-option label="常规" value="0"></el-option>
                         <el-option label="续刊" value="1"></el-option>
                         <el-option label="补刊" value="2"></el-option>
@@ -287,10 +288,11 @@
                         <el-option label="赠送" value="4"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
+                <el-form-item v-if="planType==1||planType==2" :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
                     <el-select
                         v-model="relatedApId"
-                        placeholder="请选择续刊的订单"
+                        size="small"
+                        :placeholder="`请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`"
                         filterable
                         :clearable="true"
                     >
@@ -984,7 +986,15 @@
                 };
                 info.qc = contractNo;
                 info.planType = planType;
-                info.relatedApId = relatedApId;
+                if(planType==1||planType==2) {
+                    if(!relatedApId) {
+                        this.messageFun('warning', `请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`);
+                        this.Ctrlloading.close();
+                        return
+                    }
+                    info.relatedApId = relatedApId
+
+                }
                 api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
                     .then(res => {
                         console.log(res);
@@ -1699,7 +1709,7 @@
         }
     };
 </script>
-<style scoped>
+<style lang="scss" scoped>
     a {
         color: #108ee9;
     }
@@ -1994,7 +2004,31 @@
         cursor: pointer;
         color:rgba(102,102,102,1);
     }
+    /deep/ .publish_dialog {
+        .el-dialog__header {
+            padding: 16px 24px 6px;
+        }
+        .el-dialog__body {
+            padding: 0 24px 14px;
+            .comment {
+                display: block;
+                color: rgba(0, 0, 0, 0.45);
+                line-height: 24px;
+                margin-bottom: 16px;
+            }
+            .el-form-item {
+                margin-bottom: 12px;
+            }
+            .el-form-item__label {
+                padding-bottom: 4px;
+                line-height: 24px;
+            }
+            .el-input--small, .el-select--small {
+                width: 100%;
+            }
 
+        }
+    }
     /deep/ .Import_dialog .el-upload-list__item{
         width: 100%;
     }

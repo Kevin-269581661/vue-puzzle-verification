@@ -1872,7 +1872,7 @@
                                 cityList.push(cityObj);
                             }
                             this.throwCity = cityList
-                            console.log('cityList', cityList)
+                            // console.log('cityList', cityList)
                             this.cityOptions = areaArr.province()
                         } else {
                             sessFun.messageFun('warning', '城市数据获取异常')

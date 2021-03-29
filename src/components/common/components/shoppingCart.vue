@@ -58,26 +58,29 @@
                     </div>
                   </el-form-item>
                   <el-form-item label="小区户数：">
-                    <span>{{ props.row.houseNum }}</span>
+                    <span>{{ props.row.hNum }}</span>
                   </el-form-item>
                   <el-form-item label="楼盘价格：">
-                    <span>&yen;{{ props.row.buildPrice }}</span>
+                    <span>&yen;{{ props.row.hPrice }}</span>
                   </el-form-item>
-                  <el-form-item label="资产编号：">
+                  <el-form-item label="楼栋数量：">
+                    <span>{{ props.row.fNum }}</span>
+                  </el-form-item>
+                  <!-- <el-form-item label="资产编号：">
                     <div class="shopList_adLimit" style="width: 80px">
                       <span>{{ props.row.assetTag }}</span>
                     </div>
-                  </el-form-item>
+                  </el-form-item> -->
                   <el-form-item label="入住年份：">
-                    <span>{{ props.row.liveYear }}</span>
+                    <span>{{ props.row.chDay }}</span>
                   </el-form-item>
                   <el-form-item label="广告限制：">
                     <div class="shopList_adLimit">
-                      <span>{{ props.row.adLimit }}</span>
+                      <span>{{ props.row.notPush }}</span>
                     </div>
                   </el-form-item>
                 </el-form>
-                <el-form
+                <!-- <el-form
                   v-if="customPermission.patrolPermission"
                   label-position="left"
                   inline
@@ -101,7 +104,7 @@
                       <span>{{ props.row.electrifyState }}</span>
                     </div>
                   </el-form-item>
-                </el-form>
+                </el-form> -->
               </template>
             </el-table-column>
             <el-table-column label="资源" min-width="60" prop="resName">
@@ -460,8 +463,13 @@ export default {
   font-size: 14px;
   font-weight: normal;
   margin: 0 6px;
-  cursor: pointer;
-  color: #1890ff;
+  color: rgba(0, 0, 0, 0.65);
+}
+.car-title span em{
+  font-size: 14px;
+  font-weight: normal;
+  margin: 0 6px;
+  color:rgba(24, 144, 255, 1)
 }
 .cart-pagination /deep/ .el-input__inner {
   width: 100%;

@@ -24,7 +24,7 @@
           <!-- TODO:更换小区模板EXCEL下载地址 -->
           <a
             :href="apiVar.qadnUrl + '/importTemplate/communityTemplate.xlsx'"
-            download="点位导入模板.xlsx"
+            download="意向小区导入模板.xlsx"
             class="downloag_btn"
             @click="dowmLoadFun"
             >点击下载<img
@@ -80,7 +80,7 @@
             >
             <span
               ><em class="orange">{{ errorSize }}</em
-              >个导入失败个</span
+              >个导入失败</span
             >
           </div>
           <div>
@@ -180,7 +180,7 @@
         <el-table-column
           prop="planAdsCnt"
           label="计划投放数量（面）"
-          min-width="6%"
+          min-width="8%"
         >
         </el-table-column>
         <el-table-column
@@ -453,13 +453,12 @@ export default {
         const {
           export_json_to_excel,
         } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = ["资源", "城市", "区域", "排期", "投放面", "失败原因"];
+        const tHeader = ["资源", "城市", "区域", "排期", "失败原因"];
         const filterVal = [
           "resName",
           "city",
           "district",
           "date",
-          "asLab",
           "failReason",
         ];
 

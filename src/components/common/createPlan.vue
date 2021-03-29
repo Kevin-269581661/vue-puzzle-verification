@@ -207,33 +207,6 @@
           <div>
             <div class="search-nav">
               <div class="search-wrap">
-                <!-- <div style="margin-right: 0" v-show="isOccupied">
-                  <el-select
-                    v-model="activeSelect"
-                    placeholder="请选择"
-                    class="type-select"
-                    size="small"
-                  >
-                    <el-option label="方案排斥" value="1"></el-option>
-                  </el-select>
-                  <el-select
-                    v-model="activeAdPlan"
-                    placeholder="请选择排斥方案"
-                    class="reject_select"
-                    @change="selectRejectPlan"
-                    filterable
-                    :clearable="true"
-                    size="small"
-                  >
-                    <el-option
-                      v-for="item in rejectAdPlan"
-                      :key="item.value"
-                      :label="item.label"
-                      v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt053_ck01' }"
-                      :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </div> -->
                 <div>
                   <el-input
                     placeholder="请输入要搜索的内容"
@@ -273,9 +246,9 @@
                 </div>
                 <div>
                   <el-input
-                    class="surfaceNumClass"
+                    class="planAdsCntClass"
                     placeholder="请输入内容"
-                    v-model="surfaceNum"
+                    v-model="planAdsCnt"
                   >
                     <template slot="prepend">投放面数</template>
                   </el-input>
@@ -410,7 +383,7 @@
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
-                  <el-select
+                  <!-- <el-select
                     v-model="mState"
                     placeholder="媒体状态"
                     class="otherSelect"
@@ -420,7 +393,7 @@
                   >
                     <el-option label="正常" value="1"></el-option>
                     <el-option label="待安装" value="2"></el-option>
-                  </el-select>
+                  </el-select> -->
                   <el-select
                     v-model="limitList"
                     placeholder="广告限制"
@@ -1246,7 +1219,7 @@
                   :show-overflow-tooltip="true"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.buildType || "--" }}</span>
+                    <span>{{ scope.row.cType || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="楼盘价格" align="right" min-width="110">
@@ -1277,17 +1250,17 @@
                 </el-table-column>
                 <el-table-column label="人流量" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.peopleFlow || "--" }}
+                    {{ scope.row.peopleFlow  }}
                   </template>
                 </el-table-column>
                 <el-table-column label="车位数" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.parkSpaceNum || "--" }}
+                    {{ scope.row.parkSpaceNum  }}
                   </template>
                 </el-table-column>
                 <el-table-column label="车流量" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.carFlow || "--" }}
+                    {{ scope.row.carFlow  }}
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -1687,19 +1660,19 @@
                 <li><em>所属品牌：</em>{{ cBand || "--" }}</li>
                 <!-- <li class="money">
                   <em>订单金额：</em>¥{{ priceFormat(totalPrice) }}
-                </li>
+                </li> -->
                 <li style="overflow: hidden; text-overflow: ellipsis">
-                  <em>协同选点：</em><span id="shareUrl">{{ shareADUrl }}</span>
+                  <!-- <em>协同选点：</em><span id="shareUrl">{{ shareADUrl }}</span>
                   <el-button plain @click="copyUrl" class="urlBtn"
                     >复制</el-button
-                  >
+                  > -->
                   <el-button
                     @click="downLoadFanan()"
                     type="success"
                     class="urlBtn"
                     >导出方案</el-button
                   >
-                </li> -->
+                </li>
               </ul>
             </div>
           </div>
@@ -2333,7 +2306,7 @@ export default {
       importDraftsType: "",
       importDraftsConfig: {},
       //搜索旁投放面数
-      surfaceNum: "",
+      planAdsCnt: "",
       isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
@@ -4352,21 +4325,24 @@ export default {
     downLoadFanan() {
       let arr = this.excelData(this.shopingList);
       let allHead = [
-        "资源名称",
-        "市",
-        "区",
-        "商圈",
-        "资源地址",
-        "楼盘价格",
-        "入住年份",
-        "住户数量",
-        "出入口",
-        "楼栋数量",
-        "楼盘（写字楼）类型",
-        "地图中心点",
-        "可选面数",
-        "投放排期",
-      ];
+          "省份",
+          "城市",
+          "区域",
+          "资源名称",
+          "商圈",
+          "地址",
+          "媒介载体",
+          "楼栋数量",
+          "住户数量",
+          "楼盘价格",
+          "楼盘类型",
+          "入住年份",
+          "车位数",
+          "车流量",
+          "人流量",
+          "广告限制",
+          "计划投放数量(面)",
+        ];
       let head = [
         "在线协同选点链接(可地图查看社区)  " + this.shareADUrl,
         "",
@@ -5193,7 +5169,7 @@ export default {
     //step2搜索按钮
     searchFun() {
       this.searchBtnAbled = true;
-      console.log("this.surfaceNum: ", this.surfaceNum);
+      console.log("this.planAdsCnt: ", this.planAdsCnt);
       console.log("搜索排期时间", this.dateInput);
       console.log("this.searchInput: ", this.searchInput);
       this.areaName = "全市";
@@ -5391,16 +5367,16 @@ export default {
     setMapParams() {
       localStorage.removeItem("qinlinMapCode");
       this.ActiveMapType = 2;
-      console.log("this.surfaceNum: ", this.surfaceNum);
+      console.log("this.planAdsCnt: ", this.planAdsCnt);
       this.mapParams = {
         rid: this.activeCityData.rid,
         city: this.activeCityData.rName,
         ls: this.dateInput[0],
         le: this.dateInput[1],
-        planAdsCnt: this.surfaceNum,
+        planAdsCnt: this.planAdsCnt,
         mVehicle: this.mediaType,
       };
-      console.log("this.surfaceNum: ", this.surfaceNum);
+      console.log("this.planAdsCnt: ", this.planAdsCnt);
       localStorage.setItem(
         "mapParams",
         JSON.stringify({
@@ -5410,7 +5386,7 @@ export default {
           adSystemId: [this.industryID],
           suID: this.BDData.uid,
           asrIDs: this.planForm.pointOfAsrIDs,
-          planAdsCnt: this.surfaceNum ? this.surfaceNum : 1,
+          planAdsCnt: this.planAdsCnt ? this.planAdsCnt : 1,
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;
@@ -5881,7 +5857,8 @@ export default {
     },
     // 车位数过滤
     tableHeaderFilterByParkSpaceNum() {
-      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]) {
+      debugger
+      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]== "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
         let tagName =
@@ -6346,8 +6323,10 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
+            sessFun.messageFun("ssuccess", `成功加入${this.mapAdsList.length - this.shopingList.length}个小区`);
             this.setMapAdsListInShopCar();
             // localStorage.removeItem("qinlinMapCode");
+            this.mapBtn = true
           } else {
             this.getMapLoading.close();
             sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
@@ -9548,7 +9527,7 @@ export default {
   transform: translateX(-40px);
   border-left: 1px solid #d9d9d9;
 }
-.surfaceNumClass {
+.planAdsCntClass {
   width: 20px !important;
 }
 </style>

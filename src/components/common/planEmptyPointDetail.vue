@@ -59,7 +59,52 @@
             </div>
           </div>
           <div>
-            <detail :detail="planDetail" v-if="isShow"></detail>
+            <detail :detail="planDetail" v-if="isShow" ref="detailRef">
+              <div class="plan-detail">
+                <div class="plan-detail-left">
+                    <ul>
+                        <li>
+                            <span>公司名称：</span>
+                            <em>{{planDetail.cName}}</em>
+                        </li>
+                         <li>
+                            <span>公司品牌：</span>
+                            <em>{{planDetail.bTitle || '--'}}</em>
+                        </li>
+                        <li>
+                            <span>联系人：</span>
+                            <em>{{planDetail.cuName}}</em>
+                        </li>
+                        <li>
+                            <span>投放城市：</span>
+                            <em>{{filter(planDetail.rIDs)}}</em>
+                        </li>
+                        <li>
+                            <span>意向小区总数</span>
+                            <em>{{planDetail.proposalResCnt}}</em>
+                        </li>
+                        <li>
+                            <span>计划投放面数</span>
+                            <em>{{planDetail.planPdNum}}</em>
+                        </li>
+                        <li>
+                            <span>所属销售：</span>
+                            <em>{{planDetail.realName}}</em>
+                        </li>
+                    </ul>
+                </div>
+                <div class="plan-detail-right">
+                    <dl>
+                        <dt></dt>
+                        <dd></dd>
+                    </dl>
+                    <dl>
+                        <dt>状态</dt>
+                        <dd>{{stateToText(planDetail.apState)}}</dd>
+                    </dl>
+                </div>
+            </div>
+            </detail>
           </div>
         </div>
       </div>
@@ -90,12 +135,18 @@
                         <el-form-item label="商圈：">
                           <span>{{ props.row.tradingArea }}</span>
                         </el-form-item>
+                        <el-form-item label="小区户数">
+                          <span>{{ props.row.hNum }}</span>
+                        </el-form-item>
+                        <el-form-item label="楼盘价格：">
+                          <span>{{ props.row.hPrice }}</span>
+                        </el-form-item>
                         <el-form-item label="楼栋数量：">
                           <span>{{ props.row.fNum }}</span>
                         </el-form-item>
-                        <el-form-item label="资产编号：">
+                        <!-- <el-form-item label="资产编号：">
                           <span>{{ props.row.assetTag }}</span>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="入住年份：">
                           <span>{{ props.row.chDay }}</span>
                         </el-form-item>
@@ -114,7 +165,7 @@
                           }}</span>
                         </el-form-item>
                       </el-form>
-                      <el-form
+                      <!-- <el-form
                         v-if="customPermission.patrolPermission"
                         label-position="left"
                         inline
@@ -138,20 +189,15 @@
                             props.row.electrifyState
                           }}</span>
                         </el-form-item>
-                      </el-form>
+                      </el-form> -->
                     </template>
                   </el-table-column>
-
                   <el-table-column
                     label="资源名称"
                     min-width="8%"
                     prop="resName"
                   >
                   </el-table-column>
-                  <!-- <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
-                                    </el-table-column>
-                                    <el-table-column prop="asLab" label="投放面" min-width="8.8%">
-                                    </el-table-column> -->
                   <el-table-column
                     prop="cityName"
                     label="城市"
@@ -191,20 +237,6 @@
                       >
                     </template>
                   </el-table-column>
-                  <!-- <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
-                                        <template slot-scope="scope">
-                                            <template v-if="scope.row.lState==2">
-                                                <span>{{scope.row.finishTimeRange}}</span>
-                                                <el-tooltip placement="top">
-                                                    <div slot="content">
-                                                        <span>{{scope.row.timeRange}}</span>
-                                                    </div>
-                                                    <i class="el-icon-question"> </i>
-                                                </el-tooltip>
-                                            </template>
-                                            <span v-else>{{scope.row.timeRange}}</span>
-                                        </template>
-                                    </el-table-column> -->
                   <el-table-column
                     prop="actualMediaCnt"
                     label="媒体数量（门）"
@@ -216,6 +248,20 @@
                     label="计划投放数量（门）"
                     min-width="7.4%"
                   >
+                  </el-table-column>
+                  <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                    <template slot-scope="scope">
+                        <template v-if="scope.row.lState==2">
+                            <span>{{scope.row.finishTimeRange}}</span>
+                            <el-tooltip placement="top">
+                                <div slot="content">
+                                    <span>{{scope.row.timeRange}}</span>
+                                </div>
+                                <i class="el-icon-question"> </i>
+                            </el-tooltip>
+                        </template>
+                        <span v-else>{{scope.row.timeRange}}</span>
+                    </template>
                   </el-table-column>
                 </el-table>
                 <el-pagination
@@ -362,6 +408,35 @@ export default {
     },
   },
   methods: {
+    filter(val) {
+            let res = "";
+            if (val) {
+                for (let data of val.split(",")) {
+                    if (!res.includes(data)) {
+                        res = data + "," + res;
+                    }
+                }
+                console.log(res);
+                res = res.toString().substring(0, res.toString().length - 1);
+            }
+            return res;
+        },
+        // 状态转换成文本
+        stateToText(val) {
+            let state = [
+                { text: "未配点", state: -1 },
+                { text: "已完成", state: 0 },
+                { text: "进行中", state: 1 },
+                { text: "未投放", state: 2 },
+                { text: "投放中", state: 3 },
+                { text: "强制结束", state: 5 }
+            ];
+            for (let data of state) {
+                if (val == data.state) {
+                    return data.text;
+                }
+            }
+        },
     handleSizeChange(val) {
       this.pageSize = val;
     },
@@ -377,31 +452,9 @@ export default {
       let resultArr = [];
       for (let data of this.setpointArr) {
         let obj = {
-          resName: data.resName,
-          city: data.city,
-          rName: data.rName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          assetTag: data.assetTag,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
+          ...data,
           hNum: data.hNum == "0" ? "#" : data.hNum,
           fNum: data.fNum == "0" ? "#" : data.fNum,
-          chDay: data.chDay,
-          adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
-          adViewSize:
-            data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState || "",
-          electrifyState: data.electrifyState || "",
-          asName: data.asName,
         };
         resultArr.push(obj);
       }
@@ -410,49 +463,87 @@ export default {
           export_json_to_excel,
         } = require("../../vendorExcel/Export2Excel");
         const tHeader = [
-          "资源名称",
-          "市",
+          "省份",
+          "城市",
           "区域",
-          "媒介载体",
-          "媒体名称",
-          "资产编号",
-          "投放面",
-          "投放日期",
-          "终止日期",
+          "资源名称",
           "商圈",
-          "楼盘类型/写字楼类型",
-          "楼盘价格",
-          "住户数量/办公室数量",
+          "地址",
+          "媒介载体",
           "楼栋数量",
-          "入住年份/建成年份",
-          "广告尺寸",
-          "可视画面",
+          "住户数量",
+          "楼盘价格",
+          "楼盘类型",
+          "入住年份",
+          "车位数",
+          "车流量",
+          "人流量",
           "广告限制",
-          "媒体备注",
-          "详细地址",
+          "计划投放数量(面)",
         ];
         const filterVal = [
+          "cityName", //省份
+          "cityName",
+          "districtName",
           "resName",
-          "city",
-          "rName",
-          "mVehicle",
-          "mTitle",
-          "assetTag",
-          "asLab",
-          "timeRange",
-          "finishTimeRange",
-          "tradingArea",
-          "cType",
+          "tradingArea", 
+          "tradingArea",    // 地址
+          "tradingArea",  //媒介载体
+          "fNum",    //楼栋数量
+          "hNum", 
           "hPrice",
-          "hNum",
-          "fNum",
+          "cType",
           "chDay",
-          "adSize",
-          "adViewSize",
-          "notPush",
-          "mRemark",
-          "resAddress",
+          "parkSpaceNum", //车位数
+          "carFlow", //车流量
+          "peopleFlow",    //人流量
+          "notPush", //广告限制
+          "planAdsCnt",
         ];
+        // const tHeader = [
+        //   "资源名称",
+        //   "市",
+        //   "区域",
+        //   "媒介载体",
+        //   "媒体名称",
+        //   "资产编号",
+        //   "投放面",
+        //   "投放日期",
+        //   "终止日期",
+        //   "商圈",
+        //   "楼盘类型/写字楼类型",
+        //   "楼盘价格",
+        //   "住户数量/办公室数量",
+        //   "楼栋数量",
+        //   "入住年份/建成年份",
+        //   "广告尺寸",
+        //   "可视画面",
+        //   "广告限制",
+        //   "媒体备注",
+        //   "详细地址",
+        // ];
+        // const filterVal = [
+        //   "resName",
+        //   "city",
+        //   "rName",
+        //   "mVehicle",
+        //   "mTitle",
+        //   "assetTag",
+        //   "asLab",
+        //   "timeRange",
+        //   "finishTimeRange",
+        //   "tradingArea",
+        //   "cType",
+        //   "hPrice",
+        //   "hNum",
+        //   "fNum",
+        //   "chDay",
+        //   "adSize",
+        //   "adViewSize",
+        //   "notPush",
+        //   "mRemark",
+        //   "resAddress",
+        // ];
         if (
           (this.sessionData.uType == "MD" &&
             this.sessionData.mediaManageLevel == 1) ||
@@ -510,22 +601,52 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let info = res.data.data;
+            // this.planDetail = {
+            //   adcID: info.adcID,
+            //   apID: info.apID,
+            //   apName: info.apName,
+            //   apState: info.apState,
+            //   lockStatus: info.lockStatus,
+            //   apTotal: info.apTotal,
+            //   apcTime: dateFormat.toDateTime(info.apcTime, "/"),
+            //   bTitle: info.bTitle,
+            //   cName: info.cName,
+            //   cuName: info.cuName,
+            //   pdEnd: info.pdEnd,
+            //   pdStar: info.pdStar,
+            //   rID: info.rID,
+            //   rIDs: info.rIDs,
+            //   realName: info.realName,
+            //   pdTotal: this.priceFormat(
+            //     (info.apTotal - info.adOtherFee - info.adSendFee) / 100
+            //   ),
+            //   pdSendFee: this.priceFormat(info.adSendFee / 100),
+            //   pdOtherFee: this.priceFormat(info.adOtherFee / 100),
+            //   Total: this.priceFormat(info.apTotal / 100),
+            //   AdDoor: {
+            //     pdTotal: this.priceFormat(
+            //       (info.AdDoor.pdTotal -
+            //         info.AdDoor.adOtherFee -
+            //         info.AdDoor.adSendFee) /
+            //         100
+            //     ),
+            //     pdSendFee: this.priceFormat(info.AdDoor.adSendFee / 100),
+            //     pdOtherFee: this.priceFormat(info.AdDoor.adOtherFee / 100),
+            //   },
+            //   barrier: {
+            //     pdTotal: this.priceFormat(
+            //       (info.barrier.pdTotal -
+            //         info.barrier.adOtherFee -
+            //         info.barrier.adSendFee) /
+            //         100
+            //     ),
+            //     pdSendFee: this.priceFormat(info.barrier.adSendFee / 100),
+            //     pdOtherFee: this.priceFormat(info.barrier.adOtherFee / 100),
+            //   },
+            // };
             this.planDetail = {
-              adcID: info.adcID,
-              apID: info.apID,
-              apName: info.apName,
-              apState: info.apState,
-              lockStatus: info.lockStatus,
-              apTotal: info.apTotal,
+              ...info,
               apcTime: dateFormat.toDateTime(info.apcTime, "/"),
-              bTitle: info.bTitle,
-              cName: info.cName,
-              cuName: info.cuName,
-              pdEnd: info.pdEnd,
-              pdStar: info.pdStar,
-              rID: info.rID,
-              rIDs: info.rIDs,
-              realName: info.realName,
               pdTotal: this.priceFormat(
                 (info.apTotal - info.adOtherFee - info.adSendFee) / 100
               ),
@@ -599,19 +720,49 @@ export default {
         console.log("获取详情页面小区数据", res);
         if (res.data.SysCode === 200200) {
           this.loading = false;
-          this.setpointArr = res.data.data;
-          // if(res.data.data.length){
-          // this.clearDrafts()
-          // this.handleImportDrafts(1,res.data.data)
-          // this.shoping=res.data.data
-          // }
-          this.$nextTick(function () {
-            this.isShow = true;
+          let resInfo = res.data.data
+           for (let data of resInfo) {
+              let time = "";
+              if (this.planDetail.apState == 1) {
+                time =
+                  this.formatTime(data.pbStar) +
+                  "-" +
+                  this.formatTime(data.pbEnd);
+              } else {
+                time =
+                  this.formatTime(data.lStar) +
+                  "-" +
+                  this.formatTime(data.lEnd);
+              }
+              data.timeRange = time;
+              let finishTimeRange = "";
+              if (data.lState == 2) {
+                finishTimeRange =
+                  this.formatTime(data.lStar) +
+                  "-" +
+                  this.formatTime(data.lSetTime);
+              }
+              data.finishTimeRange = finishTimeRange;
+            }
+            // 城市筛选过滤
+            this.filterCityData = filterFormat(resInfo, "districtName");
+            this.filtersArea = filterFormat(resInfo, "districtName");
+            this.filtersData = filterFormat(resInfo, "timeRange");
+            // 选点排期
+            // this.copyAsidArr = JSON.parse(JSON.stringify(resInfo));
+            this.setpointArr = resInfo;
+
+          // this.setpointArr = res.data.data;
+            this.$nextTick(function () {
+              this.isShow = true;
           });
         } else {
           sessFun.messageFun("warning", "获取失败");
         }
-      });
+      }).catch((res) => {
+          this.loading = false;
+          console.log(res);
+        });
     },
     // 请求数据整合
     funcToInit(apiUrl, info, state) {

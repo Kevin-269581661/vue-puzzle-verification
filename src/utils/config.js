@@ -31,6 +31,8 @@ const apiVar = {
     QKuyun: '/QinlinKuyun-API',
     UCAPI: '/UCAPI',
     Media: '/mediaService/media',
+    //qadn2.0前缀
+    AddspProposal:'/addsp/proposal',
     //qadn2.0获取小区列表
     ResList:'/addsp/proposal/getResList',
     //将方案加入草稿箱

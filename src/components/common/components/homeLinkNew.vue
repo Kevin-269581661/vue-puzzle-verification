@@ -37,11 +37,10 @@
                         </el-option>
                     </el-select>
                 </li>
-<!--                <li>-->
-<!--                    <span>地图类型：</span>-->
-<!--                    <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>-->
-<!--                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>-->
-<!--                </li>-->
+                <li>
+                    <span>投放面数：</span>
+                    <el-input-number class="custom-num" v-model="planAdsCnt" :controls="false" :min="1" :max="1000"></el-input-number>
+                </li>
             </ul>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mapDialogVisible = false">取 消</el-button>
@@ -102,6 +101,7 @@
                     },
                 },
                 dateInput: '',      // 选择的时间区间
+                planAdsCnt: 1,      // 投放面数
                 citySelectLoading: true,   // 城市下拉选项loading
                 // 确认销售地图选点是否已提交
                 confirmVisible: false,
@@ -245,7 +245,8 @@
                         ls: this.dateInput[0],
                         le: this.dateInput[1],
                         suID: this.sessionData.uID,
-                        asrIDs: this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID]
+                        asrIDs: this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID],
+                        planAdsCnt: this.planAdsCnt || 1
                     }));
                 } else if (this.sessionData.uType === 'SM') {
                     url = url + '&flag=' + false
@@ -256,7 +257,8 @@
                         le: this.dateInput[1],
                         suID: this.sessionData.uID,
                         // ascType: 是否平台商
-                        asrIDs: this.sessionData.ascType==0?[]:[this.sessionData.asrID]
+                        asrIDs: this.sessionData.ascType==0?[]:[this.sessionData.asrID],
+                        planAdsCnt: this.planAdsCnt || 1
                     }));
                 }
                 this.mapDialogVisible = false;
@@ -367,5 +369,11 @@
     }
     .map_ul li{
         margin-bottom: 16px;
+        .custom-num {
+            width: calc(100% - 84px);
+            /deep/ .el-input__inner {
+                text-align: left;
+            }
+        }
     }
 </style>

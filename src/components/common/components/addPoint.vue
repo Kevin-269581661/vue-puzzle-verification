@@ -795,15 +795,15 @@ export default {
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         })
-        require.ensure([], () => {
-            const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-            const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
-            const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
-            const list = this.currentSetpoint;
-            const data = this.formatJson(filterVal, list);
-            export_json_to_excel(tHeader, this.intentionTableData, '意向小区');
-            loading.close()
-        })
+        // require.ensure([], () => {
+        //     const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+        //     const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
+        //     const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
+        //     const list = this.currentSetpoint;
+        //     const data = this.formatJson(filterVal, list);
+        //     export_json_to_excel(tHeader, this.intentionTableData, '意向小区');
+        //     loading.close()
+        // })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>

@@ -80,14 +80,14 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="联系人：" prop="ownerBU">
+              <el-form-item label="联系人：" prop="adcID">
                 <el-select
-                  v-model="planForm.ownerBU"
+                  v-model="planForm.adcID"
                   placeholder="请选择所属联系人"
                   filterable
                 >
                   <el-option
-                    v-for="item in ownerBU"
+                    v-for="item in adcID"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -175,11 +175,11 @@
               <el-form-item
                 v-if="isBD"
                 label="客户预算："
-                prop="clientBudget"
-                ref="clientBudgetRef"
+                prop="customerBudget"
+                ref="customerBudgetRef"
               >
                 <el-input
-                  v-model="planForm.clientBudget"
+                  v-model="planForm.customerBudget"
                   placeholder="请输入预算金额"
                 >
                 </el-input>
@@ -188,11 +188,11 @@
               <el-form-item
                 v-if="isBD"
                 label="客户要求："
-                prop="clientRequst"
-                ref="clientRequstRef"
+                prop="customerDemand"
+                ref="customerDemandRef"
               >
                 <el-input
-                  v-model="planForm.clientRequst"
+                  v-model="planForm.customerDemand"
                   type="textarea"
                   placeholder="如客户对意向小区的要求等"
                   autosize
@@ -2243,13 +2243,13 @@ export default {
         }
       } else {
         callback();
-        // this.$refs["clientBudgetRef"].clearValidate()
+        // this.$refs["customerBudgetRef"].clearValidate()
       }
     };
     //客户要求自定义校验
     // let validateRequst = (rule, value, callback) =>{
     //     if(!value){
-    //         this.$refs["clientRequstRef"].clearValidate()
+    //         this.$refs["customerDemandRef"].clearValidate()
     //     }else{
     //         callback();
     //     }
@@ -2364,7 +2364,7 @@ export default {
       cName: "", // 选中公司名称
       companyBrand: [], //step1公司品牌
       cBand: "", // 选中的品牌
-      ownerBU: [], //step1联系人
+      adcID: [], //step1联系人
       //step1投放城市
       throwCity: [],
       //购物车
@@ -2439,11 +2439,11 @@ export default {
         companyName: "",
         companyBrand: "",
         throwCity: [],
-        ownerBU: "", // 所属联系人
+        adcID: "", // 所属联系人
         planRemark: "",
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
-        clientBudget: "",
-        clientRequst: "",
+        customerBudget: "",
+        customerDemand: "",
       },
       pointOfAsrIDs: [],
       // 媒介选择所属销售列表
@@ -2463,7 +2463,7 @@ export default {
           },
           { max: 30, message: "最多只能输入30个字节", trigger: "blur" },
         ],
-        ownerBU: [
+        adcID: [
           { required: true, message: "请选择联系人", trigger: "change" },
         ],
         ownerSales: [
@@ -2491,9 +2491,9 @@ export default {
           },
         ],
         //客户预算
-        clientBudget: [{ validator: validateBudget, trigger: "blur" }],
+        customerBudget: [{ validator: validateBudget, trigger: "blur" }],
         //客户要求
-        clientRequst: [
+        customerDemand: [
           // {validator: validateRequst, trigger: 'blur'},
           { max: 200, message: "字数不能超过200字", trigger: "blur" },
         ],
@@ -2662,13 +2662,11 @@ export default {
     // 获取未完成的方案并填充
     this.routePath = this.$route.fullPath;
     if (this.routePath.indexOf("unfinishedPlan") !== -1) {
-      this.setPlanInfo();
+      this.getDrafts();
+      // this.setPlanInfo();
     }
-
     console.log("this.cityOptions", this.cityOptions);
-
     //获取草稿箱数据
-    this.getDrafts();
   },
   // directives: {
   //     loadmore: {
@@ -2713,6 +2711,7 @@ export default {
     //获取草稿箱数据
     //TODO获取草稿箱数据
     getDrafts() {
+      debugger
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -2720,10 +2719,14 @@ export default {
       api.getApi(this.apiVar.GetAGdBackUp, params).then((res) => {
         console.log("获取草稿箱", res);
         if (res.data.SysCode === 200200) {
-          if (res.data.data) {
+          let resList = res.data.data.resList
+          this.unfinishedData = res.data.data
+          this.setPlanInfo();
+          if (resList.length) {
             this.clearDrafts();
-            this.handleImportDrafts(1, res.data.data);
-            this.shopingList = res.data.data;
+            this.handleImportDrafts(1, resList);
+            this.shopingList = resList;
+            this.judgeByselect()
           }
         } else {
           sessFun.messageFun("warning", "获取草稿箱失败");
@@ -2857,10 +2860,10 @@ export default {
       // 设置城市及对应的区域
       this.getAreaFun();
       //设置存入草稿箱参数
-      this.importDraftsConfig.customerBudget = +this.planForm.clientBudget; //客户预算
-      this.importDraftsConfig.customerDemand = this.planForm.clientRequst; //客户要求
+      this.importDraftsConfig.customerBudget = +this.planForm.customerBudget; //客户预算
+      this.importDraftsConfig.customerDemand = this.planForm.customerDemand; //客户要求
       this.importDraftsConfig.bID = this.planForm.companyBrand; // 公司品牌
-      this.importDraftsConfig.adcID = this.planForm.ownerBU; // 客户联系人
+      this.importDraftsConfig.adcID = this.planForm.adcID; // 客户联系人
       this.importDraftsConfig.apName = this.planForm.planName; // 意向方案名称
       this.getAdsParamsData = {
         prID: this.city[0].rid,
@@ -4579,7 +4582,7 @@ export default {
       // 重新输入账号时，初始化部分数据
       this.planForm.companyName = "";
       this.planForm.companyBrand = "";
-      this.planForm.ownerBU = "";
+      this.planForm.adcID = "";
       this.planForm.throwCity = [];
       this.dynamicTags = [];
       this.throwCity = [];
@@ -4668,13 +4671,13 @@ export default {
             }
           }
           this.companyName = companyList; // 公司名称列表
-          this.ownerBU = ownerList; // 联系人列表
+          this.adcID = ownerList; // 联系人列表
         });
     },
     // 获取公司品牌
     GetBrandByCid(val) {
       this.planForm.companyBrand = "";
-      this.planForm.ownerBU = "";
+      this.planForm.adcID = "";
       console.log("所选公司的ID", val);
       let cidParams = {
         cid: val,
@@ -4710,7 +4713,7 @@ export default {
           ownerList.push(owner);
         }
       }
-      this.ownerBU = ownerList;
+      this.adcID = ownerList;
     },
     // 获取公司及品牌
     getBand() {
@@ -4913,6 +4916,8 @@ export default {
       this.getAdsParamsData.apName = this.planForm.planName;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
       this.getAdsParamsData.suID = this.BDData.uid;
+      this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
+
 
       //   startDate: this.dateInput[0], //开始时间  必填
       //   endDate: this.dateInput[1], //结束时间 必填
@@ -4945,7 +4950,7 @@ export default {
         api.getApi(url, params).then((res) => {
           console.log("选点列表：", res);
           if (res.data.SysCode == 200200) {
-            if (res.data.data !== undefined && res.data.data.length > 0) {
+            if (res.data.data) {
               // this.planList = [];
               // this.planList = res.data.data;
               let ADList = res.data.data;
@@ -5181,7 +5186,7 @@ export default {
         this.loadScroll = true;
         this.isOccupied = true; //  || this.dateInput !== this.beforeDate
         if (this.searchInput !== "" && this.dateInput !== null) {
-          this.setpageNumAndTableData();
+          this.setpageNumAndTableData(); //重置表格
           this.ResOriginSearch();
         } else if (
           this.searchInput === "" &&
@@ -5191,7 +5196,10 @@ export default {
           this.setpageNumAndTableData();
           this.getAdList();
           this.beforeDate = this.dateInput;
-        } else if (!this.dateInput) {
+        } else if(this.planAdsCnt){
+          this.setpageNumAndTableData();
+          this.ResOriginSearch();
+        }else if (!this.dateInput) {
           sessFun.messageFun("warning", "搜索时间不能为空");
           this.searchBtnAbled = false;
         } else {
@@ -5372,7 +5380,7 @@ export default {
         city: this.activeCityData.rName,
         ls: this.dateInput[0],
         le: this.dateInput[1],
-        planAdsCnt: this.planAdsCnt,
+        planAdsCnt: this.planAdsCnt?this.planAdsCnt :1,
         mVehicle: this.mediaType,
       };
       console.log("this.planAdsCnt: ", this.planAdsCnt);
@@ -6313,10 +6321,10 @@ export default {
         suID: this.BDData.uid, //方案所属销售用户id ，【必填】
         apName: this.planForm.planName, //意向方案名称
         // type,
-        adcID: this.planForm.ownerBU, //客户联系人id
+        adcID: this.planForm.adcID, //客户联系人id
         bID: this.planForm.companyBrand,
-        customerBudget: +this.planForm.clientBudget,
-        customerDemand: this.planForm.clientRequst,
+        customerBudget: +this.planForm.customerBudget,
+        customerDemand: this.planForm.customerDemand,
       };
       api
         .postApi_json(this.apiVar.mapApi + "/proposal/resListByUid", params)
@@ -7813,7 +7821,7 @@ export default {
     //     uid: this.sessionData.uID,
     //     token: this.sessionData.token,
     //     apname: this.planForm.planName,
-    //     adcid: this.planForm.ownerBU,
+    //     adcid: this.planForm.adcID,
     //     bid: this.planForm.companyBrand,
     //     // rid: this.planForm.throwCity.join(','),
     //     suid: this.BDData.uid,
@@ -8035,7 +8043,7 @@ export default {
     //     uid: this.sessionData.uID,
     //     token: this.sessionData.token,
     //     apname: this.planForm.planName,
-    //     adcid: this.planForm.ownerBU,
+    //     adcid: this.planForm.adcID,
     //     bid: this.planForm.companyBrand,
     //     // rid: this.planForm.throwCity.join(','),
     //     suid: this.BDData.uid,
@@ -8339,35 +8347,43 @@ export default {
     // },
     // 设置方案信息
     setPlanInfo() {
-      let returnData = cacheAdPlan.getData(this.sessionData.uID);
+      debugger
+      // let returnData = cacheAdPlan.getData(this.sessionData.uID);
+      let returnData = this.unfinishedData;
+      console.log('returnData: ', returnData);
       if (returnData) {
-        this.unfinishedData = returnData;
-        this.planForm = returnData.planData.baseInfo;
-        this.BDData.uid = returnData.planData.suid;
-        this.BDData.saleManageLevel = returnData.planData.saleManageLevel || 0;
-        this.throwCity = returnData.planData.throwCity;
-        this.shopingList = returnData.planData.adsList;
-        this.companyBrand = returnData.planData.companyBrand;
-        if (this.sessionData.uType === "MD") {
-          this.getCityList();
-          this.Get_cName();
-          // 媒介需构建销售下拉选项-第一步
-          let arr = [
-            {
-              label: this.planForm.realNamesName,
-              value: this.BDData.uid,
-            },
-          ];
-          this.salerList = arr;
-        }
+        // this.planForm = returnData.baseInfo; //表单信息填写
+        this.BDData.uid = returnData.suID;
+        this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
+        // this.throwCity = returnData.throwCity;
+        returnData.resList.forEach(item => {
+          let cityObj = {
+                    label: item.cityName,
+                    value: item.cityId,
+                  };
+             this.throwCity.push(cityObj)     
+        });
+        let planFormThrowCity = []
+        returnData.resList.forEach(itme=>{
+          planFormThrowCity.push(itme.cityId)
+        })
+          this.planForm.customerBudget=returnData.customerBudget,
+          this.planForm.customerDemand=returnData.customerDemand,
+          this.planForm.companyBrand=returnData.bID,
+          this.planForm.adcID=returnData.returnData,
+          this.planForm.planName=returnData.apName,
+          this.planForm.throwCity=planFormThrowCity
+          this.companyBrand = returnData.bID;
         this.active = 1;
         console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域
         this.getAreaFun();
         this.getAdsParamsData = {
           prID: this.city[0].rid,
-          rid: "440100",
-          act: 1,
+          riD: this.city[0].rid,
+          // prID: this.city[0].rid,
+          // rid: "440100",
+          // act: 1,
           dateTimeBegin: this.dateInput[0],
           dateTimeEnd: this.dateInput[1],
           resType: this.recType,
@@ -8383,6 +8399,52 @@ export default {
         return;
       }
     },
+    //  setPlanInfo() {
+    //   debugger
+    //   // let returnData = cacheAdPlan.getData(this.sessionData.uID);
+    //   if (returnData) {
+    //     this.unfinishedData = returnData;
+    //     this.planForm = returnData.planData.baseInfo;
+    //     this.BDData.uid = returnData.planData.suid;
+    //     this.BDData.saleManageLevel = returnData.planData.saleManageLevel || 0;
+    //     this.throwCity = returnData.planData.throwCity;
+    //     this.shopingList = returnData.planData.adsList;
+    //     this.companyBrand = returnData.planData.companyBrand;
+    //     if (this.sessionData.uType === "MD") {
+    //       this.getCityList();
+    //       this.Get_cName();
+    //       // 媒介需构建销售下拉选项-第一步
+    //       let arr = [
+    //         {
+    //           label: this.planForm.realNamesName,
+    //           value: this.BDData.uid,
+    //         },
+    //       ];
+    //       this.salerList = arr;
+    //     }
+    //     this.active = 1;
+    //     console.log("设置方案信息returnData", returnData);
+    //     // 设置城市及对应的区域
+    //     this.getAreaFun();
+    //     this.getAdsParamsData = {
+    //       prID: this.city[0].rid,
+    //       rid: "440100",
+    //       act: 1,
+    //       dateTimeBegin: this.dateInput[0],
+    //       dateTimeEnd: this.dateInput[1],
+    //       resType: this.recType,
+    //       mVehicle: this.mediaType,
+    //       pageNum: this.pageNum,
+    //       pageSize: this.pageSize,
+    //     };
+    //     this.getAdList(); // 获取选点列表
+    //     this.getRejectPlanList(); // 获取排斥方案列表
+    //     this.getIndustryBycID(); // 根据所选公司获取公司所属行业
+    //   } else {
+    //     this.$router.push("./createPlan");
+    //     return;
+    //   }
+    // },
     // 时间戳转换成日期格式 2018-06-18 10:33:24
     timestampToTime(timestamp) {
       let date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000

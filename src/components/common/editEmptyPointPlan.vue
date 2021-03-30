@@ -2046,13 +2046,13 @@ export default {
         }
       } else {
         callback();
-        // this.$refs["clientBudgetRef"].clearValidate()
+        // this.$refs["customerBudgetRef"].clearValidate()
       }
     };
     //客户要求自定义校验
     // let validateRequst = (rule, value, callback) =>{
     //     if(!value){
-    //         this.$refs["clientRequstRef"].clearValidate()
+    //         this.$refs["customerDemandRef"].clearValidate()
     //     }else{
     //         callback();
     //     }
@@ -2168,7 +2168,7 @@ export default {
       cName: "", // 选中公司名称
       companyBrand: [], //step1公司品牌
       cBand: "", // 选中的品牌
-      ownerBU: [], //step1联系人
+      adcID: [], //step1联系人
       //step1投放城市
       throwCity: [],
       //购物车
@@ -2243,11 +2243,11 @@ export default {
         companyName: "",
         companyBrand: "",
         throwCity: [],
-        ownerBU: "", // 所属联系人
+        adcID: "", // 所属联系人
         planRemark: "",
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
-        clientBudget: "",
-        clientRequst: "",
+        customerBudget: "",
+        customerDemand: "",
       },
       pointOfAsrIDs: [],
       // 媒介选择所属销售列表
@@ -2267,7 +2267,7 @@ export default {
           },
           { max: 30, message: "最多只能输入30个字节", trigger: "blur" },
         ],
-        ownerBU: [
+        adcID: [
           { required: true, message: "请选择联系人", trigger: "change" },
         ],
         ownerSales: [
@@ -2295,9 +2295,9 @@ export default {
           },
         ],
         //客户预算
-        clientBudget: [{ validator: validateBudget, trigger: "blur" }],
+        customerBudget: [{ validator: validateBudget, trigger: "blur" }],
         //客户要求
-        clientRequst: [
+        customerDemand: [
           // {validator: validateRequst, trigger: 'blur'},
           { max: 200, message: "字数不能超过200字", trigger: "blur" },
         ],
@@ -2465,9 +2465,9 @@ export default {
     this.setShopAnimate();
     // 获取未完成的方案并填充
     this.routePath = this.$route.fullPath;
-    if (this.routePath.indexOf("unfinishedPlan") !== -1) {
-      this.setPlanInfo();
-    }
+    // if (this.routePath.indexOf("unfinishedPlan") !== -1) {
+    //   this.setPlanInfo();
+    // }
     // this.manualSelectPoint();
     console.log("this.cityOptions", this.cityOptions);
   },
@@ -2521,6 +2521,7 @@ export default {
       this.clearDrafts();
       api.getApi("/addsp/proposal/getAdBackUp", params).then((res) => {
         console.log("获取已选小区数据", res);
+        //TODO:没有设置第0步的数据
         if (res.data.SysCode === 200200) {
           this.loading = false;
           if (res.data.data.resList.length) {
@@ -2891,9 +2892,9 @@ export default {
       this.isSelectPoint = false;
       //   let planDetail = JSON.parse(sessionStorage.getItem("planDetail")) ;
       //   console.log('planDetail: ', planDetail);
-      //   //   this.planForm.clientBudget = planDetail
+      //   //   this.planForm.customerBudget = planDetail
       //   this.planForm.companyBrand = planDetail.cName;
-      //   this.planForm.ownerBU = planDetail.adcID;
+      //   this.planForm.adcID = planDetail.adcID;
       //   this.planForm.planName = planDetail.apName;
       //   this.handleInputConfirm()
       //    this.planForm.throwCity =
@@ -2904,10 +2905,10 @@ export default {
       // 设置城市及对应的区域
       this.getAreaFun();
       //设置存入草稿箱参数
-      this.importDraftsConfig.customerBudget = +this.planForm.clientBudget; //客户预算
-      this.importDraftsConfig.customerDemand = this.planForm.clientRequst; //客户要求
+      this.importDraftsConfig.customerBudget = +this.planForm.customerBudget; //客户预算
+      this.importDraftsConfig.customerDemand = this.planForm.customerDemand; //客户要求
       this.importDraftsConfig.bID = this.planForm.companyBrand; // 公司品牌
-      this.importDraftsConfig.adcID = this.planForm.ownerBU; // 客户联系人
+      this.importDraftsConfig.adcID = this.planForm.adcID; // 客户联系人
       this.importDraftsConfig.apName = this.planForm.planName; // 意向方案名称
       this.getAdsParamsData = {
         // prID: 110100,
@@ -4728,13 +4729,13 @@ export default {
             }
           }
           this.companyName = companyList; // 公司名称列表
-          this.ownerBU = ownerList; // 联系人列表
+          this.adcID = ownerList; // 联系人列表
         });
     },
     // 获取公司品牌
     GetBrandByCid(val) {
       this.planForm.companyBrand = "";
-      this.planForm.ownerBU = "";
+      this.planForm.adcID = "";
       console.log("所选公司的ID", val);
       let cidParams = {
         cid: val,
@@ -4770,7 +4771,7 @@ export default {
           ownerList.push(owner);
         }
       }
-      this.ownerBU = ownerList;
+      this.adcID = ownerList;
     },
     // 获取公司及品牌
     getBand() {
@@ -4973,6 +4974,7 @@ export default {
       this.getAdsParamsData.apName = this.planForm.planName;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
       this.getAdsParamsData.suID = this.BDData.uid;
+      this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
 
       //   startDate: this.dateInput[0], //开始时间  必填
       //   endDate: this.dateInput[1], //结束时间 必填
@@ -5005,7 +5007,7 @@ export default {
         api.getApi(url, params).then((res) => {
           console.log("选点列表：", res);
           if (res.data.SysCode == 200200) {
-            if (res.data.data !== undefined && res.data.data.length > 0) {
+            if (res.data.data) {
               // this.planList = [];
               // this.planList = res.data.data;
               let ADList = res.data.data;
@@ -5251,6 +5253,9 @@ export default {
           this.setpageNumAndTableData();
           this.getAdList();
           this.beforeDate = this.dateInput;
+        } else if(this.planAdsCnt){
+          this.setpageNumAndTableData();
+          this.ResOriginSearch();
         } else if (!this.dateInput) {
           sessFun.messageFun("warning", "搜索时间不能为空");
           this.searchBtnAbled = false;
@@ -5432,7 +5437,8 @@ export default {
         city: this.activeCityData.rName,
         ls: this.dateInput[0],
         le: this.dateInput[1],
-        planAdsCnt: this.planAdsCnt,
+        planAdsCnt: this.planAdsCnt?this.planAdsCnt :1,
+        mVehicle: this.mediaType,
       };
       console.log("this.planAdsCnt: ", this.planAdsCnt);
       localStorage.setItem(
@@ -5445,6 +5451,7 @@ export default {
           suID: this.BDData.uid,
           asrIDs: this.planForm.pointOfAsrIDs,
           planAdsCnt: this.planAdsCnt ? this.planAdsCnt : 1,
+          mVehicle:this.mediaType
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;
@@ -7505,7 +7512,7 @@ export default {
     //     uid: this.sessionData.uID,
     //     token: this.sessionData.token,
     //     apname: this.planForm.planName,
-    //     adcid: this.planForm.ownerBU,
+    //     adcid: this.planForm.adcID,
     //     bid: this.planForm.companyBrand,
     //     // rid: this.planForm.throwCity.join(','),
     //     suid: this.BDData.uid,
@@ -7722,7 +7729,7 @@ export default {
     //     uid: this.sessionData.uID,
     //     token: this.sessionData.token,
     //     apname: this.planForm.planName,
-    //     adcid: this.planForm.ownerBU,
+    //     adcid: this.planForm.adcID,
     //     bid: this.planForm.companyBrand,
     //     // rid: this.planForm.throwCity.join(','),
     //     suid: this.BDData.uid,

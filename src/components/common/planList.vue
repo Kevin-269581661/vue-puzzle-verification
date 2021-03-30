@@ -250,8 +250,15 @@
                         <span>{{planInfo.cleatTime}}</span>
                     </li>
                     <li class="unfinished_plan_li">
-                        <span>已选点位:</span>
-                        <span>{{planInfo.adsNum}} 面</span>
+                        <span v-if="IsSevenBD">
+                            <span>已选小区:</span>
+                            <span>{{planInfo.adsNum}} 个</span>
+                        </span>
+                        <span v-else>
+                             <span>已选点位:</span>
+                             <span>{{planInfo.adsNum}} 面</span>
+                        </span>
+                        
                     </li>
                 </ul>
             </div>
@@ -555,7 +562,8 @@
                 publishPlanDialog: false,
                 planType: '0',
                 relatedApId: null,
-                apList: []
+                apList: [],
+                IsSevenBD:false
             };
         },
         created() {
@@ -570,6 +578,7 @@
                 this.getSubSaleList()
             };
             this.getCity()
+            
         },
         methods: {
             // 切换页码
@@ -712,6 +721,7 @@
             getRole() {
                 let role = this.sessionData.uType;
                 this.role = role;
+                this.IsSevenBD = (['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID) && this.sessionData.uType=='BD')
                 console.log(role);
                 if (role == "MD") {
                     this.isDisable = false;
@@ -787,30 +797,23 @@
                     this.$router.push("./createPlanOld")
                 }
             },
-            // 新建方案
-            addOne() {
-                this.continueEditLoading = this.$loading({
-                    lock: true,
-                    text: '正在查询是否有未完成的方案',
-                    spinner: 'el-icon-loading',
-                    background: 'rgba(0, 0, 0, 0.5)'
-                });
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token
-                }
-                api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
-                    console.log('获取方案缓存', res)
+            //新增意向方案查询意向方案草稿箱
+            getProposalAdBackUp(params){
+                debugger
+                api.getApi(this.apiVar.AddspProposal + '/getAdBackUp', params).then(res => {
+                    console.log('获取意向方案缓存', res)
                     this.continueEditLoading.close()
                     if (res.data.SysCode == 200200) {
-                        console.log('获取缓存成功', res.data)
-                        if (JSON.stringify(res.data.data) === '{}') {
-                            this.routeSelect()
+                        console.log('获取意向方案缓存成功', res.data)
+                        let data = res.data.data
+                        if (JSON.stringify(data) === '{}' || !data) {
+                            this.$router.push("./createPlan")
                         } else {
-                            let planInfo = JSON.parse(res.data.data)
-                            this.showCookeAdPlan(planInfo)
+                            // let planInfo = JSON.parse(data)
+                            this.showProposalCookeAdPlan(data)
                             // 缓存到localStorage
-                            cacheAdPlan.setData(planInfo)
+                            // data.uiD = params.uid
+                            // cacheAdPlan.setData(data)
                         }
                     } else {
                         // 后台返回异常则查看前台是否有缓存
@@ -829,10 +832,68 @@
                     }
                 })
             },
+            // 新建方案
+            addOne() {
+                this.continueEditLoading = this.$loading({
+                    lock: true,
+                    text: '正在查询是否有未完成的方案',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.5)'
+                });
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                if(this.IsSevenBD){
+                    this.getProposalAdBackUp(params)
+                }else{
+                    api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
+                            console.log('获取方案缓存', res)
+                            this.continueEditLoading.close()
+                            if (res.data.SysCode == 200200) {
+                                console.log('获取缓存成功', res.data)
+                                if (JSON.stringify(res.data.data) === '{}') {
+                                    this.routeSelect()
+                                } else {
+                                    let planInfo = JSON.parse(res.data.data)
+                                    this.showCookeAdPlan(planInfo)
+                                    // 缓存到localStorage
+                                    cacheAdPlan.setData(planInfo)
+                                }
+                            } else {
+                                // 后台返回异常则查看前台是否有缓存
+                                let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                                if (returnData) {
+                                    this.showCookeAdPlan(returnData)
+                                } else {
+                                    this.routeSelect()
+                                }
+                            }
+                        }).catch(err => {
+                            console.log('err', err)
+                            this.continueEditLoading.close()
+                            if (this.$route.path.includes('planList')) {
+                                this.routeSelect()
+                            }
+                        })
+                }
+               
+            },
             // 点位表盘
             goToDiaPlate() {
                 console.log('this.$router', this.$router)
                 this.$router.push('./adsDialPlate')
+            },
+            //显示意向方案缓存信息
+            showProposalCookeAdPlan(adPlan){
+                this.planInfo = {
+                    planName: adPlan.apName,
+                    ownerSales: adPlan.saleRealName,
+                    cleatTime: adPlan.lSetTime,
+                    adsNum: adPlan.resList.length
+                }
+                this.unfinishedDialogVisible = true
+
             },
             // 显示缓存方案的信息
             showCookeAdPlan(adPlan) {
@@ -1527,9 +1588,22 @@
                     showClose: true,
                 })
             },
+            //清除意向方案缓存
+            clearProposalAdPlanBackups(params){
+                api.postApi(this.apiVar.AddspProposal + '/cleanAdBackUp', params).then(res => {
+                        console.log('清空意向方案缓存的方案', res)
+                        if (res.data.SysCode == 200200) {
+                            console.log('缓存意向方案清除成功')
+                        } else {
+                            console.log('缓存意向方案清除失败')
+                        }
+                    })
+                    cacheAdPlan.removeData(this.sessionData.uID)
+                    this.routeSelect()
+            },
             // 放弃继续编辑
             cancelEdit() {
-                this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
+                this.$confirm('放弃后将清除该方案信息!', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     showClose: false,
@@ -1540,7 +1614,10 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
+                    if(this.IsSevenBD){
+                        this.clearProposalAdPlanBackups(params)
+                    }else{
+                        api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
                         console.log('清空缓存的方案', res)
                         if (res.data.SysCode == 200200) {
                             console.log('缓存方案清除成功')
@@ -1550,6 +1627,8 @@
                     })
                     cacheAdPlan.removeData(this.sessionData.uID)
                     this.routeSelect()
+                    }
+                   
                 }).catch(() => {
                     Message.info('取消成功')
                 })
@@ -1562,7 +1641,12 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.5)'
                 });
-                this.$router.push("./createPlan?unfinishedPlan");
+                if(this.IsSevenBD){
+                    this.$router.push("./createPlan?unfinishedPlan");
+                }else{
+                    this.$router.push("./createPlanOld?unfinishedPlan");
+                }
+               
                 this.unfinishedDialogVisible = false
             },
             /**

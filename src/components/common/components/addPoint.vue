@@ -321,23 +321,6 @@
                   <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
                 </div>
               </el-form-item>
-              <template v-if="customPermission.patrolPermission">
-                <el-form-item label="巡点问题：">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
-                  </div>
-                </el-form-item>
-                <el-form-item label="通行情况：">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
-                  </div>
-                </el-form-item>
-                <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
-                  </div>
-                </el-form-item>
-              </template>
             </el-form>
           </template>
         </el-table-column>

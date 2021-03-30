@@ -399,7 +399,11 @@ export default {
         apExclude: "",
         adLimits: []
       },
-      tipObj: {},
+      tipObj: {
+        selectLab1: 0,
+        selectLab2: 0,
+        selectLab3: 0
+      },
       intentionTableData: [
       ],
       intentionTableColumn: [
@@ -598,7 +602,7 @@ export default {
             this.loading = false
             Object.assign(this.intentionInfo, res.data.data)
           } else {
-            this.messageFun('warning', res.data.MSG)
+            sessFun.messageFun('warning', res.data.MSG)
           }
       }).catch(err => {
           console.log(err);
@@ -606,7 +610,7 @@ export default {
     },
     // 意向小区列表
     getIntentionList() {
-      api.getApi("/addsp/proposal/getProposalResInfo?apID="+this.apID+'&pageNo=1&pageSize=10').then(res => {
+      api.getApi("/addsp/proposal/getProposalResInfo?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
               this.showDialogTable = true
               this.intentionTableData = res.data.data
@@ -660,10 +664,22 @@ export default {
       })
     },
     // 查询配点结果概要
-    getMatchSummary(apid) {
-      api.getApi("/addsp/match/matchSummary?apID="+this.apID).then(res => {
+    getMatchSummary(apID) {
+      api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
           if (res.data.SysCode == 200200) {
-            this.tipObj = res.data.data
+            Object.assign(this.tipObj, res.data.data)
+            if(Array.isArray(this.tipObj.resPdNumGroup)) {
+              this.tipObj.resPdNumGroup.forEach(item=>{
+                if(item.resPdNum == 1) {
+                  this.tipObj.selectLab1 = item.resCount||0
+                } else if(item.resPdNum == 2) {
+                  this.tipObj.selectLab2 = item.resCount||0
+                } else if(item.resPdNum == 3){
+                  this.tipObj.selectLab3 = item.resCount||0
+                }
+              })
+            }
+            console.log('this.tipObj', this.tipObj)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -675,10 +691,22 @@ export default {
     getSuccessPoint(matchRes) {
       if(matchRes) {
         // 首次配点
-        this.tipObj = matchRes
+        Object.assign(this.tipObj, matchRes)
+        if(Array.isArray(this.tipObj.resPdNumGroup)) {
+          this.tipObj.resPdNumGroup.forEach(item=>{
+            if(item.resPdNum == 1) {
+              this.tipObj.selectLab1 = item.resCount||0
+            } else if(item.resPdNum == 2) {
+              this.tipObj.selectLab2 = item.resCount||0
+            } else if(item.resPdNum == 3){
+              this.tipObj.selectLab3 = item.resCount||0
+            }
+          })
+        }
+        console.log('this.tipObj', this.tipObj)
       } else {
         // 查看已配点方案的配点详情
-        this.getMatchSummary(this.apid)
+        this.getMatchSummary(this.apID)
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
@@ -839,7 +867,7 @@ export default {
       this.asignPointTableLoading = true
       api.getApi("/addsp/match/removeSpace?id="+scope.row.id).then(res => {
           if (res.data.SysCode == 200200) {
-            this.getMatchSummary(this.apid)
+            this.getMatchSummary(this.apID)
             console.log('deleteAsignItem', scope)
             console.time('splice')
             this.asignPointTableData.splice(scope.$index, 1)

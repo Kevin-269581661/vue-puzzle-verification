@@ -520,7 +520,7 @@
                     apID: item.apID,
                     apName: item.apName || '',
                     apQC: item.apQC || '',
-                    apState: item.apState || '',
+                    apState: item.apState,
                     apTotal: item.apTotal || '',
                     appTime: item.appTime || '',
                     bTitle: item.bTitle || '--',
@@ -581,6 +581,7 @@
             stateToText(val) {
                 let state = [
                     {text: "已完成", value: 0, color: 'rgba(196,203,211,1)'},
+                    {text: "未配点", value: -1, color: 'rgba(196,203,211,1)'},
                     {text: "未投放", value: 2, color: 'rgba(82,196,26,1)'},
                     {text: "投放中", value: 3, color: 'rgba(24,144,255,1)'},
                     {text: "强制结束", value: 5, color: 'rgba(245,34,45,1)'}

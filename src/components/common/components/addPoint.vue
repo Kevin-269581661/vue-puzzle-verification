@@ -65,7 +65,7 @@
                   class="combination"
                   name="type"
                 >A面占比(%)</el-checkbox>
-                <el-input-number v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
+                <el-input-number :disabled="!formDataObj.aFaceRateChecked" v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
               </div>
             </el-form-item>
           </el-form>
@@ -544,7 +544,7 @@ export default {
           label: "近3月上刊率",
           prop: "publishRate",
           width: "160px",
-          value: (row)=>`${(row.publishRate||0)*100}`
+          value: (row)=>`${(row.publishRate||0)*100}%`
         },
       ],
     };
@@ -796,18 +796,17 @@ export default {
           background: 'rgba(0, 0, 0, 0.7)'
         })
         require.ensure([], () => {
-            const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+            const { export_json_to_excel } = require('../../../vendorExcel/Export2Excel');
             const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
             const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
-            const list = this.currentSetpoint;
-            const data = this.formatJson(filterVal, list);
-            export_json_to_excel(tHeader, this.intentionTableData, '意向小区');
+            const data = this.formatJson(filterVal, this.intentionTableData);
+            export_json_to_excel(tHeader, data, '意向小区');
             loading.close()
         })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
-        filterVal.map(j => v[j])
+        filterVal.map(j => j=='period'?`${v.pdStartDate}-${v.pdEndDate}`:v[j])
       );
     },
     handleClose(done) {

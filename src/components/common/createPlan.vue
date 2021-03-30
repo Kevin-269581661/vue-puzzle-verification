@@ -2711,7 +2711,6 @@ export default {
     //获取草稿箱数据
     //TODO获取草稿箱数据
     getDrafts() {
-      debugger
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -5865,7 +5864,6 @@ export default {
     },
     // 车位数过滤
     tableHeaderFilterByParkSpaceNum() {
-      debugger
       if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]== "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
@@ -8347,7 +8345,6 @@ export default {
     // },
     // 设置方案信息
     setPlanInfo() {
-      debugger
       // let returnData = cacheAdPlan.getData(this.sessionData.uID);
       let returnData = this.unfinishedData;
       console.log('returnData: ', returnData);
@@ -8400,7 +8397,6 @@ export default {
       }
     },
     //  setPlanInfo() {
-    //   debugger
     //   // let returnData = cacheAdPlan.getData(this.sessionData.uID);
     //   if (returnData) {
     //     this.unfinishedData = returnData;

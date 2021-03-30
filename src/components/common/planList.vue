@@ -799,7 +799,6 @@
             },
             //新增意向方案查询意向方案草稿箱
             getProposalAdBackUp(params){
-                debugger
                 api.getApi(this.apiVar.AddspProposal + '/getAdBackUp', params).then(res => {
                     console.log('获取意向方案缓存', res)
                     this.continueEditLoading.close()

@@ -1134,7 +1134,7 @@
             </span>
         </el-dialog>
         <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="editApid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="merge2ShopList"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="editApid" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="merge2ShopList"></add-point>
     </div>
 </template>
 
@@ -1250,7 +1250,7 @@
                 cBand: '空',               // 选中的品牌
                 ownerBU: [],               //step1联系人
                 throwCity: [],             //step1投放城市
-                dialogTableVisible: true,  //购物车
+                dialogTableVisible: false,  //购物车
 
                 //搜索类型
                 typeSelect: [
@@ -3025,7 +3025,7 @@
                                 info.checkBox.B = true
                                 for (let n = 0; n < asLabsArr.length; n++) {
                                     if (asLabsArr[n] === 'B') {
-                                        console.log('B', asIDArr[n])
+                                        // console.log('B', asIDArr[n])
                                         selectInfo.asID = asIDArr[n]
                                         break
                                     }
@@ -4909,7 +4909,7 @@
                         }
                         this.shopLoading = false
                         this.FanganInfoByApid()           //获取方案详情
-                        this.dialogVisible();
+                        // this.dialogVisible();
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }
@@ -4958,7 +4958,7 @@
                         this.getAdList()    // 获取选点列表
                         this.getRejectPlanList()    // 获取排斥方案列表
                         // 如果未配点，弹出配点弹框
-                        if(this.FAInfo.apState == -1) {
+                        if(this.FAInfo.planMode == 1) {
                             this.matchPoint()
                         }
                     } else {

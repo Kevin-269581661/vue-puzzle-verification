@@ -232,21 +232,23 @@
                   <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
                 </div>
               </el-form-item>
-              <el-form-item label="巡点问题：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
-                </div>
-              </el-form-item>
-              <el-form-item label="通行情况：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
-                </div>
-              </el-form-item>
-              <el-form-item label="通电情况：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
-                </div>
-              </el-form-item>
+              <template v-if="customPermission.patrolPermission">
+                <el-form-item label="巡点问题：">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
+                  </div>
+                </el-form-item>
+                <el-form-item label="通行情况：">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
+                  </div>
+                </el-form-item>
+                <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
+                  </div>
+                </el-form-item>
+              </template>
             </el-form>
           </template>
         </el-table-column>
@@ -319,21 +321,23 @@
                   <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
                 </div>
               </el-form-item>
-              <el-form-item label="巡点问题：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
-                </div>
-              </el-form-item>
-              <el-form-item label="通行情况：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
-                </div>
-              </el-form-item>
-              <el-form-item label="通电情况：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
-                </div>
-              </el-form-item>
+              <template v-if="customPermission.patrolPermission">
+                <el-form-item label="巡点问题：">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
+                  </div>
+                </el-form-item>
+                <el-form-item label="通行情况：">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
+                  </div>
+                </el-form-item>
+                <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                  <div class="cell-ellipsis" style="width: 80px">
+                    <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
+                  </div>
+                </el-form-item>
+              </template>
             </el-form>
           </template>
         </el-table-column>
@@ -372,6 +376,10 @@ export default {
     ADLimit: {
       type: Array,
       default: ()=>[]
+    },
+    customPermission: {
+      type: Object,
+      default: ()=>{}
     }
   },
   components: {
@@ -713,7 +721,6 @@ export default {
       api.getApi("/addsp/match/successProposal?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
             this.asignPointTableData = res.data.data||[]
-
             let getAdPrice = (data)=>{
               if(!data.asPrice) return 0
               if (data.mVehicle === '道闸') {
@@ -734,10 +741,6 @@ export default {
                 }
               }
             }
-            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
-            // this.asignPointTableData=this.asignPointTableData.concat(this.asignPointTableData)
             console.time('zhihuan')
             for(let i=0; i<this.asignPointTableData.length; i++) {
               let item = this.asignPointTableData[i]

@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       loading: false,
-      currentPageSize: 1,
+      currentPageSize: 10,
       currentPage: 1,
       totalNum: 0,
     };

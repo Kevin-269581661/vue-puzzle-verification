@@ -65,7 +65,7 @@
                   class="combination"
                   name="type"
                 >A面占比(%)</el-checkbox>
-                <el-input-number v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
+                <el-input-number :disabled="!formDataObj.aFaceRateChecked" v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
               </div>
             </el-form-item>
           </el-form>
@@ -399,7 +399,11 @@ export default {
         apExclude: "",
         adLimits: []
       },
-      tipObj: {},
+      tipObj: {
+        selectLab1: 0,
+        selectLab2: 0,
+        selectLab3: 0
+      },
       intentionTableData: [
       ],
       intentionTableColumn: [
@@ -544,7 +548,7 @@ export default {
           label: "近3月上刊率",
           prop: "publishRate",
           width: "160px",
-          value: (row)=>`${(row.publishRate||0)*100}`
+          value: (row)=>`${(row.publishRate||0)*100}%`
         },
       ],
     };
@@ -598,7 +602,7 @@ export default {
             this.loading = false
             Object.assign(this.intentionInfo, res.data.data)
           } else {
-            this.messageFun('warning', res.data.MSG)
+            sessFun.messageFun('warning', res.data.MSG)
           }
       }).catch(err => {
           console.log(err);
@@ -606,7 +610,7 @@ export default {
     },
     // 意向小区列表
     getIntentionList() {
-      api.getApi("/addsp/proposal/getProposalResInfo?apID="+this.apID+'&pageNo=1&pageSize=10').then(res => {
+      api.getApi("/addsp/proposal/getProposalResInfo?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
               this.showDialogTable = true
               this.intentionTableData = res.data.data
@@ -660,10 +664,22 @@ export default {
       })
     },
     // 查询配点结果概要
-    getMatchSummary(apid) {
-      api.getApi("/addsp/match/matchSummary?apID="+this.apID).then(res => {
+    getMatchSummary(apID) {
+      api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
           if (res.data.SysCode == 200200) {
-            this.tipObj = res.data.data
+            Object.assign(this.tipObj, res.data.data)
+            if(Array.isArray(this.tipObj.resPdNumGroup)) {
+              this.tipObj.resPdNumGroup.forEach(item=>{
+                if(item.resPdNum == 1) {
+                  this.tipObj.selectLab1 = item.resCount||0
+                } else if(item.resPdNum == 2) {
+                  this.tipObj.selectLab2 = item.resCount||0
+                } else if(item.resPdNum == 3){
+                  this.tipObj.selectLab3 = item.resCount||0
+                }
+              })
+            }
+            console.log('this.tipObj', this.tipObj)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -675,10 +691,22 @@ export default {
     getSuccessPoint(matchRes) {
       if(matchRes) {
         // 首次配点
-        this.tipObj = matchRes
+        Object.assign(this.tipObj, matchRes)
+        if(Array.isArray(this.tipObj.resPdNumGroup)) {
+          this.tipObj.resPdNumGroup.forEach(item=>{
+            if(item.resPdNum == 1) {
+              this.tipObj.selectLab1 = item.resCount||0
+            } else if(item.resPdNum == 2) {
+              this.tipObj.selectLab2 = item.resCount||0
+            } else if(item.resPdNum == 3){
+              this.tipObj.selectLab3 = item.resCount||0
+            }
+          })
+        }
+        console.log('this.tipObj', this.tipObj)
       } else {
         // 查看已配点方案的配点详情
-        this.getMatchSummary(this.apid)
+        this.getMatchSummary(this.apID)
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
@@ -795,19 +823,18 @@ export default {
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         })
-        // require.ensure([], () => {
-        //     const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        //     const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
-        //     const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
-        //     const list = this.currentSetpoint;
-        //     const data = this.formatJson(filterVal, list);
-        //     export_json_to_excel(tHeader, this.intentionTableData, '意向小区');
-        //     loading.close()
-        // })
+        require.ensure([], () => {
+            const { export_json_to_excel } = require('../../../vendorExcel/Export2Excel');
+            const tHeader = ['资源', '城市', '区域', '排期', '媒体数量（门）',  '计划投放数量（面）'];
+            const filterVal = ['resName', 'city', 'region', 'period', 'resMediaCount', 'planPdNum'];
+            const data = this.formatJson(filterVal, this.intentionTableData);
+            export_json_to_excel(tHeader, data, '意向小区');
+            loading.close()
+        })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
-        filterVal.map(j => v[j])
+        filterVal.map(j => j=='period'?`${v.pdStartDate}-${v.pdEndDate}`:v[j])
       );
     },
     handleClose(done) {
@@ -840,7 +867,7 @@ export default {
       this.asignPointTableLoading = true
       api.getApi("/addsp/match/removeSpace?id="+scope.row.id).then(res => {
           if (res.data.SysCode == 200200) {
-            this.getMatchSummary(this.apid)
+            this.getMatchSummary(this.apID)
             console.log('deleteAsignItem', scope)
             console.time('splice')
             this.asignPointTableData.splice(scope.$index, 1)

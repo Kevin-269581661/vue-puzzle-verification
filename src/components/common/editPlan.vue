@@ -74,8 +74,8 @@
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
-                                    <el-button plain @click="dialogOneKeyPoint = true"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button>
+                                    <!-- <el-button plain @click="dialogOneKeyPoint = true"
+                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button> -->
                                     <el-button plain @click="matchPoint">智能配点</el-button>
                                 </el-col>
                             </el-row>
@@ -912,7 +912,7 @@
             </ul>
         </el-dialog>
         <!--一键选点模态框-->
-        <el-dialog
+        <!-- <el-dialog
             title="一键选点"
             :visible.sync="dialogOneKeyPoint"
             width="410px"
@@ -941,7 +941,7 @@
             <el-button @click="dialogOneKeyPoint = false">取 消</el-button>
             <el-button type="primary" @click="oneKeyPointBtn('oneKeyPointData')" class="OneKeyPoint_footerBtn">一键选点</el-button>
           </span>
-        </el-dialog>
+        </el-dialog> -->
         <!-- 导入方案弹出框 -->
         <el-dialog
             class="import_fanan"
@@ -2462,7 +2462,7 @@
 
             },
             //一键选点
-            oneKeySelectPoint(){
+            /* oneKeySelectPoint(){
                 console.log('一键选点')
                 let oneKeyPointLoading = this.$loading({
                     lock: true,
@@ -2592,7 +2592,7 @@
                     }
                     clearTimeout(timer)
                 },1000*65)
-            },
+            }, */
             // step2, 资源类型切换
             activeRecType(num) {
                 this.buildValue = ''

@@ -676,8 +676,8 @@ export default {
       api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
           if (res.data.SysCode == 200200) {
             Object.assign(this.tipObj, res.data.data)
-            if(Array.isArray(this.tipObj.resPdNumGroup)) {
-              this.tipObj.resPdNumGroup.forEach(item=>{
+            if(Array.isArray(this.tipObj.proposalCountGroup)) {
+              this.tipObj.proposalCountGroup.forEach(item=>{
                 if(item.resPdNum == 1) {
                   this.tipObj.selectLab1 = item.resCount||0
                 } else if(item.resPdNum == 2) {
@@ -700,8 +700,8 @@ export default {
       if(matchRes) {
         // 首次配点
         Object.assign(this.tipObj, matchRes)
-        if(Array.isArray(this.tipObj.resPdNumGroup)) {
-          this.tipObj.resPdNumGroup.forEach(item=>{
+        if(Array.isArray(this.tipObj.proposalCountGroup)) {
+          this.tipObj.proposalCountGroup.forEach(item=>{
             if(item.resPdNum == 1) {
               this.tipObj.selectLab1 = item.resCount||0
             } else if(item.resPdNum == 2) {

@@ -940,7 +940,7 @@
                                 if(apID != key.apId){
                                     tempList.push({
                                         value: key.apId,
-                                        label: key.apName + '--' + key.cname + '--' + key.pdStar||'' + '-' + key.pdEnd||''
+                                        label: key.apName + '--' + key.cname + '--' + (key.pdStar||'') + '-' + (key.pdEnd||'')
                                     })
                                 }
                             }

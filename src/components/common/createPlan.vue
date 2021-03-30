@@ -8347,7 +8347,6 @@ export default {
     // },
     // 设置方案信息
     setPlanInfo() {
-      debugger
       // let returnData = cacheAdPlan.getData(this.sessionData.uID);
       let returnData = this.unfinishedData;
       console.log('returnData: ', returnData);

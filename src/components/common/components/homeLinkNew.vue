@@ -122,7 +122,8 @@
                 } else if(item.title === '导出空位') {
                     this.isOpenDownload=true
                 } else {
-                    document.location.href=item.link
+                    // document.location.href=item.link
+                    this.$router.push(item.link);
                 }
             },
             // 获取登录用户信息
@@ -181,11 +182,6 @@
                 console.log('ActiveMapType',this.ActiveMapType);
                 this.setMapParams();
                 this.ActiveMapType = 2
-                // if(this.ActiveMapType == 1) {
-                //     this.getMapInfo()
-                // } else if(this.ActiveMapType == 2){
-                //     this.setMapParams()
-                // }
             },
             // 获取mapid并打开地图选点新窗口
             getMapInfo(){

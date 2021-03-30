@@ -1991,9 +1991,6 @@
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 head.push('归属公司')
                             }
-                            /* if(customPermission && customPermission.patrolPermission) {
-                                head.push('巡点问题', '通行情况');
-                            } */
                             switch (customPermission.patrolPermission) {
                                 case 1:
                                     head.push('巡点问题', '通行情况');

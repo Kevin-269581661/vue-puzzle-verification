@@ -121,31 +121,30 @@ const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 const Report = () => import('../components/h5/Report.vue')
 
 Vue.use(Router);
+const staticRoutes = [{path: '/', redirect: '/login'},
+    {path: '/login', name: 'login', component: login},
+    // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
+    {path: '/progressDown', name: 'progressDown', component: progressDown},
+    {path: '/shareADList', name: 'shareADList', component: shareADList},
+    {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
+    // 亲邻地图
+    {path: '/ADResourceMap/chooseRes', component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
+    // 地图分享
+    {path: '/ADResourcesMap/shareRes', component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
+    //资源对比可视化
+    {path: '/resContrastMap',name:'resContrastMap',component: resContrastMap, meta:{title: '亲邻科技，智慧地图'}},
+    //消息列表
+    //上下刊报告h5页面
+    {path: '/Report', name: 'Report', component: Report},
+    //404
+    {path: '*', component: NotFountPage}];
 let router = new Router({
     mode: 'history',
-    routes:[
-        {path: '/', redirect: '/login'},
-        {path: '/login', name: 'login', component: login},
-        // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
-        {path: '/progressDown', name: 'progressDown', component: progressDown},
-        {path: '/shareADList', name: 'shareADList', component: shareADList},
-        {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
-        // 亲邻地图
-        {path: '/ADResourceMap/chooseRes', component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},
-        // 地图分享
-        {path: '/ADResourcesMap/shareRes', component: qinLinMap, meta:{title: '亲邻科技，智慧分享'}},
-        //资源对比可视化
-        {path: '/resContrastMap',name:'resContrastMap',component: resContrastMap, meta:{title: '亲邻科技，智慧地图'}},
-        //消息列表
-        //上下刊报告h5页面
-        {path: '/Report', name: 'Report', component: Report},
-        
-        //404
-        {path: '*', component: NotFountPage}
-    ]
+    routes: staticRoutes
 })
 let roleRoutes = []
-function addRoutes(role, old) {
+function addRoutes(role, old, retain) {
+    !retain && resetRouter()
     switch (role) {
         case 'SM':
             roleRoutes = [
@@ -398,6 +397,18 @@ function addRoutes(role, old) {
     }
     router.addRoutes(roleRoutes)
 }
-let session_data = JSON.parse(sessionStorage.getItem("session_data")||'{}')
-session_data.uType && addRoutes(session_data.uType, !['1', '2', '3', '4', '5', '6', '7'].includes(session_data.asrID))
+const resetRouter = () => {
+    const newRouter = new Router({
+        mode: 'history',
+        routes: staticRoutes
+    });
+    router.matcher = newRouter.matcher;
+}
+if(document.location.pathname.indexOf('/login') !== -1 || document.location.pathname == '/') {
+    // 刷新登录页触发
+} else {
+    // 刷新非登录页，不用重置路由
+    let session_data = JSON.parse(sessionStorage.getItem("session_data")||'{}')
+    session_data.uType && addRoutes(session_data.uType, !['1', '2', '3', '4', '5', '6', '7'].includes(session_data.asrID), true)
+}
 export {router, addRoutes}

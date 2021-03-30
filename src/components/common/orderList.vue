@@ -64,9 +64,10 @@
                             <template slot-scope="scope">
                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
-                                <el-tooltip v-if="scope.row.planType>=0" effect="dark" :content="scope.row.relatedApName||''">
+                                <el-tooltip v-if="scope.row.planType==1||scope.row.planType==2" effect="dark" :content="scope.row.relatedApName||''">
                                     <span class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
                                 </el-tooltip>
+                                <span v-else class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>

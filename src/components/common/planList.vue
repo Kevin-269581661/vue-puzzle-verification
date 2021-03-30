@@ -129,7 +129,9 @@
                                         <el-tooltip class="item" effect="dark"
                                                     :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
                                                     placement="top">
-                                            <p>
+                                            <p v-if="item.apState == '-1'">
+                                                {{item.city+'('+'--面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                            <p v-else>
                                                 {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                         </el-tooltip>
                                         <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
@@ -681,6 +683,7 @@
                     tmpObj = this.setTableData(data);
                     result.push(tmpObj);
                 }
+                console.log('result: ', result);
                 return result;
             },
             // 获取session数据
@@ -799,7 +802,6 @@
             },
             //新增意向方案查询意向方案草稿箱
             getProposalAdBackUp(params){
-                debugger
                 api.getApi(this.apiVar.AddspProposal + '/getAdBackUp', params).then(res => {
                     console.log('获取意向方案缓存', res)
                     this.continueEditLoading.close()
@@ -1543,7 +1545,7 @@
                 // console.log(obj.canLock); //false表示不能再预锁
                 // console.log(obj.unLock); //true 表示可解锁
                 for (let data of item.details) {
-
+                    data.apState=item.apState //新增字段,判断是否是意向方案,点位面数显示为--
                     if (asrIDarr.includes(data.asrID)) {
                         data.isshow = 0;
                     } else {

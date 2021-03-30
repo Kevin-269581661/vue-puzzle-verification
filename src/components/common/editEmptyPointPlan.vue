@@ -1008,7 +1008,7 @@
                 <el-table-column
                   label="广告限制"
                   min-width="130"
-                  prop="adLimit"
+                  prop="notPush"
                   :show-overflow-tooltip="true"
                 >
                   <template slot-scope="scope">
@@ -1459,23 +1459,23 @@
             <div class="planPanel noShareUl">
               <ul>
                 <li><em>方案名称：</em>{{ FAInfo.apName }}</li>
-                <li><em>所属客户：</em>{{ cName }}</li>
+                <li><em>所属客户：</em>{{ cName || "--"}}</li>
                 <li><em>所属品牌：</em>{{ cBand || "--" }}</li>
                 <!-- <li class="money">
                   <em>订单金额：</em>¥{{ priceFormat(totalPrice) }}
                 </li> -->
-                <li style="overflow: hidden; text-overflow: ellipsis">
-                  <!-- <em>协同选点：</em><span id="shareUrl">{{ shareADUrl }}</span>
+                <!-- <li style="overflow: hidden; text-overflow: ellipsis">
+                  <em>协同选点：</em><span id="shareUrl">{{ shareADUrl }}</span>
                   <el-button plain @click="copyUrl" class="urlBtn"
                     >复制</el-button
-                  > -->
+                  >
                   <el-button
                     @click="downLoadFanan()"
                     type="success"
                     class="urlBtn"
                     >导出方案</el-button
                   >
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -1535,6 +1535,12 @@
       <div class="finishBtn" v-if="active == 2">
         <el-button type="primary" @click="continueCreate">继续创建</el-button>
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
+        <el-button
+                    @click="downLoadFanan()"
+                    type="success"
+                    class="urlBtn"
+                    >导出方案</el-button
+                  >
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->
@@ -2499,6 +2505,7 @@ export default {
       // 当购物车点位数大于0时
       if (this.shopingList.length || this.isSelect) {
         this.changeApInfo();
+        this.computeMedia_AD()
       }
       return this.shopingList.length;
     },
@@ -2518,7 +2525,7 @@ export default {
         token: this.sessionData.token,
         apID: this.FAInfo.apID,
       };
-      this.clearDrafts();
+      // this.clearDrafts();
       api.getApi("/addsp/proposal/getAdBackUp", params).then((res) => {
         console.log("获取已选小区数据", res);
         //TODO:没有设置第0步的数据
@@ -4411,147 +4418,222 @@ export default {
     //   // }
     //   return importInfo;
     // },
+     //获取导出方案数据
+    getPreExcelData() {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apID: this.FAData.apID,
+      };
+      return api.getApi("/addsp/proposal/getPlanResList", params)
+    },
     // 第四步的导出方案
-    downLoadFanan() {
-      let arr = this.excelData(this.shopingList);
+      async downLoadFanan() {
+      let { data } = await this.getPreExcelData()
+      let arr = this.excelData(data.data);
       let allHead = [
-        "资源名称",
-        "市",
-        "区",
-        "商圈",
-        "资源地址",
-        "楼盘价格",
-        "入住年份",
-        "住户数量",
-        "出入口",
-        "楼栋数量",
-        "楼盘（写字楼）类型",
-        "地图中心点",
-        "可选面数",
-        "投放排期",
-      ];
-      let head = [
-        "在线协同选点链接(可地图查看社区)  " + this.shareADUrl,
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-      ];
-      if (
-        (this.sessionData.uType == "MD" &&
-          this.sessionData.mediaManageLevel == 1) ||
-        (this.sessionData.uType == "BD" &&
-          this.sessionData.saleManageLevel == 2)
-      ) {
-        allHead.push("归属公司");
-      }
-      /* if(this.customPermission.patrolPermission) {
-                    allHead.push('巡点问题', '通行情况');
-                } */
-      switch (this.customPermission.patrolPermission) {
-        case 1:
-          allHead.push("巡点问题", "通行情况");
-          break;
-        case 2:
-          allHead.push("巡点问题", "通行情况", "通电情况");
-          break;
-      }
+          "省份",
+          "城市",
+          "区域",
+          "资源名称",
+          "商圈",
+          "地址",
+          "媒介载体",
+          "楼栋数量",
+          "住户数量",
+          "楼盘价格",
+          "楼盘类型",
+          "入住年份",
+          "车位数",
+          "车流量",
+          "人流量",
+          "广告限制",
+          "计划投放数量(面)",
+        ];
+  
       sheetExcel.toDownload(
         allHead,
         arr,
-        this.planForm.planName + "点位表",
-        head
+        this.planForm.planName + "区位表",
+        // head
       );
     },
     // 处理数据
     excelData(arr) {
+      debugger
       console.log("arrr------excelData", arr);
       let dateArr = [];
-      let filtersData = filterFormat(arr, "schedule");
-      for (let item of filtersData) {
-        console.log(item);
-        let dateObj = {
-          sheetName: item.value,
-          showList: [],
-          resIDArr: [],
-        };
-        dateArr.push(dateObj);
+      let arr2 =[]
+      //将得到的数据除去不需要的
+      for (let item of arr) {
+        let obj ={
+          provinceName : item.provinceName,
+          cityName : item.cityName,
+          districtName : item.districtName,
+          resName : item.resName,
+          tradingArea : item.tradingArea,
+          resAddress : item.resAddress,
+          mVehicle : item.mVehicle,
+          fNum : item.fNum,
+          hNum : item.hNum,
+          hPrice : item.hPrice,
+          cType : item.cType,
+          chDay : item.chDay,
+          parkSpaceNum : item.parkSpaceNum,
+          carFlow : item.carFlow,
+          peopleFlow : item.peopleFlow,
+          notPush : item.notPush,
+          planAdsCnt : item.planAdsCnt,
+        }
+        arr2.push(obj);
       }
-      for (let data of arr) {
-        let obj = {
-          resID: data.resID,
-          resName: data.resName,
-          city: data.city,
-          rName: data.origin,
-          tradingArea: data.tradingArea,
-          resAddress: data.address,
-          hPrice: data.buildPrice,
-          chDay: data.liveYear,
-          hNum: data.houseNum,
-          dNum: data.dNum,
-          fNum: data.buildNum,
-          cType: data.buildType,
-          map: data.mapCenter,
-          adsNum: 1,
-          timeRange: "",
-        };
-        if (
-          (this.sessionData.uType == "MD" &&
-            this.sessionData.mediaManageLevel == 1) ||
-          (this.sessionData.uType == "BD" &&
-            this.sessionData.saleManageLevel == 2)
-        ) {
-          obj.asName = data.asName;
-        }
-        // 巡点权限(1：亲粤邻 2：北京)
-        if (this.customPermission) {
-          switch (this.customPermission.patrolPermission) {
-            case 1:
-              obj.remark = data.remark;
-              obj.trafficState = data.trafficState;
-              break;
-            case 2:
-              obj.remark = data.remark;
-              obj.trafficState = data.trafficState;
-              obj.allElectrifyState = data.allElectrifyState;
-              break;
-          }
-        }
-        for (let date of dateArr) {
-          if (data.schedule == date.sheetName) {
-            if (date.resIDArr.includes(data.resID)) {
-              for (let item of date.showList) {
-                if (item.resID == data.resID) {
-                  item.adsNum++;
-                  break;
-                }
-              }
-            } else {
-              obj.timeRange = date.sheetName;
-              date.resIDArr.push(data.resID);
-              date.showList.push(obj);
-            }
-            break;
-          }
-        }
+      let obj = {
+        sheetName : arr[0].schedule.replace(/[/]/g, "."),
+        showList: arr2
       }
-      for (let data of dateArr) {
-        for (let obj of data.showList) {
-          delete obj.resID;
-        }
-        data.sheetName = data.sheetName.replace(/[/]/g, ".");
-      }
-      // console.log('datearrr-----', dateArr);
+      dateArr.push(obj)
       return dateArr;
     },
+    // downLoadFanan() {
+    //   let arr = this.excelData(this.shopingList);
+    //   let allHead = [
+    //     "资源名称",
+    //     "市",
+    //     "区",
+    //     "商圈",
+    //     "资源地址",
+    //     "楼盘价格",
+    //     "入住年份",
+    //     "住户数量",
+    //     "出入口",
+    //     "楼栋数量",
+    //     "楼盘（写字楼）类型",
+    //     "地图中心点",
+    //     "可选面数",
+    //     "投放排期",
+    //   ];
+    //   let head = [
+    //     "在线协同选点链接(可地图查看社区)  " + this.shareADUrl,
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //     "",
+    //   ];
+    //   if (
+    //     (this.sessionData.uType == "MD" &&
+    //       this.sessionData.mediaManageLevel == 1) ||
+    //     (this.sessionData.uType == "BD" &&
+    //       this.sessionData.saleManageLevel == 2)
+    //   ) {
+    //     allHead.push("归属公司");
+    //   }
+    //   /* if(this.customPermission.patrolPermission) {
+    //                 allHead.push('巡点问题', '通行情况');
+    //             } */
+    //   switch (this.customPermission.patrolPermission) {
+    //     case 1:
+    //       allHead.push("巡点问题", "通行情况");
+    //       break;
+    //     case 2:
+    //       allHead.push("巡点问题", "通行情况", "通电情况");
+    //       break;
+    //   }
+    //   sheetExcel.toDownload(
+    //     allHead,
+    //     arr,
+    //     this.planForm.planName + "点位表",
+    //     head
+    //   );
+    // },
+    // // 处理数据
+    // excelData(arr) {
+    //   console.log("arrr------excelData", arr);
+    //   let dateArr = [];
+    //   let filtersData = filterFormat(arr, "schedule");
+    //   for (let item of filtersData) {
+    //     console.log(item);
+    //     let dateObj = {
+    //       sheetName: item.value,
+    //       showList: [],
+    //       resIDArr: [],
+    //     };
+    //     dateArr.push(dateObj);
+    //   }
+    //   for (let data of arr) {
+    //     let obj = {
+    //       resID: data.resID,
+    //       resName: data.resName,
+    //       city: data.city,
+    //       rName: data.origin,
+    //       tradingArea: data.tradingArea,
+    //       resAddress: data.address,
+    //       hPrice: data.buildPrice,
+    //       chDay: data.liveYear,
+    //       hNum: data.houseNum,
+    //       dNum: data.dNum,
+    //       fNum: data.buildNum,
+    //       cType: data.buildType,
+    //       map: data.mapCenter,
+    //       adsNum: 1,
+    //       timeRange: "",
+    //     };
+    //     if (
+    //       (this.sessionData.uType == "MD" &&
+    //         this.sessionData.mediaManageLevel == 1) ||
+    //       (this.sessionData.uType == "BD" &&
+    //         this.sessionData.saleManageLevel == 2)
+    //     ) {
+    //       obj.asName = data.asName;
+    //     }
+    //     // 巡点权限(1：亲粤邻 2：北京)
+    //     if (this.customPermission) {
+    //       switch (this.customPermission.patrolPermission) {
+    //         case 1:
+    //           obj.remark = data.remark;
+    //           obj.trafficState = data.trafficState;
+    //           break;
+    //         case 2:
+    //           obj.remark = data.remark;
+    //           obj.trafficState = data.trafficState;
+    //           obj.allElectrifyState = data.allElectrifyState;
+    //           break;
+    //       }
+    //     }
+    //     for (let date of dateArr) {
+    //       if (data.schedule == date.sheetName) {
+    //         if (date.resIDArr.includes(data.resID)) {
+    //           for (let item of date.showList) {
+    //             if (item.resID == data.resID) {
+    //               item.adsNum++;
+    //               break;
+    //             }
+    //           }
+    //         } else {
+    //           obj.timeRange = date.sheetName;
+    //           date.resIDArr.push(data.resID);
+    //           date.showList.push(obj);
+    //         }
+    //         break;
+    //       }
+    //     }
+    //   }
+    //   for (let data of dateArr) {
+    //     for (let obj of data.showList) {
+    //       delete obj.resID;
+    //     }
+    //     data.sheetName = data.sheetName.replace(/[/]/g, ".");
+    //   }
+    //   // console.log('datearrr-----', dateArr);
+    //   return dateArr;
+    // },
     // 导出空位
     downEmpty() {
       console.log("this.planForm.throwCity----", this.planForm.throwCity);
@@ -6482,19 +6564,19 @@ export default {
       return ifBoolea;
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
-    setMapAdsListInShopCar() {
-      console.log("执行了setShopDataByMapAD", this.mapADList);
-      let mapADList = this.mapADList; // tempData
-      mapADList.forEach((item) => {
+     setMapAdsListInShopCar() {
+      let mapAdsList = this.mapAdsList; // tempData
+      mapAdsList.forEach((item) => {
         item.checkBox = false;
         item.city = item.cityName;
       });
-
-      this.shopingList = mapADList;
+      this.clearDrafts();
+      this.handleImportDrafts(1, mapAdsList);
+      this.shopingList = mapAdsList;
       if (this.getMapLoading) {
         this.getMapLoading.close();
       }
-
+      this.dialogTableVisible = true;
       this.computeMedia_AD();
       this.judgeByselect();
     },
@@ -7654,6 +7736,8 @@ export default {
       api.postApi(this.apiVar.CreatePlan, params).then((res) => {
         console.log("creatAdPlancreatAdPlanres: ", res);
         if (res.data.SysCode == 200200) {
+          sessionStorage.setItem("plan_apid", res.data.data.apID);
+          this.FAData.apID = res.data.data.apID
           if (res.data.data.errorResNames) {
             this.ADloading.close();
             sessFun.messageFun("warning", "存在失败小区");
@@ -7673,7 +7757,6 @@ export default {
       });
     },
     // creatAdPlan() {
-    //   debugger;
     //   console.log("creatAdPlan", this.quotation);
     //   let arr = [];
     //   let cityArea = [];
@@ -8034,6 +8117,7 @@ export default {
     // },
     // 设置方案信息
     setPlanInfo() {
+      debugger
       let returnData = cacheAdPlan.getData(this.sessionData.uID);
       if (returnData) {
         this.unfinishedData = returnData;

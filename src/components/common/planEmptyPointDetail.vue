@@ -43,11 +43,11 @@
                   v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt097_ck03' }"
                   >编辑</el-button
                 >
-                <el-button type="primary" @click="edit()" v-if="role == 'MD'"
+                <el-button type="primary" @click="editPlan" v-if="role == 'MD'"
                   >配点</el-button
                 >
               </template>
-              <template v-if="planDetail.apState == 1">
+              <!-- <template v-if="planDetail.apState == 1">
                 <el-button
                   type="primary"
                   @click="edit()"
@@ -55,7 +55,7 @@
                   v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt097_ck03' }"
                   >编辑</el-button
                 >
-              </template>
+              </template> -->
             </div>
           </div>
           <div>
@@ -408,6 +408,10 @@ export default {
     },
   },
   methods: {
+    //跳转配点路由
+    editPlan(){
+      this.$router.push("./editPlan");
+    },
     filter(val) {
             let res = "";
             if (val) {
@@ -482,13 +486,13 @@ export default {
           "计划投放数量(面)",
         ];
         const filterVal = [
-          "cityName", //省份
+          "provinceName", //省份
           "cityName",
           "districtName",
           "resName",
           "tradingArea", 
-          "tradingArea",    // 地址
-          "tradingArea",  //媒介载体
+          "resAddress",    // 地址
+          "mVehicle",  //媒介载体
           "fNum",    //楼栋数量
           "hNum", 
           "hPrice",
@@ -500,50 +504,7 @@ export default {
           "notPush", //广告限制
           "planAdsCnt",
         ];
-        // const tHeader = [
-        //   "资源名称",
-        //   "市",
-        //   "区域",
-        //   "媒介载体",
-        //   "媒体名称",
-        //   "资产编号",
-        //   "投放面",
-        //   "投放日期",
-        //   "终止日期",
-        //   "商圈",
-        //   "楼盘类型/写字楼类型",
-        //   "楼盘价格",
-        //   "住户数量/办公室数量",
-        //   "楼栋数量",
-        //   "入住年份/建成年份",
-        //   "广告尺寸",
-        //   "可视画面",
-        //   "广告限制",
-        //   "媒体备注",
-        //   "详细地址",
-        // ];
-        // const filterVal = [
-        //   "resName",
-        //   "city",
-        //   "rName",
-        //   "mVehicle",
-        //   "mTitle",
-        //   "assetTag",
-        //   "asLab",
-        //   "timeRange",
-        //   "finishTimeRange",
-        //   "tradingArea",
-        //   "cType",
-        //   "hPrice",
-        //   "hNum",
-        //   "fNum",
-        //   "chDay",
-        //   "adSize",
-        //   "adViewSize",
-        //   "notPush",
-        //   "mRemark",
-        //   "resAddress",
-        // ];
+      
         if (
           (this.sessionData.uType == "MD" &&
             this.sessionData.mediaManageLevel == 1) ||
@@ -912,6 +873,22 @@ export default {
         })
         .catch(() => {});
     },
+    //清空草稿箱数据
+    clearDrafts(apid) {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apID:apid
+      };
+      api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
+        console.log("清空草稿箱", res);
+        if (res.data.SysCode === 200200) {
+          console.log("清除草稿箱失败成功");
+        } else {
+          sessFun.messageFun("warning", "清除草稿箱失败");
+        }
+      });
+    },
     // 编辑
     edit() {
       let apid = sessionStorage.getItem("plan_apid");
@@ -924,9 +901,10 @@ export default {
       };
       api
         .postApi(this.apiVar.Advertisement + "/CheckLock", info)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.data.SysCode) {
             if (!res.data.IsLock) {
+              await this.clearDrafts(apid)
               this.$router.push("./editEmptyPointPlan");
             } else {
               this.changeRoute();

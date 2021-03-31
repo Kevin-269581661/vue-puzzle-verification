@@ -17,7 +17,7 @@
             <li class="info-item">
               <span class="item-label">意向投放小区：</span>
               <span class="item-content">
-                {{ intentionInfo.planResCount||'--' }}个
+                {{ intentionInfo.planResCount||'--' }} 个
                 <span class="active" @click="getIntentionList">查看</span>
               </span>
             </li>
@@ -335,6 +335,7 @@
 <script>
 import api from "../../../api/api";
 // 时间格式化
+import moment from "moment";
 import timeFormat from "../../../commonFun/timeFormat.js";
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "./dialogTable.vue";
@@ -908,6 +909,7 @@ export default {
     }
   }
   .board1 .info-item {
+    display: flex;
     margin-top: 8px;
     .active {
       color: rgba(24, 144, 255, 1);

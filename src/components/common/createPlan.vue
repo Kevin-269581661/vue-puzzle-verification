@@ -1667,7 +1667,7 @@
               <ul>
                 <li><em>方案名称：</em>{{ planForm.planName }}</li>
                 <li><em>所属客户：</em>{{ cName || cacheCName || "--"}}</li>
-                <li><em>所属品牌：</em>{{ cBand || cachecBTitle || "--"}}</li>
+                <li><em>所属品牌：</em>{{ cBand || cacheBTitle || "--"}}</li>
                 <!-- <li class="money">
                   <em>订单金额：</em>¥{{ priceFormat(totalPrice) }}
                 </li> -->
@@ -8394,8 +8394,8 @@ export default {
           this.planForm.adcID=returnData.returnData,
           this.planForm.planName=returnData.apName,
           // this.planForm.throwCity=planFormThrowCity
-          this.cacheCName = returnData.cacheCName
-          this.cacheBTitle = returnData.cacheBTitle
+          this.cacheCName = returnData.cName
+          this.cacheBTitle = returnData.bTitle
         // this.active = 1;
         console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域

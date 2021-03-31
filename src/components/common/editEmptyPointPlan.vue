@@ -6456,6 +6456,8 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       let params = {
+        asrIDs:this.FAInfo.asrIDs,
+        suID :this.FAInfo.suID,
         apID: this.FAInfo.apID, //意向方案id
       };
       api

@@ -505,25 +505,25 @@ export default {
           "planAdsCnt",
         ];
       
-        if (
-          (this.sessionData.uType == "MD" &&
-            this.sessionData.mediaManageLevel == 1) ||
-          (this.sessionData.uType == "BD" &&
-            this.sessionData.saleManageLevel == 2)
-        ) {
-          tHeader.push("归属公司");
-          filterVal.push("asName");
-        }
-        switch (this.customPermission.patrolPermission) {
-          case 1:
-            tHeader.push("巡点问题", "通行情况");
-            filterVal.push("remark", "trafficState");
-            break;
-          case 2:
-            tHeader.push("巡点问题", "通行情况", "通电情况");
-            filterVal.push("remark", "trafficState", "electrifyState");
-            break;
-        }
+        // if (
+        //   (this.sessionData.uType == "MD" &&
+        //     this.sessionData.mediaManageLevel == 1) ||
+        //   (this.sessionData.uType == "BD" &&
+        //     this.sessionData.saleManageLevel == 2)
+        // ) {
+        //   tHeader.push("归属公司");
+        //   filterVal.push("asName");
+        // }
+        // switch (this.customPermission.patrolPermission) {
+        //   case 1:
+        //     tHeader.push("巡点问题", "通行情况");
+        //     filterVal.push("remark", "trafficState");
+        //     break;
+        //   case 2:
+        //     tHeader.push("巡点问题", "通行情况", "通电情况");
+        //     filterVal.push("remark", "trafficState", "electrifyState");
+        //     break;
+        // }
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, name);

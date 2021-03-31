@@ -84,7 +84,8 @@
                         </el-table-column>
                         <el-table-column prop="apTotal" label="方案价格" sortable="custom" width="120px" align="right">
                             <template slot-scope="scope">
-                                <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
+                                <span v-if="scope.row.apState == '-1'">--</span>
+                                <span v-else>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')&&role!='BD'"

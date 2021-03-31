@@ -150,7 +150,7 @@
             >
             </el-table-column>
             <el-table-column
-              prop="actualMediaCnt"
+              prop="actualAdsCnt"
               label="可投数量（面）"
               min-width="100"
             >

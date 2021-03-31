@@ -64,7 +64,7 @@
                   v-model="formDataObj.aFaceRateChecked"
                   class="combination"
                   name="type"
-                >A面占比(%)</el-checkbox>
+                >A面占比不高于(%)</el-checkbox>
                 <el-input-number :disabled="!formDataObj.aFaceRateChecked" v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
               </div>
             </el-form-item>
@@ -187,7 +187,7 @@
               >)
               <div class="divide-border"></div>
               上刊率50%以上的点位:<span class="tip-active">{{
-                tipObj.underHalfSpaceRate
+                (tipObj.underHalfSpaceRate*100).toFixed(2)
               }}%</span>
               <div class="divide-border"></div>
               配点失败小区<span class="tip-active warn"> {{
@@ -514,7 +514,7 @@ export default {
           label: "近3月上刊率",
           prop: "publishRate",
           width: "160px",
-          value: (row)=>`${(row.publishRate||0)*100}%`
+          value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
         },
       ],
     };
@@ -800,11 +800,6 @@ export default {
     },
     handleClose(done) {
       this.$emit('closeAddPoint')
-      /* this.$confirm("确认关闭？")
-        .then((_) => {
-          // done();
-        })
-        .catch((_) => {}); */
     },
     closeAsignPointTable() {
       this.$confirm('关闭后，所配点位将被清除',

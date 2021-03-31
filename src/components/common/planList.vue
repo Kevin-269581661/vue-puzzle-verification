@@ -941,7 +941,7 @@
                                 if(apID != key.apId){
                                     tempList.push({
                                         value: key.apId,
-                                        label: key.apName + '--' + key.cname + '--' + (key.pdStar||'') + '-' + (key.pdEnd||'')
+                                        label: key.apName + '（' + key.cname + ' · ' + (key.pdStar||'') + '-' + (key.pdEnd||'') + '）'
                                     })
                                 }
                             }
@@ -2110,10 +2110,17 @@
                 padding-bottom: 4px;
                 line-height: 24px;
             }
+            .el-input__inner {
+                padding: 0 12px;
+            }
             .el-input--small, .el-select--small {
                 width: 100%;
             }
-
+        }
+        .el-dialog__footer {
+            .el-button+.el-button {
+                margin-left: 10px;
+            }
         }
     }
     /deep/ .Import_dialog .el-upload-list__item{

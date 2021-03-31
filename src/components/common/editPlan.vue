@@ -5167,7 +5167,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '../../assets/component.scss';
+    // @import '../../assets/component.scss';
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 584px !important;
     }

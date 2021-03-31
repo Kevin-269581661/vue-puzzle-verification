@@ -74,8 +74,6 @@
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')"
                                                v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
-                                    <!-- <el-button plain @click="dialogOneKeyPoint = true"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点</el-button> -->
                                     <el-button plain @click="matchPoint">智能配点</el-button>
                                 </el-col>
                             </el-row>
@@ -911,37 +909,6 @@
                 </li>
             </ul>
         </el-dialog>
-        <!--一键选点模态框-->
-        <!-- <el-dialog
-            title="一键选点"
-            :visible.sync="dialogOneKeyPoint"
-            width="410px"
-            style="margin-top: 20vh;">
-            <div class="onKeyPointFrom">
-                <el-form
-                    ref="oneKeyPointData"
-                    :model="oneKeyPointData"
-                    label-width="85px"
-                    :rules="oneKeyPointDataRules">
-                    <el-form-item label="点位总量: "  prop="TotalPoint">
-                        <el-input v-model="oneKeyPointData.TotalPoint"></el-input>
-                    </el-form-item>
-                    <el-form-item label="每小区选: "  prop="pointNumByRes">
-                        <el-input v-model="oneKeyPointData.pointNumByRes"></el-input>
-                    </el-form-item>
-                    <el-form-item label="A面占比: " prop="A_cale" class="ABcaleItem">
-                        <div class="ABcalePercent">
-                            <el-input v-model="oneKeyPointData.A_cale"></el-input>
-                            <span class="percent">%</span>
-                        </div>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <span slot="footer" class="OneKeyPoint_footer">
-            <el-button @click="dialogOneKeyPoint = false">取 消</el-button>
-            <el-button type="primary" @click="oneKeyPointBtn('oneKeyPointData')" class="OneKeyPoint_footerBtn">一键选点</el-button>
-          </span>
-        </el-dialog> -->
         <!-- 导入方案弹出框 -->
         <el-dialog
             class="import_fanan"
@@ -1416,27 +1383,6 @@
                 orderArr: [],
                 shareADUrl: '',                // 协同选点url地址
                 workInSync: false,              // 是否点击协同选点按钮
-                dialogOneKeyPoint: false,    // 一键选点模态框
-                oneKeyPointData:{
-                    TotalPoint: '',
-                    pointNumByRes: '',
-                    A_cale: 0,
-                    B_cale: 0,
-                },                              // 一键选点的参数
-                oneKeyPointDataRules: {
-                    TotalPoint: [
-                        {required: true, message: '点位数不能为空', trigger: 'blur'},
-                        {validator: validateNum, trigger: 'blur'},
-                    ],
-                    pointNumByRes:[
-                        {required: true, message: '不能为空', trigger: 'blur'},
-                        {validator: validateNum, trigger: 'blur'},
-                    ],
-                    A_cale:[
-                        {required: true, message: 'A面占比不能为空', trigger: 'blur'},
-                        {validator: validateCale, trigger: 'blur'},
-                    ]
-                },
                 apid: '',                        // 编辑方案的id
                 aiCode: '',                        // 获取协同选点列表的密钥
                 shareADSData: {},                 //协同选点的数据包括选点列表
@@ -2162,7 +2108,7 @@
                             if(this.apid != key.apId){
                                 tempList.push({
                                     value: key.apId,
-                                    label: key.apName + '--' + key.cname + '--' + key.apcTime
+                                    label: key.apName + '（' + key.cname + ' · ' + key.apcTime + '）'
                                 })
                             }
                         }
@@ -2436,163 +2382,7 @@
                 this.mapBtn = false;
                 this.dialogVisible()
             },
-            // 模态框中的确认按钮
-            oneKeyPointBtn(item){
-                let IsBoolean = false
-                this.$refs[item].validate((valid) => {
-                    if (valid) {
-                        IsBoolean = true
-                    } else {
-                        console.log('error submit!!')
-                        return false;
-                    }
-                })
-
-                if(IsBoolean){
-                    console.log('一键选点',this.oneKeyPointData)
-                    if(Number(this.oneKeyPointData.TotalPoint) < Number(this.oneKeyPointData.pointNumByRes)){
-                        sessFun.messageFun('warning','每小区选择的个数不能大于点位总量')
-                    }else{
-                        this.oneKeySelectPoint()
-                    }
-
-                }else{
-                    sessFun.messageFun('warning','信息填写有误')
-                }
-
-            },
-            //一键选点
-            /* oneKeySelectPoint(){
-                console.log('一键选点')
-                let oneKeyPointLoading = this.$loading({
-                    lock: true,
-                    text: '快马加鞭选点中...',
-                    spinner: 'el-icon-loading',
-                    background: 'rgba(0, 0, 0, 0.7)'
-                });
-                let IsXhr = false
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    vehicle:'AdGate',
-                    act: 1,
-                    ls: this.dateInput[0].replace(/\./g, '/'),
-                    le: this.dateInput[1].replace(/\./g, '/'),
-                    rid: this.city[this.activeIndex].rid,
-                    total: this.oneKeyPointData.TotalPoint,
-                    everyResNumber: this.oneKeyPointData.pointNumByRes,
-                    labAPercent: this.oneKeyPointData.A_cale,
-                    rt:  this.recType,
-                    rhn: this.houseNum[0],
-                    shn: this.houseNum[1],
-                    shp: this.buildPrice[0] * 100,
-                    bhp: this.buildPrice[1] * 100,
-                    suid: this.BDData.uid,
-                    apId: this.activeAdPlan,
-                    asrIDs: this.BDData.asrIDs || ''
-                }
-                if(this.selectValue === '商圈'){
-                    params.ta = this.searchInput
-                }
-                // 过滤地区rID
-                console.log(this.areaName,'areaRid',this.areaRid)
-                if(this.areaName !== '全市'){
-                    params.qrid = this.areaRid
-                }
-                // 限制广告不能投放类型 ,分割
-                if(this.limitList.length > 0){
-                    params.adLimit = this.limitList.join(',')
-                }
-                for(let i in params){
-                    if(i !== 'labAPercent' && (params[i] === '' || params[i] === undefined || params[i] == 0)){
-                        delete params[i]
-                    }
-                }
-                api.postApi(this.apiVar.Advertisement + '/AutoSetAdS', params).then(res=>{
-                    console.log('一键选点',res.data)
-                    IsXhr = true
-                    let tempArr = []
-                    let resArr = res.data
-                    if(resArr !== '' && resArr.length > 0){
-                        for(let key of res.data){
-                            let selectInfo = {
-                                rid: this.city[this.activeIndex].rid,
-                                mID: key.mID,
-                                mVehicle: key.mVehicle,
-                                asID: key.asID,
-                                asIDs: key.asID,
-                                asLabs: key.asLab,
-                                resName: key.resName,
-                                resID: key.resID,
-                                city: this.city[this.activeIndex].rName,
-                                origin: key.rName,
-                                buildType: key.cType,
-                                houseNum: key.hNum,
-                                buildPrice: key.hPrice/100,
-                                mediaName: key.mTitle || '',
-                                trafficState: key.trafficState||'',
-                                electrifyState: key.electrifyState||'',
-                                remark: key.remark ? key.remark : '',
-                                buildNum: key.fNum,
-                                schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                                tradingArea: key.tradingArea,
-                                assetTag: key.assetTag,
-                                liveYear: key.chDay,
-                                adLimit: key.notPush,
-                                mapCenter: key.reference || '',      // 地图中心点
-                                address: key.resAddress || '',
-                                dNum: key.dNum || '',       // 出入口数
-                                A_B: key.asLab,
-                                checkBox: {A: false, B: false,ABC: false},
-                                connID: key.connID || '',
-                                connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
-                                industryInfos : key.industryInfos || [],
-                                mediaLevel: key.grade || '',
-                                adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
-                                asName: key.asName || '',         // 点位所属公司名称
-                                asrID: key.asrID,                 // 所属公司id
-                            }
-                            if(selectInfo.asLabs === 'A'){
-                                selectInfo.checkBox.A = true
-                            }else if(selectInfo.asLabs === 'B'){
-                                selectInfo.checkBox.B = true
-                            }
-                            if (this.qinLinJudgeHaveDiffAD(selectInfo)) {
-                                tempArr.push(selectInfo)
-                            }
-                        }
-                        if (this.shopingList.length !== 0) {
-                            for (let key of tempArr) {
-                                this.shopingList.push(key)
-                            }
-                        } else {
-                            this.shopingList = tempArr
-                        }
-                        this.dialogOneKeyPoint = false
-                        this.computeMedia_AD()
-                        this.judgeByselect()
-                        if(this.oneKeyPointData.TotalPoint == res.data.length){
-                            sessFun.messageFun('success','成功选择了'+ res.data.length +'面')
-                        }else{
-                            sessFun.messageFun('warning','满足条件的点位不足'+this.oneKeyPointData.TotalPoint+'面,成功选择了'+ res.data.length +'面')
-                        }
-
-                    }else{
-                        sessFun.messageFun('warning','选择失败')
-                    }
-                    oneKeyPointLoading.close()
-                })
-                let timer = setTimeout(()=>{
-                    if(!IsXhr){
-                        // console.log('取消一键选点')
-                        sessFun.messageFun('warning','点位选择异常')
-                        oneKeyPointLoading.close()
-                    }else{
-                        // console.log('一键选点已成功')
-                    }
-                    clearTimeout(timer)
-                },1000*65)
-            }, */
+            
             // step2, 资源类型切换
             activeRecType(num) {
                 this.buildValue = ''
@@ -5167,6 +4957,7 @@
 </script>
 
 <style scoped lang="scss">
+    // @import '../../assets/component.scss';
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 584px !important;
     }
@@ -6075,10 +5866,6 @@
     }
     .el-dialog__footer{
         text-align: center;
-    }
-    .OneKeyPoint_footer button{
-        padding: 0;
-        line-height: 34px;
     }
     /deep/ .clearShopping{
         cursor: pointer;

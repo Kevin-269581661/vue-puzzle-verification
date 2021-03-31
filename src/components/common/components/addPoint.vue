@@ -36,7 +36,7 @@
             <li class="info-item">
               <span class="item-label">投放排期：</span>
               <span class="item-content">
-                {{ `${intentionInfo.pdStartDate}~${intentionInfo.pdEndDate}` }}
+                {{ `${moment(intentionInfo.pdStartDate).format('LL')}-${moment(intentionInfo.pdEndDate).format('LL')}` }}
               </span>
             </li>
             <li class="info-item">
@@ -72,7 +72,7 @@
         </div>
         <div class="board board3">
           <div class="board-title">点位排斥</div>
-          <el-form label-position="left" label-width="82px">
+          <el-form label-position="left" label-width="70px">
             <el-form-item label="方案名称：">
               <el-select
                 size="mini"
@@ -122,7 +122,7 @@
       :visible="showDialogTable"
       @closeDialog="showDialogTable=false"
       title="意向投放小区"
-      width="83%"
+      width="1134px"
     >
       <div slot="topTip" class="table-top-tip">
         <i class="el-icon-info" style="color: #1890ff"></i>
@@ -155,16 +155,16 @@
       :visible="showAsignPointTableData"
       @closeDialog="closeAsignPointTable"
       title="配点结果详情"
-      width="83%"
+      width="1134px"
     >
       <div slot="topTip">
         <span class="table-top-comment">
           意向投放小区：<span>{{
             tipObj.planResCount
-          }}</span>
+          }}</span>个
           <span class="active comment-item" @click="getIntentionList">查看</span>
-          计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}</span
-          >个 客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
+          计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}个</span> 
+          客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
           客户要求：<span class="comment-item">{{ tipObj.customerDemand }}</span>
         </span>
         <div class="table-top-tip">
@@ -188,11 +188,11 @@
               <div class="divide-border"></div>
               上刊率50%以上的点位:<span class="tip-active">{{
                 tipObj.underHalfSpaceRate
-              }}</span>
+              }}%</span>
               <div class="divide-border"></div>
-              配点失败小区<span class="tip-active warn">{{
+              配点失败小区<span class="tip-active warn"> {{
                 tipObj.failResCount
-              }}</span
+              }} </span
               >个
             </span>
           </h4>
@@ -208,47 +208,32 @@
           <template slot-scope="props">
             <el-form label-position="left" inline>
               <el-form-item label="商圈：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
               </el-form-item>
               <el-form-item label="楼栋数量：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
               </el-form-item>
               <el-form-item label="资产编号：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
               </el-form-item>
               <el-form-item label="入住年份：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
               </el-form-item>
               <el-form-item label="广告限制：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
               </el-form-item>
-              <template v-if="customPermission.patrolPermission">
-                <el-form-item label="巡点问题：">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
-                  </div>
-                </el-form-item>
-                <el-form-item label="通行情况：">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
-                  </div>
-                </el-form-item>
-                <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
-                  <div class="cell-ellipsis" style="width: 80px">
-                    <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
-                  </div>
-                </el-form-item>
-              </template>
+            </el-form>
+
+            <el-form label-position="left" inline v-if="customPermission.patrolPermission">
+              <el-form-item label="巡点问题：">
+                <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
+              </el-form-item>
+              <el-form-item label="通行情况：">
+                <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
+              </el-form-item>
+              <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+                <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
@@ -256,7 +241,7 @@
       <el-table-column slot="otherColumn" label="操作" align="left">
         <template slot-scope="scope">
           <el-button
-            style="text-align: left"
+            style="text-align: left; color: #1890FF; font-size: 14px; height: 25px; line-height: 25px;"
             type="text"
             size="small"
             @click="deleteAsignItem(scope)"
@@ -290,36 +275,26 @@
       :visible="showFailDialogTable"
       @closeDialog="showFailDialogTable = false"
       title="配点失败小区"
-      width="83%"
+      width="1134px"
     >
       <template slot="aheadColumn">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
               <el-form-item label="商圈：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
               </el-form-item>
               <el-form-item label="楼栋数量：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
               </el-form-item>
               <el-form-item label="资产编号：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
               </el-form-item>
               <el-form-item label="入住年份：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
               </el-form-item>
               <el-form-item label="广告限制：">
-                <div class="cell-ellipsis" style="width: 80px">
-                  <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
-                </div>
+                <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -339,6 +314,7 @@ import moment from "moment";
 import timeFormat from "../../../commonFun/timeFormat.js";
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "./dialogTable.vue";
+moment.locale('zh-cn')
 export default {
   name: "addPoint",
   props: {
@@ -371,6 +347,7 @@ export default {
   },
   data() {
     return {
+      moment,
       matched: false,
       loading: false,
       showDialogTable: false,
@@ -422,16 +399,16 @@ export default {
           prop: "period",
           minWidth: "160px",
           tip: true,
-          value: (row)=>`${row.pdStartDate}~${row.pdEndDate}`
+          value: (row)=>`${timeFormat.toDate(row.pdStartDate, '/')}~${timeFormat.toDate(row.pdEndDate, '/')}`
         },
         {
-          label: "媒体数量（门）",
+          label: "媒体数量(门)",
           prop: "resMediaCount",
           width: "120px",
           align: "right",
         },
         {
-          label: "计划投放数量（面）",
+          label: "计划投放数量(面)",
           prop: "planPdNum",
           width: "160px",
           align: "right",
@@ -511,30 +488,27 @@ export default {
         },
         {
           label: "排期",
-          prop: "period",
+          prop: "schedules",
           minWidth: "160px",
-          value: (row)=>`${row.pdStartDate}~${row.pdEndDate}`,
           tip: true
         },
         {
           label: "已配/计划",
           prop: "mediaNum",
-          width: "120px",
+          width: "100px",
           value: (row)=>`${row.actualPdNum}/${row.planPdNum}`,
           align: "right"
         },
         {
           label: "媒体名称",
           prop: "mTitle",
-          width: "160px",
-          align: "right"
+          width: "120px"
         },
         {
           label: "投放面",
           prop: "asLab",
-          width: "160px",
-          value: (row)=>`${row.asLab}面`,
-          align: "right"
+          width: "120px",
+          value: (row)=>`${row.asLab}面`
         },
         {
           label: "近3月上刊率",
@@ -871,21 +845,39 @@ export default {
   },
 };
 </script>
-
+<style lang="scss">
+.el-message-box {
+  padding: 24px 26px;
+  .el-message-box__header {
+    padding: 0;
+  }
+  .el-message-box__content {
+    padding: 8px 0 24px;
+  }
+  .el-message-box__status+.el-message-box__message {
+    padding-left: 41px;
+  }
+  .el-message-box__btns {
+    padding: 0;
+  }
+}
+</style>
 <style lang="scss" scoped>
+@import '../../../assets/component.scss';
 /deep/ .add-point-dialog {
-  .el-dialog__header {
-    text-align: left;
-    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  .el-checkbox {
+    line-height: 27px;
   }
-  .el-dialog__header {
-    padding: 16px 24px;
+  .el-checkbox__label {
+    padding-left: 8px;
   }
-  .el-dialog__body {
-    padding: 0 24px;
-    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  .el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
+    width: 20px;
   }
   .el-dialog__footer {
+    .el-button+.el-button {
+      margin-left: 10px;
+    }
   }
   .el-form-item {
     .el-form-item__label {
@@ -896,6 +888,9 @@ export default {
   .el-checkbox-group {
     display: flex;
     flex-flow: column;
+  }
+  .el-input__inner{
+    height: 32px;
   }
   .board {
     padding: 16px 0;
@@ -920,8 +915,6 @@ export default {
       display: inline-block;
       vertical-align: text-bottom;
       overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
   }
   .board2 {
@@ -930,6 +923,7 @@ export default {
       margin-bottom: 0;
     }
     .el-form-item__label {
+      margin-bottom: 8px;
       line-height: 24px;
       font-weight: 600;
       color: rgba(0, 0, 0, 0.85);
@@ -942,19 +936,27 @@ export default {
       line-height: 28px;
       margin: 0;
       .el-input__inner {
-        width: 100px;
+        width: 64px;
         height: 28px;
+        padding: 0 28px 0 8px;
         line-height: 28px;
+        text-align: center;
       }
     }
     .combination {
     }
   }
   .board3 {
+    .board-title {
+      margin-bottom: 2px;
+    }
     .el-form-item {
       margin-bottom: 0;
       .el-form-item__label {
-        line-height: 46px;
+        line-height: 44px;
+      }
+      .el-form-item__content {
+        line-height: 44px;
       }
     }
   }
@@ -963,6 +965,9 @@ export default {
   display: flex;
   align-items: baseline;
   margin: 0 0 16px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 22px;
   h4 {
     font-size: 14px;
     display: inline-block;
@@ -996,6 +1001,10 @@ export default {
   border: 1px solid #bae7ff;
   border-radius: 4px;
   background: #e6f7ff;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 22px;
   .el-icon-info {
     color: #1890ff;
     margin-right: 4px;
@@ -1006,8 +1015,7 @@ export default {
   }
   .tip-active {
     font-size: 14px;
-    font-weight: normal;
-    margin: 0 6px;
+    font-weight: 600;
     cursor: pointer;
     color: #1890ff;
     &.right {
@@ -1019,10 +1027,9 @@ export default {
   }
   .divide-border {
     display: inline-block;
-    vertical-align: middle;
     width: 1px;
     height: 14px;
-    margin: 0 12px;
+    margin: 0 8px;
     background: rgba(0, 0, 0, 0.1);
   }
 }
@@ -1030,7 +1037,8 @@ export default {
   padding: 0 10px;
 }
 .cell-ellipsis {
-  width: 132px;
+  min-width: 30px;
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

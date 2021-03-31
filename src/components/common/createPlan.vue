@@ -245,10 +245,20 @@
                   </el-date-picker>
                 </div>
                 <div>
+                  <!-- <el-input-number 
+                    class="planAdsCntClass" 
+                    v-model="planAdsCnt" 
+                    :controls="false" 
+                    :min="1" 
+                    :max="1000">
+                    <template slot="prepend">投放面数</template>
+                  </el-input-number> -->
+
                   <el-input
                     class="planAdsCntClass"
                     placeholder="请输入内容"
-                    v-model="planAdsCnt"
+                    v-model.trim="planAdsCnt"
+                    @blur="planAdsCntBlur"
                   >
                     <template slot="prepend">投放面数</template>
                   </el-input>
@@ -347,12 +357,12 @@
                 >
                   广告门
                 </dd>
-                <dd
+                <!-- <dd
                   :class="mediaType === '道闸' ? 'active' : ''"
                   @click="activeMediaType('道闸')"
                 >
                   道闸
-                </dd>
+                </dd> -->
               </dl>
               <dl style="border: none">
                 <dt>城市区域：</dt>
@@ -428,7 +438,7 @@
                     >
                     </el-option>
                   </el-select>
-                  <el-select
+                  <!-- <el-select
                     v-model="activeGrade"
                     placeholder="媒体等级"
                     class="otherSelect"
@@ -439,7 +449,7 @@
                     <el-option label="A级" value="A"></el-option>
                     <el-option label="B级" value="B"></el-option>
                     <el-option label="C级" value="C"></el-option>
-                  </el-select>
+                  </el-select> -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -1192,7 +1202,7 @@
                     {{ scope.row.tradingArea || "--" }}
                   </template>
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                   v-if="customPermission.patrolPermission == 2"
                   label="通电情况"
                   align="right"
@@ -1201,7 +1211,7 @@
                   <template slot-scope="scope">
                     {{ scope.row.electrifyState || "--" }}
                   </template>
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column
                   label="广告限制"
                   min-width="130"
@@ -1209,7 +1219,7 @@
                   :show-overflow-tooltip="true"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.adLimit || "--" }}</span>
+                    <span>{{ scope.row.notPush || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -1730,11 +1740,11 @@
       <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
       <div class="finishBtn" v-if="active == 2">
-        <el-button type="primary" @click="continueCreate">继续创建</el-button>
+        <el-button type="default" @click="continueCreate">继续创建</el-button>
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
         <el-button
                     @click="downLoadFanan()"
-                    type="success"
+                    type="primary"
                     class="urlBtn"
                     >导出方案</el-button
                   >
@@ -2237,9 +2247,10 @@ export default {
     let validateBudget = (rule, value, callback) => {
       if (value) {
         // 数字/货币金额 (只支持正数、不支持校验千分位分隔符)
-        let reg = /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0){1}$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/;
+        // let reg = /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0){1}$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/;
+        let reg = /^\d{1,}$/
         if (!reg.test(value)) {
-          callback(new Error("请输入正数"));
+          callback(new Error("请输入正整数"));
         } else {
           if (value > 9999999) {
             callback(new Error("预算不能大于9,999,999"));
@@ -2316,7 +2327,7 @@ export default {
       importDraftsType: "",
       importDraftsConfig: {},
       //搜索旁投放面数
-      planAdsCnt: "",
+      planAdsCnt: 1,
       isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
@@ -2672,6 +2683,7 @@ export default {
     // 获取未完成的方案并填充
     this.routePath = this.$route.fullPath;
     if (this.routePath.indexOf("unfinishedPlan") !== -1) {
+      this.active = 1;
       this.getDrafts();
       // this.setPlanInfo();
     }
@@ -2718,6 +2730,14 @@ export default {
     // },
   },
   methods: {
+    //投放面数限制
+    planAdsCntBlur(e){
+      let reg = /^\d{1,}$/;
+      let boolean =reg.test(e.target.value)
+      if(!boolean){
+        e.target.value = ""
+      }
+    },
     //获取草稿箱数据
     //TODO获取草稿箱数据
     getDrafts() {
@@ -6336,7 +6356,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            sessFun.messageFun("ssuccess", `成功加入${this.mapAdsList.length - this.shopingList.length}个小区`);
+            sessFun.messageFun("success", `成功获取到${this.mapAdsList.length - this.shopingList.length}条数据`);
             this.setMapAdsListInShopCar();
             // localStorage.removeItem("qinlinMapCode");
             this.mapBtn = true
@@ -8380,7 +8400,7 @@ export default {
           this.planForm.throwCity=planFormThrowCity
           this.cacheCName = returnData.cacheCName
           this.cacheBTitle = returnData.cacheBTitle
-        this.active = 1;
+        // this.active = 1;
         console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域
         this.getAreaFun();
@@ -8696,7 +8716,7 @@ export default {
 .content_bottom_wrap {
   background: #ffffff;
   border: 1px solid #dedede;
-  padding: 20px 18px 40px 18px;
+  padding: 32px 18px;
 }
 
 .content_top_wrap .content_top_head {
@@ -9594,8 +9614,11 @@ export default {
   transform: translateX(-40px);
   border-left: 1px solid #d9d9d9;
 }
-.planAdsCntClass {
-  width: 20px !important;
+/deep/ .planAdsCntClass.el-input {
+  width:200px;
+  .el-input__inner{
+  width: 105px !important;
+  }
 }
 </style>
 <style>

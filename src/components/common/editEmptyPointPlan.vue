@@ -150,12 +150,12 @@
                 >
                   广告门
                 </dd>
-                <dd
+                <!-- <dd
                   :class="mediaType === '道闸' ? 'active' : ''"
                   @click="activeMediaType('道闸')"
                 >
                   道闸
-                </dd>
+                </dd> -->
               </dl>
               <dl style="border: none">
                 <dt>城市区域：</dt>
@@ -231,7 +231,7 @@
                     >
                     </el-option>
                   </el-select>
-                  <el-select
+                  <!-- <el-select
                     v-model="activeGrade"
                     placeholder="媒体等级"
                     class="otherSelect"
@@ -242,7 +242,7 @@
                     <el-option label="A级" value="A"></el-option>
                     <el-option label="B级" value="B"></el-option>
                     <el-option label="C级" value="C"></el-option>
-                  </el-select>
+                  </el-select> -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -1012,7 +1012,7 @@
                   :show-overflow-tooltip="true"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.adLimit || "--" }}</span>
+                    <span>{{ scope.row.notPush || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -1533,11 +1533,11 @@
       <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
       <div class="finishBtn" v-if="active == 2">
-        <el-button type="primary" @click="continueCreate">继续创建</el-button>
+        <el-button type="default" @click="continueCreate">继续创建</el-button>
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
         <el-button
                     @click="downLoadFanan()"
-                    type="success"
+                    type="primary"
                     class="urlBtn"
                     >导出方案</el-button
                   >
@@ -6462,7 +6462,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            sessFun.messageFun("ssuccess", `成功加入${this.mapAdsList.length - this.shopingList.length}个小区`);
+            sessFun.messageFun("success", `成功获取到${this.mapAdsList.length - this.shopingList.length}条数据`);
             this.setMapAdsListInShopCar();
             // localStorage.removeItem("qinlinMapCode");
             this.mapBtn = true
@@ -8406,7 +8406,7 @@ export default {
 .content_bottom_wrap {
   background: #ffffff;
   border: 1px solid #dedede;
-  padding: 20px 18px 40px 18px;
+  padding: 32px 18px;
 }
 
 .content_top_wrap .content_top_head {
@@ -9304,8 +9304,11 @@ export default {
   transform: translateX(-40px);
   border-left: 1px solid #d9d9d9;
 }
-.planAdsCntClass {
-  width: 20px !important;
+/deep/ .planAdsCntClass.el-input {
+  width:200px;
+  .el-input__inner{
+  width: 105px !important;
+  }
 }
 </style>
 <style>

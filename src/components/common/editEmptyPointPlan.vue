@@ -4460,7 +4460,6 @@ export default {
     },
     // 处理数据
     excelData(arr) {
-      debugger
       console.log("arrr------excelData", arr);
       let dateArr = [];
       let arr2 =[]
@@ -4488,7 +4487,7 @@ export default {
         arr2.push(obj);
       }
       let obj = {
-        sheetName : arr[0].schedule.replace(/[/]/g, "."),
+        sheetName : "小区列表",
         showList: arr2
       }
       dateArr.push(obj)
@@ -8117,7 +8116,6 @@ export default {
     // },
     // 设置方案信息
     setPlanInfo() {
-      debugger
       let returnData = cacheAdPlan.getData(this.sessionData.uID);
       if (returnData) {
         this.unfinishedData = returnData;

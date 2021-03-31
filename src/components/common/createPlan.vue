@@ -4398,7 +4398,6 @@ export default {
     },
     // 处理数据
     excelData(arr) {
-      debugger
       console.log("arrr------excelData", arr);
       let dateArr = [];
       let arr2 =[]
@@ -4426,7 +4425,7 @@ export default {
         arr2.push(obj);
       }
       let obj = {
-        sheetName : arr[0].schedule.replace(/[/]/g, "."),
+        sheetName : "小区列表",
         showList: arr2
       }
       dateArr.push(obj)
@@ -6663,86 +6662,86 @@ export default {
     //   this.judgeByselect();
     // },
     // 判断点位是否已存在购物车（亲邻地图）
-    qinLinJudgeHaveDiffAD(data, SourceType) {
-      let ADData = data;
-      let shopArr = this.shopingList;
-      let ifBoolea = true;
-      if (shopArr.length !== 0) {
-        for (let i = 0; i < shopArr.length; i++) {
-          if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
-            console.log("相同mid,相同面", ADData);
-            let ADScheArr = ADData.schedule.split("-");
-            let shopScheArr = shopArr[i].schedule.split("-");
-            // 全等
-            if (
-              ADScheArr[0] == shopScheArr[0] &&
-              ADScheArr[1] == shopScheArr[1]
-            ) {
-              if (SourceType === "mapAds") {
-                let centerName = "";
-                if (ADData.reference && ADData.reference.length) {
-                  for (let key of ADData.reference) {
-                    let keyCenter =
-                      key.centerName +
-                      "-" +
-                      key.centerAddress +
-                      "-" +
-                      key.distance +
-                      "米";
-                    if (!shopArr[i].mapCenter.includes(keyCenter)) {
-                      centerName += keyCenter + ",";
-                    }
-                  }
-                }
-                if (shopArr[i].mapCenter !== "") {
-                  shopArr[i].mapCenter = shopArr[i].mapCenter + centerName;
-                } else {
-                  shopArr[i].mapCenter = centerName;
-                }
-              }
-              ifBoolea = false;
-              break;
-              // 左相交
-            } else if (
-              ADScheArr[0] < shopScheArr[0] &&
-              ADScheArr[1] >= shopScheArr[0] &&
-              ADScheArr[1] <= shopScheArr[1]
-            ) {
-              ifBoolea = false;
-              break;
-              // 被包含
-            } else if (
-              ADScheArr[0] >= shopScheArr[0] &&
-              ADScheArr[1] <= shopScheArr[1]
-            ) {
-              ifBoolea = false;
-              break;
-              // 右相交
-            } else if (
-              ADScheArr[0] >= shopScheArr[0] &&
-              ADScheArr[0] <= shopScheArr[1] &&
-              ADScheArr[1] > shopScheArr[1]
-            ) {
-              ifBoolea = false;
-              break;
-              // 包含
-            } else if (
-              ADScheArr[0] < shopScheArr[0] &&
-              ADScheArr[1] > shopScheArr[1]
-            ) {
-              ifBoolea = false;
-              break;
-            } else {
-              console.log("else");
-              ifBoolea = true;
-            }
-          }
-        }
-      } else {
-        return ifBoolea;
-      }
-      return ifBoolea;
-    },
+    // qinLinJudgeHaveDiffAD(data, SourceType) {
+    //   let ADData = data;
+    //   let shopArr = this.shopingList;
+    //   let ifBoolea = true;
+    //   if (shopArr.length !== 0) {
+    //     for (let i = 0; i < shopArr.length; i++) {
+    //       if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
+    //         console.log("相同mid,相同面", ADData);
+    //         let ADScheArr = ADData.schedule.split("-");
+    //         let shopScheArr = shopArr[i].schedule.split("-");
+    //         // 全等
+    //         if (
+    //           ADScheArr[0] == shopScheArr[0] &&
+    //           ADScheArr[1] == shopScheArr[1]
+    //         ) {
+    //           if (SourceType === "mapAds") {
+    //             let centerName = "";
+    //             if (ADData.reference && ADData.reference.length) {
+    //               for (let key of ADData.reference) {
+    //                 let keyCenter =
+    //                   key.centerName +
+    //                   "-" +
+    //                   key.centerAddress +
+    //                   "-" +
+    //                   key.distance +
+    //                   "米";
+    //                 if (!shopArr[i].mapCenter.includes(keyCenter)) {
+    //                   centerName += keyCenter + ",";
+    //                 }
+    //               }
+    //             }
+    //             if (shopArr[i].mapCenter !== "") {
+    //               shopArr[i].mapCenter = shopArr[i].mapCenter + centerName;
+    //             } else {
+    //               shopArr[i].mapCenter = centerName;
+    //             }
+    //           }
+    //           ifBoolea = false;
+    //           break;
+    //           // 左相交
+    //         } else if (
+    //           ADScheArr[0] < shopScheArr[0] &&
+    //           ADScheArr[1] >= shopScheArr[0] &&
+    //           ADScheArr[1] <= shopScheArr[1]
+    //         ) {
+    //           ifBoolea = false;
+    //           break;
+    //           // 被包含
+    //         } else if (
+    //           ADScheArr[0] >= shopScheArr[0] &&
+    //           ADScheArr[1] <= shopScheArr[1]
+    //         ) {
+    //           ifBoolea = false;
+    //           break;
+    //           // 右相交
+    //         } else if (
+    //           ADScheArr[0] >= shopScheArr[0] &&
+    //           ADScheArr[0] <= shopScheArr[1] &&
+    //           ADScheArr[1] > shopScheArr[1]
+    //         ) {
+    //           ifBoolea = false;
+    //           break;
+    //           // 包含
+    //         } else if (
+    //           ADScheArr[0] < shopScheArr[0] &&
+    //           ADScheArr[1] > shopScheArr[1]
+    //         ) {
+    //           ifBoolea = false;
+    //           break;
+    //         } else {
+    //           console.log("else");
+    //           ifBoolea = true;
+    //         }
+    //       }
+    //     }
+    //   } else {
+    //     return ifBoolea;
+    //   }
+    //   return ifBoolea;
+    // },
     // // 移除同行资源点位
     // removeCommentIndustryAds(letter) {
     //   let shopingData = this.shopShowList;

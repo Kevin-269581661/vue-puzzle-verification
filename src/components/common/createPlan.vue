@@ -2897,6 +2897,7 @@ export default {
       this.importDraftsConfig.bID = this.planForm.companyBrand; // 公司品牌
       this.importDraftsConfig.adcID = this.planForm.adcID; // 客户联系人
       this.importDraftsConfig.apName = this.planForm.planName; // 意向方案名称
+      this.importDraftsConfig.rIDs = this.planForm.throwCity; // 选择的城市
       this.getAdsParamsData = {
         prID: this.city[0].rid,
         riD: this.city[0].rid,
@@ -4943,6 +4944,7 @@ export default {
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
       this.getAdsParamsData.suID = this.BDData.uid;
       this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
+      this.getAdsParamsData.pageNum = this.pageNum;
 
 
       //   startDate: this.dateInput[0], //开始时间  必填
@@ -6350,6 +6352,7 @@ export default {
         bID: this.planForm.companyBrand,
         customerBudget: +this.planForm.customerBudget,
         customerDemand: this.planForm.customerDemand,
+        asrIDs: this.planForm.pointOfAsrIDs.join(","),
       };
       api
         .postApi_json(this.apiVar.mapApi + "/proposal/resListByUid", params)
@@ -6588,6 +6591,9 @@ export default {
       });
       this.clearDrafts();
       this.handleImportDrafts(1, mapAdsList);
+      if(!mapAdsList.length){
+        this.changeApInfo()
+      }
       this.shopingList = mapAdsList;
       if (this.getMapLoading) {
         this.getMapLoading.close();
@@ -8373,31 +8379,21 @@ export default {
         this.BDData.uid = returnData.suID;
         this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
         this.throwCity = [];
-        returnData.resList.forEach(item => {
+         this.planForm.throwCity = []
+        returnData.cityList.forEach(item => {
           let cityObj = {
-                    label: item.cityName,
-                    value: item.cityId,
+                    label: item.rName,
+                    value: item.rID,
                   };
-             this.throwCity.push(cityObj)     
+             this.throwCity.push(cityObj)
+             this.planForm.throwCity.push(item.rID)  
         });
-        //去重
-        let map=new Map()
-        for(let i=0;i<this.throwCity.length;i++){
-          if(!map.get(this.throwCity[i])){
-            map.set(this.throwCity[i].label,this.throwCity[i])
-          }
-        }
-        this.throwCity = [...map.values()]
-        let planFormThrowCity = []
-        this.throwCity.forEach(itme=>{
-          planFormThrowCity.push(itme.value)
-        })
           this.planForm.customerBudget=returnData.customerBudget,
           this.planForm.customerDemand=returnData.customerDemand,
           this.planForm.companyBrand=returnData.bID,
           this.planForm.adcID=returnData.returnData,
           this.planForm.planName=returnData.apName,
-          this.planForm.throwCity=planFormThrowCity
+          // this.planForm.throwCity=planFormThrowCity
           this.cacheCName = returnData.cacheCName
           this.cacheBTitle = returnData.cacheBTitle
         // this.active = 1;

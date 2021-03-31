@@ -5056,6 +5056,7 @@ export default {
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
       this.getAdsParamsData.suID = this.BDData.uid;
       this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
+      this.getAdsParamsData.pageNum = this.pageNum;
 
       //   startDate: this.dateInput[0], //开始时间  必填
       //   endDate: this.dateInput[1], //结束时间 必填

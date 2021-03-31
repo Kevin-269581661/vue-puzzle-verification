@@ -263,7 +263,6 @@
             },
             // 判断是否已提交地图选择点位,并跳转到创建方案页面
             getMapAdsAndGotoPlan(){
-                debugger
                 let indexData = {
                     dateInput: this.dateInput,
                     rid: this.mapCity.toString(),

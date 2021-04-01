@@ -1,15 +1,17 @@
-/deep/ .el-dialog__header {
-  padding: 16px 24px;
-  text-align: left;
-  border-bottom: 1px solid rgba(233, 233, 233, 1);
-}
-/deep/ .el-dialog__body {
-  padding: 0 24px;
-  border-bottom: 1px solid rgba(233, 233, 233, 1);
-}
-/deep/ .el-dialog__footer {
-  padding: 11px 20px;
-}
-.el-button--primary {
-  background-color: rgba(24, 144, 255, 1);
+/deep/ .custom-dialog-wrapper {
+  .el-dialog__header {
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  }
+  .el-dialog__body {
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  }
+  .el-dialog__footer {
+    padding: 11px 20px;
+  }
+  .el-button--primary {
+    background-color: rgba(24, 144, 255, 1);
+  }
 }

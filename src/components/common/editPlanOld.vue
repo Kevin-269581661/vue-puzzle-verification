@@ -577,12 +577,13 @@
                         <el-dialog title="已选点位" :visible.sync="dialogTableVisible"
                                    :close-on-click-modal="false"
                                    :close-on-press-escape="false"
-                                   :before-close="shopingBeforeClose">
-                            <template slot-scope="scope">
+                                   :before-close="shopingBeforeClose"
+                                   custom-class="custom-dialog-wrapper shop-cart-wrapper">
+                            <template>
                                 <div class="table_wrap car-list" style="margin-top: 60px"
-                                     :visible.sync="dialogTableVisible" v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+                                    v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
                                     <div class="table_box shopcar_box">
-                                        <el-row style="margin-bottom:10px;">
+                                        <el-row class="top-row">
                                             <el-col :span="8">
                                                 <el-radio-group v-model="activeName" size="small" @change="handleClick">
                                                     <el-radio-button :label="item.type.toString()" v-for="item of typeShopList" :key="item.type">{{item.mVehicle}}</el-radio-button>
@@ -691,17 +692,22 @@
                                                     <span v-show="!scope.row.share">{{scope.row.resName}}</span>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column prop="mediaName" label="媒体名称" min-width="130" class="tar">
-                                                <template slot-scope="scope">
-                                                    <el-tooltip v-if="scope.row.mediaName.length >= 5" class="item" effect="dark" :content="scope.row.mediaName" placement="bottom-start">
-                                                        <span>{{scope.row.mediaName}}</span>
-                                                    </el-tooltip>
-                                                    <span v-else> {{ scope.row.mediaName}}</span>
-                                                </template>
-                                            </el-table-column>
                                             <el-table-column prop="city" label="城市" min-width="80">
                                             </el-table-column>
                                             <el-table-column prop="origin" label="区域" min-width="80">
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="buildType"
+                                                label="楼盘类型"
+                                                min-width="85">
+                                            </el-table-column>
+                                            <el-table-column
+                                                prop="schedules"
+                                                label="排期"
+                                                min-width="185">
+                                                <template slot-scope="scope">
+                                                    <span :class="scope.row.changeError ? 'change_defeat_schedules' : ''">{{scope.row.schedules}}</span>
+                                                </template>
                                             </el-table-column>
                                             <el-table-column
                                                 prop="scope"
@@ -717,10 +723,13 @@
                                                     <span v-else> {{ scope.row.mapCenter || '--' }} </span>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column
-                                                prop="buildType"
-                                                label="楼盘类型"
-                                                min-width="85">
+                                            <el-table-column prop="mediaName" label="媒体名称" min-width="130" class="tar">
+                                                <template slot-scope="scope">
+                                                    <el-tooltip v-if="scope.row.mediaName.length >= 5" class="item" effect="dark" :content="scope.row.mediaName" placement="bottom-start">
+                                                        <span>{{scope.row.mediaName}}</span>
+                                                    </el-tooltip>
+                                                    <span v-else> {{ scope.row.mediaName}}</span>
+                                                </template>
                                             </el-table-column>
                                             <el-table-column
                                                 prop="mediaLevel"
@@ -728,14 +737,6 @@
                                                 min-width="85">
                                                 <template slot-scope="scope">
                                                     {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
-                                                </template>
-                                            </el-table-column>
-                                            <el-table-column
-                                                prop="schedules"
-                                                label="排期"
-                                                min-width="185">
-                                                <template slot-scope="scope">
-                                                    <span :class="scope.row.changeError ? 'change_defeat_schedules' : ''">{{scope.row.schedules}}</span>
                                                 </template>
                                             </el-table-column>
                                             <el-table-column min-width="65px">
@@ -774,8 +775,8 @@
                                         </div>
                                     </div>
 
-                                    <div style="text-align: center; margin-top: 10px;">
-                                        <el-button @click="goBack" type="primary"
+                                    <div class="shop-cart-footer">
+                                        <el-button @click="goBack" type="default"
                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt071_ck08'}">返回
                                         </el-button>
                                         <el-button @click="next" type="primary"
@@ -5563,6 +5564,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../../assets/component.scss';
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 584px !important;
     }
@@ -5600,16 +5602,14 @@
         z-index: 99;
     }
     .mapBtn {
+        display: inline-block;
         min-width: 110px;
         text-align: center;
-        display: inline-block;
-        /* padding: 3px; */
         border: 1px solid #D9D9D9;
         border-radius: 4px;
-        font-family: PingFangSC-Regular;
         font-size: 14px;
+        vertical-align: bottom;
         color: rgba(0, 0, 0, 0.65);
-        margin-bottom: 5px;
         cursor: pointer;
     }
 
@@ -5624,7 +5624,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 10px;
+        margin-top: 16px;
+        margin-bottom: 24px;
     }
     /*购物车提示信息*/
     .warningInfoColor{
@@ -5683,7 +5684,6 @@
         width: 300px;
         height: 34px;
     }
-
     .shopAnimate, .shopAnimateAll {
         position: fixed;
         top: 574px;
@@ -6168,6 +6168,31 @@
     }
 
     /*购物车列表*/
+    /deep/ .shop-cart-wrapper {
+        .shopcar_box {
+            padding: 24px 24px 0;
+        }
+        .top-row {
+            margin-bottom:10px;
+            .el-input__icon {
+                height: 32px;
+                line-height: 32px;
+            }
+            .el-input__inner {
+                height: 32px;
+                line-height: 32px;
+            }
+        }
+        .shop-cart-footer {
+            padding-top: 10px;
+            text-align: center;
+            border-top: 1px solid rgba(233, 233, 233, 1);
+        }
+        .el-dialog__body {
+            padding: 0;
+            border-bottom: none;
+        }
+    }
     .car-title {
         background: #E6F7FF;
         border: 1px solid #BAE7FF;
@@ -6531,8 +6556,8 @@
         color: #1890ff;
         font-size: 14px;
         position: absolute;
-        top:96px;
-        right: 132px;
+        top: 113px;
+        right: 468px;
         z-index: 10;
         line-height: 45px;
         cursor: pointer;
@@ -6624,6 +6649,9 @@
         background: #FF6868;
         width: 5px;
         height: 5px;
+    }
+    /deep/ .el-pagination__sizes .el-input__inner{
+        height: 28px;
     }
     .ad_pagination /deep/ .el-pagination__sizes .el-input__inner{
         width: 100px;

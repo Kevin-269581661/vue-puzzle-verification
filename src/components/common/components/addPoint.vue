@@ -7,7 +7,7 @@
       :show-close="false"
       :before-close="handleClose"
       :close-on-click-modal="false"
-      custom-class="add-point-dialog"
+      custom-class="custom-dialog-wrapper add-point-dialog"
       center
     >
       <div v-loading="loading">
@@ -543,7 +543,8 @@ export default {
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
-        showClose: false
+        showClose: false,
+        customClass: 'messageBoxCustom'
       })
       .then((_) => {
         this.matched = false
@@ -623,7 +624,8 @@ export default {
           showCancelButton: false,
           closeOnClickModal:false,
           closeOnPressEscape: false,
-          showClose: false
+          showClose: false,
+          customClass: 'messageBoxCustom'
         }).then(() => {
           this.getSuccessPoint(matchRes)
         })
@@ -810,7 +812,8 @@ export default {
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
-        showClose: false
+        showClose: false,
+        customClass: 'messageBoxCustom'
       })
       .then((_) => {
         this.showAsignPointTableData = false;
@@ -841,13 +844,33 @@ export default {
 };
 </script>
 <style lang="scss">
-.el-message-box {
-  padding: 24px 26px;
+.messageBoxCustom {
+  padding: 24px 24px;
+  .el-button--primary {
+    background-color: rgba(24, 144, 255, 1);
+  }
   .el-message-box__header {
     padding: 0;
+    .el-message-box__title {
+      padding-left: 41px;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+    }
   }
   .el-message-box__content {
     padding: 8px 0 24px;
+    .el-message-box__status {
+      position: absolute;
+      top: -20px;
+    }
+    .el-message-box__message p {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+    }
   }
   .el-message-box__status+.el-message-box__message {
     padding-left: 41px;
@@ -952,6 +975,12 @@ export default {
       }
       .el-form-item__content {
         line-height: 44px;
+      }
+      .el-select {
+        width: 100%;
+        .el-input__inner {
+          width: 100%;
+        }
       }
     }
   }

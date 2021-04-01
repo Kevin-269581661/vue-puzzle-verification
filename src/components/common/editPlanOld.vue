@@ -100,8 +100,8 @@
                             </dl>
                             <dl class="city-proper" v-for="(list, index) of area" :key="index"
                                 v-show=" index == activeIndex">
-                                <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
-                                    @click="activeArea(item)">{{item.rName}}
+                                <dd v-for="(item, itemIndex) of list" :class="item.rName == areaName ? 'active' : ''"
+                                    @click="activeArea(item)" :key="itemIndex">{{item.rName}}
                                 </dd>
                             </dl>
                             <dl style="border: none">
@@ -305,7 +305,7 @@
                                                     trigger="hover">
                                                     <span v-if="scope.row.adlInfo === ''">暂无被占信息</span>
                                                     <ul v-else>
-                                                        <li v-for="item in scope.row.adlInfo">
+                                                        <li v-for="(item, itemIndex) in scope.row.adlInfo" :key="itemIndex">
                                                             <div v-if="item.asState">
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
@@ -339,7 +339,7 @@
                                                     trigger="hover">
                                                     <span v-if="scope.row.adlInfo === ''">暂无被占信息</span>
                                                     <ul v-else>
-                                                        <li v-for="item in scope.row.adlInfo">
+                                                        <li v-for="(item, adlInfoIndex) in scope.row.adlInfo" :key="adlInfoIndex">
                                                             <div v-if="item.asState">
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
@@ -869,7 +869,7 @@
             top="30vh"
             width="30%">
             <ul>
-                <li v-for="item in beOccupiedAdsData">
+                <li v-for="(item, index) in beOccupiedAdsData" :key="index">
                     <p>
                         <span style="color: #333">占点方案：</span>
                         <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
@@ -1045,7 +1045,7 @@
             width="54%">
             <div class="scheduled_box">
                 <ul>
-                    <li v-for="(item,index) in cityAdsScheduled">
+                    <li v-for="(item,index) in cityAdsScheduled" :key="index">
                         <el-row>
                             <el-col :span="2"><span>{{item.city}}</span></el-col>
                             <el-col :span="2"><span>{{item.adsNum}}面</span></el-col>
@@ -1094,9 +1094,9 @@
                     <span style="font-weight: bold;font-size: 14px">{{showErrorData.success}}面更换排期成功，{{showErrorData.error}}面排期被占</span>
                 </h3>
                 <ul>
-                    <li v-for="(item,index) in showErrorData.errorList">
+                    <li v-for="(item,index) in showErrorData.errorList" :key="index">
                         {{item.city}}:{{item.schedules}}
-                        <el-tooltip class="item" effect="dark"placement="right-start">
+                        <el-tooltip class="item" effect="dark" placement="right-start">
                             <div slot="content">
                                 <span v-for="(key,otherIndex) of item.otherArr" :key="otherIndex">
                                     {{key.resName + '-' + key.mediaName + '-' + key.asLab + '面'}}

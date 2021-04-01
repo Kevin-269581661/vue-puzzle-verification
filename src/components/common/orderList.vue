@@ -56,18 +56,17 @@
                 </div>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange"
-                              v-loading="loading"
-                              element-loading-text="玩命加载中"
-                              element-loading-spinner="el-icon-loading"
-                              >
-                        <el-table-column label="订单名称" min-width="12.6%">
+                            v-loading="loading"
+                            element-loading-text="玩命加载中"
+                            element-loading-spinner="el-icon-loading">
+                        <el-table-column label="订单名称" min-width="12.6%" class-name="custom-column-order">
                             <template slot-scope="scope">
                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
                                 <el-tooltip v-if="scope.row.planType==1||scope.row.planType==2" effect="dark" :content="scope.row.relatedApName||''">
                                     <span class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
                                 </el-tooltip>
-                                <span v-else class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
+                                <span v-else-if="scope.row.planType>=0" class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
@@ -966,7 +965,7 @@
     };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     a {
         color: #108ee9;
     }
@@ -1094,6 +1093,11 @@
 
     .mediaList_wrap .mediaList_container .table_wrap {
         margin: 0 auto 16px;
+        /deep/ .custom-column-order {
+            .cell {
+                margin-right: 28px;
+            }
+        }
     }
 
     .el-button + .el-button {
@@ -1128,7 +1132,9 @@
         font-size: 12px;
     }
     .plan-type {
-        float: right;
+        position: absolute;
+        top: 17px;
+        right: 10px;
         padding: 0 4px;
         line-height: 18px;
         border-radius: 2px;

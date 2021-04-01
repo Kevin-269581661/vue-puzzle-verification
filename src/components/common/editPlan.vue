@@ -596,9 +596,15 @@
                                                     <el-button plain @click="getShareADList" size="small" class="mapBtn"
                                                                v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
                                                 </span>
-                                                <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
+                                                <el-dropdown class="match-point-dropdown" size="small" split-button type="primary" @command="changeEvent">
+                                                    快捷配点
+                                                    <el-dropdown-menu slot="dropdown">
+                                                        <el-dropdown-item v-for="item of eventList" :key="item.value" :command="item.value">{{item.label}}</el-dropdown-item>
+                                                    </el-dropdown-menu>
+                                                    </el-dropdown>
+                                                <!-- <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                     <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                                </el-select>
+                                                </el-select> -->
                                             </el-col>
                                         </el-row>
                                         <el-row class="car-title">
@@ -5941,6 +5947,15 @@
     }
     .button_point{
         text-align: right;
+    }
+    /deep/ .match-point-dropdown {
+        margin-left: 4px;
+        .el-button--small {
+            font-size: 14px;
+        }
+        .el-dropdown__caret-button {
+            min-width: unset;
+        }
     }
     .change_scheduling{
         color: #1890ff;

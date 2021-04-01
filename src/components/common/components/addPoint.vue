@@ -140,7 +140,7 @@
             </template>
           </span>
         </h4>
-        <span class="tip-active right" @click="export2Excel">下载</span>
+        <span class="tip-active tip-active-handle right" @click="export2Excel">下载</span>
       </div>
       <template slot="dialogFooter" class="dialog-footer">
         <el-button @click="showDialogTable=false"
@@ -175,15 +175,15 @@
                 tipObj.resCount
               }}</span>
               (选1面:<span class="tip-active">{{ tipObj.selectLab1 }}</span>
-              选2面:<span class="tip-active">{{ tipObj.selectLab2 }}</span>
-              选择3面:<span class="tip-active">{{ tipObj.selectLab3 }}</span
+              &nbsp选2面:<span class="tip-active">{{ tipObj.selectLab2 }}</span>
+              &nbsp选择3面:<span class="tip-active">{{ tipObj.selectLab3 }}</span
               >)
               <div class="divide-border"></div>
               媒体:<span class="tip-active">{{ tipObj.mediaCount }}</span>
               <div class="divide-border"></div>
               点位:<span class="tip-active">{{ tipObj.faceCount }}</span>
               (A面:<span class="tip-active">{{ tipObj.afaceCount }}</span>
-              B面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
+              &nbspB面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
               >)
               <div class="divide-border"></div>
               上刊率50%以上的点位:<span class="tip-active">{{
@@ -196,11 +196,11 @@
               >个
             </span>
           </h4>
-          <span class="tip-active right" @click="getFailRes"
+          <span class="tip-active tip-active-handle right" @click="getFailRes"
             >失败小区</span
           >
           <div class="divide-border"></div>
-          <span class="tip-active" @click="downLoadMatchResult">下载结果</span>
+          <span class="tip-active tip-active-handle" @click="downLoadMatchResult">下载结果</span>
         </div>
       </div>
       <template slot="aheadColumn">
@@ -471,7 +471,7 @@ export default {
         {
           label: "资源",
           prop: "resName",
-          minWidth: "100px",
+          minWidth: "160px",
           tip: true
         },
         {
@@ -489,7 +489,7 @@ export default {
         {
           label: "排期",
           prop: "schedules",
-          minWidth: "160px",
+          minWidth: "180px",
           tip: true
         },
         {
@@ -502,18 +502,18 @@ export default {
         {
           label: "媒体名称",
           prop: "mTitle",
-          width: "120px"
+          width: "100px"
         },
         {
           label: "投放面",
           prop: "asLab",
-          width: "120px",
+          width: "80px",
           value: (row)=>`${row.asLab}面`
         },
         {
           label: "近3月上刊率",
           prop: "publishRate",
-          width: "160px",
+          width: "120px",
           value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
         },
       ],
@@ -616,7 +616,7 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
-        this.$confirm(`计划投放<span style='color: #1890ff'>${matchRes.planAdSpaceCount}</span>个点位，成功<span style='color: #1890ff'>${matchRes.faceCount}</span>个，失败<span style='color: rgba(250, 173, 20, 1)'>${matchRes.planAdSpaceCount-matchRes.faceCount}</span>个`,
+        this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
           "恭喜您，配点成功！", {
           confirmButtonText: "查看详情",
           dangerouslyUseHTMLString: true,
@@ -867,13 +867,16 @@ export default {
     }
     .el-message-box__message p {
       font-size: 14px;
-      font-weight: 400;
+      font-weight: 600;
       color: rgba(0, 0, 0, 0.65);
       line-height: 22px;
     }
   }
   .el-message-box__status+.el-message-box__message {
-    padding-left: 41px;
+    padding-left: 40px;
+  }
+  .el-message-box__status::before {
+    padding-left: 0;
   }
   .el-message-box__btns {
     padding: 0;
@@ -888,6 +891,9 @@ export default {
   }
   .el-checkbox__label {
     padding-left: 8px;
+  }
+  .el-checkbox__input.is-checked+.el-checkbox__label {
+    color: rgba(0, 0, 0, 0.65);
   }
   .el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
     width: 20px;
@@ -1005,7 +1011,7 @@ export default {
   }
   .tip-active {
     font-size: 14px;
-    font-weight: normal;
+    font-weight: 400;
     margin: 0 6px;
     cursor: pointer;
     color: #1890ff;
@@ -1021,7 +1027,7 @@ export default {
   display: flex;
   align-items: baseline;
   margin: 0 0 16px;
-  padding: 9.5px;
+  padding: 8px;
   border: 1px solid #bae7ff;
   border-radius: 4px;
   background: #e6f7ff;
@@ -1048,6 +1054,9 @@ export default {
     &.warn {
       color: rgba(250, 102, 20, 1);
     }
+  }
+  .tip-active-handle {
+    font-weight: 400;
   }
   .divide-border {
     display: inline-block;

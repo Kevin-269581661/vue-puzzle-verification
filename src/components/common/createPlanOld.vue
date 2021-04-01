@@ -65,7 +65,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="投放城市：" prop="throwCity" ref="planThrowCity">
-                                <div v-if="cityOther" v-model="planForm.throwCity">
+                                <div v-if="cityOther">
                                     <el-tag
                                         :key="tag"
                                         v-for="tag in dynamicTags"
@@ -227,8 +227,8 @@
                             </dl>
                             <dl class="city-proper" v-for="(list, index) of area" :key="index"
                                 v-show=" index == activeIndex">
-                                <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
-                                    @click="activeArea(item)">{{item.rName}}
+                                <dd v-for="(item, itemIndex) of list" :class="item.rName == areaName ? 'active' : ''"
+                                    @click="activeArea(item)" :key="itemIndex">{{item.rName}}
                                 </dd>
                             </dl>
                             <dl style="border: none">

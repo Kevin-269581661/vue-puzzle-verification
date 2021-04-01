@@ -6,7 +6,7 @@
     :before-close="handleClose"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
-    custom-class="adjust-dialog"
+    custom-class="custom-dialog-wrapper adjust-dialog"
     center>
     <div>
       <slot name="topTip"></slot>

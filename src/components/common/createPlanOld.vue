@@ -977,9 +977,9 @@
                                 <li><em>所属品牌：</em>{{cBand || '--'}}</li>
                                 <li class="money"><em>订单金额：</em>¥{{priceFormat(totalPrice)}}</li>
                                 <li style="overflow: hidden;text-overflow:ellipsis">
-                                    <em>协同选点：</em><span id="shareUrl">{{shareADUrl}}</span>
-                                    <el-button plain @click="copyUrl" class="urlBtn">复制</el-button>
-                                    <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button>
+                                    <em>协同选点：</em><span id="shareUrl" class="plan-url">{{shareADUrl}}</span>
+                                    <span @click="copyUrl" class="urlBtn">复制</span>
+                                    <!-- <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button> -->
                                 </li>
                             </ul>
                         </div>
@@ -1010,10 +1010,11 @@
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
             <div class="finishBtn" v-if="active == 3">
-                <el-button type="primary" @click="continueCreate">继续创建</el-button>
+                <el-button type="default" @click="continueCreate">继续创建</el-button>
                 <el-button plain type="default" @click="ToDetail">
                     查看方案
                 </el-button>
+                <el-button @click="downLoadFanan()" type="primary">导出方案</el-button>
             </div>
         </div>
         <!--添加商品到购物车的动画效果-->
@@ -5942,9 +5943,9 @@
         z-index: 99;
     }
 
-    /* .urlBtn {
-        padding: 10px;
-    } */
+    .urlBtn {
+        color: #1890FF;
+    }
 
     .mapBtn {
         display: inline-block;
@@ -6086,7 +6087,7 @@
     .content_top_wrap, .content_bottom_wrap {
         background: #FFFFFF;
         border: 1px solid #DEDEDE;
-        padding: 20px 18px 40px 18px;
+        padding: 32px 18px 40px 18px;
     }
 
     .content_top_wrap .content_top_head {
@@ -6792,7 +6793,7 @@
     .successIcon h2 {
         font-size: 24px;
         color: #333333;
-        margin-top: 24px;
+        margin-top: 16px;
         margin-bottom: 8px;
         font-weight: bold;
     }
@@ -6809,7 +6810,6 @@
 
     .planPanel {
         width: 557px;
-        height: 220px;
         background: #FAFAFA;
         border-radius: 2px;
         padding: 19px 0;
@@ -6818,7 +6818,8 @@
     }
 
     .planPanel ul li {
-        padding-left: 207px;
+        padding-left: 160px;
+        line-height: 26px;
         text-align: left;
         font-size: 14px;
         color: #666666;
@@ -6829,6 +6830,13 @@
         margin-bottom: 10px;
         font-size: 20px;
         color: #666666;
+    }
+    .plan-url {
+        white-space: nowrap;
+        width: 237px;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .planPanel ul li em {
@@ -6843,11 +6851,11 @@
     }
 
     .noShareUl {
-        height: 245px !important;
+        
     }
 
     .noShareUl ul li {
-        margin-bottom: 15px !important;
+        margin-bottom: 12px !important;
     }
 
     /*一键选点*/

@@ -232,9 +232,6 @@ export default {
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
-              /* if(customPermission && customPermission.patrolPermission) {
-                            head.push('巡点问题', '通行情况');
-                        } */
               switch (customPermission.patrolPermission) {
                 case 1:
                   head.push("巡点问题", "通行情况");
@@ -442,9 +439,6 @@ export default {
             ) {
               head.push("归属公司");
             }
-            /* if(customPermission && customPermission.patrolPermission) {
-                            head.push('巡点问题', '通行情况');
-                        } */
             switch (customPermission.patrolPermission) {
               case 1:
                 head.push("巡点问题", "通行情况");
@@ -761,7 +755,7 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn() {
-      return this.sessionData.uType !== "BD";
+      return !(this.sessionData.uType == "BD" && ['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID));
     },
   },
 };

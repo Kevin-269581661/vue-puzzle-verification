@@ -744,7 +744,7 @@
                                                     {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column min-width="65px">
+                                            <el-table-column min-width="65px" label="投放面">
                                                 <template slot-scope="scope">
                                                     <span>{{scope.row.A_B}}面</span>
                                                 </template>

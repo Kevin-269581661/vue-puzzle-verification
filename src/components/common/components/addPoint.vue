@@ -135,7 +135,7 @@
             <template v-for="(item, index) in intentionInfo.resPdNumGroup">
               <span :key="index">
                 个，选{{ item.resPdNum }}面的小区
-                <span class="tip-active">{{ item.resCount }}</span>
+                <span class="tip-active">{{ item.resCount }}</span> 个
               </span>
             </template>
           </span>
@@ -196,9 +196,9 @@
               >个
             </span>
           </h4>
-          <span class="tip-active tip-active-handle right" @click="getFailRes"
-            >失败小区</span
-          >
+          <!-- <span class="tip-active tip-active-handle right" @click="getMatchSummary(apID)">刷新</span>
+          <div class="divide-border"></div> -->
+          <span class="tip-active tip-active-handle right" @click="getFailRes">失败小区</span>
           <div class="divide-border"></div>
           <span class="tip-active tip-active-handle" @click="downLoadMatchResult">下载结果</span>
         </div>
@@ -802,6 +802,10 @@ export default {
       this.$emit('closeAddPoint')
     },
     closeAsignPointTable() {
+      if(this.matched) {
+        this.showAsignPointTableData = false
+        return
+      }
       this.$confirm('关闭后，所配点位将被清除',
         "是否取消配点？", {
         confirmButtonText: "确 定",

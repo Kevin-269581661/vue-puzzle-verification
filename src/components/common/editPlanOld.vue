@@ -739,7 +739,7 @@
                                                     {{scope.row.mediaLevel !== '' ? scope.row.mediaLevel + '级' : '--'}}
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column min-width="65px">
+                                            <el-table-column min-width="65px" label="投放面">
                                                 <template slot-scope="scope">
                                                     <span>{{scope.row.A_B}}面</span>
                                                 </template>
@@ -849,9 +849,9 @@
             <el-button plain @click="next('workInSync')" v-if="active == 2"
                        v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt090_ck03'}">协同选点</el-button>
             <div class="finishBtn" v-if="active == 3">
-                <el-button type="primary" @click="continueCreate">继续创建</el-button>
+                <el-button type="default" @click="continueCreate">继续创建</el-button>
                 <el-button plain type="default" @click="ToDetail">查看方案</el-button>
-                <el-button @click="downLoadFanan()" type="success">导出方案</el-button>
+                <el-button @click="downLoadFanan()" type="primary">导出方案</el-button>
             </div>
         </div>
         <!--添加商品到购物车的动画效果-->
@@ -6160,7 +6160,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 700px;
+        height: 746px;
     }
 
     .step3 /deep/ .el-dialog {
@@ -6418,7 +6418,7 @@
 
     .planPanel {
         width: 557px;
-        height: 220px;
+        // height: 220px;
         background: #FAFAFA;
         border-radius: 2px;
         padding: 19px 0;
@@ -6428,6 +6428,7 @@
 
     .planPanel ul li {
         padding-left: 206px;
+        line-height: 26px;
         text-align: left;
         font-size: 14px;
         color: #666666;
@@ -6435,7 +6436,7 @@
     }
 
     .planPanel ul li.money {
-        margin-bottom: 10px;
+        margin-bottom: 0 !important;
         font-size: 20px;
         color: #666666;
     }
@@ -6452,11 +6453,11 @@
     }
 
     .noShareUl {
-        height: 198px !important;
+        // height: 198px !important;
     }
 
     .noShareUl ul li {
-        margin-bottom: 20px !important;
+        margin-bottom: 12px !important;
     }
     /*一键选点*/
     /deep/ .onKeyPointFrom .el-form-item__content{

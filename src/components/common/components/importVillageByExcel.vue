@@ -64,27 +64,23 @@
     <el-dialog
       title="导入结果"
       :visible.sync="dialogResult"
-      top="23vh"
+      top="5vh"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
       :center="false"
       custom-class="error-point-dialog"
+      width="1134px"
     >
       <div class="table-top-tip">
         <h4 class="container">
           <div>
             <i class="el-icon-info" style="color: #1890ff"></i>
-            <span
-              ><em>{{ successSize }}</em
-              >个导入成功，</span
-            >
-            <span
-              ><em class="orange">{{ errorSize }}</em
-              >个导入失败</span
-            >
+            <span><em>{{ successSize }}</em>个导入成功，
+            <em class="orange">{{ errorSize }}</em>个导入失败
+            </span>
           </div>
           <div>
-            <span><em @click="openUnsuccessful">查看失败小区</em></span>
+            <span style="color:#1890ff;cursor: pointer;" @click="openUnsuccessful">查看失败小区</span>
           </div>
         </h4>
       </div>
@@ -104,21 +100,22 @@
           :index="successPageSize * successCurrentPage - successPageSize + 1"
         >
         </el-table-column>
-        <el-table-column prop="resName" label="资源" min-width="6%">
+        <el-table-column prop="resName" label="资源名称" min-width="10%">
         </el-table-column>
         <el-table-column prop="cityName" label="城市" min-width="6%">
         </el-table-column>
         <el-table-column prop="districtName" label="区域" min-width="6%">
         </el-table-column>
-        <el-table-column prop="schedule" label="排期" min-width="6%">
+        <el-table-column prop="schedule" label="排期" min-width="10%">
         </el-table-column>
         <el-table-column
           prop="actualMediaCnt"
           label="媒体数量（门）"
           min-width="6%"
+          align="right"
         >
         </el-table-column
-        ><el-table-column prop="planAdsCnt" label="计划投放数量" min-width="6%">
+        ><el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -139,8 +136,8 @@
           size="medium "
           @click="addShoppingCart"
           :disabled="isDown"
-          style="padding: 0 4px"
-          >确定并且添加到购物车</el-button
+          style="padding: 0 4px;width:146px"
+          >确定并添加到购物车</el-button
         >
       </span>
     </el-dialog>
@@ -148,11 +145,12 @@
     <el-dialog
       title="导入失败的小区"
       :visible.sync="dialogErrorPoint"
-      top="23vh"
+      top="5vh"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
       :center="false"
       custom-class="error-point-dialog"
+      width="1134px"
     >
       <el-table
         ref="errorTableRef"
@@ -175,12 +173,18 @@
         </el-table-column>
         <el-table-column prop="district" label="区域" min-width="6%">
         </el-table-column>
-        <el-table-column prop="date" label="排期" min-width="6%">
+        <el-table-column label="排期" min-width="10%">
+          <template slot-scope="scope">
+            <div>
+              {{ scope.row.startTime + "-" + scope.row.endTime}}
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           prop="planAdsCnt"
           label="计划投放数量（面）"
           min-width="8%"
+          align="right"
         >
         </el-table-column>
         <el-table-column
@@ -493,26 +497,35 @@ export default {
 
 <style scoped lang="scss">
 /deep/ .import-dialog .el-dialog__header {
-  padding: 12px 24px;
+  padding: 16px 24px;
 }
 /deep/ .import-dialog .el-dialog__body {
-  padding: 4px 24px 24px;
+  padding: 0px 24px 24px;
 }
 /deep/ .import-dialog .el-dialog__footer {
   display: block;
-  text-align: center;
+  text-align: right;
+  padding: 0px 24px 24px;
 }
 
 /deep/ .error-point-dialog {
   .el-dialog__header {
-    padding: 19px 24px;
+    padding: 15px 24px;
     border-bottom: 1px solid #e9e9e9;
   }
   .el-dialog__body {
     padding: 24px;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+    .el-table{
+      margin-bottom: 16px;
+    }
   }
   .el-button + .el-button {
     margin-left: 14px;
+  }
+  .el-dialog__footer{
+    text-align: center;
+    padding: 16px 20px ;
   }
 }
 .step-title {
@@ -529,22 +542,28 @@ export default {
   flex-flow: row nowrap;
   align-items: center;
   box-sizing: border-box;
-  margin: 16px 0;
+  margin: 16px 0 24px;
   background: #ffffff;
   border-radius: 4px;
   border: 1px solid #dadada;
 }
 .second-step {
   /deep/ .el-upload-dragger {
+    margin: 16px 0 0 0;
     height: 128px;
     padding-top: 33px;
+    background:#fafafa;
     .el-upload__text {
       margin-top: 10px;
+    }
+    img{
+      height: 26px;
+      width:26px;
     }
   }
 }
 .excel-img {
-  width: 28px;
+  width: 26px;
   vertical-align: middle;
   margin: 0 6px 0 16px;
 }
@@ -552,9 +571,7 @@ export default {
   width: 12.9px;
   margin-left: 9px;
 }
-/deep/ .el-upload-dragger {
-  margin: 16px 0 0 0;
-}
+
 .downloag_btn {
   display: flex;
   align-items: center;
@@ -567,13 +584,13 @@ export default {
   background: #e6f7ff;
   border: 1px solid #bae7ff;
   border-radius: 4px;
-  margin: 16px 0;
-  padding: 9.5px;
+  margin-bottom: 16px ;
+  padding: 9px;
 }
 
-.table-top-tip /deep/ .el-icon-info {
-  margin-right: 4px;
-}
+// .table-top-tip /deep/ .el-icon-info {
+//   margin-right: 4px;
+// }
 
 .table-top-tip .container {
   display: flex;
@@ -583,18 +600,16 @@ export default {
 
 .table-top-tip em {
   font-size: 14px;
-  font-weight: normal;
-  margin: 0 6px;
+  font-weight: 600;
+  margin: 0 4px;
   cursor: pointer;
   color: #1890ff;
 }
 .table-top-tip .orange {
   color: #f87126;
 }
-/deep/ .el-input__inner {
+/deep/ .el-pagination .el-input__inner {
   width: 100%;
 }
-/deep/ .el-dialog__footer {
-  text-align: center;
-}
+
 </style>

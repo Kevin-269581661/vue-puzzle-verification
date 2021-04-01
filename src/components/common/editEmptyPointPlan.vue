@@ -52,6 +52,7 @@
                     class="planAdsCntClass"
                     placeholder="请输入内容"
                     v-model="planAdsCnt"
+                    @change="planAdsCntChange"
                   >
                     <template slot="prepend">投放面数</template>
                   </el-input>
@@ -2475,7 +2476,7 @@ export default {
     //   this.setPlanInfo();
     // }
     // this.manualSelectPoint();
-    console.log("this.cityOptions", this.cityOptions);
+    // console.log("this.cityOptions", this.cityOptions);
   },
   // directives: {
   //     loadmore: {
@@ -2518,6 +2519,15 @@ export default {
     // },
   },
   methods: {
+    //投放面数限制
+    planAdsCntChange(value){
+      let reg = /^\d{1,}$/;
+      let boolean =reg.test(value)
+      if(!boolean){
+        sessFun.messageFun("warning", "计划面数仅能输入正整数");
+        this.planAdsCnt = 1
+      }
+    },
     //获取新业务逻辑数据
     getPlanResList() {
       let params = {
@@ -2710,7 +2720,7 @@ export default {
             }
             this.shopLoading = false;
             // this.computeMedia_AD()            // 统计购物车媒体数和面数
-            this.FanganInfoByApid(); //获取方案详情
+            this.FanganInfoByApid(planDetail); //获取方案详情
             this.dialogVisible();
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -2721,7 +2731,7 @@ export default {
         });
     },
     // 根据编辑方案的apid获取该方案的详情
-    FanganInfoByApid() {
+    FanganInfoByApid(planDetail) {
       let uid = this.sessionData.uID;
       this.editApid = sessionStorage.getItem("plan_apid");
       let params = {
@@ -2757,7 +2767,7 @@ export default {
               this.setAllCityAndArea(this.FAInfo.cityList);
             } else {
               // this.setCityAndArea(this.FAInfo.cityList)
-              this.getCityList();
+              this.getCityList(planDetail);
             }
             // this.computeConnectAdData();
             this.getAdsParamsData = {
@@ -3069,21 +3079,32 @@ export default {
       // console.log('构建城市区域', this.area)
       this.cityOptions = areaArr.province();
     },
-    // 获取权限下的城市列表
-    getCityList() {
-      let cityArea = JSON.parse(sessionStorage.getItem("cityArea"));
-      console.log("获取权限下的城市列表cityArea", cityArea);
+    //获取 城市列表
+    getCityList(planDetail) {
       let cityList = [];
-      for (let cKey of cityArea) {
-        if (cKey.asrID == this.sessionData.asrID) {
+      for (let cKey of planDetail.cityList) {
           cityList.push({
-            label: cKey.city,
-            value: cKey.rid,
+            label: cKey.rName,
+            value: cKey.rID,
           });
-        }
       }
       this.setCityAndArea(cityList);
     },
+    // 获取权限下的城市列表
+    // getCityList() {
+    //   let cityArea = JSON.parse(sessionStorage.getItem("cityArea"));
+    //   console.log("获取权限下的城市列表cityArea", cityArea);
+    //   let cityList = [];
+    //   for (let cKey of cityArea) {
+    //     if (cKey.asrID == this.sessionData.asrID) {
+    //       cityList.push({
+    //         label: cKey.city,
+    //         value: cKey.rid,
+    //       });
+    //     }
+    //   }
+    //   this.setCityAndArea(cityList);
+    // },
     // 根据用户权限与投放城市的交集，显示城市
     filterCity(cityData) {
       let FA_rIDs_arr = this.FAInfo.cityList;
@@ -4448,13 +4469,14 @@ export default {
           "车流量",
           "人流量",
           "广告限制",
+          "媒体数量（门）",
           "计划投放数量(面)",
         ];
   
       sheetExcel.toDownload(
         allHead,
         arr,
-        this.planForm.planName + "区位表",
+        this.planForm.planName,
         // head
       );
     },
@@ -4482,6 +4504,7 @@ export default {
           carFlow : item.carFlow,
           peopleFlow : item.peopleFlow,
           notPush : item.notPush,
+          actualMediaCnt:item.actualMediaCnt,
           planAdsCnt : item.planAdsCnt,
         }
         arr2.push(obj);
@@ -8118,51 +8141,51 @@ export default {
     //   cacheAdPlan.setData(planInfo);
     // },
     // 设置方案信息
-    setPlanInfo() {
-      let returnData = cacheAdPlan.getData(this.sessionData.uID);
-      if (returnData) {
-        this.unfinishedData = returnData;
-        this.planForm = returnData.planData.baseInfo;
-        this.BDData.uid = returnData.planData.suid;
-        this.BDData.saleManageLevel = returnData.planData.saleManageLevel || 0;
-        this.throwCity = returnData.planData.throwCity;
-        this.shopingList = returnData.planData.adsList;
-        this.companyBrand = returnData.planData.companyBrand;
-        if (this.sessionData.uType === "MD") {
-          this.getCityList();
-          this.Get_cName();
-          // 媒介需构建销售下拉选项-第一步
-          let arr = [
-            {
-              label: this.planForm.realNamesName,
-              value: this.BDData.uid,
-            },
-          ];
-          this.salerList = arr;
-        }
-        this.active = 1;
-        console.log("设置方案信息returnData", returnData);
-        // 设置城市及对应的区域
-        this.getAreaFun();
-        this.getAdsParamsData = {
-          prID: this.city[0].rid,
-          rid: "440100",
-          act: 1,
-          dateTimeBegin: this.dateInput[0],
-          dateTimeEnd: this.dateInput[1],
-          resType: this.recType,
-          mVehicle: this.mediaType,
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-        };
-        this.getAdList(); // 获取选点列表
-        // this.getRejectPlanList(); // 获取排斥方案列表
-        this.getIndustryBycID(); // 根据所选公司获取公司所属行业
-      } else {
-        this.$router.push("./createPlan");
-        return;
-      }
-    },
+    // setPlanInfo() {
+    //   let returnData = cacheAdPlan.getData(this.sessionData.uID);
+    //   if (returnData) {
+    //     this.unfinishedData = returnData;
+    //     this.planForm = returnData.planData.baseInfo;
+    //     this.BDData.uid = returnData.planData.suid;
+    //     this.BDData.saleManageLevel = returnData.planData.saleManageLevel || 0;
+    //     this.throwCity = returnData.planData.throwCity;
+    //     this.shopingList = returnData.planData.adsList;
+    //     this.companyBrand = returnData.planData.companyBrand;
+    //     if (this.sessionData.uType === "MD") {
+    //       this.getCityList();
+    //       this.Get_cName();
+    //       // 媒介需构建销售下拉选项-第一步
+    //       let arr = [
+    //         {
+    //           label: this.planForm.realNamesName,
+    //           value: this.BDData.uid,
+    //         },
+    //       ];
+    //       this.salerList = arr;
+    //     }
+    //     this.active = 1;
+    //     console.log("设置方案信息returnData", returnData);
+    //     // 设置城市及对应的区域
+    //     this.getAreaFun();
+    //     this.getAdsParamsData = {
+    //       prID: this.city[0].rid,
+    //       rid: "440100",
+    //       act: 1,
+    //       dateTimeBegin: this.dateInput[0],
+    //       dateTimeEnd: this.dateInput[1],
+    //       resType: this.recType,
+    //       mVehicle: this.mediaType,
+    //       pageNum: this.pageNum,
+    //       pageSize: this.pageSize,
+    //     };
+    //     this.getAdList(); // 获取选点列表
+    //     // this.getRejectPlanList(); // 获取排斥方案列表
+    //     this.getIndustryBycID(); // 根据所选公司获取公司所属行业
+    //   } else {
+    //     this.$router.push("./createPlan");
+    //     return;
+    //   }
+    // },
     // 时间戳转换成日期格式 2018-06-18 10:33:24
     timestampToTime(timestamp) {
       let date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -8546,9 +8569,9 @@ export default {
 }
 
 /deep/ .el-input__inner {
-  width: 260px;
+  width: 300px;
   height: 34px;
-  line-height: 34px;
+  line-height: 32px;
 }
 
 /deep/ .el-date-editor i,
@@ -8795,15 +8818,15 @@ export default {
   margin-right: 0;
 }
 
-/deep/ .el-table__expanded-cell[class*="cell"] {
-  padding: 0 86px;
-  background-color: #f7f7f7;
-}
+// /deep/ .el-table__expanded-cell[class*="cell"] {
+//   padding: 0 86px;
+//   background-color: #f7f7f7;
+// }
 
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-  height: 44px;
-  line-height: 44px;
-}
+// /deep/ .el-table__expanded-cell[class*="cell"] .el-form {
+//   height: 44px;
+//   line-height: 44px;
+// }
 
 /deep/ .el-form-item__content {
   line-height: 46px;
@@ -8856,7 +8879,7 @@ export default {
 }
 
 .step2 /deep/ .el-dialog {
-  width: 1100px;
+  width: 1134px;
   min-height: 680px;
 }
 
@@ -8893,10 +8916,10 @@ export default {
   color: #1890ff;
 }
 
-/deep/ .car-list .el-table__expanded-cell[class*="cell"] {
-  padding: 0 46px;
-  background-color: #f7f7f7;
-}
+// /deep/ .car-list .el-table__expanded-cell[class*="cell"] {
+//   padding: 0 46px;
+//   background-color: #f7f7f7;
+// }
 
 /deep/ .table_wrap.car-list {
   margin-top: 0 !important;
@@ -9106,7 +9129,7 @@ export default {
 .successIcon h2 {
   font-size: 24px;
   color: #333333;
-  margin-top: 24px;
+  margin-top: 22px;
   margin-bottom: 8px;
   font-weight: bold;
 }
@@ -9130,6 +9153,14 @@ export default {
   padding: 19px 0;
   box-sizing: border-box;
   margin: 0 auto;
+}
+.planPanel ul{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+
 }
 
 .planPanel ul li {
@@ -9157,9 +9188,9 @@ export default {
   color: #666666;
 }
 
-.noShareUl {
-  height: 245px !important;
-}
+// .noShareUl {
+//   height: 245px !important;
+// }
 
 .noShareUl ul li {
   margin-bottom: 15px !important;

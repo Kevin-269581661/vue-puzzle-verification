@@ -9,7 +9,7 @@
       <template>
         <!-- 头部 -->
         <div class="table_wrap car-list" style="margin-top: 60px">
-          <el-row style="margin-bottom: 10px">
+          <el-row style="margin-bottom: 11px">
             <el-col :span="16" style="text-align: left">
               <span class="button_point">
                 <el-button
@@ -47,13 +47,14 @@
             :default-sort="{ prop: 'mID', order: 'descending' }"
             @row-click="shopRowClick"
             style="width: 100%"
+            @expand-change="senceOpen"
           >
             <!-- :row-class-name="tableRowClassName" -->
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" inline class="demo-table-expand">
                   <el-form-item label="商圈：">
-                    <div class="shopList_adLimit" style="width: 80px">
+                    <div class="shopList_adLimit" >
                       <span>{{ props.row.tradingArea }}</span>
                     </div>
                   </el-form-item>
@@ -66,11 +67,6 @@
                   <el-form-item label="楼栋数量：">
                     <span>{{ props.row.fNum }}</span>
                   </el-form-item>
-                  <!-- <el-form-item label="资产编号：">
-                    <div class="shopList_adLimit" style="width: 80px">
-                      <span>{{ props.row.assetTag }}</span>
-                    </div>
-                  </el-form-item> -->
                   <el-form-item label="入住年份：">
                     <span>{{ props.row.chDay }}</span>
                   </el-form-item>
@@ -80,34 +76,9 @@
                     </div>
                   </el-form-item>
                 </el-form>
-                <!-- <el-form
-                  v-if="customPermission.patrolPermission"
-                  label-position="left"
-                  inline
-                  class="demo-table-expand"
-                >
-                  <el-form-item label="巡点问题：">
-                    <div class="shopList_adLimit">
-                      <span>{{ props.row.remark }}</span>
-                    </div>
-                  </el-form-item>
-                  <el-form-item label="通行情况：">
-                    <div class="shopList_adLimit">
-                      <span>{{ props.row.trafficState }}</span>
-                    </div>
-                  </el-form-item>
-                  <el-form-item
-                    label="通电情况："
-                    v-if="customPermission.patrolPermission == 2"
-                  >
-                    <div class="shopList_adLimit">
-                      <span>{{ props.row.electrifyState }}</span>
-                    </div>
-                  </el-form-item>
-                </el-form> -->
               </template>
             </el-table-column>
-            <el-table-column label="资源" min-width="60" prop="resName">
+            <el-table-column label="资源名称" min-width="150" prop="resName">
             </el-table-column>
             <!-- <el-table-column label="媒体名称" min-width="130">
               <template slot-scope="scope">
@@ -125,12 +96,12 @@
             </el-table-column>
             <el-table-column prop="districtName" label="区域" min-width="60">
             </el-table-column>
-            <el-table-column prop="schedule" label="排期" min-width="180">
+            <el-table-column prop="schedule" label="排期" min-width="160">
               <template slot-scope="scope">
                 <span>{{ scope.row.schedule }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="scope" label="地图中心点" min-width="105">
+            <el-table-column prop="scope" label="地图中心点" min-width="80">
               <template slot-scope="scope">
                 <el-tooltip
                   v-if="scope.row.mapCenterName"
@@ -145,20 +116,23 @@
             </el-table-column>
             <el-table-column
               prop="actualMediaCnt"
-              label="媒体数量（门）"
+              label="媒体数量(门)"
               min-width="100"
+              align="right"
             >
             </el-table-column>
             <el-table-column
               prop="actualAdsCnt"
-              label="可投数量（面）"
+              label="可投数量(面)"
               min-width="100"
+              align="right"
             >
             </el-table-column>
             <el-table-column
               prop="planAdsCnt"
-              label="计划投放数（面）"
-              min-width="100"
+              label="计划投放数(面)"
+              min-width="120"
+              align="right"
             >
             </el-table-column>
             <!-- <el-table-column label="楼盘类型" min-width="85">
@@ -195,7 +169,7 @@
                 >
                   <i
                     class="el-icon-delete"
-                    style="color: #108de7; font-size: 20px; margin-left: 6px"
+                    style="color: #108de7; margin-left: 6px"
                   ></i>
                 </span>
               </template>
@@ -218,7 +192,10 @@
             >
             </el-pagination>
           </div>
-          <div style="text-align: center; margin-top: 10px">
+        
+        </div>
+          <span slot="footer">
+             <div style="text-align: center;">
             <el-button @click="continueSelect">继续选点 </el-button>
 
             <el-button
@@ -230,12 +207,12 @@
             <el-button
               v-else
               @click="next"
-              type="primary"
+              type="goon"
               v-qadn-mta-h5="{ id: 'a004_b008_c001_d001_bt072_ck03' }"
               >创建方案
             </el-button>
           </div>
-        </div>
+          </span>
       </template>
     </el-dialog>
   </div>
@@ -308,7 +285,18 @@ export default {
       shopDelRowClick: false,
     };
   },
+ 
   methods: {
+     //手风琴
+    senceOpen(row, rowsList){
+      if(rowsList.length > 1){
+          this.shoppingCartShowList.forEach(ele => {
+            if(ele.resID !== row.resID){
+                this.$refs.shoppingCartRef.toggleRowExpansion(ele,false)
+            }
+          });
+      }
+    },
     //继续选点
     continueSelect() {
       console.log("当前路由", this.$route.path);
@@ -413,17 +401,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .shoppingCart-dialog .el-dialog__header {
-  padding: 12px 24px;
+/deep/ .shoppingCart-dialog {
+    width: 1134px;
+    .el-dialog__header {
+    padding: 15px 24px;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+    margin-bottom: 22px;
+  }
+    .el-dialog__body {
+    padding: 4px 24px 24px;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+    .row-table-bottom{
+      margin-top:16px
+    }
+  }
+    .el-dialog__footer {
+    display: block;
+    padding: 11px 0;
+    text-align: center;
+    .el-button--goon {
+    color: #FFF;
+    background-color: rgba(24, 144, 255, 1);
+    border-color: rgba(24, 144, 255, 1);
+    margin-left: 16px;
+    }
+  }
 }
-/deep/ .shoppingCart-dialog .el-dialog__body {
-  padding: 4px 24px 24px;
-}
-/deep/ .shoppingCart-dialog .el-dialog__footer {
-  display: block;
-  text-align: center;
-}
-
 /deep/ .clearShopping {
   cursor: pointer;
   color: #1890ff;
@@ -445,6 +448,8 @@ export default {
   border-radius: 4px;
   margin-bottom: 10px;
   padding: 5px;
+  height: 40px;
+  line-height: 30px;
 }
 
 .car-title h4 {
@@ -467,7 +472,7 @@ export default {
 }
 .car-title span em{
   font-size: 14px;
-  font-weight: normal;
+  font-weight: 600;
   margin: 0 6px;
   color:rgba(24, 144, 255, 1)
 }
@@ -495,4 +500,22 @@ export default {
   margin-bottom: 5px;
   cursor: pointer;
 }
-</style>
+.demo-table-expand {
+    font-size: 0;
+}
+.demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 48%;
+}
+/deep/ .el-form-item__content {
+  line-height: 40px;
+}
+/deep/ .el-table__expand-column .cell{
+    height: auto
+}
+</style>  

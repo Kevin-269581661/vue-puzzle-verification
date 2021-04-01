@@ -483,6 +483,7 @@ export default {
           "车流量",
           "人流量",
           "广告限制",
+          "媒体数量（门）",
           "计划投放数量(面)",
         ];
         const filterVal = [
@@ -502,6 +503,7 @@ export default {
           "carFlow", //车流量
           "peopleFlow",    //人流量
           "notPush", //广告限制
+          "actualMediaCnt",
           "planAdsCnt",
         ];
       

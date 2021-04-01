@@ -258,7 +258,7 @@
                     class="planAdsCntClass"
                     placeholder="请输入内容"
                     v-model.trim="planAdsCnt"
-                    @blur="planAdsCntBlur"
+                    @change="planAdsCntChange"
                   >
                     <template slot="prepend">投放面数</template>
                   </el-input>
@@ -2128,9 +2128,9 @@
       :visible.sync="isSelectPoint"
       top="158px"
       width="248px"
-      center
       :show-close="false"
       :lock-scroll="false"
+      class="select_point_dialog"
     >
       <div style="text-align: center">
         <span
@@ -2146,7 +2146,7 @@
       <span slot="footer" class="dialog-footer">
         <div>
           <el-button
-            type="primary"
+            type="goon"
             @click="automaticSelectPoint"
             style="width: 200px; margin-bottom: 8px"
             >导入表格</el-button
@@ -2154,7 +2154,7 @@
         </div>
         <div>
           <el-button
-            type="primary"
+            type="goon"
             @click="manualSelectPoint"
             style="width: 200px"
             >手动选点</el-button
@@ -2731,11 +2731,12 @@ export default {
   },
   methods: {
     //投放面数限制
-    planAdsCntBlur(e){
+    planAdsCntChange(value){
       let reg = /^\d{1,}$/;
-      let boolean =reg.test(e.target.value)
+      let boolean =reg.test(value)
       if(!boolean){
-        e.target.value = ""
+        sessFun.messageFun("warning", "计划面数仅能输入正整数");
+        this.planAdsCnt = 1
       }
     },
     //获取草稿箱数据
@@ -4407,13 +4408,14 @@ export default {
           "车流量",
           "人流量",
           "广告限制",
+          "媒体数量（门）",
           "计划投放数量(面)",
         ];
   
       sheetExcel.toDownload(
         allHead,
         arr,
-        this.planForm.planName + "区位表",
+        this.planForm.planName,
         // head
       );
     },
@@ -4441,6 +4443,7 @@ export default {
           carFlow : item.carFlow,
           peopleFlow : item.peopleFlow,
           notPush : item.notPush,
+          actualMediaCnt:item.actualMediaCnt,
           planAdsCnt : item.planAdsCnt,
         }
         arr2.push(obj);
@@ -8748,16 +8751,17 @@ export default {
 .content_bottom_btn {
   width: 100%;
   position: absolute;
-  bottom: -100px;
-  margin-bottom: 22px;
+  bottom: -66px;
+  // margin-bottom: 22px;
   text-align: center;
 }
 
 .content_bottom_btn button {
-  width: 80px;
-  height: 34px;
+  width: 76px;
+  height: 32px;
   outline: none;
   cursor: pointer;
+  margin-left: 14px;
 }
 
 .content_bottom_btn button.create {
@@ -8784,7 +8788,7 @@ export default {
 }
 
 .el-input {
-  width: 262px;
+  width: 300px;
   height: 34px !important;
   border-radius: 4px;
 }
@@ -8795,7 +8799,9 @@ export default {
   resize: vertical;
 }
 /deep/ textarea.el-textarea__inner {
-  transform: translateY(-4px);
+  transform: translateY(4px);
+  overflow-y:hidden;
+  width: 300px;
 }
 
 /*选择点位*/
@@ -8848,10 +8854,10 @@ export default {
   top: -2px;
 }
 
-/deep/ .el-input__inner {
-  width: 260px;
-  height: 34px;
-  line-height: 34px;
+.createPlan /deep/ .el-input__inner {
+  width: 300px;
+  height: 32px;
+  line-height: 32px;
 }
 
 /deep/ .el-date-editor i,
@@ -9098,19 +9104,19 @@ export default {
   margin-right: 0;
 }
 
-/deep/ .el-table__expanded-cell[class*="cell"] {
-  padding: 0 86px;
-  background-color: #f7f7f7;
-}
+// /deep/ .el-table__expanded-cell[class*="cell"] {
+//   padding: 0 86px;
+//   background-color: #f7f7f7;
+// }
 
-/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
-  height: 44px;
-  line-height: 44px;
-}
+// /deep/ .el-table__expanded-cell[class*="cell"] .el-form {
+//   height: 44px;
+//   line-height: 44px;
+// }
 
-/deep/ .el-form-item__content {
-  line-height: 46px;
-}
+// /deep/ .el-form-item__content {
+//   line-height: 46px;
+// }
 
 /deep/ .el-form-item__label {
   padding: 0 0 0 12px;
@@ -9159,7 +9165,7 @@ export default {
 }
 
 .step2 /deep/ .el-dialog {
-  width: 1100px;
+  width: 1134px;
   min-height: 680px;
 }
 
@@ -9196,10 +9202,7 @@ export default {
   color: #1890ff;
 }
 
-/deep/ .car-list .el-table__expanded-cell[class*="cell"] {
-  padding: 0 46px;
-  background-color: #f7f7f7;
-}
+
 
 /deep/ .table_wrap.car-list {
   margin-top: 0 !important;
@@ -9409,7 +9412,7 @@ export default {
 .successIcon h2 {
   font-size: 24px;
   color: #333333;
-  margin-top: 24px;
+  margin-top: 22px;
   margin-bottom: 8px;
   font-weight: bold;
 }
@@ -9427,14 +9430,20 @@ export default {
 
 .planPanel {
   width: 557px;
-  height: 220px;
+  // height: 220px;
   background: #fafafa;
   border-radius: 2px;
   padding: 19px 0;
   box-sizing: border-box;
   margin: 0 auto;
 }
-
+.planPanel ul{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+}
 .planPanel ul li {
   padding-left: 207px;
   text-align: left;
@@ -9460,9 +9469,9 @@ export default {
   color: #666666;
 }
 
-.noShareUl {
-  height: 245px !important;
-}
+// .noShareUl {
+//   height: 245px !important;
+// }
 
 .noShareUl ul li {
   margin-bottom: 15px !important;
@@ -9598,23 +9607,50 @@ export default {
 }
 
 .unit {
-  display: inline-block;
+  position: absolute;
+  top:5px;
+  right: 17px;
   font-style: normal;
   background-color: #f5f5f5;
   color: rgba(0, 0, 0, 0.65);
-  height: 32px;
-  width: 32px;
-  line-height: 32px;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
   text-align: center;
   border-radius: 0 4px 4px 0;
-  transform: translateX(-40px);
-  border-left: 1px solid #d9d9d9;
+  border-left: 1px solid #E6E7E9;
+  // border:1px solid #E6E7E9;
 }
 /deep/ .planAdsCntClass.el-input {
   width:200px;
   .el-input__inner{
   width: 105px !important;
   }
+}
+.createPlan /deep/ .el-form-item{
+  margin-bottom: 16px;
+  .el-textarea {
+   vertical-align : top;
+  }
+}
+//选点方式按钮颜色
+.el-button--goon {
+  color: #FFF;
+  background-color: rgba(24, 144, 255, 1);
+  border-color: rgba(24, 144, 255, 1);
+}
+.select_point_dialog{
+  /deep/ .el-dialog__header{
+    padding:10px 0;
+  }
+  /deep/ .el-dialog__body{
+    padding: 2px 20px 6px 20px;
+  }
+   /deep/ .el-dialog__footer{
+    padding: 10px 24px 24px;
+    text-align:center;
+  }
+
 }
 </style>
 <style>

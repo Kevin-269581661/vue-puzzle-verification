@@ -251,6 +251,21 @@
                 window.open(url);
 
             },
+            //清空草稿箱数据
+            clearDrafts() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                };
+                api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
+                    console.log("清空草稿箱", res);
+                    if (res.data.SysCode === 200200) {
+                    console.log("清除草稿箱成功");
+                    } else {
+                    sessFun.messageFun("warning", "清除草稿箱失败");
+                    }
+                });
+            },
             // 判断是否已提交地图选择点位,并跳转到创建方案页面
             getMapAdsAndGotoPlan() {
                 let indexData = {
@@ -260,13 +275,15 @@
                     activeMapType: this.ActiveMapType
                 }
                 let userInfo = JSON.parse(sessionStorage.getItem("session_data"))
-                api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(res=>{
+                api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(async res=>{
                     if(res.data.SysCode == 200200) {
                         let { hasCache, hasProposalCache } = res.data.data;
                             sessionStorage.setItem('indexData', JSON.stringify(indexData));
                             let is7BD = ['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)
                             if(is7BD && hasProposalCache) {
                                 // 直营销售并且选点
+                                //清除草稿箱数据，避免与未完成编辑方案冲突。
+                                await this.clearDrafts()
                                 this.$router.push('./sale/createPlan?from=index');
                             }else if(!is7BD && hasCache) {
                                 // 加盟销售并且选点

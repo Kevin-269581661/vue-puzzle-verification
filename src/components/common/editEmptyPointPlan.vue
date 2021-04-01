@@ -2499,7 +2499,9 @@ export default {
   computed: {
     nowPointNum() {
       // 当购物车点位数大于0时
-      if (this.shopingList.length || this.isSelect) {
+      if (this.shopingList.length) {
+        console.log('this.isSelect: ', this.isSelect);
+        console.log('this.shopingList: ', this.shopingList);
         this.changeApInfo();
         this.computeMedia_AD();
       }
@@ -2811,7 +2813,7 @@ export default {
             // let arr = [];
             // this.getResultData(arr);
             this.handleImportDrafts(0, this.shopingList);
-            this.shopingList = [];
+            this.shopingList = []
             this.allCheckboxUpdata();
             this.computeMedia_AD(); //
             sessFun.messageFun("success", "删除成功");
@@ -6588,26 +6590,39 @@ export default {
     },
     //Promise存储草稿
     changeApInfoPromise() {
-      this.isSelect = true;
+      console.log('changeApInfoPromise1: ');
       this.importDraftsConfig.suID = this.BDData.uid;
+      console.log('changeApInfoPromise2: ');
       this.importDraftsConfig.type = this.importDraftsType;
+      console.log('changeApInfoPromise3: ');
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
+      console.log('changeApInfoPromise4: ');
       for (let i in this.importDraftsConfig == "") {
         if (!this.importDraftsConfig[i]) {
           delete this.importDraftsConfig[i];
         }
       }
+      console.log('changeApInfoPromise5: ');
+
       let params = {
+        apID: this.FAInfo.apID,
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         ...this.importDraftsConfig,
       };
+      console.log('changeApInfoPromise8: ');
+
       return new Promise((resolve, reject) => {
         api.postApi(this.apiVar.CreateAdBackUp, params).then((response) => {
+            console.log('changeApInfoPromise6: ');
+
           if (response.data.SysCode == 200200) {
+
+            console.log('changeApInfoPromise7: ');
+
             return resolve(response.data.data);
           } else {
-            return resolve("");
+            return resolve([]);
           }
         });
         // .catch(function (error) {
@@ -6621,6 +6636,7 @@ export default {
       // this.clearDrafts();
       this.handleImportDrafts(1, mapAdsList);
       let draftsData = await this.changeApInfoPromise();
+      console.log('draftsData: ', draftsData);
       draftsData.forEach((item) => {
         item.checkBox = false;
         item.city = item.cityName;
@@ -6628,8 +6644,11 @@ export default {
       //this.draftsData已经是后台最新缓存，
       //如果shopingList长度发生变化又会触发购物车
       //这里将发送给购物车的数据清空
+      console.log("handleImportDrafts赋值前");
       this.handleImportDrafts(1, []);
-      this.shopingList = draftsData;
+      console.log("shopingList赋值前");
+      this.shopingList = [...draftsData];
+      console.log("shopingList赋值后");
       if (this.getMapLoading) {
         this.getMapLoading.close();
       }
@@ -8055,13 +8074,14 @@ export default {
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
     handleImportDrafts(type, list) {
       this.importDraftsType = type;
-      this.importDraftsList = list;
+      this.importDraftsList = [...list];
     },
     // TODO:存入草稿箱, 改为更变购物车
     changeApInfo() {
+      debugger
+      console.log('changeApInfo: ');
       console.log("this.importDraftsType: ", this.importDraftsType);
       console.log("this.importDraftsList: ", this.importDraftsList);
-      this.isSelect = true;
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = this.importDraftsType;
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);

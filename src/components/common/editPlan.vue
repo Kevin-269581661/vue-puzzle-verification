@@ -4951,10 +4951,10 @@
                 for(let i=matchPoint.length-1; i>=0; i--) {
                     this.isHaveDiffPush(matchPoint[i])
                 }
-                // this.shopingList = this.shopingList.concat(matchPoint)
-                this.typeShopList = this.getTypeList();
-                this.computeMedia_AD();
                 this.judgeByselect();
+                // 打开购物车时会调用
+                // this.typeShopList = this.getTypeList();
+                // this.computeMedia_AD();
             }
         }
     }

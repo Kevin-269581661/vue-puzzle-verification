@@ -2793,7 +2793,6 @@
             },
             // 全选时放进购物车-广告门
             allSelectToShop_adDoor(){
-                console.time('allSelectToShop_adDoor')
                 let length = this.planList.length
                 for (let i = 0; i < length; i++) {
                     let info = this.planList[i]
@@ -2834,7 +2833,6 @@
                         }
                     }
                 }
-                console.timeEnd('allSelectToShop_adDoor')
                 console.log('广告门全选时购物车', this.shopingList)
             },
             // 全选时放进购物车-道闸
@@ -4954,9 +4952,8 @@
                     this.isHaveDiffPush(matchPoint[i])
                 }
                 // this.shopingList = this.shopingList.concat(matchPoint)
-                console.time('computeMedia_AD')
+                this.typeShopList = this.getTypeList();
                 this.computeMedia_AD();
-                console.timeEnd('computeMedia_AD')
                 this.judgeByselect();
             }
         }

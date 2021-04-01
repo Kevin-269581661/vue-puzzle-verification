@@ -93,13 +93,11 @@ export default {
   },
   computed: {
     currentPagination() {
-      console.time('Pagination')
       this.totalNum = this.tableData.length;
       let temp = this.tableData.slice(
         (this.currentPage - 1) * this.currentPageSize,
         this.currentPage * this.currentPageSize
-      );
-      console.timeEnd('Pagination')
+      )
       return temp
     },
   },

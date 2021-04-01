@@ -701,7 +701,6 @@ export default {
                 }
               }
             }
-            console.time('zhihuan')
             for(let i=0; i<this.asignPointTableData.length; i++) {
               let item = this.asignPointTableData[i]
               item.asIDs = item.asID
@@ -736,7 +735,6 @@ export default {
               item.electrifyState = item.electrifyState || ''
             }
             this.asignPointTableLoading = false
-            console.timeEnd('zhihuan')
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -827,11 +825,7 @@ export default {
       api.getApi("/addsp/match/removeSpace?id="+scope.row.id).then(res => {
           if (res.data.SysCode == 200200) {
             this.getMatchSummary(this.apID)
-            console.log('deleteAsignItem', scope)
-            console.time('splice')
             this.asignPointTableData.splice(scope.$index, 1)
-
-            console.timeEnd('splice')
             this.asignPointTableLoading = false
           } else {
             sessFun.messageFun('warning', res.data.MSG)

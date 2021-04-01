@@ -1915,7 +1915,6 @@ export default {
     },
     // 获取小区数据
     getResList() {
-      console.time("创建区域标注---");
       this.mapLoading = true;
       let params = {
         startTime: this.adListParams.ls,
@@ -2080,7 +2079,6 @@ export default {
       }
       this.areaLables = lableList;
       this.resMarkers = markerList;
-      console.timeEnd("创建区域标注---");
     },
     creatMarker(resKey, myIcon) {
       this.$set(resKey, "isSelect", false);
@@ -2477,7 +2475,6 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      // console.time('显示多边形');
       this.removeAreaLabels();
       //  异步保证showLoading能出现，其他方法暂时无法实现（async/await、this.$nextTick）
       let timer = setTimeout(() => {
@@ -2522,9 +2519,7 @@ export default {
         }
         this.isMouseSearch = true;
         this.activeSearchKind = "1";
-        // console.log('searchResList',this.searchResList)
         showLoading.close();
-        // console.timeEnd('显示多边形');
         clearTimeout(timer);
       }, 20);
     },
@@ -2649,8 +2644,6 @@ export default {
     },
     // 自动测距
     selfMotionDistance() {
-      // console.log('自动测距------')
-      console.time("自动测距");
       this.mousePopover = false;
       let isMapCenter = false;
       let markers = this.resMarkers;
@@ -2699,7 +2692,6 @@ export default {
       if (!isMapCenter) {
         sessFun.messageFun("warning", "请先进行周边选点再进行自动测距！");
       }
-      console.timeEnd("自动测距");
     },
     // 多点辐射
     remoteMethod(query) {
@@ -3218,7 +3210,6 @@ export default {
     },
     // 在线全选
     onlineSelectAll() {
-      console.time("在线全选耗时");
       this.isActiveASOL = true;
       let timer = setTimeout(() => {
         this.isActiveASOL = false;
@@ -3240,7 +3231,6 @@ export default {
           }
         }
       }
-      console.timeEnd("在线全选耗时");
     },
     // 取消在线选择
     canceAllOnline() {
@@ -3473,7 +3463,6 @@ export default {
     },
     // 并集显示圆半径内的小区
     showResInCircle(data, radius) {
-      console.time("圆半径内小区");
       console.log(data, radius);
       let point = data.point;
       for (let rkey of this.resMarkers) {
@@ -3518,11 +3507,9 @@ export default {
           }
         }
       }
-      console.timeEnd("圆半径内小区");
     },
     // 交集显示圆半径内的小区 this.onlineMarkers
     ShowIntersectionInCircle(data, radius) {
-      console.time("交集圆半径内小区");
       let point = data.point;
       for (let rkey of this.resMarkers) {
         let distance = this.resMap.getDistance(point, rkey.point);
@@ -3544,7 +3531,6 @@ export default {
           rkey.show();
         }
       }
-      console.timeEnd("交集圆半径内小区");
     },
     // 计算交集
     computeIntersection() {

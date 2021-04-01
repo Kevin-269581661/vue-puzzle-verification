@@ -1054,17 +1054,17 @@
                 </el-table-column>
                 <el-table-column label="人流量" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.peopleFlow  }}
+                    {{ scope.row.peopleFlow }}
                   </template>
                 </el-table-column>
                 <el-table-column label="车位数" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.parkSpaceNum  }}
+                    {{ scope.row.parkSpaceNum }}
                   </template>
                 </el-table-column>
                 <el-table-column label="车流量" align="right" min-width="110">
                   <template slot-scope="scope">
-                    {{ scope.row.carFlow  }}
+                    {{ scope.row.carFlow }}
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -1460,7 +1460,7 @@
             <div class="planPanel noShareUl">
               <ul>
                 <li><em>方案名称：</em>{{ FAInfo.apName }}</li>
-                <li><em>所属客户：</em>{{ cName || "--"}}</li>
+                <li><em>所属客户：</em>{{ cName || "--" }}</li>
                 <li><em>所属品牌：</em>{{ cBand || "--" }}</li>
                 <!-- <li class="money">
                   <em>订单金额：</em>¥{{ priceFormat(totalPrice) }}
@@ -1536,12 +1536,9 @@
       <div class="finishBtn" v-if="active == 2">
         <el-button type="default" @click="continueCreate">继续创建</el-button>
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
-        <el-button
-                    @click="downLoadFanan()"
-                    type="primary"
-                    class="urlBtn"
-                    >导出方案</el-button
-                  >
+        <el-button @click="downLoadFanan()" type="primary" class="urlBtn"
+          >导出方案</el-button
+        >
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->
@@ -2117,7 +2114,7 @@ export default {
       importDraftsType: "",
       importDraftsConfig: {},
       //搜索旁投放面数
-      planAdsCnt: "",
+      planAdsCnt: 1,
       isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
@@ -2274,9 +2271,7 @@ export default {
           },
           { max: 30, message: "最多只能输入30个字节", trigger: "blur" },
         ],
-        adcID: [
-          { required: true, message: "请选择联系人", trigger: "change" },
-        ],
+        adcID: [{ required: true, message: "请选择联系人", trigger: "change" }],
         ownerSales: [
           { required: true, message: "请输入账号", trigger: "blur" },
           { validator: validateSales, trigger: "blur" },
@@ -2506,7 +2501,7 @@ export default {
       // 当购物车点位数大于0时
       if (this.shopingList.length || this.isSelect) {
         this.changeApInfo();
-        this.computeMedia_AD()
+        this.computeMedia_AD();
       }
       return this.shopingList.length;
     },
@@ -2520,12 +2515,12 @@ export default {
   },
   methods: {
     //投放面数限制
-    planAdsCntChange(value){
+    planAdsCntChange(value) {
       let reg = /^\d{1,}$/;
-      let boolean =reg.test(value)
-      if(!boolean){
+      let boolean = reg.test(value);
+      if (!boolean) {
         sessFun.messageFun("warning", "计划面数仅能输入正整数");
-        this.planAdsCnt = 1
+        this.planAdsCnt = 1;
       }
     },
     //获取新业务逻辑数据
@@ -3083,10 +3078,10 @@ export default {
     getCityList(planDetail) {
       let cityList = [];
       for (let cKey of planDetail.cityList) {
-          cityList.push({
-            label: cKey.rName,
-            value: cKey.rID,
-          });
+        cityList.push({
+          label: cKey.rName,
+          value: cKey.rID,
+        });
       }
       this.setCityAndArea(cityList);
     },
@@ -4439,44 +4434,44 @@ export default {
     //   // }
     //   return importInfo;
     // },
-     //获取导出方案数据
+    //获取导出方案数据
     getPreExcelData() {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apID: this.FAData.apID,
       };
-      return api.getApi("/addsp/proposal/getPlanResList", params)
+      return api.getApi("/addsp/proposal/getPlanResList", params);
     },
     // 第四步的导出方案
-      async downLoadFanan() {
-      let { data } = await this.getPreExcelData()
+    async downLoadFanan() {
+      let { data } = await this.getPreExcelData();
       let arr = this.excelData(data.data);
       let allHead = [
-          "省份",
-          "城市",
-          "区域",
-          "资源名称",
-          "商圈",
-          "地址",
-          "媒介载体",
-          "楼栋数量",
-          "住户数量",
-          "楼盘价格",
-          "楼盘类型",
-          "入住年份",
-          "车位数",
-          "车流量",
-          "人流量",
-          "广告限制",
-          "媒体数量（门）",
-          "计划投放数量(面)",
-        ];
-  
+        "省份",
+        "城市",
+        "区域",
+        "资源名称",
+        "商圈",
+        "地址",
+        "媒介载体",
+        "楼栋数量",
+        "住户数量",
+        "楼盘价格",
+        "楼盘类型",
+        "入住年份",
+        "车位数",
+        "车流量",
+        "人流量",
+        "广告限制",
+        "媒体数量（门）",
+        "计划投放数量(面)",
+      ];
+
       sheetExcel.toDownload(
         allHead,
         arr,
-        this.planForm.planName,
+        this.planForm.planName
         // head
       );
     },
@@ -4484,36 +4479,36 @@ export default {
     excelData(arr) {
       console.log("arrr------excelData", arr);
       let dateArr = [];
-      let arr2 =[]
+      let arr2 = [];
       //将得到的数据除去不需要的
       for (let item of arr) {
-        let obj ={
-          provinceName : item.provinceName,
-          cityName : item.cityName,
-          districtName : item.districtName,
-          resName : item.resName,
-          tradingArea : item.tradingArea,
-          resAddress : item.resAddress,
-          mVehicle : item.mVehicle,
-          fNum : item.fNum,
-          hNum : item.hNum,
-          hPrice : item.hPrice,
-          cType : item.cType,
-          chDay : item.chDay,
-          parkSpaceNum : item.parkSpaceNum,
-          carFlow : item.carFlow,
-          peopleFlow : item.peopleFlow,
-          notPush : item.notPush,
-          actualMediaCnt:item.actualMediaCnt,
-          planAdsCnt : item.planAdsCnt,
-        }
+        let obj = {
+          provinceName: item.provinceName,
+          cityName: item.cityName,
+          districtName: item.districtName,
+          resName: item.resName,
+          tradingArea: item.tradingArea,
+          resAddress: item.resAddress,
+          mVehicle: item.mVehicle,
+          fNum: item.fNum,
+          hNum: item.hNum,
+          hPrice: item.hPrice,
+          cType: item.cType,
+          chDay: item.chDay,
+          parkSpaceNum: item.parkSpaceNum,
+          carFlow: item.carFlow,
+          peopleFlow: item.peopleFlow,
+          notPush: item.notPush,
+          actualMediaCnt: item.actualMediaCnt,
+          planAdsCnt: item.planAdsCnt,
+        };
         arr2.push(obj);
       }
       let obj = {
-        sheetName : "小区列表",
-        showList: arr2
-      }
-      dateArr.push(obj)
+        sheetName: "小区列表",
+        showList: arr2,
+      };
+      dateArr.push(obj);
       return dateArr;
     },
     // downLoadFanan() {
@@ -5358,7 +5353,7 @@ export default {
           this.setpageNumAndTableData();
           this.getAdList();
           this.beforeDate = this.dateInput;
-        } else if(this.planAdsCnt){
+        } else if (this.planAdsCnt) {
           this.setpageNumAndTableData();
           this.ResOriginSearch();
         } else if (!this.dateInput) {
@@ -5542,7 +5537,7 @@ export default {
         city: this.activeCityData.rName,
         ls: this.dateInput[0],
         le: this.dateInput[1],
-        planAdsCnt: this.planAdsCnt?this.planAdsCnt :1,
+        planAdsCnt: this.planAdsCnt ? this.planAdsCnt : 1,
         mVehicle: this.mediaType,
       };
       console.log("this.planAdsCnt: ", this.planAdsCnt);
@@ -5556,7 +5551,7 @@ export default {
           suID: this.BDData.uid,
           asrIDs: this.planForm.pointOfAsrIDs,
           planAdsCnt: this.planAdsCnt ? this.planAdsCnt : 1,
-          mVehicle:this.mediaType
+          mVehicle: this.mediaType,
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;
@@ -6027,7 +6022,7 @@ export default {
     },
     // 车位数过滤
     tableHeaderFilterByParkSpaceNum() {
-      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]== "") {
+      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1] == "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
         let tagName =
@@ -6479,8 +6474,8 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       let params = {
-        asrIDs:this.FAInfo.asrIDs,
-        suID :this.FAInfo.suID,
+        asrIDs: this.FAInfo.asrIDs,
+        suID: this.FAInfo.suID,
         apID: this.FAInfo.apID, //意向方案id
       };
       api
@@ -6488,10 +6483,13 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            sessFun.messageFun("success", `成功获取到${this.mapAdsList.length - this.shopingList.length}条数据`);
+            sessFun.messageFun(
+              "success",
+              `成功获取到${this.mapAdsList.length}条数据`
+            );
             this.setMapAdsListInShopCar();
             // localStorage.removeItem("qinlinMapCode");
-            this.mapBtn = true
+            this.mapBtn = true;
           } else {
             this.getMapLoading.close();
             sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
@@ -6588,16 +6586,50 @@ export default {
       }
       return ifBoolea;
     },
+    //Promise存储草稿
+    changeApInfoPromise() {
+      this.isSelect = true;
+      this.importDraftsConfig.suID = this.BDData.uid;
+      this.importDraftsConfig.type = this.importDraftsType;
+      this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
+      for (let i in this.importDraftsConfig == "") {
+        if (!this.importDraftsConfig[i]) {
+          delete this.importDraftsConfig[i];
+        }
+      }
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        ...this.importDraftsConfig,
+      };
+      return new Promise((resolve, reject) => {
+        api.postApi(this.apiVar.CreateAdBackUp, params).then((response) => {
+          if (response.data.SysCode == 200200) {
+            return resolve(response.data.data);
+          } else {
+            return resolve("");
+          }
+        });
+        // .catch(function (error) {
+        //   resolve("");
+        // });
+      });
+    },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
-     setMapAdsListInShopCar() {
-      let mapAdsList = this.mapAdsList; // tempData
-      mapAdsList.forEach((item) => {
+    async setMapAdsListInShopCar() {
+      let mapAdsList = this.mapAdsList.length ? this.mapAdsList : []; // tempData
+      // this.clearDrafts();
+      this.handleImportDrafts(1, mapAdsList);
+      let draftsData = await this.changeApInfoPromise();
+      draftsData.forEach((item) => {
         item.checkBox = false;
         item.city = item.cityName;
       });
-      this.clearDrafts();
-      this.handleImportDrafts(1, mapAdsList);
-      this.shopingList = mapAdsList;
+      //this.draftsData已经是后台最新缓存，
+      //如果shopingList长度发生变化又会触发购物车
+      //这里将发送给购物车的数据清空
+      this.handleImportDrafts(1, []);
+      this.shopingList = draftsData;
       if (this.getMapLoading) {
         this.getMapLoading.close();
       }
@@ -7762,7 +7794,7 @@ export default {
         console.log("creatAdPlancreatAdPlanres: ", res);
         if (res.data.SysCode == 200200) {
           sessionStorage.setItem("plan_apid", res.data.data.apID);
-          this.FAData.apID = res.data.data.apID
+          this.FAData.apID = res.data.data.apID;
           if (res.data.data.errorResNames) {
             this.ADloading.close();
             sessFun.messageFun("warning", "存在失败小区");
@@ -9154,13 +9186,12 @@ export default {
   box-sizing: border-box;
   margin: 0 auto;
 }
-.planPanel ul{
+.planPanel ul {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
   height: 100%;
-
 }
 
 .planPanel ul li {
@@ -9339,9 +9370,9 @@ export default {
   border-left: 1px solid #d9d9d9;
 }
 /deep/ .planAdsCntClass.el-input {
-  width:200px;
-  .el-input__inner{
-  width: 105px !important;
+  width: 200px;
+  .el-input__inner {
+    width: 105px !important;
   }
 }
 </style>

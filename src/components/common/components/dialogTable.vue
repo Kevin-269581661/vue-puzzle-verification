@@ -6,7 +6,7 @@
     :before-close="handleClose"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
-    custom-class="adjust-dialog"
+    custom-class="custom-dialog-wrapper adjust-dialog"
     center>
     <div>
       <slot name="topTip"></slot>
@@ -93,13 +93,11 @@ export default {
   },
   computed: {
     currentPagination() {
-      console.time('Pagination')
       this.totalNum = this.tableData.length;
       let temp = this.tableData.slice(
         (this.currentPage - 1) * this.currentPageSize,
         this.currentPage * this.currentPageSize
-      );
-      console.timeEnd('Pagination')
+      )
       return temp
     },
   },

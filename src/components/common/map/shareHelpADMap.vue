@@ -1328,7 +1328,6 @@
             },
             // 并集显示圆半径内的小区
             showResInCircle(data,radius) {
-                console.time('圆半径内小区')
                 let point = data.point
                 for (let rkey of this.resMarkers) {
                     let distance = this.resMap.getDistance(point, rkey.point)
@@ -1367,11 +1366,9 @@
                         }
                     }
                 }
-                console.timeEnd('圆半径内小区')
             },
             // 交集显示圆半径内的小区 this.onlineMarkers
             ShowIntersectionInCircle(data,radius) {
-                console.time('交集圆半径内小区')
                 let point = data.point
                 for (let rkey of this.resMarkers) {
                     let distance = this.resMap.getDistance(point, rkey.point)
@@ -1390,8 +1387,6 @@
                         rkey.show()
                     }
                 }
-                //
-                console.timeEnd('交集圆半径内小区')
             },
             // 计算交集
             computeINtersection() {
@@ -1895,7 +1890,6 @@
             },
             // 显示多边形内的点位
             showResInPolygon(temp,overlay) {
-                console.time('显示多边形')
                 let allOverlay = this.resMap.getOverlays();
                 for(let key of this.resInfo) {
                     for (let akey of allOverlay) {
@@ -1929,7 +1923,6 @@
                 }
                 this.isMouseSearch = true
                 this.activeSearchKind = '1'
-                console.timeEnd('显示多边形')
             },
             // 清除上一次的绘制
             deleteDrawingOverlay() {
@@ -1961,8 +1954,6 @@
             },
             // 自动测距
             selfMotionDistance() {
-                console.log('自动测距------')
-                console.time('自动测距')
                 this.mousePopover = false
                 let isMapCenter = false
                 for (let key of this.searchResList) {
@@ -2003,7 +1994,6 @@
                 if(!isMapCenter) {
                     sessFun.messageFun('warning','请先进行周边选点再进行自动测距！')
                 }
-                console.timeEnd('自动测距')
             },
             /**
              *  左下选中框

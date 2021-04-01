@@ -1719,8 +1719,8 @@
                         sessFun.messageFun('warning', '请填写半径范围')
                         return
                     } else {
-                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 3000) {
-                            sessFun.messageFun('warning','请输入1~3000的整数')
+                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 10000) {
+                            sessFun.messageFun('warning','请输入1~10000的整数')
                             return;
                         }
                     }
@@ -2096,7 +2096,7 @@
             padding: 16px 24px 6px;
         }
         .el-dialog__body {
-            padding: 0 24px 14px;
+            padding: 0 24px 4px;
             .comment {
                 display: block;
                 color: rgba(0, 0, 0, 0.45);
@@ -2118,6 +2118,7 @@
             }
         }
         .el-dialog__footer {
+            padding-top: 0;
             .el-button+.el-button {
                 margin-left: 10px;
             }

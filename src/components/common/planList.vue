@@ -1719,8 +1719,8 @@
                         sessFun.messageFun('warning', '请填写半径范围')
                         return
                     } else {
-                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 3000) {
-                            sessFun.messageFun('warning','请输入1~3000的整数')
+                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 10000) {
+                            sessFun.messageFun('warning','请输入1~10000的整数')
                             return;
                         }
                     }

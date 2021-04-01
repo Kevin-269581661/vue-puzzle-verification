@@ -20,8 +20,10 @@ const apiRoot = {
     devURL: '"https://test-qadn.qinlindmp.com/"',
     // testURL: '"http://192.168.1.239/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
+    // 对外灰度域名
+    grayURL: '"https://rc.qinlinad.com/"',
     // static
-    grayURL: '"https://beta-qadn.qinlindmp.com/"',
+    // grayURL: '"https://beta-qadn.qinlindmp.com/"',
     prodURL: '"https://www.qinlinad.com/"',
 };
 

@@ -2111,7 +2111,7 @@ export default {
       FAInfo: {},
       //导入草稿箱子的数据
       importDraftsList: [],
-      importDraftsType: "",
+      importDraftsType: 1,
       importDraftsConfig: {},
       //搜索旁投放面数
       planAdsCnt: 1,
@@ -2456,6 +2456,7 @@ export default {
       // cartPageSize: 10,
       // currentPage: 1,
       // totalNum: 0,
+      mapLock:true
     };
   },
   mounted() {
@@ -2499,11 +2500,9 @@ export default {
   computed: {
     nowPointNum() {
       // 当购物车点位数大于0时
-      if (this.shopingList.length) {
-        console.log('this.isSelect: ', this.isSelect);
-        console.log('this.shopingList: ', this.shopingList);
+      if (this.shopingList.length>=0 && this.FAInfo.apID && this.mapLock) {
         this.changeApInfo();
-        this.computeMedia_AD();
+        // this.computeMedia_AD();
       }
       return this.shopingList.length;
     },
@@ -2815,7 +2814,7 @@ export default {
             this.handleImportDrafts(0, this.shopingList);
             this.shopingList = []
             this.allCheckboxUpdata();
-            this.computeMedia_AD(); //
+            // this.computeMedia_AD(); //
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
           })
@@ -2849,7 +2848,7 @@ export default {
       }
       // this.typeShopList = this.getTypeList();
       // this.getShowList();
-      this.computeMedia_AD();
+      // this.computeMedia_AD();
       this.allCheckboxUpdata();
     },
 
@@ -6590,71 +6589,53 @@ export default {
     },
     //Promise存储草稿
     changeApInfoPromise() {
-      console.log('changeApInfoPromise1: ');
+      this.mapLock = false
       this.importDraftsConfig.suID = this.BDData.uid;
-      console.log('changeApInfoPromise2: ');
       this.importDraftsConfig.type = this.importDraftsType;
-      console.log('changeApInfoPromise3: ');
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
-      console.log('changeApInfoPromise4: ');
       for (let i in this.importDraftsConfig == "") {
         if (!this.importDraftsConfig[i]) {
           delete this.importDraftsConfig[i];
         }
       }
-      console.log('changeApInfoPromise5: ');
-
       let params = {
         apID: this.FAInfo.apID,
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         ...this.importDraftsConfig,
       };
-      console.log('changeApInfoPromise8: ');
-
-      return new Promise((resolve, reject) => {
         api.postApi(this.apiVar.CreateAdBackUp, params).then((response) => {
-            console.log('changeApInfoPromise6: ');
-
           if (response.data.SysCode == 200200) {
-
-            console.log('changeApInfoPromise7: ');
-
-            return resolve(response.data.data);
+            let draftsData = response.data.data
+              draftsData.forEach((item) => {
+              item.checkBox = false;
+              item.city = item.cityName;
+      });
+              //this.draftsData已经是后台最新缓存，
+              //如果shopingList长度发生变化又会触发购物车
+              //这里将发送给购物车的数据清空
+              this.handleImportDrafts(1, []);
+              this.shopingList = draftsData;
+              if (this.getMapLoading) {
+                this.getMapLoading.close();
+              }
+              this.dialogTableVisible = true;
+              this.computeMedia_AD();
+              this.judgeByselect();
+              this.mapLock = true
           } else {
             return resolve([]);
           }
-        });
         // .catch(function (error) {
         //   resolve("");
         // });
       });
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
-    async setMapAdsListInShopCar() {
+    setMapAdsListInShopCar() {
       let mapAdsList = this.mapAdsList.length ? this.mapAdsList : []; // tempData
-      // this.clearDrafts();
       this.handleImportDrafts(1, mapAdsList);
-      let draftsData = await this.changeApInfoPromise();
-      console.log('draftsData: ', draftsData);
-      draftsData.forEach((item) => {
-        item.checkBox = false;
-        item.city = item.cityName;
-      });
-      //this.draftsData已经是后台最新缓存，
-      //如果shopingList长度发生变化又会触发购物车
-      //这里将发送给购物车的数据清空
-      console.log("handleImportDrafts赋值前");
-      this.handleImportDrafts(1, []);
-      console.log("shopingList赋值前");
-      this.shopingList = [...draftsData];
-      console.log("shopingList赋值后");
-      if (this.getMapLoading) {
-        this.getMapLoading.close();
-      }
-      this.dialogTableVisible = true;
-      this.computeMedia_AD();
-      this.judgeByselect();
+      this.changeApInfoPromise();
     },
     // 判断点位是否已存在购物车（亲邻地图）
     qinLinJudgeHaveDiffAD(data, SourceType) {
@@ -8078,10 +8059,7 @@ export default {
     },
     // TODO:存入草稿箱, 改为更变购物车
     changeApInfo() {
-      debugger
-      console.log('changeApInfo: ');
-      console.log("this.importDraftsType: ", this.importDraftsType);
-      console.log("this.importDraftsList: ", this.importDraftsList);
+      if(this.mapLock){
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = this.importDraftsType;
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
@@ -8117,6 +8095,9 @@ export default {
           sessFun.messageFun("warning", res.data.MSG);
         }
       });
+
+      }
+      
       // cacheAdPlan.setData(planInfo);
     },
     // saveApInfo() {

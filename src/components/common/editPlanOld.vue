@@ -6081,9 +6081,9 @@
     .filter-condition /deep/ .el-tag:hover .el-tag__close.el-icon-close{
         color: #1890FF;
     }
-    /deep/ .el-tag__close.el-icon-close:hover{
+    /* /deep/ .el-tag__close.el-icon-close:hover{
         background: #fff;
-    }
+    } */
 
     /*表格*/
     /deep/ .el-table th, .el-table tr {

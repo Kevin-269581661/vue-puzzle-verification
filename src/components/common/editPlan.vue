@@ -5396,13 +5396,22 @@
     .dw-panel .other-dd{
         padding-left: 0px;
     }
-    .otherSelect /deep/ .el-input__inner{
-        width: 100px;
-        height: 30px;
-        padding-left: 10px;
-        color: #1890FF;
-        border-radius: 0;
-        overflow: hidden;
+    .otherSelect {
+        /deep/ .el-input__inner{
+            width: 100px;
+            height: 30px;
+            padding-left: 10px;
+            color: #1890FF;
+            border-radius: 0;
+            overflow: hidden;
+        }
+        /* /deep/ .el-select__tags-text {
+            display: inline-block;
+            max-width: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        } */
+
     }
     .adLimitSelect /deep/ .el-select__tags > span{
         width: 68px;
@@ -5424,6 +5433,7 @@
         color: #1890FF;
     }
     .otherBtn.el-button{
+        // width: 120px;
         border-radius: 0;
         color:rgba(0,0,0,0.35);
     }
@@ -5478,9 +5488,9 @@
     .filter-condition /deep/ .el-tag:hover .el-tag__close.el-icon-close{
         color: #1890FF;
     }
-    /deep/ .el-tag__close.el-icon-close:hover{
+    /* /deep/ .el-tag__close.el-icon-close:hover{
         background: #fff;
-    }
+    } */
 
     /*表格*/
     /deep/ .el-table th, .el-table tr {

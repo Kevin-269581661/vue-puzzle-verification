@@ -9014,13 +9014,26 @@ export default {
   padding-left: 0px;
 }
 
-.otherSelect /deep/ .el-input__inner {
-  width: 100px;
-  height: 30px;
-  padding-left: 10px;
-  color: #1890ff;
-  border-radius: 0;
-  overflow: hidden;
+.otherSelect {
+  /deep/ .el-input__inner{
+      max-width: 135px;
+      height: 30px;
+      padding-left: 10px;
+      color: #1890FF;
+      border-radius: 0;
+      overflow: hidden;
+  }
+  /deep/ .el-select__tags-text {
+      display: inline-block;
+      max-width: 30px;
+      overflow: hidden;
+      // text-overflow: ellipsis;
+  }
+  /deep/ .el-tag__close.el-icon-close {
+      right: -5px;
+      top: -5px;
+  }
+
 }
 
 .adLimitSelect /deep/ .el-select__tags > span {
@@ -9110,9 +9123,9 @@ export default {
   color: #1890ff;
 }
 
-/deep/ .el-tag__close.el-icon-close:hover {
+/* /deep/ .el-tag__close.el-icon-close:hover {
   background: #fff;
-}
+} */
 
 /*表格*/
 /deep/ .el-table th,

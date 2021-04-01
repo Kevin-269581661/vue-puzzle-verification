@@ -721,14 +721,14 @@
                             </div>
                         </div>
                         <!--购物车-->
-                        <el-dialog title="已选点位" :visible.sync="dialogTableVisible">
-                            <template slot-scope="scope">
-                                <div class="table_wrap car-list" style="margin-top: 60px">
-                                    <el-row style="margin-bottom:10px;">
+                        <el-dialog title="已选点位" :visible.sync="dialogTableVisible" custom-class="custom-dialog-wrapper shop-cart-wrapper">
+                            <div class="table_wrap car-list" style="margin-top: 60px">
+                                <div class="table_box shopcar_box">
+                                    <el-row class="top-row">
                                         <el-col :span="8">
                                             <el-radio-group v-model="activeName" size="small" @change="handleClick">
                                                 <el-radio-button :label="item.type.toString()"
-                                                                 v-for="item of typeShopList" :key="item.type">
+                                                                    v-for="item of typeShopList" :key="item.type">
                                                     {{item.mVehicle}}
                                                 </el-radio-button>
                                             </el-radio-group>
@@ -737,20 +737,20 @@
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
                                                 <el-button plain @click="getMapADList" size="small" class="mapBtn"
-                                                           :disabled="mapBtn"
-                                                           v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                            :disabled="mapBtn"
+                                                            v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                             </span>
                                             <el-select v-model="eventType" placeholder="快捷配点" filterable
-                                                       @change="changeEvent">
+                                                        @change="changeEvent">
                                                 <el-option v-for="item of eventList" :key="item.value"
-                                                           :label="item.label" :value="item.value"></el-option>
+                                                            :label="item.label" :value="item.value"></el-option>
                                             </el-select>
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
                                         <el-col :span="10">
                                             <img src="../../assets/images/statistics.png" alt=""
-                                                 style="vertical-align: text-top;">
+                                                    style="vertical-align: text-top;">
                                             社区:<span>{{shopMedia_ADNum.resNum}}</span>
                                             (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
                                             选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
@@ -898,10 +898,10 @@
                                         <el-table-column min-width="50" :render-header="renderHeader">
                                             <template slot-scope="scope">
                                                 <span style="cursor: pointer;color: #1890ff"
-                                                      @click="deleteRow(scope.row)"
-                                                      v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
+                                                        @click="deleteRow(scope.row)"
+                                                        v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
                                                     <i class="el-icon-delete"
-                                                       style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
+                                                        style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
                                                 </span>
                                             </template>
                                         </el-table-column>
@@ -926,14 +926,14 @@
                                             :total="totalNum">
                                         </el-pagination>
                                     </div>
-
-                                    <div style="text-align: center; margin-top: 10px;">
-                                        <el-button @click="next" type="primary"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
-                                        </el-button>
-                                    </div>
                                 </div>
-                            </template>
+
+                                <div class="shop-cart-footer">
+                                    <el-button @click="next" type="primary"
+                                                v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
+                                    </el-button>
+                                </div>
+                            </div>
                         </el-dialog>
                     </div>
                 </div>
@@ -5894,6 +5894,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../../assets/component.scss';
     /deep/ .el-table__fixed, /deep/ .el-table__fixed-right {
         height: 584px !important;
     }
@@ -5946,15 +5947,14 @@
     } */
 
     .mapBtn {
+        display: inline-block;
         min-width: 110px;
         text-align: center;
-        display: inline-block;
         border: 1px solid #D9D9D9;
         border-radius: 4px;
-        font-family: PingFangSC-Regular;
         font-size: 14px;
+        vertical-align: bottom;
         color: rgba(0, 0, 0, 0.65);
-        margin-bottom: 5px;
         cursor: pointer;
     }
 
@@ -5970,7 +5970,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 10px;
+        margin-top: 16px;
+        margin-bottom: 24px;
     }
 
     /*购物车提示信息*/
@@ -6531,6 +6532,32 @@
     }
 
     /*购物车列表*/
+    /deep/ .shop-cart-wrapper {
+        .shopcar_box {
+            padding: 24px 24px 0;
+        }
+        .top-row {
+            margin-bottom:10px;
+            .el-input__icon {
+                height: 32px;
+                line-height: 32px;
+            }
+            .el-input__inner {
+                height: 32px;
+                line-height: 32px;
+            }
+        }
+        .shop-cart-footer {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            text-align: center;
+            border-top: 1px solid rgba(233, 233, 233, 1);
+        }
+        .el-dialog__body {
+            padding: 0;
+            border-bottom: none;
+        }
+    }
     .car-title {
         background: #E6F7FF;
         border: 1px solid #BAE7FF;

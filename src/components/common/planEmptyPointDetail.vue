@@ -708,7 +708,7 @@ export default {
               data.finishTimeRange = finishTimeRange;
             }
             // 城市筛选过滤
-            this.filterCityData = filterFormat(resInfo, "districtName");
+            this.filterCityData = filterFormat(resInfo, "cityName");
             this.filtersArea = filterFormat(resInfo, "districtName");
             this.filtersData = filterFormat(resInfo, "timeRange");
             // 选点排期
@@ -921,10 +921,10 @@ export default {
       this.customPermission = this.sessionData.customPermission;
     },
     filterCity(value, row) {
-      return row.city === value;
+      return row.cityName === value;
     },
     filterOrigin(value, row) {
-      return row.rName === value;
+      return row.districtName === value;
     },
     filterTimeRange(value, row) {
       return row.timeRange === value;

@@ -5763,7 +5763,7 @@
             // 继续创建
             continueCreate() {
                 this.$router.push("./createPlanOld");
-                location.reload(false)
+                // location.reload(false)
             },
             //复制协同选点的url
             copyUrl() {

@@ -2502,7 +2502,7 @@ export default {
       // 当购物车点位数大于0时
       if (this.shopingList.length>=0 && this.FAInfo.apID && this.mapLock) {
         this.changeApInfo();
-        // this.computeMedia_AD();
+        this.computeMedia_AD();
       }
       return this.shopingList.length;
     },

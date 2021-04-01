@@ -9191,6 +9191,7 @@ export default {
 /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
   /*滚动条里面小方块*/
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   background: #c1c1c1;
   border-radius: 4px;
 }

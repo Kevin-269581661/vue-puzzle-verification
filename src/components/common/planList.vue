@@ -515,6 +515,7 @@
                 cityList: [],
                 // 状态列表
                 stateList: [
+                    {text: '未配点', value: -1},
                     {text: '已完成', value: 0},
                     {text: '进行中', value: 1},
                     {text: '未投放', value: 2},
@@ -1473,7 +1474,7 @@
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if (keyword || rangeDate || (status === 0 || status > 0) || company || cityWord || Lock || dateType) {
+                if (keyword || rangeDate || status >= -1 || company || cityWord || Lock || dateType) {
                     this.currentPlan = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -1505,7 +1506,7 @@
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
                     ...(rangeDate && {starttime: rangeDate[0], andtime: rangeDate[1]}),
-                    ...(status !== '' && status >= 0 && {apstate: status}),
+                    ...(status !== '' && status >= -1 && {apstate: status}),
                     ...(company && {asrID: company}),
                     ...(cityWord && {rname: cityWord}),
                     ...(Lock && {onyusuo: Lock}),

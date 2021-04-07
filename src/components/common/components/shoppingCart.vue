@@ -49,7 +49,6 @@
             style="width: 100%"
             @expand-change="senceOpen"
           >
-            <!-- :row-class-name="tableRowClassName" -->
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" inline class="demo-table-expand">
@@ -80,18 +79,6 @@
             </el-table-column>
             <el-table-column label="资源名称" min-width="150" prop="resName">
             </el-table-column>
-            <!-- <el-table-column label="媒体名称" min-width="130">
-              <template slot-scope="scope">
-                <el-tooltip
-                  class="item"
-                  effect="dark"
-                  :content="scope.row.mediaName"
-                  placement="bottom"
-                >
-                  <span>{{ scope.row.mediaName }}</span>
-                </el-tooltip>
-              </template>
-            </el-table-column> -->
             <el-table-column prop="cityName" label="城市" min-width="60">
             </el-table-column>
             <el-table-column prop="districtName" label="区域" min-width="60">
@@ -135,26 +122,6 @@
               align="right"
             >
             </el-table-column>
-            <!-- <el-table-column label="楼盘类型" min-width="85">
-              <template slot-scope="scope">
-                {{ scope.row.buildType || "--" }}
-              </template>
-            </el-table-column> -->
-            <!-- <el-table-column prop="mediaLevel" label="媒体等级" min-width="85">
-              <template slot-scope="scope">
-                {{
-                  scope.row.mediaLevel !== ""
-                    ? scope.row.mediaLevel + "级"
-                    : "--"
-                }}
-              </template>
-            </el-table-column> -->
-
-            <!-- <el-table-column min-width="65">
-              <template slot-scope="scope">
-                <span>{{ scope.row.A_B }}面</span>
-              </template>
-            </el-table-column> -->
             <el-table-column min-width="50" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span
@@ -219,9 +186,6 @@
 </template>
 
 <script>
-// 时间格式化
-import timeFormat from "@/commonFun/timeFormat";
-
 export default {
   name: "shoppingCart",
   props: {
@@ -288,24 +252,21 @@ export default {
  
   methods: {
      //手风琴
-    senceOpen(row, rowsList){
+    senceOpen(row, rowsList) {
       if(rowsList.length > 1){
           this.shoppingCartShowList.forEach(ele => {
             if(ele.resID !== row.resID){
-                this.$refs.shoppingCartRef.toggleRowExpansion(ele,false)
+              this.$refs.shoppingCartRef.toggleRowExpansion(ele,false)
             }
           });
       }
     },
     //继续选点
     continueSelect() {
-      console.log("当前路由", this.$route.path);
       this.$emit("update:dialogTableVisible", false);
     },
     //删除购物车行
     deleteRow(event, rows) {
-      console.log("购物车删除行", rows);
-      console.log("删除行id", rows.mID);
       this.$emit("shoppingCartdeleteRow", rows);
       event.stopPropagation();
     },
@@ -326,20 +287,6 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
     },
-    //指定行的样式
-    // tableRowClassName({ row }) {
-    //   if (row.lState !== undefined && row.lState.length > 0) {
-    //     return "warning-row";
-    //   } else if (
-    //     row.connData.connectResName !== "" ||
-    //     row.connData.commentWorkRes !== "" ||
-    //     row.connData.connectMedia !== ""
-    //   ) {
-    //     return "warning-row-conncet";
-    //   } else {
-    //     return "";
-    //   }
-    // },
     // 购物车行被点击
     shopRowClick(row, event, column) {
       console.log("购物车行被点击row", row, column);
@@ -351,14 +298,12 @@ export default {
     },
     // 自定义购物车表头-清空
     renderHeader(h, { column }) {
-      // console.log('********h*******',h,column)
       return h(
         "span",
         {
           class: "clearShopping",
           on: {
             click: () => {
-              // console.log('**************123')
               this.clearShop();
               // （广告门，道闸）
               this.MtaStatFun(
@@ -390,7 +335,6 @@ export default {
       if (this.$refs.shoppingCartRef) {
         this.$refs.shoppingCartRef.bodyWrapper.scrollTop = 0;
       }
-      // console.log("this.$refs.shoppingCartRef: ", this.$refs.shoppingCartRef);
       return this.shoppingCartList.slice(
         (this.currentPage - 1) * this.cartPageSize,
         this.currentPage * this.cartPageSize

@@ -136,7 +136,26 @@ export default {
       let rectInfo = this.$refs[this.refName]
       if(!rectInfo) return
       rectInfo = $(rectInfo.$el)[0].getBoundingClientRect()
-      this.boxWidth = rectInfo.width-6
+      let boxWidth = rectInfo.width-6,
+        boxHeight = rectInfo.height-6;
+      boxWidth = boxWidth>0?boxWidth:0
+      boxHeight = boxHeight>0?boxHeight:0
+      let waveHeight1 = boxHeight*(this.barData.overdueRate*1/100)
+      let waveHeight2 = boxHeight*(this.barData.overdueRate*1+this.barData.banRepairRate*1)/100
+
+      let waveWidthUnit = boxWidth/2/this.waveNum
+      let waveHeightUnit = boxWidth*3/50
+      let wavePath1 = `M 0 ${waveHeight1}  Q ${waveWidthUnit} ${waveHeightUnit+waveHeight1}, ${waveWidthUnit*2} ${waveHeight1} T ${waveWidthUnit*2*2} ${waveHeight1} T ${waveWidthUnit*2*3} ${waveHeight1} T ${waveWidthUnit*2*4} ${waveHeight1} T ${waveWidthUnit*2*5} ${waveHeight1} T ${waveWidthUnit*2*6} ${waveHeight1} T ${waveWidthUnit*2*7} ${waveHeight1} T ${waveWidthUnit*2*8} ${waveHeight1} V ${boxHeight} H 0 V ${waveHeight1}`
+      let wavePath2 = `M 0 ${waveHeight2}  Q ${waveWidthUnit} ${waveHeightUnit+waveHeight2}, ${waveWidthUnit*2} ${waveHeight2} T ${waveWidthUnit*2*2} ${waveHeight2} T ${waveWidthUnit*2*3} ${waveHeight2} T ${waveWidthUnit*2*4} ${waveHeight2} T ${waveWidthUnit*2*5} ${waveHeight2} T ${waveWidthUnit*2*6} ${waveHeight2} T ${waveWidthUnit*2*7} ${waveHeight2} T ${waveWidthUnit*2*8} ${waveHeight2} V ${boxHeight} H 0 V ${waveHeight2}`
+      this.boxWidth = boxWidth
+      this.boxHeight = boxHeight
+      this.waveHeight1 = waveHeight1
+      this.waveHeight2 = waveHeight2
+      this.waveWidthUnit = waveWidthUnit
+      this.waveHeightUnit = waveHeightUnit
+      this.wavePath1 = wavePath1
+      this.wavePath2 = wavePath2
+      /* this.boxWidth = rectInfo.width-6
       this.boxWidth = this.boxWidth>0?this.boxWidth:0
       this.boxHeight = rectInfo.height-6
       this.boxHeight = this.boxHeight>0?this.boxHeight:0
@@ -146,7 +165,7 @@ export default {
       this.waveWidthUnit = this.boxWidth/2/this.waveNum
       this.waveHeightUnit = this.boxWidth*3/50
       this.wavePath1 = `M 0 ${this.waveHeight1}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight1}, ${this.waveWidthUnit*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*2} ${this.waveHeight1} T ${this.waveWidthUnit*2*3} ${this.waveHeight1} T ${this.waveWidthUnit*2*4} ${this.waveHeight1} T ${this.waveWidthUnit*2*5} ${this.waveHeight1} T ${this.waveWidthUnit*2*6} ${this.waveHeight1} T ${this.waveWidthUnit*2*7} ${this.waveHeight1} T ${this.waveWidthUnit*2*8} ${this.waveHeight1} V ${this.boxHeight} H 0 V ${this.waveHeight1}`
-      this.wavePath2 = `M 0 ${this.waveHeight2}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight2}, ${this.waveWidthUnit*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*3} ${this.waveHeight2} T ${this.waveWidthUnit*2*4} ${this.waveHeight2} T ${this.waveWidthUnit*2*5} ${this.waveHeight2} T ${this.waveWidthUnit*2*6} ${this.waveHeight2} T ${this.waveWidthUnit*2*7} ${this.waveHeight2} T ${this.waveWidthUnit*2*8} ${this.waveHeight2} V ${this.boxHeight} H 0 V ${this.waveHeight2}`
+      this.wavePath2 = `M 0 ${this.waveHeight2}  Q ${this.waveWidthUnit} ${this.waveHeightUnit+this.waveHeight2}, ${this.waveWidthUnit*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*2} ${this.waveHeight2} T ${this.waveWidthUnit*2*3} ${this.waveHeight2} T ${this.waveWidthUnit*2*4} ${this.waveHeight2} T ${this.waveWidthUnit*2*5} ${this.waveHeight2} T ${this.waveWidthUnit*2*6} ${this.waveHeight2} T ${this.waveWidthUnit*2*7} ${this.waveHeight2} T ${this.waveWidthUnit*2*8} ${this.waveHeight2} V ${this.boxHeight} H 0 V ${this.waveHeight2}` */
     },
     catDetail() {
       if(this.filter!==2) return

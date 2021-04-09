@@ -121,7 +121,10 @@ export default {
                 <div class="plan-detail-right">
                     <dl>
                         <dt>状态</dt>
-                        <dd>{{stateToText(detail.apState)}}</dd>
+                        <dd>
+                            <b class="order-badge"></b>
+                            {{stateToText(detail.apState)}}
+                        </dd>
                     </dl>
                     <dl v-if="role != 'EP'">
                         <dt>方案金额</dt>
@@ -132,7 +135,7 @@ export default {
         </slot>
     </div>
 </template>
-<style scoped>
+<style lang="scss" scoped>
 .plan-detail {
     display: flex;
     justify-content: space-between;
@@ -197,6 +200,13 @@ export default {
     font-size: 20px;
     color: rgba(0, 0, 0, 0.85);
     font-weight: bold;
+    .order-badge {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 6px;
+        background: #1890FF;
+    }
 }
 /*1920*/
 @media all and (min-width: 1900px) {

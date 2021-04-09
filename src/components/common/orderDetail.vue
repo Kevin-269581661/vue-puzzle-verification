@@ -35,12 +35,6 @@
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
                                        v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画
                             </el-button>
-                            <!--<el-button type="primary" :disabled="usableBtn"-->
-                            <!--v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0" @click="changePoint" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点</el-button>-->
-                            <!-- <el-button type="primary"
-                                       v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                       @click="changeHandleType" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}">换点
-                            </el-button> -->
                             <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
                                 size="small" value="换点" placeholder="换点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
@@ -226,12 +220,12 @@
                     </el-tab-pane>
                     <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
-                            <change-pic :type="1" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
+                            <change-pic :type="1" :order-detail="orderDetail" :scheduleList="scheduleList" :adMaterialRemarkList="adMaterialRemarkList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
                         <div class="changepic_box" v-if="planPanel=='fifth'">
-                            <change-pic :type="2" :order-detail="orderDetail" :scheduleList="scheduleList"></change-pic>
+                            <change-pic :type="2" :order-detail="orderDetail" :scheduleList="scheduleList" :adMaterialRemarkList="adMaterialRemarkList"></change-pic>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
@@ -744,6 +738,8 @@
                 filtersArea: [],
                 // 当前计划排期区间列表
                 scheduleList: [],
+                // 当前订单物料列表
+                adMaterialRemarkList: [],
                 // 排期时间过滤
                 filtersData: [],
                 //选点排期资源名称搜索
@@ -887,6 +883,8 @@
                 this.getSetPoint();
             }
             this.getScheduleList();
+            // 获取所有物料
+            // this.getAdMaterialRemarkList();
             // 根据角色判断是否有修改合同编号的权限
             this.getRole();
             // 获取订单详情的上面公司的信息
@@ -1236,7 +1234,7 @@
                     this.$refs.apQuotation.judgeIsDetail()
                     MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
                 } else if (this.planPanel == "third") {
-                    // this.getMaterInfo();
+                    this.getAdMaterialRemarkList()
                     MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
                 } else if (this.planPanel == "forth") {
                     MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
@@ -1412,6 +1410,24 @@
                         console.log(res.data);
                         if (res.data.SysCode == 200200) {
                             this.scheduleList = (res.data.data || []).map(item=>{return {text: item, value: item}})
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                    });
+            },
+            // 获取订单物料备注
+            getAdMaterialRemarkList() {
+                let apID = sessionStorage.getItem("order_apid");
+                let info = {
+                    apID
+                };
+                api.getApi("/addsp/material/getAdMaterial", info)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.adMaterialRemarkList = (res.data.data || []).map(item=>{return {text: item, value: item}})
                         } else {
                             Message.warning(res.data.MSG);
                         }

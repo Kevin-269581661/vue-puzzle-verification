@@ -9,7 +9,8 @@ Vue.config.productionTip = false;
 
 // ElementUI
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import '../static/css/element-variables.scss'
+// import 'element-ui/lib/theme-chalk/index.css'
 
 // MintUI
 import MintUI from 'mint-ui'

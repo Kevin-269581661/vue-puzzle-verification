@@ -58,115 +58,119 @@
         <!-- 上传上画素材、备注弹框 -->
         <el-dialog
             title="画面备注信息"
+            custom-class="custom-dialog-wrapper material-remark-dialog"
             :visible.sync="showPhotoRemark">
-            <div style="display: flex;justify-content: space-between;align-items: center">
-                <div class="inline_dialog">
-                    <p><span>资源名称：</span>
-                        <el-input v-model="resNameSec" placeholder="请输入资源名称" size="small"></el-input>
-                    </p>
-                    <p><span>地图中心点：</span>
-                        <el-select v-model="mapName" placeholder="请选择地图中心点" size="small">
-                            <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name"
-                                       :value="item.name"></el-option>
-                        </el-select>
-                    </p>
-                    <el-button size="small" plain @click="searchInfo()" :disabled="!isSearch"
-                               v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt124_ck01'}">搜索
-                    </el-button>
-                    <el-button plain size="small" @click="resetInfo()" :disabled="!isReset"
-                               v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt125_ck02'}">重置
-                    </el-button>
-                </div>
-                <div>
-                    <el-dropdown class="dropdown_a">
-                        <el-button type="primary">
-                            批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+            <div class="material-remark-dialog__body">
+                <div style="display: flex;justify-content: space-between;align-items: center">
+                    <div class="inline_dialog">
+                        <p><span>资源名称：</span>
+                            <el-input v-model="resNameSec" placeholder="请输入资源名称" size="small"></el-input>
+                        </p>
+                        <p><span>地图中心点：</span>
+                            <el-select v-model="mapName" placeholder="请选择地图中心点" size="small">
+                                <el-option v-for="(item, index) of mapArr" :key="index" :label="item.name"
+                                        :value="item.name"></el-option>
+                            </el-select>
+                        </p>
+                        <el-button size="small" plain @click="searchInfo()" :disabled="!isSearch"
+                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt124_ck01'}">搜索
                         </el-button>
-                        <el-dropdown-menu slot="dropdown" class="dropdown-menu">
-                            <el-dropdown-item v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt126_ck04'}"
-                                              @click.native="openAllPic()">
-                                添加画像
-                            </el-dropdown-item>
-                            <el-dropdown-item @click.native="openAllRemark()"
-                                              v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">
-                                添加备注
-                            </el-dropdown-item>
-                            <el-dropdown-item @click.native="deleteMaterInfo('all')">
-                                删除物料信息
-                            </el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
+                        <el-button plain size="small" @click="resetInfo()" :disabled="!isReset"
+                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt125_ck02'}">重置
+                        </el-button>
+                    </div>
+                    <div>
+                        <el-button plain size="small" @click="batImport">导入</el-button>
+                        <el-dropdown class="dropdown_a">
+                            <el-button type="primary">
+                                批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown" class="dropdown-menu">
+                                <el-dropdown-item v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt126_ck04'}"
+                                                @click.native="openAllPic()">
+                                    添加画像
+                                </el-dropdown-item>
+                                <el-dropdown-item @click.native="openAllRemark()"
+                                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">
+                                    添加备注
+                                </el-dropdown-item>
+                                <el-dropdown-item @click.native="deleteMaterInfo('all')">
+                                    删除物料信息
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                </div>
+                <div class="car-title">
+                    <i class="el-icon-info" style="color: #1890FF;margin-right: 5px"></i>
+                    <h4>
+                        已保存物料信息的点位数量有<span>{{hasMaterialCount}}</span> 个 当前选择的点位<span>{{selectList.length}}</span>个
+                    </h4>
+                </div>
+                <el-table :data="materInfoArr" border height="535" ref="multipleTable" v-loading="materloading"
+                        @select="handleSelect" @select-all="handleSelectAll"
+                        class="table_mater">
+                    <el-table-column type="selection" width="41px" scope="scope">
+                    </el-table-column>
+                    <el-table-column prop="imgUrl" label="" width="50" class="change-pic-icon">
+                        <template slot-scope="scope">
+                            <img v-if="scope.row.imgUrl" @click="previewImg(scope.row)"
+                                src="../../../assets/images/changePic_3.png" alt="">
+                            <img v-else src="../../../assets/images/changePic_2.png" alt="">
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="resName" label="资源名称" show-overflow-tooltip>
+                    </el-table-column>
+                    <el-table-column prop="mTitle" label="媒体名称" show-overflow-tooltip>
+                    </el-table-column>
+                    <el-table-column prop="asLab" label="面" width="50">
+                    </el-table-column>
+                    <el-table-column prop="city" label="城市" width="90">
+                    </el-table-column>
+                    <el-table-column prop="rName" label="区域" width="90">
+                    </el-table-column>
+                    <el-table-column prop="map" label="地图中心点" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{scope.row.map||'--'}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="timeRange" label="排期" min-width="120" :filters="filtersData"
+                                    :filter-method="filterTimeRange">
+                    </el-table-column>
+                    <el-table-column prop="remark" label="上画备注" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <span>{{scope.row.remark||'--'}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="60">
+                        <!--<template slot-scope="scope">-->
+                        <!--<i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></i>-->
+                        <!--<i class="el-icon-delete" :style="{color:scope.row.imgUrl?'#108DE7':''}" @click="deleteMaterInfo(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>-->
+                        <!--</template>-->
+                        <template slot-scope="scope">
+                            <span style="color: #1890ff;cursor: pointer" @click="showMaterDetail(scope.row)">编辑</span>
+                        </template>
+
+                    </el-table-column>
+
+                    <div slot="empty">
+                        <no-search-result></no-search-result>
+                    </div>
+                </el-table>
+                <div class="ad_pagination" v-if="total">
+                    <el-pagination
+                        background
+                        layout="total, sizes, prev, pager, next, jumper"
+                        @current-change="changePage"
+                        @size-change="sizeChange"
+                        :page-sizes="[10, 20, 50,100,500]"
+                        :current-page.sync="currInfoPage"
+                        :page-size="maInfoSize"
+                        :total="total">
+                    </el-pagination>
                 </div>
             </div>
-            <div class="car-title">
-                <i class="el-icon-info" style="color: #1890FF;margin-right: 5px"></i>
-                <h4>
-                    已保存物料信息的点位数量有<span>{{hasMaterialCount}}</span> 个 当前选择的点位<span>{{selectList.length}}</span>个
-                </h4>
-            </div>
-            <el-table :data="materInfoArr" border height="535" ref="multipleTable" v-loading="materloading"
-                      @select="handleSelect" @select-all="handleSelectAll"
-                      class="table_mater">
-                <el-table-column type="selection" width="41px" scope="scope">
-                </el-table-column>
-                <el-table-column prop="imgUrl" label="" width="50" class="change-pic-icon">
-                    <template slot-scope="scope">
-                        <img v-if="scope.row.imgUrl" @click="previewImg(scope.row)"
-                             src="../../../assets/images/changePic_3.png" alt="">
-                        <img v-else src="../../../assets/images/changePic_2.png" alt="">
-                    </template>
-                </el-table-column>
-                <el-table-column prop="resName" label="资源名称" show-overflow-tooltip>
-                </el-table-column>
-                <el-table-column prop="mTitle" label="媒体名称" show-overflow-tooltip>
-                </el-table-column>
-                <el-table-column prop="asLab" label="面" width="50">
-                </el-table-column>
-                <el-table-column prop="city" label="城市" width="90">
-                </el-table-column>
-                <el-table-column prop="rName" label="区域" width="90">
-                </el-table-column>
-                <el-table-column prop="map" label="地图中心点" show-overflow-tooltip>
-                    <template slot-scope="scope">
-                        <span>{{scope.row.map||'--'}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="timeRange" label="排期" min-width="120" :filters="filtersData"
-                                 :filter-method="filterTimeRange">
-                </el-table-column>
-                <el-table-column prop="remark" label="上画备注" show-overflow-tooltip>
-                    <template slot-scope="scope">
-                        <span>{{scope.row.remark||'--'}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作" width="60">
-                    <!--<template slot-scope="scope">-->
-                    <!--<i class="el-icon-picture" :style="{color:scope.row.imgUrl?'#108DE7':'', margin: '0 10px'}" @click="previewImg(scope.row)" :disabled="!scope.row.imgUrl"></i>-->
-                    <!--<i class="el-icon-delete" :style="{color:scope.row.imgUrl?'#108DE7':''}" @click="deleteMaterInfo(scope.row, scope.$index)" :disabled="!scope.row.imgUrl"></i>-->
-                    <!--</template>-->
-                    <template slot-scope="scope">
-                        <span style="color: #1890ff;cursor: pointer" @click="showMaterDetail(scope.row)">编辑</span>
-                    </template>
-
-                </el-table-column>
-
-                <div slot="empty">
-                    <no-search-result></no-search-result>
-                </div>
-            </el-table>
-            <div class="ad_pagination" v-if="total">
-                <el-pagination
-                    background
-                    layout="total, sizes, prev, pager, next, jumper"
-                    @current-change="changePage"
-                    @size-change="sizeChange"
-                    :page-sizes="[10, 20, 50,100,500]"
-                    :current-page.sync="currInfoPage"
-                    :page-size="maInfoSize"
-                    :total="total">
-                </el-pagination>
-            </div>
-            <p style="text-align:center;margin-top:20px;">
+            <p class="material-remark-dialog__footer">
                 <el-button plain @click="showPhotoRemark = false" size="small">取消</el-button>
                 <el-button type="primary" size="small" @click="saveAll()">保存</el-button>
             </p>
@@ -210,7 +214,7 @@
                     <el-col class="flex_box remark-box">
                         <span>备注信息：</span>
                         <el-input type="textarea" :rows="2" placeholder="请输入备注信息" v-model="oneEditInfo.remark"
-                                  :maxlength="100"></el-input>
+                                  :maxlength="20"></el-input>
                     </el-col>
                 </el-row>
             </div>
@@ -272,6 +276,8 @@
                 <el-button type="primary" @click="comfirmUploadAllPic" size="small">确 定</el-button>
             </span>
         </el-dialog>
+        <!-- 批量导入物料备注弹框 -->
+        <dialog-import-excel :importDialogShow.sync="importDialogShow" :textObj="textObj" width="448px" importAction="/addsp/material/importRemark"></dialog-import-excel>
         <!-- 图片查看显示 -->
         <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
             <img :src="dialogImageUrl" alt="暂无图片"/>
@@ -288,12 +294,14 @@
     import sessFun from '../../../commonFun/sessFun.js';
     // 时间格式化
     import dateFormat from "../../../commonFun/timeFormat.js";
+    import dialogImportExcel from "./dialogImportExcel.vue";
 
     export default {
         components: {
             noSearchResult,
             elTable: Table,
             elTableColumn: TableColumn,
+            dialogImportExcel
         },
         props: {
             material: {
@@ -362,7 +370,18 @@
                 // selectNum:0,//勾选的个数
                 hasMaterialCount: 0,//已备注的数量
                 oneEditInfo: {remark: '',imgUrl:''},
-                orderApType :''
+                orderApType :'',
+                importDialogShow: false,
+                textObj: {
+                    title: '导入物料备注',
+                    step1: '第一步：下载模板并按要求完善表格',
+                    step2: '第二步：上传编辑好的Excle表格',
+                    fileName: '《QADN-导入物料备注模板》',
+                    downloadFileName: '物料备注导入表.xlsx',
+                    downloadLink: `${window.location.protocol}//${window.location.host}/static/物料备注导入表.xlsx`,
+                    footerCancle: '取 消',
+                    footerComfirm: '提 交'
+                }
             }
         },
         directives: {
@@ -384,6 +403,7 @@
             this.materialInfo = this.material;
             this.daomaterInfo = this.daomater;
             this.orderApType = sessionStorage.getItem("order_apSrc");
+            console.log('textObj', this.textObj.downloadLink)
         },
         methods: {
 
@@ -571,6 +591,10 @@
                     clearTimeout(timer);
                 }, 1000);
                 this.searchInfoFun();
+            },
+            // 批量导入物料备注
+            batImport() {
+                this.importDialogShow = true
             },
             // 打开备注框
             openAllRemark() {
@@ -941,7 +965,8 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '../../../assets/component.scss';
     .box-wrap {
         background-color: #fff;
     }
@@ -998,7 +1023,23 @@
     .search-row /deep/ .el-button {
         padding: 0 10px;
     }
-
+    /deep/ .material-remark-dialog {
+        .material-remark-dialog__body {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+        .material-remark-dialog__footer {
+            padding-top:11px;
+            border-top: 1px solid rgba(233, 233, 233, 1);
+            text-align:center;
+        }
+        .el-dialog__body {
+            padding: 16px 0 11px 0;
+            .ad_pagination {
+                padding-bottom: 24px;
+            }
+        }
+    }
     .inline_dialog {
         display: flex;
         align-items: center;

@@ -51,6 +51,13 @@
                     </el-select>
                 </div>
                 <div>
+                    <span>物料备注：</span>
+                    <el-select placeholder="请选择物料备注" v-model="publishSearchInfo.materialRemark">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
+                    </el-select>
+                </div>
+                <div>
                     <span>拍照状态：</span>
                     <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
                         <el-option label="全部" value="全部"></el-option>
@@ -121,13 +128,20 @@
                         </el-select>
                     </div>
                     <div>
-                    <span>拍照状态：</span>
-                    <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
-                        <el-option label="全部" value="全部"></el-option>
-                        <el-option label="已拍照" value="1"></el-option>
-                        <el-option label="未拍照" value="0"></el-option>
-                    </el-select>
-                </div>
+                        <span>物料备注：</span>
+                        <el-select placeholder="请选择物料备注" v-model="publishSearchInfo.materialRemark">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <span>拍照状态：</span>
+                        <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option label="已拍照" value="1"></el-option>
+                            <el-option label="未拍照" value="0"></el-option>
+                        </el-select>
+                    </div>
                     <el-button type="primary" @click="search()">搜 索</el-button>
                     <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
                 </div>
@@ -507,6 +521,10 @@
                 type: Array,
                 default: ()=>[]
             },
+            adMaterialRemarkList: {
+                typeof: Array,
+                default: ()=>[]
+            },
             fromType: {
                 type: Boolean,
             },
@@ -538,6 +556,8 @@
                     allResource: [],
                     // 投放排期
                     dateRange: '全部',
+                    // 物料备注
+                    materialRemark: '全部',
                     prStatus: '全部'
                 },
 
@@ -904,7 +924,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, prStatus} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -914,6 +934,7 @@
                     pageSize: pageSize,
                     mVehicle: mediaType,
                     time: dateRange=='全部'?'':dateRange,
+                    materialRemark: materialRemark=='全部'?'':materialRemark,
                     prStatus: prStatus=='全部'?'':prStatus
                 };
 
@@ -954,6 +975,8 @@
                         lState: '0',
                         // 投放排期
                         dateRange: '全部',
+                        // 物料备注
+                        materialRemark: '全部',
                         prStatus: "全部"
                     };
 

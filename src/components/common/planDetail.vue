@@ -22,7 +22,8 @@
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
                             <template v-if="planDetail.apState==1">
-                                <el-button type="primary" @click="edit()" v-if="(role=='BD')|| (role=='MD')"
+                                <!-- 加盟销售才能编辑非意向进行中方案 -->
+                                <el-button type="primary" @click="edit()" v-if="(role=='BD' && !['1', '2', '3', '4', '5', '6', '7'].includes(sessionData.asrID) && planDetail.planMode!=1) || (role=='MD')"
                                            v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
                             </template>
                         </div>
@@ -342,6 +343,7 @@ export default {
                             apID: info.apID,
                             apName: info.apName,
                             apState: info.apState,
+                            planMode: info.planMode,
                             lockStatus: info.lockStatus,
                             apTotal: info.apTotal,
                             apcTime: dateFormat.toDateTime(info.apcTime, '/'),
@@ -547,7 +549,13 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
-                        this.$router.push("./editPlan");
+                        // 意向方案
+                        if(this.planDetail.planMode == 1) {
+                            this.$router.push("./editPlan");
+                        } else {
+                            // 非意向方案
+                            this.$router.push("./editPlanOld");
+                        }
                     }else{
                         this.changeRoute();
                     }

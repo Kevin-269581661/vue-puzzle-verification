@@ -20,8 +20,10 @@ const apiRoot = {
     devURL: '"https://test-qadn.qinlindmp.com/"',
     // testURL: '"http://192.168.1.239/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
+    // 对外灰度域名
+    grayURL: '"https://rc.qinlinad.com/"',
     // static
-    grayURL: '"https://beta-qadn.qinlindmp.com/"',
+    // grayURL: '"https://beta-qadn.qinlindmp.com/"',
     prodURL: '"https://www.qinlinad.com/"',
 };
 
@@ -31,6 +33,18 @@ const apiVar = {
     QKuyun: '/QinlinKuyun-API',
     UCAPI: '/UCAPI',
     Media: '/mediaService/media',
+    //qadn2.0前缀
+    AddspProposal:'/addsp/proposal',
+    //qadn2.0获取小区列表
+    ResList:'/addsp/proposal/getResList',
+    //将方案加入草稿箱
+    CreateAdBackUp:'/addsp/proposal/createAdBackUp',
+    //清空草稿箱
+    CleanAdBackUp:"/addsp/proposal/cleanAdBackUp",
+    //获取草稿箱
+    GetAGdBackUp:"/addsp/proposal/getAdBackUp",
+    //传见方案接口
+    CreatePlan:"/addsp/proposal/create",
     Advertisement: '/advertisement',
     //消息通知
     system:'/system/message',

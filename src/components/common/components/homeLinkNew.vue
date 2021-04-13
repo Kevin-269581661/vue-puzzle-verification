@@ -37,11 +37,10 @@
                         </el-option>
                     </el-select>
                 </li>
-<!--                <li>-->
-<!--                    <span>地图类型：</span>-->
-<!--                    <el-radio v-model="ActiveMapType" :label="2">新版地图</el-radio>-->
-<!--                    <el-radio v-model="ActiveMapType" :label="1">旧版地图</el-radio>-->
-<!--                </li>-->
+                <li v-if="sessionData.uType == 'BD' && ['1', '2', '3', '4', '5', '6', '7'].includes(sessionData.asrID)">
+                    <span>投放面数：</span>
+                    <el-input-number class="custom-num" v-model="planAdsCnt" :controls="false" :min="1" :max="1000"></el-input-number>
+                </li>
             </ul>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="mapDialogVisible = false">取 消</el-button>
@@ -102,6 +101,7 @@
                     },
                 },
                 dateInput: '',      // 选择的时间区间
+                planAdsCnt: null,      // 投放面数
                 citySelectLoading: true,   // 城市下拉选项loading
                 // 确认销售地图选点是否已提交
                 confirmVisible: false,
@@ -122,7 +122,8 @@
                 } else if(item.title === '导出空位') {
                     this.isOpenDownload=true
                 } else {
-                    document.location.href=item.link
+                    // document.location.href=item.link
+                    this.$router.push(item.link);
                 }
             },
             // 获取登录用户信息
@@ -181,11 +182,6 @@
                 console.log('ActiveMapType',this.ActiveMapType);
                 this.setMapParams();
                 this.ActiveMapType = 2
-                // if(this.ActiveMapType == 1) {
-                //     this.getMapInfo()
-                // } else if(this.ActiveMapType == 2){
-                //     this.setMapParams()
-                // }
             },
             // 获取mapid并打开地图选点新窗口
             getMapInfo(){
@@ -232,92 +228,130 @@
                     city:  this.mapCityName,
                     ls: this.dateInput[0],
                     le: this.dateInput[1],
+                    suID: this.sessionData.uID,
                 };
-
-                let url = '';
-                if(window.location.hostname == 'localhost') {
-                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
-                } else {
-                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
+                if(this.planAdsCnt) {
+                    this.mapParams.planAdsCnt = this.planAdsCnt
                 }
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}`;
                 // 角色
                 if (this.sessionData.uType === 'BD') {
                     url = url + '&flag=' + true;
                     this.confirmVisible = true;
+                    this.mapParams.asrIDs = this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID]
                     localStorage.removeItem('qinlinMapCode');
-                    localStorage.setItem('mapParams', JSON.stringify({
-                        rid: this.mapParams.rid,
-                        ls: this.dateInput[0],
-                        le: this.dateInput[1],
-                        suID: this.sessionData.uID,
-                        asrIDs: this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID]
-                    }));
+                    localStorage.setItem('mapParams', JSON.stringify(this.mapParams));
                 } else if (this.sessionData.uType === 'SM') {
                     url = url + '&flag=' + false
+                    this.mapParams.asrIDs = this.sessionData.ascType==0?[]:[this.sessionData.asrID]
                     localStorage.removeItem('qinlinMapCode');
-                    localStorage.setItem('mapParams', JSON.stringify({
-                        rid: this.mapParams.rid,
-                        ls: this.dateInput[0],
-                        le: this.dateInput[1],
-                        suID: this.sessionData.uID,
-                        // ascType: 是否平台商
-                        asrIDs: this.sessionData.ascType==0?[]:[this.sessionData.asrID]
-                    }));
+                    localStorage.setItem('mapParams', JSON.stringify(this.mapParams));
                 }
                 this.mapDialogVisible = false;
                 window.open(url);
 
             },
+            //清空草稿箱数据
+            clearDrafts() {
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                };
+                api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
+                    console.log("清空草稿箱", res);
+                    if (res.data.SysCode === 200200) {
+                    console.log("清除草稿箱成功");
+                    } else {
+                    sessFun.messageFun("warning", "清除草稿箱失败");
+                    }
+                });
+            },
             // 判断是否已提交地图选择点位,并跳转到创建方案页面
-            getMapAdsAndGotoPlan(){
+            getMapAdsAndGotoPlan() {
                 let indexData = {
                     dateInput: this.dateInput,
                     rid: this.mapCity.toString(),
                     city: this.mapCityName,
                     activeMapType: this.ActiveMapType
                 }
-                if (this.ActiveMapType === 1) {
-                    api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
-                        console.log('用户是否选点的接口', res)
-                        if(res.data.SysCode == '200200'){
-                            let resData = res.data.data
-                            if (resData.isSelect) {
-                                this.confirmVisible = false
-                                sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                let userInfo = JSON.parse(sessionStorage.getItem("session_data"))
+                api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(async res=>{
+                    if(res.data.SysCode == 200200) {
+                        let { hasCache, hasProposalCache } = res.data.data;
+                            sessionStorage.setItem('indexData', JSON.stringify(indexData));
+                            let is7BD = ['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)
+                            if(is7BD && hasProposalCache) {
+                                // 直营销售并且选点
+                                //清除草稿箱数据，避免与未完成编辑方案冲突。
+                                await this.clearDrafts()
                                 this.$router.push('./sale/createPlan?from=index');
+                            }else if(!is7BD && hasCache) {
+                                // 加盟销售并且选点
+                                this.$router.push('./sale/createPlanOld?from=index');
                             }else{
-                                this.messageFun('warning','您在地图未提交点位')
+                                    this.messageFun('warning','您在地图未提交点位')
                             }
-                        }else{
-                            this.messageFun('warning',res.data.MSG)
-                        }
-                    })
-                } else {
-                    api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(res=>{
-                        if(res.data.SysCode == 200200) {
-                            let resData = res.data.data;
-                            if (resData === 1) {
-                                this.confirmVisible = false;
-                                sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                                this.$router.push('./sale/createPlan?from=index');
-                            }else{
-                                this.messageFun('warning','您在地图未提交点位')
-                            }
-                        } else {
-                            this.messageFun('warning',res.data.MSG)
-                        }
-                    })
-                    // let code = localStorage.getItem(`qinlinMapCode`)
-                    // if(code) {
-                    //     this.confirmVisible = false;
-                    //     sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                    //     this.$router.push('./sale/createPlan?from=index');
-                    // } else {
-                    //     sessFun.messageFun('warning','您在地图未提交点位')
-                    // }
-                }
+                    } else {
+                        this.messageFun('warning',res.data.MSG)
+                    }
+                })
 
             },
+            //  getMapAdsAndGotoPlan(){
+            //     let indexData = {
+            //         dateInput: this.dateInput,
+            //         rid: this.mapCity.toString(),
+            //         city: this.mapCityName,
+            //         activeMapType: this.ActiveMapType
+            //     }
+            //     let userInfo = JSON.parse(sessionStorage.getItem("session_data"))
+            //     if (this.ActiveMapType === 1) {
+            //         api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
+            //             console.log('用户是否选点的接口', res)
+            //             if(res.data.SysCode == '200200'){
+            //                 let resData = res.data.data
+            //                 if (resData.isSelect) {
+            //                     this.confirmVisible = false
+            //                     sessionStorage.setItem('indexData', JSON.stringify(indexData));
+            //                     if(['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
+            //                         // 直营销售
+            //                         this.$router.push('./sale/createPlan?from=index');
+            //                     } else {
+            //                         // 加盟销售
+            //                         this.$router.push('./sale/createPlanOld?from=index');
+            //                     }
+            //                 }else{
+            //                     this.messageFun('warning','您在地图未提交点位')
+            //                 }
+            //             }else{
+            //                 this.messageFun('warning',res.data.MSG)
+            //             }
+            //         })
+            //     } else {
+            //         api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(res=>{
+            //             console.log('是否已提交地图点位: ', res);
+            //             if(res.data.SysCode == 200200) {
+            //                 let resData = res.data.data;
+            //                 if (resData === 1) {
+            //                     this.confirmVisible = false;
+            //                     sessionStorage.setItem('indexData', JSON.stringify(indexData));
+            //                     if(['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
+            //                         // 直营销售
+            //                         this.$router.push('./sale/createPlan?from=index');
+            //                     } else {
+            //                         // 加盟销售
+            //                         this.$router.push('./sale/createPlanOld?from=index');
+            //                     }
+            //                 }else{
+            //                     this.messageFun('warning','您在地图未提交点位')
+            //                 }
+            //             } else {
+            //                 this.messageFun('warning',res.data.MSG)
+            //             }
+            //         })
+            //     }
+
+            // },
             // 操作提示统一方法
             messageFun(mesType,mes){
                 this.$message({
@@ -367,5 +401,11 @@
     }
     .map_ul li{
         margin-bottom: 16px;
+        .custom-num {
+            width: calc(100% - 84px);
+            /deep/ .el-input__inner {
+                text-align: left;
+            }
+        }
     }
 </style>

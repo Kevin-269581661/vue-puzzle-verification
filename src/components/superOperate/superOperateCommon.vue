@@ -198,7 +198,7 @@
                 let routePath = ''
                 if (path.includes('/mediaDetail')) {
                     routePath = '/superOperate/mediaList'
-                } else if (path.includes('/planDetail')) {
+                } else if (path.includes('/planDetail') || path.includes('/planEmptyPointDetail')) {
                     routePath = '/superOperate/planList'
                 } else if (path.includes('/orderDetail')) {
                     routePath = '/superOperate/orderList'

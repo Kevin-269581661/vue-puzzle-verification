@@ -84,7 +84,8 @@
                         </el-table-column>
                         <el-table-column prop="apTotal" label="方案价格" sortable="custom" width="120px" align="right">
                             <template slot-scope="scope">
-                                <span>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
+                                <span v-if="scope.row.apState == '-1'">--</span>
+                                <span v-else>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')&&role!='BD'"
@@ -129,7 +130,9 @@
                                         <el-tooltip class="item" effect="dark"
                                                     :content="item.asName+' '+item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'"
                                                     placement="top">
-                                            <p>
+                                            <p v-if="item.apState == '-1'">
+                                                {{item.city+'('+'--面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
+                                            <p v-else>
                                                 {{item.city+'('+item.num+'面,'+formatTime(item.pdStar)+'至'+formatTime(item.pdEnd)+')'}}</p>
                                         </el-tooltip>
                                         <el-tooltip class="item" effect="dark" :content="'距离解锁还剩'+item.RemainDay+'天'"
@@ -164,6 +167,10 @@
                                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
+                                                          :disabled="isDisable || scope.row.apState !== -1"
+                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">配点
+                                        </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))"
                                                           v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
@@ -246,8 +253,15 @@
                         <span>{{planInfo.cleatTime}}</span>
                     </li>
                     <li class="unfinished_plan_li">
-                        <span>已选点位:</span>
-                        <span>{{planInfo.adsNum}} 面</span>
+                        <span v-if="IsSevenBD">
+                            <span>已选小区:</span>
+                            <span>{{planInfo.adsNum}} 个</span>
+                        </span>
+                        <span v-else>
+                             <span>已选点位:</span>
+                             <span>{{planInfo.adsNum}} 面</span>
+                        </span>
+                        
                     </li>
                 </ul>
             </div>
@@ -260,6 +274,52 @@
         <!-- 导出空点 -->
         <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
             <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
+        </el-dialog>
+
+        <!--发布方案-->
+        <el-dialog
+            title="发布方案"
+            :visible.sync="publishPlanDialog"
+            :close-on-click-modal="false"
+            custom-class="publish_dialog"
+            :show-close="false"
+            width="368px">
+            <span class="comment">完善以下信息后提交，即可完成发布</span>
+            <el-form label-position="top">
+                <el-form-item label="合同编号" label-width="80px">
+                    <el-input size="small" v-model="this.QCinfo"></el-input>
+                </el-form-item>
+                <el-form-item label="订单类型" label-width="80px">
+                    <el-select v-model="planType" size="small" placeholder="请选择活动区域">
+                        <el-option label="常规" value="0"></el-option>
+                        <el-option label="续刊" value="1"></el-option>
+                        <el-option label="补刊" value="2"></el-option>
+                        <el-option label="空刊" value="3"></el-option>
+                        <el-option label="赠送" value="4"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-if="planType==1||planType==2" :label="`${['常规','续刊', '补刊', '空刊', '赠送'][planType]}订单`" label-width="80px">
+                    <el-select
+                        v-model="relatedApId"
+                        size="small"
+                        :placeholder="`请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`"
+                        filterable
+                        :clearable="true"
+                    >
+                        <el-option
+                        v-for="item in apList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                    </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="publishPlanDialog = false">取 消</el-button>
+                <el-button type="primary" @click="commitRelease">确 定</el-button>
+            </div>
         </el-dialog>
 
         <!--周边小区导出-->
@@ -279,7 +339,6 @@
             <ul class="export_ul" v-show="exportResStep === 1">
                 <li>
                     <span>匹配城市：</span>
-                    <!---->
                     <el-select size="small" v-model="exportInfo.citys" filterable placeholder="请选择城市" @change="exportCityFun">
                         <el-option v-for="(key,index) in exportRescityList"
                                    :key="index"
@@ -287,18 +346,6 @@
                                    :value="key.value">
                         </el-option>
                     </el-select>
-                    <!--   <el-cascader
-                           :options="cityOptions"
-                           v-model="exportInfo.citys"
-                           separator="-"
-                           :show-all-levels="false"
-                           placeholder="请选择城市"
-                           filterable
-                           size="small"
-                           style="width: 82%"
-                           clearable
-                           @change="exportCityFun">
-                       </el-cascader>-->
                 </li>
                 <li>
                     <span>匹配范围：</span>
@@ -345,6 +392,7 @@
                 </el-button>
             </div>
         </el-dialog>
+
     </div>
 </template>
 
@@ -467,6 +515,7 @@
                 cityList: [],
                 // 状态列表
                 stateList: [
+                    {text: '未配点', value: -1},
                     {text: '已完成', value: 0},
                     {text: '进行中', value: 1},
                     {text: '未投放', value: 2},
@@ -513,7 +562,12 @@
                 // 上传的文件
                 exportFileData: [],
                 // 导出中
-                isBroundImport: false
+                isBroundImport: false,
+                publishPlanDialog: false,
+                planType: '0',
+                relatedApId: null,
+                apList: [],
+                IsSevenBD:false
             };
         },
         created() {
@@ -528,6 +582,7 @@
                 this.getSubSaleList()
             };
             this.getCity()
+            
         },
         methods: {
             // 切换页码
@@ -598,8 +653,7 @@
                     if (!res.data.SysCode) {
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.total;
-                        let dataArr = dataInfo.list;
-                        this.currentPlan = this.funcData(dataArr);
+                        this.currentPlan = this.funcData(dataInfo.list);
                         this.loading = false;
                         if (dataInfo.totalpage == 0) {
                             this.messageFun('warning', '暂无数据');
@@ -631,6 +685,7 @@
                     tmpObj = this.setTableData(data);
                     result.push(tmpObj);
                 }
+                console.log('result: ', result);
                 return result;
             },
             // 获取session数据
@@ -671,6 +726,7 @@
             getRole() {
                 let role = this.sessionData.uType;
                 this.role = role;
+                this.IsSevenBD = (['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID) && this.sessionData.uType=='BD')
                 console.log(role);
                 if (role == "MD") {
                     this.isDisable = false;
@@ -700,7 +756,8 @@
             stateToText(val) {
                 let state = [
                     {text: "已完成", value: 0, color: 'rgba(196,203,211,1)'},
-                    {text: "进行中", value: 1, color: 'rgba(250,173,20,1)'},
+                    {text: "未配点", value: -1, color: 'rgba(250, 173, 20, 1)'},
+                    {text: "进行中", value: 1, color: 'rgba(113, 213, 217, 1)'},
                     {text: "未投放", value: 2, color: 'rgba(82,196,26,1)'},
                     {text: "投放中", value: 3, color: 'rgba(24,144,255,1)'},
                     {text: "强制结束", value: 5, color: 'rgba(245,34,45,1)'}
@@ -732,6 +789,53 @@
                 this.currPage = 1;
                 this.searchFun();
             },
+            routeSelect() {
+                if(['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                    // 直营
+                    if(this.sessionData.uType=='BD') {
+                        this.$router.push("./createPlan")
+                    } else {
+                        this.$router.push("./createPlanOld")
+                    }
+                } else {
+                    // 加盟
+                    this.$router.push("./createPlanOld")
+                }
+            },
+            //新增意向方案查询意向方案草稿箱
+            getProposalAdBackUp(params){
+                api.getApi(this.apiVar.AddspProposal + '/getAdBackUp', params).then(res => {
+                    console.log('获取意向方案缓存', res)
+                    this.continueEditLoading.close()
+                    if (res.data.SysCode == 200200) {
+                        console.log('获取意向方案缓存成功', res.data)
+                        let data = res.data.data
+                        if (JSON.stringify(data) === '{}' || !data) {
+                            this.$router.push("./createPlan")
+                        } else {
+                            // let planInfo = JSON.parse(data)
+                            this.showProposalCookeAdPlan(data)
+                            // 缓存到localStorage
+                            // data.uiD = params.uid
+                            // cacheAdPlan.setData(data)
+                        }
+                    } else {
+                        // 后台返回异常则查看前台是否有缓存
+                        let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                        if (returnData) {
+                            this.showCookeAdPlan(returnData)
+                        } else {
+                            this.routeSelect()
+                        }
+                    }
+                }).catch(err => {
+                    console.log('err', err)
+                    this.continueEditLoading.close()
+                    if (this.$route.path.includes('planList')) {
+                        this.routeSelect()
+                    }
+                })
+            },
             // 新建方案
             addOne() {
                 this.continueEditLoading = this.$loading({
@@ -744,40 +848,56 @@
                     uid: this.sessionData.uID,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
-                    console.log('获取方案缓存', res)
-                    this.continueEditLoading.close()
-                    if (res.data.SysCode == 200200) {
-                        console.log('获取缓存成功', res.data)
-                        if (JSON.stringify(res.data.data) === '{}') {
-                            this.$router.push("./createPlan");
-                        } else {
-                            let planInfo = JSON.parse(res.data.data)
-                            this.showCookeAdPlan(planInfo)
-                            // 缓存到localStorage
-                            cacheAdPlan.setData(planInfo)
-                        }
-                    } else {
-                        // 后台返回异常则查看前台是否有缓存
-                        let returnData = cacheAdPlan.getData(this.sessionData.uID)
-                        if (returnData) {
-                            this.showCookeAdPlan(returnData)
-                        } else {
-                            this.$router.push("./createPlan");
-                        }
-                    }
-                }).catch(err => {
-                    console.log('err', err)
-                    this.continueEditLoading.close()
-                    if (this.$route.path.includes('planList')) {
-                        this.$router.push("./createPlan");
-                    }
-                })
+                if(this.IsSevenBD){
+                    this.getProposalAdBackUp(params)
+                }else{
+                    api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
+                            console.log('获取方案缓存', res)
+                            this.continueEditLoading.close()
+                            if (res.data.SysCode == 200200) {
+                                console.log('获取缓存成功', res.data)
+                                if (JSON.stringify(res.data.data) === '{}') {
+                                    this.routeSelect()
+                                } else {
+                                    let planInfo = JSON.parse(res.data.data)
+                                    this.showCookeAdPlan(planInfo)
+                                    // 缓存到localStorage
+                                    cacheAdPlan.setData(planInfo)
+                                }
+                            } else {
+                                // 后台返回异常则查看前台是否有缓存
+                                let returnData = cacheAdPlan.getData(this.sessionData.uID)
+                                if (returnData) {
+                                    this.showCookeAdPlan(returnData)
+                                } else {
+                                    this.routeSelect()
+                                }
+                            }
+                        }).catch(err => {
+                            console.log('err', err)
+                            this.continueEditLoading.close()
+                            if (this.$route.path.includes('planList')) {
+                                this.routeSelect()
+                            }
+                        })
+                }
+               
             },
             // 点位表盘
             goToDiaPlate() {
                 console.log('this.$router', this.$router)
                 this.$router.push('./adsDialPlate')
+            },
+            //显示意向方案缓存信息
+            showProposalCookeAdPlan(adPlan){
+                this.planInfo = {
+                    planName: adPlan.apName,
+                    ownerSales: adPlan.saleRealName,
+                    cleatTime: adPlan.lSetTime,
+                    adsNum: adPlan.resList.length
+                }
+                this.unfinishedDialogVisible = true
+
             },
             // 显示缓存方案的信息
             showCookeAdPlan(adPlan) {
@@ -804,6 +924,35 @@
                 result = result + rid.toString().substring(0, 4);
                 result = result + "00" + Math.round(Math.random() * 9);
                 return result;
+            },
+            // 获取方案列表
+            getPlanList(apID, suID) {
+                return new Promise((resolve, reject)=>{
+                    let params = {
+                        uid:this.sessionData.uID,
+                        token: this.sessionData.token,
+                        sales_user: suID
+                    }
+                    api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
+                        console.log('销售所属方案',res)
+                        if (res.data.SysCode == 200200) {
+                            let resData =  res.data.data
+                            let tempList = []
+                            for(let key of resData){
+                                if(apID != key.apId){
+                                    tempList.push({
+                                        value: key.apId,
+                                        label: key.apName + '（' + key.cname + ' · ' + (key.pdStar||'') + '-' + (key.pdEnd||'') + '）'
+                                    })
+                                }
+                            }
+                            this.apList = tempList
+                            resolve()
+                        } else {
+                            sessFun.messageFun('warning',res.data.MSG)
+                        }
+                    })
+                })
             },
             // 发布
             release(row) {
@@ -847,13 +996,17 @@
                                 } else {
                                     this.QCinfo = this.getContractNo(text.rID);
                                 }
-                                MessageBox.prompt("合同编号:", {
+                                this.getPlanList(text.apID, text.suID).then((resolve)=> {
+                                    this.publishPlanDialog = true
+                                })
+                                /* MessageBox.prompt("合同编号:", {
                                     confirmButtonText: "是",
                                     cancelButtonText: "否",
                                     inputPattern: /^[^\u4e00-\u9fa5]{0,}$/,
                                     inputErrorMessage: "只能输入数字,字母,字符",
                                     inputValue: this.QCinfo
-                                }).then(() => {
+                                })
+                                .then(() => {
                                     this.Ctrlloading = Loading.service(
                                         {
                                             text: "请耐心等待...",
@@ -862,10 +1015,10 @@
                                         }
                                     );
                                     // 保存合同编号
-                                    this.saveContractNo(this.QCinfo);
+                                    this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
                                 }).catch(() => {
                                     Message.info('已取消操作');
-                                });
+                                }); */
                             } else {
                                 this.messageFun('warning', res.data.MSG);
                             }
@@ -874,8 +1027,20 @@
                     this.messageFun('warning', '您没有权限发布该方案');
                 }
             },
+            // 提交
+            commitRelease() {
+                this.Ctrlloading = Loading.service(
+                    {
+                        text: "请耐心等待...",
+                        spinner: "el-icon-loading",
+                        background: "rgba(0, 0, 0, 0.7)"
+                    }
+                );
+                // 保存合同编号
+                this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
+            },
             // 保存合同编号
-            saveContractNo(contractNo) {
+            saveContractNo(contractNo, planType, relatedApId) {
                 // uid         int【必填】     当前账户UserID
                 // apid        int【必填】     方案apID
                 // qc          String【必填】  方案合同编号
@@ -885,6 +1050,16 @@
                     apid: this.currentItem.apID,
                 };
                 info.qc = contractNo;
+                info.planType = planType;
+                if(planType==1||planType==2) {
+                    if(!relatedApId) {
+                        this.messageFun('warning', `请选择${['常规','续刊', '补刊', '空刊', '赠送'][planType]}的订单`);
+                        this.Ctrlloading.close();
+                        return
+                    }
+                    info.relatedApId = relatedApId
+
+                }
                 api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
                     .then(res => {
                         console.log(res);
@@ -933,6 +1108,7 @@
                                 break;
                             }
                         }
+                        this.publishPlanDialog = false
                     } else if (res.data.SysCode == 300500) {
                         if (res.data.asList) {
                             // 存在点位被占，是否立即去方案详情修改？
@@ -950,25 +1126,45 @@
             },
             // 跳转到详情页面
             ToDetail(row) {
-                console.log(row.apID);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-                this.$router.push("./planDetail");
+                if(row.apState == -1) {
+                    // 未配点意向方案详情
+                    this.$router.push("./planEmptyPointDetail");
+                } else if(row.planMode == 1) {
+                    // 已配点意向方案
+                    this.$router.push("./planDetail");
+                } else {
+                    this.$router.push("./planDetail");
+                }
             },
             // 跳转到编辑页面
             ToEdit(row) {
-                console.log(row);
                 sessionStorage.setItem("plan_apid", row.apID);
                 sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-                this.$router.push("./editPlan");
+                console.log('roweedit', row)
+                if(row.planMode == 1) {
+                    // 意向方案
+                    this.$router.push("./editPlan");
+                } else {
+                    // 非意向方案
+                    this.$router.push("./editPlanOld");
+                }
             },
             // 比较两个时间大小
             compareTime(arr, sField, eField) {
                 return dateFormat.compareTime(arr, sField, eField);
             },
+            // 意向方案配点（直营媒介配点）
+            addPoint(row) {
+                if(this.sessionData.uType == 'MD' && ['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                    this.ToEdit(row);
+                } else {
+                    this.$message.warning('暂无权限！');
+                }
+            },
             //预锁
             preload(row) {
-                console.log('row-----', row);
                 this.$confirm('<p>锁定后，方案中的点位将被占用</p>', '是否确认锁定该方案的点位', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1115,24 +1311,35 @@
             },
             // KA方案拆分
             splitAdPlan(row) {
-                this.checkPoin(row).then(res=>{
-                    if(res === true) {
-                        let params = {
-                            apID: row.apID
+                if(row.planMode == 1) {
+                    // 意向方案
+                    api.postApi('/addsp/proposal/splitAdPlan', {apID: row.apID}).then(res => {
+                        console.log('方案拆分res', res)
+                        if (res.data.SysCode === 200200) {
+                            sessFun.messageFun('success', '拆分成功')
+                            this.searchFun()
+                        } else {
+                            sessFun.messageFun('warning', res.data.MSG || '方案异常')
                         }
-                        api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', params).then(res => {
-                            console.log('方案拆分res', res)
-                            if (res.data.SysCode === 200200) {
-                                sessFun.messageFun('success', '拆分成功')
-                                this.searchFun()
-                            } else {
-                                sessFun.messageFun('warning', res.data.MSG || '方案异常')
-                            }
-                        })
-                    }
-                }).catch(error=> {
+                    })
+                } else {
+                    this.checkPoin(row).then(res=>{
+                        if(res === true) {
+                            api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', {apID: row.apID}).then(res => {
+                                console.log('方案拆分res', res)
+                                if (res.data.SysCode === 200200) {
+                                    sessFun.messageFun('success', '拆分成功')
+                                    this.searchFun()
+                                } else {
+                                    sessFun.messageFun('warning', res.data.MSG || '方案异常')
+                                }
+                            })
+                            
+                        }
+                    }).catch(error=> {
 
-                })
+                    })
+                }
             },
             cancelLock() {
                 this.dialogVisible = false;
@@ -1190,26 +1397,7 @@
                 };
                 console.log(info);
                 api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
-                    console.log(res.data);
                     if (res.data.SysCode == 300200) {
-                        /*           for (let plandata of this.currentPlan) {
-                                       if (plandata.apID == this.currentItem.apID) {
-                                           for (let item of plandata.cityArea) {
-                                               if (info.asrIDs.includes(item.asrID)) {
-                                                   for (let ridItem of arr) {
-                                                       if (ridItem.asrID == item.asrID) {
-                                                           let RemainDay = this.countDay(ridItem.pdStar);
-                                                           item.RemainDay = RemainDay;
-                                                           this.$set(item, 'RemainDay', RemainDay);
-                                                           break;
-                                                       }
-                                                   }
-                                               }
-                                           }
-                                           break;
-                                       }
-                                   }
-                                   this.currentPlan.push();*/
                         this.searchFun();
                         this.messageFun('success', res.data.MSG);
 
@@ -1246,19 +1434,6 @@
                 api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
                     console.log(res.data);
                     this.Ctrlloading.close();
-                    /* if (res.data.SysCode == 300200) {
-                         for (let plandata of this.currentPlan) {
-                             if (plandata.apID == this.currentItem.apID) {
-                                 for (let item of plandata.cityArea) {
-                                     if (info.asrIDs.includes(item.asrID)) {
-                                         delete item.RemainDay;
-                                     }
-                                 }
-                                 break;
-                             }
-                         }
-                         this.currentPlan.push();
-                     }*/
                     this.searchFun();
                     this.messageFun('success', res.data.MSG);
                 }).catch(err => {
@@ -1299,7 +1474,7 @@
                     this.isSearch = true;
                     clearTimeout(timer);
                 }, 1000);
-                if (keyword || rangeDate || (status === 0 || status > 0) || company || cityWord || Lock || dateType) {
+                if (keyword || rangeDate || status >= -1 || company || cityWord || Lock || dateType) {
                     this.currentPlan = [];
                     this.loading = true;
                     this.currPage = 1;
@@ -1331,7 +1506,7 @@
                     ...info,
                     ...(keyword && {keywordType: select, keyword}),
                     ...(rangeDate && {starttime: rangeDate[0], andtime: rangeDate[1]}),
-                    ...(status !== '' && status >= 0 && {apstate: status}),
+                    ...(status !== '' && status >= -1 && {apstate: status}),
                     ...(company && {asrID: company}),
                     ...(cityWord && {rname: cityWord}),
                     ...(Lock && {onyusuo: Lock}),
@@ -1349,6 +1524,7 @@
                     apID: item.apID,
                     apName: item.apName || '',
                     apState: item.apState || '',
+                    planMode: item.planMode || 0,
                     apTotal: item.apTotal || '',
                     apcTime: item.apcTime || '',
                     bTitle: item.bTitle || '--',
@@ -1371,7 +1547,7 @@
                 // console.log(obj.canLock); //false表示不能再预锁
                 // console.log(obj.unLock); //true 表示可解锁
                 for (let data of item.details) {
-
+                    data.apState=item.apState //新增字段,判断是否是意向方案,点位面数显示为--
                     if (asrIDarr.includes(data.asrID)) {
                         data.isshow = 0;
                     } else {
@@ -1416,9 +1592,22 @@
                     showClose: true,
                 })
             },
+            //清除意向方案缓存
+            clearProposalAdPlanBackups(params){
+                api.postApi(this.apiVar.AddspProposal + '/cleanAdBackUp', params).then(res => {
+                        console.log('清空意向方案缓存的方案', res)
+                        if (res.data.SysCode == 200200) {
+                            console.log('缓存意向方案清除成功')
+                        } else {
+                            console.log('缓存意向方案清除失败')
+                        }
+                    })
+                    cacheAdPlan.removeData(this.sessionData.uID)
+                    this.routeSelect()
+            },
             // 放弃继续编辑
             cancelEdit() {
-                this.$confirm('放弃后将清除该方案信息及点位!', '提示', {
+                this.$confirm('放弃后将清除该方案信息!', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     showClose: false,
@@ -1429,7 +1618,10 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token
                     }
-                    api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
+                    if(this.IsSevenBD){
+                        this.clearProposalAdPlanBackups(params)
+                    }else{
+                        api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
                         console.log('清空缓存的方案', res)
                         if (res.data.SysCode == 200200) {
                             console.log('缓存方案清除成功')
@@ -1438,7 +1630,9 @@
                         }
                     })
                     cacheAdPlan.removeData(this.sessionData.uID)
-                    this.$router.push("./createPlan");
+                    this.routeSelect()
+                    }
+                   
                 }).catch(() => {
                     Message.info('取消成功')
                 })
@@ -1451,7 +1645,12 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.5)'
                 });
-                this.$router.push("./createPlan?unfinishedPlan");
+                if(this.IsSevenBD){
+                    this.$router.push("./createPlan?unfinishedPlan");
+                }else{
+                    this.$router.push("./createPlanOld?unfinishedPlan");
+                }
+               
                 this.unfinishedDialogVisible = false
             },
             /**
@@ -1521,8 +1720,8 @@
                         sessFun.messageFun('warning', '请填写半径范围')
                         return
                     } else {
-                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 3000) {
-                            sessFun.messageFun('warning','请输入1~3000的整数')
+                        if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 10000) {
+                            sessFun.messageFun('warning','请输入1~10000的整数')
                             return;
                         }
                     }
@@ -1598,7 +1797,7 @@
         }
     };
 </script>
-<style scoped>
+<style lang="scss" scoped>
     a {
         color: #108ee9;
     }
@@ -1893,7 +2092,39 @@
         cursor: pointer;
         color:rgba(102,102,102,1);
     }
-
+    /deep/ .publish_dialog {
+        .el-dialog__header {
+            padding: 16px 24px 6px;
+        }
+        .el-dialog__body {
+            padding: 0 24px 4px;
+            .comment {
+                display: block;
+                color: rgba(0, 0, 0, 0.45);
+                line-height: 24px;
+                margin-bottom: 16px;
+            }
+            .el-form-item {
+                margin-bottom: 12px;
+            }
+            .el-form-item__label {
+                padding-bottom: 4px;
+                line-height: 24px;
+            }
+            .el-input__inner {
+                padding: 0 12px;
+            }
+            .el-input--small, .el-select--small {
+                width: 100%;
+            }
+        }
+        .el-dialog__footer {
+            padding-top: 0;
+            .el-button+.el-button {
+                margin-left: 10px;
+            }
+        }
+    }
     /deep/ .Import_dialog .el-upload-list__item{
         width: 100%;
     }

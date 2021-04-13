@@ -17,7 +17,12 @@
 
 <script>
   export default {
-    name: "NotFoundPage"
+    name: "NotFoundPage",
+    beforeCreate() {
+      if(!sessionStorage.getItem("session_data")) {
+        this.$router.replace({path: '/'})
+      }
+    }
   }
 </script>
 

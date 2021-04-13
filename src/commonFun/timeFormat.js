@@ -5,10 +5,6 @@ var timeFormat = {};
 timeFormat.toDate = function (time, format = '-') {
 	let result = '';
 	if (time) {
-		// let str = time.toString().substring(time.length - 2);
-		// if (str == ".0") {
-		// 	time = time.toString().substring(0, time.length - 2);
-		// }
 		if(typeof time === 'number') {
 			time = new Date(time)
 		} else {

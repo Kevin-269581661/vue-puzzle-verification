@@ -56,14 +56,17 @@
                 </div>
                 <div class="table_wrap">
                     <el-table border :data="currentOrder" style="width: 100%" @sort-change="sortChange"
-                              v-loading="loading"
-                              element-loading-text="玩命加载中"
-                              element-loading-spinner="el-icon-loading"
-                              >
-                        <el-table-column label="订单名称" min-width="12.6%">
+                            v-loading="loading"
+                            element-loading-text="玩命加载中"
+                            element-loading-spinner="el-icon-loading">
+                        <el-table-column label="订单名称" min-width="12.6%" class-name="custom-column-order">
                             <template slot-scope="scope">
                                 <span class="u-bk-btn" v-if="scope.row.apSrc!=0">贝壳</span>
                                 <span style="color: #108ee9;cursor: pointer" @click="ToDetail(scope.row)">{{scope.row.apName}}</span>
+                                <el-tooltip v-if="scope.row.planType==1||scope.row.planType==2" effect="dark" :content="scope.row.relatedApName||''">
+                                    <span class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
+                                </el-tooltip>
+                                <span v-else-if="scope.row.planType>=0" class="plan-type">{{['常规','续刊', '补刊', '空刊', '赠送'][scope.row.planType]}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
@@ -516,7 +519,7 @@
                     apID: item.apID,
                     apName: item.apName || '',
                     apQC: item.apQC || '',
-                    apState: item.apState || '',
+                    apState: item.apState,
                     apTotal: item.apTotal || '',
                     appTime: item.appTime || '',
                     bTitle: item.bTitle || '--',
@@ -524,7 +527,10 @@
                     realName: item.realName || '',
                     companyList: [],
                     skProgress: item.skProgress || '',
-                    xkProgress: item.xkProgress || ''
+                    xkProgress: item.xkProgress || '',
+                    planType: item.planType || '',
+                    relatedApName: item.relatedApName || '',
+                    relatedApId: item.relatedApId || '',
                 };
                 for (let data of item.companyList) {
                     let objItem = {
@@ -574,6 +580,7 @@
             stateToText(val) {
                 let state = [
                     {text: "已完成", value: 0, color: 'rgba(196,203,211,1)'},
+                    {text: "未配点", value: -1, color: 'rgba(250, 173, 20, 1)'},
                     {text: "未投放", value: 2, color: 'rgba(82,196,26,1)'},
                     {text: "投放中", value: 3, color: 'rgba(24,144,255,1)'},
                     {text: "强制结束", value: 5, color: 'rgba(245,34,45,1)'}
@@ -958,7 +965,7 @@
     };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     a {
         color: #108ee9;
     }
@@ -1086,6 +1093,11 @@
 
     .mediaList_wrap .mediaList_container .table_wrap {
         margin: 0 auto 16px;
+        /deep/ .custom-column-order {
+            .cell {
+                margin-right: 28px;
+            }
+        }
     }
 
     .el-button + .el-button {
@@ -1118,5 +1130,17 @@
         border-radius:2px;
         color: #fff;
         font-size: 12px;
+    }
+    .plan-type {
+        position: absolute;
+        top: 17px;
+        right: 10px;
+        padding: 0 4px;
+        line-height: 18px;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #FFFFFF;
+        background: #1890FF;
     }
 </style>

@@ -245,7 +245,7 @@
                   </el-table-column>
                   <el-table-column
                     prop="planAdsCnt"
-                    label="计划投放数量（门）"
+                    label="计划投放数量（面）"
                     min-width="7.4%"
                   >
                   </el-table-column>

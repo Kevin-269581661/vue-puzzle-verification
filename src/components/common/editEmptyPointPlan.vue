@@ -910,8 +910,6 @@ export default {
       isShowHalfYear: false,
       // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
       // doUpload: "/advertisement/AnalysisExcelAdBaseInfo",
-
-      // doUpload: "/advertisement/AdPlanResImport",
       doUpload: "/addsp/proposal/importResExcel",
       // 空位导出url
       downUrl: "",
@@ -2303,6 +2301,7 @@ export default {
         "住户数量",
         "楼盘价格",
         "楼盘类型",
+        "地图中心点",
         "入住年份",
         "车位数",
         "车流量",
@@ -2337,6 +2336,7 @@ export default {
           hNum: item.hNum,
           hPrice: item.hPrice,
           cType: item.cType,
+          map: item.mapCenterName || '',
           chDay: item.chDay,
           parkSpaceNum: item.parkSpaceNum,
           carFlow: item.carFlow,

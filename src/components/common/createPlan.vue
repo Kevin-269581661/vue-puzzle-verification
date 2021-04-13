@@ -1645,7 +1645,6 @@ export default {
     },
     // 获取浏览器session数据
     getsessionData() {
-      debugger
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       this.customPermission = sess.customPermission;

@@ -1486,7 +1486,7 @@ export default {
       api.getApi(this.apiVar.GetAGdBackUp, params).then((res) => {
         console.log("获取草稿箱", res);
         if (res.data.SysCode === 200200) {
-          let resList = res.data.data.resList;
+          let resList = res.data.data.resList || [];
           this.unfinishedData = res.data.data;
           this.setPlanInfo();
           if (resList.length) {
@@ -2821,9 +2821,10 @@ export default {
         // this.unfinishedData.planData.throwCity
         console.log("缓存方案再编辑", this.unfinishedData.planData);
         let arr = [];
+        let cityList = this.unfinishedData.cityList.map(item=>item.rID)
         for (let key of this.shopingList) {
           if (
-            this.unfinishedData.planData.baseInfo.throwCity.includes(key.rid)
+            cityList.includes(key.rid)
           ) {
             arr.push(key);
           }
@@ -2909,7 +2910,7 @@ export default {
       let cityArr = [];
       for (let j = 0; j < throwCityList.length; j++) {
         for (let t = 0; t < this.throwCity.length; t++) {
-          if (this.throwCity[t].value === throwCityList[j]) {
+          if (this.throwCity[t].value == throwCityList[j]) {
             let cityObj = {
               rName: this.throwCity[t].label,
               rid: this.throwCity[t].value,
@@ -4102,6 +4103,7 @@ export default {
       let returnData = this.unfinishedData;
       console.log("returnData: ", returnData);
       if (returnData) {
+        this.GetBrandByCid(returnData.cID);
         this.BDData.uid = returnData.suID;
         this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
         this.throwCity = [];
@@ -4112,12 +4114,13 @@ export default {
             value: item.rID,
           };
           this.throwCity.push(cityObj);
-          this.planForm.throwCity.push(item.rID);
+          this.planForm.throwCity.push(item.rID+'');
         });
         (this.planForm.customerBudget = returnData.customerBudget),
           (this.planForm.customerDemand = returnData.customerDemand),
+          (this.planForm.companyName = returnData.cID),
           (this.planForm.companyBrand = returnData.bID),
-          (this.planForm.adcID = returnData.returnData),
+          (this.planForm.adcID = returnData.adcID),
           (this.planForm.planName = returnData.apName),
           // this.planForm.throwCity=planFormThrowCity
           (this.cacheCName = returnData.cName);

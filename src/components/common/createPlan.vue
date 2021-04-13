@@ -1645,6 +1645,7 @@ export default {
     },
     // 获取浏览器session数据
     getsessionData() {
+      debugger
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       this.customPermission = sess.customPermission;
@@ -4107,7 +4108,7 @@ export default {
       if (returnData) {
         this.GetBrandByCid(returnData.cID);
         this.BDData.uid = returnData.suID;
-        this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
+        // this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
         this.throwCity = [];
         this.planForm.throwCity = [];
         returnData.cityList.forEach((item) => {

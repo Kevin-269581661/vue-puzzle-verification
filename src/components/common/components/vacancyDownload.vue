@@ -94,7 +94,7 @@ export default {
       cityList: [],
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() <= Date.now();
+          return time.getTime() <= Date.now()-1000*3600*24;
         },
       },
     };

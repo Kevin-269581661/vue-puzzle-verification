@@ -100,7 +100,7 @@
                 prop="throwCity"
                 ref="planThrowCity"
               >
-                <div v-if="cityOther" v-model="planForm.throwCity">
+                <div v-if="cityOther">
                   <el-tag
                     :key="tag"
                     v-for="tag in dynamicTags"
@@ -903,7 +903,7 @@
           value-format="yyyy/MM/dd"
           format="yyyy/MM/dd"
           class="date-select input-with-select"
-          :picker-options="pickerOptions"
+          :picker-options="emptyPointPickerOptions"
         >
         </el-date-picker>
       </p>
@@ -1138,11 +1138,15 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() <= Date.now();
-        },
+        }
+      },
+      emptyPointPickerOptions: {
+        disabledDate(time) {
+          return time.getTime() <= Date.now()-1000*3600*24;
+        }
       },
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
-      // doUpload: "/advertisement/AdPlanResImport",
       doUpload: "/addsp/proposal/importResExcel",
       // 空位导出url
       downUrl: "",
@@ -1237,11 +1241,6 @@ export default {
       planSelect: "",
       mState: "", // 媒体状态
       activeGrade: "", // 媒体等级
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now();
-        },
-      },
       dateInput: [], // 时间输入框
       beforeDate: [], // 时间输入框的前一次时间
       //setp1创建方案表单

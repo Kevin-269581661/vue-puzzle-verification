@@ -668,7 +668,7 @@
           value-format="yyyy/MM/dd"
           format="yyyy/MM/dd"
           class="date-select input-with-select"
-          :picker-options="pickerOptions"
+          :picker-options="emptyPointPickerOptions"
         >
         </el-date-picker>
       </p>
@@ -901,11 +901,6 @@ export default {
       isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now();
-        },
-      },
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
       // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
@@ -1007,6 +1002,11 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() <= Date.now();
+        },
+      },
+      emptyPointPickerOptions: {
+        disabledDate(time) {
+          return time.getTime() <= Date.now()-1000*3600*24;
         },
       },
       dateInput: [], // 时间输入框
@@ -3627,7 +3627,7 @@ export default {
       return ifBoolea;
     },
     //Promise存储草稿,拉取地图选点调用
-    changeApInfoPromise() {
+    /* changeApInfoPromise() {
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = this.importDraftsType;
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
@@ -3663,7 +3663,7 @@ export default {
         .catch(function (error) {
           resolve("");
         });
-    },
+    }, */
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
     setMapAdsListInShopCar() {
       let mapAdsList = this.mapAdsList.length ? this.mapAdsList : []; // tempData

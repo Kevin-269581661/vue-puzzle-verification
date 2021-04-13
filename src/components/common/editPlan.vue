@@ -1019,7 +1019,7 @@
             width="54%">
             <div class="scheduled_box">
                 <ul>
-                    <li v-for="(item,index) in cityAdsScheduled">
+                    <li v-for="(item,index) in cityAdsScheduled" :key="index">
                         <el-row>
                             <el-col :span="2"><span>{{item.city}}</span></el-col>
                             <el-col :span="2"><span>{{item.adsNum}}面</span></el-col>

@@ -1045,9 +1045,14 @@
     .inline_dialog {
         display: flex;
         align-items: center;
+        span {
+            white-space: nowrap;
+        }
     }
 
     .inline_dialog > p {
+        display: flex;
+        align-items: center;
         margin-right: 16px;
     }
 

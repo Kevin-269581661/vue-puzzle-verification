@@ -403,10 +403,12 @@
             this.materialInfo = this.material;
             this.daomaterInfo = this.daomater;
             this.orderApType = sessionStorage.getItem("order_apSrc");
-            console.log('textObj', this.textObj.downloadLink)
+            this.$EventBus.$on('resetSearchInfo', this.resetInfo)
+        },
+        beforeDestroy() {
+            this.$EventBus.$off('resetSearchInfo', this.resetInfo);
         },
         methods: {
-
             // 排期筛选
             filterTimeRange(value, row) {
                 return row.timeRange === value;

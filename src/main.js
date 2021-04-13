@@ -44,6 +44,9 @@ Vue.filter('moneyFormat', function (value=0, prefix='', decimal=2) {
 		return value
 	}
 })
+
+// 全局事件总线
+Vue.prototype.$EventBus = new Vue()
 //引入全局css
 import '../static/css/reset.css'
 import '../static/css/public.css'

@@ -6,6 +6,7 @@
       :width="width"
       top="23vh"
       :close-on-press-escape="false"
+      :close-on-click-modal="false"
       :show-close="false"
       :center="false"
       custom-class="import-dialog"
@@ -45,6 +46,7 @@
           :limit="1"
           :multiple="false"
           :fileList="fileList"
+          accept=".xlsx"
         >
           <img src="../../../assets/images/export.png" alt="" />
           <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
@@ -115,8 +117,13 @@ export default {
       event.stopPropagation();
     },
     importUploadFile(file, fileList) {
-      this.fileList = fileList
-      this.importFileData = [file];
+      if(file.name.match(/.xlsx$/)) {
+        this.fileList = fileList
+        this.importFileData = [file];
+      } else {
+        this.fileList = []
+        this.$message.warning("文件格式必须为xlsx，请重新长传！")
+      }
     },
     importFileRemove(file, fileList) {
       console.log(file, fileList);
@@ -139,6 +146,9 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.$message.success(res.data.MSG);
+            // 重置画面备注信息
+            this.$EventBus.$emit('resetSearchInfo')
+            this.$emit("update:importDialogShow", false)
           } else {
             this.$message.warning(res.data.MSG);
           }

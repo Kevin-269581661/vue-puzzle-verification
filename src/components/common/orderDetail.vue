@@ -883,8 +883,6 @@
                 this.getSetPoint();
             }
             this.getScheduleList();
-            // 获取所有物料
-            // this.getAdMaterialRemarkList();
             // 根据角色判断是否有修改合同编号的权限
             this.getRole();
             // 获取订单详情的上面公司的信息
@@ -1234,11 +1232,12 @@
                     this.$refs.apQuotation.judgeIsDetail()
                     MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
                 } else if (this.planPanel == "third") {
-                    this.getAdMaterialRemarkList()
                     MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
                 } else if (this.planPanel == "forth") {
+                    this.getAdMaterialRemarkList()
                     MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
                 } else if (this.planPanel == "fifth") {
+                    this.getAdMaterialRemarkList()
                     MtaH5.clickStat('a006_b011_c000_d000_bt116_ck09')
                 } else if (this.planPanel == "sixth") {
                     MtaH5.clickStat('a006_b011_c000_d000_bt117_ck09')
@@ -1247,18 +1246,7 @@
             },
             //返回列表
             goBack() {
-                // let isChange = sessionStorage.getItem('change_point');
-                // if(isChange =='yes'){
-                //     sessionStorage.setItem('change_point', 'no');
-                //     // location.reload();
-                //     this.usableBtn = false;
-                //     $(window).scrollTop(0);
-                //     this.showTitle = false;
-                //     this.showBtn = true;
-                //     this.showHandel = false;
-                // }else{
                 this.$router.push("./orderList");
-                // }
             },
             // 获取订单详情的上面公司的信息
             getInitData() {

@@ -712,7 +712,7 @@ export default {
               item.mediaLevel = item.grade || ''
               item.schedules = timeFormat.toDate(item.pdStartDate, '/') + '-' + timeFormat.toDate(item.pdEndDate, '/')//item.pdStartDate + '-' + item.pdEndDate
               item.adLimit = item.notPush
-              item.mapCenter = ''     // 地图中心点名称
+              item.mapCenter = item.mapCenter||'--'     // 地图中心点名称
               item.reference = ''
               item.rid = item.cityCode
               item.address = item.address || ''

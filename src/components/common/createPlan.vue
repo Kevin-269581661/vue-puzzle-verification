@@ -100,7 +100,7 @@
                 prop="throwCity"
                 ref="planThrowCity"
               >
-                <div v-if="cityOther" v-model="planForm.throwCity">
+                <div v-if="cityOther">
                   <el-tag
                     :key="tag"
                     v-for="tag in dynamicTags"
@@ -1662,7 +1662,9 @@ export default {
         this.BDData.saleManageLevel = sess.saleManageLevel;
         this.saleManageLevel = sess.saleManageLevel;
         this.isBD = true;
-        this.getCityList(); // 获取权限下的城市列表
+        if(this.$route.fullPath.indexOf("unfinishedPlan") == -1) {
+          this.getCityList(); // 获取权限下的城市列表
+        }
         this.Get_cName();
       } else {
         this.isBD = false;
@@ -4114,7 +4116,7 @@ export default {
             value: item.rID,
           };
           this.throwCity.push(cityObj);
-          this.planForm.throwCity.push(item.rID+'');
+          this.planForm.throwCity.push(item.rID);
         });
         (this.planForm.customerBudget = returnData.customerBudget),
           (this.planForm.customerDemand = returnData.customerDemand),

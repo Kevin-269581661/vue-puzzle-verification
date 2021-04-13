@@ -3470,8 +3470,20 @@
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
                     this.getAdsParamsData.resName = ''
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now();
+                        }
+                    }
+                    this.dateInput.splice(0,1,timeFormat.returnDayCount(1, '/'))
                     this.setPageNoAndTableData()
                     this.getAdList()
+                } else if(this.selectValue == '被占查询') {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
                 }
             },
             //  查询被占点位

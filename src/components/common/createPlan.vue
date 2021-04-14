@@ -2270,7 +2270,7 @@ export default {
       if (importFileData.length) {
         let rids = this.planForm.throwCity.join(",");
         let sess = this.sessionData;
-        let info = `?uid=${sess.uID}&token=${sess.token}&suId=${
+        let info = `?uid=${sess.uID}&token=${sess.token}&suID=${
           this.BDData.uid
         }&rIDs=${rids}&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
         let formData = new FormData();

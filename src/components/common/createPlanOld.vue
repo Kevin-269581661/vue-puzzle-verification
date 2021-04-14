@@ -3470,15 +3470,26 @@
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
                     this.getAdsParamsData.resName = ''
+                    // 只能选择今天之后的日期
                     this.pickerOptions = {
                         disabledDate(time) {
                             return time.getTime() <= Date.now();
                         }
                     }
-                    this.dateInput.splice(0,1,timeFormat.returnDayCount(1, '/'))
+                    // 明天的日期（/分割）
+                    let tomorrow = timeFormat.returnDayCount(1, '/')
+                    if(this.dateInput[0] < tomorrow) {
+                        if(this.dateInput[1] < tomorrow) {
+                            // 日期范围只选择了当天
+                            this.dateInput = [tomorrow, tomorrow]
+                        } else {
+                            this.dateInput.splice(0,1,tomorrow)
+                        }
+                    }
                     this.setPageNoAndTableData()
                     this.getAdList()
                 } else if(this.selectValue == '被占查询') {
+                    // 被占查询可以选择当天
                     this.pickerOptions = {
                         disabledDate(time) {
                             return time.getTime() <= Date.now()-1000*3600*24;

@@ -5,6 +5,9 @@ function getBalance() {
       case '3':
         balance = '3,599.6';
         break;
+      case '4':
+        balance = '0.00';
+        break;
       case '12':
         balance = '0.00';
         break;

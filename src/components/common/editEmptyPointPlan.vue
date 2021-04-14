@@ -908,8 +908,6 @@ export default {
       },
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
-      // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
-      // doUpload: "/advertisement/AnalysisExcelAdBaseInfo",
       doUpload: "/addsp/proposal/importResExcel",
       // 空位导出url
       downUrl: "",
@@ -2119,7 +2117,7 @@ export default {
       if (importFileData.length) {
         let rids = this.planForm.throwCity.join(",");
         let sess = this.sessionData;
-        let info = `?uid=${sess.uID}&token=${sess.token}&suId=${
+        let info = `?uid=${sess.uID}&token=${sess.token}&suID=${
           this.BDData.uid
         }&rIDs=${rids}&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
         let formData = new FormData();

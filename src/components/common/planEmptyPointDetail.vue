@@ -245,7 +245,7 @@
                   </el-table-column>
                   <el-table-column
                     prop="planAdsCnt"
-                    label="计划投放数量（门）"
+                    label="计划投放数量（面）"
                     min-width="7.4%"
                   >
                   </el-table-column>
@@ -478,6 +478,7 @@ export default {
           "住户数量",
           "楼盘价格",
           "楼盘类型",
+          "地图中心点",
           "入住年份",
           "车位数",
           "车流量",
@@ -498,6 +499,7 @@ export default {
           "hNum", 
           "hPrice",
           "cType",
+          "mapCenterName",
           "chDay",
           "parkSpaceNum", //车位数
           "carFlow", //车流量

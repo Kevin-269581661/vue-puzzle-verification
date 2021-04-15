@@ -2379,7 +2379,7 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true`
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=' + ${this.mapParams.city} + '&flag=' + true`
                 // if(window.location.hostname == 'localhost') {
                 //     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 // } else {

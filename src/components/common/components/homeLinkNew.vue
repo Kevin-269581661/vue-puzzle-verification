@@ -37,7 +37,7 @@
                         </el-option>
                     </el-select>
                 </li>
-                <li v-if="sessionData.uType == 'BD' && ['1', '2', '3', '4', '5', '6', '7'].includes(sessionData.asrID)">
+                <li v-if="sessionData.uType == 'BD' && ['2', '3', '4', '5', '6', '7'].includes(sessionData.asrID)">
                     <span>投放面数：</span>
                     <el-input-number class="custom-num" v-model="planAdsCnt" :controls="false" :min="1" :max="1000"></el-input-number>
                 </li>
@@ -279,7 +279,7 @@
                     if(res.data.SysCode == 200200) {
                         let { hasCache, hasProposalCache } = res.data.data;
                             sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                            let is7BD = ['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)
+                            let is7BD = ['2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)
                             if(is7BD && hasProposalCache) {
                                 // 直营销售并且选点
                                 //清除草稿箱数据，避免与未完成编辑方案冲突。

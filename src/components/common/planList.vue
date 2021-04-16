@@ -287,7 +287,7 @@
             <span class="comment">完善以下信息后提交，即可完成发布</span>
             <el-form label-position="top">
                 <el-form-item label="合同编号" label-width="80px">
-                    <el-input size="small" v-model="this.QCinfo"></el-input>
+                    <el-input size="small" v-model="QCinfo"></el-input>
                 </el-form-item>
                 <el-form-item label="订单类型" label-width="80px">
                     <el-select v-model="planType" size="small" placeholder="请选择活动区域">
@@ -1029,15 +1029,19 @@
             },
             // 提交
             commitRelease() {
-                this.Ctrlloading = Loading.service(
-                    {
-                        text: "请耐心等待...",
-                        spinner: "el-icon-loading",
-                        background: "rgba(0, 0, 0, 0.7)"
-                    }
-                );
-                // 保存合同编号
-                this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
+                if(/^[^\u4e00-\u9fa5]{0,}$/.test(this.QCinfo)) {
+                    this.Ctrlloading = Loading.service(
+                        {
+                            text: "请耐心等待...",
+                            spinner: "el-icon-loading",
+                            background: "rgba(0, 0, 0, 0.7)"
+                        }
+                    );
+                    // 保存合同编号
+                    this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
+                } else {
+                    this.messageFun('warning', '只能输入数字,字母,字符');
+                }
             },
             // 保存合同编号
             saveContractNo(contractNo, planType, relatedApId) {

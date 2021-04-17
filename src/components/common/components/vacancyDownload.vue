@@ -755,7 +755,7 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn() {
-      return !(this.sessionData.uType == "BD" && ['1', '2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID));
+      return !(this.sessionData.uType == "BD" && ['2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID));
     },
   },
 };

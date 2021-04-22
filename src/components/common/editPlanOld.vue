@@ -2034,9 +2034,6 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                /* if(this.customPermission.patrolPermission) {
-                    allHead.push('巡点问题', '通行情况');
-                } */
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2547,12 +2544,12 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = '';
-                if(window.location.hostname == 'localhost') {
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
+                /* if(window.location.hostname == 'localhost') {
                     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 } else {
                     url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                };
+                }; */
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()
@@ -6194,7 +6191,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 746px;
+        min-height: 680px;
     }
 
     .step3 /deep/ .el-dialog {
@@ -6219,6 +6216,7 @@
         }
         .shop-cart-footer {
             padding-top: 10px;
+            padding-bottom: 10px;
             text-align: center;
             border-top: 1px solid rgba(233, 233, 233, 1);
         }

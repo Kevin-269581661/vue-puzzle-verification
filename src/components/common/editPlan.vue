@@ -5593,7 +5593,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 746px;
+        min-height: 680px;
     }
 
     .step3 /deep/ .el-dialog {
@@ -5618,6 +5618,7 @@
         }
         .shop-cart-footer {
             padding-top: 10px;
+            padding-bottom: 10px;
             text-align: center;
             border-top: 1px solid rgba(233, 233, 233, 1);
         }

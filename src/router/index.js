@@ -409,6 +409,6 @@ if(document.location.pathname.indexOf('/login') !== -1 || document.location.path
 } else {
     // 刷新非登录页，不用重置路由
     let session_data = JSON.parse(sessionStorage.getItem("session_data")||'{}')
-    session_data.uType && addRoutes(session_data.uType, !['2', '3', '4', '5', '6', '7'].includes(session_data.asrID), true)
+    session_data.uType && addRoutes(session_data.uType, session_data.customPermission.proposalPermission == 0, true)
 }
 export {router, addRoutes}

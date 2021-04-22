@@ -16,14 +16,13 @@
             <div class="up-loader-header">
                 <div>
                     <span>城市区域：</span>
-                    <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect"
-                                 @change="searchImgChange()" filterable>
-                    </el-cascader>
+                    <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
                 </div>
                 <div>
                     <span>资源名称：</span>
-                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse">
-                        <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
+                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
                                    :value="item.value"></el-option>
                     </el-select>
                 </div>
@@ -45,14 +44,14 @@
                 </div>
                 <div>
                     <span>投放排期：</span>
-                    <el-select placeholder="请选择投放排期" v-model="publishSearchInfo.dateRange">
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </div>
                 <div>
                     <span>物料备注：</span>
-                    <el-select placeholder="请选择物料备注" v-model="publishSearchInfo.materialRemark">
+                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
                     </el-select>
@@ -110,12 +109,13 @@
                     <div>
                         <span>城市区域:</span>
                         <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域"
-                                     filterable size="small" @change="painCityChange()"></el-cascader>
+                                    filterable size="small" @change="painCityChange()"></el-cascader>
                     </div>
                     <div>
                         <span>资源名称:</span>
                         <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small"
                                    filterable>
+                            <el-option label="全部" value="全部"></el-option>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
@@ -544,7 +544,7 @@
                     // 城市选择
                     citySelect: ['全部'],
                     // 资源选择
-                    allhouse: '全部',
+                    allhouse: ['全部'],
                     // 监播图选择
                     allPic: '1',
                     //投放状态
@@ -552,15 +552,14 @@
                     // 搜索列表
                     // 城市列表
                     citys: [],
-                    // 资源列表
-                    allResource: [],
                     // 投放排期
-                    dateRange: '全部',
+                    dateRange: ['全部'],
                     // 物料备注
-                    materialRemark: '全部',
+                    materialRemark: ['全部'],
                     prStatus: '全部'
                 },
-
+                // 资源列表
+                allResource: [],
                 // 上传图片
                 addload: '',
                 // 所有的图片组合
@@ -863,12 +862,12 @@
                                 value: item.resID,
                             };
                         });
-                        result.unshift({
+                        this.allResource = result;
+                        /* result.unshift({
                             value: "全部",
                             label: "全部"
-                        })
+                        }) */
                         this.searchInfo.resArr = result;
-                        this.publishSearchInfo.allResource = result;
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }
@@ -884,18 +883,17 @@
             },
             searchImgChange() {
                 let {citySelect} = this.publishSearchInfo;
-                // console.log(citySelect);
                 if (citySelect[0] !== "全部") {
                     let cityId = citySelect[0];
                     let areaId = citySelect[1];
                     this.getResArr(cityId, areaId);
+                } else {
+                    this.getResArr();
                 }
-                // this.searchImg();
             },
             // 上下刊搜索图片
             searchImg() {
                 let {citySelect, allhouse, allPic} = this.publishSearchInfo;
-                // console.log(allPic);
                 if (citySelect.length || allhouse || allPic) {
                     this.pageInfo.currPage = 1;
                     this.searchFun();
@@ -920,6 +918,14 @@
                     this.pageInfo.paginationShow = true;
                 });
             },
+            changeSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                    this.publishSearchInfo[target].splice(allIndex, 1)
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                    this.publishSearchInfo[target] = ['全部']
+                }
+            },
             // 搜索数据格式化
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
@@ -933,8 +939,8 @@
                     pageNum: currPage,
                     pageSize: pageSize,
                     mVehicle: mediaType,
-                    time: dateRange=='全部'?'':dateRange,
-                    materialRemark: materialRemark=='全部'?'':materialRemark,
+                    time: dateRange.includes('全部')?'':dateRange,
+                    materialRemark: materialRemark.includes('全部')?'':materialRemark,
                     prStatus: prStatus=='全部'?'':prStatus
                 };
 
@@ -949,13 +955,12 @@
                 }
                 if (citySelect.length) {
                     if (citySelect[0] == '全部') {
-                        // this.searchFun();
                     } else {
                         info.city = citySelect[0];
                         info.district = citySelect[1];
                     }
                 }
-                if (allhouse!=='全部') {
+                if (!allhouse.includes('全部')) {
                     info.resid = allhouse;
                 }
                 console.log('type---', info);
@@ -968,15 +973,15 @@
                         ...this.publishSearchInfo,
                         citySelect: ['全部'],
                         // 资源选择
-                        allhouse: '全部',
+                        allhouse: ['全部'],
                         // 监播图选择
                         allPic: '1',
                         //投放状态
                         lState: '0',
                         // 投放排期
-                        dateRange: '全部',
+                        dateRange: ['全部'],
                         // 物料备注
-                        materialRemark: '全部',
+                        materialRemark: ['全部'],
                         prStatus: "全部"
                     };
 
@@ -1543,7 +1548,6 @@
                     apId: sessionStorage.getItem('order_apid'),
                 };
                 api.getApi(this.apiVar.replace + '/plan/resInfo', info).then(res => {
-                    // console.log(res);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data.map(item => {
                             return {
@@ -1553,7 +1557,6 @@
                             };
                         });
                         this.dialogInfo.resArr = result;
-                        // console.log('资源名称列表',this.dialogInfo.resArr);
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }

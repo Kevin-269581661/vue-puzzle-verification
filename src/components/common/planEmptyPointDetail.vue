@@ -39,23 +39,14 @@
                 <el-button
                   type="primary"
                   @click="edit()"
-                  v-if="role == 'MD' || role == 'BD'"
+                  v-if="customPermission.proposalPermission && (role == 'MD' || role == 'BD')"
                   v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt097_ck03' }"
                   >编辑</el-button
                 >
-                <el-button type="primary" @click="editPlan" v-if="role == 'MD'"
+                <el-button type="primary" @click="editPlan" v-if="customPermission.proposalPermission && role == 'MD'"
                   >配点</el-button
                 >
               </template>
-              <!-- <template v-if="planDetail.apState == 1">
-                <el-button
-                  type="primary"
-                  @click="edit()"
-                  v-if="role == 'MD'"
-                  v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt097_ck03' }"
-                  >编辑</el-button
-                >
-              </template> -->
             </div>
           </div>
           <div>
@@ -165,31 +156,6 @@
                           }}</span>
                         </el-form-item>
                       </el-form>
-                      <!-- <el-form
-                        v-if="customPermission.patrolPermission"
-                        label-position="left"
-                        inline
-                        class="demo-table-expand"
-                      >
-                        <el-form-item label="巡点问题：">
-                          <span class="ellipsis-td">{{
-                            props.row.remark
-                          }}</span>
-                        </el-form-item>
-                        <el-form-item label="通行情况：">
-                          <span class="ellipsis-td">{{
-                            props.row.trafficState
-                          }}</span>
-                        </el-form-item>
-                        <el-form-item
-                          label="通电情况："
-                          v-if="customPermission.patrolPermission == 2"
-                        >
-                          <span class="ellipsis-td">{{
-                            props.row.electrifyState
-                          }}</span>
-                        </el-form-item>
-                      </el-form> -->
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -508,26 +474,6 @@ export default {
           "actualMediaCnt",
           "planAdsCnt",
         ];
-      
-        // if (
-        //   (this.sessionData.uType == "MD" &&
-        //     this.sessionData.mediaManageLevel == 1) ||
-        //   (this.sessionData.uType == "BD" &&
-        //     this.sessionData.saleManageLevel == 2)
-        // ) {
-        //   tHeader.push("归属公司");
-        //   filterVal.push("asName");
-        // }
-        // switch (this.customPermission.patrolPermission) {
-        //   case 1:
-        //     tHeader.push("巡点问题", "通行情况");
-        //     filterVal.push("remark", "trafficState");
-        //     break;
-        //   case 2:
-        //     tHeader.push("巡点问题", "通行情况", "通电情况");
-        //     filterVal.push("remark", "trafficState", "electrifyState");
-        //     break;
-        // }
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, name);

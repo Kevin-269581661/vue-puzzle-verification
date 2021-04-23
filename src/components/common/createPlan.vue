@@ -4020,7 +4020,8 @@ export default {
           this.FAData.apID = res.data.data.apID;
           if (res.data.dataerrorResNames) {
             this.ADloading.close();
-            sessFun.messageFun("warning", "存在失败小区");
+            sessFun.messageFun("warning", "存在失败小区：" + res.data.dataerrorResNames||'');
+            // sessFun.messageFun("warning", "存在失败小区");
             return;
           }
           this.active++;

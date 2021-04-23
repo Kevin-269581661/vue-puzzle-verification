@@ -3988,7 +3988,7 @@ export default {
           this.FAData.apID = res.data.data.apID;
           if (res.data.data.errorResNames) {
             this.ADloading.close();
-            sessFun.messageFun("warning", "存在失败小区");
+            sessFun.messageFun("warning", "存在失败小区：" + res.data.data.errorResNames||'');
             return;
           }
           // this.PushADBFun(res.data.Data);

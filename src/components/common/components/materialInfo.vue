@@ -378,7 +378,8 @@
                     step2: '第二步：上传编辑好的Excle表格',
                     fileName: '《QADN-导入物料备注模板》',
                     downloadFileName: '物料备注导入表.xlsx',
-                    downloadLink: `${window.location.protocol}//${window.location.host}/static/物料备注导入表.xlsx`,
+                    downloadLink: `${window.location.protocol}//${window.location.host}/importTemplate/物料备注导入表.xlsx`,
+                    // downloadLink: `${this.apiVar.qadnUrl}/importTemplate/物料备注导入表.xlsx`,
                     footerCancle: '取 消',
                     footerComfirm: '提 交'
                 }

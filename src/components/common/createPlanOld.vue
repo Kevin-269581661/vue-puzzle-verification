@@ -976,7 +976,7 @@
                                 <li><em>所属客户：</em>{{cName}}</li>
                                 <li><em>所属品牌：</em>{{cBand || '--'}}</li>
                                 <li class="money"><em>订单金额：</em>¥{{priceFormat(totalPrice)}}</li>
-                                <li style="overflow: hidden;text-overflow:ellipsis">
+                                <li style="display:flex;overflow: hidden;text-overflow:ellipsis;">
                                     <em>协同选点：</em><span id="shareUrl" class="plan-url">{{shareADUrl}}</span>
                                     <span @click="copyUrl" class="urlBtn">复制</span>
                                     <!-- <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button> -->

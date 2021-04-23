@@ -12,65 +12,55 @@
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
-
-            <div class="up-loader-header">
-                <div>
-                    <span>城市区域：</span>
+            <el-form :inline="true" size="small">
+                <el-form-item label="城市区域:">
                     <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
-                </div>
-                <div>
-                    <span>资源名称：</span>
+                </el-form-item>
+                <el-form-item label="资源名称:">
                     <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
-                                   :value="item.value"></el-option>
+                                :value="item.value"></el-option>
                     </el-select>
-                </div>
-               <div>
-                   <span>监播状态：</span>
-                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
-                       <el-option label="全部" value="1"></el-option>
-                       <el-option label="已上传" value="2"></el-option>
-                       <el-option label="未上传" value="3"></el-option>
-                   </el-select>
-               </div>
-                <div>
-                    <span>投放状态：</span>
+                </el-form-item>
+                <el-form-item label="监播状态:">
+                    <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
+                        <el-option label="全部" value="1"></el-option>
+                        <el-option label="已上传" value="2"></el-option>
+                        <el-option label="未上传" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="投放状态:">
                     <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="正常投放" value="1"></el-option>
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
-                </div>
-                <div>
-                    <span>投放排期：</span>
+                </el-form-item>
+                <el-form-item label="投放排期:">
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
-                </div>
-                <div>
-                    <span>物料备注：</span>
+                </el-form-item>
+                <el-form-item label="物料备注:">
                     <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
                     </el-select>
-                </div>
-                <div>
-                    <span>拍照状态：</span>
+                </el-form-item>
+                <el-form-item label="拍照状态:">
                     <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option label="已拍照" value="1"></el-option>
                         <el-option label="未拍照" value="0"></el-option>
                     </el-select>
-                </div>
-                <el-button type="primary" @click="searchImg()">搜 索</el-button>
-                <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
-                <!--<div class="progress">-->
-                    <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
-                    <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
-                <!--</div>-->
-            </div>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="searchImg()">搜 索</el-button>
+                    <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
+                </el-form-item>
+            </el-form>
         </template>
         <!-- 换画报告 -->
         <template v-else>
@@ -98,53 +88,43 @@
             </div>
             <!-- 搜索 -->
             <div class="search_pic" v-if="!firstTime">
-                <div class="up-loader-header">
-                    <div>
-                        <span>媒体类型:</span>
+                <el-form :inline="true" size="small">
+                    <el-form-item label="媒体类型:">
                         <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                        <span>城市区域:</span>
+                    </el-form-item>
+                    <el-form-item label="城市区域:">
                         <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域"
-                                    filterable size="small" @change="painCityChange()"></el-cascader>
-                    </div>
-                    <div>
-                        <span>资源名称:</span>
+                            filterable size="small" @change="painCityChange()"></el-cascader>
+                    </el-form-item>
+                    <el-form-item label="资源名称:">
                         <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small"
-                                   filterable>
+                            filterable>
                             <el-option label="全部" value="全部"></el-option>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                        <span>监播状态:</span>
+                    </el-form-item>
+                    <el-form-item label="监播状态:">
                         <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                        :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                        <span>物料备注：</span>
-                        <el-select placeholder="请选择物料备注" v-model="publishSearchInfo.materialRemark">
-                            <el-option label="全部" value="全部"></el-option>
-                            <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
-                        </el-select>
-                    </div>
-                    <div>
-                        <span>拍照状态：</span>
+                    </el-form-item>
+                    <el-form-item label="拍照状态:">
                         <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
                             <el-option label="全部" value="全部"></el-option>
                             <el-option label="已拍照" value="1"></el-option>
                             <el-option label="未拍照" value="0"></el-option>
                         </el-select>
-                    </div>
-                    <el-button type="primary" @click="search()">搜 索</el-button>
-                    <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
-                </div>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="search()">搜 索</el-button>
+                        <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
+                    </el-form-item>
+                </el-form>
             </div>
         </template>
 
@@ -2364,32 +2344,33 @@
         margin-bottom: 10px;
     }
 
-    .up-loader-header {
+    /* .up-loader-header {
         position: relative;
         display: flex;
         flex-flow: row wrap;
         align-items: flex-end;
         & > div {
+            flex-grow: 1;
             margin-bottom: 12px;
             margin-right: 32px;
         }
         & > button {
             margin-bottom: 12px;
         }
-    }
-    .up-loader-header>div>span{
+    } */
+    /* .up-loader-header>div>span{
         color:rgba(0,0,0,0.85);
         font-size: 14px;
-    }
+    } */
 
     .progress {
         float: right;
     }
 
-    /deep/ .up-loader-header .el-input__inner {
+    /* /deep/ .up-loader-header .el-input__inner {
         height: 32px;
         width: 172px;
-    }
+    } */
 
     .progress span {
         position: relative;
@@ -2955,10 +2936,10 @@
         .point_item {
             margin: 0 36px 16px;
         }
-        /deep/ .up-loader-header .el-input__inner {
+        /* /deep/ .up-loader-header .el-input__inner {
             height: 32px;
             width: 312px;
-        }
+        } */
     }
 </style>
 <style>

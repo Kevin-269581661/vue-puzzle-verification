@@ -2569,7 +2569,7 @@
         overflow-x: initial;
     }
 
-    /deep/ .el-form-item__content {
+    .table_wrap /deep/ .el-form-item__content {
         line-height: 46px;
     }
 

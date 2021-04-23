@@ -122,7 +122,7 @@ export default {
         this.importFileData = [file];
       } else {
         this.fileList = []
-        this.$message.warning("文件格式必须为xlsx，请重新长传！")
+        this.$message.warning("文件格式必须为xlsx，请重新上传！")
       }
     },
     importFileRemove(file, fileList) {

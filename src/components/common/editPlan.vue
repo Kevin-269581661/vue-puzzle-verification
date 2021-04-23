@@ -6064,9 +6064,9 @@
         border-radius: 50%;
     }
     .defead_scheduled_footer_btn{
-        width: 55px;
+        /* width: 55px;
         height: 30px;
-        padding: 9px 12px;
+        padding: 9px 12px; */
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

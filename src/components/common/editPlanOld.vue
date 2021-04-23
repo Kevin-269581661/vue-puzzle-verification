@@ -3296,7 +3296,7 @@
             },
             //行被点击 beOccupiedGetList
             rowClick(row, event, column){
-                console.log('row',row,event,column)
+                console.log('row',row,column)
                 if(!this.isOccupied){
                     let star = timeFormat.toDate(row.lStar,'/')
                     let end = timeFormat.toDate(row.lEnd,'/')

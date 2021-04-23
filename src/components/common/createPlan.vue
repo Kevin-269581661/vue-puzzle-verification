@@ -674,6 +674,20 @@
                   prop="resName"
                 >
                 </el-table-column>
+                <el-table-column
+                  prop="actualMediaCnt"
+                  label="媒体数量(门)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualAdsCnt"
+                  label="可投数量(面)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
                 <el-table-column prop="cityName" label="城市" min-width="110">
                 </el-table-column>
                 <el-table-column
@@ -687,16 +701,6 @@
                     {{ scope.row.tradingArea || "--" }}
                   </template>
                 </el-table-column>
-                <!-- <el-table-column
-                  v-if="customPermission.patrolPermission == 2"
-                  label="通电情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.electrifyState || "--" }}
-                  </template>
-                </el-table-column> -->
                 <el-table-column
                   label="广告限制"
                   min-width="130"

@@ -452,7 +452,6 @@
                 class="selectAdsTable"
                 height="595"
               >
-                <!-- //TODO:页面方案列表的改造 -->
                 <el-table-column
                   fixed
                   class-name="el-table-column-checkbox"
@@ -486,6 +485,20 @@
                   label="资源名称"
                   width="200"
                   prop="resName"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualMediaCnt"
+                  label="媒体数量(门)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualAdsCnt"
+                  label="可投数量(面)"
+                  min-width="120"
+                  align="right"
                 >
                 </el-table-column>
                 <el-table-column prop="cityName" label="城市" min-width="110">
@@ -3880,13 +3893,6 @@ export default {
       } else {
         this.IsAll = false;
       }
-      // this.IsAll = true
-      console.log(
-        "shopingList",
-        this.shopingList,
-        this.currPageSelect,
-        this.currPageAsLength
-      );
     },
     // 选点列表数据到购物车数据
     setShopingTable(info) {

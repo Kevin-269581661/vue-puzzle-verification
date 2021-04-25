@@ -157,9 +157,9 @@
                         </el-tooltip>
                         <p class="car_header">
                             <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom"
-                                        v-if="item.assetTag&&item.assetTag.length>10">
+                                        v-if="item.assetTag&&item.assetTag.length>14">
                                 <span><i class="el-icon-date date_fa"
-                                         type="text"></i>{{wordlimit(item.assetTag, 10)}}</span>
+                                         type="text"></i>{{wordlimit(item.assetTag, 14)}}</span>
                             </el-tooltip>
                             <span v-else><i class="el-icon-date date_fa" type="text"></i>{{item.assetTag}}</span>
                             <span v-if="type ==1 || type ==2"><i class="el-icon-date date_fa" type="text"></i>{{item.timeRange}}</span>

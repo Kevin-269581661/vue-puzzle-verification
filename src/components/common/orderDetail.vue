@@ -2776,7 +2776,7 @@
         padding-top: 9%;
         width: 100%;
         height: 135px;
-        background: rgba(0, 0, 0, 0.06);
+        background: rgba(0, 0, 0, 0.02);
     }
 
     /deep/ .el-upload--text .el-upload-dragger img{

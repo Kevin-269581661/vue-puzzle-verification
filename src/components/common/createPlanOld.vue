@@ -5785,7 +5785,8 @@
             },
             // 继续创建
             continueCreate() {
-                this.$router.push("./createPlanOld");
+                this.$router.go(0);
+                // this.$router.push("./createPlanOld");
                 // location.reload(false)
             },
             //复制协同选点的url

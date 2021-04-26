@@ -2474,6 +2474,7 @@ export default {
         "城市",
         "区域",
         "资源名称",
+        "空闲点位",
         "商圈",
         "地址",
         "媒介载体",
@@ -2510,6 +2511,7 @@ export default {
           cityName: item.cityName,
           districtName: item.districtName,
           resName: item.resName,
+          actualAdsCnt: item.actualAdsCnt||'',
           tradingArea: item.tradingArea,
           resAddress: item.resAddress,
           mVehicle: item.mVehicle,
@@ -4044,7 +4046,7 @@ export default {
     },
     // 继续创建
     continueCreate() {
-      this.$router.push("./createPlan");
+      this.$router.go(0);
       // location.reload(false);
     },
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息

@@ -437,6 +437,7 @@ export default {
           "城市",
           "区域",
           "资源名称",
+          "空闲点位",
           "商圈",
           "地址",
           "媒介载体",
@@ -458,6 +459,7 @@ export default {
           "cityName",
           "districtName",
           "resName",
+          "actualAdsCnt",
           "tradingArea", 
           "resAddress",    // 地址
           "mVehicle",  //媒介载体

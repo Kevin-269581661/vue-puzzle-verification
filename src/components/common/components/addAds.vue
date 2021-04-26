@@ -797,6 +797,8 @@
                             this.judgeByselect()
                         } else {
                             this.planList = []
+                            this.total = 0
+                            this.adsCount = 0
                         }
                         this.loading = false
                     } else {

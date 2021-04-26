@@ -1576,7 +1576,7 @@
                 ADloading: '',                   // 创建方案、提交选点和报价单时的loading
                 areaCity: [],
                 activeCityData: {},             // 城市切换的数据，默认为this.city[0]
-                loadScroll: true,               // 搜索后不执行滚动加载
+                // loadScroll: true,               // 搜索后不执行滚动加载
                 dateTime: '',                   // 获取今天日期
                 ADLimit: [                      // step2 广告限制
                     {value: '地产', label: '地产'},
@@ -1768,18 +1768,6 @@
                 this.getAdList()
 
             },
-            //监听table滚动
-            // loadMore() {
-            //     if (this.loadScroll) {
-            //         this.loadScroll = false
-            //         if(this.pageNo <= this.total){
-            //             this.getAdsParamsData.pageNo = this.pageNo
-            //             this.getAdList()
-            //         }
-            //     } else {
-            //         console.log('此时为搜索出来的数据')
-            //     }
-            // },
             // 获取浏览器session数据
             getsessionData() {
                 this.sessionData = sessFun.getSess();
@@ -3109,7 +3097,7 @@
             },
             // 初始化step2的数据
             initStep2Data() {
-                this.loadScroll = true
+                // this.loadScroll = true
                 this.recType = 1
                 this.pageNo = 1
                 this.planList = []
@@ -3292,6 +3280,8 @@
                                 this.searchBtnAbled = false
                             } else {
                                 this.planList = []
+                                this.total = 0
+                                this.adsCount = 0
                             }
                             this.loading = false
                         } else {
@@ -3398,12 +3388,12 @@
                     this.planList.push(adObj)
                 }
                 this.currPageAsLength = i
-                this.loadScroll = true
+                // this.loadScroll = true
 
                 console.log('表格数据', this.planList, this.currPageSelect, this.currPageAsLength)
             },
             setPageNoAndTableData() {
-                this.loadScroll = false
+                // this.loadScroll = false
                 this.IsAll = false
                 this.HSearch = ''
                 this.pageNo = 1
@@ -3422,12 +3412,12 @@
                 console.log('搜索排期时间', this.dateInput)
                 this.areaName = '全市'
                 if (this.selectValue === '被占查询') {
-                    this.loadScroll = false
+                    // this.loadScroll = false
                     //    this.isOccupied = false     // 被占搜索时隐藏过滤条件
                     this.beOccupiedGetList()    // 获取被占列表接口
                     this.beOccupiedNumber++
                 } else {
-                    this.loadScroll = true
+                    // this.loadScroll = true
                     this.isOccupied = true      //  || this.dateInput !== this.beforeDate
                     if (this.searchInput !== '' && this.dateInput !== null) {
                         this.setPageNoAndTableData()
@@ -7004,6 +6994,7 @@
 
     .ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
         width: 100px;
+        height: 28px;
     }
 
     .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {

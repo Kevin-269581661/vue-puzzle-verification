@@ -2361,6 +2361,16 @@
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
                     this.getAdsParamsData.resName = ''
+                    this.setPageNoAndTableData()
+                    this.getAdList()
+                }
+                if(this.selectValue == '被占查询') {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
+                } else {
                     this.pickerOptions = {
                         disabledDate(time) {
                             return time.getTime() <= Date.now();
@@ -2374,14 +2384,6 @@
                             this.dateInput = [tomorrow, tomorrow]
                         } else {
                             this.dateInput.splice(0,1,tomorrow)
-                        }
-                    }
-                    this.setPageNoAndTableData()
-                    this.getAdList()
-                } else if(this.selectValue == '被占查询') {
-                    this.pickerOptions = {
-                        disabledDate(time) {
-                            return time.getTime() <= Date.now()-1000*3600*24;
                         }
                     }
                 }

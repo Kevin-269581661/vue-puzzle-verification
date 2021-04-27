@@ -3460,6 +3460,17 @@
                     this.getAdsParamsData.tradingArea = ''
                     this.getAdsParamsData.assetTag = ''
                     this.getAdsParamsData.resName = ''
+                    this.setPageNoAndTableData()
+                    this.getAdList()
+                }
+                if(this.selectValue == '被占查询') {
+                    // 被占查询可以选择当天
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
+                } else {
                     // 只能选择今天之后的日期
                     this.pickerOptions = {
                         disabledDate(time) {
@@ -3474,15 +3485,6 @@
                             this.dateInput = [tomorrow, tomorrow]
                         } else {
                             this.dateInput.splice(0,1,tomorrow)
-                        }
-                    }
-                    this.setPageNoAndTableData()
-                    this.getAdList()
-                } else if(this.selectValue == '被占查询') {
-                    // 被占查询可以选择当天
-                    this.pickerOptions = {
-                        disabledDate(time) {
-                            return time.getTime() <= Date.now()-1000*3600*24;
                         }
                     }
                 }

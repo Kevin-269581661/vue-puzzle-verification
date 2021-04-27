@@ -309,27 +309,6 @@ export default {
                 if (key.asLabs.indexOf('B') === -1) {
                     adObj.box.B = true;
                 }
-                // 点位价格
-                if (key.mVehicle === '道闸') {
-                    adObj.adPrice = key.asPrice / 100;
-                } else {
-                    // 每个小区默认勾选一个点位，A、B面五五分
-                    if(!pointSet.has(key.resID)) {
-                        if(pointSet.size%2 === 0 && !adObj.box.A) {
-                            adObj.checkBox.A = true
-                            this.AddShopingInfo(adObj, 'A')
-                        } else if(pointSet.size%2 === 1 && !adObj.box.B) {
-                            adObj.checkBox.B = true
-                            this.AddShopingInfo(adObj, 'B')
-                        }
-                        pointSet.add(key.resID)
-                    }
-                    if (key.asPrice) {
-                        adObj.adPrice = key.asPrice / 700;
-                    } else {
-                        adObj.adPrice = 0;
-                    }
-                }
                 if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {
@@ -350,6 +329,27 @@ export default {
                     adObj.adlInfo = arr;
                 } else {
                     adObj.adlInfo = '';
+                }
+                // 点位价格
+                if (key.mVehicle === '道闸') {
+                    adObj.adPrice = key.asPrice / 100;
+                } else {
+                    if (key.asPrice) {
+                        adObj.adPrice = key.asPrice / 700;
+                    } else {
+                        adObj.adPrice = 0;
+                    }
+                    // 每个小区默认勾选一个点位，A、B面五五分
+                    if(!pointSet.has(key.resID)) {
+                        if(pointSet.size%2 === 0 && !adObj.box.A) {
+                            adObj.checkBox.A = true
+                            this.AddShopingInfo(adObj, 'A')
+                        } else if(pointSet.size%2 === 1 && !adObj.box.B) {
+                            adObj.checkBox.B = true
+                            this.AddShopingInfo(adObj, 'B')
+                        }
+                        pointSet.add(key.resID)
+                    }
                 }
                 result.push(adObj);
             }

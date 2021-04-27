@@ -2319,6 +2319,7 @@ export default {
         "人流量",
         "广告限制",
         "媒体数量（门）",
+        "可投数量(面)",
         "计划投放数量(面)",
       ];
 
@@ -2354,6 +2355,7 @@ export default {
           peopleFlow: item.peopleFlow,
           notPush: item.notPush,
           actualMediaCnt: item.actualMediaCnt,
+          actualAdsCnt: item.actualAdsCnt||'',
           planAdsCnt: item.planAdsCnt,
         };
         arr2.push(obj);

@@ -2474,7 +2474,6 @@ export default {
         "城市",
         "区域",
         "资源名称",
-        "空闲点位",
         "商圈",
         "地址",
         "媒介载体",
@@ -2489,7 +2488,8 @@ export default {
         "人流量",
         "广告限制",
         "媒体数量（门）",
-        "计划投放数量(面)",
+        "可投数量(面)",
+        "计划投放数量(面)"
       ];
 
       sheetExcel.toDownload(
@@ -2511,7 +2511,6 @@ export default {
           cityName: item.cityName,
           districtName: item.districtName,
           resName: item.resName,
-          actualAdsCnt: item.actualAdsCnt||'',
           tradingArea: item.tradingArea,
           resAddress: item.resAddress,
           mVehicle: item.mVehicle,
@@ -2526,7 +2525,8 @@ export default {
           peopleFlow: item.peopleFlow,
           notPush: item.notPush,
           actualMediaCnt: item.actualMediaCnt,
-          planAdsCnt: item.planAdsCnt,
+          actualAdsCnt: item.actualAdsCnt||'',
+          planAdsCnt: item.planAdsCnt
         };
         arr2.push(obj);
       }

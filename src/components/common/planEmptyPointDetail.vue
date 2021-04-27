@@ -437,7 +437,6 @@ export default {
           "城市",
           "区域",
           "资源名称",
-          "空闲点位",
           "商圈",
           "地址",
           "媒介载体",
@@ -452,6 +451,7 @@ export default {
           "人流量",
           "广告限制",
           "媒体数量（门）",
+          "可投数量(面)",
           "计划投放数量(面)",
         ];
         const filterVal = [
@@ -459,7 +459,6 @@ export default {
           "cityName",
           "districtName",
           "resName",
-          "actualAdsCnt",
           "tradingArea", 
           "resAddress",    // 地址
           "mVehicle",  //媒介载体
@@ -474,7 +473,8 @@ export default {
           "peopleFlow",    //人流量
           "notPush", //广告限制
           "actualMediaCnt",
-          "planAdsCnt",
+          "actualAdsCnt",
+          "planAdsCnt"
         ];
         const list = resultArr;
         const data = this.formatJson(filterVal, list);

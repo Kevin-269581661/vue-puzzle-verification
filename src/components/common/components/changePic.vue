@@ -16,7 +16,7 @@
                 <el-form-item label="城市区域:">
                     <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
                 </el-form-item>
-                <el-form-item label="资源名称:">
+                <el-form-item label="资源名称:" class="tag-overflow">
                     <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
@@ -37,13 +37,13 @@
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="投放排期:">
+                <el-form-item label="投放排期:" class="tag-overflow">
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="物料备注:">
+                <el-form-item label="物料备注:" class="tag-overflow">
                     <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
@@ -2335,6 +2335,14 @@
 </script>
 
 <style lang="scss" scoped>
+    .tag-overflow /deep/ .el-select__tags-text{
+        max-width: 70px;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
     /deep/ .el-input__icon {
         line-height: unset;
     }

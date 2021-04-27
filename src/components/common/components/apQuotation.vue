@@ -465,7 +465,6 @@
                         "asrIDs": this.ridString
                     }
                 }
-                // console.log('GetAdPriceByRids:params',params)
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('刊例价信息', res)
                     let ADPriceList = res.data

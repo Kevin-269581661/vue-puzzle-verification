@@ -784,7 +784,7 @@ import {
   InputNumber,
   Radio,
 } from "element-ui";
-import apQuotation from "./components/apQuotation";
+// import apQuotation from "./components/apQuotation";
 import api from "../../api/api";
 import areaArr from "../../commonFun/areaPackage_new";
 import commaFormat from "../../commonFun/commaFormat";
@@ -824,7 +824,7 @@ export default {
     elBadge: Badge,
     elCheckbox: Checkbox,
     elInputNumber: InputNumber,
-    apQuotation,
+    // apQuotation,
     importResult,
     importVillageByExcel,
     shoppingCart,
@@ -947,8 +947,8 @@ export default {
       activeRName: "", //step2当前选中的城市名称
       areaName: "全市", // step2当前选中的区域
       areaRid: "", // step2当前选中的区域rid
-      quotation: [], // step3 报价单汇总
-      quotationObj: {}, // 传递给报价单组件的数据，标示是否来自详情
+      // quotation: [], // step3 报价单汇总
+      // quotationObj: {}, // 传递给报价单组件的数据，标示是否来自详情
       remark: "无", //备注
       customer: [], // step1公司客户
       companyName: [], //step1公司名称

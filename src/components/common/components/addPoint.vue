@@ -535,7 +535,7 @@ export default {
   methods: {
     // 重新配点
     rematchPoint() {
-      this.$confirm('重新配点会使原购物车里的点位被覆盖',
+      this.$confirm('重新配点会清除原配点结果信息',
         "是否重新配点？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,

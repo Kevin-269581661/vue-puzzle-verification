@@ -726,7 +726,7 @@
             getRole() {
                 let role = this.sessionData.uType;
                 this.role = role;
-                this.IsSevenBD = (['2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID) && this.sessionData.uType=='BD')
+                this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && this.sessionData.uType=='BD')
                 console.log(role);
                 if (role == "MD") {
                     this.isDisable = false;
@@ -790,7 +790,7 @@
                 this.searchFun();
             },
             routeSelect() {
-                if(['2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                if(this.sessionData.customPermission.proposalPermission == 1) {
                     // 直营
                     if(this.sessionData.uType=='BD') {
                         this.$router.push("./createPlan")
@@ -1161,7 +1161,7 @@
             },
             // 意向方案配点（直营媒介配点）
             addPoint(row) {
-                if(this.sessionData.uType == 'MD' && ['2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID)) {
+                if(this.sessionData.uType == 'MD' && this.sessionData.customPermission.proposalPermission == 1) {
                     this.ToEdit(row);
                 } else {
                     this.$message.warning('暂无权限！');

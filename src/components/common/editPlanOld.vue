@@ -2034,9 +2034,6 @@
                 if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                     allHead.push('归属公司')
                 }
-                /* if(this.customPermission.patrolPermission) {
-                    allHead.push('巡点问题', '通行情况');
-                } */
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2263,6 +2260,8 @@
                             this.searchBtnAbled = false
                         }else{
                             this.planList = []
+                            this.total = 0
+                            this.adsCount = 0
                         }
                         this.loading = false
                     } else {
@@ -2446,6 +2445,29 @@
                     this.setPageNoAndTableData()
                     this.getAdList()
                 }
+                if(this.selectValue == '被占查询') {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
+                } else {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now();
+                        }
+                    }
+                    // 明天的日期（/分割）
+                    let tomorrow = timeFormat.returnDayCount(1, '/')
+                    if(this.dateInput[0] < tomorrow) {
+                        if(this.dateInput[1] < tomorrow) {
+                            // 日期范围只选择了当天
+                            this.dateInput = [tomorrow, tomorrow]
+                        } else {
+                            this.dateInput.splice(0,1,tomorrow)
+                        }
+                    }
+                }
             },
             // 判断地图权限
             judgeMapSelect() {
@@ -2526,12 +2548,12 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = '';
-                if(window.location.hostname == 'localhost') {
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
+                /* if(window.location.hostname == 'localhost') {
                     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 } else {
                     url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                };
+                }; */
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()
@@ -3278,7 +3300,7 @@
             },
             //行被点击 beOccupiedGetList
             rowClick(row, event, column){
-                console.log('row',row,event,column)
+                console.log('row',row,column)
                 if(!this.isOccupied){
                     let star = timeFormat.toDate(row.lStar,'/')
                     let end = timeFormat.toDate(row.lEnd,'/')
@@ -6173,7 +6195,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 746px;
+        min-height: 680px;
     }
 
     .step3 /deep/ .el-dialog {
@@ -6198,6 +6220,7 @@
         }
         .shop-cart-footer {
             padding-top: 10px;
+            padding-bottom: 10px;
             text-align: center;
             border-top: 1px solid rgba(233, 233, 233, 1);
         }
@@ -6639,9 +6662,9 @@
         border-radius: 50%;
     }
     .defead_scheduled_footer_btn{
-        width: 55px;
+        /* width: 55px;
         height: 30px;
-        padding: 9px 12px;
+        padding: 9px 12px; */
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

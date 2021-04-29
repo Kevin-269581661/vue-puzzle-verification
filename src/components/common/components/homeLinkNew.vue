@@ -37,7 +37,7 @@
                         </el-option>
                     </el-select>
                 </li>
-                <li v-if="sessionData.uType == 'BD' && ['2', '3', '4', '5', '6', '7'].includes(sessionData.asrID)">
+                <li v-if="sessionData.uType == 'BD' && sessionData.customPermission.proposalPermission == 1">
                     <span>投放面数：</span>
                     <el-input-number class="custom-num" v-model="planAdsCnt" :controls="false" :min="1" :max="1000"></el-input-number>
                 </li>
@@ -279,7 +279,7 @@
                     if(res.data.SysCode == 200200) {
                         let { hasCache, hasProposalCache } = res.data.data;
                             sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                            let is7BD = ['2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)
+                            let is7BD = this.sessionData.customPermission.proposalPermission == 1
                             if(is7BD && hasProposalCache) {
                                 // 直营销售并且选点
                                 //清除草稿箱数据，避免与未完成编辑方案冲突。
@@ -297,61 +297,6 @@
                 })
 
             },
-            //  getMapAdsAndGotoPlan(){
-            //     let indexData = {
-            //         dateInput: this.dateInput,
-            //         rid: this.mapCity.toString(),
-            //         city: this.mapCityName,
-            //         activeMapType: this.ActiveMapType
-            //     }
-            //     let userInfo = JSON.parse(sessionStorage.getItem("session_data"))
-            //     if (this.ActiveMapType === 1) {
-            //         api.getApi(this.apiVar.Map + '/checkMapSelect',{uid: this.sessionData.uID,token: this.sessionData.token}).then(res =>{
-            //             console.log('用户是否选点的接口', res)
-            //             if(res.data.SysCode == '200200'){
-            //                 let resData = res.data.data
-            //                 if (resData.isSelect) {
-            //                     this.confirmVisible = false
-            //                     sessionStorage.setItem('indexData', JSON.stringify(indexData));
-            //                     if(['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
-            //                         // 直营销售
-            //                         this.$router.push('./sale/createPlan?from=index');
-            //                     } else {
-            //                         // 加盟销售
-            //                         this.$router.push('./sale/createPlanOld?from=index');
-            //                     }
-            //                 }else{
-            //                     this.messageFun('warning','您在地图未提交点位')
-            //                 }
-            //             }else{
-            //                 this.messageFun('warning',res.data.MSG)
-            //             }
-            //         })
-            //     } else {
-            //         api.getApi(this.apiVar.mapApi + '/checkAdsCacheExist').then(res=>{
-            //             console.log('是否已提交地图点位: ', res);
-            //             if(res.data.SysCode == 200200) {
-            //                 let resData = res.data.data;
-            //                 if (resData === 1) {
-            //                     this.confirmVisible = false;
-            //                     sessionStorage.setItem('indexData', JSON.stringify(indexData));
-            //                     if(['1', '2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
-            //                         // 直营销售
-            //                         this.$router.push('./sale/createPlan?from=index');
-            //                     } else {
-            //                         // 加盟销售
-            //                         this.$router.push('./sale/createPlanOld?from=index');
-            //                     }
-            //                 }else{
-            //                     this.messageFun('warning','您在地图未提交点位')
-            //                 }
-            //             } else {
-            //                 this.messageFun('warning',res.data.MSG)
-            //             }
-            //         })
-            //     }
-
-            // },
             // 操作提示统一方法
             messageFun(mesType,mes){
                 this.$message({

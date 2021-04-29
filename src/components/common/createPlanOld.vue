@@ -976,7 +976,7 @@
                                 <li><em>所属客户：</em>{{cName}}</li>
                                 <li><em>所属品牌：</em>{{cBand || '--'}}</li>
                                 <li class="money"><em>订单金额：</em>¥{{priceFormat(totalPrice)}}</li>
-                                <li style="overflow: hidden;text-overflow:ellipsis">
+                                <li style="display:flex;overflow: hidden;text-overflow:ellipsis;">
                                     <em>协同选点：</em><span id="shareUrl" class="plan-url">{{shareADUrl}}</span>
                                     <span @click="copyUrl" class="urlBtn">复制</span>
                                     <!-- <el-button @click="downLoadFanan()" type="success" class="urlBtn">导出方案</el-button> -->
@@ -1128,7 +1128,7 @@
                     value-format="yyyy/MM/dd"
                     format="yyyy/MM/dd"
                     class="date-select input-with-select"
-                    :picker-options="pickerOptions"
+                    :picker-options="emptyPointPickerOptions"
                 >
                 </el-date-picker>
             </p>
@@ -1380,11 +1380,6 @@
                 }
             }
             return {
-                pickerOptions: {
-                    disabledDate(time) {
-                        return time.getTime() <= Date.now();
-                    }     
-                },
                 // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
                 isShowHalfYear: false,
                 // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
@@ -1493,6 +1488,11 @@
                         return time.getTime() <= Date.now();
                     }
                 },
+                emptyPointPickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now()-1000*3600*24;
+                    }
+                },
                 dateInput: [],            // 时间输入框
                 beforeDate: [],           // 时间输入框的前一次时间
                 //setp1创建方案表单
@@ -1576,7 +1576,7 @@
                 ADloading: '',                   // 创建方案、提交选点和报价单时的loading
                 areaCity: [],
                 activeCityData: {},             // 城市切换的数据，默认为this.city[0]
-                loadScroll: true,               // 搜索后不执行滚动加载
+                // loadScroll: true,               // 搜索后不执行滚动加载
                 dateTime: '',                   // 获取今天日期
                 ADLimit: [                      // step2 广告限制
                     {value: '地产', label: '地产'},
@@ -1768,18 +1768,6 @@
                 this.getAdList()
 
             },
-            //监听table滚动
-            // loadMore() {
-            //     if (this.loadScroll) {
-            //         this.loadScroll = false
-            //         if(this.pageNo <= this.total){
-            //             this.getAdsParamsData.pageNo = this.pageNo
-            //             this.getAdList()
-            //         }
-            //     } else {
-            //         console.log('此时为搜索出来的数据')
-            //     }
-            // },
             // 获取浏览器session数据
             getsessionData() {
                 this.sessionData = sessFun.getSess();
@@ -3109,7 +3097,7 @@
             },
             // 初始化step2的数据
             initStep2Data() {
-                this.loadScroll = true
+                // this.loadScroll = true
                 this.recType = 1
                 this.pageNo = 1
                 this.planList = []
@@ -3292,6 +3280,8 @@
                                 this.searchBtnAbled = false
                             } else {
                                 this.planList = []
+                                this.total = 0
+                                this.adsCount = 0
                             }
                             this.loading = false
                         } else {
@@ -3398,12 +3388,12 @@
                     this.planList.push(adObj)
                 }
                 this.currPageAsLength = i
-                this.loadScroll = true
+                // this.loadScroll = true
 
                 console.log('表格数据', this.planList, this.currPageSelect, this.currPageAsLength)
             },
             setPageNoAndTableData() {
-                this.loadScroll = false
+                // this.loadScroll = false
                 this.IsAll = false
                 this.HSearch = ''
                 this.pageNo = 1
@@ -3422,12 +3412,12 @@
                 console.log('搜索排期时间', this.dateInput)
                 this.areaName = '全市'
                 if (this.selectValue === '被占查询') {
-                    this.loadScroll = false
+                    // this.loadScroll = false
                     //    this.isOccupied = false     // 被占搜索时隐藏过滤条件
                     this.beOccupiedGetList()    // 获取被占列表接口
                     this.beOccupiedNumber++
                 } else {
-                    this.loadScroll = true
+                    // this.loadScroll = true
                     this.isOccupied = true      //  || this.dateInput !== this.beforeDate
                     if (this.searchInput !== '' && this.dateInput !== null) {
                         this.setPageNoAndTableData()
@@ -3472,6 +3462,31 @@
                     this.getAdsParamsData.resName = ''
                     this.setPageNoAndTableData()
                     this.getAdList()
+                }
+                if(this.selectValue == '被占查询') {
+                    // 被占查询可以选择当天
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
+                } else {
+                    // 只能选择今天之后的日期
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now();
+                        }
+                    }
+                    // 明天的日期（/分割）
+                    let tomorrow = timeFormat.returnDayCount(1, '/')
+                    if(this.dateInput[0] < tomorrow) {
+                        if(this.dateInput[1] < tomorrow) {
+                            // 日期范围只选择了当天
+                            this.dateInput = [tomorrow, tomorrow]
+                        } else {
+                            this.dateInput.splice(0,1,tomorrow)
+                        }
+                    }
                 }
             },
             //  查询被占点位
@@ -3613,12 +3628,12 @@
                     suID: this.BDData.uid,
                     asrIDs: this.planForm.pointOfAsrIDs
                 }));
-                let url = '';
-                if(window.location.hostname == 'localhost') {
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
+                /* if(window.location.hostname == 'localhost') {
                     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 } else {
                     url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                }
+                } */
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()
@@ -5762,7 +5777,8 @@
             },
             // 继续创建
             continueCreate() {
-                this.$router.push("./createPlanOld");
+                this.$router.go(0);
+                // this.$router.push("./createPlanOld");
                 // location.reload(false)
             },
             //复制协同选点的url
@@ -6980,6 +6996,7 @@
 
     .ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
         width: 100px;
+        height: 28px;
     }
 
     .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {

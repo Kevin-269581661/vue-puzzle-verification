@@ -23,7 +23,7 @@
                             </el-tooltip>
                             <template v-if="planDetail.apState==1">
                                 <!-- 加盟销售才能编辑非意向进行中方案 -->
-                                <el-button type="primary" @click="edit()" v-if="(role=='BD' && !['2', '3', '4', '5', '6', '7'].includes(sessionData.asrID) && planDetail.planMode!=1) || (role=='MD')"
+                                <el-button type="primary" @click="edit()" v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) || (role=='MD')"
                                            v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
                             </template>
                         </div>

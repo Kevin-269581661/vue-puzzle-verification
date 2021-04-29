@@ -94,7 +94,7 @@ export default {
       cityList: [],
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() <= Date.now();
+          return time.getTime() <= Date.now()-1000*3600*24;
         },
       },
     };
@@ -755,7 +755,7 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn() {
-      return !(this.sessionData.uType == "BD" && ['2', '3', '4', '5', '6', '7'].includes(this.sessionData.asrID));
+      return !(this.sessionData.uType == "BD" && this.sessionData.customPermission.proposalPermission == 1);
     },
   },
 };

@@ -232,7 +232,7 @@ export default {
               addRoutes('SM')
               this.$router.push('/superOperate')
             } else if (userMsg.uType === 'MD') {
-              if(['2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
+              if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营媒介
                 addRoutes('MD')
               } else {
@@ -242,7 +242,7 @@ export default {
               this.$router.push('/media')
             } else if (userMsg.uType === 'BD') {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
-              if(['2', '3', '4', '5', '6', '7'].includes(userMsg.asrID)) {
+              if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营销售
                 addRoutes('BD')
               } else {
@@ -393,7 +393,7 @@ export default {
             addRoutes('SM')
             this.$router.push('/superOperate')
           } else if (isLogin.uType === 'MD') {
-            if(['2', '3', '4', '5', '6', '7'].includes(isLogin.asrID)) {
+            if(isLogin.customPermission.proposalPermission == 1) {
               // 判断直营媒介
               addRoutes('MD')
             } else {
@@ -402,7 +402,7 @@ export default {
             }
             this.$router.push('/media')
           } else if (isLogin.uType === 'BD') {
-            if(['2', '3', '4', '5', '6', '7'].includes(isLogin.asrID)) {
+            if(isLogin.customPermission.proposalPermission == 1) {
               // 判断直营销售
               addRoutes('BD')
             } else {

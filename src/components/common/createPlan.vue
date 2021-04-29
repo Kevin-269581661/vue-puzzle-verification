@@ -674,6 +674,20 @@
                   prop="resName"
                 >
                 </el-table-column>
+                <el-table-column
+                  prop="actualMediaCnt"
+                  label="媒体数量(门)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualAdsCnt"
+                  label="可投数量(面)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
                 <el-table-column prop="cityName" label="城市" min-width="110">
                 </el-table-column>
                 <el-table-column
@@ -687,16 +701,6 @@
                     {{ scope.row.tradingArea || "--" }}
                   </template>
                 </el-table-column>
-                <!-- <el-table-column
-                  v-if="customPermission.patrolPermission == 2"
-                  label="通电情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.electrifyState || "--" }}
-                  </template>
-                </el-table-column> -->
                 <el-table-column
                   label="广告限制"
                   min-width="130"
@@ -903,7 +907,7 @@
           value-format="yyyy/MM/dd"
           format="yyyy/MM/dd"
           class="date-select input-with-select"
-          :picker-options="pickerOptions"
+          :picker-options="emptyPointPickerOptions"
         >
         </el-date-picker>
       </p>
@@ -1138,7 +1142,12 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() <= Date.now();
-        },
+        }
+      },
+      emptyPointPickerOptions: {
+        disabledDate(time) {
+          return time.getTime() <= Date.now()-1000*3600*24;
+        }
       },
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
@@ -1236,11 +1245,6 @@ export default {
       planSelect: "",
       mState: "", // 媒体状态
       activeGrade: "", // 媒体等级
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now();
-        },
-      },
       dateInput: [], // 时间输入框
       beforeDate: [], // 时间输入框的前一次时间
       //setp1创建方案表单
@@ -2484,7 +2488,8 @@ export default {
         "人流量",
         "广告限制",
         "媒体数量（门）",
-        "计划投放数量(面)",
+        "可投数量(面)",
+        "计划投放数量(面)"
       ];
 
       sheetExcel.toDownload(
@@ -2520,7 +2525,8 @@ export default {
           peopleFlow: item.peopleFlow,
           notPush: item.notPush,
           actualMediaCnt: item.actualMediaCnt,
-          planAdsCnt: item.planAdsCnt,
+          actualAdsCnt: item.actualAdsCnt||'',
+          planAdsCnt: item.planAdsCnt
         };
         arr2.push(obj);
       }
@@ -4020,7 +4026,8 @@ export default {
           this.FAData.apID = res.data.data.apID;
           if (res.data.dataerrorResNames) {
             this.ADloading.close();
-            sessFun.messageFun("warning", "存在失败小区");
+            sessFun.messageFun("warning", "存在失败小区：" + res.data.dataerrorResNames||'');
+            // sessFun.messageFun("warning", "存在失败小区");
             return;
           }
           this.active++;
@@ -4039,7 +4046,7 @@ export default {
     },
     // 继续创建
     continueCreate() {
-      this.$router.push("./createPlan");
+      this.$router.go(0);
       // location.reload(false);
     },
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息

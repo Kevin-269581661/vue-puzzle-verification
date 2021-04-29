@@ -9,7 +9,8 @@ Vue.config.productionTip = false;
 
 // ElementUI
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import '../static/css/element-variables.scss'
+// import 'element-ui/lib/theme-chalk/index.css'
 
 // MintUI
 import MintUI from 'mint-ui'
@@ -43,6 +44,9 @@ Vue.filter('moneyFormat', function (value=0, prefix='', decimal=2) {
 		return value
 	}
 })
+
+// 全局事件总线
+Vue.prototype.$EventBus = new Vue()
 //引入全局css
 import '../static/css/reset.css'
 import '../static/css/public.css'

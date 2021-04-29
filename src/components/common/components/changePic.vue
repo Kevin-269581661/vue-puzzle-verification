@@ -12,59 +12,55 @@
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
-
-            <div class="up-loader-header">
-                <div>
-                    <span>城市区域：</span>
-                    <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect"
-                                 @change="searchImgChange()" filterable>
-                    </el-cascader>
-                </div>
-                <div>
-                    <span>资源名称：</span>
-                    <el-select placeholder="请选择资源名称" filterable v-model="publishSearchInfo.allhouse">
-                        <el-option v-for="(item, index) of publishSearchInfo.allResource" :key="index" :label="item.resName"
-                                   :value="item.value"></el-option>
+            <el-form :inline="true" size="small">
+                <el-form-item label="城市区域:">
+                    <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
+                </el-form-item>
+                <el-form-item label="资源名称:" class="tag-overflow">
+                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
+                                :value="item.value"></el-option>
                     </el-select>
-                </div>
-               <div>
-                   <span>监播状态：</span>
-                   <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
-                       <el-option label="全部" value="1"></el-option>
-                       <el-option label="已上传" value="2"></el-option>
-                       <el-option label="未上传" value="3"></el-option>
-                   </el-select>
-               </div>
-                <div>
-                    <span>投放状态：</span>
+                </el-form-item>
+                <el-form-item label="监播状态:">
+                    <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
+                        <el-option label="全部" value="1"></el-option>
+                        <el-option label="已上传" value="2"></el-option>
+                        <el-option label="未上传" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="投放状态:">
                     <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="正常投放" value="1"></el-option>
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
-                </div>
-                <div>
-                    <span>投放排期：</span>
-                    <el-select placeholder="请选择投放排期" v-model="publishSearchInfo.dateRange">
+                </el-form-item>
+                <el-form-item label="投放排期:" class="tag-overflow">
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
-                </div>
-                <div>
-                    <span>拍照状态：</span>
+                </el-form-item>
+                <el-form-item label="物料备注:" class="tag-overflow">
+                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="拍照状态:">
                     <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option label="已拍照" value="1"></el-option>
                         <el-option label="未拍照" value="0"></el-option>
                     </el-select>
-                </div>
-                <el-button type="primary" @click="searchImg()">搜 索</el-button>
-                <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
-                <!--<div class="progress">-->
-                    <!--<el-progress :percentage="publishNumInfo.percent" :text-inside="true"></el-progress>-->
-                    <!--<span>{{ publishNumInfo.currNum }} / {{ publishNumInfo.totalNum }}</span>-->
-                <!--</div>-->
-            </div>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="searchImg()">搜 索</el-button>
+                    <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
+                </el-form-item>
+            </el-form>
         </template>
         <!-- 换画报告 -->
         <template v-else>
@@ -92,45 +88,43 @@
             </div>
             <!-- 搜索 -->
             <div class="search_pic" v-if="!firstTime">
-                <div class="up-loader-header">
-                    <div>
-                        <span>媒体类型:</span>
+                <el-form :inline="true" size="small">
+                    <el-form-item label="媒体类型:">
                         <el-select v-model="searchInfo.mediaType" placeholder="请选择媒体类型" size="small">
                             <el-option v-for="item of searchInfo.mediaTypeArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                        <span>城市区域:</span>
+                    </el-form-item>
+                    <el-form-item label="城市区域:">
                         <el-cascader :options="searchInfo.citys" v-model="searchInfo.city" placeholder="请选择城市区域"
-                                     filterable size="small" @change="painCityChange()"></el-cascader>
-                    </div>
-                    <div>
-                        <span>资源名称:</span>
+                            filterable size="small" @change="painCityChange()"></el-cascader>
+                    </el-form-item>
+                    <el-form-item label="资源名称:">
                         <el-select v-model="searchInfo.resName" placeholder="请选择资源名称" size="small"
-                                   filterable>
+                            filterable>
+                            <el-option label="全部" value="全部"></el-option>
                             <el-option v-for="item of searchInfo.resArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                        <span>监播状态:</span>
+                    </el-form-item>
+                    <el-form-item label="监播状态:">
                         <el-select v-model="searchInfo.status" placeholder="请选择监播状态" size="small">
                             <el-option v-for="item of searchInfo.statusArr" :key="item.value" :label="item.label"
-                                       :value="item.value"></el-option>
+                                        :value="item.value"></el-option>
                         </el-select>
-                    </div>
-                    <div>
-                    <span>拍照状态：</span>
-                    <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
-                        <el-option label="全部" value="全部"></el-option>
-                        <el-option label="已拍照" value="1"></el-option>
-                        <el-option label="未拍照" value="0"></el-option>
-                    </el-select>
-                </div>
-                    <el-button type="primary" @click="search()">搜 索</el-button>
-                    <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
-                </div>
+                    </el-form-item>
+                    <el-form-item label="拍照状态:">
+                        <el-select placeholder="请选择拍照状态" v-model="searchInfo.prStatus">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option label="已拍照" value="1"></el-option>
+                            <el-option label="未拍照" value="0"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="search()">搜 索</el-button>
+                        <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
+                    </el-form-item>
+                </el-form>
             </div>
         </template>
 
@@ -163,9 +157,9 @@
                         </el-tooltip>
                         <p class="car_header">
                             <el-tooltip class="item" effect="dark" :content="item.assetTag" placement="bottom"
-                                        v-if="item.assetTag&&item.assetTag.length>10">
+                                        v-if="item.assetTag&&item.assetTag.length>14">
                                 <span><i class="el-icon-date date_fa"
-                                         type="text"></i>{{wordlimit(item.assetTag, 10)}}</span>
+                                         type="text"></i>{{wordlimit(item.assetTag, 14)}}</span>
                             </el-tooltip>
                             <span v-else><i class="el-icon-date date_fa" type="text"></i>{{item.assetTag}}</span>
                             <span v-if="type ==1 || type ==2"><i class="el-icon-date date_fa" type="text"></i>{{item.timeRange}}</span>
@@ -507,6 +501,10 @@
                 type: Array,
                 default: ()=>[]
             },
+            adMaterialRemarkList: {
+                typeof: Array,
+                default: ()=>[]
+            },
             fromType: {
                 type: Boolean,
             },
@@ -526,7 +524,7 @@
                     // 城市选择
                     citySelect: ['全部'],
                     // 资源选择
-                    allhouse: '全部',
+                    allhouse: ['全部'],
                     // 监播图选择
                     allPic: '1',
                     //投放状态
@@ -534,13 +532,14 @@
                     // 搜索列表
                     // 城市列表
                     citys: [],
-                    // 资源列表
-                    allResource: [],
                     // 投放排期
-                    dateRange: '全部',
+                    dateRange: ['全部'],
+                    // 物料备注
+                    materialRemark: ['全部'],
                     prStatus: '全部'
                 },
-
+                // 资源列表
+                allResource: [],
                 // 上传图片
                 addload: '',
                 // 所有的图片组合
@@ -843,12 +842,12 @@
                                 value: item.resID,
                             };
                         });
-                        result.unshift({
+                        this.allResource = result;
+                        /* result.unshift({
                             value: "全部",
                             label: "全部"
-                        })
+                        }) */
                         this.searchInfo.resArr = result;
-                        this.publishSearchInfo.allResource = result;
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }
@@ -864,18 +863,17 @@
             },
             searchImgChange() {
                 let {citySelect} = this.publishSearchInfo;
-                // console.log(citySelect);
                 if (citySelect[0] !== "全部") {
                     let cityId = citySelect[0];
                     let areaId = citySelect[1];
                     this.getResArr(cityId, areaId);
+                } else {
+                    this.getResArr();
                 }
-                // this.searchImg();
             },
             // 上下刊搜索图片
             searchImg() {
                 let {citySelect, allhouse, allPic} = this.publishSearchInfo;
-                // console.log(allPic);
                 if (citySelect.length || allhouse || allPic) {
                     this.pageInfo.currPage = 1;
                     this.searchFun();
@@ -900,11 +898,19 @@
                     this.pageInfo.paginationShow = true;
                 });
             },
+            changeSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                    this.publishSearchInfo[target].splice(allIndex, 1)
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                    this.publishSearchInfo[target] = ['全部']
+                }
+            },
             // 搜索数据格式化
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, prStatus} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -913,7 +919,8 @@
                     pageNum: currPage,
                     pageSize: pageSize,
                     mVehicle: mediaType,
-                    time: dateRange=='全部'?'':dateRange,
+                    time: dateRange.includes('全部')?'':dateRange,
+                    materialRemark: materialRemark.includes('全部')?'':materialRemark,
                     prStatus: prStatus=='全部'?'':prStatus
                 };
 
@@ -928,13 +935,12 @@
                 }
                 if (citySelect.length) {
                     if (citySelect[0] == '全部') {
-                        // this.searchFun();
                     } else {
                         info.city = citySelect[0];
                         info.district = citySelect[1];
                     }
                 }
-                if (allhouse!=='全部') {
+                if (!allhouse.includes('全部')) {
                     info.resid = allhouse;
                 }
                 console.log('type---', info);
@@ -947,13 +953,15 @@
                         ...this.publishSearchInfo,
                         citySelect: ['全部'],
                         // 资源选择
-                        allhouse: '全部',
+                        allhouse: ['全部'],
                         // 监播图选择
                         allPic: '1',
                         //投放状态
                         lState: '0',
                         // 投放排期
-                        dateRange: '全部',
+                        dateRange: ['全部'],
+                        // 物料备注
+                        materialRemark: ['全部'],
                         prStatus: "全部"
                     };
 
@@ -1520,7 +1528,6 @@
                     apId: sessionStorage.getItem('order_apid'),
                 };
                 api.getApi(this.apiVar.replace + '/plan/resInfo', info).then(res => {
-                    // console.log(res);
                     if (res.data.SysCode == 200200) {
                         let result = res.data.data.map(item => {
                             return {
@@ -1530,7 +1537,6 @@
                             };
                         });
                         this.dialogInfo.resArr = result;
-                        // console.log('资源名称列表',this.dialogInfo.resArr);
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }
@@ -2329,6 +2335,14 @@
 </script>
 
 <style lang="scss" scoped>
+    .tag-overflow /deep/ .el-select__tags-text{
+        max-width: 70px;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
     /deep/ .el-input__icon {
         line-height: unset;
     }
@@ -2338,32 +2352,33 @@
         margin-bottom: 10px;
     }
 
-    .up-loader-header {
+    /* .up-loader-header {
         position: relative;
         display: flex;
         flex-flow: row wrap;
         align-items: flex-end;
         & > div {
+            flex-grow: 1;
             margin-bottom: 12px;
             margin-right: 32px;
         }
         & > button {
             margin-bottom: 12px;
         }
-    }
-    .up-loader-header>div>span{
+    } */
+    /* .up-loader-header>div>span{
         color:rgba(0,0,0,0.85);
         font-size: 14px;
-    }
+    } */
 
     .progress {
         float: right;
     }
 
-    /deep/ .up-loader-header .el-input__inner {
+    /* /deep/ .up-loader-header .el-input__inner {
         height: 32px;
         width: 172px;
-    }
+    } */
 
     .progress span {
         position: relative;
@@ -2929,10 +2944,10 @@
         .point_item {
             margin: 0 36px 16px;
         }
-        /deep/ .up-loader-header .el-input__inner {
+        /* /deep/ .up-loader-header .el-input__inner {
             height: 32px;
             width: 312px;
-        }
+        } */
     }
 </style>
 <style>

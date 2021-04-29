@@ -2322,6 +2322,7 @@
                                     type: 'success '
                                 }).then(() => {
                                     this.resetForm()  // 请求成功后重置表单
+                                    this.recForm.fullViewUrl = '';  // 小区照片未进行recForm数据绑定
                                     this.resUpdata = []
                                 }).catch(() => {
                                     this.resetForm()
@@ -2382,7 +2383,11 @@
                 if(this.recForm.fullViewUrl && file.url) {
                     let tempPicArr = this.recForm.fullViewUrl.split(',');
                     let resArr = tempPicArr.filter(item=>{
-                        return file.url != item
+                        if(file.response) {
+                            return file.response[0].pURL != item
+                        } else {
+                            return file.url != item
+                        }
                     });
                     this.recForm.fullViewUrl = resArr.join(',');
                 }

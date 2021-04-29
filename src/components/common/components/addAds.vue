@@ -3,13 +3,8 @@
         <div>
             <div class="search-nav">
                 <div class="flex_box search_row">
-                    <!-- <el-select v-model="selectValue" placeholder="请选择" @change="initData" size="small">
-                        <el-option v-for="item in typeSelect" :key="item.value" :label="item.value" :value="item.value"></el-option>
-                    </el-select>
-                    <el-input v-model="searchInput" placeholder="请输入要搜索的内容" @change="initData" size="small" class="searchInput"></el-input> -->
                     <el-input placeholder="请输入要搜索的内容" v-model="searchInput" class="input-with-select" @change="initData" size="small">
                         <el-select slot="prepend" v-model="selectValue" placeholder="请选择" @change="initData" size="small">
-                            <!-- <el-option label="资源名称" value="1"></el-option> -->
                             <el-option v-for="item in typeSelect" :key="item.value" :label="item.value" :value="item.value"></el-option>
                         </el-select>
                     </el-input>
@@ -32,14 +27,14 @@
                 </dl>
                 <dl style="border: none">
                     <dt>城市区域：</dt>
-                    <dd v-for="(item, index) in city" :index="index"
+                    <dd v-for="(item, index) in city" :key="index"
                         :class=" index == activeIndex ? 'active' : ''"
                         @click="activeCity(item,index)">{{item.rName}}
                     </dd>
                 </dl>
-                <dl class="city-proper" v-for="(list, index) of area" :index="index"
+                <dl class="city-proper" v-for="(list, index) of area" :key="index"
                     v-show=" index == activeIndex">
-                    <dd v-for="item of list" :class="item.rName == areaName ? 'active' : ''"
+                    <dd v-for="(item, itemIndex) of list" :key="itemIndex" :class="item.rName == areaName ? 'active' : ''"
                         @click="activeArea(item.rName)">{{item.rName}}
                     </dd>
                 </dl>
@@ -550,7 +545,7 @@
                 adsCount:0,//总可选点位
                 pickerOptions: {
                     disabledDate(time) {
-                        return time.getTime() <= Date.now()
+                        return time.getTime() <= Date.now()-1000*3600*24*7
                     }
                 },
             }
@@ -576,21 +571,7 @@
                 // this.getAdList()
             }
         },
-        // directives: {
-        //     loadmore: {
-        //         bind: function (el, binding) {
-        //             const selectWrap = el.querySelector('.el-table__body-wrapper')
-        //             selectWrap.addEventListener('scroll', function () {
-        //                 const scrollDistance = this.scrollHeight - this.scrollTop - this.clientHeight
-        //                 if (scrollDistance <= 150) {
-        //                     binding.value()
-        //                 }
-        //             })
-        //         }
-        //     }
-        // },
         mounted(){
-            console.log('this.IsAdd',this.IsAdd)
             this.sessionData = sessFun.getSess();
             let starTime, endTime
             this.dateTime = timeFormat.returnDayCount(0,'/')
@@ -603,18 +584,6 @@
             this.getADLimit()       // 获取广告限制列表
         },
         methods:{
-            //监听table滚动
-            // loadMore() {
-            //     if (this.loadScroll) {
-            //         this.loadScroll = false
-            //         if(this.pageNo <= this.total){
-            //             this.getAdsParamsData.pageNo = this.pageNo
-            //             this.getAdList()
-            //         }
-            //     } else {
-            //         console.log('此时为搜索出来的数据')
-            //     }
-            // },
             // 改变每页条数
             sizeChange(pageVal) {
                 this.IsAll = false
@@ -828,6 +797,8 @@
                             this.judgeByselect()
                         } else {
                             this.planList = []
+                            this.total = 0
+                            this.adsCount = 0
                         }
                         this.loading = false
                     } else {

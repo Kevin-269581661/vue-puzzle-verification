@@ -286,7 +286,7 @@
                             if (resData.isSelect) {
                                 this.confirmVisible = false
                                 sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                                if(['2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
+                                if(this.sessionData.customPermission.proposalPermission == 1) {
                                     // 直营销售
                                     this.$router.push('./sale/createPlan?from=index');
                                 } else {
@@ -307,7 +307,7 @@
                             if (resData === 1) {
                                 this.confirmVisible = false;
                                 sessionStorage.setItem('indexData', JSON.stringify(indexData));
-                                if(['2', '3', '4', '5', '6', '7'].includes(userInfo.asrID)) {
+                                if(this.sessionData.customPermission.proposalPermission == 1) {
                                     // 直营销售
                                     this.$router.push('./sale/createPlan?from=index');
                                 } else {

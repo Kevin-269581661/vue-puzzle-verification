@@ -1019,7 +1019,7 @@
             width="54%">
             <div class="scheduled_box">
                 <ul>
-                    <li v-for="(item,index) in cityAdsScheduled">
+                    <li v-for="(item,index) in cityAdsScheduled" :key="index">
                         <el-row>
                             <el-col :span="2"><span>{{item.city}}</span></el-col>
                             <el-col :span="2"><span>{{item.adsNum}}面</span></el-col>
@@ -2179,6 +2179,8 @@
                             this.searchBtnAbled = false
                         }else{
                             this.planList = []
+                            this.total = 0
+                            this.adsCount = 0
                         }
                         this.loading = false
                     } else {
@@ -2361,6 +2363,29 @@
                     this.getAdsParamsData.resName = ''
                     this.setPageNoAndTableData()
                     this.getAdList()
+                }
+                if(this.selectValue == '被占查询') {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now()-1000*3600*24;
+                        }
+                    }
+                } else {
+                    this.pickerOptions = {
+                        disabledDate(time) {
+                            return time.getTime() <= Date.now();
+                        }
+                    }
+                    // 明天的日期（/分割）
+                    let tomorrow = timeFormat.returnDayCount(1, '/')
+                    if(this.dateInput[0] < tomorrow) {
+                        if(this.dateInput[1] < tomorrow) {
+                            // 日期范围只选择了当天
+                            this.dateInput = [tomorrow, tomorrow]
+                        } else {
+                            this.dateInput.splice(0,1,tomorrow)
+                        }
+                    }
                 }
             },
             // 设置地图选点参数
@@ -5572,7 +5597,7 @@
 
     .step2 /deep/ .el-dialog {
         width: 1100px;
-        height: 746px;
+        min-height: 680px;
     }
 
     .step3 /deep/ .el-dialog {
@@ -5597,6 +5622,7 @@
         }
         .shop-cart-footer {
             padding-top: 10px;
+            padding-bottom: 10px;
             text-align: center;
             border-top: 1px solid rgba(233, 233, 233, 1);
         }
@@ -6042,9 +6068,9 @@
         border-radius: 50%;
     }
     .defead_scheduled_footer_btn{
-        width: 55px;
+        /* width: 55px;
         height: 30px;
-        padding: 9px 12px;
+        padding: 9px 12px; */
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{

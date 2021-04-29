@@ -452,7 +452,6 @@
                 class="selectAdsTable"
                 height="595"
               >
-                <!-- //TODO:页面方案列表的改造 -->
                 <el-table-column
                   fixed
                   class-name="el-table-column-checkbox"
@@ -486,6 +485,20 @@
                   label="资源名称"
                   width="200"
                   prop="resName"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualMediaCnt"
+                  label="媒体数量(门)"
+                  min-width="120"
+                  align="right"
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="actualAdsCnt"
+                  label="可投数量(面)"
+                  min-width="120"
+                  align="right"
                 >
                 </el-table-column>
                 <el-table-column prop="cityName" label="城市" min-width="110">
@@ -668,7 +681,7 @@
           value-format="yyyy/MM/dd"
           format="yyyy/MM/dd"
           class="date-select input-with-select"
-          :picker-options="pickerOptions"
+          :picker-options="emptyPointPickerOptions"
         >
         </el-date-picker>
       </p>
@@ -771,7 +784,7 @@ import {
   InputNumber,
   Radio,
 } from "element-ui";
-import apQuotation from "./components/apQuotation";
+// import apQuotation from "./components/apQuotation";
 import api from "../../api/api";
 import areaArr from "../../commonFun/areaPackage_new";
 import commaFormat from "../../commonFun/commaFormat";
@@ -811,7 +824,7 @@ export default {
     elBadge: Badge,
     elCheckbox: Checkbox,
     elInputNumber: InputNumber,
-    apQuotation,
+    // apQuotation,
     importResult,
     importVillageByExcel,
     shoppingCart,
@@ -901,11 +914,6 @@ export default {
       isDialogImport: false,
       handleTime: "", //上传时间
       isSelectPoint: false, //是否展示点位选择弹窗
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now();
-        },
-      },
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
       doUpload: "/addsp/proposal/importResExcel",
@@ -939,8 +947,8 @@ export default {
       activeRName: "", //step2当前选中的城市名称
       areaName: "全市", // step2当前选中的区域
       areaRid: "", // step2当前选中的区域rid
-      quotation: [], // step3 报价单汇总
-      quotationObj: {}, // 传递给报价单组件的数据，标示是否来自详情
+      // quotation: [], // step3 报价单汇总
+      // quotationObj: {}, // 传递给报价单组件的数据，标示是否来自详情
       remark: "无", //备注
       customer: [], // step1公司客户
       companyName: [], //step1公司名称
@@ -1003,6 +1011,11 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() <= Date.now();
+        },
+      },
+      emptyPointPickerOptions: {
+        disabledDate(time) {
+          return time.getTime() <= Date.now()-1000*3600*24;
         },
       },
       dateInput: [], // 时间输入框
@@ -2306,6 +2319,7 @@ export default {
         "人流量",
         "广告限制",
         "媒体数量（门）",
+        "可投数量(面)",
         "计划投放数量(面)",
       ];
 
@@ -2341,6 +2355,7 @@ export default {
           peopleFlow: item.peopleFlow,
           notPush: item.notPush,
           actualMediaCnt: item.actualMediaCnt,
+          actualAdsCnt: item.actualAdsCnt||'',
           planAdsCnt: item.planAdsCnt,
         };
         arr2.push(obj);
@@ -3625,7 +3640,7 @@ export default {
       return ifBoolea;
     },
     //Promise存储草稿,拉取地图选点调用
-    changeApInfoPromise() {
+    /* changeApInfoPromise() {
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = this.importDraftsType;
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
@@ -3661,7 +3676,7 @@ export default {
         .catch(function (error) {
           resolve("");
         });
-    },
+    }, */
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
     setMapAdsListInShopCar() {
       let mapAdsList = this.mapAdsList.length ? this.mapAdsList : []; // tempData
@@ -3880,13 +3895,6 @@ export default {
       } else {
         this.IsAll = false;
       }
-      // this.IsAll = true
-      console.log(
-        "shopingList",
-        this.shopingList,
-        this.currPageSelect,
-        this.currPageAsLength
-      );
     },
     // 选点列表数据到购物车数据
     setShopingTable(info) {
@@ -3988,7 +3996,7 @@ export default {
           this.FAData.apID = res.data.data.apID;
           if (res.data.data.errorResNames) {
             this.ADloading.close();
-            sessFun.messageFun("warning", "存在失败小区");
+            sessFun.messageFun("warning", "存在失败小区：" + res.data.data.errorResNames||'');
             return;
           }
           // this.PushADBFun(res.data.Data);

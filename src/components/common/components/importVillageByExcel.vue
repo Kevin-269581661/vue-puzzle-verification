@@ -217,10 +217,6 @@
 </template>
 
 <script>
-// 时间格式化
-// import timeFormat from "../../../commonFun/timeFormat.js";
-import { api } from "../../../api/api.js";
-
 export default {
   name: "importVillageByExcel",
   props: {
@@ -327,123 +323,7 @@ export default {
       this.$emit("update:isDialogImport", false);
       //执行上传小区excel文件
       this.$emit("submitBtn", this.importFileData);
-
       this.importFileRemove();
-      // this.dialogResult = true;
-      return;
-      if (
-        Array.isArray(this.importFileData) &&
-        this.importFileData.length == 0
-      ) {
-        this.$message.warning("请先上传excel文件哦~");
-        return;
-      }
-      let formData = new FormData();
-      formData.append("file", this.importFileData[0].raw);
-      // 上传文件
-      this.uploadLoading = true;
-      this.handleTime = new Date().getTime();
-      api
-        .postUpload_file(
-          this.importAction +
-            "?apID=" +
-            sessionStorage.getItem("order_apid") +
-            "&mark=" +
-            this.handleTime,
-          formData
-        )
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            let resData = res.data.data;
-            if (resData.sucessNum > 0) {
-              // 刷新换点表格
-              this.refreshChangePointList();
-            }
-            if (resData.errorNum > 0) {
-              const h = this.$createElement;
-              this.$msgbox({
-                title: "",
-                message: h("p", null, [
-                  h("span", null, "成功导入 "),
-                  h(
-                    "span",
-                    { style: "color: #1890FF" },
-                    resData.sucessNum || 0
-                  ),
-                  h("span", null, " 个点位,"),
-                  h("span", null, " 问题点位 "),
-                  h("span", { style: "color: #FA8C16" }, resData.errorNum || 0),
-                  h("span", null, " 个"),
-                ]),
-                type: "warning",
-                showClose: false,
-                showCancelButton: true,
-                distinguishCancelAndClose: true,
-                confirmButtonText: "好 的",
-                cancelButtonText: "失败点位",
-                beforeClose: (action, instance, done) => {
-                  if (action === "confirm") {
-                    done();
-                  } else {
-                    instance.cancelButtonLoading = true;
-                    instance.cancelButtonText = "执行中...";
-                    setTimeout(() => {
-                      instance.cancelButtonLoading = false;
-                      done();
-                    }, 300);
-                  }
-                },
-              })
-                .then((action) => {})
-                .catch((action) => {
-                  if (action === "cancel") {
-                    this.errorList = resData.errorList || [];
-                    this.dialogErrorPoint = true;
-                  }
-                });
-            } else if (resData.sucessNum > 0) {
-              const h = this.$createElement;
-              this.$msgbox({
-                title: "",
-                message: h("p", null, [
-                  h(
-                    "span",
-                    {
-                      style:
-                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-                    },
-                    "成功导入 "
-                  ),
-                  h(
-                    "span",
-                    {
-                      style:
-                        "color: #1890FF; font-size: 16px; font-weight: 600;",
-                    },
-                    resData.sucessNum || 0
-                  ),
-                  h(
-                    "span",
-                    {
-                      style:
-                        "color: rgba(0, 0, 0, 0.85); font-size: 16px; font-weight: 600;",
-                    },
-                    " 个点位"
-                  ),
-                ]),
-                type: "success",
-                showClose: false,
-                confirmButtonText: "好 的",
-              }).then((action) => {});
-            }
-          } else {
-            this.$message.warning(res.data.MSG);
-          }
-        })
-        .catch((res) => {})
-        .finally((_) => {
-          this.uploadLoading = false;
-        });
     },
     //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
     addShoppingCart() {

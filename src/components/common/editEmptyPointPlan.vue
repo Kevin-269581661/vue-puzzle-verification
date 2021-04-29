@@ -2326,7 +2326,7 @@ export default {
       sheetExcel.toDownload(
         allHead,
         arr,
-        this.planForm.planName
+        this.planName
       );
     },
     // 处理数据

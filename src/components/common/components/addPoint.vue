@@ -175,15 +175,15 @@
                 tipObj.resCount
               }}</span>
               (选1面:<span class="tip-active">{{ tipObj.selectLab1 }}</span>
-              &nbsp选2面:<span class="tip-active">{{ tipObj.selectLab2 }}</span>
-              &nbsp选择3面:<span class="tip-active">{{ tipObj.selectLab3 }}</span
+              &nbsp;选2面:<span class="tip-active">{{ tipObj.selectLab2 }}</span>
+              &nbsp;选择3面:<span class="tip-active">{{ tipObj.selectLab3 }}</span
               >)
               <div class="divide-border"></div>
               媒体:<span class="tip-active">{{ tipObj.mediaCount }}</span>
               <div class="divide-border"></div>
               点位:<span class="tip-active">{{ tipObj.faceCount }}</span>
               (A面:<span class="tip-active">{{ tipObj.afaceCount }}</span>
-              &nbspB面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
+              &nbsp;B面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
               >)
               <div class="divide-border"></div>
               上刊率50%以上的点位:<span class="tip-active">{{
@@ -238,13 +238,13 @@
           </template>
         </el-table-column>
       </template>
-      <el-table-column slot="otherColumn" label="操作" align="left">
+      <el-table-column slot="otherColumn" slot-scope="{currentPage, currentPageSize}" label="操作" align="left">
         <template slot-scope="scope">
           <el-button
             style="text-align: left; color: #1890FF; font-size: 14px; height: 25px; line-height: 25px;"
             type="text"
             size="small"
-            @click="deleteAsignItem(scope)"
+            @click="deleteAsignItem(scope, currentPage, currentPageSize)"
             >删除</el-button
           >
         </template>
@@ -647,7 +647,6 @@ export default {
                 }
               })
             }
-            console.log('this.tipObj', this.tipObj)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -671,7 +670,6 @@ export default {
             }
           })
         }
-        console.log('this.tipObj', this.tipObj)
       } else {
         // 查看已配点方案的配点详情
         this.getMatchSummary(this.apID)
@@ -824,12 +822,12 @@ export default {
         sessFun.messageFun('info','已取消')
       });
     },
-    deleteAsignItem(scope) {
+    deleteAsignItem(scope, currentPage, currentPageSize) {
       this.asignPointTableLoading = true
       api.getApi("/addsp/match/removeSpace?id="+scope.row.id).then(res => {
           if (res.data.SysCode == 200200) {
             this.getMatchSummary(this.apID)
-            this.asignPointTableData.splice(scope.$index, 1)
+            this.asignPointTableData.splice((currentPage-1)*currentPageSize+scope.$index*1, 1)
             this.asignPointTableLoading = false
           } else {
             sessFun.messageFun('warning', res.data.MSG)

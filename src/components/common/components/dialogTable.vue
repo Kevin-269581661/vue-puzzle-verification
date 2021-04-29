@@ -33,7 +33,7 @@
             {{item.value?item.value(scope.row):scope.row[item.prop]}}
           </template>
         </el-table-column>
-        <slot name="otherColumn"></slot>
+        <slot name="otherColumn" :currentPage="currentPage" :currentPageSize="currentPageSize"></slot>
       </el-table>
       <el-pagination
         background

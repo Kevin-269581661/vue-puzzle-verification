@@ -17,20 +17,27 @@
                             <img src="../../assets/images/orderlogo.png" alt="">{{planDetail.apName}}
                         </h4>
                         <div class="handleBtn">
-                            <!--<el-button plain>导出</el-button>-->
                             <el-tooltip v-if="role=='MD' && planDetail.lockStatus==1" effect="dark" content="从今天起重新预锁七天" placement="top">
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
+                            <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
-                                <!-- 加盟销售才能编辑非意向进行中方案 -->
-                                <el-button type="primary" @click="edit()" v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) || (role=='MD')"
-                                           v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
+                                <!-- planMode：0普通 1意向 -->
+                                <el-button plain>协同选点</el-button>
+                                <el-button plain @click="setPlanPrice">设置金额</el-button>
+                                <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
+                                <el-button type="primary" @click="edit()" 
+                                    v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
+                                    || 
+                                    (role=='BD' && customPermission.proposalPermission == 1 && planDetail.planMode==1) 
+                                    || 
+                                    (role=='MD')"
+                                    v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
                             </template>
                         </div>
                     </div>
                     <div>
                         <detail :detail="planDetail" v-if="isShow"></detail>
-
                     </div>
                 </div>
             </div>
@@ -537,21 +544,53 @@ export default {
                 });
             }).catch(() => {})
         },
+        /**
+         * @description: 设置方案金额
+         * @param {*}
+         * @return {*}
+         */
+        setPlanPrice() {
+
+        },
+        //清空草稿箱数据
+        clearDrafts(apid) {
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: apid
+            };
+            return new Promise(resolve=>{
+                api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
+                    if (res.data.SysCode === 200200) {
+                        console.log("清除草稿箱成功");
+                        resolve(1)
+                    } else {
+                        sessFun.messageFun("warning", "清除草稿箱失败");
+                    }
+                });
+            })
+        },
         // 编辑
         edit() {
             let apid = sessionStorage.getItem("plan_apid");
+            sessionStorage.setItem("planDetail",JSON.stringify(this.planDetail))
             let session = this.sessionData;
             let info = {
                 uid: session.uID,
                 token: session.token,
                 apid: apid,
             };
-            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
                         // 意向方案
                         if(this.planDetail.planMode == 1) {
-                            this.$router.push("./editPlan");
+                            if(this.role=='BD') {
+                                // 编辑意向小区
+                                (await this.clearDrafts(apid)) && this.$router.push("./editEmptyPointPlan");
+                            } else {
+                                this.$router.push("./editPlan");
+                            }
                         } else {
                             // 非意向方案
                             this.$router.push("./editPlanOld");

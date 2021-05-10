@@ -135,9 +135,6 @@
                         <el-form-item label="楼栋数量：">
                           <span>{{ props.row.fNum }}</span>
                         </el-form-item>
-                        <!-- <el-form-item label="资产编号：">
-                          <span>{{ props.row.assetTag }}</span>
-                        </el-form-item> -->
                         <el-form-item label="入住年份：">
                           <span>{{ props.row.chDay }}</span>
                         </el-form-item>
@@ -245,12 +242,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <!-- <el-tab-pane label="报价单" name="second">
-                        <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
-                    </el-tab-pane> -->
-          <!-- <el-tab-pane label="物料信息" name="third">
-                        <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="false"></material>
-                    </el-tab-pane> -->
         </el-tabs>
       </div>
       <div class="content_bottom_btn">
@@ -487,19 +478,14 @@ export default {
     },
     // tab点击
     handleClick() {
-      if (this.planPanel == "first") {
-        this.getSetPoint();
-        MtaH5.clickStat("a004_b010_c000_d000_bt099_ck09");
-      } else if (this.planPanel == "second") {
-        MtaH5.clickStat("a004_b010_c000_d000_bt100_ck09");
-      } else if (this.planPanel == "third") {
-        MtaH5.clickStat("a004_b010_c000_d000_bt101_ck09");
-      }
+      // if (this.planPanel == "first") {
+      //   this.getSetPoint();
+      //   MtaH5.clickStat("a004_b010_c000_d000_bt099_ck09");
+      // }
     },
     // 获取选点排期列表数据
     getInitData() {
       this.isShow = false;
-
       // 真实数据
       let apid = sessionStorage.getItem("plan_apid");
       let info = {
@@ -507,56 +493,11 @@ export default {
         token: this.sessionData.token,
         apid: apid,
       };
-      // uid         int【必填】     当前账户UserID
-      // apid        int             公司对应方案apID
       api
         .getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let info = res.data.data;
-            // this.planDetail = {
-            //   adcID: info.adcID,
-            //   apID: info.apID,
-            //   apName: info.apName,
-            //   apState: info.apState,
-            //   lockStatus: info.lockStatus,
-            //   apTotal: info.apTotal,
-            //   apcTime: dateFormat.toDateTime(info.apcTime, "/"),
-            //   bTitle: info.bTitle,
-            //   cName: info.cName,
-            //   cuName: info.cuName,
-            //   pdEnd: info.pdEnd,
-            //   pdStar: info.pdStar,
-            //   rID: info.rID,
-            //   rIDs: info.rIDs,
-            //   realName: info.realName,
-            //   pdTotal: this.priceFormat(
-            //     (info.apTotal - info.adOtherFee - info.adSendFee) / 100
-            //   ),
-            //   pdSendFee: this.priceFormat(info.adSendFee / 100),
-            //   pdOtherFee: this.priceFormat(info.adOtherFee / 100),
-            //   Total: this.priceFormat(info.apTotal / 100),
-            //   AdDoor: {
-            //     pdTotal: this.priceFormat(
-            //       (info.AdDoor.pdTotal -
-            //         info.AdDoor.adOtherFee -
-            //         info.AdDoor.adSendFee) /
-            //         100
-            //     ),
-            //     pdSendFee: this.priceFormat(info.AdDoor.adSendFee / 100),
-            //     pdOtherFee: this.priceFormat(info.AdDoor.adOtherFee / 100),
-            //   },
-            //   barrier: {
-            //     pdTotal: this.priceFormat(
-            //       (info.barrier.pdTotal -
-            //         info.barrier.adOtherFee -
-            //         info.barrier.adSendFee) /
-            //         100
-            //     ),
-            //     pdSendFee: this.priceFormat(info.barrier.adSendFee / 100),
-            //     pdOtherFee: this.priceFormat(info.barrier.adOtherFee / 100),
-            //   },
-            // };
             this.planDetail = {
               ...info,
               apcTime: dateFormat.toDateTime(info.apcTime, "/"),
@@ -600,6 +541,7 @@ export default {
     // 获取选点排期
     getSetPoint() {
       if (this.setpointArr.length) {
+        // 防止重复点击tab
         return;
       }
       // 真实数据
@@ -609,21 +551,13 @@ export default {
         token: this.sessionData.token,
         apid: apid,
       };
-      if (this.planDetail.apState == 1) {
-        // apState: 1 方案并未转成订单
-        this.funcToInit(
-          this.apiVar.Advertisement + "/GetADB",
-          info,
-          this.planDetail.apState
-        );
-      } else {
-        // this.funcToInit(this.apiVar.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);
+      // 未配点方案
+      if(this.planDetail.apState == -1) {
         this.getPlanResList();
       }
     },
     //获取新业务逻辑数据
     getPlanResList() {
-      console.log("this.planDetail: ", this.planDetail);
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -662,10 +596,7 @@ export default {
             this.filtersArea = filterFormat(resInfo, "districtName");
             this.filtersData = filterFormat(resInfo, "timeRange");
             // 选点排期
-            // this.copyAsidArr = JSON.parse(JSON.stringify(resInfo));
             this.setpointArr = resInfo;
-
-          // this.setpointArr = res.data.data;
             this.$nextTick(function () {
               this.isShow = true;
           });
@@ -674,97 +605,6 @@ export default {
         }
       }).catch((res) => {
           this.loading = false;
-          console.log(res);
-        });
-    },
-    // 请求数据整合
-    funcToInit(apiUrl, info, state) {
-      // uid         int【必填】     当前账户UserID
-      // apid        int             公司对应方案apID
-      api
-        .getApi(apiUrl, info)
-        .then((res) => {
-          if (!res.data.SysCode) {
-            let initData = res.data;
-            let resInfo = initData.adSpaceInfo;
-            // 城市中文名称
-            for (let data of resInfo) {
-              let time = "";
-              if (state == 1) {
-                time =
-                  this.formatTime(data.pbStar) +
-                  "-" +
-                  this.formatTime(data.pbEnd);
-              } else {
-                time =
-                  this.formatTime(data.lStar) +
-                  "-" +
-                  this.formatTime(data.lEnd);
-              }
-              data.timeRange = time;
-              let finishTimeRange = "";
-              if (data.lState == 2) {
-                finishTimeRange =
-                  this.formatTime(data.lStar) +
-                  "-" +
-                  this.formatTime(data.lSetTime);
-              }
-              data.finishTimeRange = finishTimeRange;
-            }
-            // 城市筛选过滤
-            this.filterCityData = filterFormat(resInfo, "city");
-            this.filtersArea = filterFormat(resInfo, "rName");
-            this.filtersData = filterFormat(resInfo, "timeRange");
-            // 选点排期
-            this.copyAsidArr = JSON.parse(JSON.stringify(resInfo));
-            this.setpointArr = resInfo;
-
-            // 广告门物料信息
-            let mInfo = initData.gateMaterialInfo;
-            let materialRes = [];
-            for (let data of mInfo) {
-              let str = data.gateMaterialSize.split("-");
-              let obj = {
-                adSize: str[0],
-                adViewSize: str[1],
-                pointNum: data.gateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              materialRes.push(obj);
-            }
-            this.materialInfo = materialRes;
-
-            // 道闸物料信息
-            let InfoTest = initData.roadGateMaterialInfo;
-            let daoRes = [];
-            for (let data of InfoTest) {
-              let str = data.roadGateMaterialSize.split("-");
-              let obj = {
-                adSize: str[1],
-                adViewSize: str[0],
-                pointNum: data.roadGateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              daoRes.push(obj);
-            }
-            this.daoInfo = daoRes;
-            this.loading = false;
-            this.maLoading = false;
-
-            this.$nextTick(function () {
-              this.isShow = true;
-            });
-          } else {
-            Message.warning(res.data.MSG);
-          }
-        })
-        .catch((res) => {
-          this.loading = false;
-          this.maLoading = false;
           console.log(res);
         });
     },
@@ -830,12 +670,11 @@ export default {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apID:apid
+        apID: apid
       };
       api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
-        console.log("清空草稿箱", res);
         if (res.data.SysCode === 200200) {
-          console.log("清除草稿箱失败成功");
+          console.log("清除草稿箱成功");
         } else {
           sessFun.messageFun("warning", "清除草稿箱失败");
         }

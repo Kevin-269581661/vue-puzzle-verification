@@ -1447,7 +1447,6 @@ export default {
       // this.setPlanInfo();
     }
     console.log("this.cityOptions", this.cityOptions);
-    //获取草稿箱数据
   },
   watch: {
     "planForm.throwCity": {

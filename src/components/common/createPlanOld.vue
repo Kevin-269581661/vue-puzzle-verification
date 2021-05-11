@@ -2975,7 +2975,7 @@
                     uid: this.BDData.uid,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
+                return api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
                     console.log('MyCustomer:', res.data)
                     let customerList = res.data
                     this.customer = res.data    //保存所有信息，方便后面的过滤使用
@@ -5827,7 +5827,7 @@
                 cacheAdPlan.setData(planInfo)
             },
             // 设置方案信息
-            setPlanInfo() {
+            async setPlanInfo() {
                 let returnData = cacheAdPlan.getData(this.sessionData.uID)
                 if (returnData) {
                     this.unfinishedData = returnData
@@ -5839,7 +5839,8 @@
                     this.companyBrand = returnData.planData.companyBrand
                     if (this.sessionData.uType === 'MD') {
                         this.getCityList()
-                        this.Get_cName()
+                        // getIndustryBycID需要先获取Get_cName
+                        await this.Get_cName()
                         // 媒介需构建销售下拉选项-第一步
                         let arr = [
                             {

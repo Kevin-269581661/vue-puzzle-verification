@@ -23,8 +23,9 @@
                             <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
                                 <!-- planMode：0普通 1意向 -->
-                                <el-button plain>协同选点</el-button>
-                                <el-button plain @click="setPlanPrice">设置金额</el-button>
+                                <el-button plain class="handleBtn--plain">协同选点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="setPlanPrice">设置金额</el-button>
+                                <el-button plain class="handleBtn--plain" @click="setPlanPrice">配点</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                                 <el-button type="primary" @click="edit()" 
                                     v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
@@ -152,6 +153,42 @@
                 <el-button plain class="cancel" @click="goBack()"
                            v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt098_ck03'}">返回</el-button>
             </div>
+            <el-dialog title="设置方案金额" :visible.sync="settlementFormVisible" width="368px" custom-class="settlement-dialog" :show-close="false" :close-on-click-modal="false" :close-on-press-escap="false" :before-close="resetSettlement">
+                <el-form ref="settlementForm" :model="settlementForm" :rules="settlementFormRules">
+                    <el-form-item label="点位单价：" prop="unitPrice" :label-width="formLabelWidth">
+                        <el-input v-model.number="settlementForm.unitPrice" size="small" maxlength="7">
+                            <template slot="append">元/面·周</template>
+                        </el-input>
+                    </el-form-item>
+                    <div class="form__line"></div>
+                    <el-form-item label="现金结算：" prop="cash" :label-width="formLabelWidth">
+                        <el-input v-model.number="settlementForm.cash" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="置换结算：" prop="displace" :label-width="formLabelWidth">
+                        <el-input v-model.number="settlementForm.displace" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="其它结算：" prop="other" :label-width="formLabelWidth">
+                        <el-input v-model.number="settlementForm.other" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="方案总价：" :label-width="formLabelWidth">
+                        <span class="form-item__price">{{(isNaN(settlementForm.cash)?0:settlementForm.cash*1)+(isNaN(settlementForm.displace)?0:settlementForm.displace*1)+(isNaN(settlementForm.other)?0:settlementForm.other*1)}} 元</span>
+                    </el-form-item>
+                    <div class="form__line"></div>
+                    <el-form-item label="金额备注：" prop="settlementRemark" :label-width="formLabelWidth">
+                        <el-input type="textarea" placeholder="请输入备注" v-model="settlementForm.settlementRemark" size="small"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="resetSettlement(()=>settlementFormVisible = false)">取 消</el-button>
+                    <el-button type="primary" @click="setPlanPrice('settlementForm')">确 定</el-button>
+                </div>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -192,6 +229,21 @@ export default {
         elButton: Button,
     },
     data() {
+        let validatPrice = (rule, value, callback) => {
+            if (value) {
+                let reg = /^\d{1,}$/;
+                if (!reg.test(value)) {
+                    callback(new Error("请输入正整数"));
+                } else if (value > 9999999) {
+                    callback(new Error("预算不能大于9,999,999"));
+                } else {
+                    callback();
+                }
+            } else {
+                callback();
+                // this.$refs["customerBudgetRef"].clearValidate()
+            }
+        };
         return {
             // 登录信息
             sessionData:{},
@@ -220,8 +272,6 @@ export default {
                 isDetail: true,
                 quotation: []
             },
-            //物料信息
-            // materialInfo: [],
             // 城市过滤结果
             filterCityData: [],
             // 排期时间过滤
@@ -232,7 +282,23 @@ export default {
             // 分页时页面条目数量
             pageSize: 100,
             currentPage: 1,
-            totalNum: 0
+            totalNum: 0,
+            // 设置方案金额
+            formLabelWidth: '70px',
+            settlementFormVisible: false,
+            settlementForm: {
+                unitPrice: 0,
+                cash: 0,
+                displace: 0,
+                other: 0,
+                settlementRemark: ''
+            },
+            settlementFormRules: {
+                unitPrice: [{ validator: validatPrice, trigger: "blur" }],
+                cash: [{ validator: validatPrice, trigger: "blur" }],
+                displace: [{ validator: validatPrice, trigger: "blur" }],
+                other: [{ validator: validatPrice, trigger: "blur" }]
+            }
         };
     },
     created() {
@@ -357,6 +423,7 @@ export default {
                             bTitle: info.bTitle,
                             cName: info.cName,
                             cuName: info.cuName,
+                            cityList: info.cityList||[],
                             pdEnd: info.pdEnd,
                             pdStar: info.pdStar,
                             rID: info.rID,
@@ -549,8 +616,46 @@ export default {
          * @param {*}
          * @return {*}
          */
-        setPlanPrice() {
-
+        setPlanPrice(formName) {
+            if(this.settlementFormVisible) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        console.log('success---', this.settlementForm)
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token,
+                            apID: this.planDetail.apID,
+                            adsWeekFee: this.settlementForm.unitPrice*100,
+                            cashFee: this.settlementForm.cash*100,
+                            sendFee: this.settlementForm.displace*100,
+                            otherFee: this.settlementForm.other*100,
+                            remark: this.settlementForm.settlementRemark||''
+                        }
+                        api.postApi('/addsp/proposal/updatePlanMoney', params).then((res) => {
+                            if (res.data.SysCode === 200200) {
+                                console.log("金额结算成功");
+                            } else {
+                                sessFun.messageFun("warning", "金额结算失败");
+                            }
+                        });
+                    } else {
+                        console.warn('valid---')
+                        return false;
+                    }
+                });
+            } else {
+                // 表单弹框显示
+                this.settlementFormVisible = true
+            }
+        },
+        // 
+        resetSettlement(done) {
+            if(this.$refs.settlementForm) {
+                this.$refs.settlementForm.resetFields()
+                done()
+            }
+            // this.$refs[formName].resetFields()
+            // this.settlementFormVisible = false
         },
         //清空草稿箱数据
         clearDrafts(apid) {
@@ -620,12 +725,43 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .ellipsis-td {
     width: 132px;
     overflow: hidden;
     text-overflow:ellipsis;
     white-space: nowrap;
+}
+/* 设置方案金额 */
+/deep/ .settlement-dialog {
+    .el-form-item {
+        padding: 8px 0;
+        margin: 0;
+    }
+    .form__line {
+        margin: 16px 0;
+        height: 1px;
+        background: #E9E9E9;
+    }
+    .el-form-item__content {
+        line-height: unset;
+    }
+    .form-item__price {
+        line-height: 32px;
+    }
+    .el-dialog__header {
+        padding: 16px 24px;
+    }
+    .el-dialog__body {
+        padding: 0 24px;
+    }
+    .el-dialog__footer {
+        padding: 16px 24px 24px;
+    }
+    .el-form-item__label {
+        padding: 0;
+        line-height: 32px;
+    }
 }
 /*状态行*/
 /deep/ .el-table .warning-row {
@@ -711,6 +847,9 @@ export default {
     position: absolute;
     right: 28px;
     top: 30px;
+    .handleBtn--plain {
+        color: #000000A6;
+    }
 }
 
 .plan-title .handleBtn button {
@@ -754,13 +893,12 @@ export default {
 
 /*面包屑导航*/
 .tip {
-    font-size: 14px;
-    color: #999999;
-    text-align: right;
-    line-height: 36px;
-    display: inline-block;
     float: right;
     height: 36px;
+    line-height: 36px;
+    font-size: 14px;
+    text-align: right;
+    color: #999999;
 }
 
 /*按钮*/

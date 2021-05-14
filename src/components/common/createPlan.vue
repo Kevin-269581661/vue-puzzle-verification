@@ -1071,14 +1071,6 @@ export default {
         // this.$refs["customerBudgetRef"].clearValidate()
       }
     };
-    //客户要求自定义校验
-    // let validateRequst = (rule, value, callback) =>{
-    //     if(!value){
-    //         this.$refs["customerDemandRef"].clearValidate()
-    //     }else{
-    //         callback();
-    //     }
-    // }
     let validateSales = (rule, value, callback) => {
       if (value) {
         if (this.BDData.uid === "0") {

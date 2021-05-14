@@ -21,7 +21,11 @@ export default {
     },
     methods:{
         // 去重城市
-        filter(val) {
+        filter(cityList=[]) {
+            return cityList.map(_=>_.rName||'').join(',');
+        },
+        // ADorderDetail.vue传递的prop:detail无cityList
+        filter2(val) {
             let res = "";
             if (val) {
                 for (let data of val.split(",")) {
@@ -73,27 +77,35 @@ export default {
                         </li>
                         <li v-if="role != 'EP'">
                             <span>现金结算：</span>
-                            <em>¥ {{detail.pdTotal}}</em>
+                            <em>¥{{detail.pdTotal}}</em>
                         </li>
                         <li>
                             <span>公司品牌：</span>
                             <em>{{detail.bTitle || '--'}}</em>
                         </li>
-                        <li>
+                        <li v-if="isorder">
                             <span>投放城市：</span>
-                            <em>{{filter(detail.rIDs)}}</em>
+                            <em>{{filter(detail.cityList)}}</em>
+                        </li>
+                        <li v-else>
+                            <span>投放城市：</span>
+                            <em>{{filter2(detail.rIDs)}}</em>
                         </li>
                         <li v-if="role != 'EP'">
                             <span>资源置换：</span>
-                            <em>¥ {{detail.pdSendFee}}</em>
+                            <em>¥{{detail.pdSendFee}}</em>
                         </li>
                         <li>
                             <span>所属销售：</span>
                             <em>{{detail.realName}}</em>
                         </li>
+                        <li>
+                            <span>客户要求：</span>
+                            <em>{{'无'}}</em>
+                        </li>
                         <li v-if="role != 'EP'">
                             <span>其他费用：</span>
-                            <em>¥ {{detail.pdOtherFee}}</em>
+                            <em>¥{{detail.pdOtherFee}}</em>
                         </li>
                     </ul>
                 </div>
@@ -122,7 +134,6 @@ export default {
                                         <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
                                     </p>
                                 </div>
-                                <!-- <i class="el-icon-info"></i> -->
                                 <i class="fa fa-info-circle" aria-hidden="true"></i>
                             </el-tooltip>
                             方案金额
@@ -160,6 +171,8 @@ export default {
     float: left;
     width: calc(33.3% - 16px);
     margin: 0 16px 12px 0;
+    font-size: 14px;
+    color: #666666;
 }
 
 .plan-detail-left ul li em {

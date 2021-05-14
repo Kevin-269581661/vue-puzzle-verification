@@ -644,7 +644,7 @@
     </div>
     <div class="content_bottom_btn">
       <div class="finishBtn" v-if="active == 2">
-        <el-button type="default" @click="continueCreate">继续创建</el-button>
+        <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
         <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
         <el-button @click="downLoadFanan()" type="primary" class="urlBtn"
           >导出方案</el-button
@@ -3092,13 +3092,18 @@ export default {
     },
     //查看方案
     ToDetail() {
-      this.$router.push("./planEmptyPointDetail");
+      if(this.FAInfo.apState==1) {
+        // 进行中
+        this.$router.push("./planDetail");
+      } else if(this.FAInfo.apState==-1) {
+        // 未配点
+        this.$router.push("./planEmptyPointDetail");
+      }
     },
     // 继续创建
-    continueCreate() {
+    /* continueCreate() {
       this.$router.push("./createPlan");
-      // location.reload(false);
-    },
+    }, */
     // 公用方法
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
     handleImportDrafts(type, list) {

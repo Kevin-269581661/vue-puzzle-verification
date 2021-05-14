@@ -1275,6 +1275,7 @@
                                 bTitle: info.bTitle,
                                 cName: info.cName,
                                 cuName: info.cuName,
+                                cityList: info.cityList||[],
                                 pdEnd: info.pdEnd,
                                 pdStar: info.pdStar,
                                 rID: info.rID,

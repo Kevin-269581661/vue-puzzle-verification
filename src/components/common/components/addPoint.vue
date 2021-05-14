@@ -51,11 +51,19 @@
         <div class="board board2">
           <el-form label-position="top" label-width="82px">
             <el-form-item label="配点要求">
-              <el-checkbox-group v-model="formDataObj.pointDemand">
+              <div>
                 <el-checkbox
-                  label="isSpaceTimeLongFirst"
+                  v-model="formDataObj.matchRangeChecked"
+                  class="combination"
                   name="type"
-                >优先选择空置久的点位</el-checkbox>
+                >配点意向小区范围</el-checkbox>
+                <el-select size="mini" v-model="formDataObj.matchRange" placeholder="请选择">
+                  <el-option label="全部" value="1"></el-option>
+                  <el-option label="未配" value="2"></el-option>
+                </el-select>
+              </div>
+              <el-checkbox-group v-model="formDataObj.pointDemand">
+                <el-checkbox label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
                 <el-checkbox label="isSingleMediaChoose" name="type">1个门选择1个点位</el-checkbox>
                 <el-checkbox label="isSingleConnectChoose" name="type">联排门仅选1面</el-checkbox>
               </el-checkbox-group>
@@ -73,6 +81,40 @@
         <div class="board board3">
           <div class="board-title">点位排斥</div>
           <el-form label-position="left" label-width="70px">
+            <el-form-item label="通行情况">
+              <el-select
+                size="mini"
+                v-model="formDataObj.apExclude"
+                placeholder="请选择通行情况"
+                filterable
+                :clearable="true"
+              >
+                <el-option
+                  v-for="item in rejectAdPlan"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="媒体类型：">
+              <el-select
+                size="mini"
+                v-model="formDataObj.apExclude"
+                placeholder="请选择媒体类型"
+                filterable
+                :clearable="true"
+              >
+                <el-option
+                  v-for="item in rejectAdPlan"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="方案名称：">
               <el-select
                 size="mini"
@@ -362,6 +404,8 @@ export default {
         planResCount: 0
       },
       formDataObj: {
+        matchRange: '', 
+        matchRangeChecked: false, 
         pointDemand: [],
         aFaceRate: 50,
         aFaceRateChecked: false,

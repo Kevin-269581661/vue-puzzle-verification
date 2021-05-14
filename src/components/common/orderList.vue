@@ -404,7 +404,6 @@
                     token: this.sessionData.token
                 };
                 api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
-                    console.log(res.data);
                     let arr = res.data;
                     let result = [];
                     if (!arr.SysCode) {

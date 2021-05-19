@@ -6563,6 +6563,13 @@
 
     /*购物车列表*/
     /deep/ .shop-cart-wrapper {
+        .el-table tr th, .el-table tr td {
+            height: 46px;
+            .cell {
+                height: 25px;
+                line-height: 25px;
+            }
+        }
         .shopcar_box {
             padding: 24px 24px 0;
         }

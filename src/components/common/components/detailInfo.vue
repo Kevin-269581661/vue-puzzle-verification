@@ -101,7 +101,7 @@ export default {
                         </li>
                         <li>
                             <span>客户要求：</span>
-                            <em>{{'无'}}</em>
+                            <em>{{detail.customerDemand||'无'}}</em>
                         </li>
                         <li v-if="role != 'EP'">
                             <span>其他费用：</span>
@@ -120,19 +120,27 @@ export default {
                     <dl v-if="role != 'EP'">
                         <dt>
                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
-                                <div slot="content" style="display:flex;">
-                                    <p class="tooltip_p">
-                                        <b>广告门</b>
-                                        <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
-                                        <span>资源置换: <span>¥ {{detail.AdDoor.pdSendFee}}</span></span>
-                                        <span>其他费用: <span>¥ {{detail.AdDoor.pdOtherFee}}</span></span>
-                                    </p>
-                                    <p class="tooltip_p">
-                                        <b>道闸</b>
-                                        <span>现金结算: <span>¥ {{detail.barrier.pdTotal}}</span></span>
-                                        <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
-                                        <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
-                                    </p>
+                                <div slot="content">
+                                    <div class="tooltip-box">
+                                        <p class="tooltip-box__p">
+                                            <b>广告门</b>
+                                            <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
+                                            <span>资源置换: <span>¥ {{detail.AdDoor.pdSendFee}}</span></span>
+                                            <span>其他费用: <span>¥ {{detail.AdDoor.pdOtherFee}}</span></span>
+                                        </p>
+                                        <p class="tooltip-box__p">
+                                            <b>道闸</b>
+                                            <span>现金结算: <span>¥ {{detail.barrier.pdTotal}}</span></span>
+                                            <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
+                                            <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
+                                        </p>
+                                    </div>
+                                    <div class="tooltip-box tooltip-box--space">
+                                        <p class="tooltip-box__p">
+                                            <b>金额备注</b>
+                                            <span>{{detail.remark||''}}</span>
+                                        </p>
+                                    </div>
                                 </div>
                                 <i class="fa fa-info-circle" aria-hidden="true"></i>
                             </el-tooltip>
@@ -179,14 +187,25 @@ export default {
     font-size: 14px;
     color: #666666;
 }
-
-.tooltip_p{
-    max-width: 150px;
+.tooltip-box {
+    display: flex;
+    .tooltip-box__p {
+        max-width: 150px;
+        b {
+            font-size: 14px;
+        }
+        span {
+            font-size: 12px;
+        }
+        & > * {
+            display: inline-block;
+            line-height: 22px;
+            min-width: 75px;
+        }
+    }
 }
-.tooltip_p b, .tooltip_p span{
-    display: inline-block;
-    line-height: 22px;
-    min-width: 75px;
+.tooltip-box--space {
+    margin-top: 8px;
 }
 
 .plan-detail-right {

@@ -23,7 +23,7 @@
                             <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
                                 <!-- planMode：0普通 1意向 -->
-                                <el-button plain class="handleBtn--plain">协同选点</el-button>
+                                <el-button plain class="handleBtn--plain" @click="createShareCode">协同选点</el-button>
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="setPlanPrice">设置金额</el-button>
                                 <el-button plain class="handleBtn--plain" @click="setPlanPrice">配点</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
@@ -138,7 +138,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="报价单" name="second">
+                    <el-tab-pane v-if="planDetail.planMode==0" label="报价单" name="second">
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third">
@@ -395,9 +395,8 @@ export default {
             }
         },
         // 获取选点排期列表数据
-        getInitData() {
-            this.isShow = false;
-
+        getInitData(updateDetail=false) {
+            this.isShow = updateDetail;
             // 真实数据
             let apid = sessionStorage.getItem("plan_apid");
             let info = {
@@ -424,11 +423,13 @@ export default {
                             cName: info.cName,
                             cuName: info.cuName,
                             cityList: info.cityList||[],
+                            customerDemand: info.customerDemand||'',
                             pdEnd: info.pdEnd,
                             pdStar: info.pdStar,
                             rID: info.rID,
                             rIDs: info.rIDs,
                             realName: info.realName,
+                            remark: info.remark,
                             pdTotal: this.priceFormat((info.apTotal - info.adOtherFee- info.adSendFee)/100),
                             pdSendFee: this.priceFormat(info.adSendFee/100),
                             pdOtherFee: this.priceFormat(info.adOtherFee/100),
@@ -445,7 +446,7 @@ export default {
                             },
                         };
                         // 选点排期
-                        this.getSetPoint();
+                        !updateDetail && this.getSetPoint();
                     } else{
                         Message.warning(res.data.MSG);
                     }
@@ -612,6 +613,32 @@ export default {
             }).catch(() => {})
         },
         /**
+         * @description: 生成协同选点链接
+         * @param {*}
+         * @return {*}
+         */        
+        createShareCode() {
+            api.postApi('/addsp/proposal/share/createShareCode', {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: this.planDetail.apID
+            }).then((res) => {
+                if (res.data.SysCode === 200200) {
+                    let Url = this.apiVar.qadnUrl + '/shareADList?apid=' + res.data.data.apID + '&aicode=' + res.data.data.aiCode;
+                    console.log('url', Url);
+                    let oInput = document.createElement('input');
+                    oInput.value = Url;
+                    document.body.appendChild(oInput);
+                    oInput.select();                // 选择对象
+                    document.execCommand("Copy"); // 执行浏览器复制命令
+                    oInput.style.display = 'none';
+                    sessFun.messageFun("success", '协同选点链接复制成功，马上分享');    
+                } else {
+                    sessFun.messageFun("warning", res.data.MSG);
+                }
+            });
+        },
+        /**
          * @description: 设置方案金额
          * @param {*}
          * @return {*}
@@ -633,6 +660,8 @@ export default {
                         }
                         api.postApi('/addsp/proposal/updatePlanMoney', params).then((res) => {
                             if (res.data.SysCode === 200200) {
+                                this.settlementFormVisible = false
+                                this.getInitData(true)
                                 console.log("金额结算成功");
                             } else {
                                 sessFun.messageFun("warning", "金额结算失败");

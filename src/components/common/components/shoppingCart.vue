@@ -45,8 +45,8 @@
             border
             :data="shoppingCartShowList"
             :default-sort="{ prop: 'mID', order: 'descending' }"
-            @row-click="shopRowClick"
             style="width: 100%"
+            max-height="400"
             @expand-change="senceOpen"
           >
             <el-table-column type="expand">
@@ -116,11 +116,22 @@
             >
             </el-table-column>
             <el-table-column
-              prop="planAdsCnt"
               label="计划投放数(面)"
-              min-width="120"
-              align="right"
+              min-width="130"
+              align="center"
             >
+              <template slot-scope="scope">
+                <el-input-number style="width: 80px" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-if="apState==1"
+              label="配点情况"
+              min-width="120"
+            >
+            <template slot-scope="scope">
+                <span>{{ !scope.row.carAdsCnt?'未配点':scope.row.planAdsCnt==scope.row.carAdsCnt?'已完成':'已配('+(scope.row.carAdsCnt||0)+')' }}</span>
+              </template>
             </el-table-column>
             <el-table-column min-width="50" :render-header="renderHeader">
               <template slot-scope="scope">
@@ -186,6 +197,17 @@
 </template>
 
 <script>
+function debounce(row) {
+  var timeOut = null;
+  return function() {
+    clearTimeout(timeOut);
+    timeOut = setTimeout(function(){
+      console.log('time', timeOut)
+    } 
+      // this.$emit('updateShopCartRow', row)
+    , 1000);
+  }
+}
 export default {
   name: "shoppingCart",
   props: {
@@ -201,6 +223,10 @@ export default {
     activeName: {
       type: Number,
       default: 1,
+    },
+    apState: {
+      type: Number,
+      default: 0
     },
     //展示的数据
     shoppingCartList: {
@@ -287,10 +313,6 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
     },
-    // 购物车行被点击
-    shopRowClick(row, event, column) {
-      console.log("购物车行被点击row", row, column);
-    },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
@@ -315,6 +337,9 @@ export default {
         },
         [h("span", "清空")]
       );
+    },
+    updatePlanAdsCnt(row) {
+      debounce(row)()
     },
     // 清空购物车
     clearShop() {
@@ -431,6 +456,16 @@ export default {
 
 /deep/ .table_wrap.car-list {
   margin-top: 0 !important;
+  .el-input-number--mini {
+    .el-input__inner {
+      height: 26px;
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+    .el-input-number__decrease, .el-input-number__increase {
+      width: 26px;
+    }
+  }
 }
 .mapBtn {
   min-width: 110px;

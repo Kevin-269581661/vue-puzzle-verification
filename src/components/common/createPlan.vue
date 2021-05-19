@@ -4027,7 +4027,7 @@ export default {
           this.ADloading.close();
         } else {
           this.ADloading.close();
-          sessFun.messageFun("warning", "方案创建失败");
+          sessFun.messageFun("warning", "方案创建失败：" + res.data.MSG);
         }
       });
     },

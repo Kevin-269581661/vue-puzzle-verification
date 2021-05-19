@@ -613,10 +613,12 @@
               :mapBtn.sync="mapBtn"
               @next="next"
               :activeName="activeName"
+              :apState="FAInfo.apState"
               :shoppingCartList="shopingList"
               :customPermission="customPermission"
               @shoppingCartdeleteRow="changeCheck"
               @shoppongCartClearData="clearShop"
+              @updateShopCartRow="updateShopCartRow"
               :connectAdDialogVisible.sync="connectAdDialogVisible"
               @getMapADList="getMapADList"
               :shopMedia_ADNum="shopMedia_ADNum"
@@ -1324,8 +1326,6 @@ export default {
       this.shopingList.push(...successList);
       this.computeMedia_AD(); //统计购物车里选择小区的面数个数
       this.judgeByselect(); //导入购物车中的数据与已有列表是否重复
-
-      // this.AddShopingInfo(row, "A"); // 添加到购物车
     },
     //导入表格选点
     automaticSelectPoint() {
@@ -1682,7 +1682,6 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)",
         });
-        let dateArr = [];
         let self = this;
         let request_times = self.planForm.throwCity.length; //计算分几次请求
         let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
@@ -1934,7 +1933,6 @@ export default {
     },
 
     // 小区导入
-    // TODO:小区导入
     resImport(formData, info) {
       let Loading = this.$loading({
         lock: true,
@@ -1974,110 +1972,7 @@ export default {
         // item.city = this.city[this.activeIndex].rName;
         item.city = item.cityName;
       });
-
       return arr;
-    },
-    // 判断点位是否已存在购物车(同点位同排期去重、同点位排期交叉则合并、同点位排期联系则合并)
-    isHaveDiffPush(obj) {
-      console.log("obj----", obj, this.shopingList);
-      let ADData = obj;
-      let shopArr = this.shopingList;
-      let sameMidArr = [];
-      let resultArr = [];
-      for (let k = 0, kLen = shopArr.length; k < shopArr.length; ) {
-        if (ADData.resID === shopArr[k].resID) {
-          sameMidArr.push(shopArr[k]);
-          shopArr.splice(k, 1);
-        } else {
-          k++;
-        }
-      }
-      console.log("sameMidArr-----1111", sameMidArr, this.shopingList, shopArr);
-      for (let data of sameMidArr) {
-        let ADScheArr = ADData.schedule.split("-");
-        let shopScheArr = data.schedule.split("-");
-        if (
-          ADScheArr[0] < shopScheArr[0] &&
-          shopScheArr[0] <= ADScheArr[1] &&
-          ADScheArr[1] < shopScheArr[1]
-        ) {
-          // 左相交(购物车相交选点)
-          ADData.schedule = ADScheArr[0] + "-" + shopScheArr[1];
-        } else if (
-          shopScheArr[0] <= ADScheArr[0] &&
-          ADScheArr[1] <= shopScheArr[1]
-        ) {
-          ADData.schedule = shopScheArr[0] + "-" + shopScheArr[1];
-          // 购物车包含选点
-        } else if (
-          shopScheArr[0] < ADScheArr[0] &&
-          ADScheArr[0] <= shopScheArr[1] &&
-          shopScheArr[1] < ADScheArr[1]
-        ) {
-          // 右相交(购物车相交选点)
-          ADData.schedule = shopScheArr[0] + "-" + ADScheArr[1];
-        } else if (
-          ADScheArr[0] <= shopScheArr[0] &&
-          shopScheArr[1] <= ADScheArr[1]
-        ) {
-          // 购物车被选点包含
-          ADData.schedule = ADScheArr[0] + "-" + ADScheArr[1];
-        } else {
-          let timeArr = [
-            ADScheArr[0],
-            ADScheArr[1],
-            shopScheArr[0],
-            shopScheArr[1],
-          ];
-          timeArr.sort((a, b) => {
-            return Date.parse(a) - Date.parse(b);
-          });
-          if (Date.parse(timeArr[2]) - Date.parse(timeArr[1]) == 86400000) {
-            ADData.schedule = timeArr[0] + "-" + timeArr[3];
-          } else {
-            resultArr.push(data);
-          }
-        }
-      }
-      console.log("resultArr----ADData----", resultArr, ADData);
-      resultArr.push(ADData);
-      console.log("resultArr*****", resultArr, this.shopingList);
-      this.shopingList = this.shopingList.concat(resultArr);
-    },
-    // 获取订单
-    remoteGetOrder(query) {
-      if (query !== "") {
-        let sess = this.sessionData;
-        let info = {
-          uid: sess.uID,
-          token: sess.token,
-          apName: query,
-          suId: this.BDData.uid,
-          rIds: this.planForm.throwCity.join(","),
-        };
-        this.loadingOrder = true;
-        api
-          .getApi(this.apiVar.Advertisement + "/GetSaleAdPlan", info)
-          .then((res) => {
-            console.log(res.data);
-            this.loadingOrder = false;
-            if (res.data.SysCode == 200200) {
-              this.orderArr = res.data.data.map((item) => {
-                return {
-                  label: item.apName,
-                  value: item.apID,
-                };
-              });
-            } else {
-              sessFun.messageFun("warning", res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        this.orderArr = [];
-      }
     },
     //获取导出方案数据
     getPreExcelData() {
@@ -2829,13 +2724,9 @@ export default {
     changeBarrierGate(row) {
       console.log("row: ", row);
       if (row.checkBox) {
-        // let obj = this.setShopingTable(row, "ABC");
-        // let obj = this.setShopingTable(row);
         this.shopShow_hide();
-        // this.shopingList.push(obj);
         this.handleImportDrafts(1, [row]);
         this.AddShopingInfo(row); // 添加到购物车
-        // this.IsAll = true
       } else {
         this.handleImportDrafts(0, [row]);
         this.deleteShopRow(row);
@@ -2934,6 +2825,11 @@ export default {
       let mapAdsList = this.mapAdsList.length ? this.mapAdsList : [];
       this.handleImportDrafts(1, mapAdsList);
       this.changeApInfo(true);
+    },
+    // 更改计划投放面数，更新远程购物车
+    updateShopCartRow(row) {
+      this.handleImportDrafts(1, [row]);
+      this.changeApInfo();
     },
     // 统计已选小区选n面个数
     computeMedia_AD() {
@@ -3086,7 +2982,8 @@ export default {
           // sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
         } else {
           this.ADloading.close();
-          sessFun.messageFun("warning", "失败");
+          // sessFun.messageFun("warning", "失败");
+          sessFun.messageFun("warning", res.data.MSG);
         }
       });
     },
@@ -3100,12 +2997,7 @@ export default {
         this.$router.push("./planEmptyPointDetail");
       }
     },
-    // 继续创建
-    /* continueCreate() {
-      this.$router.push("./createPlan");
-    }, */
-    // 公用方法
-    // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
+    // 公用方法 方案异常时，存储当前方案基本数据及购物车点位等临时信息
     handleImportDrafts(type, list) {
       this.importDraftsType = type;
       this.importDraftsList = [...list];
@@ -3118,11 +3010,6 @@ export default {
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = this.importDraftsType;
       this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
-      for (let i in this.importDraftsConfig == "") {
-        if (!this.importDraftsConfig[i]) {
-          delete this.importDraftsConfig[i];
-        }
-      }
       let params = {
         apID: this.FAInfo.apID,
         uid: this.sessionData.uID,
@@ -3790,20 +3677,20 @@ export default {
   padding: 0 0 0 12px;
 }
 
-/deep/ .selectAdsTable .el-table__body-wrapper {
+/* /deep/ .selectAdsTable .el-table__body-wrapper {
   overflow-x: auto !important;
-}
+} */
 
 /deep/ .selectAdsTable .el-checkbox__label {
   padding-left: 4px;
 }
 
 /*滚动条*/
-/deep/ .el-table__body-wrapper {
+/* /deep/ .el-table__body-wrapper {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden !important;
-}
+} */
 
 /deep/ .el-table__body-wrapper::-webkit-scrollbar {
   width: 6px;

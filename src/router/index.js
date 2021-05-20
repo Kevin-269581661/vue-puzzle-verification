@@ -8,6 +8,7 @@ const changePwd = () => import('../components/home/changePwd.vue')
 const myInfo = () => import('../components/home/myInfo.vue')
 // 方案分享页面
 const shareADList = () => import('../components/common/shareADList.vue')
+const shareADListProposal = () => import('../components/common/shareADListProposal.vue')
 //Q&A
 const questionAndAnswer =()=> import('../components/common/questionAndAnswer')
 //404
@@ -126,6 +127,7 @@ const staticRoutes = [{path: '/', redirect: '/login'},
     // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
     {path: '/progressDown', name: 'progressDown', component: progressDown},
     {path: '/shareADList', name: 'shareADList', component: shareADList},
+    {path: '/shareADListProposal', name: 'shareADListProposal', component: shareADListProposal},
     {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
     // 亲邻地图
     {path: '/ADResourceMap/chooseRes', component: qinLinMap, meta:{title: '亲邻科技，智慧选点'}},

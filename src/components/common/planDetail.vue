@@ -23,7 +23,7 @@
                             <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
                                 <!-- planMode：0普通 1意向 -->
-                                <el-button plain class="handleBtn--plain" @click="createShareCode">协同选点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="createShareCode">协同选点</el-button>
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="setPlanPrice">设置金额</el-button>
                                 <el-button plain class="handleBtn--plain" @click="setPlanPrice">配点</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
@@ -624,7 +624,8 @@ export default {
                 apID: this.planDetail.apID
             }).then((res) => {
                 if (res.data.SysCode === 200200) {
-                    let Url = this.apiVar.qadnUrl + '/shareADList?apid=' + res.data.data.apID + '&aicode=' + res.data.data.aiCode;
+                    // let Url = this.apiVar.qadnUrl + '/shareADList?apid=' + res.data.data.apID + '&aicode=' + res.data.data.aiCode;
+                    let Url = `${window.location.protocol}//${window.location.host}/shareADListProposal?apid=${res.data.data.apID}&aicode=${res.data.data.aiCode}`;
                     console.log('url', Url);
                     let oInput = document.createElement('input');
                     oInput.value = Url;

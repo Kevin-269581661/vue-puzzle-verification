@@ -197,17 +197,7 @@
 </template>
 
 <script>
-function debounce(row) {
-  var timeOut = null;
-  return function() {
-    clearTimeout(timeOut);
-    timeOut = setTimeout(function(){
-      console.log('time', timeOut)
-    } 
-      // this.$emit('updateShopCartRow', row)
-    , 1000);
-  }
-}
+var timeOut = null;
 export default {
   name: "shoppingCart",
   props: {
@@ -272,7 +262,7 @@ export default {
       cartPageSize: 10,
       totalNum: 400,
       //所有的数据，如果是一次全部返回的话
-      shopDelRowClick: false,
+      shopDelRowClick: false
     };
   },
  
@@ -339,7 +329,10 @@ export default {
       );
     },
     updatePlanAdsCnt(row) {
-      debounce(row)()
+      clearTimeout(timeOut);
+      timeOut = setTimeout(()=>{
+        this.$emit('updateShopCartRow', row)
+      }, 500);
     },
     // 清空购物车
     clearShop() {

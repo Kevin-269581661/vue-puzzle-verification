@@ -9,8 +9,8 @@
       <template>
         <!-- 头部 -->
         <div class="table_wrap car-list" style="margin-top: 60px">
-          <el-row style="margin-bottom: 11px">
-            <el-col :span="16" style="text-align: left">
+          <el-row style="margin-bottom: 11px; text-align: right;">
+            <!-- <el-col :span="16" style="text-align: left"> -->
               <span class="button_point">
                 <el-button
                   plain
@@ -23,8 +23,21 @@
                   }"
                   >获取地图选点</el-button
                 >
+                <el-button plain @click="getShareADList" size="small" class="mapBtn"
+                  v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
               </span>
-            </el-col>
+              <!-- 2-移除可投数量为0的意向小区 3-移除未配点小区 4-移除非客户选点的小区 -->
+              <el-dropdown size="small" type="primary">
+                <el-button type="primary" style="padding: 0 8px;">
+                  一键移除<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(4)">移除非客户选点</el-dropdown-item>
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(2)">移除可投数量为0的小区</el-dropdown-item>
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(3)">移除未配点小区</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            <!-- </el-col> -->
           </el-row>
           <el-row class="car-title">
             <el-col>
@@ -307,6 +320,14 @@ export default {
     getMapADList() {
       console.log("触发获取地图选点信息click");
       this.$emit("getMapADList");
+    },
+    // 购物车- 获取协同选点的数据
+    getShareADList() {
+      this.$emit("getShareADList");
+    },
+    // 一键移除
+    deletePartBackUp(val) {
+      this.$emit("deletePartBackUp", val);
     },
     // 自定义购物车表头-清空
     renderHeader(h, { column }) {

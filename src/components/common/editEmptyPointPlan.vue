@@ -621,6 +621,8 @@
               @updateShopCartRow="updateShopCartRow"
               :connectAdDialogVisible.sync="connectAdDialogVisible"
               @getMapADList="getMapADList"
+              @getShareADList="getShareADList"
+              @deletePartBackUp="deletePartBackUp"
               :shopMedia_ADNum="shopMedia_ADNum"
             ></shopping-cart>
           </div>
@@ -725,28 +727,6 @@
 </template>
 
 <script>
-import {
-  Input,
-  Dialog,
-  Button,
-  Tabs,
-  TabPane,
-  Table,
-  TableColumn,
-  Cascader,
-  DatePicker,
-  Select,
-  Option,
-  Form,
-  FormItem,
-  Steps,
-  Step,
-  Badge,
-  Checkbox,
-  Message,
-  InputNumber,
-  Radio,
-} from "element-ui";
 import api from "../../api/api";
 import areaArr from "../../commonFun/areaPackage_new";
 import commaFormat from "../../commonFun/commaFormat";
@@ -768,27 +748,9 @@ import shoppingCart from "./components/shoppingCart";
 export default {
   name: "createPlan",
   components: {
-    elInput: Input,
-    elDialog: Dialog,
-    elButton: Button,
-    elTabs: Tabs,
-    elTabPane: TabPane,
-    elTable: Table,
-    elTableColumn: TableColumn,
-    elCascader: Cascader,
-    elDatePicker: DatePicker,
-    elSelect: Select,
-    elOption: Option,
-    elForm: Form,
-    elFormItem: FormItem,
-    elSteps: Steps,
-    elStep: Step,
-    elBadge: Badge,
-    elCheckbox: Checkbox,
-    elInputNumber: InputNumber,
     importResult,
     importVillageByExcel,
-    shoppingCart,
+    shoppingCart
   },
   data() {
     //客户预算自定义校验
@@ -1037,8 +999,6 @@ export default {
       // 购物车展示的数据
       typeShopList: [],
       activeName: 1,
-      // 事件选择
-      eventType: "",
       eventList: [],
       // 购物车表格数据
       shopShowList: [],
@@ -1142,8 +1102,7 @@ export default {
       currPageSelect: 0, //当前页面已选择的点位数
       total: 0, //总可选点位
       // 定制权限
-      customPermission: {},
-      pullMap: false,
+      customPermission: {}
     };
   },
   mounted() {
@@ -1169,8 +1128,7 @@ export default {
     },
     nowPointNum(val) {
       if (val >= 0 && this.FAInfo.apID) {
-        this.changeApInfo();
-        // this.computeMedia_AD();
+        // this.changeApInfo();
       }
     },
   },
@@ -1185,26 +1143,23 @@ export default {
       }
     },
     //获取新业务逻辑数据
-    getPlanResList() {
+    getAdBackUp() {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apID: this.FAInfo.apID,
       };
-      // this.clearDrafts();
       api.getApi("/addsp/proposal/getAdBackUp", params).then((res) => {
         console.log("获取已选小区数据", res);
         //TODO:没有设置第0步的数据
         if (res.data.SysCode === 200200) {
           this.loading = false;
           if (res.data.data.resList.length) {
-            // this.clearDrafts();
-            res.data.data.resList.forEach((item) => {
+            /* res.data.data.resList.forEach((item) => {
               item.checkBox = false;
               item.city = item.cityName;
-            });
-            this.handleImportDrafts(1, res.data.data.resList);
-
+            }); */
+            // this.handleImportDrafts(1, res.data.data.resList);
             this.shopingList = res.data.data.resList;
           }
         } else {
@@ -1230,7 +1185,7 @@ export default {
           console.log("方案详情", res.data);
           if (res.data.SysCode == 200200) {
             this.FAInfo = res.data.data;
-            this.getPlanResList();
+            this.getAdBackUp();
             this.planName = this.FAInfo.apName;
             this.cName = this.FAInfo.cName;
             this.cBand = this.FAInfo.bTitle;
@@ -1280,8 +1235,8 @@ export default {
           type: "warning",
         })
           .then(() => {
-            this.handleImportDrafts(0, this.shopingList);
             this.shopingList = [];
+            this.handleImportDrafts(0, this.shopingList);
             this.allCheckboxUpdata();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
@@ -1297,7 +1252,6 @@ export default {
     //TODO:在购物车里删除行
     changeCheck(rows) {
       this.handleImportDrafts(0, [rows]);
-      console.log("rows: ", rows);
       if (this.planList.length > 0 && rows.city === this.planList[0].city) {
         for (let i = 0; i < this.planList.length; i++) {
           if (rows.resID === this.planList[i].resID) {
@@ -2783,7 +2737,6 @@ export default {
       this.allCheckboxUpdata();
     },
     // 购物车-获取地图选择的点位列表
-    // TODO购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
       // 亲邻地图
@@ -2802,13 +2755,12 @@ export default {
         .postApi_json(this.apiVar.mapApi + "/proposal/resListByUid", params)
         .then((res) => {
           if (res.data.SysCode === 200200) {
-            this.mapAdsList = res.data.data;
+            this.mapAdsList = res.data.data||[];
             sessFun.messageFun(
               "success",
               `成功获取到${this.mapAdsList.length}条数据`
             );
-            this.setMapAdsListInShopCar();
-            // localStorage.removeItem("qinlinMapCode");
+            this.handleImportDrafts(1, this.mapAdsList, "pullAll");
             this.mapBtn = true;
           } else {
             this.getMapLoading.close();
@@ -2820,16 +2772,37 @@ export default {
           sessFun.messageFun("warning", "数据接口异常");
         });
     },
-    // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
-    setMapAdsListInShopCar() {
-      let mapAdsList = this.mapAdsList.length ? this.mapAdsList : [];
-      this.handleImportDrafts(1, mapAdsList);
-      this.changeApInfo(true);
+    // 更新客户选点
+    getShareADList() {
+      let ShareLoading = this.$loading({
+        lock: true,
+        text: '数据获取中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apID: this.FAInfo.apID
+      }
+      api.postApi('/addsp/proposal/share/updateAdBackUp', params).then(res => {
+        console.log('获取aicode', res)
+        if (res.data.SysCode == 200200) {
+          this.shopingList = res.data.data||[]
+          ShareLoading.close()
+        } else {
+          ShareLoading.close()
+          sessFun.messageFun('warning','暂无数据可获取')
+        }
+      })
+    },
+    // 一键移除
+    deletePartBackUp(val) {
+      this.handleImportDrafts(val, [], 'pullAll')
     },
     // 更改计划投放面数，更新远程购物车
     updateShopCartRow(row) {
       this.handleImportDrafts(1, [row]);
-      this.changeApInfo();
     },
     // 统计已选小区选n面个数
     computeMedia_AD() {
@@ -2997,19 +2970,16 @@ export default {
         this.$router.push("./planEmptyPointDetail");
       }
     },
-    // 公用方法 方案异常时，存储当前方案基本数据及购物车点位等临时信息
-    handleImportDrafts(type, list) {
-      this.importDraftsType = type;
-      this.importDraftsList = [...list];
-    },
-    changeApInfo(pullMap) {
-      if (this.pullMap === true) {
-        this.pullMap = false;
-        return;
-      }
+    // 0-删除缓存的小区 1-增加缓存的小区 2-移除可投数量为0的意向小区 3-移除未配点小区 4-移除非客户选点的小区
+    handleImportDrafts(type, list, pullAll=null) {
       this.importDraftsConfig.suID = this.BDData.uid;
-      this.importDraftsConfig.type = this.importDraftsType;
-      this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
+      this.importDraftsConfig.type = type;
+      if(![2, 3, 4].includes(type)) {
+        this.importDraftsConfig.resList = JSON.stringify(list);
+      }
+      this.changeApInfo(pullAll);
+    },
+    changeApInfo(pullAll) {
       let params = {
         apID: this.FAInfo.apID,
         uid: this.sessionData.uID,
@@ -3020,14 +2990,12 @@ export default {
         console.log("res创建方案缓存", res);
         if (res.data.SysCode == 200200) {
           // 地图拉取时使用草稿箱进行全量填充
-          if (pullMap) {
-            let draftsData = res.data.data;
-            draftsData.forEach((item) => {
+          if (pullAll) {
+            /* draftsData.forEach((item) => {
               item.checkBox = false;
               item.city = item.cityName;
-            });
-            this.shopingList = draftsData;
-            this.pullMap = true;
+            }); */
+            this.shopingList = res.data.data||[];
             if (this.getMapLoading) {
               this.getMapLoading.close();
             }

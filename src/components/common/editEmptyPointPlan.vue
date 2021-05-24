@@ -1896,7 +1896,6 @@ export default {
       api
         .postApi_new(this.doUpload + info, formData)
         .then((res) => {
-          console.log("res: ", res);
           if (res.data.SysCode == 200200) {
             let importInfo = res.data.data;
             console.log("importInfo: ", importInfo);
@@ -1915,7 +1914,7 @@ export default {
     // 根据导入方案返回的数据,设置购物车所需要的数据格式
     setShopDataByImport(arr) {
       console.log("arr: ", arr);
-      Message.success("成功导入" + arr.length + "条数据");
+      sessFun.messageFun("success", "成功导入" + arr.length + "条数据");
       setTimeout(() => {
         this.dialogTableVisible = true;
       }, 500);

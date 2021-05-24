@@ -372,8 +372,8 @@
       custom-class="custom-dialog-wrapper match-range-dialog"
     >
       <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
-      <el-radio v-model="formDataObj.matchRange" label="0">全部小区</el-radio>
-      <el-radio v-model="formDataObj.matchRange" label="1">未配点小区</el-radio>
+      <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
+      <el-radio v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
       <div slot="footer">
         <el-button @click="dialogMatchRangeFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="matchRes">确 定</el-button>
@@ -444,7 +444,7 @@ export default {
       },
       dialogMatchRangeFormVisible: false,
       formDataObj: {
-        matchRange: '0',
+        matchRange: '1',
         pointDemand: [],
         aFaceRate: 50,
         aFaceRateChecked: false,

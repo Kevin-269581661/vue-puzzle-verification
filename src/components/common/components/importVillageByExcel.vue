@@ -114,8 +114,8 @@
           min-width="6%"
           align="right"
         >
-        </el-table-column
-        ><el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
+        </el-table-column>
+        <el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -181,6 +181,20 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="actualMediaCnt"
+          label="媒体数量（门）"
+          min-width="6%"
+          align="right"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="actualAdsCnt"
+          label="可投数量（面）"
+          min-width="6%"
+          align="right"
+        >
+        </el-table-column>
+        <el-table-column
           prop="planAdsCnt"
           label="计划投放数量（面）"
           min-width="8%"
@@ -191,8 +205,16 @@
           prop="failReason"
           label="失败原因"
           show-overflow-tooltip
-          min-width="10%"
+          min-width="20%"
         >
+          <template slot-scope="scope">
+            <div>
+              {{scope.row.failReason}}
+              <el-tooltip v-if="scope.row.earliestOnPubDate" effect="dark" :content="scope.row.earliestOnPubDate" placement="top-start">
+                <i class="el-icon-date"></i>
+              </el-tooltip>
+            </div>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -208,9 +230,14 @@
       </el-pagination>
       <span slot="footer">
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>
-        <el-button plain @click="export2Excel" :disabled="isDown"
-          >导出</el-button
-        >
+        <el-button plain @click="export2Excel" :disabled="isDown">导出</el-button>
+        <el-button type="primary"
+          size="medium "
+          :disabled="isDown"
+          style="padding: 0 4px;"
+          @click="addShoppingCart('errorList')">
+          导入可投数不足的意向小区
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -326,9 +353,21 @@ export default {
       this.importFileRemove();
     },
     //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
-    addShoppingCart() {
-      this.dialogResult = false;
-      this.$emit("skipAndAddShopping", this.successList);
+    addShoppingCart(errorList) {
+      if(errorList) {
+        let importErrorList = this.errorList.filter((item)=>{
+          return item.failReason == "实际投放点位数不满足计划投放点位数且目前没有足够的点位数可供投放"
+        })
+        if(importErrorList.length) {
+          this.dialogResult = false;
+          this.$emit("skipAndAddShopping", importErrorList);
+        } else {
+          this.$message.warning('可投数不足的意向小区为空！');
+        }
+      } else {
+        this.dialogResult = false;
+        this.$emit("skipAndAddShopping", this.successList);
+      }
     },
     // 导出失败excel
     export2Excel() {
@@ -491,5 +530,7 @@ export default {
 /deep/ .el-pagination .el-input__inner {
   width: 100%;
 }
-
+/deep/ .el-table__body-wrapper {
+  overflow-x: scroll !important;
+}
 </style>

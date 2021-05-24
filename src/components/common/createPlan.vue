@@ -4510,7 +4510,7 @@ export default {
 }
 
 .createPlan /deep/ .el-input__inner {
-  width: 300px;
+  // width: 300px;
   height: 32px;
   line-height: 32px;
 }

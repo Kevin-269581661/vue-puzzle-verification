@@ -25,7 +25,7 @@
                                 <!-- planMode：0普通 1意向 -->
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="createShareCode">协同选点</el-button>
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="setPlanPrice">设置金额</el-button>
-                                <el-button plain class="handleBtn--plain" @click="setPlanPrice">配点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD'" plain class="handleBtn--plain" @click="matchRes">配点</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                                 <el-button type="primary" @click="edit()" 
                                     v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
@@ -190,6 +190,8 @@
                 </div>
             </el-dialog>
         </div>
+        <!--智能配点-->
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
     </div>
 </template>
 
@@ -206,12 +208,13 @@ import sessFun from "../../commonFun/sessFun.js";
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
+import addPoint from './components/addPoint.vue';
 import {
-    Table,
-    TableColumn,
-    Tabs,
-    TabPane,
-    Button,
+    // Table,
+    // TableColumn,
+    // Tabs,
+    // TabPane,
+    // Button,
     Message,
     MessageBox
 } from "element-ui";
@@ -222,11 +225,12 @@ export default {
         apQuotation,
         material,
         detail,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elButton: Button,
+        addPoint
+        // elTable: Table,
+        // elTableColumn: TableColumn,
+        // elTabs: Tabs,
+        // elTabPane: TabPane,
+        // elButton: Button,
     },
     data() {
         let validatPrice = (rule, value, callback) => {
@@ -247,6 +251,18 @@ export default {
         return {
             // 登录信息
             sessionData:{},
+            addPointDialogVisible: false,
+            rejectAdPlan: [],                  // 排斥方案选项
+            showMatchResult: false,
+            ADLimit: [                      // step2 广告限制
+                {value: '地产', label: '地产'},
+                {value: '汽车', label: '汽车'},
+                {value: '美容', label: '美容'},
+                {value: '餐饮', label: '餐饮'},
+                {value: '食品', label: '食品'},
+                {value: '金融', label: '金融'},
+                {value: '医学', label: '医学'},
+            ],
             isDown: false,
             isShow: true,
             //加载中
@@ -306,6 +322,7 @@ export default {
         this.getRole();
         // 获取选点排期数据
         this.getInitData();
+        this.getADLimit()       // 获取广告限制列表
     },
     computed: {
         currentPagination() {
@@ -447,6 +464,7 @@ export default {
                         };
                         // 选点排期
                         !updateDetail && this.getSetPoint();
+                        this.getRejectPlanList(res.data.data.suID)
                     } else{
                         Message.warning(res.data.MSG);
                     }
@@ -473,6 +491,53 @@ export default {
             } else {
                 this.funcToInit(this.apiVar.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);
             }
+        },
+        getADLimit() {
+            this.ADLimit = []
+            let params = {
+                "uid": this.sessionData.uID,
+                "token": this.sessionData.token,
+                "service":"GetNotPush",
+                "data": {}
+            }
+            api.postApi_new(this.apiVar.Media, params).then(res => {
+                console.log('广告限制列表', res)
+                if(res.data.SysCode === 200200 ){
+                    let limit = res.data.data
+                    let limitArr = []
+                    for (let i = 0; i < limit.length; i++) {
+                        let limitObj = {value: limit[i].nTitle, label: limit[i].nTitle}
+                        limitArr.push(limitObj)
+                    }
+                    this.ADLimit = limitArr
+                }
+            })
+        },
+        // 获取排斥方案选择列
+        getRejectPlanList(suID){
+            let params = {
+                uid:this.sessionData.uID,
+                token: this.sessionData.token,
+                sales_user: suID
+            }
+            api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
+                console.log('销售所属方案',res)
+                if (res.data.SysCode == 200200) {
+                    let resData =  res.data.data
+                    let tempList = []
+                    for(let key of resData){
+                        if(this.apid != key.apId){
+                            tempList.push({
+                                value: key.apId,
+                                label: key.apName + '（' + key.cname + ' · ' + key.apcTime + '）'
+                            })
+                        }
+                    }
+                    this.rejectAdPlan = tempList
+                } else {
+                    sessFun.messageFun('warning',res.data.MSG)
+                }
+            })
         },
         // 请求数据整合
         funcToInit(apiUrl, info, state){
@@ -677,6 +742,37 @@ export default {
                 // 表单弹框显示
                 this.settlementFormVisible = true
             }
+        },
+        // 销售配点
+        matchRes() {
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apid: this.planDetail.apID,
+            };
+            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
+                if(!res.data.SysCode){
+                    if(!res.data.IsLock){
+                        if(this.planDetail.apState!==-1) {
+                            // 方案已配点，显示上次配点结果
+                            this.showMatchResult = true
+                            this.$nextTick(()=>{
+                                // 重置显示参数，方便下次触发watch
+                                this.showMatchResult = false
+                            })
+                        } else {
+                            // 方案未配点
+                            this.addPointDialogVisible = true
+                        }
+                    } else{
+                        this.changeRoute();
+                    }
+                }
+            });
+        },
+        // 替换方案中的点位
+        BDSaveMatchToPlan() {
+            console.log('---', '替换方案中的点位')
         },
         // 
         resetSettlement(done) {

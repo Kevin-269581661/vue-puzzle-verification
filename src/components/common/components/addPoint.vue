@@ -47,33 +47,32 @@
             </li>
           </ul>
         </div>
-
         <div class="board board2">
           <el-form label-position="top" label-width="82px">
             <el-form-item label="配点要求">
-              <div>
-                <el-checkbox
-                  v-model="formDataObj.matchRangeChecked"
-                  class="combination"
-                  name="type"
-                >配点意向小区范围</el-checkbox>
-                <el-select size="mini" v-model="formDataObj.matchRange" placeholder="请选择">
-                  <el-option label="全部" value="1"></el-option>
-                  <el-option label="未配" value="2"></el-option>
-                </el-select>
-              </div>
               <el-checkbox-group v-model="formDataObj.pointDemand">
-                <el-checkbox label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
+                <el-checkbox v-if="sessionData.uType == 'MD'" label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
                 <el-checkbox label="isSingleMediaChoose" name="type">1个门选择1个点位</el-checkbox>
                 <el-checkbox label="isSingleConnectChoose" name="type">联排门仅选1面</el-checkbox>
               </el-checkbox-group>
-              <div>
+              <div v-if="sessionData.uType == 'MD'">
                 <el-checkbox
                   v-model="formDataObj.aFaceRateChecked"
-                  class="combination"
                   name="type"
                 >A面占比不高于(%)</el-checkbox>
                 <el-input-number :disabled="!formDataObj.aFaceRateChecked" v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
+              </div>
+              <div v-else>
+                <el-checkbox
+                  disabled
+                  checked
+                  name="type"
+                >A面占比不高于(50%)
+                  <el-tooltip placement="top" trigger="hover" effect="dark">
+                      <div slot="content">占比不可更改，如有需要请联系媒介配点</div>
+                      <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  </el-tooltip>
+                </el-checkbox>
               </div>
             </el-form-item>
           </el-form>
@@ -81,36 +80,34 @@
         <div class="board board3">
           <div class="board-title">点位排斥</div>
           <el-form label-position="left" label-width="70px">
-            <el-form-item label="通行情况">
+            <el-form-item v-if="sessionData.uType == 'MD'" label="通行情况：">
               <el-select
-                size="mini"
-                v-model="formDataObj.apExclude"
+                multiple
+                collapse-tags
+                v-model="formDataObj.excludeTrafficStateList"
                 placeholder="请选择通行情况"
-                filterable
-                :clearable="true"
               >
                 <el-option
-                  v-for="item in rejectAdPlan"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in trafficAndmType.excludeTrafficStateList"
+                  :key="item"
+                  :label="item"
+                  :value="item"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="媒体类型：">
+            <el-form-item label="门体类型：">
               <el-select
-                size="mini"
-                v-model="formDataObj.apExclude"
-                placeholder="请选择媒体类型"
-                filterable
-                :clearable="true"
+                v-model="formDataObj.excludeMTypeList"
+                multiple
+                collapse-tags
+                placeholder="请选择门体类型"
               >
                 <el-option
-                  v-for="item in rejectAdPlan"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in trafficAndmType.excludeMTypeList"
+                  :key="item"
+                  :label="item"
+                  :value="item"
                 >
                 </el-option>
               </el-select>
@@ -151,9 +148,9 @@
           </el-form>
         </div>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer">
         <el-button @click="handleClose">取 消</el-button>
-        <el-button :disabled="loading" type="primary" @click="matchRes"
+        <el-button :disabled="loading" type="primary" @click="dialogMatchRangeFormVisible=true"
           >配 点</el-button
         >
       </span>
@@ -184,7 +181,7 @@
         </h4>
         <span class="tip-active tip-active-handle right" @click="export2Excel">下载</span>
       </div>
-      <template slot="dialogFooter" class="dialog-footer">
+      <template slot="dialogFooter">
         <el-button @click="showDialogTable=false"
           >关 闭</el-button
         >
@@ -227,10 +224,12 @@
               (A面:<span class="tip-active">{{ tipObj.afaceCount }}</span>
               &nbsp;B面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
               >)
-              <div class="divide-border"></div>
-              上刊率50%以上的点位:<span class="tip-active">{{
-                (tipObj.underHalfSpaceRate*100).toFixed(2)
-              }}%</span>
+              <template v-if="sessionData.uType == 'MD'">
+                <div class="divide-border"></div>
+                上刊率50%以上的点位:<span class="tip-active">{{
+                  (tipObj.underHalfSpaceRate*100).toFixed(2)
+                }}%</span>
+              </template>
               <div class="divide-border"></div>
               配点失败小区<span class="tip-active warn"> {{
                 tipObj.failResCount
@@ -291,24 +290,41 @@
           >
         </template>
       </el-table-column>
-      <template slot="dialogFooter" class="dialog-footer">
-        <el-button @click="closeAsignPointTable"
-          >关 闭</el-button
-        >
-        <el-button
-          v-if="matched"
-          class="merge-btn"
-          type="primary"
-          @click="rematchPoint">
-          重新配点
-        </el-button>
-        <el-button
-          v-else
-          class="merge-btn"
-          type="primary"
-          @click="merge2ShopList">
-          确定并添加到购物车
-        </el-button>
+      <template slot="dialogFooter">
+        <template v-if="sessionData.uType == 'MD'">
+          <el-button @click="closeAsignPointTable"
+            >关 闭</el-button
+          >
+          <el-button
+            v-if="matched"
+            class="merge-btn"
+            type="primary"
+            @click="rematchPoint">
+            重新配点
+          </el-button>
+          <el-button
+            v-else
+            class="merge-btn"
+            type="primary"
+            @click="merge2ShopList">
+            确定并添加到购物车
+          </el-button>
+        </template>
+        <template v-else-if="sessionData.uType == 'BD'">
+          <el-button
+            class="merge-btn"
+            type="primary"
+            :disabled="matchCnt==0"
+            @click="rematchPoint">
+            {{`重新配点(${matchCnt})`}}
+          </el-button>
+          <el-button
+            class="merge-btn"
+            type="primary"
+            @click="BDSaveMatchToPlan">
+            保存配点
+          </el-button>
+        </template>
       </template>
     </dialog-table>
     <dialog-table
@@ -342,10 +358,27 @@
           </template>
         </el-table-column>
       </template>
-      <template slot="dialogFooter" class="dialog-footer">
+      <template slot="dialogFooter">
         <el-button @click="showFailDialogTable = false">关 闭</el-button>
       </template>
     </dialog-table>
+    <!-- 选择配点范围 -->
+    <el-dialog 
+      title="请选择配点范围" 
+      :visible.sync="dialogMatchRangeFormVisible"
+      width="368px"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper match-range-dialog"
+    >
+      <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
+      <el-radio v-model="formDataObj.matchRange" label="0">全部小区</el-radio>
+      <el-radio v-model="formDataObj.matchRange" label="1">未配点小区</el-radio>
+      <div slot="footer">
+        <el-button @click="dialogMatchRangeFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="matchRes">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -390,7 +423,13 @@ export default {
   data() {
     return {
       moment,
+      sessionData: null,
       matched: false,
+      matchCnt: 0,    // 销售配点次数
+      trafficAndmType: {
+        excludeTrafficStateList: [],
+        excludeMTypeList: []
+      },
       loading: false,
       showDialogTable: false,
       showFailDialogTable: false,
@@ -403,14 +442,16 @@ export default {
         planAdSpaceCount: 0,
         planResCount: 0
       },
+      dialogMatchRangeFormVisible: false,
       formDataObj: {
-        matchRange: '', 
-        matchRangeChecked: false, 
+        matchRange: '0',
         pointDemand: [],
         aFaceRate: 50,
         aFaceRateChecked: false,
         apExclude: "",
-        adLimits: []
+        adLimits: [],
+        excludeTrafficStateList: [],
+        excludeMTypeList: []
       },
       tipObj: {
         selectLab1: 0,
@@ -572,11 +613,45 @@ export default {
     }
   },
   created() {
-    
+    this.sessionData = sessFun.getSess();
   },
   mounted() {
+    this.getExcludeSelect()
   },
   methods: {
+    getExcludeSelect() {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/getExcludeSelect?asrID="+this.sessionData.asrID).then(res => {
+          if (res.data.SysCode == 200200) {
+            let {excludeTrafficStateList=[], excludeMTypeList=[]} = res.data.data;
+            this.trafficAndmType = {
+              excludeTrafficStateList,
+              excludeMTypeList
+            }
+          } else {
+            sessFun.messageFun('warning', res.data.MSG)
+          }
+        }).catch(err => {
+            console.log(err);
+        });
+      })
+    },
+    // 获取该用户下的配点次数
+    getMatchCnt() {
+      this.loading = true
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/getMatchCnt?apID="+this.apID).then(res => {
+          if (res.data.SysCode == 200200) {
+            this.matchCnt = res.data.data||0
+            this.loading = false
+          } else {
+            sessFun.messageFun('warning', res.data.MSG)
+          }
+        }).catch(err => {
+            console.log(err);
+        });
+      })
+    },
     // 重新配点
     rematchPoint() {
       this.$confirm('重新配点会清除原配点结果信息',
@@ -601,6 +676,12 @@ export default {
     },
     // 配点结果添加到购物车
     merge2ShopList() {
+      this.$emit('merge2ShopList', this.asignPointTableData)
+      this.showAsignPointTableData = false
+      this.$emit('closeAddPoint')
+    },
+    // 销售保存配点结果到方案中
+    BDSaveMatchToPlan() {
       this.$emit('merge2ShopList', this.asignPointTableData)
       this.showAsignPointTableData = false
       this.$emit('closeAddPoint')
@@ -633,14 +714,18 @@ export default {
       });
     },
     // 配点
-    matchRes() {
+    async matchRes() {
+      this.sessionData.uType=='BD' && await this.getMatchCnt()
       let params = {}
-      if(this.formDataObj.aFaceRateChecked) {
+      if(this.formDataObj.aFaceRateChecked && this.sessionData.uType == 'MD') {
         params.aFaceRate = this.formDataObj.aFaceRate||0
+      } else if(this.sessionData.uType == 'BD') {
+        params.aFaceRate = this.formDataObj.aFaceRate||50
       }
       this.formDataObj.pointDemand.forEach(item => {
         params[item] = true
       });
+      console.log('formDataObj', this.formDataObj, params)
       new Promise((resolve, reject)=>{
         api.postApi_json("/addsp/match/matchRes", {
           ...params,
@@ -649,7 +734,10 @@ export default {
           "apExclude": this.formDataObj.apExclude,
           "adLimits": this.formDataObj.adLimits,
           "isSingleConnectChoose": params.isSingleConnectChoose||false,
-          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false
+          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false,
+          "allMatch": this.formDataObj.matchRange*1,
+          "excludeMTypeList": this.formDataObj.excludeMTypeList,
+          "excludeTrafficStateList": this.formDataObj.excludeTrafficStateList
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
@@ -671,13 +759,15 @@ export default {
           showClose: false,
           customClass: 'messageBoxCustom'
         }).then(() => {
+          this.dialogMatchRangeFormVisible = false
           this.getSuccessPoint(matchRes)
         })
       })
     },
     // 查询配点结果概要
     getMatchSummary(apID) {
-      api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
           if (res.data.SysCode == 200200) {
             Object.assign(this.tipObj, res.data.data)
             if(Array.isArray(this.tipObj.proposalCountGroup)) {
@@ -691,15 +781,17 @@ export default {
                 }
               })
             }
+            resolve(true)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
         }).catch(err => {
           console.log(err);
         })
+      })
     },
     // 查询配点成功结果
-    getSuccessPoint(matchRes) {
+    async getSuccessPoint(matchRes) {
       if(matchRes) {
         // 首次配点
         Object.assign(this.tipObj, matchRes)
@@ -716,7 +808,7 @@ export default {
         }
       } else {
         // 查看已配点方案的配点详情
-        this.getMatchSummary(this.apID)
+        await this.getMatchSummary(this.apID)
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
@@ -925,6 +1017,32 @@ export default {
 </style>
 <style lang="scss" scoped>
 @import '../../../assets/component.scss';
+/deep/ .match-range-dialog {
+  .el-dialog__header {
+    padding-bottom: 6px;
+    border: none !important;
+  }
+  .el-dialog__body {
+    border: none;
+    .content-tip {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 24px;
+    }
+    .el-radio {
+      margin-right: 24px;
+    }
+    .el-radio__label {
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+    }
+  }
+  .el-dialog__footer {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
 /deep/ .add-point-dialog {
   .el-checkbox {
     line-height: 27px;
@@ -945,7 +1063,7 @@ export default {
   }
   .el-form-item {
     .el-form-item__label {
-      padding-left: 0;
+      padding: 0;
       color: rgba(0, 0, 0, 0.65);
     }
   }
@@ -1006,8 +1124,6 @@ export default {
         line-height: 28px;
         text-align: center;
       }
-    }
-    .combination {
     }
   }
   .board3 {

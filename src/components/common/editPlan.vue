@@ -3529,6 +3529,9 @@
                             this.removeAllType('B');
                             this.MtaStatFun('a004_b008_c001_d001_bt070_ck04','a004_b008_c001_d002_bt085_ck04');
                             break;
+                        case 9:
+                            this.removeAllType('B');
+                            break;
                     }
                 }else{
                     let active = this.activeName;
@@ -3642,6 +3645,10 @@
                     resultArr = resultArr.concat(result);
                 }
                 return resultArr;
+            },
+            // 移除非意向点位
+            removeNoProposal() {
+                console.log('移除非意向点位')
             },
             getResultData(resultArr){
                 let other = [];

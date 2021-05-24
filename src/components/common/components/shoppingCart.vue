@@ -57,6 +57,8 @@
             ref="shoppingCartRef"
             border
             :data="shoppingCartShowList"
+            :row-class-name="tableRowClassName"
+            :highlight-current-row="true"
             :default-sort="{ prop: 'mID', order: 'descending' }"
             style="width: 100%"
             max-height="400"
@@ -91,6 +93,10 @@
               </template>
             </el-table-column>
             <el-table-column label="资源名称" min-width="150" prop="resName">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isCustomerSelect" class="custom-select">*</span>
+                <span>{{ scope.row.resName }}</span>
+              </template>
             </el-table-column>
             <el-table-column prop="cityName" label="城市" min-width="60">
             </el-table-column>
@@ -134,7 +140,7 @@
               align="center"
             >
               <template slot-scope="scope">
-                <el-input-number style="width: 80px" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
               </template>
             </el-table-column>
             <el-table-column
@@ -168,6 +174,12 @@
           </el-table>
           <!-- 分页 -->
           <div class="row-table-bottom">
+            <p class="warningInfo">
+              <span style="background: #FFC1BE;" class="warningInfoColor"></span>
+              <span class="warningInfoName">可投面数为0的小区</span>
+              <span style="background: #FFE093;" class="warningInfoColor"></span>
+              <span class="warningInfoName">可投面数为0的小区</span>
+            </p>
             <el-pagination
               background
               @size-change="handleSizeChange"
@@ -290,6 +302,18 @@ export default {
           });
       }
     },
+    // 表格当前行是否高亮
+    tableRowClassName({row}) {
+      if (row.actualAdsCnt==0) {
+        // 可投面数为0
+        return "warning-row";
+      } else if (row.planAdsCnt>row.actualAdsCnt) {
+          // 可投面数不满足计划投放面数
+        return "warning-row-conncet";
+      }else {
+        return "";
+      }
+    },
     //继续选点
     continueSelect() {
       this.$emit("update:dialogTableVisible", false);
@@ -323,10 +347,12 @@ export default {
     },
     // 购物车- 获取协同选点的数据
     getShareADList() {
+      this.currentPage = 1;
       this.$emit("getShareADList");
     },
     // 一键移除
     deletePartBackUp(val) {
+      this.currentPage = 1;
       this.$emit("deletePartBackUp", val);
     },
     // 自定义购物车表头-清空
@@ -480,6 +506,12 @@ export default {
       width: 26px;
     }
   }
+  .custom-select {
+    color: red;
+    .el-input__inner {
+      color: red;
+    }
+  }
 }
 .mapBtn {
   min-width: 110px;
@@ -509,6 +541,42 @@ export default {
   line-height: 40px;
 }
 /deep/ .el-table__expand-column .cell{
-    height: auto
+  height: auto
+}
+
+.shopList_adLimit {
+  width: 132px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.row-table-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.warningInfoColor {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  border-radius: 1px;
+  vertical-align: middle;
+}
+
+.warningInfo .warningInfoName {
+  margin-right: 24px;
+  line-height: 22px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/*状态行*/
+/deep/ .el-table .warning-row {
+  background: rgba(255, 0, 0, 0.08);
+}
+
+/deep/ .el-table .warning-row-conncet {
+  background: rgba(255, 199, 0, 0.1);
 }
 </style>  

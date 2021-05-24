@@ -1125,12 +1125,7 @@ export default {
         if (this.planForm.throwCity.length == 0) return;
         this.getPointOfAsr();
       },
-    },
-    nowPointNum(val) {
-      if (val >= 0 && this.FAInfo.apID) {
-        // this.changeApInfo();
-      }
-    },
+    }
   },
   methods: {
     //投放面数限制
@@ -1149,22 +1144,23 @@ export default {
         token: this.sessionData.token,
         apID: this.FAInfo.apID,
       };
-      api.getApi("/addsp/proposal/getAdBackUp", params).then((res) => {
-        console.log("获取已选小区数据", res);
-        //TODO:没有设置第0步的数据
-        if (res.data.SysCode === 200200) {
-          this.loading = false;
-          if (res.data.data.resList.length) {
-            /* res.data.data.resList.forEach((item) => {
-              item.checkBox = false;
-              item.city = item.cityName;
-            }); */
-            // this.handleImportDrafts(1, res.data.data.resList);
-            this.shopingList = res.data.data.resList;
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/proposal/getAdBackUp", params).then((res) => {
+          console.log("获取已选小区数据", res);
+          if (res.data.SysCode === 200200) {
+            this.loading = false;
+            if (res.data.data.resList.length) {
+              res.data.data.resList.forEach((item) => {
+                item.checkBox = false;
+                item.city = item.cityName;
+              });
+              this.shopingList = res.data.data.resList;
+              resolve(true)
+            }
+          } else {
+            sessFun.messageFun("warning", "获取失败");
           }
-        } else {
-          sessFun.messageFun("warning", "获取失败");
-        }
+        });
       });
     },
     // 时间格式规范
@@ -1185,7 +1181,6 @@ export default {
           console.log("方案详情", res.data);
           if (res.data.SysCode == 200200) {
             this.FAInfo = res.data.data;
-            this.getAdBackUp();
             this.planName = this.FAInfo.apName;
             this.cName = this.FAInfo.cName;
             this.cBand = this.FAInfo.bTitle;
@@ -1204,7 +1199,10 @@ export default {
               pageNo: this.pageNo,
               pageSize: this.pageSize,
             };
-            this.getAdList(); // 获取选点列表
+            Promise.all([this.getAdBackUp(), this.getAdList('init')]).then(()=>{
+              this.computeMedia_AD()
+              this.judgeByselect()
+            })
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }
@@ -1236,7 +1234,8 @@ export default {
         })
           .then(() => {
             this.shopingList = [];
-            this.handleImportDrafts(0, this.shopingList);
+            // 清除草稿箱
+            this.clearDrafts()
             this.allCheckboxUpdata();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
@@ -1341,7 +1340,6 @@ export default {
       shopAnimate.style.right = this.shopXY.x + "px";
     },
     // 跳转来源于首页地图选点-设置部分默认数据
-    // TODO跳转来源于首页地图选点-设置部分默认数据
     setDataByIndex() {
       this.indexData = JSON.parse(sessionStorage.getItem("indexData"));
       this.ActiveMapType = this.indexData.activeMapType;
@@ -1923,7 +1921,6 @@ export default {
       }, 500);
       arr.forEach((item) => {
         item.checkBox = false;
-        // item.city = this.city[this.activeIndex].rName;
         item.city = item.cityName;
       });
       return arr;
@@ -2066,7 +2063,7 @@ export default {
     },
     // 获取广告点位列表
     //按小区选点
-    getAdList() {
+    getAdList(init) {
       this.loading = true;
       this.getAdsParamsData.startDate = this.dateInput[0];
       this.getAdsParamsData.endDate = this.dateInput[1];
@@ -2075,21 +2072,6 @@ export default {
       this.getAdsParamsData.suID = this.BDData.uid;
       this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
       this.getAdsParamsData.pageNum = this.pageNum;
-
-      //   startDate: this.dateInput[0], //开始时间  必填
-      //   endDate: this.dateInput[1], //结束时间 必填
-      //   suID: this.BDData.uid, //方案所属销售用户id 必填
-      //   apName: this.planForm.planName, //意向方案名称 必填
-      //   asrIDs: this.planForm.pointOfAsrIDs.join(","), //附属公司id拼接，逗号相隔
-      //   pageNum: this.pageNum, //第几页
-      //   pageSize: this.pageSize, //每页条数
-      //   asrIDs:"", //附属公司id拼接，逗号相隔
-      //   rID, //区域id
-      //   resType, //资源类型
-      //   mVehicle, //媒体类型
-      //   pageNum, //第几页
-      //   pageSize, //每页大小
-      //   apID, //意向方案id，编辑的时候需要带
 
       for (let i in this.getAdsParamsData) {
         if (!this.getAdsParamsData[i]) {
@@ -2101,9 +2083,8 @@ export default {
         token: this.sessionData.token,
         ...this.getAdsParamsData,
       };
-      let timer = setTimeout(() => {
-        // setTimeout 异步让table出现loading
-        let url = this.apiVar.ResList;
+      let url = this.apiVar.ResList;
+      return new Promise((resolve)=>{
         api.getApi(url, params).then((res) => {
           console.log("选点列表：", res);
           if (res.data.SysCode == 200200) {
@@ -2112,20 +2093,21 @@ export default {
               this.setTableDataADDoor(ADList);
               this.totalPage = res.data.totalPage;
               this.total = res.data.total;
-              this.judgeByselect(); //判断购物车是否存在得到的数据
+              !init && this.judgeByselect(); //判断购物车是否存在得到的数据
               this.searchBtnAbled = false;
             } else {
               this.planList = [];
             }
             this.loading = false;
+            resolve(true)
           } else {
             sessFun.messageFun("warning", res.data.MSG);
             this.loading = false;
+            resolve(false)
           }
           this.searchBtnAbled = false;
         });
-        clearTimeout(timer);
-      }, 0);
+      })
     },
     // 接口数据转成table
     setTableDataADDoor(ADSdata) {
@@ -2550,6 +2532,8 @@ export default {
         } else {
           this.IsAll = false;
         }
+      } else {
+        this.resetPlanList()
       }
     },
     // planList的勾选
@@ -2566,8 +2550,6 @@ export default {
             break;
           }
         }
-      } else {
-        console.log("不同城市");
       }
     },
     // 区选重置planList的勾选
@@ -2693,11 +2675,10 @@ export default {
       let arr = [];
       for (let i = 0; i < this.planList.length; i++) {
         let info = this.planList[i];
-        let selectInfo = this.setShopingTable(info);
         if (!info.checkBox) {
           info.checkBox = true;
           this.currPageSelect++;
-          arr.push(selectInfo);
+          arr.push(info);
         }
       }
       this.handleImportDrafts(1, arr);
@@ -2710,9 +2691,7 @@ export default {
       for (let pkey of this.planList) {
         if (!pkey.checkBox) {
           pkey.checkBox = true;
-          // let selectInfo = this.setShopingTable(pkey, "ABC");
-          let selectInfo = this.setShopingTable(pkey);
-          this.shopingList.push(selectInfo);
+          this.shopingList.push(pkey);
         }
       }
       console.log("道闸全选时购物车", this.shopingList);
@@ -2788,7 +2767,13 @@ export default {
       api.postApi('/addsp/proposal/share/updateAdBackUp', params).then(res => {
         console.log('获取aicode', res)
         if (res.data.SysCode == 200200) {
+          res.data.data.forEach((item) => {
+            item.checkBox = false;
+            item.city = item.cityName;
+          });
           this.shopingList = res.data.data||[]
+          this.judgeByselect()
+          this.computeMedia_AD();
           ShareLoading.close()
         } else {
           ShareLoading.close()
@@ -2830,21 +2815,13 @@ export default {
     AddShopingInfo(info) {
       console.log("选中的row信息", info);
       this.currPageSelect++;
-      // let selectInfo = this.setShopingTable(info, letter);
-      let selectInfo = this.setShopingTable(info);
-      this.shopingList.push(selectInfo);
+      this.shopingList.push(info);
       console.log("this.shopingList: ", this.shopingList);
       if (this.currPageSelect == this.currPageAsLength) {
         this.IsAll = true;
       } else {
         this.IsAll = false;
       }
-    },
-    // 选点列表数据到购物车数据
-    setShopingTable(info) {
-      console.log("info: ", info);
-      let selectInfo = info;
-      return selectInfo;
     },
     //修改动画效果及显示隐藏
     shopShow_hide(all) {
@@ -2991,11 +2968,11 @@ export default {
         if (res.data.SysCode == 200200) {
           // 地图拉取时使用草稿箱进行全量填充
           if (pullAll) {
-            /* draftsData.forEach((item) => {
+            (res.data.data||[]).forEach((item) => {
               item.checkBox = false;
               item.city = item.cityName;
-            }); */
-            this.shopingList = res.data.data||[];
+            });
+            this.shopingList = res.data.data||[]
             if (this.getMapLoading) {
               this.getMapLoading.close();
             }
@@ -3113,43 +3090,6 @@ export default {
   margin-right: 7px !important;
 }
 
-.row-table-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-/*购物车提示信息*/
-.warningInfoColor {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  border-radius: 4px;
-  vertical-align: middle;
-}
-
-.warningInfo .warningInfoName {
-  color: #333;
-  font-size: 12px;
-}
-
-/*状态行*/
-/deep/ .el-table .warning-row {
-  background: rgba(255, 0, 0, 0.08);
-}
-
-/deep/ .el-table .warning-row-conncet {
-  background: rgba(255, 199, 0, 0.1);
-}
-
-.shopList_adLimit {
-  width: 132px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /deep/ .el-input__inner:hover {
   border-color: #dcdfe6;
 }
@@ -3169,12 +3109,12 @@ export default {
   line-height: 14px;
 }
 
-/deep/ .el-input__inner {
+/* /deep/ .el-input__inner {
   font-size: 14px;
   line-height: 14px;
   width: 300px;
   height: 34px;
-}
+} */
 
 .shopAnimate,
 .shopAnimateAll {
@@ -3300,11 +3240,11 @@ export default {
   margin: 0 auto;
 }
 
-.el-input {
+/* .el-input {
   width: 262px;
   height: 34px !important;
   border-radius: 4px;
-}
+} */
 
 /deep/ .el-textarea__inner {
   width: 260px;
@@ -3365,7 +3305,7 @@ export default {
   top: -2px;
 }
 
-/deep/ .el-input__inner {
+.planAdsCntClass /deep/ .el-input__inner {
   width: 300px;
   height: 34px;
   line-height: 32px;

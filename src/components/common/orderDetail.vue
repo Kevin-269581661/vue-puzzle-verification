@@ -207,7 +207,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane v-if="role != 'EP'" label="报价单" name="second">
+                    <el-tab-pane v-if="role != 'EP' && orderDetail.planMode != 1" label="报价单" name="second">
                         <div>
                             <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation"
                                           :copydata="copyAsidArr" :isorder="true" :shopingList="[]"
@@ -1270,6 +1270,7 @@
                                 apQC: info.apQC,
                                 apName: info.apName,
                                 apState: info.apState,
+                                planMode: info.planMode,
                                 apTotal: info.apTotal,
                                 apcTime: info.apcTime,
                                 bTitle: info.bTitle,

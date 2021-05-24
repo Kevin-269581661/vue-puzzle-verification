@@ -319,10 +319,11 @@ export default {
   watch: {
     importInfoData: {
       handler(newVal, oldVal) {
-        this.successList = newVal.successList ? newVal.successList : [];
+        this.successList = newVal.successList||[];
         this.successSize = this.successList.length;
-        this.errorList = newVal.errorList ? newVal.errorList : [];
+        this.errorList = newVal.errorList||[];
         this.errorSize = this.errorList.length;
+        this.lessPlanCntList = newVal.lessPlanCntList||[];
       },
       deep: true,
     },
@@ -355,12 +356,9 @@ export default {
     //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
     addShoppingCart(errorList) {
       if(errorList) {
-        let importErrorList = this.errorList.filter((item)=>{
-          return item.failReason == "实际投放点位数不满足计划投放点位数且目前没有足够的点位数可供投放"
-        })
-        if(importErrorList.length) {
+        if(this.lessPlanCntList.length) {
           this.dialogResult = false;
-          this.$emit("skipAndAddShopping", importErrorList);
+          this.$emit("skipAndAddShopping", this.lessPlanCntList);
         } else {
           this.$message.warning('可投数不足的意向小区为空！');
         }

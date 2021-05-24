@@ -636,6 +636,7 @@
                 </el-dialog>
                 <!--修改订单金额-->
                 <el-dialog
+                    v-if="orderDetail.planMode!=1"
                     title="修改订单金额"
                     width="768px"
                     top="20vh"
@@ -645,6 +646,7 @@
                     <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
                                       :changePriceData="changePriceData"></changeOrderPrice>
                 </el-dialog>
+                <changeProposalOrderPrice v-else :apID="orderDetail.apID" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; getInitData()"></changeProposalOrderPrice>
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
@@ -676,7 +678,8 @@
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
-
+    import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
+    
     export default {
         name: "orderDetail",
         components: {
@@ -688,7 +691,8 @@
             changePointPlayDateRange,
             changePic,
             noSearchResult,
-            changeOrderPrice
+            changeOrderPrice,
+            changeProposalOrderPrice
         },
         data() {
             return {
@@ -1036,7 +1040,10 @@
                     }
                 ).then(() => {
                     this.changePriceModal = true
-                    this.getOrderPriceDetail()
+                    if(this.orderDetail.planMode != 1) {
+                        // 非意向方案
+                        this.getOrderPriceDetail()
+                    }
 
                 })
                     .catch(() => {

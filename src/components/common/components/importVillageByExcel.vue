@@ -438,7 +438,7 @@ export default {
     }
   }
   .el-button + .el-button {
-    margin-left: 14px;
+    // margin-left: 14px;
   }
   .el-dialog__footer{
     text-align: center;

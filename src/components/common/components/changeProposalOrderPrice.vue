@@ -31,7 +31,7 @@
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="resetSettlement(()=>settlementFormVisible = false)">取 消</el-button>
+            <el-button @click="resetSettlement(cancelDialog)">取 消</el-button>
             <el-button type="primary" @click="setPlanPrice('settlementForm')">确 定</el-button>
         </div>
     </el-dialog>
@@ -44,12 +44,34 @@
     export default {
         name: "changeProposalOrderPrice",
         props: {
+            apID: {
+                type: [String, Number],
+            },
+            settlementFormVisible: {
+                type: Boolean,
+                default: ()=>false
+            }
         },
         data() {
+            let validatPrice = (rule, value, callback) => {
+                if (value) {
+                    let reg = /^\d{1,}$/;
+                    if (!reg.test(value)) {
+                        callback(new Error("请输入正整数"));
+                    } else if (value > 9999999) {
+                        callback(new Error("预算不能大于9,999,999"));
+                    } else {
+                        callback();
+                    }
+                } else {
+                    callback();
+                    // this.$refs["customerBudgetRef"].clearValidate()
+                }
+            };
             return {
+                sessionData: {},
                 // 设置方案金额
                 formLabelWidth: '70px',
-                settlementFormVisible: false,
                 settlementForm: {
                     unitPrice: 0,
                     cash: 0,
@@ -65,6 +87,9 @@
                 }
             }
         },
+        created() {
+            this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
+        },
         mounted() {
             
         },
@@ -77,7 +102,7 @@
                             let params = {
                                 uid: this.sessionData.uID,
                                 token: this.sessionData.token,
-                                apID: this.planDetail.apID,
+                                apID: this.apID,
                                 adsWeekFee: this.settlementForm.unitPrice*100,
                                 cashFee: this.settlementForm.cash*100,
                                 sendFee: this.settlementForm.displace*100,
@@ -86,11 +111,15 @@
                             }
                             api.postApi('/addsp/proposal/updatePlanMoney', params).then((res) => {
                                 if (res.data.SysCode === 200200) {
-                                    this.settlementFormVisible = false
-                                    this.getInitData(true)
+                                    // this.$emit("update:settlementFormVisible", false);
+                                    this.cancelDialog()
+                                    this.$emit("planMoneyUpdated")
                                     console.log("金额结算成功");
                                 } else {
-                                    sessFun.messageFun("warning", "金额结算失败");
+                                    this.$message({
+                                        type: 'warning',
+                                        message: '金额结算失败'
+                                    });
                                 }
                             });
                         } else {
@@ -98,9 +127,6 @@
                             return false;
                         }
                     });
-                } else {
-                    // 表单弹框显示
-                    this.settlementFormVisible = true
                 }
             },
             resetSettlement(done) {
@@ -108,7 +134,10 @@
                     this.$refs.settlementForm.resetFields()
                     done()
                 }
-            }
+            },
+            cancelDialog() {
+                this.$emit('cancel')
+            },
         }
     }
 </script>

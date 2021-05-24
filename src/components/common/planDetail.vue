@@ -772,7 +772,20 @@ export default {
         },
         // 替换方案中的点位
         BDSaveMatchToPlan() {
-            console.log('---', '替换方案中的点位')
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: this.planDetail.apID
+            };
+            api.postApi("/addsp/match/UpdatePlan", info).then((res) => {
+                if (res.data.SysCode === 200200) {
+                    // this.getInitData();
+                    location.reload(false)
+                    sessFun.messageFun("success", '保存配点成功！');
+                } else {
+                    sessFun.messageFun("warning", res.data.MSG);
+                }
+            });
         },
         // 
         resetSettlement(done) {

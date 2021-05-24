@@ -36,6 +36,7 @@
                 <el-button @click="reLock">预 锁</el-button>
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
+                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="createShareCode">协同选点</el-button>
                 <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="matchRes">配点</el-button>
                 <el-button v-if="customPermission.proposalPermission && role == 'MD'" type="primary" @click="editPlan">配点</el-button>
                 <el-button
@@ -544,12 +545,33 @@ export default {
           console.log(res);
         });
     },
+    createShareCode() {
+      api.postApi('/addsp/proposal/share/createShareCode', {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+          apID: this.planDetail.apID
+      }).then((res) => {
+          if (res.data.SysCode === 200200) {
+              let Url = `${window.location.protocol}//${window.location.host}/shareADListProposal?apid=${res.data.data.apID}&aicode=${res.data.data.aiCode}`;
+              console.log('url', Url);
+              let oInput = document.createElement('input');
+              oInput.value = Url;
+              document.body.appendChild(oInput);
+              oInput.select();                // 选择对象
+              document.execCommand("Copy"); // 执行浏览器复制命令
+              oInput.style.display = 'none';
+              sessFun.messageFun("success", '协同选点链接复制成功，马上分享');    
+          } else {
+              sessFun.messageFun("warning", res.data.MSG);
+          }
+      });
+    },
     // 销售配点
     matchRes() {
       let info = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
-          apid: this.planDetail.apID,
+          apid: this.planDetail.apID
       };
       api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
           if(!res.data.SysCode){
@@ -573,7 +595,19 @@ export default {
     },
     // 替换方案中的点位
     BDSaveMatchToPlan() {
-      console.log('---', '替换方案中的点位')
+      let info = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apID: this.planDetail.apID
+      };
+      api.postApi("/addsp/match/UpdatePlan", info).then((res) => {
+        if (res.data.SysCode === 200200) {
+          this.$router.push("./planDetail");
+          sessFun.messageFun("success", '保存配点成功！');
+        } else {
+          sessFun.messageFun("warning", res.data.MSG);
+        }
+      });
     },
     // 获取选点排期
     getSetPoint() {

@@ -314,9 +314,9 @@
           <el-button
             class="merge-btn"
             type="primary"
-            :disabled="matchCnt==0"
+            :disabled="matchCnt==10"
             @click="rematchPoint">
-            {{`重新配点(${matchCnt})`}}
+            {{`重新配点(${10-matchCnt})`}}
           </el-button>
           <el-button
             class="merge-btn"
@@ -644,6 +644,7 @@ export default {
           if (res.data.SysCode == 200200) {
             this.matchCnt = res.data.data||0
             this.loading = false
+            resolve(true)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -654,8 +655,8 @@ export default {
     },
     // 重新配点
     rematchPoint() {
-      this.$confirm('重新配点会清除原配点结果信息',
-        "是否重新配点？", {
+      this.$confirm(this.sessionData.uType=='BD'?'本次配点结果质量高，重新配点可能会错失最优点位配置':'重新配点会清除原配点结果信息',
+        "确定放弃本次配点结果吗？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",

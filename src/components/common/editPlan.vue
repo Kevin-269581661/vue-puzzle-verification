@@ -1414,7 +1414,8 @@
                 // 购物车分页时页面条目数量
                 cartPageSize: 10,
                 currentPage: 1,
-                totalNum: 0
+                totalNum: 0,
+                planResSet: new Set()
             };
         },
         mounted() {
@@ -2075,6 +2076,22 @@
                 endTime = timeFormat.returnDayCount(14,'/')
                 this.dateInput = [starTime, endTime] // 设置默认时间
                 this.beforeDate = [starTime, endTime]
+            },
+            // 获取该方案下的所有意向小区
+            getSimplePlanResList() {
+                let params = {
+                    uid:this.sessionData.uID,
+                    token: this.sessionData.token,
+                    apID: this.editApid
+                }
+                api.getApi('/addsp/proposal/getSimplePlanResList', params).then(res => {
+                    console.log('销售所属方案',res)
+                    if (res.data.SysCode == 200200) {
+                        this.planResSet = new Set(res.data.data||[])
+                    } else {
+                        sessFun.messageFun('warning',res.data.MSG)
+                    }
+                })
             },
             // 获取排斥方案选择列
             getRejectPlanList(){
@@ -2960,8 +2977,9 @@
                     return "warning-row";
                 } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
                     return "warning-row-conncet";
-                }else {
-                    return "";
+                }else if(!this.planResSet.has(row.resID+'-'+row.schedules)) {
+                    // 非意向点位
+                    return "warning-row-not-proposal";
                 }
             },
             // 打开购物车则计算连排门信息
@@ -3332,6 +3350,7 @@
                                 this.ADloading.close()
                                 if (res.data.SysCode === 200200) {
                                     this.active = 2
+                                    this.totalPrice = res.data.data||0
                                     if (apMinTime <= this.dateTime) {
                                         sessFun.messageFun('warning', '该方案的投放期已经开始，建议立即发布该方案！')
                                     } else {
@@ -3530,7 +3549,7 @@
                             this.MtaStatFun('a004_b008_c001_d001_bt070_ck04','a004_b008_c001_d002_bt085_ck04');
                             break;
                         case 9:
-                            this.removeAllType('B');
+                            this.removeNoProposal();
                             break;
                     }
                 }else{
@@ -3648,7 +3667,12 @@
             },
             // 移除非意向点位
             removeNoProposal() {
-                console.log('移除非意向点位')
+                this.shopingList = this.shopingList.filter(item=>this.planResSet.has(item.resID+'-'+item.schedules))
+                this.currentPage = 1;
+                this.typeShopList = this.getTypeList();
+                this.getShowList();
+                this.computeMedia_AD()
+                this.allCheckboxUpdata()
             },
             getResultData(resultArr){
                 let other = [];
@@ -4734,6 +4758,7 @@
                         }
                         this.getAdList()    // 获取选点列表
                         this.getRejectPlanList()    // 获取排斥方案列表
+                        this.getSimplePlanResList()  // 获取该方案下的所有意向小区
                         // 如果未配点，弹出配点弹框
                         if(this.FAInfo.planMode == 1) {
                             this.matchPoint()
@@ -5026,11 +5051,14 @@
     }
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: rgba(255,0,0,0.08);
+        background: #FFC1BE;
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(255,199,0,0.10)
+        background: #FFE093;
+    }
+    /deep/ .el-table .warning-row-not-proposal {
+        background: #B5FFC4;
     }
     .shopList_adLimit{
         width: 132px;

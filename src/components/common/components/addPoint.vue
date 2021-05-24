@@ -614,6 +614,7 @@ export default {
   },
   created() {
     this.sessionData = sessFun.getSess();
+    this.getMatchCnt();
   },
   mounted() {
     this.getExcludeSelect()
@@ -715,8 +716,7 @@ export default {
       });
     },
     // 配点
-    async matchRes() {
-      this.sessionData.uType=='BD' && await this.getMatchCnt()
+    matchRes() {
       let params = {}
       if(this.formDataObj.aFaceRateChecked && this.sessionData.uType == 'MD') {
         params.aFaceRate = this.formDataObj.aFaceRate||0
@@ -742,6 +742,8 @@ export default {
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
+            // 获取销售已配点次数
+            this.sessionData.uType=='BD' && this.getMatchCnt()
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }

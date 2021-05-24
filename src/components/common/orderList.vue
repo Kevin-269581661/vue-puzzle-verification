@@ -677,7 +677,6 @@
             getOrderPriceDetail(apID){
                 api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:apID})
                     .then(res =>{
-                        // console.log('test--', res.data);
                         if (!res.data.SysCode) {
                             sessionStorage.setItem('priceData',JSON.stringify(res.data))
                             let priceData = res.data

@@ -649,10 +649,11 @@
     <div class="content_bottom_btn">
       <div class="finishBtn" v-if="active == 2">
         <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
-        <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
-        <el-button @click="downLoadFanan()" type="primary" class="urlBtn"
+        <!-- <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button> -->
+        <el-button plain @click="downLoadFanan()" class="urlBtn"
           >导出方案</el-button
         >
+        <el-button type="primary" @click="ToDetail">配 点</el-button>
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->
@@ -1213,6 +1214,7 @@ export default {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
+        apID: this.FAInfo.apID
       };
       api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
         console.log("清空草稿箱", res);

@@ -374,13 +374,14 @@ export default {
         const {
           export_json_to_excel,
         } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = ["资源", "城市", "区域", "排期", "失败原因"];
+        const tHeader = ["资源", "城市", "区域", "排期", "失败原因", "最早可连续投放开始日期"];
         const filterVal = [
           "resName",
           "city",
           "district",
           "date",
           "failReason",
+          "earliestOnPubDate"
         ];
 
         const list = this.errorList;

@@ -210,7 +210,7 @@
           <template slot-scope="scope">
             <div>
               {{scope.row.failReason}}
-              <el-tooltip v-if="scope.row.earliestOnPubDate" effect="dark" :content="scope.row.earliestOnPubDate" placement="top-start">
+              <el-tooltip v-if="scope.row.earliestOnPubDate" effect="dark" :content="'最早可连续投放开始日期：'+scope.row.earliestOnPubDate" placement="top-start">
                 <i class="el-icon-date"></i>
               </el-tooltip>
             </div>

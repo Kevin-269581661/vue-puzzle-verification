@@ -162,18 +162,17 @@
         <el-table-column
           type="index"
           label="序号"
-          min-width="6%"
           width="50"
           :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
-          >>
+        >
         </el-table-column>
-        <el-table-column prop="resName" label="资源" min-width="6%">
+        <el-table-column prop="resName" label="资源" width="120" show-overflow-tooltip>
         </el-table-column>
-        <el-table-column prop="city" label="城市" min-width="6%">
+        <el-table-column prop="city" label="城市" width="100">
         </el-table-column>
-        <el-table-column prop="district" label="区域" min-width="6%">
+        <el-table-column prop="district" label="区域" width="100">
         </el-table-column>
-        <el-table-column label="排期" min-width="10%">
+        <el-table-column label="排期" width="180">
           <template slot-scope="scope">
             <div>
               {{ scope.row.startTime + "-" + scope.row.endTime}}
@@ -183,29 +182,30 @@
         <el-table-column
           prop="actualMediaCnt"
           label="媒体数量（门）"
-          min-width="6%"
+          width="120"
           align="right"
         >
         </el-table-column>
         <el-table-column
           prop="actualAdsCnt"
           label="可投数量（面）"
-          min-width="6%"
+          width="120"
           align="right"
         >
         </el-table-column>
         <el-table-column
           prop="planAdsCnt"
           label="计划投放数量（面）"
-          min-width="8%"
+          width="150"
           align="right"
         >
         </el-table-column>
         <el-table-column
           prop="failReason"
           label="失败原因"
+          width="360"
           show-overflow-tooltip
-          min-width="20%"
+          fixed="right"
         >
           <template slot-scope="scope">
             <div>
@@ -529,7 +529,7 @@ export default {
 /deep/ .el-pagination .el-input__inner {
   width: 100%;
 }
-/deep/ .el-table__body-wrapper {
+.error-point-dialog /deep/ .el-table__body-wrapper {
   overflow-x: scroll !important;
 }
 </style>

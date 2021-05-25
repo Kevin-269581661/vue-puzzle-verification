@@ -230,8 +230,15 @@
                     le: this.dateInput[1],
                     suID: this.sessionData.uID,
                 };
-                if(this.planAdsCnt) {
-                    this.mapParams.planAdsCnt = this.planAdsCnt
+                if(this.sessionData.uType == 'BD' && this.sessionData.customPermission.proposalPermission == 1) {
+                    if(this.planAdsCnt>=1) {
+                        this.mapParams.planAdsCnt = this.planAdsCnt
+                    } else {
+                        return this.$message({
+                            type: 'warning',
+                            message: '投放面数为空！'
+                        })
+                    }
                 }
                 let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}`;
                 // 角色
@@ -249,7 +256,6 @@
                 }
                 this.mapDialogVisible = false;
                 window.open(url);
-
             },
             //清空草稿箱数据
             clearDrafts() {

@@ -155,28 +155,28 @@
             <el-dialog title="设置方案金额" :visible.sync="settlementFormVisible" width="368px" custom-class="settlement-dialog" :show-close="false" :close-on-click-modal="false" :close-on-press-escap="false" :before-close="resetSettlement">
                 <el-form ref="settlementForm" :model="settlementForm" :rules="settlementFormRules">
                     <el-form-item label="点位单价：" prop="unitPrice" :label-width="formLabelWidth">
-                        <el-input v-model.number="settlementForm.unitPrice" size="small" maxlength="7">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.unitPrice" size="small" maxlength="7">
                             <template slot="append">元/面·周</template>
                         </el-input>
                     </el-form-item>
                     <div class="form__line"></div>
                     <el-form-item label="现金结算：" prop="cash" :label-width="formLabelWidth">
-                        <el-input v-model.number="settlementForm.cash" size="small" maxlength="7">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.cash" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
                     </el-form-item>
                     <el-form-item label="置换结算：" prop="displace" :label-width="formLabelWidth">
-                        <el-input v-model.number="settlementForm.displace" size="small" maxlength="7">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.displace" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
                     </el-form-item>
                     <el-form-item label="其它结算：" prop="other" :label-width="formLabelWidth">
-                        <el-input v-model.number="settlementForm.other" size="small" maxlength="7">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.other" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
                     </el-form-item>
                     <el-form-item label="方案总价：" :label-width="formLabelWidth">
-                        <span class="form-item__price">{{(isNaN(settlementForm.cash)?0:settlementForm.cash*1)+(isNaN(settlementForm.displace)?0:settlementForm.displace*1)+(isNaN(settlementForm.other)?0:settlementForm.other*1)}} 元</span>
+                        <span class="form-item__price">{{((isNaN(settlementForm.cash)?0:settlementForm.cash*1)+(isNaN(settlementForm.displace)?0:settlementForm.displace*1)+(isNaN(settlementForm.other)?0:settlementForm.other*1)).toFixed(2)}} 元</span>
                     </el-form-item>
                     <div class="form__line"></div>
                     <el-form-item label="金额备注：" prop="settlementRemark" :label-width="formLabelWidth">
@@ -446,9 +446,9 @@ export default {
                             rIDs: info.rIDs,
                             realName: info.realName,
                             remark: info.remark,
-                            pdTotal: this.priceFormat((info.apTotal - info.adOtherFee- info.adSendFee)/100),
-                            pdSendFee: this.priceFormat(info.adSendFee/100),
-                            pdOtherFee: this.priceFormat(info.adOtherFee/100),
+                            pdTotal: this.priceFormat(info.apTotal/100 - info.otherFee- info.sendFee),
+                            pdSendFee: this.priceFormat(info.sendFee),
+                            pdOtherFee: this.priceFormat(info.otherFee),
                             Total: this.priceFormat(info.apTotal/100),
                             AdDoor:{
                                 pdTotal: this.priceFormat((info.AdDoor.pdTotal - info.AdDoor.adOtherFee- info.AdDoor.adSendFee)/100),

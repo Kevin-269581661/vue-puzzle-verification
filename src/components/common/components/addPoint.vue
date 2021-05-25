@@ -84,8 +84,9 @@
               <el-select
                 multiple
                 collapse-tags
+                :disabled="!customPermission.patrolPermission"
                 v-model="formDataObj.excludeTrafficStateList"
-                placeholder="请选择通行情况"
+                :placeholder="customPermission.patrolPermission?'请选择通行情况':'尚未开通定制巡点服务，请联系客服开通'"
               >
                 <el-option
                   v-for="item in trafficAndmType.excludeTrafficStateList"

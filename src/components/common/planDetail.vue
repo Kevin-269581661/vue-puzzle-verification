@@ -83,8 +83,7 @@
                                             </el-form>
                                         </template>
                                     </el-table-column>
-
-                                    <el-table-column label="资源名称" min-width="16.1%" prop="resName">
+                                    <el-table-column label="资源名称" min-width="16.1%" prop="resName" show-overflow-tooltip>
                                     </el-table-column>
                                     <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                     </el-table-column>

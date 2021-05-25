@@ -831,7 +831,8 @@
                                         <el-table-column
                                             label="资源名称"
                                             min-width="140"
-                                            prop="resName">
+                                            prop="resName"
+                                            show-overflow-tooltip>
                                         </el-table-column>
                                         <el-table-column
                                             label="媒体名称"

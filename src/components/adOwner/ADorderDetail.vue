@@ -68,7 +68,7 @@
                                                 </el-form>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="资源名称" min-width="16.1%" prop="resName">
+                                        <el-table-column label="资源名称" min-width="16.1%" prop="resName" show-overflow-tooltip>
                                         </el-table-column>
                                         <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
                                         </el-table-column>
@@ -87,7 +87,7 @@
                                                 <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                        <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange" show-overflow-tooltip>
                                             <template slot-scope="scope">
                                                 <template v-if="scope.row.lState==2">
                                                     <span>{{scope.row.finishTimeRange}}</span>

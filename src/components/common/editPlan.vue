@@ -687,7 +687,7 @@
                                             </el-table-column>
                                             <el-table-column
                                                 label="资源名称"
-                                                min-width="140">
+                                                min-width="140" show-overflow-tooltip>
                                                 <template slot-scope="scope">
                                                     <el-badge is-dot class="item" v-show="scope.row.share">
                                                         <span>{{scope.row.resName}}</span>

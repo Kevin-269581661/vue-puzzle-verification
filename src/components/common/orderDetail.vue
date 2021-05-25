@@ -121,7 +121,7 @@
                                             </el-form>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
+                                    <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap" show-overflow-tooltip>
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
                                                 <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
@@ -157,16 +157,10 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="timeRange" label="排期" min-width="14.2%"
-                                                     :filters="scheduleList" :filter-method="filterTimeRange">
+                                                     :filters="scheduleList" :filter-method="filterTimeRange" show-overflow-tooltip>
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
-                                                <!--<el-tooltip placement="top">-->
-                                                <!--<div slot="content">-->
-                                                <!--<span>{{scope.row.timeRange}}</span>-->
-                                                <!--</div>-->
-                                                <!--<i class="el-icon-question"> </i>-->
-                                                <!--</el-tooltip>-->
                                             </template>
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>

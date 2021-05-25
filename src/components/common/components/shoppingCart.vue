@@ -92,7 +92,7 @@
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column label="资源名称" min-width="150" prop="resName">
+            <el-table-column label="资源名称" min-width="150" prop="resName" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="scope.row.isCustomerSelect" class="custom-select">*</span>
                 <span>{{ scope.row.resName }}</span>

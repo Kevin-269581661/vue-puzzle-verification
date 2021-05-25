@@ -610,11 +610,13 @@ export default {
     },
     showMatchResult(val) {
       val && (this.matched = true) && this.getSuccessPoint()
+    },
+    apID(val) {
+      val && this.sessionData.uType=='BD' && this.getMatchCnt()
     }
   },
   created() {
     this.sessionData = sessFun.getSess();
-    this.getMatchCnt();
   },
   mounted() {
     this.getExcludeSelect()

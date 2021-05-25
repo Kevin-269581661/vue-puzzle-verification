@@ -37,7 +37,7 @@
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
                 <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="matchRes">配点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain @click="matchRes">配点</el-button>
                 <el-button v-if="customPermission.proposalPermission && role == 'MD'" type="primary" @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"

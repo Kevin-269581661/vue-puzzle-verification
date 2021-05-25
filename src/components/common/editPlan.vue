@@ -588,12 +588,12 @@
                                             </el-col>
 
                                             <el-col :span="16" style="text-align:right;">
-                                                <!-- <span class="button_point">
+                                                <span class="button_point">
                                                     <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
                                                                v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
-                                                    <el-button plain @click="getShareADList" size="small" class="mapBtn"
-                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
-                                                </span> -->
+                                                    <!-- <el-button plain @click="getShareADList" size="small" class="mapBtn"
+                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button> -->
+                                                </span>
                                                 <el-dropdown class="match-point-dropdown" size="small" split-button type="primary" @command="changeEvent">
                                                     快捷配点
                                                     <el-dropdown-menu slot="dropdown">

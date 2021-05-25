@@ -70,7 +70,7 @@
                 >A面占比不高于(50%)
                   <el-tooltip placement="top" trigger="hover" effect="dark">
                       <div slot="content">占比不可更改，如有需要请联系媒介配点</div>
-                      <i class="fa fa-info-circle" aria-hidden="true"></i>
+                      <i class="fa fa-info-circle" style="color: #999999;" aria-hidden="true"></i>
                   </el-tooltip>
                 </el-checkbox>
               </div>
@@ -687,9 +687,25 @@ export default {
     },
     // 销售保存配点结果到方案中
     BDSaveMatchToPlan() {
-      this.$emit('merge2ShopList', this.asignPointTableData)
-      this.showAsignPointTableData = false
-      this.$emit('closeAddPoint')
+      this.$confirm('即将以本次配点结果覆盖方案中现有的点位，原保存的点位将被移除！',
+        "是否保存配点？", {
+        confirmButtonText: "确 定",
+        dangerouslyUseHTMLString: true,
+        type: "warning",
+        showCancelButton: true,
+        closeOnClickModal:false,
+        closeOnPressEscape: false,
+        showClose: false,
+        customClass: 'messageBoxCustom'
+      })
+      .then((_) => {
+        this.$emit('merge2ShopList', this.asignPointTableData)
+        this.showAsignPointTableData = false
+        this.$emit('closeAddPoint')
+      })
+      .catch(() => {
+        sessFun.messageFun('info','已取消保存')
+      });
     },
     // 获取意向信息
     getIntentionInfo() {

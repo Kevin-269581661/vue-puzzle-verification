@@ -171,10 +171,10 @@
             意向小区共
             <span class="tip-active">{{
               intentionInfo.planResCount || ""
-            }}</span>
+            }}</span> 个
             <template v-for="(item, index) in intentionInfo.resPdNumGroup">
               <span :key="index">
-                个，选{{ item.resPdNum }}面的小区
+                ，选{{ item.resPdNum }}面的小区
                 <span class="tip-active">{{ item.resCount }}</span> 个
               </span>
             </template>
@@ -831,6 +831,8 @@ export default {
       } else {
         // 查看已配点方案的配点详情
         await this.getMatchSummary(this.apID)
+        this.intentionInfo.resPdNumGroup = this.tipObj.proposalCountGroup||[]
+        this.intentionInfo.planResCount = this.tipObj.planResCount||0
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true

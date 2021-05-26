@@ -2768,6 +2768,10 @@ export default {
       api.postApi('/addsp/proposal/share/updateAdBackUp', params).then(res => {
         console.log('获取aicode', res)
         if (res.data.SysCode == 200200) {
+          sessFun.messageFun(
+            "success",
+            `更新成功！`
+          );
           res.data.data.forEach((item) => {
             item.checkBox = false;
             item.city = item.cityName;
@@ -3593,13 +3597,6 @@ export default {
 /deep/ .selectAdsTable .el-checkbox__label {
   padding-left: 4px;
 }
-
-/*滚动条*/
-/* /deep/ .el-table__body-wrapper {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden !important;
-} */
 
 /deep/ .el-table__body-wrapper::-webkit-scrollbar {
   width: 6px;

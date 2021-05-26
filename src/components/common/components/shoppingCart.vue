@@ -58,10 +58,11 @@
             border
             :data="shoppingCartShowList"
             :row-class-name="tableRowClassName"
-            :highlight-current-row="true"
+            highlight-current-row
+            @current-change="handleCurrentRowChange"
             :default-sort="{ prop: 'mID', order: 'descending' }"
             style="width: 100%"
-            max-height="400"
+            height="500"
             @expand-change="senceOpen"
           >
             <el-table-column type="expand">
@@ -178,19 +179,19 @@
               <span style="background: #FFC1BE;" class="warningInfoColor"></span>
               <span class="warningInfoName">可投面数为0的小区</span>
               <span style="background: #FFE093;" class="warningInfoColor"></span>
-              <span class="warningInfoName">可投面数为0的小区</span>
+              <span class="warningInfoName">可投面数不满足计划投放面数的小区</span>
             </p>
             <el-pagination
               background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="currentPage"
+              :current-page.sync="currentPage"
               :page-sizes="[10, 20, 50, 100, 500]"
               :page-size="cartPageSize"
               :pager-count="5"
               class="cart-pagination"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="totalNum"
+              :total="shoppingCartList.length"
               style="text-align: right"
             >
             </el-pagination>
@@ -285,7 +286,7 @@ export default {
       // 购物车分页时页面条目数量
       currentPage: 1,
       cartPageSize: 10,
-      totalNum: 400,
+      totalNum: 0,
       //所有的数据，如果是一次全部返回的话
       shopDelRowClick: false
     };
@@ -312,6 +313,12 @@ export default {
         return "warning-row-conncet";
       }else {
         return "";
+      }
+    },
+    handleCurrentRowChange(currentRow, oldCurrentRow) {
+      // 可投面数为0
+      if (currentRow && currentRow.actualAdsCnt==0 && currentRow.earliestOnPubDate) {
+        this.$message({type: 'warning', message: `该小区所选排期内无合适的点位可连续投放，最早可投日期从${currentRow.earliestOnPubDate}开始`})
       }
     },
     //继续选点
@@ -396,10 +403,9 @@ export default {
   },
   computed: {
     shoppingCartShowList() {
-      this.totalNum = this.shoppingCartList.length;
-      if (this.$refs.shoppingCartRef) {
+      /* if (this.$refs.shoppingCartRef) {
         this.$refs.shoppingCartRef.bodyWrapper.scrollTop = 0;
-      }
+      } */
       return this.shoppingCartList.slice(
         (this.currentPage - 1) * this.cartPageSize,
         this.currentPage * this.cartPageSize

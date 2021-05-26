@@ -595,13 +595,7 @@ export default {
           prop: "asLab",
           width: "80px",
           value: (row)=>`${row.asLab}面`
-        },
-        {
-          label: "近3月上刊率",
-          prop: "publishRate",
-          width: "120px",
-          value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
-        },
+        }
       ],
     };
   },
@@ -621,6 +615,14 @@ export default {
   },
   mounted() {
     this.getExcludeSelect()
+    if(this.sessionData.uType == 'MD') {
+      this.asignPointTableColumn.push({
+        label: "近3月上刊率",
+        prop: "publishRate",
+        width: "120px",
+        value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
+      })
+    }
   },
   methods: {
     getExcludeSelect() {

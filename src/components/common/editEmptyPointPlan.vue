@@ -1274,13 +1274,12 @@ export default {
 
     //导入表格，点击确定放入购物车后的处理函数
     handleSkipAndAdd(successList) {
-      console.log("点击添加到购物车后页面变更");
-      // //将导入表格组件中传递出来的成功数据放入购物车
-      successList = this.setShopDataByImport(successList);
-      this.handleImportDrafts(1, successList);
-      this.shopingList.push(...successList);
-      this.computeMedia_AD(); //统计购物车里选择小区的面数个数
-      this.judgeByselect(); //导入购物车中的数据与已有列表是否重复
+      successList.forEach((item) => {
+        item.checkBox = false;
+        item.city = item.cityName;
+      });
+      this.handleImportDrafts(1, successList, 'pullAll');
+      sessFun.messageFun("success", "成功导入" + successList.length + "条数据");
     },
     //导入表格选点
     automaticSelectPoint() {
@@ -1912,19 +1911,6 @@ export default {
           console.log(res);
           Loading.close();
         });
-    },
-    // 根据导入方案返回的数据,设置购物车所需要的数据格式
-    setShopDataByImport(arr) {
-      console.log("arr: ", arr);
-      sessFun.messageFun("success", "成功导入" + arr.length + "条数据");
-      setTimeout(() => {
-        this.dialogTableVisible = true;
-      }, 500);
-      arr.forEach((item) => {
-        item.checkBox = false;
-        item.city = item.cityName;
-      });
-      return arr;
     },
     //获取导出方案数据
     getPreExcelData() {
@@ -2982,9 +2968,9 @@ export default {
               this.getMapLoading.close();
             }
             this.dialogTableVisible = true;
-            this.computeMedia_AD();
             this.judgeByselect();
           }
+          this.computeMedia_AD(); //统计购物车里选择小区的面数个数
         } else {
           sessFun.messageFun("warning", res.data.MSG);
         }

@@ -355,7 +355,7 @@ export default {
     },
     //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
     addShoppingCart(errorList) {
-      if(errorList) {
+      if(errorList=='errorList') {
         if(this.lessPlanCntList.length) {
           this.dialogResult = false;
           this.$emit("skipAndAddShopping", this.lessPlanCntList);

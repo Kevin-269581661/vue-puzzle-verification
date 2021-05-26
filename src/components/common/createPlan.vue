@@ -870,11 +870,10 @@
       <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
 
       <div class="finishBtn" v-if="active == 2">
-        <el-button type="default" @click="continueCreate">继续创建</el-button>
-        <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button>
-        <el-button @click="downLoadFanan()" type="primary" class="urlBtn"
-          >导出方案</el-button
-        >
+        <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
+        <!-- <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button> -->
+        <el-button @click="downLoadFanan()" type="primary" class="urlBtn">导出方案</el-button>
+        <el-button type="primary" @click="ToDetail">配点</el-button>
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->

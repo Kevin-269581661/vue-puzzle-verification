@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div v-if="isPC">
+        <!-- <div v-if="isPC"> -->
+        <div>
             <div>
                 <header class="share_index_header">
                     <div class="logo_img">
@@ -216,9 +217,9 @@
                 </div>
             </div>
         </div>
-        <div v-else>
+        <!-- <div v-else>
             <share-mobile></share-mobile>
-        </div>
+        </div> -->
     </div>
 </template>
 

@@ -653,7 +653,7 @@
         <el-button plain @click="downLoadFanan()" class="urlBtn"
           >导出方案</el-button
         >
-        <el-button type="primary" @click="ToDetail">配 点</el-button>
+        <el-button type="primary" @click="ToDetail">查看方案</el-button>
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->

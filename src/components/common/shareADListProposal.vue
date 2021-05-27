@@ -183,7 +183,6 @@
                                 <el-pagination
                                     background
                                     layout="total, sizes, prev, pager, next, jumper"
-                                    :hide-on-single-page="true"
                                     @current-change="changePage"
                                     @size-change="sizeChange"
                                     :page-sizes="[10, 20, 50, 100, 500]"
@@ -288,7 +287,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             }
         },
         created() {
-            this.browserRedirect()
+            // this.browserRedirect()
         },
         mounted() {
             if (this.isPC === true) {
@@ -310,7 +309,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         },
         methods: {
             // 判断是移动端还是PC端
-            browserRedirect() {
+            /* browserRedirect() {
                 let userAgentInfo = navigator.userAgent;
                 let Agents = ["Android", "iPhone",
                     "SymbianOS", "Windows Phone",
@@ -324,7 +323,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                     }
                 }
                 console.log('PC端页面')
-            },
+            }, */
             // 切换tabs
             switchTabs(tab, event) {
                 console.log('---',tab.name, this.activeName)
@@ -346,7 +345,6 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             updatePlanAdsCnt(row) {
                 clearTimeout(this.timer)
                 this.timer = setTimeout(() => {
-                    console.log('-0-', row)
                     if(row.planAdsCnt==0) {
                         this.$refs.multipleTable.toggleRowSelection(row, false)
                     } else if(row.planAdsCnt>0) {
@@ -494,7 +492,6 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             },
             // 行选中
             handleSelect(selection, row) {
-                console.log('selection')
                 this.$nextTick(()=>{
                     if(row.planAdsCnt == 0) {
                         this.$set(row, 'planAdsCnt', 1)
@@ -527,7 +524,9 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                 for(let adProposalRes of this.showResList) {
                     if(this.mapResSet.has(adProposalRes.adProposalResID)) {
                         this.$refs.multipleTable.toggleRowSelection(adProposalRes, true)
+                        adProposalRes.planAdsCnt == 0 && (this.$set(adProposalRes, 'planAdsCnt', 1))
                     }
+                    this.computeNumber()
                 }
             },
             // 提交列表选择的点位给无忧地图 activeRadio

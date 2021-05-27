@@ -606,8 +606,9 @@ export default {
     showMatchResult(val) {
       val && (this.matched = true) && this.getSuccessPoint()
     },
-    apID(val) {
-      val && this.sessionData.uType=='BD' && this.getMatchCnt()
+    apID(newVal, oldVal) {
+      // 方案详情中销售首次弹框配点时获取已配点次数
+      newVal && newVal!=oldVal && this.sessionData.uType=='BD' && this.getMatchCnt()
     }
   },
   created() {

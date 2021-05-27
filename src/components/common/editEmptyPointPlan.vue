@@ -820,9 +820,6 @@ export default {
     };
     return {
       FAInfo: {},
-      //导入草稿箱子的数据
-      importDraftsList: [],
-      importDraftsType: 1,
       importDraftsConfig: {},
       //搜索旁投放面数
       planAdsCnt: 1,
@@ -1237,7 +1234,7 @@ export default {
           .then(() => {
             this.shopingList = [];
             // 清除草稿箱
-            this.clearDrafts()
+            this.clearDrafts();
             this.allCheckboxUpdata();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
@@ -1250,7 +1247,6 @@ export default {
       }
     },
     //在购物车里删除行，改变总表前面的check
-    //TODO:在购物车里删除行
     changeCheck(rows) {
       this.handleImportDrafts(0, [rows]);
       if (this.planList.length > 0 && rows.city === this.planList[0].city) {
@@ -2704,7 +2700,6 @@ export default {
     },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
-      console.log("触发获取地图选点信息click");
       // 亲邻地图
       this.getMapLoading = this.$loading({
         lock: true,
@@ -3576,10 +3571,6 @@ export default {
   padding: 0 0 0 12px;
 }
 
-/* /deep/ .selectAdsTable .el-table__body-wrapper {
-  overflow-x: auto !important;
-} */
-
 /deep/ .selectAdsTable .el-checkbox__label {
   padding-left: 4px;
 }
@@ -3790,10 +3781,6 @@ export default {
   font-size: 12px;
   color: #666666;
 }
-
-// .noShareUl {
-//   height: 245px !important;
-// }
 
 .noShareUl ul li {
   margin-bottom: 15px !important;

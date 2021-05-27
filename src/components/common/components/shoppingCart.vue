@@ -23,11 +23,11 @@
                   }"
                   >获取地图选点</el-button
                 >
-                <el-button plain @click="getShareADList" size="small" class="mapBtn"
+                <el-button v-if="apState!=null" plain @click="getShareADList" size="small" class="mapBtn"
                   v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
               </span>
               <!-- 2-移除可投数量为0的意向小区 3-移除未配点小区 4-移除非客户选点的小区 -->
-              <el-dropdown size="small" type="primary">
+              <el-dropdown v-if="apState!=null" size="small" type="primary">
                 <el-button type="primary" style="padding: 0 8px;">
                   一键移除<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -140,7 +140,7 @@
               align="center"
             >
               <template slot-scope="scope">
-                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.normalAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
               </template>
             </el-table-column>
             <el-table-column
@@ -241,7 +241,7 @@ export default {
     },
     apState: {
       type: Number,
-      default: 0
+      default: null
     },
     //展示的数据
     shoppingCartList: {

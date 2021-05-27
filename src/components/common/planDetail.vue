@@ -463,7 +463,7 @@ export default {
                         };
                         // 选点排期
                         !updateDetail && this.getSetPoint();
-                        this.getRejectPlanList(res.data.data.suID)
+                        this.getRejectPlanList(res.data.data.suID);
                     } else{
                         Message.warning(res.data.MSG);
                     }

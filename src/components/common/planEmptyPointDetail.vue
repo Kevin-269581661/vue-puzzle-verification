@@ -37,7 +37,7 @@
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
                 <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain @click="matchRes">配点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain @click="matchRes(planDetail.apID)">配点</el-button>
                 <el-button v-if="customPermission.proposalPermission && role == 'MD'" type="primary" @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"
@@ -361,6 +361,16 @@ export default {
     // 获取选点排期数据
     this.getInitData();
   },
+  mounted() {
+    if(this.$route.query.option) {
+      // 销售创建完成时配点跳转到该页面触发，不需要获取方案详情，就可弹框(该方案为未配点状态)
+      let apID = this.$route.query.option.split('match')[1];
+      if(apID) {
+        this.planDetail.apID = apID;
+        apID && this.matchRes(apID, 'created');
+      }
+    }
+  },
   computed: {
     currentPagination() {
       this.totalNum = this.setpointArr.length;
@@ -376,34 +386,34 @@ export default {
       this.$router.push("./editPlan");
     },
     filter(val) {
-            let res = "";
-            if (val) {
-                for (let data of val.split(",")) {
-                    if (!res.includes(data)) {
-                        res = data + "," + res;
-                    }
-                }
-                console.log(res);
-                res = res.toString().substring(0, res.toString().length - 1);
+      let res = "";
+      if (val) {
+          for (let data of val.split(",")) {
+              if (!res.includes(data)) {
+                  res = data + "," + res;
+              }
+          }
+          console.log(res);
+          res = res.toString().substring(0, res.toString().length - 1);
+      }
+      return res;
+    },
+    // 状态转换成文本
+    stateToText(val) {
+        let state = [
+            { text: "未配点", state: -1 },
+            { text: "已完成", state: 0 },
+            { text: "进行中", state: 1 },
+            { text: "未投放", state: 2 },
+            { text: "投放中", state: 3 },
+            { text: "强制结束", state: 5 }
+        ];
+        for (let data of state) {
+            if (val == data.state) {
+                return data.text;
             }
-            return res;
-        },
-        // 状态转换成文本
-        stateToText(val) {
-            let state = [
-                { text: "未配点", state: -1 },
-                { text: "已完成", state: 0 },
-                { text: "进行中", state: 1 },
-                { text: "未投放", state: 2 },
-                { text: "投放中", state: 3 },
-                { text: "强制结束", state: 5 }
-            ];
-            for (let data of state) {
-                if (val == data.state) {
-                    return data.text;
-                }
-            }
-        },
+        }
+    },
     handleSizeChange(val) {
       this.pageSize = val;
     },
@@ -567,28 +577,29 @@ export default {
       });
     },
     // 销售配点
-    matchRes() {
+    matchRes(apID, created) {
+      if(!apID) return
       let info = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
-          apid: this.planDetail.apID
+          apid: apID
       };
       api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
           if(!res.data.SysCode){
               if(!res.data.IsLock){
-                  if(this.planDetail.apState!==-1) {
-                      // 方案已配点，显示上次配点结果
-                      this.showMatchResult = true
-                      this.$nextTick(()=>{
-                          // 重置显示参数，方便下次触发watch
-                          this.showMatchResult = false
-                      })
-                  } else {
-                      // 方案未配点
-                      this.addPointDialogVisible = true
-                  }
+                if(created || this.planDetail.apState==-1) {
+                  // 方案未配点
+                    this.addPointDialogVisible = true
+                } else {
+                  // 方案已配点，显示上次配点结果
+                  this.showMatchResult = true
+                  this.$nextTick(()=>{
+                      // 重置显示参数，方便下次触发watch
+                      this.showMatchResult = false
+                  })
+                }
               } else{
-                  this.changeRoute();
+                this.changeRoute();
               }
           }
       });

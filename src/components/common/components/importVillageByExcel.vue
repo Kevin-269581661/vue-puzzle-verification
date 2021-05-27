@@ -233,7 +233,7 @@
         <el-button plain @click="export2Excel" :disabled="isDown">导出</el-button>
         <el-button type="primary"
           size="medium "
-          :disabled="isDown"
+          :disabled="isConcat"
           style="padding: 0 4px;"
           @click="addShoppingCart('errorList')">
           导入可投数不足的意向小区
@@ -287,6 +287,7 @@ export default {
       importFileData: [],
       // 失败点位下载按钮状态
       isDown: false,
+      isConcat: false,
       uploadLoading: false,
       handleTime: "",
     };
@@ -357,8 +358,11 @@ export default {
     addShoppingCart(errorList) {
       if(errorList=='errorList') {
         if(this.lessPlanCntList.length) {
-          this.dialogResult = false;
-          this.$emit("skipAndAddShopping", this.lessPlanCntList);
+          this.dialogErrorPoint = false;
+          // this.$emit("skipAndAddShopping", this.lessPlanCntList);
+          this.successList = this.successList.concat(this.lessPlanCntList);
+          this.isConcat = true;
+          this.lessPlanCntList = [];
         } else {
           this.$message.warning('可投数不足的意向小区为空！');
         }

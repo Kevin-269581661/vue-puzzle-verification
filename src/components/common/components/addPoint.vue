@@ -42,7 +42,7 @@
             <li class="info-item">
               <span class="item-label">客户要求：</span>
               <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand||'' }}
+                {{ intentionInfo.customerDemand||'--' }}
               </span>
             </li>
           </ul>
@@ -964,6 +964,7 @@ export default {
     closeAsignPointTable() {
       if(this.matched) {
         this.showAsignPointTableData = false
+        this.handleClose()
         return
       }
       this.$confirm('关闭后，所配点位将被清除',
@@ -979,6 +980,7 @@ export default {
       })
       .then((_) => {
         this.showAsignPointTableData = false;
+        this.handleClose()
       })
       .catch(() => {
         sessFun.messageFun('info','已取消')

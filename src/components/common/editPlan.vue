@@ -639,7 +639,6 @@
                                             element-loading-spinner="el-icon-loading"
                                             border
                                             :row-class-name="tableRowClassName"
-                                            :highlight-current-row="true"
                                             :data="currentPagination"
                                             @row-click="shopRowClick"
                                             style="width: 100%"
@@ -2977,10 +2976,11 @@
                     return "warning-row";
                 } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
                     return "warning-row-conncet";
-                }else if(!this.planResSet.has(row.resID+'-'+row.schedules)) {
+                } else if(!this.planResSet.has(row.resID+'-'+row.schedules)) {
                     // 非意向点位
                     return "warning-row-not-proposal";
                 }
+                return '';
             },
             // 打开购物车则计算连排门信息
             computeConnectAdData() {
@@ -4760,9 +4760,9 @@
                         this.getRejectPlanList()    // 获取排斥方案列表
                         this.getSimplePlanResList()  // 获取该方案下的所有意向小区
                         // 如果未配点，弹出配点弹框
-                        if(this.FAInfo.planMode == 1) {
+                        /* if(this.FAInfo.planMode == 1) {
                             this.matchPoint()
-                        }
+                        } */
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }

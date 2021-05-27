@@ -58,8 +58,7 @@
             border
             :data="shoppingCartShowList"
             :row-class-name="tableRowClassName"
-            highlight-current-row
-            @current-change="handleCurrentRowChange"
+            @row-click="handleCurrentRowChange"
             :default-sort="{ prop: 'mID', order: 'descending' }"
             style="width: 100%"
             height="500"
@@ -315,7 +314,7 @@ export default {
         return "";
       }
     },
-    handleCurrentRowChange(currentRow, oldCurrentRow) {
+    handleCurrentRowChange(currentRow) {
       // 可投面数为0
       if (currentRow && currentRow.actualAdsCnt==0 && currentRow.earliestOnPubDate) {
         this.$message({type: 'warning', message: `该小区所选排期内无合适的点位可连续投放，最早可投日期从${currentRow.earliestOnPubDate}开始`})

@@ -19,7 +19,7 @@
                     <el-tabs v-model="activeName" @tab-click="switchTabs">
                         <el-tab-pane label="列表模式" name="first">
                             <div class="search-row">
-                                <el-input placeholder="请输入楼盘名称" v-model="filterOptions.searchKey" clearable @clear="filterFun('')" @keyup.enter.native="keyupFun($event)">
+                                <el-input placeholder="请输入资源名称" v-model="filterOptions.searchKey" clearable @clear="filterFun('')" @keyup.enter.native="keyupFun($event)">
                                     <el-button style="background: #1890ffff; color: #fff;" slot="append" @click="filterFun(filterOptions.searchKey)">搜  索</el-button>
                                 </el-input>
                             </div>

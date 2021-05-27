@@ -67,7 +67,7 @@
                   disabled
                   checked
                   name="type"
-                >A面占比不高于(50%)
+                >A面占比50%
                   <el-tooltip placement="top" trigger="hover" effect="dark">
                       <div slot="content">占比不可更改，如有需要请联系媒介配点</div>
                       <i class="fa fa-info-circle" style="color: #999999;" aria-hidden="true"></i>

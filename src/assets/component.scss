@@ -14,6 +14,11 @@
   .el-button--primary {
     background-color: rgba(24, 144, 255, 1);
   }
+  .el-button--primary.is-disabled, .el-button--primary.is-disabled:hover, .el-button--primary.is-disabled:focus, .el-button--primary.is-disabled:active {
+    color: #fff;
+    background-color: #8cc8ff;
+    border-color: #8cc8ff;
+  }
   .el-pagination__sizes .el-input--mini .el-input__inner{
     height: 28px;
   }

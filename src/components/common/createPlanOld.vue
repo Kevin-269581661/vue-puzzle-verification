@@ -6612,6 +6612,14 @@
             display: inline-block;
         }
     }
+    .divide-border {
+        display: inline-block;
+        width: 1px;
+        height: 14px;
+        vertical-align: middle;
+        margin: 0 8px;
+        background: rgba(0, 0, 0, 0.1);
+    }
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
         padding: 0 46px;

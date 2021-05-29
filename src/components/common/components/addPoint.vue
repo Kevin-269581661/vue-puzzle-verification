@@ -713,16 +713,21 @@ export default {
     // 获取意向信息
     getIntentionInfo() {
       this.loading = true
-      api.getApi("/addsp/proposal/getSummarize?apID="+this.apID).then(res => {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/proposal/getSummarize?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
+            resolve(true)
             this.loading = false
             Object.assign(this.intentionInfo, res.data.data)
           } else {
+            resolve(false)
             sessFun.messageFun('warning', res.data.MSG)
           }
-      }).catch(err => {
-          console.log(err);
-      });
+        }).catch(err => {
+            resolve(false)
+            console.log(err);
+        })
+      })
     },
     // 意向小区列表
     getIntentionList() {
@@ -834,7 +839,7 @@ export default {
     // 查询配点成功结果
     async getSuccessPoint(matchRes) {
       if(matchRes) {
-        // 首次配点
+        // 弹框中选择配点
         Object.assign(this.tipObj, matchRes)
         if(Array.isArray(this.tipObj.proposalCountGroup)) {
           this.tipObj.proposalCountGroup.forEach(item=>{
@@ -850,8 +855,9 @@ export default {
       } else {
         // 查看已配点方案的配点详情
         await this.getMatchSummary(this.apID)
-        this.intentionInfo.resPdNumGroup = this.tipObj.proposalCountGroup||[]
-        this.intentionInfo.planResCount = this.tipObj.planResCount||0
+        await this.getIntentionInfo()
+        // this.intentionInfo.resPdNumGroup = this.tipObj.proposalCountGroup||[]
+        // this.intentionInfo.planResCount = this.tipObj.planResCount||0
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true

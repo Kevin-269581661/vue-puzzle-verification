@@ -126,7 +126,7 @@ export default {
     padding: 16px 24px;
   }
   .el-dialog__body {
-    padding: 24px;
+    padding: 24px !important;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
   }
   .el-dialog__footer {

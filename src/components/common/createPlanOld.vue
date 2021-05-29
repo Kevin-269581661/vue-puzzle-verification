@@ -737,14 +737,17 @@
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
                                                 <el-button plain @click="getMapADList" size="small" class="mapBtn"
-                                                            :disabled="mapBtn"
-                                                            v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                    :disabled="mapBtn"
+                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                             </span>
-                                            <el-select v-model="eventType" placeholder="快捷配点" filterable
-                                                        @change="changeEvent">
-                                                <el-option v-for="item of eventList" :key="item.value"
-                                                            :label="item.label" :value="item.value"></el-option>
-                                            </el-select>
+                                            <el-dropdown size="small" type="primary">
+                                                <el-button type="primary" style="padding: 0 8px;">
+                                                    快捷配点<i class="el-icon-arrow-down el-icon--right"></i>
+                                                </el-button>
+                                                <el-dropdown-menu slot="dropdown">
+                                                    <el-dropdown-item v-for="item of eventList" :key="item.value" @click.native.prevent="changeEvent(item.value)">{{item.label}}</el-dropdown-item>
+                                                </el-dropdown-menu>
+                                            </el-dropdown>
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
@@ -902,9 +905,9 @@
                                     </el-table>
                                     <div class="row-table-bottom">
                                         <p class="warningInfo">
-                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                            <span style="background: #FFC1BE;" class="warningInfoColor"></span>
                                             <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                            <span style="background: #FFE093;" class="warningInfoColor"></span>
                                             <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                         </p>
                                         <el-pagination
@@ -1537,8 +1540,6 @@
                 // 购物车展示的数据
                 typeShopList: [],
                 activeName: '1',
-                // 事件选择
-                eventType: '',
                 eventList: [],
                 // 购物车表格数据
                 shopShowList: [],
@@ -4848,7 +4849,6 @@
             dialogVisible() {
                 this.dialogTableVisible = true
                 // this.computeMedia_AD()            // 统计媒体数量和媒体面数
-                this.eventType = "";
                 this.typeShopList = this.getTypeList();
                 this.handleClick();
             },
@@ -4884,7 +4884,6 @@
             // 切换tab
             handleClick() {
                 console.log('this.activeName----', this.activeName, this.typeShopList);
-                this.eventType = '';
                 this.getShowList();
                 this.getEventList();
                 this.computeMedia_AD();
@@ -5012,7 +5011,6 @@
                         sessFun.messageFun('warning', '暂无被占点位')
                     }
                 }).catch(() => {
-                    this.eventType = '';
                     sessFun.messageFun('info', '取消成功')
                 })
                 // this.ADLockNum = 0
@@ -6007,11 +6005,11 @@
 
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: rgba(255, 0, 0, 0.08);
+        background: #FFC1BE;
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(255, 199, 0, 0.10)
+        background: #FFE093;
     }
 
     .shopList_adLimit {

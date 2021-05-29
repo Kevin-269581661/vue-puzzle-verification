@@ -41,15 +41,16 @@ export default {
         // 状态转换成文本
         stateToText(val) {
             let state = [
-                { text: "已完成", state: 0 },
-                { text: "进行中", state: 1 },
-                { text: "未投放", state: 2 },
-                { text: "投放中", state: 3 },
-                { text: "强制结束", state: 5 }
+                { text: "未配点", state: -1, color: 'rgba(250, 173, 20, 1)' },
+                { text: "已完成", state: 0, color: 'rgba(196,203,211,1)' },
+                { text: "进行中", state: 1, color: 'rgb(113, 213, 217)' },
+                { text: "未投放", state: 2, color: 'rgba(82,196,26,1)' },
+                { text: "投放中", state: 3, color: 'rgba(24,144,255,1)' },
+                { text: "强制结束", state: 5, color: 'rgba(245,34,45,1)' }
             ];
             for (let data of state) {
                 if (val == data.state) {
-                    return data.text;
+                    return data;
                 }
             }
         },
@@ -113,8 +114,8 @@ export default {
                     <dl>
                         <dt>状态</dt>
                         <dd>
-                            <b class="order-badge"></b>
-                            {{stateToText(detail.apState)}}
+                            <b class="order-badge" :style="{background: stateToText(detail.apState).color}"></b>
+                            {{stateToText(detail.apState).text}}
                         </dd>
                     </dl>
                     <dl v-if="role != 'EP'">
@@ -236,7 +237,6 @@ export default {
         width: 12px;
         height: 12px;
         border-radius: 6px;
-        background: #1890FF;
     }
 }
 /*1920*/

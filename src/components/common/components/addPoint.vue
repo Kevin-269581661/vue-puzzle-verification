@@ -70,7 +70,7 @@
                 >A面占比50%
                   <el-tooltip placement="top" trigger="hover" effect="dark">
                       <div slot="content">占比不可更改，如有需要请联系媒介配点</div>
-                      <i class="fa fa-info-circle" style="color: #999999;" aria-hidden="true"></i>
+                      <i class="fa fa-info-circle" style="color: #999999; cursor: default;" aria-hidden="true"></i>
                   </el-tooltip>
                 </el-checkbox>
               </div>
@@ -299,7 +299,7 @@
           <el-button
             v-if="matched"
             class="merge-btn"
-            type="primary"
+            plain
             @click="rematchPoint">
             重新配点
           </el-button>
@@ -314,7 +314,7 @@
         <template v-else-if="sessionData.uType == 'BD'">
           <el-button
             class="merge-btn"
-            type="primary"
+            plain
             :disabled="matchCnt==10"
             @click="rematchPoint">
             {{`重新配点(${10-matchCnt})`}}

@@ -233,7 +233,7 @@
         <el-button plain @click="export2Excel" :disabled="isDown">导出</el-button>
         <el-button type="primary"
           size="medium "
-          :disabled="isConcat"
+          :disabled="!lessPlanCntList.length"
           style="padding: 0 4px;"
           @click="addShoppingCart('errorList')">
           导入可投数不足的意向小区
@@ -269,6 +269,7 @@ export default {
       successSize: 0,
       errorList: [],
       errorSize: 0,
+      lessPlanCntList: [],
       //每页显示的数据量
       successPageSize: 10,
       errorPageSize: 10,
@@ -281,13 +282,9 @@ export default {
       dialogErrorPoint: false,
       //导入结果弹窗
       dialogResult: false,
-      // 登录信息
-      // sessionData: {},
-      // importAction: "/advertisement/UpdateOrderAdsWithExcel",
       importFileData: [],
       // 失败点位下载按钮状态
       isDown: false,
-      isConcat: false,
       uploadLoading: false,
       handleTime: "",
     };
@@ -361,7 +358,6 @@ export default {
           this.dialogErrorPoint = false;
           // this.$emit("skipAndAddShopping", this.lessPlanCntList);
           this.successList = this.successList.concat(this.lessPlanCntList);
-          this.isConcat = true;
           this.lessPlanCntList = [];
         } else {
           this.$message.warning('可投数不足的意向小区为空！');
@@ -418,19 +414,35 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .import-dialog .el-dialog__header {
-  padding: 16px 24px;
-}
-/deep/ .import-dialog .el-dialog__body {
-  padding: 0px 24px 24px;
-}
-/deep/ .import-dialog .el-dialog__footer {
-  display: block;
-  text-align: right;
-  padding: 0px 24px 24px;
+/deep/ .import-dialog {
+  .el-table tr th, .el-table tr td {
+    height: 46px;
+    .cell {
+      height: 25px;
+      line-height: 25px;
+    }
+  }
+  .el-dialog__header {
+    padding: 16px 24px;
+  }
+  .el-dialog__body {
+    padding: 0px 24px 24px;
+  }
+  .el-dialog__footer {
+    display: block;
+    text-align: right;
+    padding: 0px 24px 24px;
+  }
 }
 
 /deep/ .error-point-dialog {
+  .el-table tr th, .el-table tr td {
+    height: 46px;
+    .cell {
+      height: 25px;
+      line-height: 25px;
+    }
+  }
   .el-dialog__header {
     padding: 15px 24px;
     border-bottom: 1px solid #e9e9e9;
@@ -509,10 +521,6 @@ export default {
   margin-bottom: 16px ;
   padding: 9px;
 }
-
-// .table-top-tip /deep/ .el-icon-info {
-//   margin-right: 4px;
-// }
 
 .table-top-tip .container {
   display: flex;

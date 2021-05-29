@@ -23,9 +23,9 @@
                             <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
                                 <!-- planMode：0普通 1意向 -->
-                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="createShareCode">协同选点</el-button>
-                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" plain class="handleBtn--plain" @click="setPlanPrice">设置金额</el-button>
-                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" plain class="handleBtn--plain" @click="matchRes">配点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="createShareCode">协同选点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="setPlanPrice">设置金额</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" type="default" @click="matchRes">配点</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                                 <el-button type="primary" @click="edit()" 
                                     v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 

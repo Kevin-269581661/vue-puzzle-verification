@@ -592,17 +592,47 @@
 
                                             <el-col :span="16" style="text-align:right;">
                                                 <span class="button_point">
-                                                    <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
-                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                    <el-button plain @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
+                                                        v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                                     <el-button plain @click="getShareADList" size="small" class="mapBtn"
-                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
+                                                        v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
                                                 </span>
-                                                <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
+                                                <!-- <el-select v-model="eventType" placeholder="快捷配点" filterable @change="changeEvent">
                                                     <el-option v-for="item of eventList" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                                </el-select>
+                                                </el-select> -->
+                                                <el-dropdown size="small" type="primary">
+                                                    <el-button type="primary" style="padding: 0 8px;">
+                                                        快捷配点<i class="el-icon-arrow-down el-icon--right"></i>
+                                                    </el-button>
+                                                    <el-dropdown-menu slot="dropdown">
+                                                        <el-dropdown-item v-for="item of eventList" :key="item.value" @click.native.prevent="changeEvent(item.value)">{{item.label}}</el-dropdown-item>
+                                                    </el-dropdown-menu>
+                                                </el-dropdown>
                                             </el-col>
                                         </el-row>
                                         <el-row class="car-title">
+                                            <i class="el-icon-info"></i>
+                                            小区:<span>{{shopMedia_ADNum.resNum}}</span
+                                            >(选1面:<span>{{shopMedia_ADNum.oneNum}}</span>
+                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>
+                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>
+                                            选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                            <div class="divide-border"></div>
+                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                            <div class="divide-border"></div>
+                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span
+                                            >(A面:<span>{{mediaLevelNum.ANum}}</span>
+                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            <div class="divide-border"></div>
+                                            <template v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                                B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                                C级:<span>{{mediaLevelNum.CLevel}}</span>
+                                            </template>
+                                            <div class="divide-border"></div>
+                                            被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span>
+                                        </el-row>
+                                        <!-- <el-row class="car-title">
                                             <el-col :span="9">
                                                 <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
                                                 社区:<span>{{shopMedia_ADNum.resNum}}</span>
@@ -625,7 +655,7 @@
                                                 C级:<span>{{mediaLevelNum.CLevel}}</span>
                                             </el-col>
                                             <el-col :span="2">被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span></el-col>
-                                        </el-row>
+                                        </el-row> -->
                                         <span class="change_scheduling" @click="changeAdsSchedule"
                                               v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt060_ck04' : 'a004_b008_c001_d002_bt075_ck04'}">
                                             更换排期
@@ -756,9 +786,9 @@
                                         </el-table>
                                         <div class="row-table-bottom">
                                             <p class="warningInfo">
-                                                <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                                <span style="background: #FFC1BE;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">被占点位</span>
-                                                <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                                <span style="background: #FFE093;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                             </p>
                                             <el-pagination
@@ -1000,7 +1030,7 @@
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
-                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <i class="el-icon-info"></i>
                     <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
                         <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
                     </h4>
@@ -1333,7 +1363,6 @@
                 typeShopList:[],
                 activeName: '1',
                 // 事件选择
-                eventType: '',
                 eventList: [],
                 // 购物车表格数据
                 shopShowList: [],
@@ -3787,7 +3816,6 @@
             dialogVisible() {
                 this.computeConnectAdData()
                 this.dialogTableVisible = true;
-                this.eventType = "";
                 this.typeShopList = this.getTypeList();
                 this.handleClick();
             },
@@ -3822,7 +3850,6 @@
             // 切换tab
             handleClick(){
                 console.log('this.activeName----', this.activeName, this.typeShopList);
-                this.eventType = '';
                 this.getShowList();
                 this.getEventList();
                 this.computeMedia_AD();
@@ -5054,7 +5081,6 @@
                         sessFun.messageFun('warning','暂无被占点位')
                     }
                 }).catch(() => {
-                    this.eventType = '';
                     sessFun.messageFun('info','取消成功')
                 })
                 // this.ADLockNum = 0
@@ -5085,7 +5111,6 @@
                             this.computeMedia_AD()
                             sessFun.messageFun('success','删除成功')
                         }).catch(() => {
-                            this.eventType = '';
                             sessFun.messageFun('info','已取消删除')
                         });
                         this.resetPlanList()
@@ -5668,11 +5693,11 @@
     }
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: rgba(255,0,0,0.08);
+        background: #FFC1BE;
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(255,199,0,0.10)
+        background: #FFE093;
     }
     .shopList_adLimit{
         width: 132px;
@@ -6237,33 +6262,35 @@
         }
     }
     .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
+        padding: 8px;
         margin-bottom: 10px;
-        padding: 5px;
+        border: 1px solid #bae7ff;
+        border-radius: 4px;
+        line-height: 22px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #e6f7ff;
+        .el-icon-info {
+            color: #1890ff;
+            margin-right: 4px;
+        }
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        h4 {
+            font-size: 14px;
+            display: inline-block;
+        }
     }
-
-    .car-title h4 {
-        font-size: 14px;
+    .divide-border {
         display: inline-block;
+        width: 1px;
+        height: 14px;
+        vertical-align: middle;
+        margin: 0 8px;
+        background: rgba(0, 0, 0, 0.1);
     }
-
-    .car-title p {
-        font-size: 14px;
-        font-weight: normal;
-        display: inline-block;
-        margin-left: 10px;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 4px;
-        cursor: pointer;
-        color: #1890ff;
-    }
-
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
         padding: 0 46px;
         background-color: #F7F7F7;;

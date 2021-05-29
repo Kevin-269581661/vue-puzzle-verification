@@ -92,8 +92,8 @@
                     <dl>
                       <dt>状态</dt>
                       <dd>
-                        <b class="order-badge"></b>
-                        {{stateToText(planDetail.apState)}}
+                        <b class="order-badge" :style="{background: stateToText(planDetail.apState).color}"></b>
+                        {{stateToText(planDetail.apState).text}}
                       </dd>
                     </dl>
                 </div>
@@ -189,12 +189,7 @@
                       <span>{{ scope.row.cType || "--" }}</span>
                     </template>
                   </el-table-column>
-                  <!-- <el-table-column prop="hNum" label="小区户数" min-width="6.0%" align="right">
-                                        <template slot-scope="scope">
-                                            <span>{{priceToFormat(scope.row.hNum)}}</span>
-                                        </template>
-                                    </el-table-column> -->
-                  <el-table-column label="楼盘价格" min-width="9.0%">
+                  <el-table-column label="楼盘价格" min-width="9.0%" align="right">
                     <template slot-scope="scope">
                       <span
                         >&yen;{{
@@ -207,12 +202,14 @@
                     prop="actualMediaCnt"
                     label="媒体数量（门）"
                     min-width="7.4%"
+                    align="right"
                   >
                   </el-table-column>
                   <el-table-column
                     prop="planAdsCnt"
                     label="计划投放数量（面）"
                     min-width="7.4%"
+                    align="right"
                   >
                   </el-table-column>
                   <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
@@ -404,16 +401,16 @@ export default {
     // 状态转换成文本
     stateToText(val) {
         let state = [
-            { text: "未配点", state: -1 },
-            { text: "已完成", state: 0 },
-            { text: "进行中", state: 1 },
-            { text: "未投放", state: 2 },
-            { text: "投放中", state: 3 },
-            { text: "强制结束", state: 5 }
+            { text: "未配点", state: -1, color: 'rgba(250, 173, 20, 1)' },
+            { text: "已完成", state: 0, color: 'rgba(196,203,211,1)' },
+            { text: "进行中", state: 1, color: 'rgb(113, 213, 217)' },
+            { text: "未投放", state: 2, color: 'rgba(82,196,26,1)' },
+            { text: "投放中", state: 3, color: 'rgba(24,144,255,1)' },
+            { text: "强制结束", state: 5, color: 'rgba(245,34,45,1)' }
         ];
         for (let data of state) {
             if (val == data.state) {
-                return data.text;
+                return data;
             }
         }
     },
@@ -1018,7 +1015,6 @@ export default {
   outline: none;
   cursor: pointer;
   border: 1px solid #d9d9d9;
-  border-radius: 2px;
   background: #ffffff;
   font-size: 14px;
   color: #666666;

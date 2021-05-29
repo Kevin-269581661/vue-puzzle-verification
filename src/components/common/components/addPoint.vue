@@ -202,7 +202,7 @@
           意向投放小区：<span>{{
             tipObj.planResCount
           }}</span>个
-          <span class="active comment-item" @click="getIntentionList">查看</span>
+          <span class="active comment-item" @click="getIntentionList">&nbsp;查看</span>
           计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}个</span> 
           客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
           客户要求：<span class="comment-item">{{ tipObj.customerDemand }}</span>
@@ -238,8 +238,6 @@
               >个
             </span>
           </h4>
-          <!-- <span class="tip-active tip-active-handle right" @click="getMatchSummary(apID)">刷新</span>
-          <div class="divide-border"></div> -->
           <span class="tip-active tip-active-handle right" @click="getFailRes">失败小区</span>
           <div class="divide-border"></div>
           <span class="tip-active tip-active-handle" @click="downLoadMatchResult">下载结果</span>
@@ -315,7 +313,7 @@
           <el-button
             class="merge-btn"
             plain
-            :disabled="matchCnt==10"
+            :disabled="matchCnt>=10"
             @click="rematchPoint">
             {{`重新配点(${10-matchCnt})`}}
           </el-button>
@@ -368,6 +366,7 @@
       title="请选择配点范围" 
       :visible.sync="dialogMatchRangeFormVisible"
       width="368px"
+      top="22vh"
       :show-close="false"
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper match-range-dialog"
@@ -375,10 +374,10 @@
       <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
       <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
       <el-radio v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
-      <div slot="footer">
+      <template slot="footer">
         <el-button @click="dialogMatchRangeFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="matchRes">确 定</el-button>
-      </div>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -667,11 +666,12 @@ export default {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
+        iconClass: "el-icon-question",
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
         showClose: false,
-        customClass: 'messageBoxCustom'
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
       })
       .then((_) => {
         this.matched = false
@@ -695,11 +695,12 @@ export default {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
+        iconClass: "el-icon-question",
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
         showClose: false,
-        customClass: 'messageBoxCustom'
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
       })
       .then((_) => {
         this.$emit('merge2ShopList', this.asignPointTableData)
@@ -778,6 +779,7 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
+        this.dialogMatchRangeFormVisible = false
         if(matchRes) {
           this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
             "恭喜您，配点成功！", {
@@ -790,7 +792,6 @@ export default {
             showClose: false,
             customClass: 'messageBoxCustom'
           }).then(() => {
-            this.dialogMatchRangeFormVisible = false
             this.getSuccessPoint(matchRes)
           })
         } else if(matchRes===null) {
@@ -799,13 +800,14 @@ export default {
             confirmButtonText: "关闭",
             dangerouslyUseHTMLString: true,
             type: "warning",
+            iconClass: "el-icon-question",
             showCancelButton: false,
             closeOnClickModal:false,
             closeOnPressEscape: false,
             showClose: false,
-            customClass: 'messageBoxCustom'
+            customClass: 'messageBoxCustom messageBoxCustomWarning'
           }).then(() => {
-            this.dialogMatchRangeFormVisible = false
+            // this.dialogMatchRangeFormVisible = false
           })
         }
       })
@@ -995,11 +997,12 @@ export default {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
+        iconClass: "el-icon-question",
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
         showClose: false,
-        customClass: 'messageBoxCustom'
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
       })
       .then((_) => {
         this.showAsignPointTableData = false;
@@ -1027,8 +1030,22 @@ export default {
 };
 </script>
 <style lang="scss">
+.el-message-box__wrapper {
+  top: 15vh;
+  bottom: unset;
+}
+.messageBoxCustomWarning {
+  .el-message-box__status {
+    color: #FA8C16;
+  }
+}
 .messageBoxCustom {
+  width: 388px;
+  box-sizing: border-box;
   padding: 24px 24px;
+  .el-message-box__btns button:nth-child(2) {
+    margin-left: 16px;
+  }
   .el-button--primary {
     background-color: rgba(24, 144, 255, 1);
   }
@@ -1049,8 +1066,8 @@ export default {
       top: -20px;
     }
     .el-message-box__message p {
+      width: 300px;
       font-size: 14px;
-      font-weight: 600;
       color: rgba(0, 0, 0, 0.65);
       line-height: 22px;
     }
@@ -1069,9 +1086,14 @@ export default {
 <style lang="scss" scoped>
 @import '../../../assets/component.scss';
 /deep/ .match-range-dialog {
+  border-radius: 4px;
   .el-dialog__header {
     padding-bottom: 6px;
     border: none !important;
+    .el-dialog__title {
+      font-size: 16px;
+      color: rgba($color: #000, $alpha: .85);
+    }
   }
   .el-dialog__body {
     border: none !important;
@@ -1090,8 +1112,12 @@ export default {
     }
   }
   .el-dialog__footer {
-    padding-top: 24px;
-    padding-bottom: 24px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button+.el-button {
+      margin-left: 16px;
+    }
   }
 }
 /deep/ .add-point-dialog {
@@ -1278,6 +1304,7 @@ export default {
     width: 1px;
     height: 14px;
     margin: 0 8px;
+    vertical-align: middle;
     background: rgba(0, 0, 0, 0.1);
   }
 }

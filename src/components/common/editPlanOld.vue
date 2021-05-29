@@ -5819,6 +5819,13 @@
         bottom: -100px;
         margin-bottom: 22px;
         text-align: center;
+        .finishBtn {
+            display: flex;
+            justify-content: center;
+            .el-button+.el-button {
+                margin-left: 16px;
+            }
+        }
     }
 
     .content_bottom_btn button {
@@ -6508,6 +6515,7 @@
     .planPanel ul li.money {
         margin-bottom: 0 !important;
         font-size: 20px;
+        font-weight: 600;
         color: #666666;
     }
 

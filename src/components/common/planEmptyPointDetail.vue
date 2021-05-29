@@ -587,17 +587,17 @@ export default {
       api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
           if(!res.data.SysCode){
               if(!res.data.IsLock){
-                if(created || this.planDetail.apState==-1) {
+                /* if(created || this.planDetail.apState==-1) {
                   // 方案未配点
                     this.addPointDialogVisible = true
-                } else {
+                } else { */
                   // 方案已配点，显示上次配点结果
                   this.showMatchResult = true
                   this.$nextTick(()=>{
                       // 重置显示参数，方便下次触发watch
                       this.showMatchResult = false
                   })
-                }
+                // }
               } else{
                 this.changeRoute();
               }

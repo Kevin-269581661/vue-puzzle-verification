@@ -20,7 +20,7 @@
                         <el-tab-pane label="列表模式" name="first">
                             <div class="search-row">
                                 <el-input placeholder="请输入资源名称" v-model="filterOptions.searchKey" clearable @clear="filterFun('')" @keyup.enter.native="keyupFun($event)">
-                                    <el-button style="background: #1890ffff; color: #fff;" slot="append" @click="filterFun(filterOptions.searchKey)">搜  索</el-button>
+                                    <el-button style="background: #1890ffff; color: #fff; width: 88px;" slot="append" @click="filterFun(filterOptions.searchKey)">搜  索</el-button>
                                 </el-input>
                             </div>
                             <div class="dw-panel">
@@ -57,22 +57,6 @@
                                     </dd>
                                 </dl>
                             </div>
-                            <!-- <div
-                                class="filter-condition"
-                                v-show="isOccupied && filterCondition.length > 0"
-                                >
-                                <el-tag
-                                    v-for="(tag, index) in filterCondition"
-                                    :key="index"
-                                    closable
-                                    :disable-transitions="false"
-                                    @close="filterTagCloseFun(tag, index)"
-                                    :type="tag.type"
-                                    size="medium"
-                                >
-                                    {{ tag.name }}
-                                </el-tag>
-                            </div> -->
                             <div class="car-title">
                                 <i class="el-icon-info" style="color: #1890FF;"></i>
                                 <h4 v-if="reading">
@@ -98,14 +82,15 @@
                                 class="shareTable">
                                 <el-table-column
                                     v-if="reading"
-                                    width="40px"
+                                    width="54px"
                                     type="selection"
+                                    align="center"
                                     :reserve-selection="true">
                                 </el-table-column>
                                 <el-table-column
                                     label="资源名称"
                                     show-overflow-tooltip
-                                    min-width="110">
+                                    min-width="140">
                                     <template slot-scope="scope">
                                         <span>{{scope.row.resName || '--' }}</span>
                                     </template>
@@ -132,47 +117,57 @@
                                     min-width="85">
                                 </el-table-column>
                                 <el-table-column
+                                    prop="hPrice"
+                                    sortable
                                     label="楼盘价格"
-                                    min-width="85">
+                                    min-width="100">
                                     <template slot-scope="scope">
                                         <span>&yen;{{scope.row.hPrice}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
                                     prop="fNum"
+                                    sortable
                                     label="楼栋数量"
-                                    min-width="80">
+                                    min-width="100">
                                 </el-table-column>
                                 <el-table-column
                                     prop="hNum"
+                                    sortable
                                     label="住户数量"
-                                    min-width="80">
+                                    min-width="100"
+                                    align="right">
                                 </el-table-column>
                                 <el-table-column
                                     prop="chDay"
+                                    sortable
                                     label="建成年份"
-                                    min-width="80">
+                                    min-width="100">
                                 </el-table-column>
                                 <el-table-column
                                     prop="schedule"
                                     label="排期"
-                                    min-width="180"
+                                    min-width="200"
+                                    align="left"
                                     show-overflow-tooltip>
                                 </el-table-column>
                                 <el-table-column
                                     prop="actualMediaCnt"
                                     label="媒体数量(门)"
-                                    min-width="100">
+                                    min-width="120"
+                                    align="right">
                                 </el-table-column>
                                 <el-table-column
                                     prop="actualAdsCnt"
                                     label="可投数量(面)"
-                                    min-width="100">
+                                    min-width="120"
+                                    align="right">
                                 </el-table-column>
                                 <el-table-column
                                     label="计划投放数(面)"
                                     min-width="130"
-                                    align="center"
+                                    align="left"
+                                    fixed="right"
                                 >
                                     <template slot-scope="scope">
                                         <el-input-number style="width: 80px" size="mini" :min="0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
@@ -607,13 +602,13 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
     }
 </script>
 <style lang="scss" scoped>
-
     /* 城市、区域、楼盘类型筛选 */
     .dw-panel {
-        border: 1px solid #d8d8d8;
         margin-top: 24px;
         margin-bottom: 8px;
         padding: 0 18px 0 18px;
+        border: 1px solid #D8D8D8;
+        border-radius: 4px;
         dl {
             border-bottom: 1px dashed #d8d8d8;
             line-height: 40px;
@@ -727,10 +722,13 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
     }
 
     .content_main {
-        margin-top: 24px;
+        margin-top: 16px;
         background: #fff;
         padding: 0;
         border: 1px solid rgba(232,232,232,1);
+        .el-tabs__nav-wrap::after {
+            height: 1px;
+        }
     }
     .content_main /deep/ .el-tabs__content{
         padding: 0 24px 24px;
@@ -759,11 +757,10 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
     }
 
     .car-title {
-        background: #E6F7FF;
+        padding: 8px 16px;
         border: 1px solid #BAE7FF;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        padding: 5px;
+        margin-bottom: 8px;
+        background: #E6F7FF;
     }
 
     .car-title h4 {
@@ -781,7 +778,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
 
     .car-title span {
         font-size: 14px;
-        font-weight: normal;
+        font-weight: 600;
         margin: 0 6px;
         cursor: pointer;
         color: #1890ff;
@@ -892,27 +889,14 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         width: 90%;
     }
 
-    .shareTable /deep/ .has-gutter th:nth-child(7),
-    .shareTable /deep/ .has-gutter th:nth-child(6),
-    .shareTable /deep/ .has-gutter th:nth-child(5),
-    .shareTable /deep/ .el-table__row td:nth-child(7),
-    .shareTable /deep/ .el-table__row td:nth-child(5),
-    .shareTable /deep/ .el-table__row td:nth-child(6) {
-        text-align: right;
-    }
-
-    .shareTable /deep/ .has-gutter th:nth-child(10),
-    .shareTable /deep/ .has-gutter th:nth-child(11),
-    .shareTable /deep/ .has-gutter th:nth-child(12),
-    .shareTable /deep/ .has-gutter th:nth-child(13),
-    .shareTable /deep/ .el-table__row td:nth-child(10),
-    .shareTable /deep/ .el-table__row td:nth-child(11),
-    .shareTable /deep/ .el-table__row td:nth-child(12),
-    .shareTable /deep/ .el-table__row td:nth-child(13){
-        text-align: center;
-    }
-
-    .shareTable {
+    /deep/ .shareTable {
+        .el-table tr th, .el-table tr td {
+            height: 46px;
+            .cell {
+                height: 25px;
+                line-height: 25px;
+            }
+        }
         /deep/ .el-input-number--mini {
             .el-input__inner {
                 height: 28px;

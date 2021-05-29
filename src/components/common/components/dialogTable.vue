@@ -7,12 +7,14 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     custom-class="custom-dialog-wrapper adjust-dialog"
+    top="10vh"
     center>
     <div>
       <slot name="topTip"></slot>
       <el-table
         :data="currentPagination"
         style="width: 100%"
+        height="450px"
         v-loading="loading"
         element-loading-text="玩命加载中..."
         element-loading-spinner="el-icon-loading"

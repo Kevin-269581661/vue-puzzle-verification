@@ -97,6 +97,7 @@
           label="序号"
           min-width="6%"
           width="50"
+          align="center"
           :index="successPageSize * successCurrentPage - successPageSize + 1"
         >
         </el-table-column>
@@ -163,6 +164,7 @@
           type="index"
           label="序号"
           width="50"
+          align="center"
           :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
         >
         </el-table-column>

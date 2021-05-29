@@ -773,20 +773,36 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
-        this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
-          "恭喜您，配点成功！", {
-          confirmButtonText: "查看详情",
-          dangerouslyUseHTMLString: true,
-          type: "success",
-          showCancelButton: false,
-          closeOnClickModal:false,
-          closeOnPressEscape: false,
-          showClose: false,
-          customClass: 'messageBoxCustom'
-        }).then(() => {
-          this.dialogMatchRangeFormVisible = false
-          this.getSuccessPoint(matchRes)
-        })
+        if(matchRes) {
+          this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
+            "恭喜您，配点成功！", {
+            confirmButtonText: "查看详情",
+            dangerouslyUseHTMLString: true,
+            type: "success",
+            showCancelButton: false,
+            closeOnClickModal:false,
+            closeOnPressEscape: false,
+            showClose: false,
+            customClass: 'messageBoxCustom'
+          }).then(() => {
+            this.dialogMatchRangeFormVisible = false
+            this.getSuccessPoint(matchRes)
+          })
+        } else if(matchRes===null) {
+          this.$confirm(`所选配点条件匹配不到任何点位`,
+            "配点失败！", {
+            confirmButtonText: "关闭",
+            dangerouslyUseHTMLString: true,
+            type: "warning",
+            showCancelButton: false,
+            closeOnClickModal:false,
+            closeOnPressEscape: false,
+            showClose: false,
+            customClass: 'messageBoxCustom'
+          }).then(() => {
+            this.dialogMatchRangeFormVisible = false
+          })
+        }
       })
     },
     // 查询配点结果概要
@@ -1052,7 +1068,7 @@ export default {
     border: none !important;
   }
   .el-dialog__body {
-    border: none;
+    border: none !important;
     .content-tip {
       margin-bottom: 16px;
       font-size: 14px;
@@ -1084,6 +1100,14 @@ export default {
   }
   .el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
     width: 20px;
+  }
+  .el-input-number.is-controls-right[class*=mini] {
+    [class*=increase] {
+      line-height: 12px;
+    }
+    [class*=decrease] {
+      line-height: 12px;
+    }
   }
   .el-dialog__footer {
     .el-button+.el-button {
@@ -1144,13 +1168,13 @@ export default {
     }
     .el-input-number {
       width: unset;
-      line-height: 28px;
+      line-height: 24px;
       margin: 0;
       .el-input__inner {
         width: 64px;
-        height: 28px;
+        height: 24px;
         padding: 0 28px 0 8px;
-        line-height: 28px;
+        line-height: 24px;
         text-align: center;
       }
     }

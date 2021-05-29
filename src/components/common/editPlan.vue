@@ -606,28 +606,26 @@
                                             </el-col>
                                         </el-row>
                                         <el-row class="car-title">
-                                            <el-col :span="9">
-                                                <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
-                                                社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                                (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                                选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
-                                                选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
-                                            </el-col>
-                                            <el-col :span="2">
-                                                媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                            </el-col>
-                                            <el-col :span="6">
-                                                点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                                (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
-                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
-                                            </el-col>
-                                            <el-col :span="5" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                            <i class="el-icon-info"></i>
+                                            小区:<span>{{shopMedia_ADNum.resNum}}</span
+                                            >(选1面:<span>{{shopMedia_ADNum.oneNum}}</span>
+                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>
+                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>
+                                            选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                            <div class="divide-border"></div>
+                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                            <div class="divide-border"></div>
+                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span
+                                            >(A面:<span>{{mediaLevelNum.ANum}}</span>
+                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                            <div class="divide-border"></div>
+                                            <template v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
                                                 A级:<span>{{mediaLevelNum.ALevel}}</span>
                                                 B级:<span>{{mediaLevelNum.BLevel}}</span>
                                                 C级:<span>{{mediaLevelNum.CLevel}}</span>
-                                            </el-col>
-                                            <el-col :span="2">被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span></el-col>
+                                            </template>
+                                            <div class="divide-border"></div>
+                                            被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span>
                                         </el-row>
                                         <span class="change_scheduling" @click="changeAdsSchedule"
                                               v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt060_ck04' : 'a004_b008_c001_d002_bt075_ck04'}">
@@ -758,11 +756,11 @@
                                         </el-table>
                                         <div class="row-table-bottom">
                                             <p class="warningInfo">
-                                                <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                                <span style="background: #FFC1BE;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">被占点位</span>
-                                                <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                                <span style="background: #FFE093;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
-                                                <span style="background: #B5FFC4FF" class="warningInfoColor"></span>
+                                                <span style="background: #B5FFC4;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">非意向点位</span>
                                             </p>
                                             <el-pagination
@@ -973,7 +971,7 @@
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
-                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <i class="el-icon-info"></i>
                     <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
                         <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
                     </h4>
@@ -5624,31 +5622,34 @@
         }
     }
     .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
+        padding: 8px;
         margin-bottom: 10px;
-        padding: 5px;
+        border: 1px solid #bae7ff;
+        border-radius: 4px;
+        line-height: 22px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #e6f7ff;
+        .el-icon-info {
+            color: #1890ff;
+            margin-right: 4px;
+        }
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        h4 {
+            font-size: 14px;
+            display: inline-block;
+        }
     }
-
-    .car-title h4 {
-        font-size: 14px;
+    .divide-border {
         display: inline-block;
-    }
-
-    .car-title p {
-        font-size: 14px;
-        font-weight: normal;
-        display: inline-block;
-        margin-left: 10px;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 4px;
-        cursor: pointer;
-        color: #1890ff;
+        width: 1px;
+        height: 14px;
+        vertical-align: middle;
+        margin: 0 8px;
+        background: rgba(0, 0, 0, 0.1);
     }
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {

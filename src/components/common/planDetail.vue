@@ -160,17 +160,17 @@
                         </el-input>
                     </el-form-item>
                     <div class="form__line"></div>
-                    <el-form-item label="现金结算：" prop="cash" :label-width="formLabelWidth">
+                    <el-form-item class="special-padding" label="现金结算：" prop="cash" :label-width="formLabelWidth">
                         <el-input placeholder="请输入金额" v-model.number="settlementForm.cash" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
                     </el-form-item>
-                    <el-form-item label="置换结算：" prop="displace" :label-width="formLabelWidth">
+                    <el-form-item class="special-padding" label="置换结算：" prop="displace" :label-width="formLabelWidth">
                         <el-input placeholder="请输入金额" v-model.number="settlementForm.displace" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
                     </el-form-item>
-                    <el-form-item label="其它结算：" prop="other" :label-width="formLabelWidth">
+                    <el-form-item class="special-padding" label="其它结算：" prop="other" :label-width="formLabelWidth">
                         <el-input placeholder="请输入金额" v-model.number="settlementForm.other" size="small" maxlength="7">
                             <template slot="append">元</template>
                         </el-input>
@@ -183,7 +183,7 @@
                         <el-input type="textarea" placeholder="请输入备注" v-model="settlementForm.settlementRemark" size="small"></el-input>
                     </el-form-item>
                 </el-form>
-                <div slot="footer" class="dialog-footer">
+                <div slot="footer" class="dialog-footer__button">
                     <el-button @click="resetSettlement(()=>settlementFormVisible = false)">取 消</el-button>
                     <el-button type="primary" @click="setPlanPrice('settlementForm')">确 定</el-button>
                 </div>
@@ -875,6 +875,21 @@ export default {
     .el-form-item {
         padding: 8px 0;
         margin: 0;
+        .el-form-item__label {
+            color: rgba(0, 0, 0, 0.65);
+        }
+        ::placeholder{/*Firefox,Chrome,Opera*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+        :-ms-input-placeholder{/*InternetExplorer10-11*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+        ::-ms-input-placeholder{/*MicrosoftEdge*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
     }
     .form__line {
         margin: 16px 0;
@@ -883,18 +898,44 @@ export default {
     }
     .el-form-item__content {
         line-height: unset;
+        .el-input__inner {
+            color: rgba(0, 0, 0, 0.65);
+        }
+        .el-input-group__append {
+            padding: 4px 12px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+    }
+    .special-padding.el-form-item {
+        .el-input-group__append {
+            padding: 4px 9px;
+        }
     }
     .form-item__price {
         line-height: 32px;
+        color: rgba(0, 0, 0, 0.65);
     }
     .el-dialog__header {
         padding: 16px 24px;
+        .el-dialog__title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 24px;
+        }
     }
     .el-dialog__body {
         padding: 0 24px;
     }
     .el-dialog__footer {
         padding: 16px 24px 24px;
+        .dialog-footer__button {
+            word-spacing: -1em;
+            .el-button+.el-button {
+                margin-left: 16px;
+            }
+        }
     }
     .el-form-item__label {
         padding: 0;

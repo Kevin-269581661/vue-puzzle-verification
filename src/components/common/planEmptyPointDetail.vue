@@ -54,44 +54,47 @@
               <div class="plan-detail">
                 <div class="plan-detail-left">
                     <ul>
-                        <li>
-                            <span>公司名称：</span>
-                            <em>{{planDetail.cName}}</em>
-                        </li>
-                         <li>
-                            <span>公司品牌：</span>
-                            <em>{{planDetail.bTitle || '--'}}</em>
-                        </li>
-                        <li>
-                            <span>联系人：</span>
-                            <em>{{planDetail.cuName}}</em>
-                        </li>
-                        <li>
-                            <span>投放城市：</span>
-                            <em>{{filter(planDetail.rIDs)}}</em>
-                        </li>
-                        <li>
-                            <span>意向小区总数</span>
-                            <em>{{planDetail.proposalResCnt}}</em>
-                        </li>
-                        <li>
-                            <span>计划投放面数</span>
-                            <em>{{planDetail.planPdNum}}</em>
-                        </li>
-                        <li>
-                            <span>所属销售：</span>
-                            <em>{{planDetail.realName}}</em>
-                        </li>
+                      <li>
+                        <span>公司名称：</span>
+                        <em>{{planDetail.cName}}</em>
+                      </li>
+                      <li>
+                        <span>投放城市：</span>
+                        <em>{{filter(planDetail.rIDs)}}</em>
+                      </li>
+                      <li>
+                        <span>所属销售：</span>
+                        <em>{{planDetail.realName}}</em>
+                      </li>
+                      <li>
+                        <span>公司品牌：</span>
+                        <em>{{planDetail.bTitle || '--'}}</em>
+                      </li>
+                      <li>
+                        <span>意向小区总数：</span>
+                        <em>{{planDetail.proposalResCnt}}</em>
+                      </li>
+                      <li>
+                        <span>联系人：</span>
+                        <em>{{planDetail.cuName}}</em>
+                      </li>
+                      <li>
+                        <span>计划投放面数：</span>
+                        <em>{{planDetail.planPdNum}}</em>
+                      </li>
                     </ul>
                 </div>
                 <div class="plan-detail-right">
                     <dl>
-                        <dt></dt>
-                        <dd></dd>
+                      <dt></dt>
+                      <dd></dd>
                     </dl>
                     <dl>
-                        <dt>状态</dt>
-                        <dd>{{stateToText(planDetail.apState)}}</dd>
+                      <dt>状态</dt>
+                      <dd>
+                        <b class="order-badge"></b>
+                        {{stateToText(planDetail.apState)}}
+                      </dd>
                     </dl>
                 </div>
             </div>
@@ -938,6 +941,13 @@ export default {
   position: relative;
 }
 
+.plan-detail-left {
+  ul {
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 96px;
+  }
+}
 .plan-title .handleBtn {
   position: absolute;
   right: 28px;

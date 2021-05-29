@@ -748,32 +748,25 @@
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
-                                        <el-col :span="10">
-                                            <img src="../../assets/images/statistics.png" alt=""
-                                                    style="vertical-align: text-top;">
-                                            社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
-                                            选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
-                                        </el-col>
-                                        <el-col :span="2">
-                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                            <template v-if="activeName == '1'">
-                                                (A面:<span>{{mediaLevelNum.ANum}}</span>
-                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
-                                            </template>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            A级:<span>{{mediaLevelNum.ALevel}}</span>
-                                            B级:<span>{{mediaLevelNum.BLevel}}</span>
-                                            C级:<span>{{mediaLevelNum.CLevel}}</span>
-                                        </el-col>
+                                        <i class="el-icon-info"></i>
+                                        小区:<span>{{shopMedia_ADNum.resNum}}</span
+                                        >(选1面:<span>{{shopMedia_ADNum.oneNum}}</span>
+                                        选2面:<span>{{shopMedia_ADNum.twoNum}}</span>
+                                        选3面:<span>{{shopMedia_ADNum.threeNum}}</span>
+                                        选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                        <div class="divide-border"></div>
+                                        媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                        <div class="divide-border"></div>
+                                        点位:<span>{{shopMedia_ADNum.ADNum}}</span
+                                        ><template v-if="activeName == '1'">
+                                            (A面:<span>{{mediaLevelNum.ANum}}</span>
+                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                        </template>
+                                        <div class="divide-border"></div>
+                                        A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                        B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                        C级:<span>{{mediaLevelNum.CLevel}}</span>
                                     </el-row>
-
                                     <el-table
                                         border
                                         :data="currentPagination"
@@ -1211,7 +1204,7 @@
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
-                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <i class="el-icon-info"></i>
                     <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
                         <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
                     </h4>
@@ -6598,31 +6591,26 @@
         }
     }
     .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
+        padding: 8px;
         margin-bottom: 10px;
-        padding: 5px;
-    }
-
-    .car-title h4 {
-        font-size: 14px;
-        display: inline-block;
-    }
-
-    .car-title p {
-        font-size: 14px;
-        font-weight: normal;
-        display: inline-block;
-        margin-left: 10px;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 6px;
-        cursor: pointer;
-        color: #1890ff;
+        border: 1px solid #bae7ff;
+        border-radius: 4px;
+        line-height: 22px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #e6f7ff;
+        .el-icon-info {
+            color: #1890ff;
+            margin-right: 4px;
+        }
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        h4 {
+            font-size: 14px;
+            display: inline-block;
+        }
     }
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {

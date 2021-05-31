@@ -121,7 +121,8 @@
                                     prop="hPrice"
                                     sortable
                                     label="楼盘价格"
-                                    min-width="100">
+                                    min-width="100"
+                                    align="right">
                                     <template slot-scope="scope">
                                         <span>&yen;{{scope.row.hPrice}}</span>
                                     </template>
@@ -130,7 +131,8 @@
                                     prop="fNum"
                                     sortable
                                     label="楼栋数量"
-                                    min-width="100">
+                                    min-width="100"
+                                    align="right">
                                 </el-table-column>
                                 <el-table-column
                                     prop="hNum"
@@ -251,7 +253,8 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                 apID: '',               // 方案id
                 aiCode: '',             // 获取密钥
                 FAData: {},
-                selectedResSet: null, // 记录客户所选小区，关键字：adProposalResID
+                selectedResSet: null, // 记录客户上次提交的所选小区，关键字：adProposalResID
+                selectionMap: {},     // 记录客户当前操作所选小区和计划投放面数
                 selectionResList: [],
                 reading: true,          // 编辑列表
                 key: 1,
@@ -368,6 +371,9 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             updatePlanAdsCnt(row) {
                 clearTimeout(this.timer)
                 this.timer = setTimeout(() => {
+                    if(row.planAdsCnt===null||row.planAdsCnt===undefined) {
+                        row.planAdsCnt = 0
+                    }
                     if(row.planAdsCnt==0) {
                         this.$refs.multipleTable.toggleRowSelection(row, false)
                     } else if(row.planAdsCnt>0) {
@@ -480,15 +486,29 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                 api.getApi('/addsp/proposal/share/getResList', params).then(res => {
                     console.log('获取协同选点列表', res)
                     if(res.data.SysCode == 200200) {
-                        this.showResList = res.data.data
                         // 统计小区总数
-                        onload && (this.resMediaAdsNum.resTotalNum = this.showResList.length||0)
-                        for(let adProposalRes of this.showResList) {
-                            // 统计可投面总数
-                            onload && (this.resMediaAdsNum.adsTotalNum += adProposalRes.actualAdsCnt||0)
-                            if(this.selectedResSet.has(adProposalRes.adProposalResID)) {
-                                this.$refs.multipleTable.toggleRowSelection(adProposalRes, true)
+                        if(onload) {
+                            this.showResList = res.data.data||[]
+                            this.resMediaAdsNum.resTotalNum = this.showResList.length
+                            for(let adProposalRes of this.showResList) {
+                                // 统计可投面总数
+                                this.resMediaAdsNum.adsTotalNum += adProposalRes.actualAdsCnt||0
+                                if(this.selectedResSet.has(adProposalRes.adProposalResID)) {
+                                    this.$refs.multipleTable.toggleRowSelection(adProposalRes, true)
+                                }
                             }
+                        } else {
+                            this.selectionMap = {}
+                            for(let res of this.selectionResList) {
+                                this.selectionMap[res.adProposalResID] = res.planAdsCnt
+                            }
+                            let tempResList = res.data.data||[]
+                            for(let adProposalRes of tempResList) {
+                                if(this.selectionMap[adProposalRes.adProposalResID]>0) {
+                                    adProposalRes.planAdsCnt = this.selectionMap[adProposalRes.adProposalResID]
+                                }
+                            }
+                            this.showResList = tempResList
                         }
                         this.computeNumber()
                     } else {
@@ -549,8 +569,8 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                         this.$refs.multipleTable.toggleRowSelection(adProposalRes, true)
                         adProposalRes.planAdsCnt == 0 && (this.$set(adProposalRes, 'planAdsCnt', 1))
                     }
-                    this.computeNumber()
                 }
+                this.computeNumber()
             },
             // 提交列表选择的点位给无忧地图 activeRadio
             listToMap() {
@@ -723,8 +743,9 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         border: 1px solid rgba(232,232,232,1);
         text-align: center;
         background: url("../../../static/images/shareBg.png") 100% no-repeat;
-        background-size: cover;
+        background-size: contain;
         background-position: center;
+        background-color: #1990ff;
     }
 
     .content_head .title {
@@ -924,6 +945,11 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             .cell {
                 height: 25px;
                 line-height: 25px;
+            }
+        }
+        .el-table__header {
+            .el-table th > .cell {
+                color: rgba(0, 0, 0, 0.85);
             }
         }
         /deep/ .el-input-number--mini {

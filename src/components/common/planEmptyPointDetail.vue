@@ -200,14 +200,14 @@
                   </el-table-column>
                   <el-table-column
                     prop="actualMediaCnt"
-                    label="媒体数量（门）"
+                    label="媒体数量(门)"
                     min-width="7.4%"
                     align="right"
                   >
                   </el-table-column>
                   <el-table-column
                     prop="planAdsCnt"
-                    label="计划投放数量（面）"
+                    label="计划投放数量(面)"
                     min-width="7.4%"
                     align="right"
                   >

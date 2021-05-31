@@ -782,7 +782,7 @@ export default {
       }).then((matchRes)=>{
         this.dialogMatchRangeFormVisible = false
         if(matchRes) {
-          this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
+          this.$confirm(`计划投放<span style='color: #1890ff; font-weight: 600;'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff; font-weight: 600;'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1); font-weight: 600;'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
             "恭喜您，配点成功！", {
             confirmButtonText: "查看详情",
             dangerouslyUseHTMLString: true,

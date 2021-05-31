@@ -53,13 +53,13 @@
             </el-col>
           </el-row>
           <!-- 表格 -->
+          <!-- :default-sort="{ prop: 'mID', order: 'descending' }" -->
           <el-table
             ref="shoppingCartRef"
             border
             :data="shoppingCartShowList"
             :row-class-name="tableRowClassName"
             @row-click="handleCurrentRowChange"
-            :default-sort="{ prop: 'mID', order: 'descending' }"
             style="width: 100%"
             height="500"
             @expand-change="senceOpen"
@@ -140,7 +140,7 @@
               align="center"
             >
               <template slot-scope="scope">
-                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :min="scope.row.actualAdsCnt?1:0" :max="scope.row.normalAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :step="1" :min="1" :max="scope.row.normalAdsCnt||1" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
               </template>
             </el-table-column>
             <el-table-column
@@ -316,7 +316,7 @@ export default {
     },
     handleCurrentRowChange(currentRow) {
       // 可投面数为0
-      if (currentRow && currentRow.actualAdsCnt==0 && currentRow.earliestOnPubDate) {
+      if (currentRow && (currentRow.actualAdsCnt==0||currentRow.planAdsCnt>currentRow.actualAdsCnt) && currentRow.earliestOnPubDate) {
         this.$message({type: 'warning', message: `该小区所选排期内无合适的点位可连续投放，最早可投日期从${currentRow.earliestOnPubDate}开始`})
       }
     },
@@ -384,6 +384,9 @@ export default {
     updatePlanAdsCnt(row) {
       clearTimeout(timeOut);
       timeOut = setTimeout(()=>{
+        if(row.planAdsCnt===null||row.planAdsCnt===undefined) {
+          row.planAdsCnt = 1
+        }
         this.$emit('updateShopCartRow', row)
       }, 500);
     },

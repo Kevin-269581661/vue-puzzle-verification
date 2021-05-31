@@ -767,7 +767,7 @@
                                                 background
                                                 @size-change="handleSizeChange"
                                                 @current-change="handleCurrentChange"
-                                                :current-page="currentPage"
+                                                :current-page.sync="currentPage"
                                                 :page-sizes="[10, 20, 50,100,500]"
                                                 :page-size="cartPageSize"
                                                 class="cart-pagination"

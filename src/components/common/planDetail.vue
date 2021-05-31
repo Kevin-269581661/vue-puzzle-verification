@@ -25,7 +25,7 @@
                                 <!-- planMode：0普通 1意向 -->
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="createShareCode">协同选点</el-button>
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="setPlanPrice">设置金额</el-button>
-                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" type="default" @click="matchRes">配点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" type="default" :disabled="matchCnt>=10" @click="matchRes">{{`配点(${10-matchCnt})`}}</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                                 <el-button type="primary" @click="edit()" 
                                     v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
@@ -190,7 +190,7 @@
             </el-dialog>
         </div>
         <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="false" :matchCnt.sync="matchCnt" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
     </div>
 </template>
 
@@ -251,8 +251,9 @@ export default {
             // 登录信息
             sessionData:{},
             addPointDialogVisible: false,
+            matchCnt: 10,
             rejectAdPlan: [],                  // 排斥方案选项
-            showMatchResult: false,
+            // showMatchResult: false,
             ADLimit: [                      // step2 广告限制
                 {value: '地产', label: '地产'},
                 {value: '汽车', label: '汽车'},
@@ -321,6 +322,7 @@ export default {
         this.getRole();
         // 获取选点排期数据
         this.getInitData();
+        this.getMatchCnt(sessionStorage.getItem("plan_apid"));
         this.getADLimit()       // 获取广告限制列表
     },
     computed: {
@@ -752,22 +754,39 @@ export default {
             api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
-                        if(this.planDetail.apState!==-1) {
+                        /* if(this.planDetail.apState!==-1) {
                             // 方案已配点，显示上次配点结果
                             this.showMatchResult = true
                             this.$nextTick(()=>{
                                 // 重置显示参数，方便下次触发watch
                                 this.showMatchResult = false
                             })
-                        } else {
+                        } else { */
                             // 方案未配点
                             this.addPointDialogVisible = true
-                        }
+                        // }
                     } else{
                         this.changeRoute();
                     }
                 }
             });
+        },
+        // 获取该用户下的配点次数
+        getMatchCnt(apID) {
+            return new Promise((resolve)=>{
+                api.getApi("/addsp/match/getMatchCnt?apID="+apID).then(res => {
+                if (res.data.SysCode == 200200) {
+                    this.matchCnt = res.data.data||0
+                    resolve(true)
+                } else {
+                    sessFun.messageFun('warning', res.data.MSG)
+                    resolve(false)
+                }
+                }).catch(err => {
+                    console.log(err);
+                    resolve(false)
+                });
+            })
         },
         // 替换方案中的点位
         BDSaveMatchToPlan() {
@@ -920,7 +939,7 @@ export default {
         padding: 16px 24px;
         .el-dialog__title {
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             color: rgba(0, 0, 0, 0.85);
             line-height: 24px;
         }

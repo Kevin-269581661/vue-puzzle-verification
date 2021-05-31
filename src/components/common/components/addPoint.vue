@@ -247,31 +247,31 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
-              <el-form-item label="商圈：">
+              <el-form-item label="商圈:">
                 <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
               </el-form-item>
-              <el-form-item label="楼栋数量：">
+              <el-form-item label="楼栋数量:">
                 <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
               </el-form-item>
-              <el-form-item label="资产编号：">
+              <el-form-item label="资产编号:">
                 <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
               </el-form-item>
-              <el-form-item label="入住年份：">
+              <el-form-item label="入住年份:">
                 <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
               </el-form-item>
-              <el-form-item label="广告限制：">
+              <el-form-item label="广告限制:">
                 <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
               </el-form-item>
             </el-form>
 
             <el-form label-position="left" inline v-if="customPermission.patrolPermission">
-              <el-form-item label="巡点问题：">
+              <el-form-item label="巡点问题:">
                 <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
               </el-form-item>
-              <el-form-item label="通行情况：">
+              <el-form-item label="通行情况:">
                 <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
               </el-form-item>
-              <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+              <el-form-item label="通电情况:" v-if="customPermission.patrolPermission==2">
                 <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
               </el-form-item>
             </el-form>
@@ -415,6 +415,11 @@ export default {
     customPermission: {
       type: Object,
       default: ()=>{}
+    },
+    // 销售配点次数
+    matchCnt: {
+      type: Number,
+      default: ()=>10
     }
   },
   components: {
@@ -425,7 +430,6 @@ export default {
       moment,
       sessionData: null,
       matched: false,
-      matchCnt: 0,    // 销售配点次数
       trafficAndmType: {
         excludeTrafficStateList: [],
         excludeMTypeList: []
@@ -604,10 +608,6 @@ export default {
     },
     showMatchResult(val) {
       val && (this.matched = true) && this.getSuccessPoint()
-    },
-    apID(newVal, oldVal) {
-      // 方案详情中销售首次弹框配点时获取已配点次数
-      newVal && newVal!=oldVal && this.sessionData.uType=='BD' && this.getMatchCnt()
     }
   },
   created() {
@@ -648,7 +648,8 @@ export default {
       return new Promise((resolve)=>{
         api.getApi("/addsp/match/getMatchCnt?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
-            this.matchCnt = res.data.data||0
+            // this.matchCnt = res.data.data||10
+            this.$emit("update:matchCnt", res.data.data||10)
             this.loading = false
             resolve(true)
           } else {
@@ -661,8 +662,8 @@ export default {
     },
     // 重新配点
     rematchPoint() {
-      this.$confirm(this.sessionData.uType=='BD'?'本次配点结果质量高，重新配点可能会错失最优点位配置':'重新配点会清除原配点结果信息',
-        "确定放弃本次配点结果吗？", {
+      this.$confirm(this.sessionData.uType=='BD'?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
+        "是否重新配点？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
@@ -1039,10 +1040,11 @@ export default {
     color: #FA8C16;
   }
 }
-.messageBoxCustom {
+.messageBoxCustom.el-message-box {
   width: 388px;
+  border: unset;
   box-sizing: border-box;
-  padding: 24px 24px;
+  padding: 24px 24px !important;
   .el-message-box__btns button:nth-child(2) {
     margin-left: 16px;
   }

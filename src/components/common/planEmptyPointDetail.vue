@@ -37,8 +37,8 @@
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
                 <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain @click="matchRes(planDetail.apID)">配点</el-button>
-                <el-button v-if="customPermission.proposalPermission && role == 'MD'" type="primary" @click="editPlan">配点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
+                <el-button v-if="customPermission.proposalPermission && role == 'MD'" plain @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"
                   @click="edit()"
@@ -266,7 +266,7 @@
       </div>
     </div>
     <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="showMatchResult" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="false" :matchCnt.sync="matchCnt" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
   </div>
 </template>
 
@@ -302,17 +302,18 @@ export default {
       // 登录信息
       sessionData: {},
       addPointDialogVisible: false,
-        rejectAdPlan: [],                  // 排斥方案选项
-        showMatchResult: false,
-        ADLimit: [                      // step2 广告限制
-            {value: '地产', label: '地产'},
-            {value: '汽车', label: '汽车'},
-            {value: '美容', label: '美容'},
-            {value: '餐饮', label: '餐饮'},
-            {value: '食品', label: '食品'},
-            {value: '金融', label: '金融'},
-            {value: '医学', label: '医学'},
-        ],
+      matchCnt: 10,
+      rejectAdPlan: [],                  // 排斥方案选项
+      // showMatchResult: false,
+      ADLimit: [                      // step2 广告限制
+        {value: '地产', label: '地产'},
+        {value: '汽车', label: '汽车'},
+        {value: '美容', label: '美容'},
+        {value: '餐饮', label: '餐饮'},
+        {value: '食品', label: '食品'},
+        {value: '金融', label: '金融'},
+        {value: '医学', label: '医学'},
+      ],
       isDown: false,
       isShow: true,
       //加载中
@@ -360,6 +361,7 @@ export default {
     this.getRole();
     // 获取选点排期数据
     this.getInitData();
+    this.getMatchCnt(sessionStorage.getItem("plan_apid"));
   },
   mounted() {
     if(this.$route.query.option) {
@@ -587,22 +589,39 @@ export default {
       api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
           if(!res.data.SysCode){
               if(!res.data.IsLock){
-                /* if(created || this.planDetail.apState==-1) {
+                // if(created || this.planDetail.apState==-1) {
                   // 方案未配点
                     this.addPointDialogVisible = true
-                } else { */
+                /* } else {
                   // 方案已配点，显示上次配点结果
                   this.showMatchResult = true
                   this.$nextTick(()=>{
-                      // 重置显示参数，方便下次触发watch
-                      this.showMatchResult = false
+                    // 重置显示参数，方便下次触发watch
+                    this.showMatchResult = false
                   })
-                // }
+                } */
               } else{
                 this.changeRoute();
               }
           }
       });
+    },
+    // 获取该用户下的配点次数
+    getMatchCnt(apID) {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/getMatchCnt?apID="+apID).then(res => {
+          if (res.data.SysCode == 200200) {
+            this.matchCnt = res.data.data||0
+            resolve(true)
+          } else {
+            sessFun.messageFun('warning', res.data.MSG)
+            resolve(false)
+          }
+          }).catch(err => {
+            console.log(err);
+            resolve(false)
+          });
+      })
     },
     // 替换方案中的点位
     BDSaveMatchToPlan() {

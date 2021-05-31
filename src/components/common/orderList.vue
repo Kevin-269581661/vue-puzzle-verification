@@ -191,6 +191,7 @@
         <!-- 画像申请的弹出框结束 -->
         <!--修改金额弹框-->
         <el-dialog
+            v-if="orderRow.planMode!=1"
             title="修改订单金额"
             width="768px"
             top="20vh"
@@ -199,7 +200,7 @@
             :before-close="cancelChangePrice">
             <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
-
+        <changeProposalOrderPrice v-else :apID="currApid" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; searchFun()"></changeProposalOrderPrice>
     </div>
 </template>
 
@@ -613,7 +614,6 @@
             },
             // 结束订单
             finishOrder(row) {
-
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -630,6 +630,7 @@
                         type: "warning"
                     }
                 ).then(() => {
+                    this.orderRow = row
                     this.currApid = row.apID
                     const loading = this.$loading({
                         lock: true,
@@ -656,7 +657,7 @@
                                     }
                                 ).then(() => {
                                     this.handleTime = new Date().getTime()
-
+                                    console.log('row---', row)
                                     this.getOrderPriceDetail(row.apID)
                                 })
                                     .catch(() => {

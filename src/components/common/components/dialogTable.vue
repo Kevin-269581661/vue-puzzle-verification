@@ -121,11 +121,12 @@ export default {
 <style lang="scss" scoped>
 /deep/ .adjust-dialog {
   .el-dialog__header {
+    padding: 16px 24px;
     text-align: left;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
-  }
-  .el-dialog__header {
-    padding: 16px 24px;
+    .el-dialog__title {
+      font-weight: 600;
+    }
   }
   .el-dialog__body {
     padding: 24px !important;
@@ -143,7 +144,7 @@ export default {
       }
     }
     .el-table__expanded-cell[class*=cell] {
-      padding: 0;
+      padding-left: 16px;
     }
   }
   .pagination {

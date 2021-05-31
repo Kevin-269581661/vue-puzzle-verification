@@ -60,7 +60,7 @@
                             <div class="car-title">
                                 <i class="el-icon-info" style="color: #1890FF;"></i>
                                 <h4 v-if="reading">
-                                    可选择<span>{{resMediaAdsNum.adsTotalNum}}</span>面（共<span>{{resMediaAdsNum.resTotalNum}}</span>个楼盘）,
+                                    可选择<span>{{resMediaAdsNum.adsTotalNum}}</span>面（共<span>{{resMediaAdsNum.resTotalNum}}</span>个楼盘），
                                     已选:<span>{{resMediaAdsNum.planAdsTotal}}</span>面（共<span>{{resMediaAdsNum.selectionTotal}}</span>个楼盘）
                                 </h4>
                                 <h4 v-else>
@@ -79,6 +79,7 @@
                                 border
                                 :data="currentPageTableData"
                                 style="width: 100%"
+                                height="456px"
                                 class="shareTable">
                                 <el-table-column
                                     v-if="reading"
@@ -170,7 +171,7 @@
                                     fixed="right"
                                 >
                                     <template slot-scope="scope">
-                                        <el-input-number style="width: 80px" size="mini" :min="0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+                                        <el-input-number style="width: 80px" :step-strictly="true" size="mini" :min="0" :max="scope.row.actualAdsCnt||0" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -323,7 +324,34 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
             switchTabs(tab, event) {
                 console.log('---',tab.name, this.activeName)
                 if (tab.name === 'second') {
-                    this.listToMap()
+                    let cityListLength = this.filterOptions.cityList.length
+                    let citySelected = false
+                    for(let i = 0; i < cityListLength; i++) {
+                        if(this.filterOptions.cityList[i].selected) {
+                            let {rID, rName} = this.filterOptions.cityList[i]
+                            this.activeCity = {
+                                value: rID,
+                                label: rName
+                            }
+                            citySelected = true
+                            return
+                        }
+                    }
+                    if(cityListLength > 0 && !citySelected) {
+                        let {rID, rName} = this.filterOptions.cityList[0]
+                        this.activeCity = {
+                            value: rID,
+                            label: rName
+                        }
+                    }
+                    if(this.activeCity.value) {
+                        this.listToMap()
+                    } else {
+                        this.$message({
+                            message: "获取城市失败！",
+                            type: 'warning'
+                        })
+                    }
                 } else {
                     // 无忧地图选择点位同步到列表
                     if (this.isChangeMapSelect) {
@@ -696,6 +724,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         text-align: center;
         background: url("../../../static/images/shareBg.png") 100% no-repeat;
         background-size: cover;
+        background-position: center;
     }
 
     .content_head .title {
@@ -726,8 +755,8 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         background: #fff;
         padding: 0;
         border: 1px solid rgba(232,232,232,1);
-        .el-tabs__nav-wrap::after {
-            height: 1px;
+        /deep/ .el-tabs__nav-wrap::after {
+            height: 1px !important;
         }
     }
     .content_main /deep/ .el-tabs__content{
@@ -784,44 +813,44 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
         color: #1890ff;
     }
 
-    /deep/ .el-tabs__item{
+    /* /deep/ .el-tabs__item{
         font-size: 16px;
-    }
+    } */
 
-    /deep/ .el-tabs__item.is-active {
+    /* /deep/ .el-tabs__item.is-active {
         color: #1890FF;
-    }
+    } */
 
-    /deep/ .el-table th{
+    /* /deep/ .el-table th{
         background: #f7f7f7;
-    }
+    } */
 
-    /deep/ .el-table th > .cell {
+    /* /deep/ .el-table th > .cell {
         color: #666666;
         line-height: 14px;
         font-weight: bold;
 
-    }
+    } */
 
-    /deep/ .el-table__row td{
+    /* /deep/ .el-table__row td{
         line-height: 48px;
         font-size: 14px;
         padding: 8px 0;
-    }
+    } */
 
-    /deep/ .el-checkbox + .el-checkbox {
+    /* /deep/ .el-checkbox + .el-checkbox {
         margin-left: 10px;
-    }
+    } */
 
-    /deep/ .el-table__expanded-cell[class*=cell] {
+    /* /deep/ .el-table__expanded-cell[class*=cell] {
         padding: 0 86px;
         background-color: #F7F7F7;;
-    }
+    } */
 
-    .el-table__expanded-cell[class*=cell] .el-form{
+    /* .el-table__expanded-cell[class*=cell] .el-form{
         height: 44px;
         line-height: 44px;
-    }
+    } */
 
     /deep/ .el-form-item__content {
         line-height: 46px;
@@ -829,34 +858,34 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
 
     /*滚动条*/
     /deep/ .el-table__body-wrapper {
-        height: 440px;
-        overflow-y: auto;
-        overflow-x:auto;
+        // height: 440px;
+        // overflow-y: auto;
+        // overflow-x:auto;
     }
 
-    /deep/ .el-table__body-wrapper::-webkit-scrollbar {
+    /* /deep/ .el-table__body-wrapper::-webkit-scrollbar {
         width: 4px;
         height: 8px;
         background: #FAFAFA;
-    }
+    } */
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
-        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: #C1C1C1;
-        border-radius: 4px;
+        // -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        // background: #C1C1C1;
+        // border-radius: 4px;
     }
 
-    /deep/ .el-table td .cell {
+    /* /deep/ .el-table td .cell {
         height: 30px;
         line-height: 30px;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
+    } */
 
-    /deep/ .el-table__row .cell span{
+    /* /deep/ .el-table__row .cell span{
         overflow-x: initial;
-    }
+    } */
     /*城市按钮*/
     .city_radio{
         display: inline-block;
@@ -910,11 +939,11 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
     }
 
 
-    @media all and (min-width: 1900px){
+    /* @media all and (min-width: 1900px){
         /deep/ .el-table__body-wrapper{
             overflow-x: hidden;
         }
-    }
+    } */
 </style>
 <style>
     .shareADSBtn>.el-message-box__content>.el-icon-warning{

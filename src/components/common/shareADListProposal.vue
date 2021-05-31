@@ -124,7 +124,8 @@
                                     min-width="100"
                                     align="right">
                                     <template slot-scope="scope">
-                                        <span>&yen;{{scope.row.hPrice}}</span>
+                                        <!-- &yen; -->
+                                        <span>{{scope.row.hPrice | moneyFormat("¥", 0)}}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
@@ -133,6 +134,9 @@
                                     label="楼栋数量"
                                     min-width="100"
                                     align="right">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.fNum | moneyFormat("", 0)}}</span>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column
                                     prop="hNum"
@@ -140,6 +144,9 @@
                                     label="住户数量"
                                     min-width="100"
                                     align="right">
+                                    <template slot-scope="scope">
+                                        <span>{{scope.row.hNum | moneyFormat("", 0)}}</span>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column
                                     prop="chDay"

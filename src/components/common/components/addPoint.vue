@@ -200,12 +200,12 @@
       <div slot="topTip">
         <span class="table-top-comment">
           意向投放小区：<span>{{
-            tipObj.planResCount
+            intentionInfo.planResCount || ""
           }}</span>个
           <span class="active comment-item" @click="getIntentionList">&nbsp;查看</span>
-          计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}个</span> 
-          客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
-          客户要求：<span class="comment-item">{{ tipObj.customerDemand }}</span>
+          计划投放点位：<span class="comment-item">{{ intentionInfo.planAdSpaceCount }}个</span>
+          客户预算：<span class="comment-item">{{ (intentionInfo.customerBudget/100) | moneyFormat("¥") }}</span>
+          客户要求：<span class="comment-item">{{ intentionInfo.customerDemand }}</span>
         </span>
         <div class="table-top-tip">
           <i class="el-icon-info" style="color: #1890ff"></i>
@@ -373,7 +373,11 @@
     >
       <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
       <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
-      <el-radio v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
+      <el-tooltip v-if="sessionData.uType == 'BD'" placement="top" trigger="hover" effect="dark">
+        <div slot="content">个别未配点小区请联系媒介协助配点</div>
+        <el-radio disabled v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
+      </el-tooltip>
+      <el-radio v-else v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
       <template slot="footer">
         <el-button @click="dialogMatchRangeFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="matchRes">确 定</el-button>

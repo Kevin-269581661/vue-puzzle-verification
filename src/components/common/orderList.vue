@@ -200,7 +200,7 @@
             :before-close="cancelChangePrice">
             <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
-        <changeProposalOrderPrice v-else :apID="currApid" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; searchFun()"></changeProposalOrderPrice>
+        <changeProposalOrderPrice v-else :apID="currApid" :requesInfo="{mark: this.handleTime, opType: 2}" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; searchFun()"></changeProposalOrderPrice>
     </div>
 </template>
 

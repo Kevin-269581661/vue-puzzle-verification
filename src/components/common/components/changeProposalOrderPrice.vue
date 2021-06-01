@@ -50,6 +50,10 @@
             settlementFormVisible: {
                 type: Boolean,
                 default: ()=>false
+            },
+            requesInfo: {
+                type: Object,
+                default: ()=>{}
             }
         },
         data() {
@@ -107,7 +111,8 @@
                                 cashFee: this.settlementForm.cash*100,
                                 sendFee: this.settlementForm.displace*100,
                                 otherFee: this.settlementForm.other*100,
-                                remark: this.settlementForm.settlementRemark||''
+                                remark: this.settlementForm.settlementRemark||'',
+                                ...this.requesInfo
                             }
                             api.postApi('/addsp/proposal/updatePlanMoney', params).then((res) => {
                                 if (res.data.SysCode === 200200) {

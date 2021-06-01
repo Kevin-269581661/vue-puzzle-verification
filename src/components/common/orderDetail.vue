@@ -640,7 +640,7 @@
                     <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
                                       :changePriceData="changePriceData"></changeOrderPrice>
                 </el-dialog>
-                <changeProposalOrderPrice v-else :apID="orderDetail.apID" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; getInitData()"></changeProposalOrderPrice>
+                <changeProposalOrderPrice v-else :apID="orderDetail.apID" :requesInfo="{mark: this.handleTime, opType: 1}" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; getInitData()"></changeProposalOrderPrice>
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">

@@ -4758,9 +4758,9 @@
                         this.getRejectPlanList()    // 获取排斥方案列表
                         this.getSimplePlanResList()  // 获取该方案下的所有意向小区
                         // 如果未配点，弹出配点弹框
-                        /* if(this.FAInfo.planMode == 1) {
-                            this.matchPoint()
-                        } */
+                        if(this.FAInfo.planMode == 1 && this.FAInfo.apState==-1) {
+                            this.addPointDialogVisible = true
+                        }
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)
                     }

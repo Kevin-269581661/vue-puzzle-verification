@@ -9,8 +9,8 @@
       <template>
         <!-- 头部 -->
         <div class="table_wrap car-list" style="margin-top: 60px">
-          <el-row style="margin-bottom: 11px">
-            <el-col :span="16" style="text-align: left">
+          <el-row style="margin-bottom: 11px; text-align: right;">
+            <!-- <el-col :span="16" style="text-align: left"> -->
               <span class="button_point">
                 <el-button
                   plain
@@ -23,8 +23,21 @@
                   }"
                   >获取地图选点</el-button
                 >
+                <el-button v-if="apState!=null" plain @click="getShareADList" size="small" class="mapBtn"
+                  v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
               </span>
-            </el-col>
+              <!-- 2-移除可投数量为0的意向小区 3-移除未配点小区 4-移除非客户选点的小区 -->
+              <el-dropdown v-if="apState!=null" size="small" type="primary">
+                <el-button type="primary" style="padding: 0 8px;">
+                  一键移除<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(4)">移除非客户选点</el-dropdown-item>
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(2)">移除可投数量为0的小区</el-dropdown-item>
+                  <el-dropdown-item @click.native.prevent="deletePartBackUp(3)">移除未配点小区</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            <!-- </el-col> -->
           </el-row>
           <el-row class="car-title">
             <el-col>
@@ -40,13 +53,15 @@
             </el-col>
           </el-row>
           <!-- 表格 -->
+          <!-- :default-sort="{ prop: 'mID', order: 'descending' }" -->
           <el-table
             ref="shoppingCartRef"
             border
             :data="shoppingCartShowList"
-            :default-sort="{ prop: 'mID', order: 'descending' }"
-            @row-click="shopRowClick"
+            :row-class-name="tableRowClassName"
+            @row-click="handleCurrentRowChange"
             style="width: 100%"
+            height="500"
             @expand-change="senceOpen"
           >
             <el-table-column type="expand">
@@ -77,7 +92,11 @@
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column label="资源名称" min-width="150" prop="resName">
+            <el-table-column label="资源名称" min-width="150" prop="resName" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <span v-if="scope.row.isCustomerSelect" class="custom-select">*</span>
+                <span>{{ scope.row.resName }}</span>
+              </template>
             </el-table-column>
             <el-table-column prop="cityName" label="城市" min-width="60">
             </el-table-column>
@@ -116,11 +135,22 @@
             >
             </el-table-column>
             <el-table-column
-              prop="planAdsCnt"
               label="计划投放数(面)"
-              min-width="120"
-              align="right"
+              min-width="130"
+              align="center"
             >
+              <template slot-scope="scope">
+                <el-input-number style="width: 80px" :class="{'custom-select': scope.row.isCustomerSelect}" size="mini" :step="1" :min="1" :max="scope.row.normalAdsCnt||1" v-model="scope.row.planAdsCnt" @change="updatePlanAdsCnt(scope.row)"></el-input-number>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-if="apState==1"
+              label="配点情况"
+              min-width="120"
+            >
+            <template slot-scope="scope">
+                <span>{{ !scope.row.carAdsCnt?'未配点':scope.row.planAdsCnt==scope.row.carAdsCnt?'已完成':'已配('+(scope.row.carAdsCnt||0)+')' }}</span>
+              </template>
             </el-table-column>
             <el-table-column min-width="50" :render-header="renderHeader">
               <template slot-scope="scope">
@@ -144,17 +174,23 @@
           </el-table>
           <!-- 分页 -->
           <div class="row-table-bottom">
+            <p class="warningInfo">
+              <span style="background: #FFC1BE;" class="warningInfoColor"></span>
+              <span class="warningInfoName">可投面数为0的小区</span>
+              <span style="background: #FFE093;" class="warningInfoColor"></span>
+              <span class="warningInfoName">可投面数不满足计划投放面数的小区</span>
+            </p>
             <el-pagination
               background
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
-              :current-page="currentPage"
+              :current-page.sync="currentPage"
               :page-sizes="[10, 20, 50, 100, 500]"
               :page-size="cartPageSize"
               :pager-count="5"
               class="cart-pagination"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="totalNum"
+              :total="shoppingCartList.length"
               style="text-align: right"
             >
             </el-pagination>
@@ -186,6 +222,7 @@
 </template>
 
 <script>
+var timeOut = null;
 export default {
   name: "shoppingCart",
   props: {
@@ -201,6 +238,10 @@ export default {
     activeName: {
       type: Number,
       default: 1,
+    },
+    apState: {
+      type: Number,
+      default: null
     },
     //展示的数据
     shoppingCartList: {
@@ -244,9 +285,9 @@ export default {
       // 购物车分页时页面条目数量
       currentPage: 1,
       cartPageSize: 10,
-      totalNum: 400,
+      totalNum: 0,
       //所有的数据，如果是一次全部返回的话
-      shopDelRowClick: false,
+      shopDelRowClick: false
     };
   },
  
@@ -259,6 +300,24 @@ export default {
               this.$refs.shoppingCartRef.toggleRowExpansion(ele,false)
             }
           });
+      }
+    },
+    // 表格当前行是否高亮
+    tableRowClassName({row}) {
+      if (row.actualAdsCnt==0) {
+        // 可投面数为0
+        return "warning-row";
+      } else if (row.planAdsCnt>row.actualAdsCnt) {
+          // 可投面数不满足计划投放面数
+        return "warning-row-conncet";
+      }else {
+        return "";
+      }
+    },
+    handleCurrentRowChange(currentRow) {
+      // 可投面数为0
+      if (currentRow && (currentRow.actualAdsCnt==0||currentRow.planAdsCnt>currentRow.actualAdsCnt) && currentRow.earliestOnPubDate) {
+        this.$message({type: 'warning', message: `该小区所选排期内无合适的点位可连续投放，最早可投日期从${currentRow.earliestOnPubDate}开始`})
       }
     },
     //继续选点
@@ -287,14 +346,20 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
     },
-    // 购物车行被点击
-    shopRowClick(row, event, column) {
-      console.log("购物车行被点击row", row, column);
-    },
     // 购物车-获取地图选择的点位列表
     getMapADList() {
       console.log("触发获取地图选点信息click");
       this.$emit("getMapADList");
+    },
+    // 购物车- 获取协同选点的数据
+    getShareADList() {
+      this.currentPage = 1;
+      this.$emit("getShareADList");
+    },
+    // 一键移除
+    deletePartBackUp(val) {
+      this.currentPage = 1;
+      this.$emit("deletePartBackUp", val);
     },
     // 自定义购物车表头-清空
     renderHeader(h, { column }) {
@@ -316,6 +381,15 @@ export default {
         [h("span", "清空")]
       );
     },
+    updatePlanAdsCnt(row) {
+      clearTimeout(timeOut);
+      timeOut = setTimeout(()=>{
+        if(row.planAdsCnt===null||row.planAdsCnt===undefined) {
+          row.planAdsCnt = 1
+        }
+        this.$emit('updateShopCartRow', row)
+      }, 500);
+    },
     // 清空购物车
     clearShop() {
       this.$emit("shoppongCartClearData");
@@ -331,10 +405,9 @@ export default {
   },
   computed: {
     shoppingCartShowList() {
-      this.totalNum = this.shoppingCartList.length;
-      if (this.$refs.shoppingCartRef) {
+      /* if (this.$refs.shoppingCartRef) {
         this.$refs.shoppingCartRef.bodyWrapper.scrollTop = 0;
-      }
+      } */
       return this.shoppingCartList.slice(
         (this.currentPage - 1) * this.cartPageSize,
         this.currentPage * this.cartPageSize
@@ -431,6 +504,22 @@ export default {
 
 /deep/ .table_wrap.car-list {
   margin-top: 0 !important;
+  .el-input-number--mini {
+    .el-input__inner {
+      height: 26px;
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+    .el-input-number__decrease, .el-input-number__increase {
+      width: 26px;
+    }
+  }
+  .custom-select {
+    color: red;
+    .el-input__inner {
+      color: red;
+    }
+  }
 }
 .mapBtn {
   min-width: 110px;
@@ -460,6 +549,42 @@ export default {
   line-height: 40px;
 }
 /deep/ .el-table__expand-column .cell{
-    height: auto
+  height: auto
+}
+
+.shopList_adLimit {
+  width: 132px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.row-table-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.warningInfoColor {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  border-radius: 1px;
+  vertical-align: middle;
+}
+
+.warningInfo .warningInfoName {
+  margin-right: 24px;
+  line-height: 22px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/*状态行*/
+/deep/ .el-table .warning-row {
+  background: rgba(255, 0, 0, 0.08);
+}
+
+/deep/ .el-table .warning-row-conncet {
+  background: rgba(255, 199, 0, 0.1);
 }
 </style>  

@@ -20,59 +20,6 @@
                             <el-button type="primary" @click="toH5Report('SK')">查看上刊</el-button>
                             <el-button type="primary" @click="toH5Report('XK')">查看下刊</el-button>
                         </div>
-
-                        <!-- <div class="plan-detail">
-                            <div class="plan-detail-left">
-                                <ul>
-                                    <li>
-                                        <span>公司名称：</span>
-                                        <em>阿里巴巴</em>
-                                    </li>
-                                    <li>
-                                        <span>所属销售：</span>
-                                        <em>周杰伦</em>
-                                    </li>
-                                    <li>
-                                        <span>现金结算：</span>
-                                        <em>¥ 1,234,567</em>
-                                    </li>
-                                    <li>
-                                        <span>公司品牌：</span>
-                                        <em>阿里巴巴</em>
-                                    </li>
-                                    <li>
-                                        <span>投放城市：</span>
-                                        <em>广州、深圳</em>
-                                    </li>
-                                    <li>
-                                        <span>资源置换：</span>
-                                        <em>¥ 0</em>
-                                    </li>
-                                    <li>
-                                        <span>联系人：</span>
-                                        <em>刘德华</em>
-                                    </li>
-                                    <li>
-                                        <span>方案备注：</span>
-                                        <em>无</em>
-                                    </li>
-                                    <li>
-                                        <span>其他费用：</span>
-                                        <em>¥ 0</em>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="plan-detail-right">
-                                <dl>
-                                    <dt>状态</dt>
-                                    <dd>投放中</dd>
-                                </dl>
-                                <dl>
-                                    <dt>方案金额</dt>
-                                    <dd>¥ 1,234,567</dd>
-                                </dl>
-                            </div>
-                        </div> -->
                     </div>
                     <div>
                         <detail :detail="orderDetail" :isorder="true"></detail>
@@ -121,7 +68,7 @@
                                                 </el-form>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="资源名称" min-width="16.1%" prop="resName">
+                                        <el-table-column label="资源名称" min-width="16.1%" prop="resName" show-overflow-tooltip>
                                         </el-table-column>
                                         <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%" class="tar">
                                         </el-table-column>
@@ -140,7 +87,7 @@
                                                 <span>&yen;{{(scope.row.hPrice)?priceFormat(scope.row.hPrice/100): 0 }}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange">
+                                        <el-table-column prop="timeRange" label="排期" min-width="14.2%" :filters="filtersData" :filter-method="filterTimeRange" show-overflow-tooltip>
                                             <template slot-scope="scope">
                                                 <template v-if="scope.row.lState==2">
                                                     <span>{{scope.row.finishTimeRange}}</span>
@@ -421,8 +368,6 @@ export default {
             }
             if(num){
                 this.picStatus = 3;
-                // let city = this.orderDetail.rIDs.split(',')[0];
-                // console.log('comput_city', city);
                 this.map();
             }
             return num;
@@ -600,10 +545,6 @@ export default {
                     geday: obj.schedules[1],
                     apname: this.orderDetail.apName
                 };
-                // api.getApi(this.apiVar.QZhike+'/SetApply', info).then(res=>{
-                //     console.log(res.data)
-                //     Message.success('该订单住户画像开通成功');
-                // });
                 this.downApi(info);
             }
         },

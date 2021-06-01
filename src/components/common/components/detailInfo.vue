@@ -21,7 +21,11 @@ export default {
     },
     methods:{
         // 去重城市
-        filter(val) {
+        filter(cityList=[]) {
+            return cityList.map(_=>_.rName||'').join(',');
+        },
+        // ADorderDetail.vue传递的prop:detail无cityList
+        filter2(val) {
             let res = "";
             if (val) {
                 for (let data of val.split(",")) {
@@ -37,17 +41,19 @@ export default {
         // 状态转换成文本
         stateToText(val) {
             let state = [
-                { text: "已完成", state: 0 },
-                { text: "进行中", state: 1 },
-                { text: "未投放", state: 2 },
-                { text: "投放中", state: 3 },
-                { text: "强制结束", state: 5 }
+                { text: "未配点", state: -1, color: 'rgba(250, 173, 20, 1)' },
+                { text: "已完成", state: 0, color: 'rgba(196,203,211,1)' },
+                { text: "进行中", state: 1, color: 'rgb(113, 213, 217)' },
+                { text: "未投放", state: 2, color: 'rgba(82,196,26,1)' },
+                { text: "投放中", state: 3, color: 'rgba(24,144,255,1)' },
+                { text: "强制结束", state: 5, color: 'rgba(245,34,45,1)' }
             ];
             for (let data of state) {
                 if (val == data.state) {
-                    return data.text;
+                    return data;
                 }
             }
+            return {};
         },
         // 获取用户角色
         getRole() {
@@ -73,27 +79,35 @@ export default {
                         </li>
                         <li v-if="role != 'EP'">
                             <span>现金结算：</span>
-                            <em>¥ {{detail.pdTotal}}</em>
+                            <em>¥{{detail.pdTotal}}</em>
                         </li>
                         <li>
                             <span>公司品牌：</span>
                             <em>{{detail.bTitle || '--'}}</em>
                         </li>
-                        <li>
+                        <li v-if="isorder">
                             <span>投放城市：</span>
-                            <em>{{filter(detail.rIDs)}}</em>
+                            <em>{{filter(detail.cityList)}}</em>
+                        </li>
+                        <li v-else>
+                            <span>投放城市：</span>
+                            <em>{{filter2(detail.rIDs)}}</em>
                         </li>
                         <li v-if="role != 'EP'">
                             <span>资源置换：</span>
-                            <em>¥ {{detail.pdSendFee}}</em>
+                            <em>¥{{detail.pdSendFee}}</em>
                         </li>
                         <li>
                             <span>所属销售：</span>
                             <em>{{detail.realName}}</em>
                         </li>
+                        <li>
+                            <span>客户要求：</span>
+                            <em>{{detail.customerDemand||'无'}}</em>
+                        </li>
                         <li v-if="role != 'EP'">
                             <span>其他费用：</span>
-                            <em>¥ {{detail.pdOtherFee}}</em>
+                            <em>¥{{detail.pdOtherFee}}</em>
                         </li>
                     </ul>
                 </div>
@@ -101,28 +115,35 @@ export default {
                     <dl>
                         <dt>状态</dt>
                         <dd>
-                            <b class="order-badge"></b>
-                            {{stateToText(detail.apState)}}
+                            <b class="order-badge" :style="{background: stateToText(detail.apState).color}"></b>
+                            {{stateToText(detail.apState).text}}
                         </dd>
                     </dl>
                     <dl v-if="role != 'EP'">
                         <dt>
                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
-                                <div slot="content" style="display:flex;">
-                                    <p class="tooltip_p">
-                                        <b>广告门</b>
-                                        <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
-                                        <span>资源置换: <span>¥ {{detail.AdDoor.pdSendFee}}</span></span>
-                                        <span>其他费用: <span>¥ {{detail.AdDoor.pdOtherFee}}</span></span>
-                                    </p>
-                                    <p class="tooltip_p">
-                                        <b>道闸</b>
-                                        <span>现金结算: <span>¥ {{detail.barrier.pdTotal}}</span></span>
-                                        <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
-                                        <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
-                                    </p>
+                                <div slot="content">
+                                    <div v-if="detail.planMode!=1" class="tooltip-box">
+                                        <p class="tooltip-box__p">
+                                            <b>广告门</b>
+                                            <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
+                                            <span>资源置换: <span>¥ {{detail.AdDoor.pdSendFee}}</span></span>
+                                            <span>其他费用: <span>¥ {{detail.AdDoor.pdOtherFee}}</span></span>
+                                        </p>
+                                        <p class="tooltip-box__p">
+                                            <b>道闸</b>
+                                            <span>现金结算: <span>¥ {{detail.barrier.pdTotal}}</span></span>
+                                            <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
+                                            <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
+                                        </p>
+                                    </div>
+                                    <div class="tooltip-box">
+                                        <p class="tooltip-box__p">
+                                            <b>金额备注</b>
+                                            <span>{{detail.remark||'--'}}</span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <!-- <i class="el-icon-info"></i> -->
                                 <i class="fa fa-info-circle" aria-hidden="true"></i>
                             </el-tooltip>
                             方案金额
@@ -160,20 +181,33 @@ export default {
     float: left;
     width: calc(33.3% - 16px);
     margin: 0 16px 12px 0;
+    font-size: 14px;
+    color: #666666;
 }
 
 .plan-detail-left ul li em {
     font-size: 14px;
     color: #666666;
 }
-
-.tooltip_p{
-    max-width: 150px;
+.tooltip-box {
+    display: flex;
+    .tooltip-box__p {
+        max-width: 150px;
+        b {
+            font-size: 14px;
+        }
+        span {
+            font-size: 12px;
+        }
+        & > * {
+            display: inline-block;
+            line-height: 22px;
+            min-width: 75px;
+        }
+    }
 }
-.tooltip_p b, .tooltip_p span{
-    display: inline-block;
-    line-height: 22px;
-    min-width: 75px;
+.tooltip-box + .tooltip-box {
+    margin-top: 8px;
 }
 
 .plan-detail-right {
@@ -204,7 +238,6 @@ export default {
         width: 12px;
         height: 12px;
         border-radius: 6px;
-        background: #1890FF;
     }
 }
 /*1920*/

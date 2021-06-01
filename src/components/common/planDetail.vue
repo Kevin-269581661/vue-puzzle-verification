@@ -17,20 +17,28 @@
                             <img src="../../assets/images/orderlogo.png" alt="">{{planDetail.apName}}
                         </h4>
                         <div class="handleBtn">
-                            <!--<el-button plain>导出</el-button>-->
                             <el-tooltip v-if="role=='MD' && planDetail.lockStatus==1" effect="dark" content="从今天起重新预锁七天" placement="top">
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
+                            <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                             <template v-if="planDetail.apState==1">
-                                <!-- 加盟销售才能编辑非意向进行中方案 -->
-                                <el-button type="primary" @click="edit()" v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) || (role=='MD')"
-                                           v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
+                                <!-- planMode：0普通 1意向 -->
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="createShareCode">协同选点</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="setPlanPrice">设置金额</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" type="default" :disabled="matchCnt>=10" @click="matchRes">{{`配点(${10-matchCnt})`}}</el-button>
+                                <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
+                                <el-button type="primary" @click="edit()" 
+                                    v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
+                                    || 
+                                    (role=='BD' && customPermission.proposalPermission == 1 && planDetail.planMode==1) 
+                                    || 
+                                    (role=='MD')"
+                                    v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt097_ck03'}">编辑</el-button>
                             </template>
                         </div>
                     </div>
                     <div>
                         <detail :detail="planDetail" v-if="isShow"></detail>
-
                     </div>
                 </div>
             </div>
@@ -75,8 +83,7 @@
                                             </el-form>
                                         </template>
                                     </el-table-column>
-
-                                    <el-table-column label="资源名称" min-width="16.1%" prop="resName">
+                                    <el-table-column label="资源名称" min-width="16.1%" prop="resName" show-overflow-tooltip>
                                     </el-table-column>
                                     <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
                                     </el-table-column>
@@ -130,7 +137,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="报价单" name="second">
+                    <el-tab-pane v-if="planDetail.planMode==0" label="报价单" name="second">
                         <ap-quotation @detailInfo="setInfo" :quotationData="quotation" :copydata="copyAsidArr" :shopingList="[]" class="price_quo"></ap-quotation>
                     </el-tab-pane>
                     <el-tab-pane label="物料信息" name="third">
@@ -145,7 +152,45 @@
                 <el-button plain class="cancel" @click="goBack()"
                            v-qadn-mta-h5="{id: 'a004_b010_c000_d000_bt098_ck03'}">返回</el-button>
             </div>
+            <el-dialog title="设置方案金额" :visible.sync="settlementFormVisible" width="368px" custom-class="settlement-dialog" :show-close="false" :close-on-click-modal="false" :close-on-press-escap="false" :before-close="resetSettlement">
+                <el-form ref="settlementForm" :model="settlementForm" :rules="settlementFormRules">
+                    <el-form-item label="点位单价：" prop="unitPrice" :label-width="formLabelWidth">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.unitPrice" size="small" maxlength="7">
+                            <template slot="append">元/面·周</template>
+                        </el-input>
+                    </el-form-item>
+                    <div class="form__line"></div>
+                    <el-form-item class="special-padding" label="现金结算：" prop="cash" :label-width="formLabelWidth">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.cash" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item class="special-padding" label="置换结算：" prop="displace" :label-width="formLabelWidth">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.displace" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item class="special-padding" label="其它结算：" prop="other" :label-width="formLabelWidth">
+                        <el-input placeholder="请输入金额" v-model.number="settlementForm.other" size="small" maxlength="7">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="方案总价：" :label-width="formLabelWidth">
+                        <span class="form-item__price">{{((isNaN(settlementForm.cash)?0:settlementForm.cash*1)+(isNaN(settlementForm.displace)?0:settlementForm.displace*1)+(isNaN(settlementForm.other)?0:settlementForm.other*1)).toFixed(2)}} 元</span>
+                    </el-form-item>
+                    <div class="form__line"></div>
+                    <el-form-item label="金额备注：" prop="settlementRemark" :label-width="formLabelWidth">
+                        <el-input type="textarea" placeholder="请输入备注" v-model="settlementForm.settlementRemark" size="small"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer__button">
+                    <el-button @click="resetSettlement(()=>settlementFormVisible = false)">取 消</el-button>
+                    <el-button type="primary" @click="setPlanPrice('settlementForm')">确 定</el-button>
+                </div>
+            </el-dialog>
         </div>
+        <!--智能配点-->
+        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="false" :matchCnt.sync="matchCnt" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
     </div>
 </template>
 
@@ -162,12 +207,13 @@ import sessFun from "../../commonFun/sessFun.js";
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
+import addPoint from './components/addPoint.vue';
 import {
-    Table,
-    TableColumn,
-    Tabs,
-    TabPane,
-    Button,
+    // Table,
+    // TableColumn,
+    // Tabs,
+    // TabPane,
+    // Button,
     Message,
     MessageBox
 } from "element-ui";
@@ -178,16 +224,45 @@ export default {
         apQuotation,
         material,
         detail,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elButton: Button,
+        addPoint
+        // elTable: Table,
+        // elTableColumn: TableColumn,
+        // elTabs: Tabs,
+        // elTabPane: TabPane,
+        // elButton: Button,
     },
     data() {
+        let validatPrice = (rule, value, callback) => {
+            if (value) {
+                let reg = /^\d{1,}$/;
+                if (!reg.test(value)) {
+                    callback(new Error("请输入正整数"));
+                } else if (value > 9999999) {
+                    callback(new Error("预算不能大于9,999,999"));
+                } else {
+                    callback();
+                }
+            } else {
+                callback();
+                // this.$refs["customerBudgetRef"].clearValidate()
+            }
+        };
         return {
             // 登录信息
             sessionData:{},
+            addPointDialogVisible: false,
+            matchCnt: 10,
+            rejectAdPlan: [],                  // 排斥方案选项
+            // showMatchResult: false,
+            ADLimit: [                      // step2 广告限制
+                {value: '地产', label: '地产'},
+                {value: '汽车', label: '汽车'},
+                {value: '美容', label: '美容'},
+                {value: '餐饮', label: '餐饮'},
+                {value: '食品', label: '食品'},
+                {value: '金融', label: '金融'},
+                {value: '医学', label: '医学'},
+            ],
             isDown: false,
             isShow: true,
             //加载中
@@ -213,8 +288,6 @@ export default {
                 isDetail: true,
                 quotation: []
             },
-            //物料信息
-            // materialInfo: [],
             // 城市过滤结果
             filterCityData: [],
             // 排期时间过滤
@@ -225,7 +298,23 @@ export default {
             // 分页时页面条目数量
             pageSize: 100,
             currentPage: 1,
-            totalNum: 0
+            totalNum: 0,
+            // 设置方案金额
+            formLabelWidth: '70px',
+            settlementFormVisible: false,
+            settlementForm: {
+                unitPrice: 0,
+                cash: 0,
+                displace: 0,
+                other: 0,
+                settlementRemark: ''
+            },
+            settlementFormRules: {
+                unitPrice: [{ validator: validatPrice, trigger: "blur" }],
+                cash: [{ validator: validatPrice, trigger: "blur" }],
+                displace: [{ validator: validatPrice, trigger: "blur" }],
+                other: [{ validator: validatPrice, trigger: "blur" }]
+            }
         };
     },
     created() {
@@ -233,6 +322,8 @@ export default {
         this.getRole();
         // 获取选点排期数据
         this.getInitData();
+        this.getMatchCnt(sessionStorage.getItem("plan_apid"));
+        this.getADLimit()       // 获取广告限制列表
     },
     computed: {
         currentPagination() {
@@ -322,9 +413,8 @@ export default {
             }
         },
         // 获取选点排期列表数据
-        getInitData() {
-            this.isShow = false;
-
+        getInitData(updateDetail=false) {
+            this.isShow = updateDetail;
             // 真实数据
             let apid = sessionStorage.getItem("plan_apid");
             let info = {
@@ -350,14 +440,17 @@ export default {
                             bTitle: info.bTitle,
                             cName: info.cName,
                             cuName: info.cuName,
+                            cityList: info.cityList||[],
+                            customerDemand: info.customerDemand||'',
                             pdEnd: info.pdEnd,
                             pdStar: info.pdStar,
                             rID: info.rID,
                             rIDs: info.rIDs,
                             realName: info.realName,
-                            pdTotal: this.priceFormat((info.apTotal - info.adOtherFee- info.adSendFee)/100),
-                            pdSendFee: this.priceFormat(info.adSendFee/100),
-                            pdOtherFee: this.priceFormat(info.adOtherFee/100),
+                            remark: info.remark,
+                            pdTotal: this.priceFormat(info.apTotal/100 - info.otherFee- info.sendFee),
+                            pdSendFee: this.priceFormat(info.sendFee),
+                            pdOtherFee: this.priceFormat(info.otherFee),
                             Total: this.priceFormat(info.apTotal/100),
                             AdDoor:{
                                 pdTotal: this.priceFormat((info.AdDoor.pdTotal - info.AdDoor.adOtherFee- info.AdDoor.adSendFee)/100),
@@ -371,7 +464,8 @@ export default {
                             },
                         };
                         // 选点排期
-                        this.getSetPoint();
+                        !updateDetail && this.getSetPoint();
+                        this.getRejectPlanList(res.data.data.suID);
                     } else{
                         Message.warning(res.data.MSG);
                     }
@@ -398,6 +492,53 @@ export default {
             } else {
                 this.funcToInit(this.apiVar.Advertisement+'/GetAdLaunch', info, this.planDetail.apState);
             }
+        },
+        getADLimit() {
+            this.ADLimit = []
+            let params = {
+                "uid": this.sessionData.uID,
+                "token": this.sessionData.token,
+                "service":"GetNotPush",
+                "data": {}
+            }
+            api.postApi_new(this.apiVar.Media, params).then(res => {
+                console.log('广告限制列表', res)
+                if(res.data.SysCode === 200200 ){
+                    let limit = res.data.data
+                    let limitArr = []
+                    for (let i = 0; i < limit.length; i++) {
+                        let limitObj = {value: limit[i].nTitle, label: limit[i].nTitle}
+                        limitArr.push(limitObj)
+                    }
+                    this.ADLimit = limitArr
+                }
+            })
+        },
+        // 获取排斥方案选择列
+        getRejectPlanList(suID){
+            let params = {
+                uid:this.sessionData.uID,
+                token: this.sessionData.token,
+                sales_user: suID
+            }
+            api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
+                console.log('销售所属方案',res)
+                if (res.data.SysCode == 200200) {
+                    let resData =  res.data.data
+                    let tempList = []
+                    for(let key of resData){
+                        if(this.apid != key.apId){
+                            tempList.push({
+                                value: key.apId,
+                                label: key.apName + '（' + key.cname + ' · ' + key.apcTime + '）'
+                            })
+                        }
+                    }
+                    this.rejectAdPlan = tempList
+                } else {
+                    sessFun.messageFun('warning',res.data.MSG)
+                }
+            })
         },
         // 请求数据整合
         funcToInit(apiUrl, info, state){
@@ -537,21 +678,180 @@ export default {
                 });
             }).catch(() => {})
         },
+        /**
+         * @description: 生成协同选点链接
+         * @param {*}
+         * @return {*}
+         */        
+        createShareCode() {
+            api.postApi('/addsp/proposal/share/createShareCode', {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: this.planDetail.apID
+            }).then((res) => {
+                if (res.data.SysCode === 200200) {
+                    // let Url = this.apiVar.qadnUrl + '/shareADList?apid=' + res.data.data.apID + '&aicode=' + res.data.data.aiCode;
+                    let Url = `${window.location.protocol}//${window.location.host}/shareADListProposal?apid=${res.data.data.apID}&aicode=${res.data.data.aiCode}`;
+                    console.log('url', Url);
+                    let oInput = document.createElement('input');
+                    oInput.value = Url;
+                    document.body.appendChild(oInput);
+                    oInput.select();                // 选择对象
+                    document.execCommand("Copy"); // 执行浏览器复制命令
+                    oInput.style.display = 'none';
+                    sessFun.messageFun("success", '协同选点链接复制成功，马上分享');    
+                } else {
+                    sessFun.messageFun("warning", res.data.MSG);
+                }
+            });
+        },
+        /**
+         * @description: 设置方案金额
+         * @param {*}
+         * @return {*}
+         */
+        setPlanPrice(formName) {
+            if(this.settlementFormVisible) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let params = {
+                            uid: this.sessionData.uID,
+                            token: this.sessionData.token,
+                            apID: this.planDetail.apID,
+                            adsWeekFee: this.settlementForm.unitPrice*100,
+                            cashFee: this.settlementForm.cash*100,
+                            sendFee: this.settlementForm.displace*100,
+                            otherFee: this.settlementForm.other*100,
+                            remark: this.settlementForm.settlementRemark||''
+                        }
+                        api.postApi('/addsp/proposal/updatePlanMoney', params).then((res) => {
+                            if (res.data.SysCode === 200200) {
+                                this.settlementFormVisible = false
+                                this.getInitData(true)
+                                console.log("金额结算成功");
+                            } else {
+                                sessFun.messageFun("warning", "金额结算失败");
+                            }
+                        });
+                    } else {
+                        console.warn('valid---')
+                        return false;
+                    }
+                });
+            } else {
+                // 表单弹框显示
+                this.settlementFormVisible = true
+            }
+        },
+        // 销售配点
+        matchRes() {
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apid: this.planDetail.apID,
+            };
+            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
+                if(!res.data.SysCode){
+                    if(!res.data.IsLock){
+                        /* if(this.planDetail.apState!==-1) {
+                            // 方案已配点，显示上次配点结果
+                            this.showMatchResult = true
+                            this.$nextTick(()=>{
+                                // 重置显示参数，方便下次触发watch
+                                this.showMatchResult = false
+                            })
+                        } else { */
+                            // 方案未配点
+                            this.addPointDialogVisible = true
+                        // }
+                    } else{
+                        this.changeRoute();
+                    }
+                }
+            });
+        },
+        // 获取该用户下的配点次数
+        getMatchCnt(apID) {
+            return new Promise((resolve)=>{
+                api.getApi("/addsp/match/getMatchCnt?apID="+apID).then(res => {
+                if (res.data.SysCode == 200200) {
+                    this.matchCnt = res.data.data||0
+                    resolve(true)
+                } else {
+                    sessFun.messageFun('warning', res.data.MSG)
+                    resolve(false)
+                }
+                }).catch(err => {
+                    console.log(err);
+                    resolve(false)
+                });
+            })
+        },
+        // 替换方案中的点位
+        BDSaveMatchToPlan() {
+            let info = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: this.planDetail.apID
+            };
+            api.postApi("/addsp/match/UpdatePlan", info).then((res) => {
+                if (res.data.SysCode === 200200) {
+                    // this.getInitData();
+                    location.reload(false)
+                    sessFun.messageFun("success", '保存配点成功！');
+                } else {
+                    sessFun.messageFun("warning", res.data.MSG);
+                }
+            });
+        },
+        // 
+        resetSettlement(done) {
+            if(this.$refs.settlementForm) {
+                this.$refs.settlementForm.resetFields()
+                done()
+            }
+            // this.$refs[formName].resetFields()
+            // this.settlementFormVisible = false
+        },
+        //清空草稿箱数据
+        clearDrafts(apid) {
+            let params = {
+                uid: this.sessionData.uID,
+                token: this.sessionData.token,
+                apID: apid
+            };
+            return new Promise(resolve=>{
+                api.postApi(this.apiVar.CleanAdBackUp, params).then((res) => {
+                    if (res.data.SysCode === 200200) {
+                        console.log("清除草稿箱成功");
+                        resolve(1)
+                    } else {
+                        sessFun.messageFun("warning", "清除草稿箱失败");
+                    }
+                });
+            })
+        },
         // 编辑
         edit() {
             let apid = sessionStorage.getItem("plan_apid");
+            sessionStorage.setItem("planDetail",JSON.stringify(this.planDetail))
             let session = this.sessionData;
             let info = {
                 uid: session.uID,
                 token: session.token,
                 apid: apid,
             };
-            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(res =>{
+            api.postApi(this.apiVar.Advertisement+"/CheckLock", info).then(async res =>{
                 if(!res.data.SysCode){
                     if(!res.data.IsLock){
                         // 意向方案
                         if(this.planDetail.planMode == 1) {
-                            this.$router.push("./editPlan");
+                            if(this.role=='BD') {
+                                // 编辑意向小区
+                                (await this.clearDrafts(apid)) && this.$router.push("./editEmptyPointPlan");
+                            } else {
+                                this.$router.push("./editPlan");
+                            }
                         } else {
                             // 非意向方案
                             this.$router.push("./editPlanOld");
@@ -581,12 +881,84 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .ellipsis-td {
     width: 132px;
     overflow: hidden;
     text-overflow:ellipsis;
     white-space: nowrap;
+}
+/* 设置方案金额 */
+/deep/ .settlement-dialog {
+    .el-form-item {
+        padding: 8px 0;
+        margin: 0;
+        .el-form-item__label {
+            color: rgba(0, 0, 0, 0.65);
+        }
+        ::placeholder{/*Firefox,Chrome,Opera*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+        :-ms-input-placeholder{/*InternetExplorer10-11*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+        ::-ms-input-placeholder{/*MicrosoftEdge*/
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+    }
+    .form__line {
+        margin: 16px 0;
+        height: 1px;
+        background: #E9E9E9;
+    }
+    .el-form-item__content {
+        line-height: unset;
+        .el-input__inner {
+            color: rgba(0, 0, 0, 0.65);
+        }
+        .el-input-group__append {
+            padding: 4px 12px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.25);
+        }
+    }
+    .special-padding.el-form-item {
+        .el-input-group__append {
+            padding: 4px 9px;
+        }
+    }
+    .form-item__price {
+        line-height: 32px;
+        color: rgba(0, 0, 0, 0.65);
+    }
+    .el-dialog__header {
+        padding: 16px 24px;
+        .el-dialog__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 24px;
+        }
+    }
+    .el-dialog__body {
+        padding: 0 24px;
+    }
+    .el-dialog__footer {
+        padding: 16px 24px 24px;
+        .dialog-footer__button {
+            word-spacing: -1em;
+            .el-button+.el-button {
+                margin-left: 16px;
+            }
+        }
+    }
+    .el-form-item__label {
+        padding: 0;
+        line-height: 32px;
+    }
 }
 /*状态行*/
 /deep/ .el-table .warning-row {
@@ -672,6 +1044,9 @@ export default {
     position: absolute;
     right: 28px;
     top: 30px;
+    .handleBtn--plain {
+        color: #000000A6;
+    }
 }
 
 .plan-title .handleBtn button {
@@ -715,13 +1090,12 @@ export default {
 
 /*面包屑导航*/
 .tip {
-    font-size: 14px;
-    color: #999999;
-    text-align: right;
-    line-height: 36px;
-    display: inline-block;
     float: right;
     height: 36px;
+    line-height: 36px;
+    font-size: 14px;
+    text-align: right;
+    color: #999999;
 }
 
 /*按钮*/

@@ -839,7 +839,7 @@
             },
             // 创建标注
             creatMarker() {
-                console.log('--------',this.resInfo)
+                console.log('---创建标注---')
                 let markerList = [];
                 let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(39,25),{
                     anchor: new BMap.Size(8, 8)

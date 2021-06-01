@@ -42,30 +42,37 @@
             <li class="info-item">
               <span class="item-label">客户要求：</span>
               <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand||'' }}
+                {{ intentionInfo.customerDemand||'--' }}
               </span>
             </li>
           </ul>
         </div>
-
         <div class="board board2">
           <el-form label-position="top" label-width="82px">
             <el-form-item label="配点要求">
               <el-checkbox-group v-model="formDataObj.pointDemand">
-                <el-checkbox
-                  label="isSpaceTimeLongFirst"
-                  name="type"
-                >优先选择空置久的点位</el-checkbox>
+                <el-checkbox v-if="sessionData.uType == 'MD'" label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
                 <el-checkbox label="isSingleMediaChoose" name="type">1个门选择1个点位</el-checkbox>
                 <el-checkbox label="isSingleConnectChoose" name="type">联排门仅选1面</el-checkbox>
               </el-checkbox-group>
-              <div>
+              <div v-if="sessionData.uType == 'MD'">
                 <el-checkbox
                   v-model="formDataObj.aFaceRateChecked"
-                  class="combination"
                   name="type"
                 >A面占比不高于(%)</el-checkbox>
                 <el-input-number :disabled="!formDataObj.aFaceRateChecked" v-model="formDataObj.aFaceRate" controls-position="right" size="mini" :min="0" :max="100"></el-input-number>
+              </div>
+              <div v-else>
+                <el-checkbox
+                  disabled
+                  checked
+                  name="type"
+                >A面占比50%
+                  <el-tooltip placement="top" trigger="hover" effect="dark">
+                      <div slot="content">占比不可更改，如有需要请联系媒介配点</div>
+                      <i class="fa fa-info-circle" style="color: #999999; cursor: default;" aria-hidden="true"></i>
+                  </el-tooltip>
+                </el-checkbox>
               </div>
             </el-form-item>
           </el-form>
@@ -73,6 +80,39 @@
         <div class="board board3">
           <div class="board-title">点位排斥</div>
           <el-form label-position="left" label-width="70px">
+            <el-form-item v-if="sessionData.uType == 'MD'" label="通行情况：">
+              <el-select
+                multiple
+                collapse-tags
+                :disabled="!customPermission.patrolPermission"
+                v-model="formDataObj.excludeTrafficStateList"
+                :placeholder="customPermission.patrolPermission?'请选择通行情况':'尚未开通定制巡点服务，请联系客服开通'"
+              >
+                <el-option
+                  v-for="item in trafficAndmType.excludeTrafficStateList"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="门体类型：">
+              <el-select
+                v-model="formDataObj.excludeMTypeList"
+                multiple
+                collapse-tags
+                placeholder="请选择门体类型"
+              >
+                <el-option
+                  v-for="item in trafficAndmType.excludeMTypeList"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="方案名称：">
               <el-select
                 size="mini"
@@ -109,9 +149,9 @@
           </el-form>
         </div>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer">
         <el-button @click="handleClose">取 消</el-button>
-        <el-button :disabled="loading" type="primary" @click="matchRes"
+        <el-button :disabled="loading" type="primary" @click="dialogMatchRangeFormVisible=true"
           >配 点</el-button
         >
       </span>
@@ -131,10 +171,10 @@
             意向小区共
             <span class="tip-active">{{
               intentionInfo.planResCount || ""
-            }}</span>
+            }}</span> 个
             <template v-for="(item, index) in intentionInfo.resPdNumGroup">
               <span :key="index">
-                个，选{{ item.resPdNum }}面的小区
+                ，选{{ item.resPdNum }}面的小区
                 <span class="tip-active">{{ item.resCount }}</span> 个
               </span>
             </template>
@@ -142,7 +182,7 @@
         </h4>
         <span class="tip-active tip-active-handle right" @click="export2Excel">下载</span>
       </div>
-      <template slot="dialogFooter" class="dialog-footer">
+      <template slot="dialogFooter">
         <el-button @click="showDialogTable=false"
           >关 闭</el-button
         >
@@ -160,12 +200,12 @@
       <div slot="topTip">
         <span class="table-top-comment">
           意向投放小区：<span>{{
-            tipObj.planResCount
+            intentionInfo.planResCount || ""
           }}</span>个
-          <span class="active comment-item" @click="getIntentionList">查看</span>
-          计划投放点位：<span class="comment-item">{{ tipObj.planAdSpaceCount }}个</span> 
-          客户预算：<span class="comment-item">{{ (tipObj.customerBudget/100) | moneyFormat("¥") }}</span>
-          客户要求：<span class="comment-item">{{ tipObj.customerDemand }}</span>
+          <span class="active comment-item" @click="getIntentionList">&nbsp;查看</span>
+          计划投放点位：<span class="comment-item">{{ intentionInfo.planAdSpaceCount }}个</span>
+          客户预算：<span class="comment-item">{{ (intentionInfo.customerBudget/100) | moneyFormat("¥") }}</span>
+          客户要求：<span class="comment-item">{{ intentionInfo.customerDemand }}</span>
         </span>
         <div class="table-top-tip">
           <i class="el-icon-info" style="color: #1890ff"></i>
@@ -185,10 +225,12 @@
               (A面:<span class="tip-active">{{ tipObj.afaceCount }}</span>
               &nbsp;B面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
               >)
-              <div class="divide-border"></div>
-              上刊率50%以上的点位:<span class="tip-active">{{
-                (tipObj.underHalfSpaceRate*100).toFixed(2)
-              }}%</span>
+              <template v-if="sessionData.uType == 'MD'">
+                <div class="divide-border"></div>
+                上刊率50%以上的点位:<span class="tip-active">{{
+                  (tipObj.underHalfSpaceRate*100).toFixed(2)
+                }}%</span>
+              </template>
               <div class="divide-border"></div>
               配点失败小区<span class="tip-active warn"> {{
                 tipObj.failResCount
@@ -196,8 +238,6 @@
               >个
             </span>
           </h4>
-          <!-- <span class="tip-active tip-active-handle right" @click="getMatchSummary(apID)">刷新</span>
-          <div class="divide-border"></div> -->
           <span class="tip-active tip-active-handle right" @click="getFailRes">失败小区</span>
           <div class="divide-border"></div>
           <span class="tip-active tip-active-handle" @click="downLoadMatchResult">下载结果</span>
@@ -207,31 +247,31 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
-              <el-form-item label="商圈：">
+              <el-form-item label="商圈:">
                 <span class="cell-ellipsis">{{ props.row.tradingArea||'' }}</span>
               </el-form-item>
-              <el-form-item label="楼栋数量：">
+              <el-form-item label="楼栋数量:">
                 <span class="cell-ellipsis">{{ props.row.fNum||'' }}</span>
               </el-form-item>
-              <el-form-item label="资产编号：">
+              <el-form-item label="资产编号:">
                 <span class="cell-ellipsis">{{ props.row.assetTag||'' }}</span>
               </el-form-item>
-              <el-form-item label="入住年份：">
+              <el-form-item label="入住年份:">
                 <span class="cell-ellipsis">{{ props.row.chDay||'' }}</span>
               </el-form-item>
-              <el-form-item label="广告限制：">
+              <el-form-item label="广告限制:">
                 <span class="cell-ellipsis">{{ props.row.notPush||'' }}</span>
               </el-form-item>
             </el-form>
 
             <el-form label-position="left" inline v-if="customPermission.patrolPermission">
-              <el-form-item label="巡点问题：">
+              <el-form-item label="巡点问题:">
                 <span class="cell-ellipsis">{{ props.row.remark||'' }}</span>
               </el-form-item>
-              <el-form-item label="通行情况：">
+              <el-form-item label="通行情况:">
                 <span class="cell-ellipsis">{{ props.row.trafficState||'' }}</span>
               </el-form-item>
-              <el-form-item label="通电情况：" v-if="customPermission.patrolPermission==2">
+              <el-form-item label="通电情况:" v-if="customPermission.patrolPermission==2">
                 <span class="cell-ellipsis">{{ props.row.electrifyState||'' }}</span>
               </el-form-item>
             </el-form>
@@ -249,24 +289,41 @@
           >
         </template>
       </el-table-column>
-      <template slot="dialogFooter" class="dialog-footer">
-        <el-button @click="closeAsignPointTable"
-          >关 闭</el-button
-        >
-        <el-button
-          v-if="matched"
-          class="merge-btn"
-          type="primary"
-          @click="rematchPoint">
-          重新配点
-        </el-button>
-        <el-button
-          v-else
-          class="merge-btn"
-          type="primary"
-          @click="merge2ShopList">
-          确定并添加到购物车
-        </el-button>
+      <template slot="dialogFooter">
+        <template v-if="sessionData.uType == 'MD'">
+          <el-button @click="closeAsignPointTable"
+            >关 闭</el-button
+          >
+          <el-button
+            v-if="matched"
+            class="merge-btn"
+            plain
+            @click="rematchPoint">
+            重新配点
+          </el-button>
+          <el-button
+            v-else
+            class="merge-btn"
+            type="primary"
+            @click="merge2ShopList">
+            确定并添加到购物车
+          </el-button>
+        </template>
+        <template v-else-if="sessionData.uType == 'BD'">
+          <el-button
+            class="merge-btn"
+            plain
+            :disabled="matchCnt>=10"
+            @click="rematchPoint">
+            {{`重新配点(${10-matchCnt})`}}
+          </el-button>
+          <el-button
+            class="merge-btn"
+            type="primary"
+            @click="BDSaveMatchToPlan">
+            保存配点
+          </el-button>
+        </template>
       </template>
     </dialog-table>
     <dialog-table
@@ -300,10 +357,32 @@
           </template>
         </el-table-column>
       </template>
-      <template slot="dialogFooter" class="dialog-footer">
+      <template slot="dialogFooter">
         <el-button @click="showFailDialogTable = false">关 闭</el-button>
       </template>
     </dialog-table>
+    <!-- 选择配点范围 -->
+    <el-dialog 
+      title="请选择配点范围" 
+      :visible.sync="dialogMatchRangeFormVisible"
+      width="368px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper match-range-dialog"
+    >
+      <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
+      <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
+      <el-tooltip v-if="sessionData.uType == 'BD'" placement="top" trigger="hover" effect="dark">
+        <div slot="content">个别未配点小区请联系媒介协助配点</div>
+        <el-radio disabled v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
+      </el-tooltip>
+      <el-radio v-else v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
+      <template slot="footer">
+        <el-button @click="dialogMatchRangeFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="matchRes">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -340,6 +419,11 @@ export default {
     customPermission: {
       type: Object,
       default: ()=>{}
+    },
+    // 销售配点次数
+    matchCnt: {
+      type: Number,
+      default: ()=>10
     }
   },
   components: {
@@ -348,7 +432,12 @@ export default {
   data() {
     return {
       moment,
+      sessionData: null,
       matched: false,
+      trafficAndmType: {
+        excludeTrafficStateList: [],
+        excludeMTypeList: []
+      },
       loading: false,
       showDialogTable: false,
       showFailDialogTable: false,
@@ -361,12 +450,16 @@ export default {
         planAdSpaceCount: 0,
         planResCount: 0
       },
+      dialogMatchRangeFormVisible: false,
       formDataObj: {
+        matchRange: '1',
         pointDemand: [],
         aFaceRate: 50,
         aFaceRateChecked: false,
         apExclude: "",
-        adLimits: []
+        adLimits: [],
+        excludeTrafficStateList: [],
+        excludeMTypeList: []
       },
       tipObj: {
         selectLab1: 0,
@@ -509,13 +602,7 @@ export default {
           prop: "asLab",
           width: "80px",
           value: (row)=>`${row.asLab}面`
-        },
-        {
-          label: "近3月上刊率",
-          prop: "publishRate",
-          width: "120px",
-          value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
-        },
+        }
       ],
     };
   },
@@ -528,23 +615,68 @@ export default {
     }
   },
   created() {
-    
+    this.sessionData = sessFun.getSess();
   },
   mounted() {
+    this.getExcludeSelect()
+    if(this.sessionData.uType == 'MD') {
+      this.asignPointTableColumn.push({
+        label: "近3月上刊率",
+        prop: "publishRate",
+        width: "120px",
+        value: (row)=>`${((row.publishRate||0)*100).toFixed(2)}%`
+      })
+    }
   },
   methods: {
+    getExcludeSelect() {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/getExcludeSelect?asrID="+this.sessionData.asrID).then(res => {
+          if (res.data.SysCode == 200200) {
+            let {excludeTrafficStateList=[], excludeMTypeList=[]} = res.data.data;
+            this.trafficAndmType = {
+              excludeTrafficStateList,
+              excludeMTypeList
+            }
+          } else {
+            sessFun.messageFun('warning', res.data.MSG)
+          }
+        }).catch(err => {
+            console.log(err);
+        });
+      })
+    },
+    // 获取该用户下的配点次数
+    getMatchCnt() {
+      this.loading = true
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/getMatchCnt?apID="+this.apID).then(res => {
+          if (res.data.SysCode == 200200) {
+            // this.matchCnt = res.data.data||10
+            this.$emit("update:matchCnt", res.data.data||10)
+            this.loading = false
+            resolve(true)
+          } else {
+            sessFun.messageFun('warning', res.data.MSG)
+          }
+        }).catch(err => {
+            console.log(err);
+        });
+      })
+    },
     // 重新配点
     rematchPoint() {
-      this.$confirm('重新配点会清除原配点结果信息',
+      this.$confirm(this.sessionData.uType=='BD'?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
         "是否重新配点？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
+        iconClass: "el-icon-question",
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
         showClose: false,
-        customClass: 'messageBoxCustom'
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
       })
       .then((_) => {
         this.matched = false
@@ -561,19 +693,47 @@ export default {
       this.showAsignPointTableData = false
       this.$emit('closeAddPoint')
     },
+    // 销售保存配点结果到方案中
+    BDSaveMatchToPlan() {
+      this.$confirm('即将以本次配点结果覆盖方案中现有的点位，原保存的点位将被移除！',
+        "是否保存配点？", {
+        confirmButtonText: "确 定",
+        dangerouslyUseHTMLString: true,
+        type: "warning",
+        iconClass: "el-icon-question",
+        showCancelButton: true,
+        closeOnClickModal:false,
+        closeOnPressEscape: false,
+        showClose: false,
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
+      })
+      .then((_) => {
+        this.$emit('merge2ShopList', this.asignPointTableData)
+        this.showAsignPointTableData = false
+        this.$emit('closeAddPoint')
+      })
+      .catch(() => {
+        sessFun.messageFun('info','已取消保存')
+      });
+    },
     // 获取意向信息
     getIntentionInfo() {
       this.loading = true
-      api.getApi("/addsp/proposal/getSummarize?apID="+this.apID).then(res => {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/proposal/getSummarize?apID="+this.apID).then(res => {
           if (res.data.SysCode == 200200) {
+            resolve(true)
             this.loading = false
             Object.assign(this.intentionInfo, res.data.data)
           } else {
+            resolve(false)
             sessFun.messageFun('warning', res.data.MSG)
           }
-      }).catch(err => {
-          console.log(err);
-      });
+        }).catch(err => {
+            resolve(false)
+            console.log(err);
+        })
+      })
     },
     // 意向小区列表
     getIntentionList() {
@@ -591,12 +751,15 @@ export default {
     // 配点
     matchRes() {
       let params = {}
-      if(this.formDataObj.aFaceRateChecked) {
+      if(this.formDataObj.aFaceRateChecked && this.sessionData.uType == 'MD') {
         params.aFaceRate = this.formDataObj.aFaceRate||0
+      } else if(this.sessionData.uType == 'BD') {
+        params.aFaceRate = this.formDataObj.aFaceRate||50
       }
       this.formDataObj.pointDemand.forEach(item => {
         params[item] = true
       });
+      console.log('formDataObj', this.formDataObj, params)
       new Promise((resolve, reject)=>{
         api.postApi_json("/addsp/match/matchRes", {
           ...params,
@@ -605,10 +768,15 @@ export default {
           "apExclude": this.formDataObj.apExclude,
           "adLimits": this.formDataObj.adLimits,
           "isSingleConnectChoose": params.isSingleConnectChoose||false,
-          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false
+          "isSpaceTimeLongFirst": params.isSpaceTimeLongFirst||false,
+          "allMatch": this.formDataObj.matchRange*1,
+          "excludeMTypeList": this.formDataObj.excludeMTypeList,
+          "excludeTrafficStateList": this.formDataObj.excludeTrafficStateList
         }).then(res => {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
+            // 获取销售已配点次数
+            this.sessionData.uType=='BD' && this.getMatchCnt()
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
@@ -616,24 +784,43 @@ export default {
           console.log(err);
         })
       }).then((matchRes)=>{
-        this.$confirm(`计划投放<span style='color: #1890ff'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1)'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
-          "恭喜您，配点成功！", {
-          confirmButtonText: "查看详情",
-          dangerouslyUseHTMLString: true,
-          type: "success",
-          showCancelButton: false,
-          closeOnClickModal:false,
-          closeOnPressEscape: false,
-          showClose: false,
-          customClass: 'messageBoxCustom'
-        }).then(() => {
-          this.getSuccessPoint(matchRes)
-        })
+        this.dialogMatchRangeFormVisible = false
+        if(matchRes) {
+          this.$confirm(`计划投放<span style='color: #1890ff; font-weight: 600;'> ${matchRes.planAdSpaceCount} </span>个点位，成功<span style='color: #1890ff; font-weight: 600;'> ${matchRes.faceCount} </span>个，失败<span style='color: rgba(250, 173, 20, 1); font-weight: 600;'> ${matchRes.planAdSpaceCount-matchRes.faceCount} </span>个`,
+            "恭喜您，配点成功！", {
+            confirmButtonText: "查看详情",
+            dangerouslyUseHTMLString: true,
+            type: "success",
+            showCancelButton: false,
+            closeOnClickModal:false,
+            closeOnPressEscape: false,
+            showClose: false,
+            customClass: 'messageBoxCustom'
+          }).then(() => {
+            this.getSuccessPoint(matchRes)
+          })
+        } else if(matchRes===null) {
+          this.$confirm(`所选配点条件匹配不到任何点位`,
+            "配点失败！", {
+            confirmButtonText: "关闭",
+            dangerouslyUseHTMLString: true,
+            type: "warning",
+            iconClass: "el-icon-question",
+            showCancelButton: false,
+            closeOnClickModal:false,
+            closeOnPressEscape: false,
+            showClose: false,
+            customClass: 'messageBoxCustom messageBoxCustomWarning'
+          }).then(() => {
+            // this.dialogMatchRangeFormVisible = false
+          })
+        }
       })
     },
     // 查询配点结果概要
     getMatchSummary(apID) {
-      api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
+      return new Promise((resolve)=>{
+        api.getApi("/addsp/match/matchSummary?apID="+apID).then(res => {
           if (res.data.SysCode == 200200) {
             Object.assign(this.tipObj, res.data.data)
             if(Array.isArray(this.tipObj.proposalCountGroup)) {
@@ -647,17 +834,19 @@ export default {
                 }
               })
             }
+            resolve(true)
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }
         }).catch(err => {
           console.log(err);
         })
+      })
     },
     // 查询配点成功结果
-    getSuccessPoint(matchRes) {
+    async getSuccessPoint(matchRes) {
       if(matchRes) {
-        // 首次配点
+        // 弹框中选择配点
         Object.assign(this.tipObj, matchRes)
         if(Array.isArray(this.tipObj.proposalCountGroup)) {
           this.tipObj.proposalCountGroup.forEach(item=>{
@@ -672,7 +861,10 @@ export default {
         }
       } else {
         // 查看已配点方案的配点详情
-        this.getMatchSummary(this.apID)
+        await this.getMatchSummary(this.apID)
+        await this.getIntentionInfo()
+        // this.intentionInfo.resPdNumGroup = this.tipObj.proposalCountGroup||[]
+        // this.intentionInfo.planResCount = this.tipObj.planResCount||0
       }
       this.showAsignPointTableData = true
       this.asignPointTableLoading = true
@@ -802,6 +994,7 @@ export default {
     closeAsignPointTable() {
       if(this.matched) {
         this.showAsignPointTableData = false
+        this.handleClose()
         return
       }
       this.$confirm('关闭后，所配点位将被清除',
@@ -809,14 +1002,16 @@ export default {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
         type: "warning",
+        iconClass: "el-icon-question",
         showCancelButton: true,
         closeOnClickModal:false,
         closeOnPressEscape: false,
         showClose: false,
-        customClass: 'messageBoxCustom'
+        customClass: 'messageBoxCustom messageBoxCustomWarning'
       })
       .then((_) => {
         this.showAsignPointTableData = false;
+        this.handleClose()
       })
       .catch(() => {
         sessFun.messageFun('info','已取消')
@@ -840,8 +1035,23 @@ export default {
 };
 </script>
 <style lang="scss">
-.messageBoxCustom {
-  padding: 24px 24px;
+.el-message-box__wrapper {
+  top: 15vh;
+  bottom: unset;
+}
+.messageBoxCustomWarning {
+  .el-message-box__status {
+    color: #FA8C16;
+  }
+}
+.messageBoxCustom.el-message-box {
+  width: 388px;
+  border: unset;
+  box-sizing: border-box;
+  padding: 24px 24px !important;
+  .el-message-box__btns button:nth-child(2) {
+    margin-left: 16px;
+  }
   .el-button--primary {
     background-color: rgba(24, 144, 255, 1);
   }
@@ -862,8 +1072,8 @@ export default {
       top: -20px;
     }
     .el-message-box__message p {
+      width: 300px;
       font-size: 14px;
-      font-weight: 600;
       color: rgba(0, 0, 0, 0.65);
       line-height: 22px;
     }
@@ -881,6 +1091,41 @@ export default {
 </style>
 <style lang="scss" scoped>
 @import '../../../assets/component.scss';
+/deep/ .match-range-dialog {
+  border-radius: 4px;
+  .el-dialog__header {
+    padding-bottom: 6px;
+    border: none !important;
+    .el-dialog__title {
+      font-size: 16px;
+      color: rgba($color: #000, $alpha: .85);
+    }
+  }
+  .el-dialog__body {
+    border: none !important;
+    .content-tip {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 24px;
+    }
+    .el-radio {
+      margin-right: 24px;
+    }
+    .el-radio__label {
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+    }
+  }
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button+.el-button {
+      margin-left: 16px;
+    }
+  }
+}
 /deep/ .add-point-dialog {
   .el-checkbox {
     line-height: 27px;
@@ -894,6 +1139,14 @@ export default {
   .el-input-number--mini .el-input-number__decrease, .el-input-number--mini .el-input-number__increase {
     width: 20px;
   }
+  .el-input-number.is-controls-right[class*=mini] {
+    [class*=increase] {
+      line-height: 12px;
+    }
+    [class*=decrease] {
+      line-height: 12px;
+    }
+  }
   .el-dialog__footer {
     .el-button+.el-button {
       margin-left: 10px;
@@ -901,7 +1154,7 @@ export default {
   }
   .el-form-item {
     .el-form-item__label {
-      padding-left: 0;
+      padding: 0;
       color: rgba(0, 0, 0, 0.65);
     }
   }
@@ -953,17 +1206,15 @@ export default {
     }
     .el-input-number {
       width: unset;
-      line-height: 28px;
+      line-height: 24px;
       margin: 0;
       .el-input__inner {
         width: 64px;
-        height: 28px;
+        height: 24px;
         padding: 0 28px 0 8px;
-        line-height: 28px;
+        line-height: 24px;
         text-align: center;
       }
-    }
-    .combination {
     }
   }
   .board3 {
@@ -1059,6 +1310,7 @@ export default {
     width: 1px;
     height: 14px;
     margin: 0 8px;
+    vertical-align: middle;
     background: rgba(0, 0, 0, 0.1);
   }
 }

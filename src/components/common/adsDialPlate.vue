@@ -67,7 +67,8 @@
                             prop="resName"
                             label="资源名称"
                             min-width="120"
-                            fixed>
+                            fixed
+                            show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                             class-name="el-table-column-mediaName"

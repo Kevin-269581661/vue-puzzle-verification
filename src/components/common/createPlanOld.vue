@@ -737,43 +737,39 @@
                                         <el-col :span="16" style="text-align:right;">
                                             <span class="button_point">
                                                 <el-button plain @click="getMapADList" size="small" class="mapBtn"
-                                                            :disabled="mapBtn"
-                                                            v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                    :disabled="mapBtn"
+                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
                                             </span>
-                                            <el-select v-model="eventType" placeholder="快捷配点" filterable
-                                                        @change="changeEvent">
-                                                <el-option v-for="item of eventList" :key="item.value"
-                                                            :label="item.label" :value="item.value"></el-option>
-                                            </el-select>
+                                            <el-dropdown size="small" type="primary">
+                                                <el-button type="primary" style="padding: 0 8px;">
+                                                    快捷配点<i class="el-icon-arrow-down el-icon--right"></i>
+                                                </el-button>
+                                                <el-dropdown-menu slot="dropdown">
+                                                    <el-dropdown-item v-for="item of eventList" :key="item.value" @click.native.prevent="changeEvent(item.value)">{{item.label}}</el-dropdown-item>
+                                                </el-dropdown-menu>
+                                            </el-dropdown>
                                         </el-col>
                                     </el-row>
                                     <el-row class="car-title">
-                                        <el-col :span="10">
-                                            <img src="../../assets/images/statistics.png" alt=""
-                                                    style="vertical-align: text-top;">
-                                            社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                            (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                            选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                            选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
-                                            选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
-                                        </el-col>
-                                        <el-col :span="2">
-                                            媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                            <template v-if="activeName == '1'">
-                                                (A面:<span>{{mediaLevelNum.ANum}}</span>
-                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
-                                            </template>
-                                        </el-col>
-                                        <el-col :span="5">
-                                            A级:<span>{{mediaLevelNum.ALevel}}</span>
-                                            B级:<span>{{mediaLevelNum.BLevel}}</span>
-                                            C级:<span>{{mediaLevelNum.CLevel}}</span>
-                                        </el-col>
+                                        <i class="el-icon-info"></i>
+                                        小区:<span>{{shopMedia_ADNum.resNum}}</span
+                                        >(选1面:<span>{{shopMedia_ADNum.oneNum}}</span>
+                                        选2面:<span>{{shopMedia_ADNum.twoNum}}</span>
+                                        选3面:<span>{{shopMedia_ADNum.threeNum}}</span>
+                                        选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
+                                        <div class="divide-border"></div>
+                                        媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
+                                        <div class="divide-border"></div>
+                                        点位:<span>{{shopMedia_ADNum.ADNum}}</span
+                                        ><template v-if="activeName == '1'">
+                                            (A面:<span>{{mediaLevelNum.ANum}}</span>
+                                            B面:<span>{{mediaLevelNum.BNum}}</span>)
+                                        </template>
+                                        <div class="divide-border"></div>
+                                        A级:<span>{{mediaLevelNum.ALevel}}</span>
+                                        B级:<span>{{mediaLevelNum.BLevel}}</span>
+                                        C级:<span>{{mediaLevelNum.CLevel}}</span>
                                     </el-row>
-
                                     <el-table
                                         border
                                         :data="currentPagination"
@@ -831,7 +827,8 @@
                                         <el-table-column
                                             label="资源名称"
                                             min-width="140"
-                                            prop="resName">
+                                            prop="resName"
+                                            show-overflow-tooltip>
                                         </el-table-column>
                                         <el-table-column
                                             label="媒体名称"
@@ -908,9 +905,9 @@
                                     </el-table>
                                     <div class="row-table-bottom">
                                         <p class="warningInfo">
-                                            <span style="background: rgba(255,0,0,0.08)" class="warningInfoColor"></span>
+                                            <span style="background: #FFC1BE;" class="warningInfoColor"></span>
                                             <span class="warningInfoName">被占点位</span>
-                                            <span style="background: rgba(255,199,0,0.10)" class="warningInfoColor"></span>
+                                            <span style="background: #FFE093;" class="warningInfoColor"></span>
                                             <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                         </p>
                                         <el-pagination
@@ -1210,7 +1207,7 @@
             </template>
             <template v-if="importType == '2'">
                 <div class="car-title">
-                    <i class="el-icon-info" style="color: #1890FF;"></i>
+                    <i class="el-icon-info"></i>
                     <h4>已成功导入点位<span>{{excelObj.successNum}}</span>个,问题点位<span>{{excelObj.failNum}}</span>个
                         <span @click="downLoadExcel()">下载表格<i class="el-icon-download"></i></span>
                     </h4>
@@ -1543,8 +1540,6 @@
                 // 购物车展示的数据
                 typeShopList: [],
                 activeName: '1',
-                // 事件选择
-                eventType: '',
                 eventList: [],
                 // 购物车表格数据
                 shopShowList: [],
@@ -2975,7 +2970,7 @@
                     uid: this.BDData.uid,
                     token: this.sessionData.token
                 }
-                api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
+                return api.getApi(this.apiVar.Advertisement + '/MyCustomer', params).then(res => {
                     console.log('MyCustomer:', res.data)
                     let customerList = res.data
                     this.customer = res.data    //保存所有信息，方便后面的过滤使用
@@ -4854,7 +4849,6 @@
             dialogVisible() {
                 this.dialogTableVisible = true
                 // this.computeMedia_AD()            // 统计媒体数量和媒体面数
-                this.eventType = "";
                 this.typeShopList = this.getTypeList();
                 this.handleClick();
             },
@@ -4890,7 +4884,6 @@
             // 切换tab
             handleClick() {
                 console.log('this.activeName----', this.activeName, this.typeShopList);
-                this.eventType = '';
                 this.getShowList();
                 this.getEventList();
                 this.computeMedia_AD();
@@ -5018,7 +5011,6 @@
                         sessFun.messageFun('warning', '暂无被占点位')
                     }
                 }).catch(() => {
-                    this.eventType = '';
                     sessFun.messageFun('info', '取消成功')
                 })
                 // this.ADLockNum = 0
@@ -5827,7 +5819,7 @@
                 cacheAdPlan.setData(planInfo)
             },
             // 设置方案信息
-            setPlanInfo() {
+            async setPlanInfo() {
                 let returnData = cacheAdPlan.getData(this.sessionData.uID)
                 if (returnData) {
                     this.unfinishedData = returnData
@@ -5839,7 +5831,8 @@
                     this.companyBrand = returnData.planData.companyBrand
                     if (this.sessionData.uType === 'MD') {
                         this.getCityList()
-                        this.Get_cName()
+                        // getIndustryBycID需要先获取Get_cName
+                        await this.Get_cName()
                         // 媒介需构建销售下拉选项-第一步
                         let arr = [
                             {
@@ -5961,6 +5954,7 @@
 
     .urlBtn {
         color: #1890FF;
+        cursor: pointer;
     }
 
     .mapBtn {
@@ -6012,11 +6006,11 @@
 
     /*状态行*/
     /deep/ .el-table .warning-row {
-        background: rgba(255, 0, 0, 0.08);
+        background: #FFC1BE;
     }
 
     /deep/ .el-table .warning-row-conncet {
-        background: rgba(255, 199, 0, 0.10)
+        background: #FFE093;
     }
 
     .shopList_adLimit {
@@ -6140,6 +6134,13 @@
         bottom: -100px;
         margin-bottom: 22px;
         text-align: center;
+        .finishBtn {
+            display: flex;
+            justify-content: center;
+            .el-button+.el-button {
+                margin-left: 16px;
+            }
+        }
     }
 
     .content_bottom_btn button {
@@ -6563,6 +6564,13 @@
 
     /*购物车列表*/
     /deep/ .shop-cart-wrapper {
+        .el-table tr th, .el-table tr td {
+            height: 46px;
+            .cell {
+                height: 25px;
+                line-height: 25px;
+            }
+        }
         .shopcar_box {
             padding: 24px 24px 0;
         }
@@ -6589,31 +6597,34 @@
         }
     }
     .car-title {
-        background: #E6F7FF;
-        border: 1px solid #BAE7FF;
-        border-radius: 4px;
+        padding: 8px;
         margin-bottom: 10px;
-        padding: 5px;
+        border: 1px solid #bae7ff;
+        border-radius: 4px;
+        line-height: 22px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #e6f7ff;
+        .el-icon-info {
+            color: #1890ff;
+            margin-right: 4px;
+        }
+        span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        h4 {
+            font-size: 14px;
+            display: inline-block;
+        }
     }
-
-    .car-title h4 {
-        font-size: 14px;
+    .divide-border {
         display: inline-block;
-    }
-
-    .car-title p {
-        font-size: 14px;
-        font-weight: normal;
-        display: inline-block;
-        margin-left: 10px;
-    }
-
-    .car-title span {
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0 6px;
-        cursor: pointer;
-        color: #1890ff;
+        width: 1px;
+        height: 14px;
+        vertical-align: middle;
+        margin: 0 8px;
+        background: rgba(0, 0, 0, 0.1);
     }
 
     /deep/ .car-list .el-table__expanded-cell[class*=cell] {
@@ -6847,7 +6858,7 @@
     }
 
     .planPanel ul li {
-        padding-left: 160px;
+        padding-left: 136px;
         line-height: 26px;
         text-align: left;
         font-size: 14px;
@@ -6858,6 +6869,7 @@
     .planPanel ul li.money {
         margin-bottom: 10px;
         font-size: 20px;
+        font-weight: 600;
         color: #666666;
     }
     .plan-url {

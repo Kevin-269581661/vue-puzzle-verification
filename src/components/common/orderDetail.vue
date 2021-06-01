@@ -121,7 +121,7 @@
                                             </el-form>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap">
+                                    <el-table-column label="资源名称" min-width="16.1%" class-name="resName-wrap" show-overflow-tooltip>
                                         <template slot-scope="scope">
                                             <div style="float:left;position: absolute;left: 0;top: 0">
                                                 <div v-if="scope.row.lState==2" slot="reference" class="color-line" style="background-color: #FF763B"></div>
@@ -157,16 +157,10 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="timeRange" label="排期" min-width="14.2%"
-                                                     :filters="scheduleList" :filter-method="filterTimeRange">
+                                                     :filters="scheduleList" :filter-method="filterTimeRange" show-overflow-tooltip>
                                         <template slot-scope="scope">
                                             <template v-if="scope.row.lState==2">
                                                 <span>{{scope.row.finishTimeRange}}</span>
-                                                <!--<el-tooltip placement="top">-->
-                                                <!--<div slot="content">-->
-                                                <!--<span>{{scope.row.timeRange}}</span>-->
-                                                <!--</div>-->
-                                                <!--<i class="el-icon-question"> </i>-->
-                                                <!--</el-tooltip>-->
                                             </template>
                                             <span v-else>{{scope.row.timeRange}}</span>
                                         </template>
@@ -207,7 +201,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane v-if="role != 'EP'" label="报价单" name="second">
+                    <el-tab-pane v-if="role != 'EP' && orderDetail.planMode != 1" label="报价单" name="second">
                         <div>
                             <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation"
                                           :copydata="copyAsidArr" :isorder="true" :shopingList="[]"
@@ -636,6 +630,7 @@
                 </el-dialog>
                 <!--修改订单金额-->
                 <el-dialog
+                    v-if="orderDetail.planMode!=1"
                     title="修改订单金额"
                     width="768px"
                     top="20vh"
@@ -645,6 +640,7 @@
                     <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice"
                                       :changePriceData="changePriceData"></changeOrderPrice>
                 </el-dialog>
+                <changeProposalOrderPrice v-else :apID="orderDetail.apID" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; getInitData()"></changeProposalOrderPrice>
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
@@ -676,7 +672,8 @@
     import noSearchResult from "./components/noSearchResult.vue";
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
-
+    import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
+    
     export default {
         name: "orderDetail",
         components: {
@@ -688,7 +685,8 @@
             changePointPlayDateRange,
             changePic,
             noSearchResult,
-            changeOrderPrice
+            changeOrderPrice,
+            changeProposalOrderPrice
         },
         data() {
             return {
@@ -1036,7 +1034,10 @@
                     }
                 ).then(() => {
                     this.changePriceModal = true
-                    this.getOrderPriceDetail()
+                    if(this.orderDetail.planMode != 1) {
+                        // 非意向方案
+                        this.getOrderPriceDetail()
+                    }
 
                 })
                     .catch(() => {
@@ -1270,20 +1271,23 @@
                                 apQC: info.apQC,
                                 apName: info.apName,
                                 apState: info.apState,
+                                planMode: info.planMode,
                                 apTotal: info.apTotal,
                                 apcTime: info.apcTime,
                                 bTitle: info.bTitle,
                                 cName: info.cName,
                                 cuName: info.cuName,
+                                cityList: info.cityList||[],
                                 pdEnd: info.pdEnd,
                                 pdStar: info.pdStar,
                                 rID: info.rID,
                                 rIDs: info.rIDs,
                                 realName: info.realName,
-                                pdTotal: this.priceFormat((info.apTotal - info.adOtherFee - info.adSendFee) / 100),
-                                pdSendFee: this.priceFormat(info.adSendFee / 100),
-                                pdOtherFee: this.priceFormat(info.adOtherFee / 100),
-                                Total: this.priceFormat(info.apTotal / 100),
+                                remark: info.remark,
+                                pdTotal: this.priceFormat((info.apTotal/100 - info.otherFee - info.sendFee)),
+                                pdSendFee: this.priceFormat(info.sendFee),
+                                pdOtherFee: this.priceFormat(info.otherFee),
+                                Total: this.priceFormat(info.apTotal/100),
                                 AdDoor: {
                                     pdTotal: this.priceFormat((info.AdDoor.pdTotal - info.AdDoor.adOtherFee - info.AdDoor.adSendFee) / 100),
                                     pdSendFee: this.priceFormat(info.AdDoor.adSendFee / 100),

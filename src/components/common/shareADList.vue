@@ -1027,7 +1027,7 @@
         }
     }
 </script>
-<style scoped>
+<style lang="scss" scoped>
     /deep/ .el-badge__content.is-fixed.is-dot {
         left: -15px;
         top: 5px;

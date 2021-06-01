@@ -7,12 +7,14 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     custom-class="custom-dialog-wrapper adjust-dialog"
+    top="10vh"
     center>
     <div>
       <slot name="topTip"></slot>
       <el-table
         :data="currentPagination"
         style="width: 100%"
+        height="450px"
         v-loading="loading"
         element-loading-text="玩命加载中..."
         element-loading-spinner="el-icon-loading"
@@ -119,14 +121,15 @@ export default {
 <style lang="scss" scoped>
 /deep/ .adjust-dialog {
   .el-dialog__header {
+    padding: 16px 24px;
     text-align: left;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
-  }
-  .el-dialog__header {
-    padding: 16px 24px;
+    .el-dialog__title {
+      font-weight: 600;
+    }
   }
   .el-dialog__body {
-    padding: 24px;
+    padding: 24px !important;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
   }
   .el-dialog__footer {
@@ -141,7 +144,7 @@ export default {
       }
     }
     .el-table__expanded-cell[class*=cell] {
-      padding: 0;
+      padding-left: 16px;
     }
   }
   .pagination {

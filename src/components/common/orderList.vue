@@ -191,6 +191,7 @@
         <!-- 画像申请的弹出框结束 -->
         <!--修改金额弹框-->
         <el-dialog
+            v-if="orderRow.planMode!=1"
             title="修改订单金额"
             width="768px"
             top="20vh"
@@ -199,7 +200,7 @@
             :before-close="cancelChangePrice">
             <changeOrderPrice @cancel="cancelChangePrice" @done="doneChangePrice" :changePriceData="changePriceData"></changeOrderPrice>
         </el-dialog>
-
+        <changeProposalOrderPrice v-else :apID="currApid" :settlementFormVisible="changePriceModal" @cancel="changePriceModal = false" @planMoneyUpdated="changePriceModal = false; searchFun()"></changeProposalOrderPrice>
     </div>
 </template>
 
@@ -216,6 +217,7 @@
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
     import changeOrderPrice from './components/changeOrderPrice.vue';
+    import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
     // 筛选过滤
     import filterFormat from "../../commonFun/filterTableData.js";
     export default {
@@ -224,7 +226,8 @@
             applyphoto,
             noSearchResult,
             pointState,
-            changeOrderPrice
+            changeOrderPrice,
+            changeProposalOrderPrice
         },
         data() {
             return {
@@ -404,7 +407,6 @@
                     token: this.sessionData.token
                 };
                 api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
-                    console.log(res.data);
                     let arr = res.data;
                     let result = [];
                     if (!arr.SysCode) {
@@ -529,6 +531,7 @@
                     skProgress: item.skProgress || '',
                     xkProgress: item.xkProgress || '',
                     planType: item.planType || '',
+                    planMode: item.planMode,
                     relatedApName: item.relatedApName || '',
                     relatedApId: item.relatedApId || '',
                 };
@@ -614,7 +617,6 @@
             },
             // 结束订单
             finishOrder(row) {
-
                 let info = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -631,6 +633,7 @@
                         type: "warning"
                     }
                 ).then(() => {
+                    this.orderRow = row
                     this.currApid = row.apID
                     const loading = this.$loading({
                         lock: true,
@@ -657,8 +660,11 @@
                                     }
                                 ).then(() => {
                                     this.handleTime = new Date().getTime()
-
-                                    this.getOrderPriceDetail(row.apID)
+                                    if(row.planMode == 1) {
+                                        this.changePriceModal = true
+                                    } else {
+                                        this.getOrderPriceDetail(row.apID)
+                                    }
                                 })
                                     .catch(() => {
                                         // Message.info("已取消操作");
@@ -678,7 +684,6 @@
             getOrderPriceDetail(apID){
                 api.getApi(this.apiVar.Advertisement+"/GetAPD", {apid:apID})
                     .then(res =>{
-                        // console.log('test--', res.data);
                         if (!res.data.SysCode) {
                             sessionStorage.setItem('priceData',JSON.stringify(res.data))
                             let priceData = res.data
@@ -970,7 +975,7 @@
         color: #108ee9;
     }
 
-    /deep/ .el-textarea__inner {
+    /deep/ .price-dialog-list .el-textarea__inner {
         height: 134px !important;
         resize: none;
     }

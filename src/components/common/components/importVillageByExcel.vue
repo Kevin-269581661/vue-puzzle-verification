@@ -97,6 +97,7 @@
           label="序号"
           min-width="6%"
           width="50"
+          align="center"
           :index="successPageSize * successCurrentPage - successPageSize + 1"
         >
         </el-table-column>
@@ -114,8 +115,8 @@
           min-width="6%"
           align="right"
         >
-        </el-table-column
-        ><el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
+        </el-table-column>
+        <el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
         </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -162,18 +163,18 @@
         <el-table-column
           type="index"
           label="序号"
-          min-width="6%"
           width="50"
+          align="center"
           :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
-          >>
+        >
         </el-table-column>
-        <el-table-column prop="resName" label="资源" min-width="6%">
+        <el-table-column prop="resName" label="资源" width="120" show-overflow-tooltip>
         </el-table-column>
-        <el-table-column prop="city" label="城市" min-width="6%">
+        <el-table-column prop="city" label="城市" width="100">
         </el-table-column>
-        <el-table-column prop="district" label="区域" min-width="6%">
+        <el-table-column prop="district" label="区域" width="100">
         </el-table-column>
-        <el-table-column label="排期" min-width="10%">
+        <el-table-column label="排期" width="180">
           <template slot-scope="scope">
             <div>
               {{ scope.row.startTime + "-" + scope.row.endTime}}
@@ -181,18 +182,41 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="actualMediaCnt"
+          label="媒体数量（门）"
+          width="120"
+          align="right"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="actualAdsCnt"
+          label="可投数量（面）"
+          width="120"
+          align="right"
+        >
+        </el-table-column>
+        <el-table-column
           prop="planAdsCnt"
           label="计划投放数量（面）"
-          min-width="8%"
+          width="150"
           align="right"
         >
         </el-table-column>
         <el-table-column
           prop="failReason"
           label="失败原因"
+          width="360"
           show-overflow-tooltip
-          min-width="10%"
+          fixed="right"
         >
+          <template slot-scope="scope">
+            <div>
+              {{scope.row.failReason}}
+              <el-tooltip v-if="scope.row.earliestOnPubDate" effect="dark" :content="'最早可连续投放开始日期：'+scope.row.earliestOnPubDate" placement="top-start">
+                <i class="el-icon-date"></i>
+              </el-tooltip>
+            </div>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -208,9 +232,14 @@
       </el-pagination>
       <span slot="footer">
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>
-        <el-button plain @click="export2Excel" :disabled="isDown"
-          >导出</el-button
-        >
+        <el-button plain @click="export2Excel" :disabled="isDown">导出</el-button>
+        <el-button type="primary"
+          size="medium "
+          :disabled="!lessPlanCntList.length"
+          style="padding: 0 4px;"
+          @click="addShoppingCart('errorList')">
+          导入可投数不足的意向小区
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -242,6 +271,7 @@ export default {
       successSize: 0,
       errorList: [],
       errorSize: 0,
+      lessPlanCntList: [],
       //每页显示的数据量
       successPageSize: 10,
       errorPageSize: 10,
@@ -254,9 +284,6 @@ export default {
       dialogErrorPoint: false,
       //导入结果弹窗
       dialogResult: false,
-      // 登录信息
-      // sessionData: {},
-      // importAction: "/advertisement/UpdateOrderAdsWithExcel",
       importFileData: [],
       // 失败点位下载按钮状态
       isDown: false,
@@ -292,10 +319,11 @@ export default {
   watch: {
     importInfoData: {
       handler(newVal, oldVal) {
-        this.successList = newVal.successList ? newVal.successList : [];
+        this.successList = newVal.successList||[];
         this.successSize = this.successList.length;
-        this.errorList = newVal.errorList ? newVal.errorList : [];
+        this.errorList = newVal.errorList||[];
         this.errorSize = this.errorList.length;
+        this.lessPlanCntList = newVal.lessPlanCntList||[];
       },
       deep: true,
     },
@@ -326,9 +354,20 @@ export default {
       this.importFileRemove();
     },
     //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
-    addShoppingCart() {
-      this.dialogResult = false;
-      this.$emit("skipAndAddShopping", this.successList);
+    addShoppingCart(errorList) {
+      if(errorList=='errorList') {
+        if(this.lessPlanCntList.length) {
+          this.dialogErrorPoint = false;
+          // this.$emit("skipAndAddShopping", this.lessPlanCntList);
+          this.successList = this.successList.concat(this.lessPlanCntList);
+          this.lessPlanCntList = [];
+        } else {
+          this.$message.warning('可投数不足的意向小区为空！');
+        }
+      } else {
+        this.dialogResult = false;
+        this.$emit("skipAndAddShopping", this.successList);
+      }
     },
     // 导出失败excel
     export2Excel() {
@@ -337,13 +376,14 @@ export default {
         const {
           export_json_to_excel,
         } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = ["资源", "城市", "区域", "排期", "失败原因"];
+        const tHeader = ["资源", "城市", "区域", "排期", "失败原因", "最早可连续投放开始日期"];
         const filterVal = [
           "resName",
           "city",
           "district",
           "date",
           "failReason",
+          "earliestOnPubDate"
         ];
 
         const list = this.errorList;
@@ -376,19 +416,35 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .import-dialog .el-dialog__header {
-  padding: 16px 24px;
-}
-/deep/ .import-dialog .el-dialog__body {
-  padding: 0px 24px 24px;
-}
-/deep/ .import-dialog .el-dialog__footer {
-  display: block;
-  text-align: right;
-  padding: 0px 24px 24px;
+/deep/ .import-dialog {
+  .el-table tr th, .el-table tr td {
+    height: 46px;
+    .cell {
+      height: 25px;
+      line-height: 25px;
+    }
+  }
+  .el-dialog__header {
+    padding: 16px 24px;
+  }
+  .el-dialog__body {
+    padding: 0px 24px 24px;
+  }
+  .el-dialog__footer {
+    display: block;
+    text-align: right;
+    padding: 0px 24px 24px;
+  }
 }
 
 /deep/ .error-point-dialog {
+  .el-table tr th, .el-table tr td {
+    height: 46px;
+    .cell {
+      height: 25px;
+      line-height: 25px;
+    }
+  }
   .el-dialog__header {
     padding: 15px 24px;
     border-bottom: 1px solid #e9e9e9;
@@ -401,7 +457,7 @@ export default {
     }
   }
   .el-button + .el-button {
-    margin-left: 14px;
+    // margin-left: 14px;
   }
   .el-dialog__footer{
     text-align: center;
@@ -468,10 +524,6 @@ export default {
   padding: 9px;
 }
 
-// .table-top-tip /deep/ .el-icon-info {
-//   margin-right: 4px;
-// }
-
 .table-top-tip .container {
   display: flex;
   justify-content: space-between;
@@ -491,5 +543,7 @@ export default {
 /deep/ .el-pagination .el-input__inner {
   width: 100%;
 }
-
+.error-point-dialog /deep/ .el-table__body-wrapper {
+  overflow-x: scroll !important;
+}
 </style>

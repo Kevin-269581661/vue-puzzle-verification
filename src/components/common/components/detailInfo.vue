@@ -140,7 +140,7 @@ export default {
                                     <div class="tooltip-box">
                                         <p class="tooltip-box__p">
                                             <b>金额备注</b>
-                                            <span>{{detail.remark||''}}</span>
+                                            <span>{{detail.remark||'--'}}</span>
                                         </p>
                                     </div>
                                 </div>

@@ -714,7 +714,6 @@ export default {
             if(this.settlementFormVisible) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        console.log('success---', this.settlementForm)
                         let params = {
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,

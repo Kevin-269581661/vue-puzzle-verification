@@ -264,7 +264,6 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                 selectionMap: {},     // 记录客户当前操作所选小区和计划投放面数
                 selectionResList: [],
                 reading: true,          // 编辑列表
-                key: 1,
                 webLoading: '',
                 iframeSrc: '',          // 无忧地图地址
                 activeCity: {},      // 当前城市
@@ -402,20 +401,11 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                             cBand: shareADSData.bTitle
                         }
                         this.selectedResSet = new Set(shareADSData.selectList||[])
-                        console.log('FAData', this.FAData)
-                        /* if (shareADSData.aiIP === undefined || shareADSData.aiIP === '' || shareADSData.asIDList === undefined) {
-                            console.log('数据可选择')
-                            this.reading = true    // 数据可编辑
-                            this.key = 1
-                        } else {
-                            console.log('数据不可选择')
-                            this.reading = false      // 数据只读
-                            this.key = 2
-                        } */
                         // 获取小区列表
                         this.getResList({apID: this.apID}, 'onload')
                     } else {
                         this.webLoading.close()
+                        this.reading = false;
                         this.$message({
                             message: res.data.MSG,
                             type: 'warning'
@@ -605,12 +595,6 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                         customClass: 'shareADSBtn'
                     }).then(() => {
                         this.PushShareADSFun()
-                        this.reading = !this.reading    // 数据可编辑
-                        if (this.key === 1) {
-                            this.key = 2;
-                        } else {
-                            this.key = 1
-                        }
                     }).catch(() => {
                         this.$message({
                             type: 'info',

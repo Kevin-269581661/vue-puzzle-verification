@@ -520,10 +520,10 @@ export default {
               ...info,
               apcTime: dateFormat.toDateTime(info.apcTime, "/"),
               pdTotal: this.priceFormat(
-                (info.apTotal - info.adOtherFee - info.adSendFee) / 100
+                (info.apTotal/100 - info.otherFee - info.sendFee)
               ),
-              pdSendFee: this.priceFormat(info.adSendFee / 100),
-              pdOtherFee: this.priceFormat(info.adOtherFee / 100),
+              pdSendFee: this.priceFormat(info.sendFee),
+              pdOtherFee: this.priceFormat(info.otherFee),
               Total: this.priceFormat(info.apTotal / 100),
               AdDoor: {
                 pdTotal: this.priceFormat(

@@ -344,7 +344,7 @@ import { ContinuousLegend } from '@antv/g2/lib/dependents';
                                 label: rName
                             }
                             citySelected = true
-                            return
+                            break
                         }
                     }
                     if(cityListLength > 0 && !citySelected) {

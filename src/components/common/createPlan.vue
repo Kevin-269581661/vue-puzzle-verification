@@ -873,9 +873,9 @@
 
       <div class="finishBtn" v-if="active == 2">
         <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
-        <!-- <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button> -->
-        <el-button @click="downLoadFanan()" type="primary" class="urlBtn">导出方案</el-button>
-        <el-button type="primary" @click="ToDetail">配点</el-button>
+        <el-button @click="downLoadFanan()" type="default" class="urlBtn">导出方案</el-button>
+        <el-button v-if="this.sessionData.saleManageLevel!=2" type="primary" @click="ToDetail">配点</el-button>
+        <el-button v-else type="primary" @click="ToDetail2"> 查看方案 </el-button>
       </div>
     </div>
     <!--添加商品到购物车的动画效果-->
@@ -3791,9 +3791,13 @@ export default {
         }
       });
     },
-    //查看方案
+    //方案详情配点
     ToDetail() {
       this.$router.push({ path: './planEmptyPointDetail', query: { option: 'match'+this.FAData.apID }});
+    },
+    // 查看详情
+    ToDetail2() {
+      this.$router.push('./planEmptyPointDetail');
     },
     // 继续创建
     continueCreate() {

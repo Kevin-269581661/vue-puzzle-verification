@@ -217,6 +217,7 @@
     import noSearchResult from "./components/noSearchResult.vue";
     import pointState from './components/pointState.vue';
     import changeOrderPrice from './components/changeOrderPrice.vue';
+    import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
     // 筛选过滤
     import filterFormat from "../../commonFun/filterTableData.js";
     export default {
@@ -225,7 +226,8 @@
             applyphoto,
             noSearchResult,
             pointState,
-            changeOrderPrice
+            changeOrderPrice,
+            changeProposalOrderPrice
         },
         data() {
             return {
@@ -529,6 +531,7 @@
                     skProgress: item.skProgress || '',
                     xkProgress: item.xkProgress || '',
                     planType: item.planType || '',
+                    planMode: item.planMode,
                     relatedApName: item.relatedApName || '',
                     relatedApId: item.relatedApId || '',
                 };
@@ -657,8 +660,11 @@
                                     }
                                 ).then(() => {
                                     this.handleTime = new Date().getTime()
-                                    console.log('row---', row)
-                                    this.getOrderPriceDetail(row.apID)
+                                    if(row.planMode == 1) {
+                                        this.changePriceModal = true
+                                    } else {
+                                        this.getOrderPriceDetail(row.apID)
+                                    }
                                 })
                                     .catch(() => {
                                         // Message.info("已取消操作");
@@ -969,7 +975,7 @@
         color: #108ee9;
     }
 
-    /deep/ .el-textarea__inner {
+    /deep/ .price-dialog-list .el-textarea__inner {
         height: 134px !important;
         resize: none;
     }

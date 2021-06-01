@@ -114,11 +114,14 @@
                                     // this.$emit("update:settlementFormVisible", false);
                                     this.cancelDialog()
                                     this.$emit("planMoneyUpdated")
-                                    console.log("金额结算成功");
+                                    this.$message({
+                                        type: 'warning',
+                                        message: '金额设置成功！'
+                                    });
                                 } else {
                                     this.$message({
                                         type: 'warning',
-                                        message: '金额结算失败'
+                                        message: '金额设置失败！'
                                     });
                                 }
                             });

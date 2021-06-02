@@ -59,7 +59,7 @@
         <el-col :span="12">
           <index-custom-card height="520px">
             <template slot="head">
-              媒体概况&nbsp
+              媒体概况&nbsp;
               <el-tooltip
                 v-if="isPoint"
                 effect="dark"
@@ -145,7 +145,7 @@
         <el-col :span="12">
           <index-custom-card height="520px">
             <template slot="head">
-              预锁概况&nbsp
+              预锁概况&nbsp;
               <el-tooltip effect="dark" content="Top center" placement="top">
                 <ul slot="content">
                   <li style="line-height: 20px">数据每5分钟更新一次</li>

@@ -1035,10 +1035,9 @@
                 ).then(() => {
                     this.changePriceModal = true
                     if(this.orderDetail.planMode != 1) {
-                        // 非意向方案
+                        // 非意向方案,更新报价单
                         this.getOrderPriceDetail()
                     }
-
                 })
                     .catch(() => {
                         // Message.info("已取消操作");
@@ -1947,6 +1946,10 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
                 let arr = []
+                if(this.orderDetail.planMode == 1) {
+                    // this.pdidList该数据在非意向方案的订单由报价单组件返回
+                    this.pdidList = JSON.parse(sessionStorage.getItem('priceData'))
+                }
                 for (let key of this.addAdsArr) {
                     for (let pKey of this.pdidList) {
                         if (key.city == pKey.city && key.asrID == pKey.asrID) {

@@ -34,7 +34,7 @@
             <el-col :span="12">
                 <index-custom-card>
                     <template slot="head">
-                        资源库存&nbsp
+                        资源库存&nbsp;
                         <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
                             <ul slot="content">
                                 <li style="line-height: 20px;">
@@ -161,7 +161,7 @@
             <!-- 机会挖掘 -->
             <index-custom-card :height="'auto'">
                 <template slot="head">
-                    机会挖掘&nbsp
+                    机会挖掘&nbsp;
                     <el-tooltip popper-class="amount-tooltip" effect="dark" content="Top center" placement="top">
                         <ul slot="content">
                             <li style="line-height: 20px;">

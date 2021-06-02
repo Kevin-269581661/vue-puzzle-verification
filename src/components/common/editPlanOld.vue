@@ -632,30 +632,6 @@
                                             <div class="divide-border"></div>
                                             被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span>
                                         </el-row>
-                                        <!-- <el-row class="car-title">
-                                            <el-col :span="9">
-                                                <img src="../../assets/images/statistics.png" alt="" style="vertical-align: text-top;">
-                                                社区:<span>{{shopMedia_ADNum.resNum}}</span>
-                                                (选1面:<span>{{shopMedia_ADNum.oneNum}}</span>&nbsp;&nbsp;
-                                                选2面:<span>{{shopMedia_ADNum.twoNum}}</span>&nbsp;&nbsp;
-                                                选3面:<span>{{shopMedia_ADNum.threeNum}}</span>&nbsp;&nbsp;
-                                                选更多:<span>{{shopMedia_ADNum.moreNum}}</span>)
-                                            </el-col>
-                                            <el-col :span="2">
-                                                媒体:<span>{{shopMedia_ADNum.mediaNum}}</span>
-                                            </el-col>
-                                            <el-col :span="6">
-                                                点位:<span>{{shopMedia_ADNum.ADNum}}</span>
-                                                (A面:<span>{{mediaLevelNum.ANum}}</span>&nbsp;&nbsp;
-                                                B面:<span>{{mediaLevelNum.BNum}}</span>)
-                                            </el-col>
-                                            <el-col :span="5" v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
-                                                A级:<span>{{mediaLevelNum.ALevel}}</span>
-                                                B级:<span>{{mediaLevelNum.BLevel}}</span>
-                                                C级:<span>{{mediaLevelNum.CLevel}}</span>
-                                            </el-col>
-                                            <el-col :span="2">被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span></el-col>
-                                        </el-row> -->
                                         <span class="change_scheduling" @click="changeAdsSchedule"
                                               v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt060_ck04' : 'a004_b008_c001_d002_bt075_ck04'}">
                                             更换排期

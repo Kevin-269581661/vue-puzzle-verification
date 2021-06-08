@@ -302,7 +302,7 @@
                                                     trigger="hover">
                                                     <span v-if="scope.row.adlInfo === ''">暂无被占信息</span>
                                                     <ul v-else>
-                                                        <li v-for="item in scope.row.adlInfo">
+                                                        <li v-for="(item, adlInfoIndex) in scope.row.adlInfo" :key="adlInfoIndex">
                                                             <div v-if="item.asState">
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
@@ -1067,7 +1067,7 @@
                 <ul>
                     <li v-for="(item,index) in showErrorData.errorList">
                         {{item.city}}:{{item.schedules}}
-                        <el-tooltip class="item" effect="dark"placement="right-start">
+                        <el-tooltip class="item" effect="dark" placement="right-start">
                             <div slot="content">
                                 <span v-for="(key,otherIndex) of item.otherArr" :key="otherIndex">
                                     {{key.resName + '-' + key.mediaName + '-' + key.asLab + '面'}}

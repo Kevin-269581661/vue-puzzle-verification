@@ -234,20 +234,20 @@ export default {
             } else if (userMsg.uType === 'MD') {
               if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营媒介
-                addRoutes('MD')
+                addRoutes('MD', true)
               } else {
                 // 判断加盟媒介(旧权限)
-                addRoutes('MD', true)
+                addRoutes('MD')
               }
               this.$router.push('/media')
             } else if (userMsg.uType === 'BD') {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
               if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营销售
-                addRoutes('BD')
+                addRoutes('BD', true)
               } else {
                 // 判断加盟销售(旧权限)
-                addRoutes('BD', true)
+                addRoutes('BD')
               }
               this.$router.push('/sale')
             } else if (userMsg.uType === 'AD') {
@@ -259,6 +259,9 @@ export default {
             } else if (userMsg.uType === 'SA') {
               addRoutes('SA')
               this.$router.push('/admin')
+            } else if (userMsg.uType === 'DEV') {
+              addRoutes('DEV')
+              this.$router.push('/f_develop')
             } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
               addRoutes('EP')
               this.$router.push('/f_engineer/orderList')
@@ -395,19 +398,19 @@ export default {
           } else if (isLogin.uType === 'MD') {
             if(isLogin.customPermission.proposalPermission == 1) {
               // 判断直营媒介
-              addRoutes('MD')
+              addRoutes('MD', true)
             } else {
               // 判断加盟媒介(旧权限)
-              addRoutes('MD', true)
+              addRoutes('MD')
             }
             this.$router.push('/media')
           } else if (isLogin.uType === 'BD') {
             if(isLogin.customPermission.proposalPermission == 1) {
               // 判断直营销售
-              addRoutes('BD')
+              addRoutes('BD', true)
             } else {
               // 判断加盟销售(旧权限)
-              addRoutes('BD', true)
+              addRoutes('BD')
             }
             this.$router.push('/sale')
           } else if (isLogin.uType === 'OP') {
@@ -419,6 +422,9 @@ export default {
           } else if (isLogin.uType === 'SA') {
             addRoutes('SA')
             this.$router.push('/admin')
+          } else if (isLogin.uType === 'DEV') {
+            addRoutes('DEV')
+            this.$router.push('/f_develop')
           } else if (isLogin.uType === 'EP') {
             addRoutes('EP')
             // 是否开通后台权限由小程序端判断

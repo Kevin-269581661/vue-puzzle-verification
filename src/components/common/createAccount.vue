@@ -11,30 +11,35 @@
             </div>
             <!--客户信息-->
             <div class="mediaList_wrap">
-                <div class="mediaList_head">
-                    <h2>账号信息</h2>
-                </div>
                 <div class="mediaList_container">
                     <el-form :model="accountForm" status-icon :rules="accountRules" ref="accountForm" label-width="120px" class="demo-ruleForm">
-                        <el-form-item label="账号:" prop="account">
-                            <el-input v-model.trim="accountForm.account" placeholder="请输入账号" :disabled="isEdit"></el-input>
+                        <el-form-item label="账号：" prop="account">
+                            <el-input v-model.trim="accountForm.account" placeholder="请输入账号" :disabled="isEdit" size="small"></el-input>
                         </el-form-item>
-                        <el-form-item label="姓名:" prop="realName">
-                            <el-input v-model.trim="accountForm.realName" placeholder="请输入真实姓名"></el-input>
+                        <el-form-item label="姓名：" prop="realName">
+                            <el-input v-model.trim="accountForm.realName" placeholder="请输入真实姓名" size="small"></el-input>
                         </el-form-item>
-                        <el-form-item label="所属公司" prop="company">
+                        <el-form-item label="所属公司：" prop="company">
                             <el-select v-model="accountForm.company" placeholder="请选择所属公司" filterable @change="companyChange" size="small">
                                 <el-option v-for="item in companyArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="角色" prop="role">
+                        <el-form-item label="角色：" prop="role">
                             <el-select v-model="accountForm.role" placeholder="请选择角色" :disabled="isEdit" @change="roleSelect" size="small">
                                 <el-option v-for="item in roleArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <template v-if="isEP">
+                        <template v-if="accountForm.role=='DEV'">
+                            <!-- 开发楼盘人员 -->
+                            <el-form-item label="开发类别：" prop="devManageLevel">
+                                <el-select v-model="accountForm.devManageLevel" placeholder="请选择开发类别" size="small">
+                                    <el-option v-for="item in devManageLevelArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </template>
+                        <template v-if="accountForm.role=='EP'">
                             <!-- 工程人员后台权限 -->
-                            <el-form-item label="后台权限:">
+                            <el-form-item label="后台权限：">
                                 <el-switch v-model="accountForm.backstagePermission" :active-value="1" :inactive-value="0" active-color="#13ce66" :disabled="showBackstagePermission"></el-switch>
                                 <el-tooltip placement="top" v-if="showBackstagePermission">
                                     <div slot="content">贵司尚未开通。<a class="learn-more" href="https://apps.qinlinad.com/engineer.html" target="_blank">了解该功能</a></div>
@@ -42,27 +47,27 @@
                                 </el-tooltip>
                             </el-form-item>
                         </template>
-                        <el-form-item label="工程类别" prop="engineerLevel" v-if="haveEPPerssion">
+                        <el-form-item label="工程类别：" prop="engineerLevel" v-if="haveEPPerssion">
                             <el-select v-model="accountForm.engineerLevel" placeholder="请选择工程类别" @change="engineerCategorySelect" size="small">
                                 <el-option v-for="item in engineerLevelArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="媒体权限" prop="mediaPermission" v-if="haveEPPerssion">
+                        <el-form-item label="媒体权限：" prop="mediaPermission" v-if="haveEPPerssion">
                             <el-select multiple v-model="accountForm.mediaPermission" placeholder="请选择媒体权限" @change="mediaAccessSelect" size="small">
                                 <el-option v-for="item in mediaPermissionArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <template v-if="type==0 && isSM">
-                            <el-form-item label="可开通全国销售">
+                        <template v-if="type==0 && accountForm.role=='SM'">
+                            <el-form-item label="可开通全国销售：">
                                 <el-switch v-model="accountForm.saleManageLevel" :active-value="1" :inactive-value="0" active-color="#13ce66"></el-switch>
                             </el-form-item>
-                            <el-form-item label="可开通全国媒介">
+                            <el-form-item label="可开通全国媒介：">
                                 <el-switch v-model="accountForm.mediaManageLevel" :active-value="1" :inactive-value="0" active-color="#13ce66"></el-switch>
                             </el-form-item>
                         </template>
-                        <template v-if="isSale ">
-                            <el-form-item label="销售类别:" prop="roleLevel">
-                                <el-select v-model="accountForm.saleManageLevel" placeholder="请选择角色">
+                        <template v-if="accountForm.role=='BD'">
+                            <el-form-item label="销售类别：" prop="roleLevel">
+                                <el-select v-model="accountForm.saleManageLevel" placeholder="请选择角色" size="small">
                                     <!--                                    <el-option :value="1" label="全国销售" v-if="sessionData.saleManageLevel"></el-option>-->
                                     <!--                                    <el-option :value="0" label="地方销售"></el-option>-->
                                     <el-option v-for="key in saleKind"
@@ -72,38 +77,38 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="权限城市:" prop="roleCity" v-if="accountForm.saleManageLevel">
-                                <el-select v-model="accountForm.roleCity" placeholder="请选择权限城市" multiple size="small" filterable @change="changeCity">
+                            <el-form-item label="权限城市：" prop="roleCity" v-if="accountForm.saleManageLevel">
+                                <el-select v-model="accountForm.roleCity" placeholder="请选择权限城市" multiple filterable @change="changeCity" size="small">
                                     <el-option v-for="item in roleCityArr" :key="item.value" :value="item.value" :label="item.label"></el-option>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="上级:" prop="boss" v-if="!isEdit">
-                                <el-autocomplete v-model="accountForm.boss" :fetch-suggestions="querySearchAsync" placeholder="请输入账号" @select="handleSelect">
+                            <el-form-item label="上级：" prop="boss" v-if="!isEdit">
+                                <el-autocomplete v-model="accountForm.boss" :fetch-suggestions="querySearchAsync" placeholder="请输入账号" @select="handleSelect" size="small">
                                 </el-autocomplete>
                             </el-form-item>
-                            <el-form-item label="上级:" v-if="isEdit">
-                                <el-input disabled="disabled" :value="accountForm.boss"></el-input>
+                            <el-form-item label="上级：" v-if="isEdit">
+                                <el-input disabled="disabled" :value="accountForm.boss" size="small"></el-input>
                             </el-form-item>
                         </template>
-                        <template v-if="sessionData.mediaManageLevel && isMedia ">
-                            <el-form-item label="媒介类别:" prop="roleLevel">
-                                <el-select v-model="accountForm.mediaManageLevel" placeholder="请选择角色">
+                        <template v-if="sessionData.mediaManageLevel && accountForm.role=='MD'">
+                            <el-form-item label="媒介类别：" prop="roleLevel">
+                                <el-select v-model="accountForm.mediaManageLevel" placeholder="请选择角色" size="small">
                                     <el-option :value="1" label="全国媒介"></el-option>
                                     <el-option :value="0" label="地方媒介"></el-option>
                                 </el-select>
                             </el-form-item>
                         </template>
-                        <el-form-item label="部门:" prop="division">
-                            <el-input v-model="accountForm.division" placeholder="请输入部门"></el-input>
+                        <el-form-item label="部门：" prop="division">
+                            <el-input v-model="accountForm.division" placeholder="请输入部门" size="small"></el-input>
                         </el-form-item>
-                        <el-form-item label="职务:" prop="position">
-                            <el-input v-model="accountForm.position" placeholder="请输入职务"></el-input>
+                        <el-form-item label="职务：" prop="position">
+                            <el-input v-model="accountForm.position" placeholder="请输入职务" size="small"></el-input>
                         </el-form-item>
-                        <el-form-item label="手机号码:" prop="phone">
-                            <el-input v-model="accountForm.phone" maxlength="11" minlength="8" placeholder="请输入手机号码"></el-input>
+                        <el-form-item label="手机号码：" prop="phone">
+                            <el-input v-model="accountForm.phone" maxlength="11" minlength="8" placeholder="请输入手机号码" size="small"></el-input>
                         </el-form-item>
-                        <el-form-item label="邮箱:" prop="email">
-                            <el-input v-model="accountForm.email" placeholder="请输入邮箱" type="email"></el-input>
+                        <el-form-item label="邮箱：" prop="email">
+                            <el-input v-model="accountForm.email" placeholder="请输入邮箱" type="email" size="small"></el-input>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -118,30 +123,11 @@
 
 <script>
     import sessFun from "../../commonFun/sessFun.js";
-    import {
-        Form,
-        FormItem,
-        Select,
-        Option,
-        Input,
-        Button,
-        MessageBox,
-        Message,
-        Autocomplete
-    } from "element-ui";
     import api from "../../api/api";
 
     export default {
         name: "createClient",
-        components: {
-            elForm: Form,
-            elFormItem: FormItem,
-            elSelect: Select,
-            elOption: Option,
-            elInput: Input,
-            elButton: Button,
-            elAutocomplete: Autocomplete
-        },
+        components: {},
         data() {
             let validateAccount = (rule, value, callback) => {
                 let reg = /^[^\u4e00-\u9fa5]{0,}$/;
@@ -197,6 +183,10 @@
                         label: '工程人员',
                         value: 'EP'
                     },
+                    {
+                        label: '开发人员',
+                        value: 'DEV'
+                    }
                 ],
                 // 公司列表
                 companyArr: [
@@ -209,7 +199,7 @@
                         value: 2
                     },
                 ],
-                //工程类别
+                // 工程类别
                 engineerLevelArr: [
                     {
                         label: '工程总监',
@@ -220,7 +210,22 @@
                         value: 0
                     },
                 ],
-                //媒体权限
+                // 开发类别
+                devManageLevelArr: [
+                    {
+                        label: '开发人员',
+                        value: '0'
+                    },
+                    {
+                        label: '资产人员',
+                        value: '1'
+                    },
+                    {
+                        label: '开发总监',
+                        value: '2'
+                    }
+                ],
+                // 媒体权限
                 mediaPermissionArr: [
                     {
                         label: '广告门',
@@ -240,6 +245,7 @@
                     boss: "",
                     position: "",
                     engineerLevel:'',
+                    devManageLevel: '',
                     mediaPermission:[],
                     phone: "",
                     division: "",
@@ -280,6 +286,7 @@
                     role: [
                         {required: true, message: "角色不能为空", trigger: "blur"}
                     ],
+                    devManageLevel:[{required: true, message: "开发类别不能为空", trigger: "blur"}],
                     engineerLevel:[{required: true, message: "工程类别不能为空", trigger: "blur"}],
                     mediaPermission:[{required: true, message: "媒体权限不能为空", trigger: "blur"}],
                     company: [
@@ -324,22 +331,13 @@
                 sessionData:'',
                 // 登录者的公司属性(0平台商，1媒体主)
                 type: '',
-                // 是否选择了媒介或者销售或者工程
-                isSale: false,
-                isMedia: false,
-                isSM: false,
-                isEP: false,
                 haveEPPerssion: false,
                 // 销售类型
                 saleKind: [
                     {
                         value: 0,
                         label: '地方销售',
-                    },
-                    // {
-                    //     value: '1',
-                    //     label: '全国销售',
-                    // },
+                    }
                 ]
             };
         },
@@ -417,46 +415,12 @@
             },
             // 选择角色
             roleSelect(val){
-                let type = this.type;
-                if(val ==='SM'){
-                    this.isSM = true;
-                    this.isSale = false;
-                    this.isMedia = false;
-                    this.isEP = false;
-                    this.haveEPPerssion = false;
-                }else if(val ==='BD'){
-                    this.isSale = true;
-                    this.isMedia = false;
-                    this.isSM = false;
-                    this.isEP = false;
-                    this.haveEPPerssion = false;
-                }else if(val == 'MD'){
-                    this.isMedia = true;
-                    this.isSale = false;
-                    this.isSM = false;
-                    this.isEP = false;
-                    this.haveEPPerssion = false;
-                }else if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
-                    this.isEP = true;
-                    this.isMedia = false;
-                    this.isSale = false;
-                    this.isSM = false;
+                this.haveEPPerssion = false;
+                if(val == 'EP'&&this.sessionData.uType=='SM'&&this.sessionData.asrID==11){
                     // 是否有新增工程类别和媒体权限的权限
                     this.haveEPPerssion = true;
-                }else if(val == 'EP'){
-                    this.isEP = true;
-                    this.isMedia = false;
-                    this.isSale = false;
-                    this.isSM = false;
-                    this.haveEPPerssion = false;
-                }else{
-                    this.isMedia = false;
-                    this.isSale = false;
-                    this.isSM = false;
-                    this.isEP = false;
-                    this.haveEPPerssion = false;
                 }
-                if(this.isSale){
+                if(this.accountForm.role=='BD'){
                     this.getRoleCity();
                 }
             },
@@ -526,7 +490,7 @@
             },
             //根据登录用户的权限设置创建新帐号的上级
             submitForm(formName) {
-                if(this.isSale && this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
+                if(this.accountForm.role=='BD' && this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
                     Message.warning('当前是想创建全国销售,请选择权限城市');
                     return;
                 }
@@ -556,6 +520,7 @@
                     division: actFrom.division,
                     position: actFrom.position,
                     engineerLevel: actFrom.engineerLevel,
+                    devManageLevel: actFrom.devManageLevel,
                     mediaPermission: actFrom.mediaPermission.length>1 ? -1 : (actFrom.mediaPermission[0]==undefined?'':actFrom.mediaPermission[0]),
                     phone: actFrom.phone,
                     email: actFrom.email,
@@ -678,6 +643,7 @@
                                     boss: result.puName ? result.puName : "",
                                     position: result.position ? result.position : "",
                                     engineerLevel: result.engineerLevel,
+                                    devManageLevel: result.devManageLevel,
                                     mediaPermission: result.mediaPermission==-1 ? [0,1] : [result.mediaPermission],
                                     phone: result.phone?result.phone:'',
                                     division: result.division ? result.division : "",
@@ -764,10 +730,24 @@
     };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     /deep/ .el-form.demo-ruleForm {
-        width: 342px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         margin: 0 auto;
+        .el-form-item {
+            margin-bottom: 16px;
+            .el-form-item__label {
+                padding: 0;
+            }
+            .el-form-item__content {
+                width: 300px;
+            }
+            .el-input__inner {
+                width: 300px;
+            }
+        }
     }
 
     /*按钮*/
@@ -783,21 +763,6 @@
         cursor: pointer;
     }
 
-    /*客户信息表单*/
-    .el-input {
-        width: 240px;
-        height: 34px;
-    }
-
-    /deep/ .el-input__inner {
-        width: 240px;
-        height: 34px;
-    }
-
-    /deep/ .el-form-item {
-        margin-bottom: 2px;
-    }
-
     /deep/ .el-popper[x-placement^="bottom"] {
         margin-top: 3px !important;
     }
@@ -809,13 +774,6 @@
         position: relative;
         top: 3px;
     }
-
-    /deep/ .el-form-item__error {
-        top: 22%;
-        left: 255px;
-        width: 200px;
-    }
-
     /deep/ .el-popper[x-placement^="bottom"] {
         margin-top: 3px !important;
         top: 200px !important;

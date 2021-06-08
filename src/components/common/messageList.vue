@@ -118,13 +118,11 @@
                     info.startTime = new Date(this.searchInfo.date[0]).getTime()
                     info.endTime = new Date(this.searchInfo.date[1]).getTime()
                 }
-                console.log(info);
                 api.getApi(this.apiVar.system + '/list',info).then(res => {
                     if (res.data.SysCode == 200200) {
                         this.totalSize = res.data.data.totalSize
                         this.messageList = res.data.data.dataList
                     }
-                    console.log(this.messageList);
                 })
             },
             reset() {
@@ -166,7 +164,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .list-wrap {
         background: #fff;
         margin: 0 64px;

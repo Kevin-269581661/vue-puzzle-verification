@@ -572,13 +572,13 @@ export default {
 				if(bool){
 					this.shopList.push(row);
 				}
-
 			}else{
-
-				for(let i = 0; i< this.shopList.length; i++){
+				for(let i = 0; i< this.shopList.length;){
 					if(this.shopList[i].resID == row.resID){
 						this.shopList.splice(i, 1);
-					}
+					} else {
+                        i++;
+                    }
 				}
 			}
 			console.log('this.shopList-----', this.shopList);

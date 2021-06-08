@@ -15,32 +15,36 @@
                     <span @click="handleClick('unread')" :class="activeName=='unread'?'active':''">未读({{messageList.unread}})</span>
                 </div>
                 <ul class="list-wrap" ref="scrollBox">
-                    <li v-if="activeName=='all'" v-for="(item,index) in messageList.list" :key="index"
-                        :class="messageList.readStatus==1?'readed':''"
-                        @click="read(item)">
-                        <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
-                        <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
-                        <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
-                        <div class="content" style="text-align: left;cursor: pointer">
-                            <h5>{{item.title}}</h5>
-                            <p v-html="item.messagePart1" style="text-align: left"></p>
-                            <span>{{timeFormat(item.createTime*1)}}</span>
-                        </div>
-                        <div class="read-mask" v-if="item.status!=0"></div>
-                    </li>
-                    <li v-if="activeName=='unread'" v-for="(item,index) in messageList.unreadlist" :key="index"
-                        :class="messageList.readStatus==1?'readed':''"
-                        @click="read(item)">
-                        <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
-                        <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
-                        <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
-                        <div class="content" style="text-align: left;cursor: pointer">
-                            <h5>{{item.title}}</h5>
-                            <p v-html="item.messagePart1" style="text-align: left"></p>
-                            <span>{{timeFormat(item.createTime*1)}}</span>
-                        </div>
-                        <div class="read-mask" v-if="item.status!=0"></div>
-                    </li>
+                    <template v-if="activeName=='all'">
+                        <li v-for="(item,index) in messageList.list" :key="index"
+                            :class="messageList.readStatus==1?'readed':''"
+                            @click="read(item)">
+                            <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
+                            <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
+                            <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
+                            <div class="content" style="text-align: left;cursor: pointer">
+                                <h5>{{item.title}}</h5>
+                                <p v-html="item.messagePart1" style="text-align: left"></p>
+                                <span>{{timeFormat(item.createTime*1)}}</span>
+                            </div>
+                            <div class="read-mask" v-if="item.status!=0"></div>
+                        </li>
+                    </template>
+                    <template v-if="activeName=='unread'">
+                        <li v-for="(item,index) in messageList.unreadlist" :key="index"
+                            :class="messageList.readStatus==1?'readed':''"
+                            @click="read(item)">
+                            <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
+                            <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
+                            <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
+                            <div class="content" style="text-align: left;cursor: pointer">
+                                <h5>{{item.title}}</h5>
+                                <p v-html="item.messagePart1" style="text-align: left"></p>
+                                <span>{{timeFormat(item.createTime*1)}}</span>
+                            </div>
+                            <div class="read-mask" v-if="item.status!=0"></div>
+                        </li>
+                    </template>    
 
                 </ul>
                 <div class="messagelist-btn">
@@ -203,10 +207,7 @@
                     }
                 } else {
                     this.$router.push('./messageList')
-
                 }
-
-
             }
         },
         mounted() {
@@ -219,9 +220,8 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .bell-wrap {
-        display: inline-block;
         cursor: pointer;
         text-align: center;
         line-height: 20px;
@@ -254,12 +254,14 @@
         /*滚动条里面小方块*/
         border-radius: 0px;
         -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
         background: rgba(0, 0, 0, 0.2);
     }
 
     .list-wrap::-webkit-scrollbar-track {
         /*滚动条里面轨道*/
         -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
         border-radius: 0;
         background: #fafafa;
     }

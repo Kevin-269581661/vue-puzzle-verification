@@ -223,7 +223,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .my-balance {
         display: block;
         width: calc(100% - 24px);

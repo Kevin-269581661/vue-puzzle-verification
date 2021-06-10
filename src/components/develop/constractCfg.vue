@@ -1,0 +1,117 @@
+<!--
+ * @Author: penglei
+ * @Date: 2021-06-09 14:45:27
+ * @LastEditors: penglei
+ * @LastEditTime: 2021-06-10 14:23:37
+ * @FilePath: /frontend/src/components/develop/constractCfg.vue
+-->
+<template>
+  <div class="questionAndAnswer">
+    <el-breadcrumb separator="/" class="constract-crumb">
+      <el-breadcrumb-item>合同管理</el-breadcrumb-item>
+      <el-breadcrumb-item>合同设置</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-container>
+      <el-aside width="200px">
+        <el-menu default-active="1">
+          <el-menu-item index="1" @click="showCom('customFiled')">
+            <span slot="title"> 自定义字段 </span>
+          </el-menu-item>
+          <el-menu-item index="2" @click="showCom('warnCfg')">
+            <span slot="title"> 合同预警 </span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <keep-alive>
+          <component :is="comName"></component>
+        </keep-alive>
+      </el-main>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import customFiled from "./components/customFiled.vue"
+import warnCfg from "./components/warnCfg.vue"
+import sessFun from "../../commonFun/sessFun.js";
+import api from "../../api/api";
+export default {
+  name: "constractCfg",
+  components: {
+    customFiled,
+    warnCfg
+  },
+  data() {
+    return {
+      comName: "customFiled"
+    };
+  },
+  computed: {},
+  created() {
+  },
+  mounted() {},
+  methods: {
+    showCom(name) {
+      this.comName = name
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.constract-crumb {
+  margin: 12px 0;
+}
+.questionAndAnswer {
+  margin: 0 60px;
+  position: relative;
+}
+
+.el-aside {
+  color: #333;
+}
+
+.el-main {
+  padding: 16px 0 16px 32px;
+  text-align: center;
+  color: #333;
+}
+
+.QNAmenu span {
+  color: #303133;
+}
+
+.QNAmenu .is-active span {
+  color: #108aff;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+}
+
+.questionAndAnswer .el-container {
+  width: 100%;
+  height: 100%;
+  padding: 16px 32px 16px 0;
+  background: #fff;
+}
+
+.el-menu {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 7px 0;
+}
+.questionAndAnswer /deep/ .el-menu-item.is-active {
+  font-weight: 600;
+  color: rgba(24, 144, 255, 0.85);
+  background-color: #e9f7fe;
+  border-right: 2px solid #1890ff;
+}
+/deep/ .el-menu-item,
+.el-submenu__title {
+  height: 40px;
+  padding-left: 32px !important;
+  line-height: 40px;
+  font-size: 14px;
+}
+</style>

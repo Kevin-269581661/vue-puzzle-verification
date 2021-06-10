@@ -1083,13 +1083,6 @@
                 }).finally(_=>{
                 })
             },
-            // 跳转到客户列表页面
-            /* routePage(row) {
-                console.log('row', row)
-                return
-                sessionStorage.setItem("customerId", row.cID);
-                this.$router.push("./superOperate/clientDetail");
-            }, */
             // 取消关注客户所在公司
             unfollow(row) {
                 this.$confirm('确定不再关注该客户了吗?', {

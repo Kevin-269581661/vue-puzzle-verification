@@ -45,7 +45,7 @@
                 <img class="index-banner" alt="" src="/static/images/noticeBanner.png" />
                 <ul class="app-list">
                     <li class="app-item" v-for="(item, index) in tableSource" :key="index">
-                        <div class="app-item__wrap" @click="catDetail(item)">
+                        <div @click="catDetail(item)">
                             <div class="notice-head">
                                 <span class="notice-title">{{item.title || ''}}</span>
                                 <span class="notice-date">{{item.createTime.split(' ')[0] || ''}}</span>
@@ -304,7 +304,7 @@
         overflow: hidden;
         .index-banner {
             width: 100%;
-            padding: 0 0 8px;
+            padding: 0 24px 8px;
             box-sizing: border-box;
             cursor: pointer;
         }
@@ -312,12 +312,13 @@
             overflow-y: auto;
         } */
         .message-list {
+            padding-left: 21px;
             padding-bottom: 48px;
         }
         .app-list {
             overflow-y: scroll;
             overflow-x: hidden;
-            padding: 0 21px 0 24px;
+            padding: 0 24px;
             .app-item:last-child {
                 border-bottom: none;
             }

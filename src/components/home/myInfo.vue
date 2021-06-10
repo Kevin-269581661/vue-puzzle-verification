@@ -69,7 +69,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .questionAndAnswer {
         width: 92%;
         margin: 0 auto;

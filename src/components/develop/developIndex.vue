@@ -237,12 +237,12 @@ export default {
         {
           imgurl: require("../../assets/images/gua.png"),
           title: "合同设置",
-          link: "./media/maintainList",
+          link: "./f_develop/constractCfg",
         },
         {
           imgurl: require("../../assets/images/addMedia.png"),
           title: "新建合同",
-          link: "./media/mediaInput",
+          link: "./f_develop/newConstract",
         },
       ],
       userInfo: {

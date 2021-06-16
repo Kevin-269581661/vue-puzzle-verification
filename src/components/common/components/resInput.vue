@@ -2,15 +2,13 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-11 18:30:22
+ * @LastEditTime: 2021-06-16 18:16:18
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
   <div>
     <div class="ad_mediaDetail_wrap clearfix">
-      
-      <!-- 资源信息mediaMana_content_top-->
-      <div class="mediaList_wrap">
+      <div>
         <div class="content_top_wrap">
           <div class="content_top_form_wrap">
             <el-form
@@ -76,14 +74,14 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6" class="el_col_box">
-                  <el-form-item label="资源名称" prop="resname">
+                  <el-form-item label="资源名称" prop="resName">
                     <el-autocomplete
-                      v-model="recForm.resname"
-                      :fetch-suggestions="getResNameByFangJiaWang"
+                      v-model="recForm.resName"
+                      :fetch-suggestions="getResListByResName"
                       placeholder=""
                       :trigger-on-focus="false"
                       @select="changeResName"
-                      @blur="blurFun('resname')"
+                      @blur="blurFun('resName')"
                     >
                     </el-autocomplete>
                     <el-button
@@ -91,11 +89,6 @@
                       type="primary"
                       @click="getResBasicData"
                       class="get_resName_btn"
-                      v-qadn-mta-h5="{
-                        id: PathHaveEdit
-                          ? 'a002_b006_c000_d000_bt028_ck05'
-                          : 'a002_b004_c000_d000_bt019_ck05',
-                      }"
                     >
                       检索</el-button
                     >
@@ -124,7 +117,7 @@
                   <el-form-item label="资源别名" prop="resAlias">
                     <el-input
                       v-model="recForm.resAlias"
-                      placeholder=""
+                      placeholder="可填写多个，请用分号间隔"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -135,7 +128,7 @@
                   <el-form-item label="资源地址" prop="resaddr">
                     <el-input
                       v-model="recForm.resaddr"
-                      placeholder=""
+                      placeholder="例：广州大道中100号"
                       @blur="blurFun('resaddr')"
                       style="width: 100%"
                       class="el-from-item-address"
@@ -147,7 +140,7 @@
                   <el-form-item label="地址别名" prop="addressAlias">
                     <el-input
                       v-model="recForm.addressAlias"
-                      placeholder=""
+                      placeholder="例：花城大道1号"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -173,7 +166,7 @@
                       <el-form-item prop="lat" class="">
                         <el-input
                           v-model.trim="recForm.lat"
-                          placeholder=""
+                          placeholder="经度"
                         ></el-input>
                       </el-form-item>
                     </div>
@@ -181,7 +174,7 @@
                       <el-form-item prop="lng">
                         <el-input
                           v-model.trim="recForm.lng"
-                          placeholder=""
+                          placeholder="纬度"
                         ></el-input>
                       </el-form-item>
                     </div>
@@ -206,7 +199,7 @@
                     <el-input
                       type="textarea"
                       v-model="recForm.description"
-                      placeholder=""
+                      placeholder="请输入小区具体描述"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -215,7 +208,7 @@
                     <el-input
                       type="textarea"
                       v-model="recForm.supportingFacilities"
-                      placeholder=""
+                      placeholder="银行、医院、学校等"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -224,7 +217,7 @@
                     <el-input
                       type="textarea"
                       v-model="recForm.transportation"
-                      placeholder=""
+                      placeholder="公交、地铁等"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -235,7 +228,7 @@
                   <el-form-item label="楼盘价格(元/m²)" prop="buildingPrice">
                     <el-input
                       v-model="recForm.buildingPrice"
-                      placeholder=""
+                      placeholder="请输入楼盘价格"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -247,7 +240,7 @@
                   >
                     <el-select
                       v-model="recForm.floorType"
-                      placeholder=""
+                      placeholder="请选择资源类型"
                       @blur="blurFun('floorType')"
                     >
                       <el-option
@@ -288,7 +281,7 @@
                   <el-form-item label="建筑类型" prop="buildingType">
                     <el-input
                       v-model="recForm.buildingType"
-                      placeholder=""
+                      placeholder="例：超高层"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -303,7 +296,7 @@
                       value-format="yyyy"
                       format="yyyy 年"
                       :editable="false"
-                      placeholder=""
+                      placeholder="请选择年份"
                       @blur="blurFun('liveTime')"
                     >
                     </el-date-picker>
@@ -313,7 +306,7 @@
                   <el-form-item label="占地面积（m²）" prop="floorSpace">
                     <el-input
                       v-model="recForm.floorSpace"
-                      placeholder=""
+                      placeholder="请输入小区占地面积"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -321,7 +314,7 @@
                   <el-form-item label="建筑面积（m²）" prop="constructionSpace">
                     <el-input
                       v-model="recForm.constructionSpace"
-                      placeholder=""
+                      placeholder="请输入小区建筑面积"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -331,7 +324,7 @@
                   <el-form-item label="建筑结构" prop="buildingStructure">
                     <el-input
                       v-model="recForm.buildingStructure"
-                      placeholder=""
+                      placeholder="例：钢筋混凝土"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -339,7 +332,7 @@
                   <el-form-item label="容积率" prop="plotRatio">
                     <el-input
                       v-model="recForm.plotRatio"
-                      placeholder=""
+                      placeholder="请输入小区容积率"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -347,7 +340,7 @@
                   <el-form-item label="绿化率（%）" prop="greenPercentage">
                     <el-input
                       v-model="recForm.greenPercentage"
-                      placeholder=""
+                      placeholder="请输入小区绿化率"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -355,7 +348,7 @@
                   <el-form-item label="产权年限（年）" prop="ownershipPeriod">
                     <el-input
                       v-model="recForm.ownershipPeriod"
-                      placeholder=""
+                      placeholder="请输入产权年限"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -366,7 +359,7 @@
                     <el-input
                       v-model="recForm.doorwayNum"
                       controls-position="right"
-                      placeholder=""
+                      placeholder="请输入出入口数量"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -375,15 +368,7 @@
                     <el-input
                       v-model="recForm.carNumber"
                       controls-position="right"
-                      placeholder=""
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="人流量（人次/日）" prop="peopleFlowrate">
-                    <el-input
-                      v-model="recForm.peopleFlowrate"
-                      placeholder=""
+                      placeholder="请输入小区车位数"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -391,31 +376,87 @@
                   <el-form-item label="车流量（车次/日）" prop="carFlowrate">
                     <el-input
                       v-model="recForm.carFlowrate"
-                      placeholder=""
+                      placeholder="请输入小区车流量"
                     ></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="人流量（人次/日）" prop="peopleFlowrate">
+                    <el-input
+                      v-model="recForm.peopleFlowrate"
+                      placeholder="请输入小区人流量"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row :gutter="76" class="from_row">
+                <el-col :span="6">
+                  <el-form-item label="其他社区广告" prop="otherAd">
+                    <el-select
+                      v-model="recForm.otherAd"
+                      placeholder="请选择已有的其他社区广告"
+                    >
+                      <el-option
+                        v-for="(item, index) in otherAdList"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="有无电梯" prop="liftType">
+                    <el-select
+                      v-model="recForm.liftType"
+                      placeholder="请选择有无电梯"
+                      @blur="blurFun('liftType')"
+                    >
+                      <el-option
+                        v-for="(item, index) in liftTypeList"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="入住率(%)" prop="liveRate">
+                    <el-input-number
+                      v-model="recForm.liveRate"
+                      placeholder="请输入入住率"
+                      :controls="false"
+                      :min="0"
+                      :max="100"
+                    ></el-input-number>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-form-item label="物业信息" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
-                  <el-form-item label="开发商" prop="developer">
+                  <el-form-item label="物业公司" prop="pmc">
                     <el-input
-                      v-model="recForm.developer"
-                      placeholder=""
+                      v-model="recForm.pmc"
+                      placeholder="物业公司单位名称"
+                      @blur="blurFun('pmc')"
                     ></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="物业公司" prop="pmc">
-                    <el-input v-model="recForm.pmc" placeholder=""></el-input>
+                  <el-form-item label="开发商" prop="developer">
+                    <el-input
+                      v-model="recForm.developer"
+                      placeholder="例：国有房产"
+                    ></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="物业费（元/m²/月）" prop="managementFee">
                     <el-input
                       v-model="recForm.managementFee"
-                      placeholder=""
+                      placeholder="请输入物业费"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -423,7 +464,7 @@
                   <el-form-item label="售楼地址" prop="salesOfficeAdd">
                     <el-input
                       v-model="recForm.salesOfficeAdd"
-                      placeholder=""
+                      placeholder="请输入售楼地址"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -433,7 +474,7 @@
                   <el-form-item label="售楼电话" prop="salesPhoneNumber">
                     <el-input
                       v-model="recForm.salesPhoneNumber"
-                      placeholder=""
+                      placeholder="请输入售楼电话"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -441,7 +482,7 @@
                   <el-form-item label="折扣信息" prop="discount">
                     <el-input
                       v-model="recForm.discount"
-                      placeholder=""
+                      placeholder="请输入折扣信息"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -449,7 +490,7 @@
                   <el-form-item label="预售许可证" prop="preSalePermit">
                     <el-input
                       v-model="recForm.preSalePermit"
-                      placeholder=""
+                      placeholder="请输入预售许可证"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -457,7 +498,7 @@
                   <el-form-item label="产权性质" prop="ownershipType">
                     <el-input
                       v-model="recForm.ownershipType"
-                      placeholder=""
+                      placeholder="例：国有房产"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -631,17 +672,6 @@ export default {
         callback();
       }
     };
-    let validateNum = (rule, value, callback) => {
-      if (value !== "" && !Number.isInteger(value)) {
-        callback(new Error("只能输入整数值!"));
-      } else {
-        if (value < 1 || value > 26) {
-          callback(new Error("最少投1面，最多可投26面!"));
-        } else {
-          callback();
-        }
-      }
-    };
     let validateSpace = (rule, value, callback) => {
       this.isResError = false;
       if (value) {
@@ -721,10 +751,22 @@ export default {
         mediaNum: "",
         updateTime: "",
       },
+      otherAdList: [
+        { label: "道闸广告", value: "道闸广告" },
+        { label: "社区灯箱广告", value: "社区灯箱广告" },
+        { label: "电梯广告", value: "电梯广告" },
+        { label: "快递柜广告", value: "快递柜广告" },
+        { label: "宣传栏广告", value: "宣传栏广告" },
+      ],
+      liftTypeList: [
+        { label: "全部楼栋有电梯", value: "全部楼栋有电梯" },
+        { label: "全部楼栋无电梯", value: "全部楼栋无电梯" },
+        { label: "部分楼栋有电梯", value: "部分楼栋有电梯" },
+      ],
       //资源表单
       recForm: {
         rt: "", //资源类型
-        resname: "", // 资源名称
+        resName: "", // 资源名称
         city: [],
         region: "", // 所属区域
         business: "", // 所属商圈
@@ -736,6 +778,9 @@ export default {
         peopleFlowrate: "", //人流量
         carNumber: "", // 车位数
         carFlowrate: "", // 车流量
+        liveRate: undefined, // 入住率
+        liftType: "", // 有无电梯
+        otherAd: "", // 同社区其他广告
         buildingPrice: "", // 楼盘价格
         liveTime: "",
         lng: "",
@@ -771,7 +816,7 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        resname: [
+        resName: [
           {
             required: true,
             message: "资源名称不能为空!",
@@ -779,7 +824,7 @@ export default {
           },
           { validator: validateSpace, trigger: ["blur", "change"] },
           { validator: validateSpecialString, trigger: ["blur", "change"] },
-          { validator: this.isHaveCommenName, trigger: "blur" },
+          // { validator: this.isHaveCommenName, trigger: "blur" },
           { max: 40, message: "最多只能输入40个字节", trigger: "change" },
         ],
         city: [
@@ -866,11 +911,23 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        pmc: [{ max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
+        pmc: [
+          {
+            required: true,
+            message: "请输入物业公司单位名称！",
+            trigger: "blur",
+          },
+          { max: 40, message: "最多只能输入40个字符!", trigger: "blur" },
+        ],
         doorwayNum: [{ validator: validatePrice, trigger: "blur" }],
         carNumber: [{ validator: validatePrice, trigger: "blur" }],
         carFlowrate: [{ validator: validatePrice, trigger: "blur" }],
         peopleFlowrate: [{ validator: validatePrice, trigger: "blur" }],
+        liftType: {
+          required: true,
+          message: "请选择有无电梯！",
+          trigger: ["blur", "change"],
+        },
         greenPercentage: [
           // 绿化率
           { validator: validateGreenP, trigger: "blur" },
@@ -910,7 +967,7 @@ export default {
           { max: 40, message: "最多只能输入40个字符!", trigger: "blur" },
         ],
       },
-      
+
       recFormImg: "", // 资源图片
       cityOptions: [], //城市数组
       rt_village: true, // 资源类型是否是社区
@@ -955,7 +1012,7 @@ export default {
         ptp: "media", // 关联类型区分属性
       },
       resUpdata: [], // 编辑资源时显示已有图片
-      
+
       Editloading: true, // 提交时的loading
       throwCity: "", // 用户权限不为全国时，根据uWho确定可选城市
       cityOther: true, // 默认显示全国省份城市
@@ -964,7 +1021,7 @@ export default {
       resData: { resID: "" }, // 创建资源成功，保存返回来的数据
       sessionData: sessFun.getSess(),
       submitBtnIsAble: false, // 防止多次点击
-      
+
       FangJiaWangData: {}, // 记录房价网拉回来的数据
       classified: false,
       mapLoading: true,
@@ -994,13 +1051,13 @@ export default {
       if (
         this.resAddres.city &&
         this.resAddres.area &&
-        this.recForm.resname &&
+        this.recForm.resName &&
         this.recForm.resaddr
       ) {
         return (
           this.resAddres.city +
           this.resAddres.area +
-          this.recForm.resname +
+          this.recForm.resName +
           this.recForm.resaddr
         );
       } else {
@@ -1038,7 +1095,7 @@ export default {
           console.log("房价网权限城市", res);
           this.fangJiaWangPrivateCity = res.data.data || [];
         } else {
-          Message.warning(res.data.MSG);
+          this.$message.warning(res.data.MSG);
         }
       });
     },
@@ -1051,62 +1108,114 @@ export default {
         }
       }
     },
-    // 远程获取房价网的小区名称
-    getResNameByFangJiaWang(queryString, callback) {
-      let flag = this.fangJiaWangPrivateCity.some((item) => {
-        return item.cityId == this.recForm.city[this.recForm.city.length - 1];
-      });
-      if (!flag) {
-        return;
-      }
+    // 模糊查询系统内已有资源（小区）
+    getResListByResName(queryString, callback) {
       if (queryString) {
+        console.log("resAddres", this.recForm.city);
         if (this.resAddres.city) {
           let params = {
-            city: this.resAddres.city, // 城市
-            keyword: queryString,
-            max: 20,
+            service: "GetResListByResName",
+            // resName: queryString,
+            // max: 20,
+            uid: this.sessionData.uID,
+            token: this.sessionData.token,
+            data: {
+              cityId: this.recForm.city[1] * 1, // 城市id
+              resName: queryString,
+            },
           };
-          api
-            .postApi(this.apiVar.QADNAPI + "/ResAutoComplete", params)
-            .then((res) => {
-              console.log("远程获取房价网的小区名称res", res);
-              if (res.data.code === "200200" || res.data.msg === "success") {
-                if (res.data.data.code == "200" || res.data.data.msg === "ok") {
-                  let results = [];
-                  for (let key of res.data.data.result) {
-                    results.push({
-                      value: key.name,
-                      district: key.district,
-                      address: key.address,
-                    });
-                  }
-                  callback(results);
-                } else {
-                  sessFun.messageFun("warning", res.data.data.msg);
-                  callback([]);
-                }
-              } else {
-                sessFun.messageFun("warning", res.data.msg);
-                callback([]);
+          api.postApi_new("/mediaService/media", params).then((res) => {
+            if (res.data.SysCode === 200200) {
+              let results = [];
+              for (let key of res.data.data) {
+                results.push({
+                  value: key.resName,
+                  info: key,
+                });
               }
-            });
+              console.log("results---", results);
+              callback(results);
+            } else {
+              callback([]);
+              sessFun.messageFun("warning", res.data.data.MSG);
+            }
+          });
         } else {
+          callback([]);
           sessFun.messageFun("warning", "请先选择社区所在的城市");
         }
       } else {
         callback([]);
+        return;
       }
     },
     // 根据选择的小区获取所在区域
     changeResName(item) {
-      console.log(item);
+      let resInfo = item.info;
       for (let key of this.regionOpt) {
-        if (key.label.includes(item.district)) {
+        if (key.label.includes(resInfo.district)) {
           this.recForm.region = key.value;
           this.resAddres.area = key.label;
           break;
         }
       }
+      this.setResInfo(resInfo);
+    },
+    // 系统录入的资源信息进行页面填充
+    setResInfo(obj) {
+      let ii =
+        '<p style="font-weight: 600;font-size: 16px;color: color:rgba(0,0,0,0.85);">' +
+        '<i class="el-icon-circle-check" style="font-size: 22px;color:#52C41A;margin-right: 8px"></i>' +
+        " 资源检索成功</p>" +
+        '<p style="font-size: 14px;padding-left: 34px;color: color:rgba(0,0,0,0.65)">将自动填入信息，可手动修改。</p>';
+      this.$confirm(ii, "", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        dangerouslyUseHTMLString: true,
+        showClose: false,
+        closeOnClickModal: false,
+      })
+        .then(() => {
+          this.recForm.resaddr = obj.resAddress || ""; // 资源地址
+          this.recForm.business = obj.tradingArea || ""; // 商圈
+          this.recForm.floorType = obj.cType; // 楼盘类型             // 出入数
+          this.recForm.buildingNum = obj.fNum; // 楼栋数量
+          this.recForm.households = obj.hNum; // 住户数量
+          this.recForm.peopleFlowrate = obj.peopleFlow || ""; // 人流量
+          this.recForm.carNumber = obj.parking || ""; // 车位数
+          this.recForm.carFlowrate = obj.carFlow || ""; // 车流量
+          this.recForm.buildingPrice = obj.hPrice; // 楼盘价格
+          this.recForm.liveTime = obj.moveinTime || ""; // 入住年份
+          this.recForm.lng = obj.latLng.split(";")[0]; // 纬度
+          this.recForm.lat = obj.latLng.split(";")[1]; // 经度
+          //
+          this.recForm.resAlias = obj.alias || ""; // 资源别名
+          this.recForm.addressAlias = obj.addressAlias || ""; // 地址别名
+          this.recForm.description = obj.description || ""; // 描述
+          this.recForm.supportingFacilities = obj.supportingFacilities || ""; // 周边配套
+          this.recForm.buildingType = obj.buildingType || ""; // 建筑类型
+          this.recForm.transportation = obj.transportation || ""; // 交通状况
+          this.recForm.floorSpace = obj.floorSpace || ""; // 占地面积
+          this.recForm.constructionSpace = obj.constructionSpace || ""; // 建筑面积
+          this.recForm.buildingStructure = obj.buildingStructure || ""; // 建筑结构
+          this.recForm.greenPercentage = obj.greenPercentage || ""; // 绿化率
+          this.recForm.ownershipPeriod = obj.ownershipPeriod || ""; // 产权年限
+          this.recForm.plotRatio = obj.plotRatio || ""; // 容积率
+          this.recForm.developer = obj.developer || ""; // 开发商
+          this.recForm.pmc = obj.resPMC || ""; // 物业公司
+          this.recForm.managementFee = obj.managementFee || ""; // 物业费
+          this.recForm.salesOfficeAdd = obj.salesOfficeAdd || ""; // 售楼地址
+          this.recForm.preSalePermit = obj.preSalePermit || ""; // 预售许可证
+          this.recForm.ownershipType = obj.ownershipType || ""; // 产权性质
+          this.recForm.salesPhoneNumber = obj.salesPhoneNumber || ""; // 售楼电话
+          this.resUpdata = (obj.fullViewUrl || "").split(",").map((item) => {
+            return { name: "资源图片", url: item };
+          });
+        })
+        .catch((error) => {
+          console.error("小区信息填充error", error);
+          sessFun.messageFun("info", "取消成功");
+        });
     },
     // 根据所选的资源名称拉取房价网数据
     getResBasicData() {
@@ -1121,16 +1230,14 @@ export default {
         return;
       }
       if (
-        this.recForm.resname !== "" &&
+        this.recForm.resName !== "" &&
         this.resAddres.area !== "" &&
         this.resAddres.city !== ""
       ) {
         let params = {
-          // uid: this.sessionData.uID,
-          // token: this.sessionData.token,
           city: this.resAddres.city,
           district: this.resAddres.area,
-          name: this.recForm.resname,
+          name: this.recForm.resName,
         };
         api
           .postApi(this.apiVar.QADNAPI + "/GetResDetails", params)
@@ -1157,7 +1264,7 @@ export default {
         '<i class="el-icon-circle-check" style="font-size: 22px;color:#52C41A;margin-right: 8px"></i>' +
         " 资源检索成功</p>" +
         '<p style="font-size: 14px;padding-left: 34px;color: color:rgba(0,0,0,0.65)">将自动填入信息，可手动修改。</p>';
-      MessageBox.confirm(ii, "", {
+      this.$confirm(ii, "", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         dangerouslyUseHTMLString: true,
@@ -1212,7 +1319,7 @@ export default {
         flag &&
         this.resAddres.city &&
         this.resAddres.area &&
-        this.recForm.resname &&
+        this.recForm.resName &&
         this.recForm.resaddr
       ) {
         let params = {
@@ -1221,7 +1328,7 @@ export default {
           address:
             this.resAddres.city +
             this.resAddres.area +
-            this.recForm.resname +
+            this.recForm.resName +
             this.recForm.resaddr,
         };
         // console.log('根据填写的具体地址去获取经纬度',params)
@@ -1265,8 +1372,8 @@ export default {
           that.resMap.setCurrentCity("广州"); // 设置地图显示的城市 此项是必须设置的
         }
         that.resMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
-        if (that.recForm.resname) {
-          that.searchResName = that.recForm.resname;
+        if (that.recForm.resName) {
+          that.searchResName = that.recForm.resName;
           that.searchFun();
         }
         that.mapLoading = false;
@@ -1274,7 +1381,7 @@ export default {
     },
     // 地图获取经纬度
     searchFun() {
-      console.log(this.searchResName, "百度地图搜索", this.recForm.resname);
+      console.log(this.searchResName, "百度地图搜索", this.recForm.resName);
       let lnglat = "";
       let that = this;
       let options = {
@@ -1361,7 +1468,7 @@ export default {
       this.recForm.lng = this.searchResData.lat;
       this.mapVisible = false;
     },
-    
+
     // 城市地区联动-省级
     ShowRegion() {
       this.cityOther = true;
@@ -1390,18 +1497,18 @@ export default {
       console.log("name", name);
       // 手动触发校验
       this.$refs.recForm.validateField(name, (valid) => {
-        // console.log('错误提示信息',valid)
+        console.log("错误提示信息", valid);
         if (!valid) {
-          console.log("校验通过");
+          // console.log("校验通过");
         } else {
-          console.log("校验不通过");
+          // console.log("校验不通过");
         }
       });
     },
     // 按所属公司的城市区域检查是否有重复的资源名称
     isHaveCommenName(rule, value, callback) {
       if (
-        this.recForm.resname !== "" &&
+        this.recForm.resName !== "" &&
         this.resAddres.area !== "" &&
         this.resAddres.city !== ""
       ) {
@@ -1412,7 +1519,7 @@ export default {
           data: {
             prId: this.recForm.city[1],
             rId: this.recForm.region,
-            name: this.recForm.resname,
+            name: this.recForm.resName,
           },
         };
         console.log("params", params);
@@ -1501,7 +1608,7 @@ export default {
         return false;
       }
     },
-    
+
     // 选择资源类型时的修改资源字段显示
     selectRec(val) {
       this.recForm.floorType = "";
@@ -1515,7 +1622,7 @@ export default {
         this.floorType = this.officeBuilding;
       }
     },
-    
+
     //添加资源媒体
     createRes() {
       console.log(this.arrMedia);
@@ -1530,7 +1637,7 @@ export default {
         rid: Number(this.recForm.region),
         ta: this.recForm.business, // 所属商圈
         rt: this.recForm.rt, // 资源类型
-        resname: this.recForm.resname, // 资源名称
+        resName: this.recForm.resName, // 资源名称
         resaddr: this.recForm.resaddr, // 资源地址
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
         latlng: this.recForm.latlng, // 经纬度 重庆:9.61;106.47  北京:116.46;39.92 广州: 113.27;23.13  上海:121.29;31.11 深圳:113.46;22.27
@@ -1589,7 +1696,7 @@ export default {
           if (res.data.SysCode == 200200) {
             // 设置资源图片信息
             this.resImg.ptid = recData.resID; // 资源图片的ptid就是资源的id
-            this.resImg.palt = this.recForm.resname + "-" + recData.rID;
+            this.resImg.palt = this.recForm.resName + "-" + recData.rID;
             this.creadMediaFun(0, 0);
           } else if (
             res.data.SysCode === 100302 ||
@@ -1605,20 +1712,6 @@ export default {
           console.log("新建资源请求错误", err);
           sessFun.messageFun("warning", "新建资源请求异常");
         });
-    },
-    // 将创建的媒体资源绑定到地图无忧标注的社区
-    pushResMediaToWydt(mIDArr) {
-      let params = {
-        service: "PushMediaToDtwy",
-        data: {
-          resID: this.resData.resID,
-          mIDs: mIDArr,
-        },
-      };
-      console.log("资源媒体图片-无忧地图参数", params);
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("资源媒体图片无忧地图", res);
-      });
     },
     // 资源图片上传前验证格式和大小
     beforeUpload_res(file) {
@@ -1664,8 +1757,8 @@ export default {
       this.resImgUrl = file.url;
       this.resImgDialog = true;
     },
-    // 表单验证 resFrom:资源表单、adDoorFrom：广告门的表单、rgFrom：道闸的表单
-    submitForm(resFrom, adDoorFrom, rgFrom) {
+    // 表单验证 resFrom:资源表单
+    submitForm() {
       console.log("校验开始-----------");
       this.submitBtnIsAble = true;
       let timer = setTimeout(() => {
@@ -1675,16 +1768,18 @@ export default {
       // 资源表单校验
       let validateResArr = [
         "rt",
+        "resName",
         "city",
         "region",
-        "resname",
         "resaddr",
+        "floorType",
+        "buildingNum",
+        "households",
+        "liveTime",
         "lat",
         "lng",
-        "floorType",
-        "households",
-        "buildingNum",
-        "liveTime",
+        "pmc",
+        "liftType",
       ];
       let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
       for (let key of validateResArr) {
@@ -1700,15 +1795,17 @@ export default {
         });
         validatesPro.push(validate);
       }
-      Promise.all(validatesPro)
+      return Promise.all(validatesPro)
         .then((res) => {
           // 验证全部通过
           console.log("验证全部通过", res);
+          return true;
         })
         .catch((err) => {
           console.log("验证失败", err);
           //验证失败 提示reject失败状态的值
           sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
+          return false;
         });
     },
     //重置表单数据
@@ -1751,7 +1848,7 @@ export default {
           let tempObj = {
             resID: recObj.resID,
             rt: recObj.cType,
-            resname: recObj.resName,
+            resName: recObj.resName,
             city: this.recForm.city,
             region: recObj.rid.toString(),
             business: recObj.tradingArea,
@@ -1878,7 +1975,7 @@ export default {
       //     resid   int【必填】     资源ID
       //     rid     int             地区id
       //     ta      String          商圈名称
-      //     resname String          资源名称
+      //     resName String          资源名称
       //     resaddr String          资源地址
       //     ct      String          楼盘类型
       //     cd      String          入住时间
@@ -1895,7 +1992,7 @@ export default {
         resid: this.resData.resID,
         rid: "",
         ta: recObj.business,
-        resname: recObj.resname,
+        resName: recObj.resName,
         resaddr: recObj.resaddr,
         latlng: recObj.lat + ";" + recObj.lng,
         ct: recObj.floorType,
@@ -1967,18 +2064,12 @@ export default {
           this.Editloading.close();
         }
       });
-    }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.mediaList_content {
-  /*width: 92%;*/
-  background: #ffffff;
-  margin: 16px 64px 0;
-  padding-bottom: 32px;
-}
 /deep/ .ad_index_footer {
   text-align: center;
   font-size: 14px;
@@ -1989,7 +2080,6 @@ export default {
 
 .content_top_wrap {
   background: #ffffff;
-  padding-top: 3px;
 }
 
 .content_bottom_wrap {
@@ -2026,23 +2116,8 @@ export default {
   font-weight: bold;
   width: 70%;
 }
-
-/*媒体删除按钮*/
-.media_deleBtn {
-  float: right;
-  width: 50px;
-  line-height: 40px;
-  text-align: center;
-  cursor: pointer;
-}
-.media_deleBtn > i {
-  color: rgba(255, 0, 0, 0.85);
-  font-size: 24px;
-  font-weight: 500;
-}
-
 .content_top_wrap .content_top_form_wrap {
-  padding: 26px 0 16px;
+  padding: 0 0 16px;
 }
 
 /deep/ .el-form.demo-ruleForm {
@@ -2211,39 +2286,9 @@ export default {
   margin-top: 3px !important;
 }
 
-/deep/ .mediaMana_content_top .el-form-item__error {
-  top: 90%;
-  width: 200px;
-}
-
 /deep/ .el-popper[x-placement^="bottom"] {
   margin-top: 3px !important;
   top: 200px !important;
-}
-
-/*媒体一表单*/
-.mediaList_content .content_bottom_upload {
-  width: 408px;
-  height: 877px;
-  border: 2px dashed #979797;
-  float: left;
-  margin-left: 10px;
-  text-align: center;
-  line-height: 810px;
-  cursor: pointer;
-}
-/*广告尺寸单位等*/
-.mm {
-  display: inline-block;
-  position: relative;
-}
-
-.mm span {
-  position: absolute;
-  /*left: 68px;*/
-  right: 20px;
-  top: 0;
-  color: #666666;
 }
 
 .el-form-item_unit {
@@ -2255,15 +2300,6 @@ export default {
   left: 212px;
   color: #666666;
   top: 0;
-}
-/*按钮*/
-.content_bottom_btn {
-  text-align: center;
-  margin-top: 20px;
-}
-
-/deep/ .mediaList_content .el-form-item__error {
-  top: 92%;
 }
 
 /*上传图片*/
@@ -2297,6 +2333,7 @@ export default {
   display: none;
 }
 /deep/ .el-form-item__label {
+  position: relative;
   float: none;
   line-height: 32px;
   color: rgba(0, 0, 0, 0.85);
@@ -2304,21 +2341,10 @@ export default {
 /deep/ .el-form-item__content {
   margin-left: 0 !important;
 }
-/*道闸tab*/
-/deep/ .el-tabs__header {
-  background: #fff;
-  margin: 0;
-  padding-left: 24px;
-  border: 1px solid rgba(230, 231, 233, 1);
-}
 /deep/ .el-tabs__item {
   width: 80px;
   font-size: 16px;
   text-align: center;
-}
-.mediaImg img {
-  width: auto;
-  height: 100%;
 }
 /deep/ .el-dialog {
   width: 670px;
@@ -2328,9 +2354,6 @@ export default {
 }
 /deep/ .el-carousel__item {
   text-align: center;
-}
-/*地图弹出框*/
-.map_dialog {
 }
 /deep/ .map_dialog .el-dialog__header {
   text-align: left;
@@ -2369,48 +2392,5 @@ export default {
 
 /deep/ .el-input-number .el-input__inner {
   text-align: left !important;
-}
-
-/*拆除*/
-/deep/ .mStatueDialog {
-  width: 285px;
-}
-
-/deep/ .mStatueDialog h4 {
-  margin: 12px 0;
-}
-
-/deep/ .mStatueDialog .el-dialog__body {
-  padding: 0 20px 10px;
-}
-
-.dismantle_title {
-  font-size: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.dismantle_title .el-icon-question {
-  font-size: 21px;
-  color: #faad14;
-}
-
-.push_map_box_p {
-  height: 32px;
-  background: rgba(255, 251, 230, 1);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 229, 143, 1);
-  line-height: 32px;
-  padding: 0 16px;
-  margin-top: 16px;
-  position: relative;
-}
-
-.push_map_box_p /deep/ .el-icon-close {
-  cursor: pointer;
-  margin-left: 24px;
-  position: absolute;
-  top: 9px;
-  right: 8px;
 }
 </style>

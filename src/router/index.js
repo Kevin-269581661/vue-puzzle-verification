@@ -120,6 +120,7 @@ const developCommon = () => import('../components/develop/developCommon.vue')
 const developIndex = () => import('../components/develop/developIndex.vue')
 const constractCfg = () => import('../components/develop/constractCfg.vue')
 const newConstract = () => import('../components/develop/newConstract.vue')
+const constractDetail = () => import('../components/develop/constractDetail.vue')
 
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
@@ -414,7 +415,8 @@ function addRoutes(role, proposal, retain) {
                         {path: '/f_develop/maintainList', component: maintainList},
                         {path: '/f_develop/messageList', component: messageList},
                         {path: '/f_develop/constractCfg', component: constractCfg},
-                        {path: '/f_develop/newConstract', component: newConstract}
+                        {path: '/f_develop/newConstract', component: newConstract},
+                        {path: '/f_develop/constractDetail', component: constractDetail}
                     ]
                 }]
             break;

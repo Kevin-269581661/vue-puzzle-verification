@@ -197,6 +197,60 @@
         </el-col>
       </el-row>
 
+      <el-row :gutter="24" class="index-row">
+        <el-col :span="12">
+          <index-custom-card height="520px">
+            <template slot="head">
+              待录入媒体&nbsp;
+              <el-tooltip effect="dark" content="Top center" placement="top">
+                <ul slot="content">
+                  <li style="line-height: 20px">数据每5分钟更新一次</li>
+                </ul>
+                <img
+                  class="quesition-icon"
+                  src="../../assets/images/question_icon.png"
+                />
+              </el-tooltip>
+            </template>
+            <template slot="content">
+              <div style="padding: 20px 25px 10px">
+                <el-table
+                  :data="preLockArr"
+                  class="lock-table"
+                  border
+                  max-height="486"
+                >
+                  <el-table-column prop="apName" label="序号" width="147">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="媒体名称" min-width="200">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="总安装媒体数" min-width="120">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="总录入媒体数" min-width="120">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="待录入媒体数" min-width="120">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="操作">
+                    <template slot-scope="scope">
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </template>
+          </index-custom-card>
+        </el-col>
+      </el-row>
+
       <el-tabs
         class="index-tab-group"
         style="height: 643px; border: 1px solid #e5e6e9"

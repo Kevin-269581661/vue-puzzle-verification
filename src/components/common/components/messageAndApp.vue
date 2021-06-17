@@ -312,8 +312,8 @@
             overflow-y: auto;
         } */
         .message-list {
-            padding-left: 21px;
-            padding-bottom: 48px;
+            padding-left: 21px !important;
+            padding-bottom: 48px !important;
         }
         .app-list {
             overflow-y: scroll;

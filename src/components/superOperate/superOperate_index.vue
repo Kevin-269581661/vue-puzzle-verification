@@ -2613,9 +2613,6 @@
     .order_charts{
         height: 543px;
     }
-    /deep/ .el-tabs__nav-wrap::after{
-        height: 1px;
-    }
     /*时间组件*/
     .order_price_date{
         position: absolute;

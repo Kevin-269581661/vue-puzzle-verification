@@ -121,6 +121,7 @@ const developIndex = () => import('../components/develop/developIndex.vue')
 const constractCfg = () => import('../components/develop/constractCfg.vue')
 const newConstract = () => import('../components/develop/newConstract.vue')
 const constractDetail = () => import('../components/develop/constractDetail.vue')
+const constractList = () => import('../components/develop/constractList.vue')
 
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
@@ -293,6 +294,8 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/communityPortrait',component: communityPortrait},
                         {path: '/media/communityRank',component: communityRank},
                         {path: '/media/portraitDetail',component: portraitDetail},
+                        // 测试
+                        {path: '/media/constractList', component: constractList}
                     ]
                 }
             ]
@@ -416,7 +419,8 @@ function addRoutes(role, proposal, retain) {
                         {path: '/f_develop/messageList', component: messageList},
                         {path: '/f_develop/constractCfg', component: constractCfg},
                         {path: '/f_develop/newConstract', component: newConstract},
-                        {path: '/f_develop/constractDetail', component: constractDetail}
+                        {path: '/f_develop/constractDetail', component: constractDetail},
+                        {path: '/f_develop/constractList', component: constractList}
                     ]
                 }]
             break;

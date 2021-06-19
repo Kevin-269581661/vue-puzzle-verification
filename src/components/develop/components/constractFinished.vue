@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-16 20:26:46
+ * @LastEditTime: 2021-06-18 16:22:32
  * @FilePath: /frontend/src/components/develop/components/constractFinished.vue
 -->
 <template>
@@ -14,8 +14,8 @@
     </div>
     <div class="planPanel">
       <ul>
-        <li><em>资源名称：</em>{{ recFormData.resName || "" }}</li>
-        <li><em>物业公司：</em>{{ recFormData.pmc || "" }}</li>
+        <li><em>资源名称：</em>{{ resFormData.resName || "" }}</li>
+        <li><em>物业公司：</em>{{ resFormData.pmc || "" }}</li>
         <li>
           <em>合同期限：</em
           >{{
@@ -32,7 +32,7 @@ import timeFormat from "../../../commonFun/timeFormat.js";
 export default {
   name: "constractFinished",
   props: {
-    recFormData: {
+    resFormData: {
       type: Object,
       required: true,
       default: () => {},

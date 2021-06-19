@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-17 22:04:26
+ * @LastEditTime: 2021-06-18 15:06:48
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -18,73 +18,99 @@
         <h2>合同列表</h2>
       </div>
       <div class="mediaList_container">
-        <el-row :gutter="36">
-          <el-col :xs="12" :sm="8" :md="8" :lg="6" :xl="6">
-            <el-input
-              placeholder="请输入内容"
-              v-model="searchInfo.keyword"
-              size="small"
-              class="search-row-item"
+        <el-form
+          :model="searchInfo"
+          ref="constractSearchForm"
+          class="search-row"
+        >
+          <el-row :gutter="36">
+            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+              <el-form-item label="关键字：" prop="keyword">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="searchInfo.keyword"
+                  size="small"
+                  class="search-row-item"
+                >
+                  <el-select
+                    v-model="searchInfo.select"
+                    slot="prepend"
+                    size="small"
+                    placeholder="请选择"
+                  >
+                    <el-option label="资源名称" value="1"></el-option>
+                    <el-option label="物业名称" value="2"></el-option>
+                    <el-option label="业务员" value="3"></el-option>
+                  </el-select>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col
+              :xs="12"
+              :sm="8"
+              :md="8"
+              :lg="8"
+              :xl="6"
+              class="combination-serch"
             >
-              <el-select
-                v-model="searchInfo.select"
-                slot="prepend"
-                size="small"
-                placeholder="请选择"
-              >
-                <el-option label="资源名称" value="1"></el-option>
-                <el-option label="物业名称" value="2"></el-option>
-                <el-option label="业务员" value="3"></el-option>
-              </el-select>
-            </el-input>
-          </el-col>
-          <el-col :xs="12" :sm="8" :md="8" :lg="6" :xl="6" class="combination-serch">
-            <el-select
-              size="small"
-              v-model="searchInfo.dateType"
-              placeholder="请选择日期"
-              class="combination-serch-select"
+              <el-form-item label="选择日期：" prop="dateType">
+                <el-select
+                  size="small"
+                  v-model="searchInfo.dateType"
+                  placeholder="请选择日期"
+                  class="combination-serch-select"
+                >
+                  <el-option label="合同开始日期" value="0"></el-option>
+                  <el-option label="合同签约日期" value="1"></el-option>
+                  <el-option label="最近待付款日期" value="2"></el-option>
+                  <el-option label="合同结束日期" value="3"></el-option>
+                  <el-option label="创建日期" value="4"></el-option>
+                </el-select>
+                <el-date-picker
+                  size="small"
+                  v-model="searchInfo.rangeDate"
+                  type="date"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择日期"
+                  class="combination-serch-date"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+              <el-form-item label="城市区域：" prop="cityWord">
+                <el-select
+                  v-model="searchInfo.cityWord"
+                  placeholder="请选择城市区域"
+                  filterable
+                  size="small"
+                  class="search-row-item"
+                >
+                  <el-option
+                    v-for="item of filterCityData"
+                    :key="item.rID"
+                    :label="item.text"
+                    :value="item.text"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col
+              :xs="12"
+              :sm="8"
+              :md="8"
+              :lg="8"
+              :xl="6"
+              class="row-btn-group"
             >
-              <el-option label="合同开始日期" value="0"></el-option>
-              <el-option label="合同签约日期" value="1"></el-option>
-              <el-option label="最近待付款日期" value="2"></el-option>
-              <el-option label="合同结束日期" value="3"></el-option>
-              <el-option label="创建日期" value="4"></el-option>
-            </el-select>
-            <el-date-picker
-              size="small"
-              v-model="searchInfo.rangeDate"
-              type="date"
-              format="yyyy-MM-dd"
-              value-format="yyyy-MM-dd"
-              placeholder="选择日期"
-              class="combination-serch-date"
-            >
-            </el-date-picker>
-          </el-col>
-          <el-col :xs="12" :sm="8" :md="8" :lg="6" :xl="6">
-            <el-select
-              v-model="searchInfo.cityWord"
-              placeholder="请选择城市区域"
-              filterable
-              size="small"
-              class="search-row-item"
-            >
-              <el-option
-                v-for="item of filterCityData"
-                :key="item.rID"
-                :label="item.text"
-                :value="item.text"
-              ></el-option>
-            </el-select>
-          </el-col>
-          <el-col :xs="12" :sm="8" :md="8" :lg="6" :xl="6">
-            <el-button type="primary" @click="search()">搜索</el-button>
-            <el-button plain @click="reset()">重置</el-button>
-            <el-button plain size="small" @click="addOne()">新建</el-button>
-            <el-button plain size="small" @click="exportRes">导出</el-button>
-          </el-col>
-        </el-row>
+              <el-button type="primary" @click="search()">搜索</el-button>
+              <el-button plain @click="reset()">重置</el-button>
+              <el-button plain size="small" @click="addOne()">新建</el-button>
+              <el-button plain size="small" @click="exportRes">导出</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
 
         <div class="table_wrap">
           <el-table
@@ -96,57 +122,58 @@
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
           >
-            <el-table-column prop="apName" label="方案名称" min-width="14.9%">
+            <el-table-column prop="resName" label="资源名称" min-width="14.9%">
               <template slot-scope="scope">
-                <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
                 <span
                   style="color: #108ee9; cursor: pointer"
                   @click="ToDetail(scope.row)"
-                  >{{ scope.row.apName }}</span
+                  >{{ scope.row.resName }}</span
                 >
               </template>
             </el-table-column>
             <el-table-column
-              prop="cName"
-              label="客户名称"
+              prop="dcType"
+              label="合同线"
+              width="100"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column
+              prop="dcType"
+              label="合同类型"
               min-width="12.6%"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
-              prop="bTitle"
-              label="品牌名称"
+              prop="startDate"
+              label="合同开始日期"
               min-width="7.6%"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
-              prop="apTotal"
-              label="方案价格"
+              prop="endDate"
+              label="合同结束日期"
               sortable="custom"
               width="120px"
               align="right"
             >
               <template slot-scope="scope">
-                <span v-if="scope.row.apState == '-1'">--</span>
-                <span v-else
-                  >&yen;{{
-                    scope.row.apTotal ? priceFormat(scope.row.apTotal / 100) : 0
-                  }}</span
-                >
+                
               </template>
             </el-table-column>
             <el-table-column
-              prop="realName"
-              label="所有人"
+              prop="mediaCnt"
+              label="合同媒体数"
               min-width="6.1%"
               v-if="!(role == 'AD') && role != 'BD'"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
-              prop="realName"
-              label="所有人"
+              prop="installMediaCnt"
+              label="已装媒体数"
               min-width="6.1%"
               v-if="role == 'BD'"
               show-overflow-tooltip
@@ -157,155 +184,92 @@
             </el-table-column>
 
             <el-table-column
-              label="投放城市(点位面数,排期)"
-              prop="cityArea"
-              min-width="25.8%"
+              prop="venueFee"
+              label="场地费"
+              width="100px"
+              sortable="custom"
+              show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <template v-if="isAll">
-                  <div
-                    v-for="(item, index) of scope.row.cityArea"
-                    :key="index"
-                    class="city_p"
-                  >
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="
-                        item.asName +
-                        ' ' +
-                        item.city +
-                        '(' +
-                        item.num +
-                        '面,' +
-                        formatTime(item.pdStar) +
-                        '至' +
-                        formatTime(item.pdEnd) +
-                        ')'
-                      "
-                      placement="top"
-                    >
-                      <div>
-                        <span v-if="item.isshow">{{ item.asName }}</span>
-                        <p>
-                          {{
-                            item.city +
-                            "(" +
-                            item.num +
-                            "面," +
-                            formatTime(item.pdStar) +
-                            "至" +
-                            formatTime(item.pdEnd) +
-                            ")"
-                          }}
-                        </p>
-                      </div>
-                    </el-tooltip>
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="'距离解锁还剩' + item.RemainDay + '天'"
-                      placement="top"
-                    >
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                          item.RemainDay
-                        }}</b>
-                      </span>
-                    </el-tooltip>
-                  </div>
-                </template>
-                <template v-else>
-                  <div
-                    v-for="item of scope.row.cityArea"
-                    :key="item.rid + '-' + item.asrID"
-                    class="city_p"
-                  >
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="
-                        item.asName +
-                        ' ' +
-                        item.city +
-                        '(' +
-                        item.num +
-                        '面,' +
-                        formatTime(item.pdStar) +
-                        '至' +
-                        formatTime(item.pdEnd) +
-                        ')'
-                      "
-                      placement="top"
-                    >
-                      <p v-if="item.apState == '-1'">
-                        {{
-                          item.city +
-                          "(" +
-                          "--面," +
-                          formatTime(item.pdStar) +
-                          "至" +
-                          formatTime(item.pdEnd) +
-                          ")"
-                        }}
-                      </p>
-                      <p v-else>
-                        {{
-                          item.city +
-                          "(" +
-                          item.num +
-                          "面," +
-                          formatTime(item.pdStar) +
-                          "至" +
-                          formatTime(item.pdEnd) +
-                          ")"
-                        }}
-                      </p>
-                    </el-tooltip>
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="'距离解锁还剩' + item.RemainDay + '天'"
-                      placement="top"
-                    >
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                          item.RemainDay
-                        }}</b>
-                      </span>
-                    </el-tooltip>
-                    <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
-                    <!--<i v-else></i>-->
-                  </div>
-                </template>
+                <span>{{ formatTime(scope.row.venueFee) }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              prop="apcTime"
+              prop="devFee"
+              label="开发费"
+              width="100px"
+              sortable="custom"
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>{{ formatTime(scope.row.devFee) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="payDate"
+              label="最近待付款日期"
+              width="100px"
+              sortable="custom"
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>{{ formatTime(scope.row.payDate) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="createUserName"
+              label="业务员"
+              width="100px"
+              sortable="custom"
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>{{ formatTime(scope.row.createUserName) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="contractNo"
+              label="合同编号"
+              width="100px"
+              sortable="custom"
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <span>{{ formatTime(scope.row.contractNo) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="createTime"
               label="创建日期"
               width="100px"
               sortable="custom"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.apcTime) }}</span>
+                <span>{{ formatTime(scope.row.createTime) }}</span>
               </template>
             </el-table-column>
             <el-table-column
               class="tac"
-              prop="apState"
-              label="状态"
+              prop="dcState"
+              label="合同状态"
               min-width="6.1%"
               show-overflow-tooltip
+              fixed="right"
+              :filters="[
+                { text: '禁用', value: '0' },
+                { text: '正常', value: '1' },
+                { text: '待安装', value: '2' },
+                { text: '待维修', value: '3' },
+              ]"
+              :filter-multiple="false"
             >
               <template slot-scope="scope"> </template>
             </el-table-column>
             <el-table-column
               label="操作"
               width="100px"
-              v-if="!(role == 'OP' || role == 'AD')"
+              fixed="right"
             >
               <template slot-scope="scope">
                 <el-dropdown
@@ -367,13 +331,9 @@
                 </el-dropdown>
               </template>
             </el-table-column>
-            <div slot="empty">
-              <!-- <no-search-result></no-search-result> -->
-            </div>
           </el-table>
 
           <div class="ad_pagination">
-            <p>注：<span>3</span>表示预锁天数</p>
             <el-pagination
               background
               v-if="paginationShow"
@@ -1811,7 +1771,6 @@ export default {
     // 设置表格数据
     setTableData(item) {
       let obj = {
-        apSrc: item.src,
         adcID: item.adcID,
         apID: item.apID,
         apName: item.apName || "",
@@ -2114,9 +2073,26 @@ a {
 /deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
   margin-left: 0;
 }
-
-.search-row-item {
-  width: 100%;
+.search-row {
+  /deep/ .el-form-item {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    margin-bottom: 16px;
+    .el-form-item__label {
+      padding: 0;
+      line-height: 32px;
+    }
+    .el-form-item__content {
+      flex-grow: 1;
+      display: flex;
+      line-height: 32px;
+    }
+  }
+  .search-row-item {
+    width: 100%;
+    // margin-bottom: 16px;
+  }
 }
 
 .typeBox p {
@@ -2141,13 +2117,21 @@ a {
   display: flex;
   flex-flow: row nowrap;
   .combination-serch-select .el-input__inner {
+    width: 126px;
     border-radius: 4px 0 0 4px;
   }
-  .combination-serch-date .el-input__inner {
-    border-radius: 0 0 4px 4px;
+  .combination-serch-date {
+    width: 100%;
+    .el-input__inner {
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+    }
   }
 }
-
+.row-btn-group {
+  clear: both;
+  margin-bottom: 16px;
+}
 /*日期控件*/
 .block {
   display: inline-block;
@@ -2251,28 +2235,6 @@ a {
   line-height: 28px;
 }
 
-.ad_pagination {
-  display: flex;
-  justify-content: space-between;
-}
-
-.ad_pagination p {
-  color: rgba(0, 0, 0, 0.65);
-  font-size: 12px;
-}
-
-.ad_pagination span {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background: rgba(230, 247, 255, 1);
-  border-radius: 2px;
-  border: 1px solid rgba(145, 213, 255, 1);
-  text-align: center;
-  color: #1890ff;
-  margin-right: 5px;
-}
-
 /*资源导出*/
 .export_step_box {
   border: 1px solid rgba(218, 218, 218, 1);
@@ -2357,6 +2319,7 @@ a {
     .el-form-item__label {
       padding-bottom: 4px;
       line-height: 24px;
+      white-space: nowrap;
     }
     .el-input__inner {
       padding: 0 12px;

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-16 20:25:42
+ * @LastEditTime: 2021-06-18 17:12:55
  * @FilePath: /frontend/src/components/develop/newConstract.vue
 -->
 <template>
@@ -46,7 +46,12 @@
         </span>
       </el-row>
       <keep-alive>
-        <component ref="needValidForm" :recFormData="recFormData" :constractFormData="constractFormData" :is="componentName"></component>
+        <component
+          ref="needValidForm"
+          :resFormData="resFormData"
+          :constractFormData="constractFormData"
+          :is="componentName"
+        ></component>
       </keep-alive>
     </div>
     <div class="footer">
@@ -56,7 +61,14 @@
       </div>
       <div v-else-if="activeStep == 2" class="footer-btn-group">
         <el-button type="default" @click="cancelFirstStep">取消</el-button>
-        <el-button type="default" @click="activeStep = 1">上一步</el-button>
+        <el-button
+          type="default"
+          @click="
+            activeStep = 1;
+            componentName = 'resInput';
+          "
+          >上一步</el-button
+        >
         <el-button type="primary" @click="thirdStep">保存</el-button>
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
@@ -68,6 +80,7 @@
 </template>
 
 <script>
+import api from "../../api/api.js";
 import resInput from "../common/components/resInput.vue";
 import constractInput from "./components/constractInput.vue";
 import constractFinished from "./components/constractFinished.vue";
@@ -83,8 +96,8 @@ export default {
     return {
       activeStep: 1,
       componentName: "resInput",
-      recFormData: {},
-      constractFormData: {}
+      resFormData: {},
+      constractFormData: {},
     };
   },
   watch: {},
@@ -99,7 +112,7 @@ export default {
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
         this.activeStep = 2;
-        this.recFormData = this.$refs.needValidForm.recForm
+        this.resFormData = this.$refs.needValidForm.recForm;
         this.componentName = "constractInput";
       }
     },
@@ -107,10 +120,54 @@ export default {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
-        this.activeStep = 3;
         this.constractFormData = this.$refs.needValidForm.constractForm;
+        await this.newConstract();
+        this.activeStep = 3;
+        console.log("-=-", this.resFormData, this.constractFormData);
         this.componentName = "constractFinished";
       }
+    },
+    newConstract() {
+      let loading = this.$loading({
+        text: "请耐心等待...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      let params = {
+        resID: this.resFormData.resID,
+        resName: this.resFormData.resName,
+        pmcName: this.resFormData.pmcName,
+        ...this.constractFormData,
+      };
+      params.venueFee = params.venueFee * 100;
+      params.devFee = params.devFee * 100;
+      // 合同类型：0-首签 1-续约 2-加门 3-补充
+      params.dcType = 0;
+      // 续约，加门或者补充时父单的id （首签时传0）
+      params.pID = 0;
+      // fileIDs
+      api.postApi("/addsp/devContract/create", params).then((res) => {
+        console.log("创建合同", res);
+        if (res.data.SysCode === 200200) {
+        } else {
+          sessFun.messageFun("warning", res.data.MSG);
+        }
+      });
+      return new Promise((resolve) => {
+        api
+          .postApi("/addsp/devContract/create", params)
+          .then((res) => {
+            console.log("创建合同", res);
+            if (res.data.SysCode === 200200) {
+              resolve(true);
+            } else {
+              sessFun.messageFun("warning", res.data.MSG);
+            }
+          })
+          .finally(() => {
+            loading.close();
+          });
+      });
     },
   },
 };

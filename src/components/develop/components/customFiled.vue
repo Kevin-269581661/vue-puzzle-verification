@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-10 18:33:17
+ * @LastEditTime: 2021-06-18 14:17:12
  * @FilePath: /frontend/src/components/develop/components/customFiled.vue
 -->
 <template>
@@ -11,7 +11,7 @@
     <el-table
       :data="tableData"
       style="width: 100%"
-      height="500px"
+      max-height="500px"
       v-loading="loading"
       element-loading-text="玩命加载中..."
       element-loading-spinner="el-icon-loading"
@@ -39,7 +39,10 @@
               <el-option label="日期" value="date"></el-option>
               <el-option label="数值型" value="number"></el-option>
               <el-option label="单选下拉列表" value="select"></el-option>
-              <el-option label="多选下拉列表" value="multipleSelect"></el-option>
+              <el-option
+                label="多选下拉列表"
+                value="multipleSelect"
+              ></el-option>
               <el-option label="单行文本框" value="input"></el-option>
               <el-option label="多行文本框" value="textarea"></el-option>
             </el-select>
@@ -57,30 +60,34 @@
       >
         <template slot-scope="scope">
           <div v-if="scope.row.operate">
-            <template v-if="scope.row.filedType=='date'">
+            <template v-if="scope.row.filedType == 'date'">
               <span>可选择具体年/月/日</span>
             </template>
-            <template v-if="scope.row.filedType=='select'">
+            <template v-if="scope.row.filedType == 'select'">
               <!-- <span>{{scope.row}}</span> -->
-              <auto-add-option :value="scope.row.filedValue" @input="(value)=>scope.row.filedValue=value"></auto-add-option>
+              <auto-add-option
+                :value="scope.row.filedValue"
+                @input="(value) => (scope.row.filedValue = value)"
+              ></auto-add-option>
             </template>
-            <template v-else-if="scope.row.filedType=='multipleSelect'">
-              <auto-add-option :value="scope.row.filedValue" @input="(value)=>scope.row.filedValue=value"></auto-add-option>
+            <template v-else-if="scope.row.filedType == 'multipleSelect'">
+              <auto-add-option
+                :value="scope.row.filedValue"
+                @input="(value) => (scope.row.filedValue = value)"
+              ></auto-add-option>
             </template>
-            <template v-else-if="scope.row.filedType=='number'">
+            <template v-else-if="scope.row.filedType == 'number'">
               <span>可填写数值</span>
             </template>
-            <template v-else-if="scope.row.filedType=='input'">
+            <template v-else-if="scope.row.filedType == 'input'">
               <span>可输入单行文本内容</span>
             </template>
-            <template v-else-if="scope.row.filedType=='textarea'">
+            <template v-else-if="scope.row.filedType == 'textarea'">
               <span>可输入多行文本内容</span>
             </template>
           </div>
           <div v-else>
-            <span>{{
-              `${scope.row.filedValue}`
-            }}</span>
+            <span>{{ `${scope.row.filedValue}` }}</span>
           </div>
         </template>
       </el-table-column>
@@ -101,20 +108,22 @@
           </div>
         </template>
       </el-table-column>
+      <div slot="append">
+        <div class="add_res" @click="addRow()">
+          <i class="el-icon-plus" style="color: rgba(24, 144, 255, 1)"></i>
+          新建字段
+        </div>
+      </div>
     </el-table>
-    <div class="add_res" @click="addRow()">
-      <i class="el-icon-plus" style="color: rgba(24, 144, 255, 1)"></i>
-      添加
-    </div>
   </div>
 </template>
 
 <script>
-import autoAddOption from "@/components/common/components/autoAddOption.vue"
+import autoAddOption from "@/components/common/components/autoAddOption.vue";
 export default {
   name: "customFiled",
   components: {
-    autoAddOption
+    autoAddOption,
   },
   props: {},
   data() {
@@ -123,13 +132,13 @@ export default {
         {
           filedName: "日期",
           filedType: "date",
-          filedValue: '',
+          filedValue: "",
           operate: true,
         },
         {
           filedName: "单选下拉列表",
           filedType: "select",
-          filedValue: ['选项1', '选项2', '选项3'],
+          filedValue: ["选项1", "选项2", "选项3"],
           operate: false,
         },
         {
@@ -147,13 +156,13 @@ export default {
         {
           filedName: "单行文本框",
           filedType: "input",
-          filedValue: '',
+          filedValue: "",
           operate: false,
         },
         {
           filedName: "多行文本框",
           filedType: "textarea",
-          filedValue: '',
+          filedValue: "",
           operate: false,
         },
       ],
@@ -211,14 +220,13 @@ export default {
 }
 .add_res {
   box-sizing: border-box;
-  width: 100%;
   height: 32px;
   border: 1px dashed #d9d9d9;
   border-radius: 4px;
   text-align: center;
   line-height: 32px;
   cursor: pointer;
-  margin-top: 10px;
+  margin: 10px 16px;
   font-size: 14px;
   color: rgba(24, 144, 255, 1);
 }

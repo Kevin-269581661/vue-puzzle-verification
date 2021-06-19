@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-17 17:40:35
+ * @LastEditTime: 2021-06-18 16:21:42
  * @FilePath: /frontend/src/components/develop/constractDetail.vue
 -->
 <template>
@@ -128,7 +128,7 @@ export default {
     return {
       activeStep: 1,
       componentName: "resInput",
-      recFormData: {},
+      resFormData: {},
       constractFormData: {},
       activeTabName: "first",
       // 合同状态和颜色映射
@@ -146,7 +146,7 @@ export default {
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
         this.activeStep = 2;
-        this.recFormData = this.$refs.needValidForm.recForm;
+        this.resFormData = this.$refs.needValidForm.recForm;
         this.componentName = "constractInput";
       }
     },

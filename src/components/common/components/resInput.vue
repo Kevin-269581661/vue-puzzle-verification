@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-16 18:16:18
+ * @LastEditTime: 2021-06-18 16:15:16
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -436,11 +436,11 @@
               <el-form-item label="物业信息" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
-                  <el-form-item label="物业公司" prop="pmc">
+                  <el-form-item label="物业公司" prop="pmcName">
                     <el-input
-                      v-model="recForm.pmc"
+                      v-model="recForm.pmcName"
                       placeholder="物业公司单位名称"
-                      @blur="blurFun('pmc')"
+                      @blur="blurFun('pmcName')"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -767,6 +767,7 @@ export default {
       recForm: {
         rt: "", //资源类型
         resName: "", // 资源名称
+        resID: null,
         city: [],
         region: "", // 所属区域
         business: "", // 所属商圈
@@ -785,7 +786,7 @@ export default {
         liveTime: "",
         lng: "",
         lat: "",
-        pmc: "",
+        pmcName: "",
         fullViewUrl: "", // 资源图片
         addressAlias: "", // 地址别名
         description: "", // 描述
@@ -911,7 +912,7 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        pmc: [
+        pmcName: [
           {
             required: true,
             message: "请输入物业公司单位名称！",
@@ -1177,6 +1178,7 @@ export default {
       })
         .then(() => {
           this.recForm.resaddr = obj.resAddress || ""; // 资源地址
+          this.recForm.resID = obj.resID || ""; // 小区ID
           this.recForm.business = obj.tradingArea || ""; // 商圈
           this.recForm.floorType = obj.cType; // 楼盘类型             // 出入数
           this.recForm.buildingNum = obj.fNum; // 楼栋数量
@@ -1202,7 +1204,8 @@ export default {
           this.recForm.ownershipPeriod = obj.ownershipPeriod || ""; // 产权年限
           this.recForm.plotRatio = obj.plotRatio || ""; // 容积率
           this.recForm.developer = obj.developer || ""; // 开发商
-          this.recForm.pmc = obj.resPMC || ""; // 物业公司
+          this.recForm.pmcName = obj.resPMC || ""; // 物业公司
+          this.recForm.liftType = obj.liftType; // 有无电梯
           this.recForm.managementFee = obj.managementFee || ""; // 物业费
           this.recForm.salesOfficeAdd = obj.salesOfficeAdd || ""; // 售楼地址
           this.recForm.preSalePermit = obj.preSalePermit || ""; // 预售许可证
@@ -1301,7 +1304,7 @@ export default {
           this.recForm.ownershipPeriod = obj.ownershipPeriod || ""; // 产权年限
           this.recForm.plotRatio = obj.plotRatio || ""; // 容积率
           this.recForm.developer = obj.developer || ""; // 开发商
-          this.recForm.pmc = obj.propertyManagement || ""; // 物业公司
+          this.recForm.pmcName = obj.propertyManagement || ""; // 物业公司
           this.recForm.managementFee = obj.managementFee || ""; // 物业费
           this.recForm.salesOfficeAdd = obj.salesOfficeAdd || ""; // 售楼地址
           this.recForm.preSalePermit = obj.preSalePermit || ""; // 预售许可证
@@ -1647,7 +1650,7 @@ export default {
         fn: this.recForm.buildingNum, // 楼栋数量
         dn: this.recForm.doorwayNum, // 出入口数量
         hn: this.recForm.households, // 小区户数
-        pmc: this.recForm.pmc, // 物业公司
+        pmc: this.recForm.pmcName, // 物业公司
         peopleFlow: this.recForm.peopleFlowrate, //人流量
         carFlow: this.recForm.carFlowrate, //车流量
         parkSpaceNum: this.recForm.carNumber, //车位数
@@ -1668,7 +1671,6 @@ export default {
         plotRatio: this.recForm.plotRatio, // 容积率
         ownershipPeriod: this.recForm.ownershipPeriod, // 产权年限
         developer: this.recForm.developer, // 开发商
-        // pmc: this.recForm.propertyManagement,                      // 物业公司
         managementFee: this.recForm.managementFee, // 物业费
         salesOfficeAdd: this.recForm.salesOfficeAdd, // 售楼地址
         preSalePermit: this.recForm.preSalePermit, // 预售许可证
@@ -1778,7 +1780,7 @@ export default {
         "liveTime",
         "lat",
         "lng",
-        "pmc",
+        "pmcName",
         "liftType",
       ];
       let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
@@ -1859,7 +1861,7 @@ export default {
             households: recObj.HouseNum,
             buildingPrice: recObj.housePrice,
             liveTime: recObj.joinTime, // 入住时间
-            pmc: recObj.pmc, // 物业公司
+            pmcName: recObj.pmc, // 物业公司
             peopleFlowrate: recObj.peopleFlowrate, // 人流量
             carNumber: recObj.carNumber, // 车位数
             carFlowrate: recObj.carFlowrate, // 车流量

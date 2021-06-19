@@ -77,8 +77,7 @@ export default {
                     { validator: checkCurrPwd, trigger: "blur" }
                 ],
                 newPwd: [
-                    { min: 6, message: "至少输入6个字节", trigger: "blur" },
-                    { max: 30, message: "最多输入30个字节", trigger: "blur" },
+                    { required: true, pattern: /(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*])[\da-zA-Z~!@#$%^&*]{8,30}/, message: '密码为数字，字母，特殊符号且长度为8-30位', trigger: ["blur", "change"] },
                     { validator: validatePass, trigger: "blur" }
                 ],
                 confirmPwd: [

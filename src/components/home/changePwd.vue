@@ -77,7 +77,7 @@ export default {
                     { validator: checkCurrPwd, trigger: "blur" }
                 ],
                 newPwd: [
-                    { required: true, pattern: /(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*.])[\da-zA-Z~!@#$%^&*.]{8,30}/, message: '密码长度要求8~30位且包含数字、字母、特殊字符', trigger: ["blur", "change"] },
+                    { required: true, pattern: /(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*.`])[\da-zA-Z~!@#$%^&*.`]{8,30}/, message: '密码长度要求8~30位且包含数字、字母、特殊字符', trigger: ["blur", "change"] },
                     { validator: validatePass, trigger: "blur" }
                 ],
                 confirmPwd: [

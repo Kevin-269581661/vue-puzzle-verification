@@ -214,15 +214,13 @@ export default {
         this.password === "" ||
         this.password == null
       ) {
-        MessageBox.alert("请输入正确的用户名", "用户登录", {
+        MessageBox.alert("用户名和密码不能为空", "用户登录", {
           showClose: false,
           confirmButtonText: "确定",
         });
         return;
       }
-      if (this.verified != "success") {
-        this.verified = "trying";
-      }
+      this.verified = "trying";
     },
     //登录
     doLogin: function () {
@@ -235,7 +233,7 @@ export default {
         loginParams = { code: this.GetRequest("code") };
       } else {
         if (name === "" || name == null || pass === "" || pass == null) {
-          MessageBox.alert("请输入正确的用户名", "用户登录", {
+          MessageBox.alert("用户名和密码不能为空", "用户登录", {
             showClose: false,
             confirmButtonText: "确定",
           });
@@ -772,6 +770,7 @@ input::placeholder {
     font-size: 26px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
   }
   /deep/ .slide-verify {
     canvas {

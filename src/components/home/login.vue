@@ -2,71 +2,62 @@
   <div class="login_wrap">
     <div class="loginBox">
       <div class="logo">
-        <img
-          src="../../assets/images/login_logo.png"
-          alt=""
-        >
+        <img src="../../assets/images/login_logo.png" alt="" />
         <p>您可信任的社区服务商</p>
       </div>
       <div class="login">
         <ul class="loginType">
-          <li
-            v-bind:class="{active:isActive}"
-            @click="loginType"
-          >密码登录
+          <li v-bind:class="{ active: isActive }" @click="loginType">
+            密码登录
           </li>
-          <li
-            v-bind:class="{active:!isActive}"
-            @click="loginType"
-          >扫码登录
+          <li v-bind:class="{ active: !isActive }" @click="loginType">
+            扫码登录
           </li>
         </ul>
-        <div
-          class="loginInput"
-          v-if="isActive"
-        >
-          <div class="username">
-            <input
-              type="text"
-              placeholder="账户"
-              v-model="username"
-            >
-            <img
-              src="../../assets/images/usericon.png"
-              alt=""
-            >
+        <div class="loginInput" v-if="isActive">
+          <div
+            v-if="verified == 'trying'"
+            class="login-verify"
+          >
+            <slide-verify
+              :l="42"
+              :r="10"
+              :w="368"
+              :h="155"
+              slider-text="向右滑动"
+              @success="onSuccess"
+              @fail="onFail"
+              @refresh="onRefresh"
+            ></slide-verify>
+            <i class="el-icon-close slide-close" @click.stop="verified = 'fail'"></i>
           </div>
-          <div class="password">
-            <input
-              type="password"
-              placeholder="密码"
-              v-model="password"
-              @keydown.13="show($event)"
-              @keydown.229="() => {}"
-            >
-            <img
-              src="../../assets/images/passicon.png"
-              alt=""
-            >
-          </div>
-          <div class="remeberUser">
+          <template v-else>
+            <div class="username">
+              <input type="text" placeholder="账户" v-model="username" />
+              <img src="../../assets/images/usericon.png" alt="" />
+            </div>
+            <div class="password">
+              <input
+                type="password"
+                placeholder="密码"
+                autocomplete="off"
+                v-model="password"
+                @keydown.13="show($event)"
+                @keydown.229="() => {}"
+              />
+              <img src="../../assets/images/passicon.png" alt="" />
+            </div>
+          </template>
+
+          <!-- <div class="remeberUser">
             <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
-          </div>
+          </div> -->
           <div class="loginBtn">
-            <button
-              id="login"
-              @click="doLogin()"
-            >登&nbsp;录</button>
+            <button id="login" @click="slideVerify()">登&nbsp;录</button>
           </div>
         </div>
-        <div
-          class="weixinLogin"
-          v-if="!isActive"
-        >
-          <div
-            class="weixinCode"
-            v-show="step === 1"
-          >
+        <div class="weixinLogin" v-if="!isActive">
+          <div class="weixinCode" v-show="step === 1">
             <div
               class="ws_waiting"
               v-loading="imgLoading"
@@ -79,28 +70,28 @@
                 alt="二维码"
                 v-show="!imgLoading"
                 class="ws_img"
-              >
+              />
               <p v-show="!imgLoading">打开微信扫一扫登录</p>
             </div>
           </div>
-          <div
-            class="weixinCode"
-            v-show="step === 2"
-          >
+          <div class="weixinCode" v-show="step === 2">
             <div class="ws_waiting">
               <i
                 class="el-icon-success"
-                style="font-size: 48px;color: #409EFF"
+                style="font-size: 48px; color: #409eff"
               ></i>
               <div style="margin-top: 16px">扫码成功，等待确认！</div>
             </div>
           </div>
         </div>
         <div class="tip">
-          <p>温馨提示：加盟城市请(<a
-              :href='apiVar.qadnUrl + "/importTemplate/ApplicationForm.doc"'
+          <p>
+            温馨提示：加盟城市请(<a
+              :href="apiVar.qadnUrl + '/importTemplate/ApplicationForm.doc'"
               download="申请表"
-            >点击并下载申请表</a>)，申请平台账号</p>
+              >点击并下载申请表</a
+            >)，申请平台账号
+          </p>
         </div>
       </div>
     </div>
@@ -110,45 +101,59 @@
          </div>-->
     <!--背景图片动画-->
     <div class="backgroundImg">
-      <img
-        src="../../assets/images/loginBg.png"
-        alt=""
-      >
+      <img src="../../assets/images/loginBg.png" alt="" />
     </div>
     <div class="footer">
-      <p>copyright &copy; 2017 Qinlin technology. All rights reserved. <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a></p>
+      <p>
+        copyright &copy; 2017 Qinlin technology. All rights reserved.
+        <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a>
+      </p>
     </div>
+    <!-- <div v-if="verified == 'trying'" class="login-verify" @click.prevent="verified='fail'">
+      <slide-verify
+        :l="42"
+        :r="10"
+        :w="368"
+        :h="155"
+        slider-text="向右滑动"
+        @success="onSuccess"
+        @fail="onFail"
+        @refresh="onRefresh"
+      ></slide-verify>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { Checkbox, MessageBox, Message } from 'element-ui';
-import utils from '../../commonFun/utils.js';
-import api from '../../api/api'
-import {addRoutes} from '../../router'
+import { Checkbox, MessageBox, Message } from "element-ui";
+import utils from "../../commonFun/utils.js";
+import api from "../../api/api";
+import { addRoutes } from "../../router";
 export default {
   name: "login",
   components: {
     elCheckbox: Checkbox,
   },
-  data () {
+  data() {
     return {
+      verified: "beforeTry",
       loading: false,
       isActive: true,
       remeAccount: false,
-      username: '', //lxj
-      password: '', //qinlin888
-      realName: '',
+      username: "", //lxj
+      password: "", //qinlin888
+      realName: "",
       checke: false,
-      websock: '',          // websocket连接
-      codeImg: '',          // 二维码图片地址
-      imgLoading: true,     // 二维码loading
+      websock: "", // websocket连接
+      codeImg: "", // 二维码图片地址
+      imgLoading: true, // 二维码loading
       isWs: false,
-      step: 1,                // 扫码登录的步骤
-      codeLoading: '',       // 扫码登录时的loading
-      condeLoginData: '',   // 扫码登录返回的登录信息
-      timer: '',             // 轮询验证二维码是否加载完成
+      step: 1, // 扫码登录的步骤
+      codeLoading: "", // 扫码登录时的loading
+      condeLoginData: "", // 扫码登录返回的登录信息
+      timer: "", // 轮询验证二维码是否加载完成
       isLogin: false,
+
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -156,35 +161,66 @@ export default {
             POINT: 13,
             canvas: '',
             context:'',*/
-    }
+    };
   },
   mounted: function () {
     // 移除社区画像信息
     sessionStorage.removeItem("portraitInfo");
     //页面加载调用获取cookie值
-    this.username = utils.getCookie('username');
+    /* this.username = utils.getCookie('username');
     this.password = utils.getCookie('password');
     if (this.username !== '' && this.password !== '') {
       this.remeAccount = true;
-    }
+    } */
     if (this.GetRequest("code")) {
-      this.doLogin()
+      this.doLogin();
     }
   },
   methods: {
+    onSuccess() {
+      this.verified = "success";
+      this.doLogin();
+      console.log("verified", this.verified);
+    },
+    onFail() {
+      // this.verified = "fail"
+      console.log("verified", this.verified);
+    },
+    onRefresh() {
+      // this.verified = "refresh"
+      console.log("verified", this.verified);
+    },
     // 获取所有行业信息并保存
-    getIndustry () {
-      api.getApi(this.apiVar.Advertisement + '/GetIndustry', { act: 'all' }).then(res => {
-        let arr = res.data;
-        sessionStorage.setItem('industry', JSON.stringify(arr));
-      });
+    getIndustry() {
+      api
+        .getApi(this.apiVar.Advertisement + "/GetIndustry", { act: "all" })
+        .then((res) => {
+          let arr = res.data;
+          sessionStorage.setItem("industry", JSON.stringify(arr));
+        });
     },
     //键盘
     show: function (ev) {
       let e = ev || window.ev;
       if (e.keyCode === 13) {
-        this.doLogin()
+        this.slideVerify();
       }
+    },
+    // 滑动验证
+    slideVerify() {
+      if (
+        this.username === "" ||
+        this.username == null ||
+        this.password === "" ||
+        this.password == null
+      ) {
+        MessageBox.alert("用户名和密码不能为空", "用户登录", {
+          showClose: false,
+          confirmButtonText: "确定",
+        });
+        return;
+      }
+      this.verified = "trying";
     },
     //登录
     doLogin: function () {
@@ -192,269 +228,283 @@ export default {
       let pass = this.password;
 
       //接口
-      let loginParams = {}
+      let loginParams = {};
       if (this.GetRequest("code")) {
         loginParams = { code: this.GetRequest("code") };
       } else {
-        if (name === '' || name == null || pass === '' || pass == null) {
-          MessageBox.alert('请输入正确的用户名', '用户登录', {
+        if (name === "" || name == null || pass === "" || pass == null) {
+          MessageBox.alert("用户名和密码不能为空", "用户登录", {
             showClose: false,
-            confirmButtonText: '确定',
+            confirmButtonText: "确定",
           });
           return;
         }
         this.loading = this.$loading({
           lock: true,
-          text: '正在登录...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
+          text: "正在登录...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
         });
         //判断复选框是否勾选，勾选则调用配置cookie方法
-        if (this.remeAccount === true) {
+        /* if (this.remeAccount === true) {
           utils.setCookie('username', name, 7);
           utils.setCookie('password', pass, 7);
         } else {
           utils.clearCookie('username')
           utils.clearCookie('password')
-        }
-        loginParams = { username: name, pwd: pass, };
+        } */
+        loginParams = { username: name, pwd: pass };
       }
-      api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
-        let userMsg = res.data;
-        console.log('登录返回的数据', res.data)
-        if (userMsg) {
-          if (!userMsg.SysCode) {
-            // 储存行业信息
-            this.getIndustry();
-            userMsg.username = name
-            sessionStorage.setItem("session_data", JSON.stringify(userMsg));
-            if (userMsg.uType === 'SM') {
-              addRoutes('SM')
-              this.$router.push('/superOperate')
-            } else if (userMsg.uType === 'MD') {
-              if(userMsg.customPermission.proposalPermission == 1) {
-                // 判断直营媒介
-                addRoutes('MD')
+      api
+        .postApi(this.apiVar.UCAPI + "/Login", loginParams)
+        .then((res) => {
+          let userMsg = res.data;
+          console.log("登录返回的数据", res.data);
+          if (userMsg) {
+            if (!userMsg.SysCode) {
+              // 储存行业信息
+              this.getIndustry();
+              userMsg.username = name;
+              sessionStorage.setItem("session_data", JSON.stringify(userMsg));
+              if (userMsg.uType === "SM") {
+                addRoutes("SM");
+                this.$router.push("/superOperate");
+              } else if (userMsg.uType === "MD") {
+                if (userMsg.customPermission.proposalPermission == 1) {
+                  // 判断直营媒介
+                  addRoutes("MD");
+                } else {
+                  // 判断加盟媒介(旧权限)
+                  addRoutes("MD", true);
+                }
+                this.$router.push("/media");
+              } else if (userMsg.uType === "BD") {
+                sessionStorage.setItem("username", name); // 用户为销售时，存起username以便创建方案的时候使用
+                if (userMsg.customPermission.proposalPermission == 1) {
+                  // 判断直营销售
+                  addRoutes("BD");
+                } else {
+                  // 判断加盟销售(旧权限)
+                  addRoutes("BD", true);
+                }
+                this.$router.push("/sale");
+              } else if (userMsg.uType === "AD") {
+                addRoutes("AD");
+                this.$router.push("/adOwner");
+              } else if (userMsg.uType === "OP") {
+                addRoutes("OP");
+                this.$router.push("/operate");
+              } else if (userMsg.uType === "SA") {
+                addRoutes("SA");
+                this.$router.push("/admin");
+              } else if (
+                userMsg.uType === "EP" &&
+                userMsg.backstagePermission == 1
+              ) {
+                addRoutes("EP");
+                this.$router.push("/f_engineer/orderList");
               } else {
-                // 判断加盟媒介(旧权限)
-                addRoutes('MD', true)
+                Message({
+                  message: "账号角色权限异常",
+                  type: "warning",
+                });
               }
-              this.$router.push('/media')
-            } else if (userMsg.uType === 'BD') {
-              sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
-              if(userMsg.customPermission.proposalPermission == 1) {
-                // 判断直营销售
-                addRoutes('BD')
-              } else {
-                // 判断加盟销售(旧权限)
-                addRoutes('BD', true)
-              }
-              this.$router.push('/sale')
-            } else if (userMsg.uType === 'AD') {
-              addRoutes('AD')
-              this.$router.push('/adOwner')
-            } else if (userMsg.uType === 'OP') {
-              addRoutes('OP')
-              this.$router.push('/operate')
-            } else if (userMsg.uType === 'SA') {
-              addRoutes('SA')
-              this.$router.push('/admin')
-            } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
-              addRoutes('EP')
-              this.$router.push('/f_engineer/orderList')
             } else {
-              Message({
-                message: '账号角色权限异常',
-                type: 'warning'
-              })
+              if (userMsg.SysCode == "400403") {
+                Message({
+                  message: "账号角色权限不足",
+                  type: "warning",
+                });
+              } else {
+                Message({
+                  message: "用户名或密码错误！",
+                  type: "warning",
+                });
+              }
+              this.loading.close();
             }
           } else {
-            if (userMsg.SysCode == '400403') {
-              Message({
-                message: '账号角色权限不足',
-                type: 'warning'
-              })
-            } else {
-              Message({
-                message: '用户名或密码错误！',
-                type: 'warning'
-              })
-            }
-            this.loading.close()
+            Message({
+              message: "登录异常！",
+              type: "warning",
+            });
+            this.loading.close();
           }
-        } else {
-          Message({
-            message: '登录异常！',
-            type: 'warning'
-          })
-          this.loading.close()
-        }
-
-      }).catch(err => {
-        console.log(err);
-        this.loading.close()
-      });
-      this.isLogin = true
-      if (this.websock !== '') {
+        })
+        .catch((err) => {
+          console.log(err);
+          this.loading.close();
+        });
+      this.isLogin = true;
+      if (this.websock !== "") {
         this.websock.close();
       }
     },
     // 判断是否使用扫码登录
-    loginType () {
+    loginType() {
       this.isActive = !this.isActive;
-      console.log('isActive', this.isActive, 'this.isWs', this.isWs)
+      console.log("isActive", this.isActive, "this.isWs", this.isWs);
       if (this.isActive === false && this.isWs === false) {
-        console.log('扫码登录')
-        this.isWs = true
-        this.isLogin = false
-        this.initWebsocket()
+        console.log("扫码登录");
+        this.isWs = true;
+        this.isLogin = false;
+        this.initWebsocket();
       } else {
-        this.isWs = false
-        this.isLogin = true
+        this.isWs = false;
+        this.isLogin = true;
         this.websock.close();
-        clearInterval(this.timer)
+        clearInterval(this.timer);
       }
     },
     // 扫码登录，初始化websocket
-    initWebsocket () {
+    initWebsocket() {
       if ("WebSocket" in window) {
         // let wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
         // let wsUrl = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
-        let wsUrl = this.apiVar.wsUrl
-        this.websock = new WebSocket(wsUrl);// 这里面的this都指向vue
-        this.websock.onopen = this.websocketOpen
-        this.websock.onmessage = this.websocketOnMessage
-        this.websock.onclose = this.websocketClose
-        this.websock.onerror = this.websocketError
-        this.isLogin = false
+        let wsUrl = this.apiVar.wsUrl;
+        this.websock = new WebSocket(wsUrl); // 这里面的this都指向vue
+        this.websock.onopen = this.websocketOpen;
+        this.websock.onmessage = this.websocketOnMessage;
+        this.websock.onclose = this.websocketClose;
+        this.websock.onerror = this.websocketError;
+        this.isLogin = false;
       } else {
-        this.$message.warning('您的浏览器不支持 WebSocket!')
+        this.$message.warning("您的浏览器不支持 WebSocket!");
       }
     },
-    websocketOpen () {              // 打开
-      console.log("WebSocket连接成功")
+    websocketOpen() {
+      // 打开
+      console.log("WebSocket连接成功");
     },
-    websocketOnMessage (res) {        // 数据接收
-      console.log(typeof (res.data), '数据接收', res.data)
-      let wsData = JSON.parse(res.data)
+    websocketOnMessage(res) {
+      // 数据接收
+      console.log(typeof res.data, "数据接收", res.data);
+      let wsData = JSON.parse(res.data);
       if (wsData.step === 1) {
-        this.step = 1
-        console.log('获取二维码')
-        this.codeImg = wsData.qrurl //
+        this.step = 1;
+        console.log("获取二维码");
+        this.codeImg = wsData.qrurl; //
         // this.imgLoading = false
-        this.codeImgLoading()
+        this.codeImgLoading();
       } else if (wsData.step === 2) {
-        this.step = 2
-        console.log('扫码成功')
+        this.step = 2;
+        console.log("扫码成功");
       } else if (wsData.step === 3) {
         this.codeLoading = this.$loading({
           lock: true,
-          text: '正在登录...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
-        this.step = 3
-        console.log('扫码成功后点击确认按钮')
-        this.condeLoginData = res.data
+          text: "正在登录...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        this.step = 3;
+        console.log("扫码成功后点击确认按钮");
+        this.condeLoginData = res.data;
         let params = {
-          uid: wsData.uid !== undefined ? wsData.uid : '',
-          token: wsData.token !== undefined ? wsData.token : ''
-        }
-        this.loginFun(params)
+          uid: wsData.uid !== undefined ? wsData.uid : "",
+          token: wsData.token !== undefined ? wsData.token : "",
+        };
+        this.loginFun(params);
       }
     },
-    websocketClose () {           //  关闭
+    websocketClose() {
+      //  关闭
       // console.log("WebSocket关闭", this.websock.readyState);
       if (!this.isLogin) {
         Message({
-          message: '扫码登录超时，请重新扫码！',
-          type: 'warning'
-        })
-        this.initWebsocket()
+          message: "扫码登录超时，请重新扫码！",
+          type: "warning",
+        });
+        this.initWebsocket();
       }
     },
-    websocketError (event) {      // 失败
+    websocketError(event) {
+      // 失败
       console.log("WebSocket连接失败", event);
     },
     //扫码登录接口
-    loginFun (data) {
-      let params = data
-      api.postApi(this.apiVar.UCAPI + '/UserLogin', params).then(res => {
-        console.log('UserLogin', res)
-        let isLogin = res.data
-        if (isLogin !== '' && isLogin !== null && !isLogin.SysCode && isLogin.IsLogin !== false) {
-          this.isLogin = true
-          this.websock.close()                            // 关闭websocket连接
-          this.getIndustry()                              //  储存行业信息
+    loginFun(data) {
+      let params = data;
+      api.postApi(this.apiVar.UCAPI + "/UserLogin", params).then((res) => {
+        console.log("UserLogin", res);
+        let isLogin = res.data;
+        if (
+          isLogin !== "" &&
+          isLogin !== null &&
+          !isLogin.SysCode &&
+          isLogin.IsLogin !== false
+        ) {
+          this.isLogin = true;
+          this.websock.close(); // 关闭websocket连接
+          this.getIndustry(); //  储存行业信息
           // isLogin.username = name
-          sessionStorage.setItem("session_data", JSON.stringify(isLogin));// isLogin.realName
-          this.codeLoading.close()
-          if (isLogin.uType === 'SM') {
-            addRoutes('SM')
-            this.$router.push('/superOperate')
-          } else if (isLogin.uType === 'MD') {
-            if(isLogin.customPermission.proposalPermission == 1) {
+          sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
+          this.codeLoading.close();
+          if (isLogin.uType === "SM") {
+            addRoutes("SM");
+            this.$router.push("/superOperate");
+          } else if (isLogin.uType === "MD") {
+            if (isLogin.customPermission.proposalPermission == 1) {
               // 判断直营媒介
-              addRoutes('MD')
+              addRoutes("MD");
             } else {
               // 判断加盟媒介(旧权限)
-              addRoutes('MD', true)
+              addRoutes("MD", true);
             }
-            this.$router.push('/media')
-          } else if (isLogin.uType === 'BD') {
-            if(isLogin.customPermission.proposalPermission == 1) {
+            this.$router.push("/media");
+          } else if (isLogin.uType === "BD") {
+            if (isLogin.customPermission.proposalPermission == 1) {
               // 判断直营销售
-              addRoutes('BD')
+              addRoutes("BD");
             } else {
               // 判断加盟销售(旧权限)
-              addRoutes('BD', true)
+              addRoutes("BD", true);
             }
-            this.$router.push('/sale')
-          } else if (isLogin.uType === 'OP') {
-            addRoutes('OP')
-            this.$router.push('/operate')
-          } else if (isLogin.uType === 'AD') {
-            addRoutes('AD')
-            this.$router.push('/adOwner')
-          } else if (isLogin.uType === 'SA') {
-            addRoutes('SA')
-            this.$router.push('/admin')
-          } else if (isLogin.uType === 'EP') {
-            addRoutes('EP')
+            this.$router.push("/sale");
+          } else if (isLogin.uType === "OP") {
+            addRoutes("OP");
+            this.$router.push("/operate");
+          } else if (isLogin.uType === "AD") {
+            addRoutes("AD");
+            this.$router.push("/adOwner");
+          } else if (isLogin.uType === "SA") {
+            addRoutes("SA");
+            this.$router.push("/admin");
+          } else if (isLogin.uType === "EP") {
+            addRoutes("EP");
             // 是否开通后台权限由小程序端判断
-            this.$router.push('/f_engineer/orderList')
+            this.$router.push("/f_engineer/orderList");
           } else {
             Message({
-              message: '账号角色权限异常',
-              type: 'warning'
-            })
-            this.isLogin = false
-            this.initWebsocket()
+              message: "账号角色权限异常",
+              type: "warning",
+            });
+            this.isLogin = false;
+            this.initWebsocket();
           }
         } else {
           Message({
-            message: '扫码登录异常！',
-            type: 'warning'
-          })
-          this.isLogin = false
-          this.initWebsocket()
+            message: "扫码登录异常！",
+            type: "warning",
+          });
+          this.isLogin = false;
+          this.initWebsocket();
         }
-        this.codeLoading.close()
-      })
+        this.codeLoading.close();
+      });
     },
     // 判断二维码图片的加载
-    codeImgLoading () {
+    codeImgLoading() {
       if (!this.isLogin) {
-        let imgInfo = document.getElementById('codeImgID')
+        let imgInfo = document.getElementById("codeImgID");
         this.timer = setInterval(() => {
           if (imgInfo.complete) {
             // console.log('加载完毕')
-            this.imgLoading = false
-            clearInterval(this.timer)
+            this.imgLoading = false;
+            clearInterval(this.timer);
           }
-        }, 50)
+        }, 50);
       } else {
-        console.log('非扫码登录')
+        console.log("非扫码登录");
       }
     },
     /**
@@ -463,27 +513,26 @@ export default {
      * @param {[string]} urlStr [当该参数不为空的时候，则解析该url中的参数集合]
      * @return {[string]}       [参数集合]
      */
-    GetRequest (name) {
+    GetRequest(name) {
       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
       var r = window.location.search.substr(1).match(reg); //获取url中"?"符后的字符串并正则匹配
       var context = "";
-      if (r != null)
-        context = r[2];
+      if (r != null) context = r[2];
       reg = null;
       r = null;
-      return context == null || context == "" || context == "undefined" ? "" : context;
-    }
+      return context == null || context == "" || context == "undefined"
+        ? ""
+        : context;
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.loading) {
-      this.loading.close()
+      this.loading.close();
     }
   },
-
-}
-
+};
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .weixinCode img {
   width: 240px;
   height: 260px;
@@ -622,11 +671,13 @@ export default {
   margin-bottom: 24px;
 }
 
-.loginInput img {
-  position: absolute;
-  left: 10px;
-  top: 13px;
-  width: 12px;
+.loginInput {
+  img {
+    position: absolute;
+    left: 10px;
+    top: 13px;
+    width: 12px;
+  }
 }
 
 input::placeholder {
@@ -698,5 +749,33 @@ input::placeholder {
 .footer a {
   color: rgba(0, 0, 0, 0.45);
   text-decoration: underline;
+}
+.login-verify {
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+  position: relative;
+  display: inline-block;
+  transform: translateX(-50%);
+  left: 50%;
+  z-index: 9;
+  margin-bottom: 16px;
+  /* background: rgba(0, 0, 0, 0.65); */
+  .slide-close {
+    position: absolute;
+    top: 4px;
+    right: 34px;
+    font-size: 26px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+  }
+  /deep/ .slide-verify {
+    canvas {
+      border-radius: 4px;
+    }
+  }
 }
 </style>

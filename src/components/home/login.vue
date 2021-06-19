@@ -15,26 +15,45 @@
           </li>
         </ul>
         <div class="loginInput" v-if="isActive">
-          <div class="username">
-            <input type="text" placeholder="账户" v-model="username" />
-            <img src="../../assets/images/usericon.png" alt="" />
+          <div
+            v-if="verified == 'trying'"
+            class="login-verify"
+          >
+            <slide-verify
+              :l="42"
+              :r="10"
+              :w="368"
+              :h="155"
+              slider-text="向右滑动"
+              @success="onSuccess"
+              @fail="onFail"
+              @refresh="onRefresh"
+            ></slide-verify>
+            <i class="el-icon-close slide-close" @click.stop="verified = 'fail'"></i>
           </div>
-          <div class="password">
-            <input
-              type="password"
-              placeholder="密码"
-              autocomplete="off"
-              v-model="password"
-              @keydown.13="show($event)"
-              @keydown.229="() => {}"
-            />
-            <img src="../../assets/images/passicon.png" alt="" />
-          </div>
+          <template v-else>
+            <div class="username">
+              <input type="text" placeholder="账户" v-model="username" />
+              <img src="../../assets/images/usericon.png" alt="" />
+            </div>
+            <div class="password">
+              <input
+                type="password"
+                placeholder="密码"
+                autocomplete="off"
+                v-model="password"
+                @keydown.13="show($event)"
+                @keydown.229="() => {}"
+              />
+              <img src="../../assets/images/passicon.png" alt="" />
+            </div>
+          </template>
+
           <!-- <div class="remeberUser">
             <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
           </div> -->
           <div class="loginBtn">
-            <button id="login" @click="doLogin()">登&nbsp;录</button>
+            <button id="login" @click="slideVerify()">登&nbsp;录</button>
           </div>
         </div>
         <div class="weixinLogin" v-if="!isActive">
@@ -90,6 +109,18 @@
         <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a>
       </p>
     </div>
+    <!-- <div v-if="verified == 'trying'" class="login-verify" @click.prevent="verified='fail'">
+      <slide-verify
+        :l="42"
+        :r="10"
+        :w="368"
+        :h="155"
+        slider-text="向右滑动"
+        @success="onSuccess"
+        @fail="onFail"
+        @refresh="onRefresh"
+      ></slide-verify>
+    </div> -->
   </div>
 </template>
 
@@ -105,6 +136,7 @@ export default {
   },
   data() {
     return {
+      verified: "beforeTry",
       loading: false,
       isActive: true,
       remeAccount: false,
@@ -121,6 +153,7 @@ export default {
       condeLoginData: "", // 扫码登录返回的登录信息
       timer: "", // 轮询验证二维码是否加载完成
       isLogin: false,
+
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -144,6 +177,19 @@ export default {
     }
   },
   methods: {
+    onSuccess() {
+      this.verified = "success";
+      this.doLogin();
+      console.log("verified", this.verified);
+    },
+    onFail() {
+      // this.verified = "fail"
+      console.log("verified", this.verified);
+    },
+    onRefresh() {
+      // this.verified = "refresh"
+      console.log("verified", this.verified);
+    },
     // 获取所有行业信息并保存
     getIndustry() {
       api
@@ -157,7 +203,25 @@ export default {
     show: function (ev) {
       let e = ev || window.ev;
       if (e.keyCode === 13) {
-        this.doLogin();
+        this.slideVerify();
+      }
+    },
+    // 滑动验证
+    slideVerify() {
+      if (
+        this.username === "" ||
+        this.username == null ||
+        this.password === "" ||
+        this.password == null
+      ) {
+        MessageBox.alert("请输入正确的用户名", "用户登录", {
+          showClose: false,
+          confirmButtonText: "确定",
+        });
+        return;
+      }
+      if (this.verified != "success") {
+        this.verified = "trying";
       }
     },
     //登录
@@ -470,7 +534,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .weixinCode img {
   width: 240px;
   height: 260px;
@@ -609,11 +673,13 @@ export default {
   margin-bottom: 24px;
 }
 
-.loginInput img {
-  position: absolute;
-  left: 10px;
-  top: 13px;
-  width: 12px;
+.loginInput {
+  img {
+    position: absolute;
+    left: 10px;
+    top: 13px;
+    width: 12px;
+  }
 }
 
 input::placeholder {
@@ -685,5 +751,32 @@ input::placeholder {
 .footer a {
   color: rgba(0, 0, 0, 0.45);
   text-decoration: underline;
+}
+.login-verify {
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+  position: relative;
+  display: inline-block;
+  transform: translateX(-50%);
+  left: 50%;
+  z-index: 9;
+  margin-bottom: 16px;
+  /* background: rgba(0, 0, 0, 0.65); */
+  .slide-close {
+    position: absolute;
+    top: 4px;
+    right: 34px;
+    font-size: 26px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  /deep/ .slide-verify {
+    canvas {
+      border-radius: 4px;
+    }
+  }
 }
 </style>

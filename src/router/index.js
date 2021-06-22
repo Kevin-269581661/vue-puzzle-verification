@@ -294,8 +294,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/communityPortrait',component: communityPortrait},
                         {path: '/media/communityRank',component: communityRank},
                         {path: '/media/portraitDetail',component: portraitDetail},
-                        // 测试
-                        {path: '/media/constractList', component: constractList}
                     ]
                 }
             ]

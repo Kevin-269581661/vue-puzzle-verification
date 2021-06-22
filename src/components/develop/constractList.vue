@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 15:06:48
+ * @LastEditTime: 2021-06-22 18:24:52
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -25,24 +25,40 @@
         >
           <el-row :gutter="36">
             <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="关键字：" prop="keyword">
+              <el-form-item label="关键字：" :prop="searchInfo.keywordType">
                 <el-input
                   placeholder="请输入内容"
-                  v-model="searchInfo.keyword"
+                  v-model="searchInfo[searchInfo.keywordType]"
                   size="small"
                   class="search-row-item"
                 >
                   <el-select
-                    v-model="searchInfo.select"
+                    v-model="searchInfo.keywordType"
                     slot="prepend"
                     size="small"
                     placeholder="请选择"
                   >
-                    <el-option label="资源名称" value="1"></el-option>
-                    <el-option label="物业名称" value="2"></el-option>
-                    <el-option label="业务员" value="3"></el-option>
+                    <el-option label="资源名称" value="resName"></el-option>
+                    <el-option label="物业名称" value="pmcName"></el-option>
+                    <!-- “业务员”只有开发总监与资产人员可筛选 -->
+                    <el-option label="业务员" value="contactsName"></el-option>
+                    <el-option label="合同编号" value="contractNo"></el-option>
                   </el-select>
                 </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+              <el-form-item label="城市区域：" prop="districtId">
+                <el-cascader
+                  v-model="searchInfo.districtId"
+                  placeholder="请选择城市区域"
+                  size="small"
+                  class="search-row-item"
+                  :options="areaArr"
+                  :clearable="true"
+                  filterable
+                  :props="{ checkStrictly: true }"
+                ></el-cascader>
               </el-form-item>
             </el-col>
             <el-col
@@ -53,47 +69,31 @@
               :xl="6"
               class="combination-serch"
             >
-              <el-form-item label="选择日期：" prop="dateType">
+              <el-form-item label="选择日期：" :prop="searchInfo.rangeDateType">
                 <el-select
                   size="small"
-                  v-model="searchInfo.dateType"
+                  v-model="searchInfo.rangeDateType"
                   placeholder="请选择日期"
                   class="combination-serch-select"
                 >
-                  <el-option label="合同开始日期" value="0"></el-option>
-                  <el-option label="合同签约日期" value="1"></el-option>
-                  <el-option label="最近待付款日期" value="2"></el-option>
-                  <el-option label="合同结束日期" value="3"></el-option>
-                  <el-option label="创建日期" value="4"></el-option>
+                  <el-option label="合同开始日期" value="startDate"></el-option>
+                  <el-option label="合同签约日期" value="signDate"></el-option>
+                  <el-option label="最近待付款日期" value="payDate"></el-option>
+                  <el-option label="合同结束日期" value="endDate"></el-option>
+                  <el-option label="创建日期" value="createDate"></el-option>
                 </el-select>
                 <el-date-picker
+                  v-model="searchInfo[searchInfo.rangeDateType]"
                   size="small"
-                  v-model="searchInfo.rangeDate"
-                  type="date"
-                  format="yyyy-MM-dd"
+                  type="daterange"
+                  align="right"
                   value-format="yyyy-MM-dd"
-                  placeholder="选择日期"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
                   class="combination-serch-date"
                 >
                 </el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-              <el-form-item label="城市区域：" prop="cityWord">
-                <el-select
-                  v-model="searchInfo.cityWord"
-                  placeholder="请选择城市区域"
-                  filterable
-                  size="small"
-                  class="search-row-item"
-                >
-                  <el-option
-                    v-for="item of filterCityData"
-                    :key="item.rID"
-                    :label="item.text"
-                    :value="item.text"
-                  ></el-option>
-                </el-select>
               </el-form-item>
             </el-col>
             <el-col
@@ -104,10 +104,14 @@
               :xl="6"
               class="row-btn-group"
             >
-              <el-button type="primary" @click="search()">搜索</el-button>
-              <el-button plain @click="reset()">重置</el-button>
-              <el-button plain size="small" @click="addOne()">新建</el-button>
-              <el-button plain size="small" @click="exportRes">导出</el-button>
+              <el-button type="primary" @click="searchFun">搜索</el-button>
+              <el-button plain @click="constractSearchForm">重置</el-button>
+              <el-button plain size="small" @click="routeCreateConstract"
+                >新建</el-button
+              >
+              <el-button plain size="small" @click="exportConstract"
+                >导出</el-button
+              >
             </el-col>
           </el-row>
         </el-form>
@@ -115,80 +119,66 @@
         <div class="table_wrap">
           <el-table
             border
-            :data="currentPlan"
+            :data="constractList"
             style="width: 100%"
-            @sort-change="sortChange"
             v-loading="loading"
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
           >
-            <el-table-column prop="resName" label="资源名称" min-width="14.9%">
-              <template slot-scope="scope">
-                <span
-                  style="color: #108ee9; cursor: pointer"
-                  @click="ToDetail(scope.row)"
-                  >{{ scope.row.resName }}</span
-                >
-              </template>
-            </el-table-column>
+            <el-table-column prop="resName" label="资源名称" width="160" show-overflow-tooltip></el-table-column>
             <el-table-column
               prop="dcType"
               label="合同线"
-              width="100"
+              width="160"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="dcType"
               label="合同类型"
-              min-width="12.6%"
+              min-width="160"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="startDate"
               label="合同开始日期"
-              min-width="7.6%"
+              min-width="160"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="endDate"
               label="合同结束日期"
-              sortable="custom"
-              width="120px"
+              width="160"
               align="right"
             >
-              <template slot-scope="scope">
-                
-              </template>
+              <template slot-scope="scope"> </template>
             </el-table-column>
             <el-table-column
               prop="mediaCnt"
               label="合同媒体数"
-              min-width="6.1%"
-              v-if="!(role == 'AD') && role != 'BD'"
+              min-width="120"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="installMediaCnt"
               label="已装媒体数"
-              min-width="6.1%"
-              v-if="role == 'BD'"
-              show-overflow-tooltip
-              :filters="filterRealName"
-              :filter-method="filterRealNameFun"
-              :filter-multiple="true"
+              min-width="120"
             >
             </el-table-column>
 
             <el-table-column
               prop="venueFee"
               label="场地费"
-              width="100px"
-              sortable="custom"
-              show-overflow-tooltip
+              width="120"
+              :filters="[
+                { text: '无场地费', value: 0 },
+                { text: '有场地费', value: 1 },
+              ]"
+              :filter-method="filterIsVenueFeeFun"
+              :filter-multiple="false"
             >
               <template slot-scope="scope">
                 <span>{{ formatTime(scope.row.venueFee) }}</span>
@@ -197,8 +187,7 @@
             <el-table-column
               prop="devFee"
               label="开发费"
-              width="100px"
-              sortable="custom"
+              width="120"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -208,8 +197,7 @@
             <el-table-column
               prop="payDate"
               label="最近待付款日期"
-              width="100px"
-              sortable="custom"
+              width="160"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -219,19 +207,17 @@
             <el-table-column
               prop="createUserName"
               label="业务员"
-              width="100px"
-              sortable="custom"
+              width="120"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.createUserName) }}</span>
+                <span>{{ scope.row.createUserName||"" }}</span>
               </template>
             </el-table-column>
             <el-table-column
               prop="contractNo"
               label="合同编号"
-              width="100px"
-              sortable="custom"
+              width="120"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -241,19 +227,18 @@
             <el-table-column
               prop="createTime"
               label="创建日期"
-              width="100px"
-              sortable="custom"
+              width="120"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.createTime) }}</span>
+                <span>{{ scope.row.createTime||"" }}</span>
               </template>
             </el-table-column>
             <el-table-column
               class="tac"
               prop="dcState"
               label="合同状态"
-              min-width="6.1%"
+              min-width="160"
               show-overflow-tooltip
               fixed="right"
               :filters="[
@@ -262,15 +247,11 @@
                 { text: '待安装', value: '2' },
                 { text: '待维修', value: '3' },
               ]"
-              :filter-multiple="false"
+              :filter-multiple="true"
             >
               <template slot-scope="scope"> </template>
             </el-table-column>
-            <el-table-column
-              label="操作"
-              width="100px"
-              fixed="right"
-            >
+            <el-table-column label="操作" width="100px" fixed="right">
               <template slot-scope="scope">
                 <el-dropdown
                   size="small"
@@ -284,8 +265,7 @@
                     <el-dropdown-item
                       @click.native.prevent="addPoint(scope.row)"
                       :disabled="isDisable || scope.row.apState !== -1"
-                      v-qadn-mta-h5="{ id: 'a004_b000_c000_d000_bt043_ck04' }"
-                      >配点
+                      >编辑
                     </el-dropdown-item>
                     <el-dropdown-item
                       @click.native.prevent="preload(scope.row)"
@@ -294,8 +274,7 @@
                         scope.row.apState !== 1 ||
                         (scope.row.apState == 1 && !scope.row.canLock)
                       "
-                      v-qadn-mta-h5="{ id: 'a004_b000_c000_d000_bt043_ck04' }"
-                      >预锁
+                      >重新提交
                     </el-dropdown-item>
                     <el-dropdown-item
                       @click.native.prevent="release(scope.row)"
@@ -305,8 +284,7 @@
                         (scope.row.apState != 1 &&
                           scope.row.apControlLevel !== 1)
                       "
-                      v-qadn-mta-h5="{ id: 'a004_b000_c000_d000_bt044_ck04' }"
-                      >发布
+                      >加门
                     </el-dropdown-item>
                     <el-dropdown-item
                       @click.native.prevent="clearLock(scope.row)"
@@ -315,8 +293,7 @@
                         scope.row.apState !== 1 ||
                         (scope.row.apState == 1 && !scope.row.unLock)
                       "
-                      v-qadn-mta-h5="{ id: 'a004_b000_c000_d000_bt045_ck04' }"
-                      >解除预锁
+                      >补充协议
                     </el-dropdown-item>
                     <el-dropdown-item
                       @click.native.prevent="splitAdPlan(scope.row)"
@@ -325,7 +302,43 @@
                         sessionData.uType === 'BD'
                       "
                     >
-                      拆单
+                      媒体录入
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native.prevent="splitAdPlan(scope.row)"
+                      v-if="
+                        scope.row.apControlLevel === 2 &&
+                        sessionData.uType === 'BD'
+                      "
+                    >
+                      续签
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native.prevent="splitAdPlan(scope.row)"
+                      v-if="
+                        scope.row.apControlLevel === 2 &&
+                        sessionData.uType === 'BD'
+                      "
+                    >
+                      付款
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native.prevent="splitAdPlan(scope.row)"
+                      v-if="
+                        scope.row.apControlLevel === 2 &&
+                        sessionData.uType === 'BD'
+                      "
+                    >
+                      删除
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      @click.native.prevent="splitAdPlan(scope.row)"
+                      v-if="
+                        scope.row.apControlLevel === 2 &&
+                        sessionData.uType === 'BD'
+                      "
+                    >
+                      付款记录
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -336,11 +349,10 @@
           <div class="ad_pagination">
             <el-pagination
               background
-              v-if="paginationShow"
               @size-change="sizeChange"
               @current-change="changePage"
               :current-page.sync="currPage"
-              :page-sizes="pageSizes"
+              :page-sizes="[10, 20, 50]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="totalNum"
@@ -384,45 +396,6 @@
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="cancelLock">取 消</el-button>
         <el-button type="primary" @click="confirmLock">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!--存在异常未完成的方案-->
-    <el-dialog
-      title="您有一个新方案未完成保存，是否继续编辑？"
-      :visible.sync="unfinishedDialogVisible"
-      width="400px"
-      custom-class="unfinished_plan_dialog"
-      :close-on-click-modal="false"
-    >
-      <div>
-        <ul>
-          <li class="unfinished_plan_li">
-            <span>方案名称:</span>
-            <span>{{ planInfo.planName }}</span>
-          </li>
-          <li class="unfinished_plan_li">
-            <span>所属销售:</span>
-            <span>{{ planInfo.ownerSales }}</span>
-          </li>
-          <li class="unfinished_plan_li">
-            <span>创建时间:</span>
-            <span>{{ planInfo.cleatTime }}</span>
-          </li>
-          <li class="unfinished_plan_li">
-            <span v-if="IsSevenBD">
-              <span>已选小区:</span>
-              <span>{{ planInfo.adsNum }} 个</span>
-            </span>
-            <span v-else>
-              <span>已选点位:</span>
-              <span>{{ planInfo.adsNum }} 面</span>
-            </span>
-          </li>
-        </ul>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button plain @click="cancelEdit">放 弃</el-button>
-        <el-button type="primary" @click="continueEdit">继续编辑</el-button>
       </span>
     </el-dialog>
 
@@ -482,122 +455,6 @@
         <el-button type="primary" @click="commitRelease">确 定</el-button>
       </div>
     </el-dialog>
-
-    <!--周边小区导出-->
-    <el-dialog
-      :title="`资源导出(` + exportResStep + `/3)`"
-      :visible.sync="isResExport"
-      :close-on-click-modal="false"
-      custom-class="Import_dialog"
-      :show-close="false"
-      width="472px"
-    >
-      <p class="info_box" v-show="isShowExportTag">
-        <i class="el-icon-warning" style="color: #1890ff"></i>
-        {{
-          exportResStep === 1
-            ? "第一步：填写导出的基本参数"
-            : exportResStep === 2
-            ? "第二步：下载模板，指定周边越多，需要导出时间越长"
-            : "第三步：上传填写好的表格，并点击提交"
-        }}
-        <!--                    <i class="el-icon-close" @click="isShowExportTag = false"></i>-->
-      </p>
-      <ul class="export_ul" v-show="exportResStep === 1">
-        <li>
-          <span>匹配城市：</span>
-          <el-select
-            size="small"
-            v-model="exportInfo.citys"
-            filterable
-            placeholder="请选择城市"
-            @change="exportCityFun"
-          >
-            <el-option
-              v-for="(key, index) in exportRescityList"
-              :key="index"
-              :label="key.label"
-              :value="key.value"
-            >
-            </el-option>
-          </el-select>
-        </li>
-        <li>
-          <span>匹配范围：</span>
-          <el-input
-            size="small"
-            class="radius_input"
-            placeholder="请输入半径距离"
-            v-model="exportInfo.radius"
-          >
-            <template slot="append">米</template>
-          </el-input>
-        </li>
-        <li>
-          <span>导出模板：</span>
-          <el-select
-            v-model="exportInfo.type"
-            size="small"
-            filterable
-            placeholder="请选择导出类型"
-          >
-            <el-option label="模板A：1小区/1门店(有距离)" value="1"></el-option>
-            <el-option
-              label="模板B：1小区/多门店(无距离)"
-              value="2"
-            ></el-option>
-          </el-select>
-        </li>
-      </ul>
-      <div class="export_step_box" v-show="exportResStep === 2">
-        <img src="../../assets/images/export.png" alt="" />
-        《QADN-数据导入-模板》
-        <a
-          :href="apiVar.qadnUrl + '/importTemplate/broundData.xlsx'"
-          download="数据导入模板.xlsx"
-          class="downloag_btn"
-          >点击下载<i class="el-icon-download"></i
-        ></a>
-      </div>
-      <div v-show="exportResStep === 3">
-        <el-upload
-          ref="exportRes"
-          class="upload-demo"
-          drag
-          :action="exportAction"
-          :file-list="exportFileData"
-          :show-file-list="true"
-          :http-request="exportUploadFile"
-          :on-remove="exportFileRemove"
-          :multiple="false"
-        >
-          <img src="../../assets/images/export.png" alt="" />
-          <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
-        </el-upload>
-      </div>
-      <div slot="footer">
-        <el-button size="small" plain @click="isResExport = false"
-          >取 消</el-button
-        >
-        <el-button
-          size="small"
-          plain
-          v-show="exportResStep > 1"
-          @click="exportResStep > 1 ? exportResStep-- : (exportResStep = 1)"
-          >上一步</el-button
-        >
-        <el-button
-          size="small"
-          type="primary"
-          @click="nextExportRes"
-          :loading="isBroundImport"
-        >
-          {{
-            isBroundImport ? "导出中.." : exportResStep >= 3 ? "确定" : "下一步"
-          }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -615,26 +472,6 @@ import downloadVacancy from "../../components/common/components/vacancyDownload.
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 
-import {
-  Button,
-  CheckboxGroup,
-  Checkbox,
-  Input,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  Row,
-  Table,
-  TableColumn,
-  DatePicker,
-  Tooltip,
-  Dialog,
-  MessageBox,
-  Message,
-  Select,
-  Option,
-  Loading,
-} from "element-ui";
 import timeFormat from "../../commonFun/timeFormat.js";
 
 export default {
@@ -642,54 +479,33 @@ export default {
   components: {
     downloadVacancy,
     // noSearchResult,
-    elButton: Button,
-    elCheckboxGroup: CheckboxGroup,
-    elCheckbox: Checkbox,
-    elInput: Input,
-    elDropdown: Dropdown,
-    elDropdownItem: DropdownItem,
-    elDropdownMenu: DropdownMenu,
-    elRow: Row,
-    elTable: Table,
-    elTableColumn: TableColumn,
-    elDatePicker: DatePicker,
-    elTooltip: Tooltip,
-    elDialog: Dialog,
-    elSelect: Select,
-    elOption: Option,
   },
 
   data() {
     return {
+      // 角色 合同类型 合同状态 合同列表权限 
+      
+      areaArr: [],
       // 搜索数据
       searchInfo: {
-        // 搜索的select框
-        select: "1",
-        // 关键字
-        keyword: "",
-        // 时间范围
-        rangeDate: "",
-        //日期类型
-        dateType: "0",
-        // 状态筛选
-        status: "",
-        // 公司搜索
-        company: "",
-        // 城市筛选
-        cityWord: "",
-        // 是否预锁
-        Lock: "",
-        // 按照啥排序
-        orderby: "",
-        // 升序降序0/1
-        desc: "",
+        keywordType: "resName",
+        rangeDateType: "startDate",
+        resName: "",
+        pmcName: "",
+        contactsName: "",
+        contractNo: "",
+        districtId: "",
+        isVenueFee: "",
+        startDate: "",
+        endDate: "",
+        signDate: "",
+        payDate: "",
+        createDate: "",
       },
       // 公司列表
       companyData: [],
       // 分页信息
-      paginationShow: true,
       pageSize: 10,
-      pageSizes: [10, 20, 50],
       currPage: 1,
       totalPage: 0,
       totalNum: 0,
@@ -705,7 +521,7 @@ export default {
       isDisable: true,
       isShowExportBtn: false, //资源导出按钮
       //加载中
-      loading: true,
+      loading: false,
       currentItem: {},
       // 解锁还是预锁
       isLock: false,
@@ -729,9 +545,7 @@ export default {
       isSearch: true,
       isReset: true,
       // 表格数据
-      currentPlan: [],
-      //过滤所有人
-      filterRealName: [],
+      constractList: [],
       // 权限城市过滤数组
       filterCityData: [],
       // 未完成方案提示
@@ -770,15 +584,15 @@ export default {
   },
   created() {
     this.getSessionData();
-    this.getRole();
-    this.getFanCity();
-    if (this.isAll) {
-      this.getCompany();
-    }
+    // this.getRole();
+    // this.getFanCity();
+    // if (this.isAll) {
+    //   this.getCompany();
+    // }
     this.searchFun();
-    if (this.isSale) {
-      this.getSubSaleList();
-    }
+    // if (this.isSale) {
+    //   this.getSubSaleList();
+    // }
     this.getCity();
   },
   methods: {
@@ -868,25 +682,16 @@ export default {
           }
         });
     },
-    //获取下级销售列表
-    getSubSaleList() {
-      api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
-        if (res.data.SysCode == 200200) {
-          this.filterRealName = filterFormat(res.data.data, "realName", "uID");
-        } else {
-          this.messageFun("warning", res.data.MSG);
-        }
-      });
-    },
-    filterRealNameFun(value, row) {
-      return row.realName === value;
+
+    filterIsVenueFeeFun(value, row) {
+      return (this.searchInfo.isVenueFee = value);
     },
     // 数据处理
     funcData(dataArr) {
       let result = [];
       for (let data of dataArr) {
         let tmpObj = {};
-        tmpObj = this.setTableData(data);
+        // tmpObj = this.setTableData(data);
         result.push(tmpObj);
       }
       console.log("result: ", result);
@@ -982,19 +787,6 @@ export default {
     priceFormat(price) {
       return commaFormat.init(price);
     },
-    // 价格时间排序(请求后台接口进行排序)
-    sortChange(column) {
-      console.log("columm---", column);
-      if (column.order == "ascending") {
-        this.searchInfo.orderby = column.prop;
-        this.searchInfo.desc = 0;
-      } else if (column.order == "descending") {
-        this.searchInfo.orderby = column.prop;
-        this.searchInfo.desc = 1;
-      }
-      this.currPage = 1;
-      this.searchFun();
-    },
     routeSelect() {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
@@ -1046,53 +838,8 @@ export default {
         });
     },
     // 新建方案
-    addOne() {
-      this.continueEditLoading = this.$loading({
-        lock: true,
-        text: "正在查询是否有未完成的方案",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.5)",
-      });
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-      };
-      if (this.IsSevenBD) {
-        this.getProposalAdBackUp(params);
-      } else {
-        api
-          .getApi(this.apiVar.Advertisement + "/getAdPlanBackups", params)
-          .then((res) => {
-            console.log("获取方案缓存", res);
-            this.continueEditLoading.close();
-            if (res.data.SysCode == 200200) {
-              console.log("获取缓存成功", res.data);
-              if (JSON.stringify(res.data.data) === "{}") {
-                this.routeSelect();
-              } else {
-                let planInfo = JSON.parse(res.data.data);
-                this.showCookeAdPlan(planInfo);
-                // 缓存到localStorage
-                cacheAdPlan.setData(planInfo);
-              }
-            } else {
-              // 后台返回异常则查看前台是否有缓存
-              let returnData = cacheAdPlan.getData(this.sessionData.uID);
-              if (returnData) {
-                this.showCookeAdPlan(returnData);
-              } else {
-                this.routeSelect();
-              }
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
-            this.continueEditLoading.close();
-            if (this.$route.path.includes("planList")) {
-              this.routeSelect();
-            }
-          });
-      }
+    routeCreateConstract() {
+      this.$router.push("./newConstract");
     },
     // 点位表盘
     goToDiaPlate() {
@@ -1699,148 +1446,71 @@ export default {
           Message.info("已取消操作");
         });
     },
-    // 搜索（优化）
-    search() {
-      let { keyword, rangeDate, status, company, cityWord, Lock, dateType } =
-        this.searchInfo;
-      this.isSearch = false;
-      let timer = setTimeout(() => {
-        this.isSearch = true;
-        clearTimeout(timer);
-      }, 1000);
-      if (
-        keyword ||
-        rangeDate ||
-        status >= -1 ||
-        company ||
-        cityWord ||
-        Lock ||
-        dateType
-      ) {
-        this.currentPlan = [];
-        this.loading = true;
-        this.currPage = 1;
-        this.searchFun();
-      } else {
-        this.messageFun("warning", "请输入搜索条件");
-      }
-    },
     searchFun() {
-      this.paginationShow = false;
-      this.loading = true;
+      // this.loading = true;
       let info = this.searchFormat();
-      this.getData(info);
-      this.$nextTick(function () {
-        this.paginationShow = true;
-      });
+      console.log("info---", this.searchInfo);
+      // this.getData(info);
     },
     // 搜索数据格式化
     searchFormat() {
-      let info = {
+      let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        start: this.currPage,
+        pageNum: this.currPage,
         pagesize: this.pageSize,
+        [this.searchInfo.keywordType]:
+          this.searchInfo[this.searchInfo.keywordType],
+        [this.searchInfo.rangeDateType]:
+          this.searchInfo[this.searchInfo.rangeDateType],
+        districtId: this.searchInfo.districtId,
+        isVenueFee: this.searchInfo.isVenueFee,
       };
-      let {
-        select,
-        keyword,
-        rangeDate,
-        status,
-        company,
-        cityWord,
-        Lock,
-        orderby,
-        desc,
-        dateType,
-      } = this.searchInfo;
-      info = {
-        ...info,
-        ...(keyword && { keywordType: select, keyword }),
-        ...(rangeDate && { starttime: rangeDate[0], andtime: rangeDate[1] }),
-        ...(status !== "" && status >= -1 && { apstate: status }),
-        ...(company && { asrID: company }),
-        ...(cityWord && { rname: cityWord }),
-        ...(Lock && { onyusuo: Lock }),
-        ...(orderby && { orderby }),
-        ...(desc !== "" && desc >= 0 && { desc }),
-        ...(rangeDate && { timeType: dateType }),
-      };
-      return info;
-    },
-    // 设置表格数据
-    setTableData(item) {
-      let obj = {
-        adcID: item.adcID,
-        apID: item.apID,
-        apName: item.apName || "",
-        apState: item.apState || "",
-        planMode: item.planMode || 0,
-        apTotal: item.apTotal || "",
-        apcTime: item.apcTime || "",
-        bTitle: item.bTitle || "--",
-        cName: item.cName || "",
-        realName: item.realName || "",
-        cityArea: [],
-        // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
-        apControlLevel: item.apControlLevel, // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
-      };
-      item.details.sort((a, b) => {
-        return a.asrID - b.asrID;
-      });
-      let asrIDarr = [];
-      obj.canLock = item.details.some(function (item, index) {
-        return !item.RemainDay;
-      });
-      obj.unLock = item.details.some(function (item, index) {
-        return item.RemainDay;
-      });
-      // console.log(obj.canLock); //false表示不能再预锁
-      // console.log(obj.unLock); //true 表示可解锁
-      for (let data of item.details) {
-        data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--
-        if (asrIDarr.includes(data.asrID)) {
-          data.isshow = 0;
+
+      api.getApi("/addsp/devContract/list", params).then((res) => {
+        if (res.data.SysCode == 200200) {
+          this.constractList = [
+            {
+              dcID: null,
+              resID: 40170,
+              resName: "大鹏街安置房",
+              dcType: 0,
+              startDate: "2021-06-16",
+              endDate: "2021-07-16",
+              nearPayDate: "2021-07-01",
+              mediaCnt: 1,
+              installMediaCnt: null,
+              venueFee: 1000,
+              venueDate: "2021-07-01",
+              devDate: "2021-07-01",
+              devFee: 1000,
+              payDate: null,
+              createUserName: "杰",
+              contractNo: null,
+              createTime: "2022-01-01T10:10:48",
+              dcState: 0,
+            },
+          ];
         } else {
-          asrIDarr.push(data.asrID);
-          data.isshow = 1;
+          this.$message.warning(res.data.MSG);
         }
-      }
-      obj.cityArea = item.details;
-      return obj;
+      });
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     // 重置
-    reset() {
-      this.searchInfo = {
-        select: "1",
-        keyword: "",
-        rangeDate: "",
-        status: "",
-        company: "",
-        cityWord: "",
-        Lock: "",
-        dateType: "0",
-      };
+    constractSearchForm() {
+      this.$refs["constractSearchForm"].resetFields();
+      return;
 
       this.currPage = 1;
-      this.currentPlan = [];
       this.isReset = false;
       let timer = setTimeout(() => {
         this.isReset = true;
         clearTimeout(timer);
       }, 1000);
       this.searchFun();
-    },
-    // 操作提示统一方法
-    messageFun(mesType, mes) {
-      this.$message({
-        message: mes,
-        type: mesType,
-        showClose: true,
-      });
     },
     //清除意向方案缓存
     clearProposalAdPlanBackups(params) {
@@ -1916,37 +1586,42 @@ export default {
     // 获取权限城市
     getCity() {
       let info = {
+        service: "GetCompanyCitiesAction",
         token: this.sessionData.token,
         uid: this.sessionData.uID,
       };
       api
-        .postApi(this.apiVar.Advertisement + "/GetAuthorCity", {})
+        .postApi_new(this.apiVar.Media, info)
         .then((res) => {
-          console.log(res.data);
-          if (res.data.SysCode == 300200) {
-            this.exportRescityList = res.data.data.map((item) => {
-              return {
-                label: item.rName,
-                value: item.rID.toString(),
+          if (res.data.SysCode == 200200) {
+            let result = [];
+            for (let data of res.data.data) {
+              let obj = {
+                label: data.cityName,
+                value: data.cityId,
+                children: [],
               };
-            });
+              if (data.districtList) {
+                for (let data2 of data.districtList) {
+                  let obj2 = {
+                    label: data2.districtName,
+                    value: data2.districtId,
+                  };
+                  obj.children.push(obj2);
+                }
+              }
+              result.push(obj);
+            }
+            this.areaArr = result;
           } else {
-            sessFun.messageFun("warning", res.data.MSG || "城市下拉获取异常");
+            this.$message.warning(res.data.MSG);
           }
+        })
+        .catch((err) => {
+          console.log(err);
         });
     },
-    exportRes() {
-      // 数据初始化
-      this.exportResStep = 1;
-      this.exportInfo = {
-        citys: [],
-        cityName: "",
-        radius: "",
-        type: "",
-      };
-      this.exportFileData = [];
-      this.isResExport = true;
-    },
+    exportConstract() {},
     exportCityFun(val) {
       console.log("val", val);
       if (val.length) {
@@ -2082,6 +1757,7 @@ a {
     .el-form-item__label {
       padding: 0;
       line-height: 32px;
+      white-space: nowrap;
     }
     .el-form-item__content {
       flex-grow: 1;
@@ -2122,10 +1798,8 @@ a {
   }
   .combination-serch-date {
     width: 100%;
-    .el-input__inner {
-      border-left: none;
-      border-radius: 0 4px 4px 0;
-    }
+    border-left: none;
+    border-radius: 0 4px 4px 0;
   }
 }
 .row-btn-group {

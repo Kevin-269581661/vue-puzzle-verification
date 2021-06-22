@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 17:12:55
+ * @LastEditTime: 2021-06-22 14:17:45
  * @FilePath: /frontend/src/components/develop/newConstract.vue
 -->
 <template>
@@ -146,13 +146,6 @@ export default {
       // 续约，加门或者补充时父单的id （首签时传0）
       params.pID = 0;
       // fileIDs
-      api.postApi("/addsp/devContract/create", params).then((res) => {
-        console.log("创建合同", res);
-        if (res.data.SysCode === 200200) {
-        } else {
-          sessFun.messageFun("warning", res.data.MSG);
-        }
-      });
       return new Promise((resolve) => {
         api
           .postApi("/addsp/devContract/create", params)

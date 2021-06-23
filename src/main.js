@@ -4,7 +4,7 @@ import Vue from 'vue'
 import {router} from './router'
 import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
-
+import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
 
 // ElementUI
@@ -20,6 +20,7 @@ import 'default-passive-events'
 import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);
+Vue.use(SlideVerify);
 
 //echarts
 import echarts from 'echarts';

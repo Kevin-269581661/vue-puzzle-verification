@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-22 18:24:52
+ * @LastEditTime: 2021-06-23 17:38:48
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -125,7 +125,15 @@
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
           >
-            <el-table-column prop="resName" label="资源名称" width="160" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="resName" label="资源名称" width="160" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <span
+                  style="color: #108ee9; cursor: pointer"
+                  @click="ToDetail(scope.row)"
+                  >{{ scope.row.resName }}</span
+                >
+              </template>
+            </el-table-column>
             <el-table-column
               prop="dcType"
               label="合同线"
@@ -483,8 +491,45 @@ export default {
 
   data() {
     return {
-      // 角色 合同类型 合同状态 合同列表权限 
-      
+      // 角色
+      roleArr: {
+        0: "开发人员",
+        1: "资产人员",
+        2: "开发总监"
+      },
+      // 合同类型 
+      constractTypeArr: {
+        0: "首签",
+        1: "续签",
+        2: "补充",
+        3: "加门"
+      },
+      // 合同状态
+      constractStatusArr: {
+        0: "待审核",
+        1: "不通过",
+        2: "待签约",
+        3: "待安装",
+        4: "待拆除",
+        5: "正常",
+        6: "合同到期",
+        7: "强制终止"
+      },
+      // 合同列表操作权限路径(000: 开发人员/首签/待审核)
+      operationAuthorityArr: {
+        "编辑": ["000", "001", "010", "020", "011", "021", "030", "031"],
+        "删除": ["000", "001", "002", "003", "004", "010", "020", "011", "021", "012", "022", "013", "023", "014", "024", "030", "031", "032", "033"],
+        "重新提交": ["001", "011", "021", "031"],
+        "媒体录入": ["003", "013", "023", "033"],
+        "续签": ["005", "006", "007", "015", "025", "016", "026", "017", "027", "035", "036", "037"],
+        "补充": ["005", "015", "025", "035"],
+        "加门": ["005", "015", "025", "035"], 
+        "付款": ["005", "006", "015", "025", "016", "026", "035", "036"],
+        "付款记录": ["005", "006", "007", "015", "025", "016", "026", "017", "027", "035", "036", "037", "205", "206", "207", "215", "225", "216", "226", "217", "227", "105", "106", "107", "115", "125", "116", "126", "117", "127", "135", "136", "137"],
+        "审核": ["200", "210", "220"],
+        "完成签约": ["102", "112", "122", "132"],
+        "合同终止": ["105", "115", "125", "135"]
+      },
       areaArr: [],
       // 搜索数据
       searchInfo: {
@@ -1085,19 +1130,9 @@ export default {
           this.Ctrlloading.close();
         });
     },
-    // 跳转到详情页面
+    // 跳转到合同详情页面
     ToDetail(row) {
-      sessionStorage.setItem("plan_apid", row.apID);
-      sessionStorage.setItem("cityArea", JSON.stringify(row.cityArea));
-      if (row.apState == -1) {
-        // 未配点意向方案详情
-        this.$router.push("./planEmptyPointDetail");
-      } else if (row.planMode == 1) {
-        // 已配点意向方案
-        this.$router.push("./planDetail");
-      } else {
-        this.$router.push("./planDetail");
-      }
+      console.log("合同详情")
     },
     // 跳转到编辑页面
     ToEdit(row) {

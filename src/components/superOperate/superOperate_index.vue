@@ -474,7 +474,6 @@
     import nestPieChart from '../common/components/nestPieChart.vue';
     import pointDistribution from '../common/components/pointDistribution.vue';
     import publishRate from '../common/components/publishRate.vue';
-    import moment from "moment";
 
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'

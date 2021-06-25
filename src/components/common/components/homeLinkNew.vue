@@ -120,6 +120,7 @@
                 if(item.title === '地图选点') {
                     this.showMapModel()
                 } else if(item.title === '导出空位') {
+                    _paq.push(["trackEvent", "click", "导出空位", item]);
                     this.isOpenDownload=true
                 } else {
                     // document.location.href=item.link

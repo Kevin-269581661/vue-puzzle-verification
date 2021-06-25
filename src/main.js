@@ -16,8 +16,6 @@ import '../static/css/element-variables.scss'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
-import 'default-passive-events'
-
 // import VueMatomo from 'vue-matomo'
 import App from './App'
 Vue.use(ElementUI);

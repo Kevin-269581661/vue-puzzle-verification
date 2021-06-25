@@ -18,14 +18,14 @@ import 'mint-ui/lib/style.css'
 
 import 'default-passive-events'
 
-import VueMatomo from 'vue-matomo'
+// import VueMatomo from 'vue-matomo'
 import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);
 Vue.use(SlideVerify);
-Vue.use(VueMatomo, {
-  host: 'https://test-matomo.qinlindmp.com/', // 这里配置你自己的piwik服务器地址和网站ID
-  siteId: 3,//siteId值
+/* Vue.use(VueMatomo, {
+  host: 'https://test-matomo.qinlindmp.com', // 这里配置你自己的piwik服务器地址和网站ID
+  siteId: 1,//siteId值
   // 根据router自动注册
   router: router,
   // // 是否需要在发送追踪信息之前请求许可
@@ -39,7 +39,7 @@ Vue.use(VueMatomo, {
   // // 默认 'piwik'
   trackerFileName: 'matomo',
   debug: false
-});
+}); */
 
 //echarts
 import echarts from 'echarts';

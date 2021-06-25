@@ -10,7 +10,7 @@
 </template>
 
 <script>
-export default {
+/* export default {
   watch: {
     $route() {
       let locationHash = window.location.hash;
@@ -18,7 +18,7 @@ export default {
       sessionStorage.setItem("hashLocation", locationHash);
     }
   },
-};
+}; */
 </script>
 
 <style scoped>

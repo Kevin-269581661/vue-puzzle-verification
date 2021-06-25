@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-23 17:38:48
+ * @LastEditTime: 2021-06-25 18:32:10
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -463,10 +463,14 @@
         <el-button type="primary" @click="commitRelease">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 付款记录 -->
+    <pay-log :dialogVisible="true"></pay-log>
   </div>
 </template>
 
 <script>
+import payLog from "./components/payLog.vue";
 import api from "../../api/api.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
@@ -474,12 +478,8 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
-import cacheAdPlan from "../../commonFun/cacheAdPlan";
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue";
 // import noSearchResult from "./components/noSearchResult.vue";
-// 筛选过滤
-import filterFormat from "../../commonFun/filterTableData.js";
-
 import timeFormat from "../../commonFun/timeFormat.js";
 
 export default {
@@ -487,6 +487,7 @@ export default {
   components: {
     downloadVacancy,
     // noSearchResult,
+    payLog
   },
 
   data() {
@@ -862,16 +863,8 @@ export default {
               this.showProposalCookeAdPlan(data);
               // 缓存到localStorage
               // data.uiD = params.uid
-              // cacheAdPlan.setData(data)
             }
           } else {
-            // 后台返回异常则查看前台是否有缓存
-            let returnData = cacheAdPlan.getData(this.sessionData.uID);
-            if (returnData) {
-              this.showCookeAdPlan(returnData);
-            } else {
-              this.routeSelect();
-            }
           }
         })
         .catch((err) => {
@@ -1559,7 +1552,6 @@ export default {
             console.log("缓存意向方案清除失败");
           }
         });
-      cacheAdPlan.removeData(this.sessionData.uID);
       this.routeSelect();
     },
     // 放弃继续编辑
@@ -1591,7 +1583,6 @@ export default {
                 } else {
                 }
               });
-            cacheAdPlan.removeData(this.sessionData.uID);
             this.routeSelect();
           }
         })

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 17:31:21
+ * @LastEditTime: 2021-06-26 19:07:51
  * @FilePath: /frontend/src/components/develop/components/constractInput.vue
 -->
 <template>
@@ -85,6 +85,18 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
+                  <el-form-item label="合同媒体数量" prop="mediaCnt">
+                    <el-input-number
+                      v-model="constractForm.mediaCnt"
+                      controls-position="right"
+                      placeholder="请输入合同媒体数量"
+                      @blur="blurFun('mediaCnt')"
+                      :min="1"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
                   <el-form-item label="到期门体归属权" prop="ownership">
                     <el-select
                       placeholder="请选择到期门体归属权"
@@ -105,20 +117,8 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-              <el-form-item label="安装信息" class="baseInfo"></el-form-item>
+              <el-form-item label="赠送信息" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
-                <el-col :span="6">
-                  <el-form-item label="合同媒体数量" prop="mediaCnt">
-                    <el-input-number
-                      v-model="constractForm.mediaCnt"
-                      controls-position="right"
-                      placeholder="请输入合同媒体数量"
-                      @blur="blurFun('mediaCnt')"
-                      :min="0"
-                      :max="9999"
-                    ></el-input-number>
-                  </el-form-item>
-                </el-col>
                 <el-col :span="6">
                   <el-form-item label="赠送车场道闸" prop="freeCarGateCnt">
                     <el-input-number
@@ -136,6 +136,64 @@
                       v-model="constractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送护栏门数量"
+                      :min="0"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item
+                    label="赠送门禁设备"
+                    prop="freeGuardrailDoorCnt"
+                  >
+                    <el-input-number
+                      v-model="constractForm.freeGuardrailDoorCnt"
+                      controls-position="right"
+                      placeholder="请输入赠送门禁设备数量"
+                      :min="0"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="赠送IC卡" prop="freeGuardrailDoorCnt">
+                    <el-input-number
+                      v-model="constractForm.freeGuardrailDoorCnt"
+                      controls-position="right"
+                      placeholder="请输入赠送IC卡数量"
+                      :min="0"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="赠送ID卡" prop="freeGuardrailDoorCnt">
+                    <el-input-number
+                      v-model="constractForm.freeGuardrailDoorCnt"
+                      controls-position="right"
+                      placeholder="请输入赠送ID卡数量"
+                      :min="0"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="赠送护栏" prop="freeGuardrailDoorCnt">
+                    <el-input-number
+                      v-model="constractForm.freeGuardrailDoorCnt"
+                      controls-position="right"
+                      placeholder="请输入赠送护栏数量"
+                      :min="0"
+                      :max="9999"
+                    ></el-input-number>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="赠送三辊闸" prop="freeGuardrailDoorCnt">
+                    <el-input-number
+                      v-model="constractForm.freeGuardrailDoorCnt"
+                      controls-position="right"
+                      placeholder="请输入赠送三辊闸数量"
                       :min="0"
                       :max="9999"
                     ></el-input-number>
@@ -274,7 +332,45 @@
               </el-row>
               <el-form-item label="附件" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
-                <el-col :span="24"> </el-col>
+                <el-col :span="8">
+                  <el-upload
+                    class=""
+                    ref="fileUpload"
+                    :action="
+                      this.apiVar.qadnUrl + '/addsp/devContract/uploadFile'
+                    "
+                    :headers="{
+                      uid: sessionData.uID,
+                      token: sessionData.token
+                    }"
+                    :data="{
+                      
+                      type: 1,
+                    }"
+                    :file-list="fileList"
+                    :on-change="fileChange"
+                    :on-progress="fileProgress"
+                    :on-success="uploadSuccess"
+                    :on-error="uploadError"
+                    :auto-upload="false"
+                    :multiple="false"
+                  >
+                    <el-button
+                      slot="trigger"
+                      size="small"
+                      icon="el-icon-upload2"
+                      style="padding: 0 15px"
+                      >上传文件</el-button
+                    >
+                    <el-button
+                      style="margin-left: 10px"
+                      size="small"
+                      type="success"
+                      @click="submitUpload"
+                      >上传到服务器</el-button
+                    >
+                  </el-upload>
+                </el-col>
               </el-row>
             </el-form>
           </div>
@@ -292,8 +388,8 @@ export default {
   props: {
     resFormData: {
       type: Object,
-      default: ()=>{}
-    }
+      default: () => {},
+    },
   },
   data() {
     let validateSpace = (rule, value, callback) => {
@@ -332,11 +428,11 @@ export default {
     return {
       devPayTypeList: [
         { label: "按年支付固定费用", value: "按年支付固定费用" },
-        { label: "一次性支付固定费用", value: "一次性支付固定费用" }
+        { label: "一次性支付固定费用", value: "一次性支付固定费用" },
       ],
       venuePayTypeList: [
         { label: "固定费用付款", value: "固定费用付款" },
-        { label: "按装门数付款", value: "按装门数付款" }
+        { label: "按装门数付款", value: "按装门数付款" },
       ],
       //资源表单
       constractForm: {
@@ -440,6 +536,7 @@ export default {
         ],
       },
 
+      fileList: [],
       PathHaveEdit: false, // 新建/编辑
       doUpload: this.apiVar.qadnUrl + "/advertisement/UpLoad",
 
@@ -456,6 +553,31 @@ export default {
     this.customPermission = this.sessionData.customPermission;
   },
   methods: {
+    //
+    fileChange(file, fileList) {
+      console.log("fileChange--", file);
+    },
+    //
+    fileProgress(event, file, fileList) {
+      console.log("event--=-", event);
+    },
+    uploadSuccess(response, file, fileList) {
+      console.log("response", response);
+      if(response.SysCode == 200200) {
+        // 继续创建
+
+      } else {
+        this.$message.warning(response.MSG);
+      }
+    },
+    uploadError(err, file, fileList) {
+      console.warn("上传失败", err);
+      this.$message.warning("附件上传失败！");
+    },
+    //
+    submitUpload() {
+      this.$refs.fileUpload.submit();
+    },
     // 资源输入框和下拉框失去光标
     blurFun(name) {
       console.log("name", name);
@@ -576,7 +698,7 @@ export default {
         this.$refs["constractForm"].clearValidate();
         clearTimeout(timer);
       }, 500);
-    }
+    },
   },
 };
 </script>

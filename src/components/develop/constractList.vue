@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-25 18:32:10
+ * @LastEditTime: 2021-06-26 19:03:39
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -371,7 +371,7 @@
       </div>
     </div>
     <!-- 预锁公司 -->
-    <el-dialog
+    <!-- <el-dialog
       :title="isLock ? '请选择预锁公司' : '请选择解锁公司'"
       :visible.sync="dialogVisible"
       width="35%"
@@ -405,7 +405,7 @@
         <el-button plain @click="cancelLock">取 消</el-button>
         <el-button type="primary" @click="confirmLock">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
 
     <!--发布方案-->
     <el-dialog
@@ -465,7 +465,7 @@
     </el-dialog>
 
     <!-- 付款记录 -->
-    <pay-log :dialogVisible="true"></pay-log>
+    <pay-log :dialogVisible.sync="payLogDialogVisible"></pay-log>
   </div>
 </template>
 
@@ -572,7 +572,7 @@ export default {
       // 解锁还是预锁
       isLock: false,
       // 预锁弹出框
-      dialogVisible: false,
+      payLogDialogVisible: true,
       // 选择要预锁的城市
       cityChoose: [],
       // 预锁的城市列表

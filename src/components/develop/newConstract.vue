@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-22 14:17:45
+ * @LastEditTime: 2021-06-26 19:02:06
  * @FilePath: /frontend/src/components/develop/newConstract.vue
 -->
 <template>
@@ -110,7 +110,7 @@ export default {
     async secondStep() {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
       console.log("test1", needValidFormResult);
-      if (needValidFormResult) {
+      if (!needValidFormResult) {
         this.activeStep = 2;
         this.resFormData = this.$refs.needValidForm.recForm;
         this.componentName = "constractInput";

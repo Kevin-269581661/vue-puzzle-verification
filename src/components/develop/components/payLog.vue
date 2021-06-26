@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-25 19:00:02
+ * @LastEditTime: 2021-06-26 17:27:22
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -11,7 +11,6 @@
       title="付款记录"
       :visible.sync="dialogVisible"
       width="418px"
-      :show-close="false"
       :before-close="handleClose"
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper pay-log-dialog"
@@ -19,32 +18,41 @@
     >
       <div v-loading="loading">
         <div class="board board1">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              审核<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>通过</el-dropdown-item>
-              <el-dropdown-item>不通过</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
           <el-timeline class="info-list">
             <el-timeline-item
               v-for="(logItem, index) in payLogArr"
               :key="index"
-              :timestamp="logItem.updateTime"
+              hide-timestamp
               placement="top"
             >
+              <div class="log-top">
+                <span class="log-top__timestamp">{{ logItem.updateTime }}</span>
+                <img
+                  class="pay-status"
+                  src="../../../assets/images/develop/statusDanger.png"
+                  alt=""
+                />
+                <el-dropdown class="handle-pay-dropdown">
+                  <span class="el-dropdown-link">
+                    审核<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item>通过</el-dropdown-item>
+                    <el-dropdown-item>不通过</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+
               <li class="info-item">
                 <span class="item-label">支付款项：</span>
                 <span class="item-content">
-                  <span class="active">查看</span>
+                  {{ ["场地费", "开发费"][logItem.payType - 1] || "" }}
                 </span>
               </li>
               <li class="info-item">
                 <span class="item-label">申请人：</span>
                 <span class="item-content">
-                  {{ logItem.planAdSpaceCount || "--" }} 个
+                  {{ logItem.createUser || "--" }}
                 </span>
               </li>
               <li class="info-item">
@@ -56,7 +64,7 @@
               <li class="info-item">
                 <span class="item-label">实付金额：</span>
                 <span class="item-content">
-                  {{ logItem.actualPayTotal }}
+                  {{ (logItem.actualPayTotal / 100) | moneyFormat("¥") }}
                 </span>
               </li>
               <li class="info-item">
@@ -79,54 +87,6 @@
               </li>
             </el-timeline-item>
           </el-timeline>
-          <!-- <ul class="info-list">
-            <li class="info-item">
-              <span class="item-label">支付款项：</span>
-              <span class="item-content">
-                <span class="active" @click="getIntentionList">查看</span>
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">申请人：</span>
-              <span class="item-content">
-                {{ intentionInfo.planAdSpaceCount || "--" }} 个
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">应付金额：</span>
-              <span class="item-content">
-                {{ (intentionInfo.customerBudget / 100) | moneyFormat("¥") }}
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">实付金额：</span>
-              <span class="item-content">
-                {{
-                  `${moment(intentionInfo.pdStartDate).format("LL")}-${moment(
-                    intentionInfo.pdEndDate
-                  ).format("LL")}`
-                }}
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">银行账号：</span>
-              <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand || "--" }}
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">开户行：</span>
-              <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand || "--" }}
-              </span>
-            </li>
-            <li class="info-item">
-              <span class="item-label">备注：</span>
-              <span class="item-content ellipsis">
-                {{ intentionInfo.customerDemand || "--" }}
-              </span>
-            </li>
-          </ul> -->
         </div>
       </div>
       <span slot="footer">
@@ -445,6 +405,7 @@ export default {
                 finishDate: "string",
                 id: 0,
                 payState: 0,
+                //payType: 1-场地费 2-开发费
                 payType: 1,
                 planPayTotal: 0,
                 remark: "string",
@@ -870,7 +831,7 @@ export default {
       );
     },
     handleClose(done) {
-      this.$emit("closeAddPoint");
+      this.$emit("update:dialogVisible", false);
     },
     closeAsignPointTable() {
       if (this.matched) {
@@ -1017,20 +978,34 @@ export default {
     }
   }
 }
+
+/* 付款记录 */
 /deep/ .pay-log-dialog {
   .el-timeline-item__node--normal {
     width: 8px;
     height: 8px;
-    background: #FFFFFF;
-    border: 1px solid #1890FF;
+    background: #ffffff;
+    border: 1px solid #1890ff;
   }
   .el-timeline-item__tail {
-    border-left: 1px solid #1890FF;
+    border-left: 1px solid #1890ff;
   }
-  .el-timeline-item__timestamp.is-top {
-    line-height: 24px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
+  .log-top {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    .log-top__timestamp {
+      line-height: 24px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .pay-status {
+      width: 40px;
+      margin-left: 8px;
+    }
+    .handle-pay-dropdown {
+      margin-left: auto;
+    }
   }
   .el-checkbox {
     line-height: 27px;
@@ -1040,18 +1015,6 @@ export default {
   }
   .el-checkbox__input.is-checked + .el-checkbox__label {
     color: rgba(0, 0, 0, 0.65);
-  }
-  .el-input-number--mini .el-input-number__decrease,
-  .el-input-number--mini .el-input-number__increase {
-    width: 20px;
-  }
-  .el-input-number.is-controls-right[class*="mini"] {
-    [class*="increase"] {
-      line-height: 12px;
-    }
-    [class*="decrease"] {
-      line-height: 12px;
-    }
   }
   .el-dialog__footer {
     .el-button + .el-button {
@@ -1090,10 +1053,12 @@ export default {
       cursor: pointer;
     }
     .item-content.ellipsis {
-      width: 290px;
+      width: 270px;
       display: inline-block;
       vertical-align: text-bottom;
       overflow: hidden;
+    }
+    .item-label {
     }
   }
 }

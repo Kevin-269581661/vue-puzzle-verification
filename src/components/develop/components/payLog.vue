@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-26 17:27:22
+ * @LastEditTime: 2021-06-27 19:16:35
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -14,7 +14,6 @@
       :before-close="handleClose"
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper pay-log-dialog"
-      center
     >
       <div v-loading="loading">
         <div class="board board1">
@@ -32,13 +31,49 @@
                   src="../../../assets/images/develop/statusDanger.png"
                   alt=""
                 />
-                <el-dropdown class="handle-pay-dropdown">
+                <el-tooltip content="原因：实付费用有问题" placement="top">
+                  <img
+                    class="quesition-icon"
+                    src="../../../assets/images/question_icon.png"
+                  />
+                </el-tooltip>
+                <el-dropdown
+                  :hide-on-click="false"
+                  trigger="click"
+                  size="medium"
+                  class="handle-pay-dropdown"
+                >
                   <span class="el-dropdown-link">
                     审核<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>通过</el-dropdown-item>
-                    <el-dropdown-item>不通过</el-dropdown-item>
+                    <el-popconfirm
+                      popper-class="handle-btn-pop"
+                      placement="top-end"
+                      confirm-button-text="确定"
+                      cancel-button-text="取消"
+                      cancel-button-type="default"
+                      icon="el-icon-warning"
+                      icon-color="#FAAD14"
+                      title="确定通过吗？"
+                    >
+                      <el-dropdown-item slot="reference">通过</el-dropdown-item>
+                    </el-popconfirm>
+                    <el-popconfirm
+                      popper-class="handle-btn-pop"
+                      placement="top-end"
+                      confirm-button-text="确定"
+                      cancel-button-text="取消"
+                      cancel-button-type="default"
+                      icon="el-icon-warning"
+                      icon-color="#FAAD14"
+                      title="确定不通过吗？"
+                      @confirm="disagreeFun"
+                    >
+                      <el-dropdown-item slot="reference"
+                        >不通过</el-dropdown-item
+                      >
+                    </el-popconfirm>
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
@@ -71,6 +106,12 @@
                 <span class="item-label">银行账号：</span>
                 <span class="item-content ellipsis">
                   {{ logItem.bankAccount || "--" }}
+                  <img
+                    class="copy-img"
+                    src="../../../assets/images/develop/copy.png"
+                    alt=""
+                    @click="copyBankAccount(logItem.bankAccount || '--')"
+                  />
                 </span>
               </li>
               <li class="info-item">
@@ -85,47 +126,168 @@
                   {{ logItem.remark || "--" }}
                 </span>
               </li>
+              <div>
+                <!-- <div class="export_step_box">
+                            <img src="../../assets/images/export.png" alt="">
+                            《QADN-数据导入-模板》
+                            <a :href ='apiVar.qadnUrl + "/importTemplate/手动录入推荐理由.xlsx"'
+                            download="数据导入模板.xlsx" class="downloag_btn" @click="dowmLoadFun">点击下载<i class="el-icon-download"></i></a>
+                        </div> -->
+              </div>
             </el-timeline-item>
           </el-timeline>
         </div>
       </div>
       <span slot="footer">
-        <el-button @click="handleClose">关闭</el-button>
+        <el-button @click="handleClose">关 闭</el-button>
       </span>
     </el-dialog>
 
-    <!-- 选择配点范围 -->
+    <!-- 审核 -->
     <el-dialog
       title="不通过理由"
-      :visible.sync="dialogMatchRangeFormVisible"
+      :visible.sync="reasonVisible"
       width="368px"
       top="22vh"
       :show-close="false"
       :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper match-range-dialog"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
     >
-      <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
-      <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
-      <el-tooltip
-        v-if="sessionData.uType == 'BD'"
-        placement="top"
-        trigger="hover"
-        effect="dark"
-      >
-        <div slot="content">个别未配点小区请联系媒介协助配点</div>
-        <el-radio disabled v-model="formDataObj.matchRange" label="0"
-          >未配点小区</el-radio
-        >
-      </el-tooltip>
-      <el-radio v-else v-model="formDataObj.matchRange" label="0"
-        >未配点小区</el-radio
-      >
+      <div class="content-form">
+        <el-input
+          type="textarea"
+          placeholder="请填写不通过的理由，限制50个字"
+          v-model="disagreeTxt"
+          resize="none"
+          :autosize="{ minRows: 2 }"
+          maxlength="50"
+          show-word-limit
+        ></el-input>
+      </div>
+
       <template slot="footer">
-        <el-button @click="dialogMatchRangeFormVisible = false"
-          >取 消</el-button
-        >
-        <el-button type="primary">确 定</el-button>
+        <el-button @click="reasonVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changePayState">确 定</el-button>
       </template>
+    </el-dialog>
+    <!-- 付款申请 -->
+    <el-dialog
+      title="付款申请"
+      width="388px"
+      custom-class="custom-dialog-wrapper pay-apply-dialog"
+      :visible.sync="payApplyVisible"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :close-on-press-escap="false"
+      :before-close="resetPayApply"
+    >
+      <el-form
+        ref="payApplyForm"
+        :model="payApplyForm"
+        :rules="payApplyFormRules"
+        label-position="right"
+      >
+        <el-form-item
+          label="支付款项："
+          prop="payType"
+          :label-width="formLabelWidth"
+        >
+          <el-select
+            placeholder="请选择支付款项"
+            v-model="payApplyForm.payType"
+            size="small"
+          >
+            <el-option label="场地费" :value="1"></el-option>
+            <el-option label="开发费" :value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          class="special-padding"
+          label="付款金额："
+          prop="actualPayTotal"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            placeholder="请输入付款金额"
+            v-model.number="payApplyForm.actualPayTotal"
+            size="small"
+            maxlength="7"
+          >
+            <template slot="append">元</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item
+          label="银行账号："
+          prop="bankAccount"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            placeholder="请输入客户银行账号"
+            v-model="payApplyForm.bankAccount"
+            size="small"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="开户行："
+          prop="bankName"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            placeholder="请输入客户开户行"
+            v-model="payApplyForm.bankName"
+            size="small"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="备注："
+          prop="remark"
+          :label-width="formLabelWidth"
+        >
+          <el-input
+            type="textarea"
+            placeholder="请输入备注信息"
+            v-model="payApplyForm.remark"
+            size="small"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="附件：" :label-width="formLabelWidth">
+          <el-upload
+            class=""
+            ref="fileUpload"
+            :action="this.apiVar.qadnUrl + '/addsp/devContract/uploadFile'"
+            :headers="{
+              uid: sessionData.uID,
+              token: sessionData.token,
+            }"
+            :data="{
+              type: 2,
+              dcID: '',
+            }"
+            name="file"
+            :file-list="payApplyFileList"
+            :on-change="fileChange"
+            :on-progress="fileProgress"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :auto-upload="false"
+            :multiple="false"
+          >
+            <el-button
+              slot="trigger"
+              size="small"
+              icon="el-icon-upload2"
+              style="padding: 0 15px"
+              >上传文件</el-button
+            >
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="resetPayApply(()=>{$emit('update:payApplyVisible', false)})">取 消</el-button>
+          <el-button type="primary" @click="createPayRecord">确 定</el-button>
+        </div>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -133,15 +295,16 @@
 <script>
 import api from "../../../api/api";
 // 时间格式化
-import moment from "moment";
-import timeFormat from "../../../commonFun/timeFormat.js";
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "../../../components/common/components/dialogTable.vue";
-moment.locale("zh-cn");
 export default {
-  name: "addPoint",
+  name: "paylog",
   props: {
     dialogVisible: {
+      type: Boolean,
+      default: () => false,
+    },
+    payApplyVisible: {
       type: Boolean,
       default: () => false,
     },
@@ -175,10 +338,27 @@ export default {
   },
   data() {
     return {
-      moment,
-
       payLogArr: [],
-
+      disagreeTxt: "",
+      reasonVisible: false,
+      formLabelWidth: "85px",
+      payApplyForm: {
+        payType: 1,
+        finshYear: 0,
+        planPayTotal: 0,
+        actualPayTotal: 0,
+        bankAccount: "",
+        bankName: "",
+        remark: "",
+      },
+      payApplyFormRules: {
+        payType: [{ required: true, trigger: "blur" }],
+        actualPayTotal: [
+          { required: true, message: "付款金额不能为空", trigger: "blur" },
+          { type: "number", message: "必须为数字值", trigger: "blur" },
+        ],
+      },
+      payApplyFileList: [],
       sessionData: null,
       matched: false,
       trafficAndmType: {
@@ -197,7 +377,6 @@ export default {
         planAdSpaceCount: 0,
         planResCount: 0,
       },
-      dialogMatchRangeFormVisible: false,
       formDataObj: {
         matchRange: "1",
         pointDemand: [],
@@ -233,17 +412,7 @@ export default {
           minWidth: "100px",
           tip: true,
         },
-        {
-          label: "排期",
-          prop: "period",
-          minWidth: "160px",
-          tip: true,
-          value: (row) =>
-            `${timeFormat.toDate(row.pdStartDate, "/")}~${timeFormat.toDate(
-              row.pdEndDate,
-              "/"
-            )}`,
-        },
+
         {
           label: "媒体数量(门)",
           prop: "resMediaCount",
@@ -371,6 +540,89 @@ export default {
     this.getPayRecordList();
   },
   methods: {
+    //
+    fileChange(file, fileList) {
+      this.payApplyFileList = fileList;
+      console.log("fileChange--", file);
+    },
+    //
+    fileProgress(event, file, fileList) {
+      console.log("event--=-", event, fileList);
+    },
+    uploadSuccess(response, file, fileList) {
+      console.log("response", response, file);
+      if (response.SysCode == 200200) {
+        // 继续创建
+        file.fileUrl = response.data.fileUrl || "";
+        file.id = response.data.id || "";
+      } else {
+        this.$message.warning(response.MSG);
+      }
+    },
+    uploadError(err, file, fileList) {
+      console.warn("上传失败", err);
+      this.$message.warning(file.name + "附件上传失败！");
+    },
+
+    // 重置付款申请表单
+    resetPayApply(done) {
+      if (this.$refs.payApplyForm) {
+        this.$refs.payApplyForm.resetFields();
+        done();
+      }
+    },
+    // 提交付款申请
+    createPayRecord() {
+      if (!this.payApplyFileList.every((item) => item.id && item.fileUrl)) {
+        // 还有文件未上传
+        console.log("payApplyFileList", this.payApplyFileList);
+        this.$refs.fileUpload.submit();
+      } else {
+        this.$refs.payApplyForm.validate((valid) => {
+          if (valid) {
+            console.log("success---", this.payApplyForm);
+            api
+              .postApi("/addsp/devContract/createPayRecord", {
+                ...this.payApplyForm,
+                dcID: "",
+                fileIDs: this.payApplyFileList.map((item) => item.id).join(","),
+              })
+              .then((res) => {
+                if (res.data.SysCode == 200200) {
+                } else {
+                  this.$message.warning(res.data.MSG || "");
+                  this.$emit('update:payApplyVisible', false);
+                }
+              });
+          } else {
+            console.warn("valid---");
+            return false;
+          }
+        });
+      }
+    },
+    // 付款申请不通过确认框
+    disagreeFun() {
+      this.reasonVisible = true;
+    },
+    // 付款申请不通过
+    changePayState() {
+      console.log("不通过理由", this.disagreeTxt);
+      if (this.disagreeTxt !== 0)
+        api
+          .postApi("/addsp/devContract/changePayState", {
+            dcpID: "",
+            passState: 0,
+            failReason: "",
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+            } else {
+              this.$message.warning(res.data.MSG || "审核失败！");
+            }
+          });
+    },
+    // 获取付款记录
     getPayRecordList() {
       return new Promise((resolve) => {
         api
@@ -418,6 +670,16 @@ export default {
             console.log(err);
           });
       });
+    },
+    // 复制银行账号
+    copyBankAccount(bankAccount) {
+      let oInput = document.createElement("input");
+      oInput.value = bankAccount;
+      document.body.appendChild(oInput);
+      oInput.select(); // 选择对象
+      document.execCommand("Copy"); // 执行浏览器复制命令
+      oInput.style.display = "none";
+      this.$message.success("复制成功");
     },
     // 获取该用户下的配点次数
     getMatchCnt() {
@@ -577,7 +839,7 @@ export default {
             console.log(err);
           });
       }).then((matchRes) => {
-        this.dialogMatchRangeFormVisible = false;
+        this.reasonVisible = false;
         if (matchRes) {
           this.$confirm(
             `计划投放<span style='color: #1890ff; font-weight: 600;'> ${
@@ -704,10 +966,6 @@ export default {
               item.origin = item.region;
               item.mediaName = item.mTitle;
               item.mediaLevel = item.grade || "";
-              item.schedules =
-                timeFormat.toDate(item.pdStartDate, "/") +
-                "-" +
-                timeFormat.toDate(item.pdEndDate, "/"); //item.pdStartDate + '-' + item.pdEndDate
               item.adLimit = item.notPush;
               item.mapCenter = item.mapCenter || "--"; // 地图中心点名称
               item.reference = "";
@@ -940,10 +1198,29 @@ export default {
     padding: 0;
   }
 }
+/* 付款记录 */
+.handle-btn-pop {
+  padding: 12px 16px;
+  .el-popconfirm__main {
+    margin-bottom: 12px;
+  }
+  .el-popconfirm__action {
+    .el-button {
+      height: 24px;
+      line-height: 24px;
+      font-size: 14px;
+      width: 50px;
+      min-width: unset;
+      & + .el-button {
+        margin-left: 8px;
+      }
+    }
+  }
+}
 </style>
 <style lang="scss" scoped>
 @import "../../../assets/component.scss";
-/deep/ .match-range-dialog {
+/deep/ .custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
     padding-bottom: 6px;
@@ -955,18 +1232,10 @@ export default {
   }
   .el-dialog__body {
     border: none !important;
-    .content-tip {
-      margin-bottom: 16px;
+    .content-form {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.45);
       line-height: 24px;
-    }
-    .el-radio {
-      margin-right: 24px;
-    }
-    .el-radio__label {
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 22px;
     }
   }
   .el-dialog__footer {
@@ -978,16 +1247,21 @@ export default {
     }
   }
 }
-
 /* 付款记录 */
 /deep/ .pay-log-dialog {
+  .el-timeline-item__wrapper {
+    padding-left: 15px;
+  }
   .el-timeline-item__node--normal {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
+    margin-top: 5px;
     background: #ffffff;
     border: 1px solid #1890ff;
   }
   .el-timeline-item__tail {
+    left: 3px;
+    margin-top: 5px;
     border-left: 1px solid #1890ff;
   }
   .log-top {
@@ -1003,62 +1277,125 @@ export default {
       width: 40px;
       margin-left: 8px;
     }
+    .quesition-icon {
+      width: 14px;
+      height: 14px;
+      margin-left: 5px;
+      border-radius: 50%;
+      vertical-align: middle;
+      -webkit-filter: brightness(0.75);
+      filter: brightness(0.75);
+    }
     .handle-pay-dropdown {
       margin-left: auto;
     }
-  }
-  .el-checkbox {
-    line-height: 27px;
-  }
-  .el-checkbox__label {
-    padding-left: 8px;
-  }
-  .el-checkbox__input.is-checked + .el-checkbox__label {
-    color: rgba(0, 0, 0, 0.65);
   }
   .el-dialog__footer {
     .el-button + .el-button {
       margin-left: 10px;
     }
   }
-  .el-form-item {
-    .el-form-item__label {
-      padding: 0;
-      color: rgba(0, 0, 0, 0.65);
-    }
-  }
-  .el-checkbox-group {
-    display: flex;
-    flex-flow: column;
-  }
-  .el-input__inner {
-    height: 32px;
-  }
   .board {
     padding: 16px 0;
     & + .board {
       border-top: 1px solid rgba(233, 233, 233, 1);
     }
-    .board-title {
-      line-height: 24px;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.85);
-    }
   }
   .board1 .info-item {
     display: flex;
-    margin-top: 8px;
+    margin-top: 4px;
+    color: rgba(0, 0, 0, 0.85);
     .active {
       color: rgba(24, 144, 255, 1);
       cursor: pointer;
     }
-    .item-content.ellipsis {
-      width: 270px;
-      display: inline-block;
-      vertical-align: text-bottom;
-      overflow: hidden;
+    .item-content {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+      &.ellipsis {
+        width: 270px;
+        display: inline-block;
+        vertical-align: text-bottom;
+        overflow: hidden;
+      }
+      .copy-img {
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
     }
-    .item-label {
+  }
+}
+/* 付款申请 */
+/deep/ .pay-apply-dialog {
+  border-radius: 4px;
+  ::placeholder {
+    /*Firefox,Chrome,Opera*/
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+  :-ms-input-placeholder {
+    /*InternetExplorer10-11*/
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+  ::-ms-input-placeholder {
+    /*MicrosoftEdge*/
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+  .el-form-item {
+    margin-bottom: 16px;
+    .el-form-item__label {
+      padding: 0;
+      line-height: 32px;
+      white-space: nowrap;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .el-form-item__content {
+      line-height: unset;
+      .el-input__inner {
+        color: rgba(0, 0, 0, 0.65);
+      }
+      .el-input-group__append {
+        padding: 4px 12px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.25);
+      }
+      .el-select {
+        width: 100%;
+      }
+    }
+  }
+  .special-padding.el-form-item {
+    .el-input-group__append {
+      padding: 4px 9px;
+    }
+  }
+  .el-dialog__header {
+    padding: 16px 24px;
+    border-bottom: unset;
+    .el-dialog__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+    }
+  }
+  .el-dialog__body {
+    padding: 0 24px;
+    border-bottom: unset;
+  }
+  .el-dialog__footer {
+    padding: 8px 24px 24px;
+    .dialog-footer__button {
+      word-spacing: -1em;
+      .el-button + .el-button {
+        margin-left: 16px;
+      }
     }
   }
 }

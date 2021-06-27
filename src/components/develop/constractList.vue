@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-26 19:03:39
+ * @LastEditTime: 2021-06-27 16:32:57
  * @FilePath: /frontend/src/components/develop/constractList.vue
 -->
 <template>
@@ -465,7 +465,7 @@
     </el-dialog>
 
     <!-- 付款记录 -->
-    <pay-log :dialogVisible.sync="payLogDialogVisible"></pay-log>
+    <pay-log :payLogDialogVisible.sync="payLogDialogVisible" :payApplyVisible.sync="payApplyVisible"></pay-log>
   </div>
 </template>
 
@@ -571,8 +571,10 @@ export default {
       currentItem: {},
       // 解锁还是预锁
       isLock: false,
-      // 预锁弹出框
-      payLogDialogVisible: true,
+      // 付款记录
+      payLogDialogVisible: false,
+      // 付款申请
+      payApplyVisible: true,
       // 选择要预锁的城市
       cityChoose: [],
       // 预锁的城市列表

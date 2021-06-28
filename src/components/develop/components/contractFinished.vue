@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 16:22:32
+ * @LastEditTime: 2021-06-28 09:37:38
  * @FilePath: /frontend/src/components/develop/components/constractFinished.vue
 -->
 <template>
@@ -19,7 +19,7 @@
         <li>
           <em>合同期限：</em
           >{{
-            `${constractFormData.startDate} 至 ${constractFormData.endDate}`
+            `${contractFormData.startDate} 至 ${contractFormData.endDate}`
           }}
         </li>
       </ul>
@@ -30,14 +30,14 @@
 <script>
 import timeFormat from "../../../commonFun/timeFormat.js";
 export default {
-  name: "constractFinished",
+  name: "contractFinished",
   props: {
     resFormData: {
       type: Object,
       required: true,
       default: () => {},
     },
-    constractFormData: {
+    contractFormData: {
       type: Object,
       required: true,
       default: () => {},

@@ -2,12 +2,12 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-26 19:02:06
- * @FilePath: /frontend/src/components/develop/newConstract.vue
+ * @LastEditTime: 2021-06-28 14:26:11
+ * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
-  <div class="new-constract-page">
-    <el-breadcrumb separator="/" class="constract-crumb">
+  <div class="new-contract-page">
+    <el-breadcrumb separator="/" class="contract-crumb">
       <el-breadcrumb-item>合同管理</el-breadcrumb-item>
       <el-breadcrumb-item>新建合同</el-breadcrumb-item>
     </el-breadcrumb>
@@ -49,7 +49,7 @@
         <component
           ref="needValidForm"
           :resFormData="resFormData"
-          :constractFormData="constractFormData"
+          :contractFormData="contractFormData"
           :is="componentName"
         ></component>
       </keep-alive>
@@ -72,8 +72,8 @@
         <el-button type="primary" @click="thirdStep">保存</el-button>
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
-        <el-button type="default" @click="cancelFirstStep">合同列表</el-button>
-        <el-button type="primary" @click="secondStep">查看详情</el-button>
+        <el-button type="default" @click="routeContractList">合同列表</el-button>
+        <el-button type="primary" @click="routeContractDetail">查看详情</el-button>
       </div>
     </div>
   </div>
@@ -82,14 +82,14 @@
 <script>
 import api from "../../api/api.js";
 import resInput from "../common/components/resInput.vue";
-import constractInput from "./components/constractInput.vue";
-import constractFinished from "./components/constractFinished.vue";
+import contractInput from "./components/contractInput.vue";
+import contractFinished from "./components/contractFinished.vue";
 export default {
-  name: "newConstract",
+  name: "newContract",
   components: {
     resInput,
-    constractInput,
-    constractFinished,
+    contractInput,
+    contractFinished,
   },
   props: {},
   data() {
@@ -97,37 +97,47 @@ export default {
       activeStep: 1,
       componentName: "resInput",
       resFormData: {},
-      constractFormData: {},
+      contractFormData: {},
     };
   },
   watch: {},
   computed: {},
   mounted() {},
   methods: {
+    /* 跳转至合同列表 */
+    routeContractList() {
+      this.$router.push("./contractList")
+    },
+    /* 跳转至合同详情 */
+    routeContractDetail() {
+      this.$router.push("./contractDetail")
+    },
     /* 第一步取消 */
-    cancelFirstStep() {},
+    cancelFirstStep() {
+      
+    },
     /* 第一步进入第二部 */
     async secondStep() {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
       console.log("test1", needValidFormResult);
-      if (!needValidFormResult) {
+      if (needValidFormResult) {
         this.activeStep = 2;
         this.resFormData = this.$refs.needValidForm.recForm;
-        this.componentName = "constractInput";
+        this.componentName = "contractInput";
       }
     },
     async thirdStep() {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
-        this.constractFormData = this.$refs.needValidForm.constractForm;
-        await this.newConstract();
+        this.contractFormData = this.$refs.needValidForm.contractForm;
+        await this.newContract();
         this.activeStep = 3;
-        console.log("-=-", this.resFormData, this.constractFormData);
-        this.componentName = "constractFinished";
+        console.log("-=-", this.resFormData, this.contractFormData);
+        this.componentName = "contractFinished";
       }
     },
-    newConstract() {
+    newContract() {
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -137,7 +147,7 @@ export default {
         resID: this.resFormData.resID,
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
-        ...this.constractFormData,
+        ...this.contractFormData,
       };
       params.venueFee = params.venueFee * 100;
       params.devFee = params.devFee * 100;
@@ -154,7 +164,7 @@ export default {
             if (res.data.SysCode === 200200) {
               resolve(true);
             } else {
-              sessFun.messageFun("warning", res.data.MSG);
+              this.$message.warning(res.data.MSG||"");
             }
           })
           .finally(() => {
@@ -167,10 +177,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.constract-crumb {
+.contract-crumb {
   margin: 12px 0;
 }
-.new-constract-page {
+.new-contract-page {
   margin: 0 60px;
   position: relative;
   .content {

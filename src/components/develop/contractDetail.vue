@@ -2,12 +2,12 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 16:21:42
- * @FilePath: /frontend/src/components/develop/constractDetail.vue
+ * @LastEditTime: 2021-06-28 09:34:25
+ * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
-  <div class="constract-detail-page">
-    <el-breadcrumb separator="/" class="constract-crumb">
+  <div class="contract-detail-page">
+    <el-breadcrumb separator="/" class="contract-crumb">
       <el-breadcrumb-item>合同管理</el-breadcrumb-item>
       <el-breadcrumb-item>合同详情</el-breadcrumb-item>
     </el-breadcrumb>
@@ -55,10 +55,10 @@
                 </el-col>
               </el-row>
             </el-col>
-            <el-col :span="6" class="constract-status">
-              <div class="constract-status__text">状态</div>
-              <div class="constract-status-name">
-                <span class="constract-status__dot"></span>
+            <el-col :span="6" class="contract-status">
+              <div class="contract-status__text">状态</div>
+              <div class="contract-status-name">
+                <span class="contract-status__dot"></span>
                 正常
               </div>
             </el-col>
@@ -114,14 +114,14 @@
 
 <script>
 import resInput from "../common/components/resInput.vue";
-import constractInput from "./components/constractInput.vue";
-import constractFinished from "./components/constractFinished.vue";
+import contractInput from "./components/contractInput.vue";
+import contractFinished from "./components/contractFinished.vue";
 export default {
-  name: "constractDetail",
+  name: "contractDetail",
   components: {
     resInput,
-    constractInput,
-    constractFinished,
+    contractInput,
+    contractFinished,
   },
   props: {},
   data() {
@@ -129,7 +129,7 @@ export default {
       activeStep: 1,
       componentName: "resInput",
       resFormData: {},
-      constractFormData: {},
+      contractFormData: {},
       activeTabName: "first",
       // 合同状态和颜色映射
     };
@@ -147,7 +147,7 @@ export default {
       if (needValidFormResult) {
         this.activeStep = 2;
         this.resFormData = this.$refs.needValidForm.recForm;
-        this.componentName = "constractInput";
+        this.componentName = "contractInput";
       }
     },
     async thirdStep() {
@@ -155,8 +155,8 @@ export default {
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
         this.activeStep = 3;
-        this.constractFormData = this.$refs.needValidForm.constractForm;
-        this.componentName = "constractFinished";
+        this.contractFormData = this.$refs.needValidForm.contractForm;
+        this.componentName = "contractFinished";
       }
     },
   },
@@ -164,10 +164,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.constract-crumb {
+.contract-crumb {
   margin: 12px 0;
 }
-.constract-detail-page {
+.contract-detail-page {
   margin: 0 60px;
   position: relative;
   .title-row {
@@ -231,10 +231,10 @@ export default {
       color: rgba(0, 0, 0, 0.85);
     }
   }
-  .constract-status {
+  .contract-status {
     margin-top: 8px;
     text-align: right;
-    .constract-status__text {
+    .contract-status__text {
       height: 22px;
       margin-right: 25px;
       line-height: 22px;
@@ -242,7 +242,7 @@ export default {
       font-weight: 400;
       color: rgba(0, 0, 0, 0.45);
     }
-    .constract-status-name {
+    .contract-status-name {
       height: 28px;
       margin-right: 25px;
       line-height: 28px;
@@ -250,7 +250,7 @@ export default {
       font-weight: 500;
       color: rgba(0, 0, 0, 0.85);
     }
-    .constract-status__dot {
+    .contract-status__dot {
       display: inline-block;
       width: 12px;
       height: 12px;

@@ -118,10 +118,11 @@ const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 // 楼盘开发人员
 const developCommon = () => import('../components/develop/developCommon.vue')
 const developIndex = () => import('../components/develop/developIndex.vue')
-const constractCfg = () => import('../components/develop/constractCfg.vue')
-const newConstract = () => import('../components/develop/newConstract.vue')
-const constractDetail = () => import('../components/develop/constractDetail.vue')
-const constractList = () => import('../components/develop/constractList.vue')
+const contractCfg = () => import('../components/develop/contractCfg.vue')
+const newContract = () => import('../components/develop/newContract.vue')
+const nextContract = () => import('../components/develop/nextContract.vue')
+const contractDetail = () => import('../components/develop/contractDetail.vue')
+const contractList = () => import('../components/develop/contractList.vue')
 
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
@@ -415,10 +416,11 @@ function addRoutes(role, proposal, retain) {
                         {path: '/f_develop/questionAndAnswer', component: questionAndAnswer},
                         {path: '/f_develop/maintainList', component: maintainList},
                         {path: '/f_develop/messageList', component: messageList},
-                        {path: '/f_develop/constractCfg', component: constractCfg},
-                        {path: '/f_develop/newConstract', component: newConstract},
-                        {path: '/f_develop/constractDetail', component: constractDetail},
-                        {path: '/f_develop/constractList', component: constractList}
+                        {path: '/f_develop/contractCfg', component: contractCfg},
+                        {path: '/f_develop/newContract', component: newContract},
+                        {path: '/f_develop/nextContract', component: nextContract},
+                        {path: '/f_develop/contractDetail', component: contractDetail},
+                        {path: '/f_develop/contractList', component: contractList}
                     ]
                 }]
             break;

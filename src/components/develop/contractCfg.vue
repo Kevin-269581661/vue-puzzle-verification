@@ -2,12 +2,12 @@
  * @Author: penglei
  * @Date: 2021-06-09 14:45:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-11 11:09:00
- * @FilePath: /frontend/src/components/develop/constractCfg.vue
+ * @LastEditTime: 2021-06-28 09:34:01
+ * @FilePath: /frontend/src/components/develop/contractCfg.vue
 -->
 <template>
-  <div class="constract-config-page">
-    <el-breadcrumb separator="/" class="constract-crumb">
+  <div class="contract-config-page">
+    <el-breadcrumb separator="/" class="contract-crumb">
       <el-breadcrumb-item>合同管理</el-breadcrumb-item>
       <el-breadcrumb-item>合同设置</el-breadcrumb-item>
     </el-breadcrumb>
@@ -37,7 +37,7 @@ import warnCfg from "./components/warnCfg.vue"
 import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api";
 export default {
-  name: "constractCfg",
+  name: "contractCfg",
   components: {
     customFiled,
     warnCfg
@@ -60,10 +60,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.constract-crumb {
+.contract-crumb {
   margin: 12px 0;
 }
-.constract-config-page {
+.contract-config-page {
   margin: 0 60px;
   position: relative;
 }
@@ -89,7 +89,7 @@ export default {
   display: inline-block;
 }
 
-.constract-config-page .el-container {
+.contract-config-page .el-container {
   width: 100%;
   height: 100%;
   padding: 16px 32px 16px 0;
@@ -101,7 +101,7 @@ export default {
   height: 100%;
   padding: 7px 0;
 }
-.constract-config-page /deep/ .el-menu-item.is-active {
+.contract-config-page /deep/ .el-menu-item.is-active {
   font-weight: 600;
   color: rgba(24, 144, 255, 0.85);
   background-color: #e9f7fe;

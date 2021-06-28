@@ -52,11 +52,11 @@
                   width="230"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.constractType || "--" }}</span>
+                    <span>{{ scope.row.contractType || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="constractNum"
+                  prop="contractNum"
                   label="合同编号"
                   width="100"
                 >
@@ -68,7 +68,7 @@
                 >
                 </el-table-column>
                 <el-table-column
-                  prop="constractDate"
+                  prop="contractDate"
                   label="合同日期"
                   width="100"
                 >
@@ -76,7 +76,7 @@
                 <el-table-column prop="cost" label="费用" width="100">
                 </el-table-column>
                 <el-table-column
-                  prop="constractWarnExplain"
+                  prop="contractWarnExplain"
                   label="预警说明"
                   width="100"
                 >
@@ -114,7 +114,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="constractNum"
+                  prop="contractNum"
                   label="合同编号"
                   width="100"
                 >
@@ -125,11 +125,11 @@
                   width="230"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.constractType || "--" }}</span>
+                    <span>{{ scope.row.contractType || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="constractNum"
+                  prop="contractNum"
                   label="更新日期"
                   width="100"
                 >
@@ -141,7 +141,7 @@
                 >
                 </el-table-column>
                 <el-table-column
-                  prop="constractDate"
+                  prop="contractDate"
                   label="审核类型"
                   width="100"
                 >
@@ -237,12 +237,12 @@ export default {
         {
           imgurl: require("../../assets/images/gua.png"),
           title: "合同设置",
-          link: "./f_develop/constractCfg",
+          link: "./f_develop/contractCfg",
         },
         {
           imgurl: require("../../assets/images/addMedia.png"),
           title: "新建合同",
-          link: "./f_develop/newConstract",
+          link: "./f_develop/newContract",
         },
       ],
       userInfo: {
@@ -452,12 +452,12 @@ export default {
           this.contractWarningList = [
             {
               resName: "资源名称",
-              constractType: "合同类型",
-              constractNum: "合同编号",
+              contractType: "合同类型",
+              contractNum: "合同编号",
               clientCompanyName: "物业名称",
-              constractDate: "合同日期",
+              contractDate: "合同日期",
               cost: "费用",
-              constractWarnExplain: "预警说明",
+              contractWarnExplain: "预警说明",
               restDay: "3",
               restRate: "100",
             },

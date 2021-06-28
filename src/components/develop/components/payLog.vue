@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-27 19:16:35
+ * @LastEditTime: 2021-06-28 17:52:06
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -157,7 +157,7 @@
         <el-input
           type="textarea"
           placeholder="请填写不通过的理由，限制50个字"
-          v-model="disagreeTxt"
+          v-model.trim="disagreeTxt"
           resize="none"
           :autosize="{ minRows: 2 }"
           maxlength="50"
@@ -246,7 +246,7 @@
           <el-input
             type="textarea"
             placeholder="请输入备注信息"
-            v-model="payApplyForm.remark"
+            v-model.trim="payApplyForm.remark"
             size="small"
           ></el-input>
         </el-form-item>
@@ -537,7 +537,6 @@ export default {
     this.sessionData = sessFun.getSess();
   },
   mounted() {
-    this.getPayRecordList();
   },
   methods: {
     //
@@ -1219,34 +1218,6 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-@import "../../../assets/component.scss";
-/deep/ .custom-confirm-dialog {
-  border-radius: 4px;
-  .el-dialog__header {
-    padding-bottom: 6px;
-    border: none !important;
-    .el-dialog__title {
-      font-size: 16px;
-      color: rgba($color: #000, $alpha: 0.85);
-    }
-  }
-  .el-dialog__body {
-    border: none !important;
-    .content-form {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.45);
-      line-height: 24px;
-    }
-  }
-  .el-dialog__footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 24px;
-    .el-button + .el-button {
-      margin-left: 16px;
-    }
-  }
-}
 /* 付款记录 */
 /deep/ .pay-log-dialog {
   .el-timeline-item__wrapper {

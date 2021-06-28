@@ -2,8 +2,8 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-26 19:07:51
- * @FilePath: /frontend/src/components/develop/components/constractInput.vue
+ * @LastEditTime: 2021-06-28 11:42:00
+ * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
   <div>
@@ -12,10 +12,10 @@
         <div class="content_top_wrap">
           <div class="content_top_form_wrap">
             <el-form
-              :model="constractForm"
+              :model="contractForm"
               status-icon
               :rules="recRules"
-              ref="constractForm"
+              ref="contractForm"
               label-width="100px"
               class="demo-ruleForm resFrom"
             >
@@ -38,7 +38,7 @@
                 <el-col :span="6">
                   <el-form-item label="联系人" prop="contactsName">
                     <el-input
-                      v-model="constractForm.contactsName"
+                      v-model="contractForm.contactsName"
                       placeholder="请输入联系人姓名"
                       :clearable="true"
                       @blur="blurFun('contactsName')"
@@ -49,7 +49,7 @@
                 <el-col :span="6" class="el_col_box">
                   <el-form-item label="联系人手机号" prop="contactsPhone">
                     <el-input
-                      v-model="constractForm.contactsPhone"
+                      v-model="contractForm.contactsPhone"
                       placeholder="请输入联系人手机号"
                       @blur="blurFun('contactsPhone')"
                     >
@@ -61,7 +61,7 @@
                 <el-col :span="6">
                   <el-form-item label="合同开始日期" prop="startDate">
                     <el-date-picker
-                      v-model="constractForm.startDate"
+                      v-model="contractForm.startDate"
                       type="date"
                       value-format="yyyy-MM-dd"
                       :editable="false"
@@ -74,7 +74,7 @@
                 <el-col :span="6">
                   <el-form-item label="合同结束日期" prop="endDate">
                     <el-date-picker
-                      v-model="constractForm.endDate"
+                      v-model="contractForm.endDate"
                       type="date"
                       value-format="yyyy-MM-dd"
                       :editable="false"
@@ -87,7 +87,7 @@
                 <el-col :span="6">
                   <el-form-item label="合同媒体数量" prop="mediaCnt">
                     <el-input-number
-                      v-model="constractForm.mediaCnt"
+                      v-model="contractForm.mediaCnt"
                       controls-position="right"
                       placeholder="请输入合同媒体数量"
                       @blur="blurFun('mediaCnt')"
@@ -100,7 +100,7 @@
                   <el-form-item label="到期门体归属权" prop="ownership">
                     <el-select
                       placeholder="请选择到期门体归属权"
-                      v-model="constractForm.ownership"
+                      v-model="contractForm.ownership"
                       @blur="blurFun('ownership')"
                     >
                       <el-option label="我方" value="我方"></el-option>
@@ -111,7 +111,7 @@
                 <el-col :span="6">
                   <el-form-item label="合同备注" prop="remark">
                     <el-input
-                      v-model="constractForm.remark"
+                      v-model="contractForm.remark"
                       placeholder="请输入合同特别条款说明"
                     ></el-input>
                   </el-form-item>
@@ -122,7 +122,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送车场道闸" prop="freeCarGateCnt">
                     <el-input-number
-                      v-model="constractForm.freeCarGateCnt"
+                      v-model="contractForm.freeCarGateCnt"
                       controls-position="right"
                       placeholder="请输入赠送道闸数量"
                       :min="0"
@@ -133,7 +133,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送护栏门" prop="freeGuardrailDoorCnt">
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送护栏门数量"
                       :min="0"
@@ -147,7 +147,7 @@
                     prop="freeGuardrailDoorCnt"
                   >
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送门禁设备数量"
                       :min="0"
@@ -158,7 +158,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送IC卡" prop="freeGuardrailDoorCnt">
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送IC卡数量"
                       :min="0"
@@ -169,7 +169,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送ID卡" prop="freeGuardrailDoorCnt">
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送ID卡数量"
                       :min="0"
@@ -180,7 +180,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送护栏" prop="freeGuardrailDoorCnt">
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送护栏数量"
                       :min="0"
@@ -191,7 +191,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送三辊闸" prop="freeGuardrailDoorCnt">
                     <el-input-number
-                      v-model="constractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailDoorCnt"
                       controls-position="right"
                       placeholder="请输入赠送三辊闸数量"
                       :min="0"
@@ -202,7 +202,7 @@
                 <el-col :span="6">
                   <el-form-item label="赠送翼闸" prop="freeWingGateCnt">
                     <el-input-number
-                      v-model="constractForm.freeWingGateCnt"
+                      v-model="contractForm.freeWingGateCnt"
                       controls-position="right"
                       placeholder="请输入赠送翼闸数量"
                       :min="0"
@@ -216,7 +216,7 @@
                 <el-col :span="6">
                   <el-form-item label="是否有场地费" prop="isVenueFee">
                     <el-select
-                      v-model="constractForm.isVenueFee"
+                      v-model="contractForm.isVenueFee"
                       placeholder="请选择是否有场地费"
                       @blur="blurFun('isVenueFee')"
                     >
@@ -225,52 +225,54 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="6">
-                  <el-form-item label="场地费付款方式" prop="venuePayType">
-                    <el-select
-                      placeholder="请选择场地费付款方式"
-                      v-model="constractForm.venuePayType"
-                      @blur="blurFun('venuePayType')"
-                    >
-                      <el-option
-                        v-for="item in venuePayTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
+                <template v-if="contractForm.isVenueFee">
+                  <el-col :span="6">
+                    <el-form-item label="场地费付款方式" prop="venuePayType">
+                      <el-select
+                        placeholder="请选择场地费付款方式"
+                        v-model="contractForm.venuePayType"
+                        @blur="blurFun('venuePayType')"
                       >
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="场地费(元/年)" prop="venueFee">
-                    <el-input
-                      v-model="constractForm.venueFee"
-                      placeholder="请输入场地费"
-                      controls-position="right"
-                      @blur="blurFun('venueFee')"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="场地费应付日期" prop="venueDate">
-                    <el-date-picker
-                      v-model="constractForm.venueDate"
-                      type="date"
-                      value-format="yyyy-MM-dd"
-                      :editable="false"
-                      placeholder="请选择场地费应付日期"
-                      @blur="blurFun('venueDate')"
-                    >
-                    </el-date-picker>
-                  </el-form-item>
-                </el-col>
+                        <el-option
+                          v-for="item in venuePayTypeList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="场地费(元/年)" prop="venueFee">
+                      <el-input
+                        v-model="contractForm.venueFee"
+                        placeholder="请输入场地费"
+                        controls-position="right"
+                        @blur="blurFun('venueFee')"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="场地费应付日期" prop="venueDate">
+                      <el-date-picker
+                        v-model="contractForm.venueDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        :editable="false"
+                        placeholder="请选择场地费应付日期"
+                        @blur="blurFun('venueDate')"
+                      >
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                </template>
               </el-row>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
                   <el-form-item label="是否有开发费" prop="isDevFee">
                     <el-select
-                      v-model="constractForm.isDevFee"
+                      v-model="contractForm.isDevFee"
                       placeholder="请选择是否有开发费"
                       @blur="blurFun('isDevFee')"
                     >
@@ -279,52 +281,54 @@
                     ></el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="6">
-                  <el-form-item label="开发费付款方式" prop="devPayType">
-                    <el-select
-                      placeholder="请选择开发费付款方式"
-                      v-model="constractForm.devPayType"
-                      @blur="blurFun('devPayType')"
-                    >
-                      <el-option
-                        v-for="item in devPayTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
+                <template v-if="contractForm.isDevFee">
+                  <el-col :span="6">
+                    <el-form-item label="开发费付款方式" prop="devPayType">
+                      <el-select
+                        placeholder="请选择开发费付款方式"
+                        v-model="contractForm.devPayType"
+                        @blur="blurFun('devPayType')"
                       >
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="开发费(元/年)" prop="devFee">
-                    <el-input
-                      v-model="constractForm.devFee"
-                      placeholder="请输入开发费"
-                      @blur="blurFun('devFee')"
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
-                  <el-form-item label="开发费应付日期" prop="devDate">
-                    <el-date-picker
-                      v-model="constractForm.devDate"
-                      type="date"
-                      value-format="yyyy-MM-dd"
-                      :editable="false"
-                      placeholder="请选择开发费应付日期"
-                      @blur="blurFun('devDate')"
-                    >
-                    </el-date-picker>
-                  </el-form-item>
-                </el-col>
+                        <el-option
+                          v-for="item in devPayTypeList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="开发费(元/年)" prop="devFee">
+                      <el-input
+                        v-model="contractForm.devFee"
+                        placeholder="请输入开发费"
+                        @blur="blurFun('devFee')"
+                      ></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="开发费应付日期" prop="devDate">
+                      <el-date-picker
+                        v-model="contractForm.devDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        :editable="false"
+                        placeholder="请选择开发费应付日期"
+                        @blur="blurFun('devDate')"
+                      >
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                </template>
               </el-row>
               <el-form-item label="其它信息" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
                   <el-form-item label="物业规模(人数)" prop="developer">
                     <el-input
-                      v-model="constractForm.developer"
+                      v-model="contractForm.developer"
                       placeholder=""
                     ></el-input>
                   </el-form-item>
@@ -341,10 +345,9 @@
                     "
                     :headers="{
                       uid: sessionData.uID,
-                      token: sessionData.token
+                      token: sessionData.token,
                     }"
                     :data="{
-                      
                       type: 1,
                     }"
                     :file-list="fileList"
@@ -435,7 +438,7 @@ export default {
         { label: "按装门数付款", value: "按装门数付款" },
       ],
       //资源表单
-      constractForm: {
+      contractForm: {
         contactsName: "", // 联系人
         contactsPhone: "", // 联系人手机号
         startDate: "", // 合同开始日期
@@ -563,9 +566,8 @@ export default {
     },
     uploadSuccess(response, file, fileList) {
       console.log("response", response);
-      if(response.SysCode == 200200) {
+      if (response.SysCode == 200200) {
         // 继续创建
-
       } else {
         this.$message.warning(response.MSG);
       }
@@ -582,7 +584,7 @@ export default {
     blurFun(name) {
       console.log("name", name);
       // 手动触发校验
-      this.$refs.constractForm.validateField(name, (valid) => {
+      this.$refs.contractForm.validateField(name, (valid) => {
         // console.log('错误提示信息',valid)
         if (!valid) {
           console.log("校验通过");
@@ -607,23 +609,23 @@ export default {
     // 资源图片上传成功
     handleDownSuccess(res) {
       console.log("上传资源图片", res);
-      if (this.constractForm.fullViewUrl) {
-        this.constractForm.fullViewUrl =
-          this.constractForm.fullViewUrl + "," + res[0].pURL;
+      if (this.contractForm.fullViewUrl) {
+        this.contractForm.fullViewUrl =
+          this.contractForm.fullViewUrl + "," + res[0].pURL;
       } else {
-        this.constractForm.fullViewUrl = res[0].pURL;
+        this.contractForm.fullViewUrl = res[0].pURL;
       }
       console.log(
-        "this.constractForm",
-        this.constractForm,
-        this.constractForm.fullViewUrl
+        "this.contractForm",
+        this.contractForm,
+        this.contractForm.fullViewUrl
       );
     },
     // 删除原资源图片，进行重新选择
     handleRemoveR(file, fileList) {
       console.log("删除或修改了资源图片", file, fileList);
-      if (this.constractForm.fullViewUrl && file.url) {
-        let tempPicArr = this.constractForm.fullViewUrl.split(",");
+      if (this.contractForm.fullViewUrl && file.url) {
+        let tempPicArr = this.contractForm.fullViewUrl.split(",");
         let resArr = tempPicArr.filter((item) => {
           if (file.response) {
             return file.response[0].pURL != item;
@@ -631,7 +633,7 @@ export default {
             return file.url != item;
           }
         });
-        this.constractForm.fullViewUrl = resArr.join(",");
+        this.contractForm.fullViewUrl = resArr.join(",");
       }
     },
 
@@ -652,18 +654,18 @@ export default {
         "ownership",
         "mediaCnt",
         "isVenueFee",
-        "venuePayType",
-        "venueFee",
-        "venueDate",
-        "isDevFee",
-        "devPayType",
-        "devFee",
-        "devDate",
+        "isDevFee"
       ];
+      if(this.contractForm.isVenueFee) {
+        validateResArr.push(...["venuePayType", "venueFee", "venueDate"])
+      }
+      if(this.contractForm.isDevFee) {
+        validateResArr.push(...["devPayType", "devFee", "devDate"])
+      }
       let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
       for (let key of validateResArr) {
         let validate = new Promise((resolve, reject) => {
-          this.$refs.constractForm.validateField(key, (valid) => {
+          this.$refs.contractForm.validateField(key, (valid) => {
             // valid为错误信息，不为空这表示错误
             if (!valid) {
               resolve(true);
@@ -689,13 +691,13 @@ export default {
     },
     //重置表单数据
     resetForm() {
-      this.$refs["constractForm"].resetFields();
+      this.$refs["contractForm"].resetFields();
     },
     // 清除表单校验
     clearFromValidate() {
       console.log("清除表单校验------");
       let timer = setTimeout(() => {
-        this.$refs["constractForm"].clearValidate();
+        this.$refs["contractForm"].clearValidate();
         clearTimeout(timer);
       }, 500);
     },

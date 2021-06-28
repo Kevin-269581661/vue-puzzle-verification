@@ -8,11 +8,13 @@
     :close-on-press-escape="false"
     custom-class="custom-dialog-wrapper adjust-dialog"
     top="10vh"
-    center>
+    center
+  >
     <div>
       <slot name="topTip"></slot>
       <el-table
         :data="currentPagination"
+        @selection-change="selectionChange"
         style="width: 100%"
         height="450px"
         v-loading="loading"
@@ -32,12 +34,17 @@
           :align="item.align"
         >
           <template slot-scope="scope">
-            {{item.value?item.value(scope.row):scope.row[item.prop]}}
+            {{ item.value ? item.value(scope.row) : scope.row[item.prop] }}
           </template>
         </el-table-column>
-        <slot name="otherColumn" :currentPage="currentPage" :currentPageSize="currentPageSize"></slot>
+        <slot
+          name="otherColumn"
+          :currentPage="currentPage"
+          :currentPageSize="currentPageSize"
+        ></slot>
       </el-table>
       <el-pagination
+        v-if="paging"
         background
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -80,7 +87,11 @@ export default {
     },
     tableData: {
       type: Array,
-      default: () => []
+      default: () => [],
+    },
+    paging: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -91,29 +102,34 @@ export default {
       totalNum: 0,
     };
   },
-  watch: {
-  },
+  watch: {},
   computed: {
     currentPagination() {
-      this.totalNum = this.tableData.length;
-      let temp = this.tableData.slice(
-        (this.currentPage - 1) * this.currentPageSize,
-        this.currentPage * this.currentPageSize
-      )
-      return temp
+      if (this.paging) {
+        this.totalNum = this.tableData.length;
+        return this.tableData.slice(
+          (this.currentPage - 1) * this.currentPageSize,
+          this.currentPage * this.currentPageSize
+        );
+      } else {
+        return this.tableData;
+      }
     },
   },
   mounted() {},
   methods: {
+    selectionChange(selection) {
+      this.$emit("selectionChange", selection);
+    },
     handleClose() {
-      this.$emit('closeDialog')
+      this.$emit("closeDialog");
     },
     handleSizeChange(val) {
       this.currentPageSize = val;
     },
     handleCurrentChange(val) {
       this.currentPage = val;
-    }
+    },
   },
 };
 </script>
@@ -136,14 +152,15 @@ export default {
     padding: 11px;
   }
   .el-table tr {
-    th, td {
+    th,
+    td {
       height: 46px;
       .cell {
         height: 25px;
         line-height: 25px;
       }
     }
-    .el-table__expanded-cell[class*=cell] {
+    .el-table__expanded-cell[class*="cell"] {
       padding-left: 16px;
     }
   }

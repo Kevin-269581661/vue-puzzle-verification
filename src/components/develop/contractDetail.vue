@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 16:50:31
+ * @LastEditTime: 2021-06-29 23:02:19
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -14,150 +14,211 @@
     <div class="detail-common">
       <el-row>
         <el-col :span="24">
-          <span class="detail-common-title">金地荔湖城湾岸坊</span>
+          <span class="detail-common-title">{{ resName || "" }}</span>
         </el-col>
-        <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-          <label class="detail-item-label">合同类型：</label>
-          <div class="detail-item-content">首签首签首签首签首签首签首</div>
+        <el-col
+          :span="6"
+          v-for="(item, index) in resInfo"
+          :key="index"
+          class="detail-item"
+        >
+          <label class="detail-item-label">{{ `${item.label}：` }}</label>
+          <div class="detail-item-content">{{ item.value || "" }}</div>
         </el-col>
       </el-row>
     </div>
     <div class="tab-container">
-      <el-tabs v-model="activeTabName">
+      <el-tabs v-model="activeTabName" type="border-card">
         <el-tab-pane
-          label="首签 (2018年6月8日)"
-          name="first"
+          v-for="(item, index) in originDataList"
+          :key="index"
+          :label="item.originName || '待定'"
+          :name="item.poriginID + ''"
           class="custom-tabs__content"
         >
-          <el-row type="flex" justify="space-between" class="title-row">
-            <el-col :span="6" class="row-left">
-              <label class="title-label">合同类型：</label>
-              <div class="title-content">暂无</div>
-            </el-col>
-            <el-col :span="6" class="row-right">
-              <el-button type="default" size="mini">删 除</el-button>
-              <el-button type="primary" size="mini">编 辑</el-button>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="18">
-              <el-row>
-                <el-col
-                  :span="8"
-                  v-for="item in 5"
-                  :key="item"
-                  class="detail-item"
+          <el-container>
+            <el-aside width="200px">
+              <el-menu default-active="0">
+                <el-menu-item
+                  v-for="(
+                    contractItem, contractIndex
+                  ) in item.devContractDataList"
+                  :key="contractIndex"
+                  :index="contractIndex + ''"
+                  @click="currentDcID = contractItem.dcID"
                 >
-                  <label class="detail-item-label">合同类型：</label>
-                  <div class="detail-item-content">
-                    首签首签首签首签首签首签首
+                  <div slot="title">
+                    <div class="contract-name">
+                      {{ contractTypeArr[contractItem.dcType] }}
+                    </div>
+                    <div class="contract-date">
+                      {{ contractItem.createTime.split(" ")[0] }}
+                    </div>
                   </div>
-                </el-col>
-              </el-row>
-            </el-col>
-            <el-col :span="6" class="contract-status">
-              <div class="contract-status__text">状态</div>
-              <div class="contract-status-name">
-                <span class="contract-status__dot"></span>
-                正常
-              </div>
-            </el-col>
-          </el-row>
-          <!-- 基本信息 -->
-          <div class="emphasize-text">基本信息</div>
-          <el-row :gutter="46" class="content-row">
-            <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-              <label class="detail-item-label">合同类型：</label>
-              <div class="detail-item-content">首签首签首签首签首签首签首</div>
-            </el-col>
-          </el-row>
-          <!-- 安装信息 -->
-          <div class="emphasize-text">安装信息</div>
-          <el-row :gutter="46" class="content-row">
-            <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-              <label class="detail-item-label">合同类型：</label>
-              <div class="detail-item-content">首签首签首签首签首签首签首</div>
-            </el-col>
-          </el-row>
-          <!-- 费用信息 -->
-          <div class="emphasize-text">费用信息</div>
-          <el-row :gutter="46" class="content-row">
-            <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-              <label class="detail-item-label">合同类型：</label>
-              <div class="detail-item-content">首签首签首签首签首签首签首</div>
-            </el-col>
-          </el-row>
-          <!-- 其它信息 -->
-          <div class="emphasize-text">其它信息</div>
-          <el-row :gutter="46" class="content-row">
-            <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-              <label class="detail-item-label">合同类型：</label>
-              <div class="detail-item-content">首签首签首签首签首签首签首</div>
-            </el-col>
-          </el-row>
-          <!-- 附件 -->
-          <div class="emphasize-text">附件</div>
-          <el-row :gutter="46" class="content-row">
-            <el-col :span="6" v-for="item in 5" :key="item" class="detail-item">
-              <label class="detail-item-label">合同类型：</label>
-              <div class="detail-item-content">首签首签首签首签首签首签首</div>
-            </el-col>
-          </el-row>
+                </el-menu-item>
+              </el-menu>
+            </el-aside>
+            <el-main>
+              <contractDetailCommon :dcID="currentDcID"></contractDetailCommon>
+            </el-main>
+          </el-container>
         </el-tab-pane>
-        <el-tab-pane label="续签 (2021年6月20日)" name="second"
-          >配置管理</el-tab-pane
-        >
       </el-tabs>
     </div>
   </div>
 </template>
 
 <script>
-import resInput from "../common/components/resInput.vue";
-import contractInput from "./components/contractInput.vue";
-import contractFinished from "./components/contractFinished.vue";
+import api from "../../api/api.js";
+import commaFormat from "../../commonFun/commaFormat.js";
+import contractDetailCommon from "./components/contractDetailCommon.vue";
 export default {
   name: "contractDetail",
   components: {
-    resInput,
-    contractInput,
-    contractFinished,
+    contractDetailCommon,
   },
   props: {},
+  created() {},
   data() {
     return {
-      activeStep: 1,
-      componentName: "resInput",
-      resFormData: {},
-      contractFormData: {},
-      activeTabName: "first",
+      contractTypeArr: {
+        0: "首签合同",
+        1: "续签合同",
+        2: "补充协议",
+        3: "加门合同",
+      },
+      resID: this.$route.query.resID,
+      originDataList: [],
+      resName: "",
+      resInfo: [],
+      activeTabName: "",
+      detailArr: [],
+      currentDcID: "",
       // 合同状态和颜色映射
     };
   },
   watch: {},
   computed: {},
-  mounted() {},
+  mounted() {
+    // 获取该小区合同详情
+    this.getContractDetailList();
+    // this.getContractDetail({ dcID: 8 });
+  },
   methods: {
-    /* 第一步取消 */
-    cancelFirstStep() {},
-    /* 第一步进入第二部 */
-    async secondStep() {
-      let needValidFormResult = await this.$refs.needValidForm.submitForm();
-      console.log("test1", needValidFormResult);
-      if (needValidFormResult) {
-        this.activeStep = 2;
-        this.resFormData = this.$refs.needValidForm.recForm;
-        this.componentName = "contractInput";
-      }
+    getContractDetailList() {
+      api
+        .getApi("/addsp/devContract/getContractDetailList", {
+          resID: this.resID,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let detailObj = res.data.data;
+            this.resName = detailObj.resName;
+            this.resInfo = [
+              { label: "资源地址", value: detailObj.resAddress },
+              { label: "楼盘类型", value: detailObj.cType },
+              {
+                label: "楼盘价格",
+                value: commaFormat.init(Math.floor(detailObj.hPrice / 1000)),
+              },
+              { label: "小区户数", value: detailObj.hNum },
+              { label: "楼栋数量", value: detailObj.fNum },
+              { label: "入住年份", value: detailObj.chDay },
+              { label: "总合同媒体数", value: detailObj.totalMediaCnt },
+              { label: "总安装媒体数", value: detailObj.totalInstallMediaCnt },
+              {
+                label: "总付款金额",
+                value: commaFormat.init(Math.floor(detailObj.payTotal / 1000)),
+              },
+            ];
+            this.originDataList = detailObj.originDataList || [];
+            if (this.originDataList.length > 0) {
+              this.activeTabName = this.originDataList[0].poriginID + "";
+              if (this.originDataList[0])
+                this.currentDcID =
+                  this.originDataList[0].devContractDataList[0].dcID;
+            }
+
+            this.$message.success(res.data.MSG || "");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
     },
-    async thirdStep() {
-      let needValidFormResult = await this.$refs.needValidForm.submitForm();
-      console.log("test1", needValidFormResult);
-      if (needValidFormResult) {
-        this.activeStep = 3;
-        this.contractFormData = this.$refs.needValidForm.contractForm;
-        this.componentName = "contractFinished";
-      }
+    // 获取合同详情
+    getContractDetail(contractItem) {
+      api
+        .getApi("/addsp/devContract/getContractDetail", {
+          dcID: contractItem.dcID,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let tempObj = res.data.data || {};
+            this.detailArr = [
+              {
+                title: "基本信息",
+                content: [
+                  { label: "资源名称", value: tempObj.resName },
+                  { label: "物业公司", value: tempObj.pmcName },
+                  { label: "联系人", value: tempObj.contactsName },
+                  { label: "联系人手机号", value: tempObj.contactsPhone },
+                  { label: "合同开始日期", value: tempObj.startDate },
+                  { label: "合同结束日期", value: tempObj.endDate },
+                  { label: "门体归属权", value: tempObj.ownership },
+                  { label: "合同媒体数", value: tempObj.mediaCnt },
+                ],
+              },
+              {
+                title: "安装信息",
+                content: [
+                  { label: "赠送车场道闸", value: tempObj.freeCarGateCnt },
+                  { label: "赠送护栏门", value: tempObj.freeGuardrailDoorCnt },
+                  {
+                    label: "赠送门禁设备",
+                    value: tempObj.freeAccessControlCnt,
+                  },
+                  { label: "赠送IC卡", value: tempObj.freeICCardCnt },
+                  { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
+                  // {label: "赠送护栏", value: tempObj.freeGuardrailDoorCnt},
+                  { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
+                  { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
+                ],
+              },
+              {
+                title: "费用信息",
+                content: [
+                  {
+                    label: "是否有场地费",
+                    value: tempObj.isVenueFee ? "是" : "否",
+                  },
+                  { label: "场地费付款方式", value: tempObj.venuePayType },
+                  { label: "场地费", value: tempObj.venueFee },
+                  { label: "场地费应付日期", value: tempObj.venueDate },
+                  {
+                    label: "是否有开发费",
+                    value: tempObj.isDevFee ? "是" : "否",
+                  },
+                  { label: "开发费付款方式", value: tempObj.devPayType },
+                  { label: "开发费", value: tempObj.devFee },
+                  { label: "开发费应付日期", value: tempObj.devDate },
+                ],
+              },
+              {
+                title: "其它信息",
+                content: [{ label: "物业规模(人数)", value: tempObj.resName }],
+              },
+            ];
+            this.fileList = [
+              {
+                fileUrl: "http://localhost:8080/static/images/noticeBanner.png",
+                fileName: "noticeBanner.png",
+              },
+            ];
+            this.$message.success(res.data.MSG || "");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
     },
   },
 };
@@ -170,36 +231,32 @@ export default {
 .contract-detail-page {
   margin: 0 60px;
   position: relative;
-  .title-row {
-    margin: 8px 24px;
-    .title-label,
-    .title-content {
-      white-space: nowrap;
-    }
-    .row-left {
-      display: flex;
-      align-items: center;
-      height: 32px;
-      font-size: 20px;
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.85);
-      line-height: 32px;
-    }
-    .row-right {
-      text-align: right;
-    }
+  .el-menu {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 7px 0;
   }
-  .content-row {
-    padding: 0 23px;
-  }
-  .emphasize-text {
-    padding: 10px 16px;
-    margin: 24px 12px 8px;
-    line-height: 22px;
-    font-size: 16px;
-    font-weight: 600;
-    background: #f5f6fa;
-    color: #333333;
+  .el-menu-item {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    .contract-name {
+      line-height: 20px;
+      font-size: 14px;
+    }
+    .contract-date {
+      margin-top: 2px;
+      line-height: 18px;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.45);
+    }
+    .is-active {
+      font-weight: 600;
+      color: #1890ff;
+      background-color: #e9f7fe;
+      border-right: 2px solid #1890ff;
+    }
   }
   .detail-item {
     display: flex;
@@ -208,7 +265,6 @@ export default {
     font-size: 14px;
     padding: 8px 24px;
     .detail-item-label {
-      width: 70px;
       white-space: nowrap;
       color: rgba(0, 0, 0, 0.85);
     }
@@ -231,38 +287,15 @@ export default {
       color: rgba(0, 0, 0, 0.85);
     }
   }
-  .contract-status {
-    margin-top: 8px;
-    text-align: right;
-    .contract-status__text {
-      height: 22px;
-      margin-right: 25px;
-      line-height: 22px;
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.45);
-    }
-    .contract-status-name {
-      height: 28px;
-      margin-right: 25px;
-      line-height: 28px;
-      font-size: 20px;
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.85);
-    }
-    .contract-status__dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 6px;
-      background: linear-gradient(180deg, #faad14 0%, #ffaa00 100%);
-    }
-  }
   .tab-container {
     margin-top: 16px;
-    height: 974px;
+    min-height: 900px;
     background: #ffffff;
     border: 1px solid #e6e7e9;
+    .el-tabs--border-card {
+      border: 0;
+      box-shadow: unset;
+    }
     .custom-tabs__content {
       margin: 0 20px;
     }

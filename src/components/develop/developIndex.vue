@@ -280,7 +280,7 @@
       </template>
     </el-dialog>
     <!-- 合同审核 -->
-    <contract-review-dialog :contractReviewVisible="contractReviewVisible"></contract-review-dialog>
+    <contract-review-dialog :contractReviewVisible.sync="contractReviewVisible"></contract-review-dialog>
   </div>
 </template>
 

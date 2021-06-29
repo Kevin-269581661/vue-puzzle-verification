@@ -2,16 +2,17 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 19:54:59
+ * @LastEditTime: 2021-06-29 20:22:17
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
   <div>
     <el-dialog
       title="合同审核"
-      :visible.sync="contractReviewVisible"
       width="1230px"
+      :visible.sync="contractReviewVisible"
       :close-on-click-modal="false"
+      :before-close="handleClose"
       custom-class="custom-dialog-wrapper contract-detail-page"
       center
     >
@@ -197,7 +198,7 @@ export default {
       }
       api.postApi("/addsp/devContract/changeDCState", params).then((res) => {
         if (res.data.SysCode == 200200) {
-          this.contractReviewVisible = false;
+          this.$emit('update:contractReviewVisible', false);
           this.$message.success(res.data.MSG || "");
         } else {
           this.$message.warning(res.data.MSG || "");
@@ -213,6 +214,9 @@ export default {
       a.click();
       $(a).remove();
     },
+    handleClose(done) {
+      this.$emit("update:contractReviewVisible", false);
+    }
   },
 };
 </script>

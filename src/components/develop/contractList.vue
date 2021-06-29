@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 12:06:53
+ * @LastEditTime: 2021-06-29 21:12:00
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -41,8 +41,21 @@
                     <el-option label="资源名称" value="resName"></el-option>
                     <el-option label="物业名称" value="pmcName"></el-option>
                     <!-- “业务员”只有开发总监与资产人员可筛选 -->
-                    <el-option label="业务员" value="contactsName"></el-option>
-                    <el-option label="合同编号" value="contractNo"></el-option>
+                    <template
+                      v-if="
+                        sessionData.uType == 'DEV_DIRECTOR' ||
+                        sessionData.uType == 'DEV_ASSET'
+                      "
+                    >
+                      <el-option
+                        label="业务员"
+                        value="contactsName"
+                      ></el-option>
+                      <el-option
+                        label="合同编号"
+                        value="contractNo"
+                      ></el-option>
+                    </template>
                   </el-select>
                 </el-input>
               </el-form-item>
@@ -141,7 +154,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="dcType"
+              prop="originName"
               label="合同线"
               width="160"
               show-overflow-tooltip
@@ -689,6 +702,7 @@ export default {
     // 跳转到合同详情页面
     ToDetail(row) {
       console.log("合同详情");
+      this.$router.push({ path: './contractDetail', query: { resID: row.resID }})
     },
     // 跳转到编辑页面
     ToEdit(row) {},

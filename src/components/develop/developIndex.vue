@@ -35,7 +35,21 @@
         <index-custom-card>
           <template slot="head"> 合同预警 </template>
           <template slot="content">
-            <div style="padding: 24px;">
+            <div style="padding: 24px">
+              <div class="table-top-tip">
+                <i class="el-icon-info" style="color: #1890ff"></i>
+                <h4>
+                  <span>
+                    近
+                    <span class="tip-active">{{ maxDayDiffer }}</span>
+                    天内，待处理的预警合同共有
+                    <span class="tip-active">{{
+                      contractWarningList.length
+                    }}</span>
+                    份
+                  </span>
+                </h4>
+              </div>
               <el-table :data="contractWarningList" border max-height="500">
                 <el-table-column
                   show-overflow-tooltip
@@ -48,46 +62,64 @@
                 </el-table-column>
                 <el-table-column
                   show-overflow-tooltip
-                  label="合同类型"
+                  label="合同线"
                   width="230"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.contractType || "--" }}</span>
+                    <span>{{ scope.row.originName || "--" }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="contractNo" label="合同编号" width="100">
+                </el-table-column>
+                <el-table-column prop="pmcName" label="物业名称" width="100">
+                </el-table-column>
+                <el-table-column prop="date" label="合同日期" width="100">
+                </el-table-column>
+                <el-table-column prop="fee" label="费用" width="100">
+                  <template slot-scope="scope">
+                    {{ scope.row.warnType > 0 ? scope.row.fee : "--" }}
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="contractNum"
-                  label="合同编号"
-                  width="100"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="clientCompanyName"
-                  label="物业名称"
-                  width="100"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="contractDate"
-                  label="合同日期"
-                  width="100"
-                >
-                </el-table-column>
-                <el-table-column prop="cost" label="费用" width="100">
-                </el-table-column>
-                <el-table-column
-                  prop="contractWarnExplain"
+                  prop="warnType"
                   label="预警说明"
                   width="100"
+                  show-overflow-tooltip
                 >
-                </el-table-column>
-                <el-table-column prop="price" label="预警倒计时">
                   <template slot-scope="scope">
+                    {{ warnTypeMap[scope.row.warnType] }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="dayDiffer" label="预警倒计时">
+                  <template slot-scope="scope">
+                    <el-popover
+                      v-if="scope.row.dayDiffer < 0"
+                      placement="top"
+                      trigger="hover"
+                      min-width="80"
+                      popper-class="warn-pop"
+                    >
+                      <span
+                        @click="
+                          ignoreVisible = true;
+                          currentIgnore = scope.row;
+                        "
+                        >忽略</span
+                      >
+                      <mini-progress
+                        slot="reference"
+                        :target="0"
+                        :percentage="scope.row.rate * 100"
+                        :value="scope.row.dayDiffer"
+                        :height="'20px'"
+                        color="rgba(24, 144, 255, 1)"
+                      ></mini-progress>
+                    </el-popover>
                     <mini-progress
-                      slot="reference"
+                      v-else
                       :target="0"
-                      :percentage="scope.row.restRate"
-                      :value="scope.row.restDay"
+                      :percentage="scope.row.restRate * 100"
+                      :value="scope.row.dayDiffer"
                       :height="'20px'"
                       color="rgba(24, 144, 255, 1)"
                     ></mini-progress>
@@ -102,8 +134,8 @@
         <index-custom-card>
           <template slot="head">合同动态</template>
           <template slot="content">
-            <div style="padding: 24px;">
-              <el-table :data="contractWarningList" border max-height="500">
+            <div style="padding: 24px">
+              <el-table :data="contractNews" border max-height="500">
                 <el-table-column
                   show-overflow-tooltip
                   label="资源名称"
@@ -114,43 +146,48 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="contractNum"
+                  prop="contractNo"
                   label="合同编号"
-                  width="100"
+                  width="130"
+                  show-overflow-tooltip
                 >
                 </el-table-column>
-                <el-table-column
-                  show-overflow-tooltip
-                  label="创建日期"
-                  width="230"
-                >
+                <el-table-column prop="dcType" label="合同类型" width="120">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.contractType || "--" }}</span>
+                    <span>{{ contractTypeArr[scope.row.dcType] || "" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="contractNum"
+                  prop="updateTime"
+                  label="创建日期"
+                  width="130"
+                  show-overflow-tooltip
+                >
+                </el-table-column>
+                <el-table-column
+                  prop="updateTime"
                   label="更新日期"
-                  width="100"
+                  width="130"
+                  show-overflow-tooltip
                 >
                 </el-table-column>
-                <el-table-column
-                  prop="clientCompanyName"
-                  label="物业名称"
-                  width="100"
-                >
+                <el-table-column prop="logType" label="审批类型" width="120">
+                  <template slot-scope="scope">
+                    {{ scope.row.logType == 2 ? "付款审批" : "合同审批" }}
+                  </template>
                 </el-table-column>
-                <el-table-column
-                  prop="contractDate"
-                  label="审核类型"
-                  width="100"
-                >
-                </el-table-column>
-                <el-table-column prop="cost" label="最新动态" width="100">
+                <el-table-column prop="cost" label="最新动态" width="120">
+                  <template slot-scope="scope">
+                    {{ statusMap[scope.row.logType][scope.row.state] || "--" }}
+                  </template>
                 </el-table-column>
                 <el-table-column prop="price" label="操作">
                   <template slot-scope="scope">
-                    <span>查看</span>
+                    <span
+                      class="table-row__btn"
+                      @click="routeContractDetail(scope.row)"
+                      >查看</span
+                    >
                   </template>
                 </el-table-column>
               </el-table>
@@ -181,27 +218,69 @@
             </div>
           </template>
           <template slot="content">
-            <ul class="item-list">
-              <li
-                class="item"
-                v-for="(rankItem, index) in rankListArr"
-                :key="index"
-              >
-                <span :title="rankItem.realName" class="label">{{
-                  rankItem.realName
-                }}</span>
-                <mini-progress
-                  :percentage="rankItem.finshProcess"
-                  :value="rankItem.totalPrice | moneyFormat('¥')"
-                  :height="'20px'"
-                  :color="'rgba(24, 144, 255, 1)'"
-                ></mini-progress>
-              </li>
-            </ul>
+            <el-row :gutter="0">
+              <el-col :span="12">
+                <ul class="item-list">
+                  <li
+                    class="item"
+                    v-for="(rankItem, index) in newContractRank"
+                    :key="index"
+                  >
+                    <span :title="rankItem.realName" class="label">{{
+                      rankItem.realName
+                    }}</span>
+                    <mini-progress
+                      :percentage="rankItem.rate"
+                      :value="rankItem.total"
+                      :height="'20px'"
+                      :color="'rgba(24, 144, 255, 1)'"
+                    ></mini-progress>
+                  </li>
+                </ul>
+              </el-col>
+              <el-col :span="12">
+                <ul class="item-list">
+                  <li
+                    class="item"
+                    v-for="(rankItem, index) in newContractRank"
+                    :key="index"
+                  >
+                    <span :title="rankItem.realName" class="label">{{
+                      rankItem.realName
+                    }}</span>
+                    <mini-progress
+                      :percentage="rankItem.rate"
+                      :value="rankItem.total"
+                      :height="'20px'"
+                      :color="'rgba(24, 144, 255, 1)'"
+                    ></mini-progress>
+                  </li>
+                </ul>
+              </el-col>
+            </el-row>
           </template>
         </index-custom-card>
       </el-row>
     </div>
+    <!-- 是否忽略该预警信息 -->
+    <el-dialog
+      :visible.sync="ignoreVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否忽略该预警信息</div>
+      <div class="message-content">确定后，该预警信息将不在显示在首页</div>
+
+      <template slot="footer">
+        <el-button @click="ignoreVisible = false">取 消</el-button>
+        <el-button type="primary" @click="createWarnIgnore">确 定</el-button>
+      </template>
+    </el-dialog>
+    <!-- 合同审核 -->
+    <contract-review-dialog :contractReviewVisible="contractReviewVisible"></contract-review-dialog>
   </div>
 </template>
 
@@ -218,6 +297,7 @@ import messageAndApp from "../common/components/messageAndApp.vue";
 import chartCard from "../common/components/chartCard.vue";
 import indexCustomCard from "../common/components/indexCustomCard.vue";
 import miniProgress from "../common/components/miniProgress.vue";
+import contractReviewDialog from "./components/contractReviewDialog.vue";
 export default {
   name: "developIndex",
   components: {
@@ -228,6 +308,7 @@ export default {
     chartCard,
     indexCustomCard,
     miniProgress,
+    contractReviewDialog
   },
   data() {
     return {
@@ -253,7 +334,7 @@ export default {
       appCenter: "",
       cardDataOther1: {
         title: "本月新开发合同",
-        tip: "",
+        tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "新增合同数量",
         compare: 0,
@@ -262,41 +343,67 @@ export default {
       },
       cardDataOther2: {
         title: "本月续签合同",
-        tip: "",
+        tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "续签数量",
         compare: 0,
         trendLabel: "月环比",
         data: [],
-        formatter: (text, item, index) => {
-          if (index % 2 === 1 && index > 0 && index < 12) {
-            return text.substr(5);
-          }
-        },
       },
       cardDataOther3: {
         title: "本月完成安装资源",
-        tip: "",
+        tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "安装数量",
         compare: 0,
         trendLabel: "月环比",
         data: [],
-        formatter: (text, item, index) => {
-          if (index % 2 === 1 && index > 0 && index < 12) {
-            return text.substr(5);
-          }
-        },
       },
       // 合同预警列表
       contractWarningList: [],
-      // 业绩排行
-      rankListArr: [],
-      // 媒体概况 媒体和点位切换
-      isPoint: false,
-      // 媒介预锁概况表格
-      preLockArr: [],
+      maxDayDiffer: 0,
+      // 合同预警类型
+      warnTypeMap: {
+        0: "合同即将到期",
+        1: "场地费待支付",
+        2: "开发费待支",
+      },
+      contractTypeArr: {
+        0: "首签",
+        1: "续签",
+        2: "补充",
+        3: "加门",
+      },
+      // 合同动态列表
+      contractNews: [],
+      // 业绩排行(新签)
+      newContractRank: [],
+      // 业绩排行(续签)
+      renewContractRank: [],
       dateInterval: 1,
+      ignoreVisible: false,
+      currentIgnore: null,
+      statusMap: {
+        1: {
+          "-1": "审核不通过",
+          0: "待审核",
+          1: "待签约",
+          2: "待安装",
+          3: "待拆除",
+          4: "正常",
+          5: "合同到期",
+          6: "强制终止",
+        },
+        2: {
+          "-1": "审核不通过",
+          0: "待审核",
+          1: "代付款",
+          2: "待开票",
+          3: "已完成",
+        },
+      },
+      // 合同审核弹框
+      contractReviewVisible: true
     };
   },
   mounted() {
@@ -306,7 +413,10 @@ export default {
     }
     this.appCenter = appCenter;
     this.uploadEvent(1);
-    this.allReportApi();
+    this.getCardData();
+    this.getContractWarningList();
+    this.getContractNews();
+    this.getRankList();
   },
   methods: {
     getSession() {
@@ -393,83 +503,238 @@ export default {
           .then((res) => {});
       });
     },
-    getRankList(field, val) {
-      // 日期区间切换等
-      if (field) {
-        this[field] = val;
-      }
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        limit: 10,
-        dateType: this.dateInterval,
-      };
-      if (this.isBehind == false) {
-        params.orderType = 1; // 领先，倒序传1
-      }
+    // 获取顶部卡片数据
+    getCardData() {
       api
-        .getApi(this.apiVar.report + "/homepage/getSMAchievementReport", params)
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            let temp = res.data.data;
-            this.rankListArr = temp.userList.filter(
-              (item) => item.totalPrice > 0
-            );
-          } else {
-            this.$message.warning(res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
-        .finally((_) => {});
-    },
-    // 首页报表接口
-    allReportApi() {
-      this.getContractWarningList();
-    },
-    // 合同预警
-    getContractWarningList() {
-      api
-        .getApi(this.apiVar.report + "/homepage/getSMCustomerActiveReport", {
+        .getApi("/report/devContract/getCardData", {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
-            this.contractWarningList = res.data.data.customerPriceList.slice(
-              0,
-              10
-            );
+            let temp = res.data.data || {};
+            if (Array.isArray(temp.weekDataList)) {
+              let weekDataList = temp.weekDataList,
+                tempcCardData1 = [],
+                tempcCardData2 = [],
+                tempcCardData3 = [];
+              weekDataList.forEach((item, index) => {
+                let commonObj = {
+                  dateStr: `第${index + 1}周`,
+                  week: item.weekStartDate + "~" + item.weekEndDate,
+                };
+                tempcCardData1.push({
+                  ...commonObj,
+                  value: item.weekNewCCnt || 0,
+                });
+                tempcCardData2.push({
+                  ...commonObj,
+                  value: item.weekRenewCCnt || 0,
+                });
+                tempcCardData3.push({
+                  ...commonObj,
+                  value: item.weekAddDoorCCnt || 0,
+                });
+              });
+              Object.assign(this.cardDataOther1, {
+                value: temp.monthNewCCnt,
+                data: tempcCardData1,
+                compare: temp.newIncrRate,
+              });
+              Object.assign(this.cardDataOther2, {
+                value: temp.monthRenewCCnt,
+                data: tempcCardData2,
+                compare: temp.renewIncrRate,
+              });
+              Object.assign(this.cardDataOther3, {
+                value: temp.monthAddDoorCCnt,
+                data: tempcCardData3,
+                compare: temp.installInctRate,
+              });
+            }
           } else {
             this.$message.warning(res.data.MSG);
           }
         })
         .catch((err) => {
           console.log("err", err);
-        })
-        .finally((_) => {
-          this.contractWarningList = [
-            {
-              resName: "资源名称",
-              contractType: "合同类型",
-              contractNum: "合同编号",
-              clientCompanyName: "物业名称",
-              contractDate: "合同日期",
-              cost: "费用",
-              contractWarnExplain: "预警说明",
-              restDay: "3",
-              restRate: "100",
-            },
-          ];
         });
+    },
+    // 该账号内忽略该合同预警
+    createWarnIgnore() {
+      api
+        .postApi("/addsp/devContractWarn/createWarnIgnore", {
+          warnType: row.warnType,
+          tokedcIDn: row.dcID,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.ignoreVisible = false;
+          } else {
+            this.$message.warning(res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    },
+    // 合同预警
+    getContractWarningList() {
+      api
+        .getApi("/report/devContract/getWarnData", {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.contractWarningList = res.data.data || [];
+            this.maxDayDiffer = this.contractWarningList.reduce((pre, cur) => {
+              if (cur.dayDiffer > pre) {
+                return cur.dayDiffer;
+              } else {
+                return pre;
+              }
+            }, 1);
+          } else {
+            this.$message.warning(res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.error("err", err);
+        });
+    },
+    // 合同动态列表
+    getContractNews() {
+      api
+        .getApi("/report/devContract/getContractNews", {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.contractNews = res.data.data || [];
+            console.log("contractNews--", this.contractNews);
+          } else {
+            this.$message.warning(res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.error("err", err);
+        });
+    },
+    // 获取业绩排行
+    getRankList(field = "dateInterval", val = 1) {
+      // 日期区间切换等
+      if (field) {
+        this[field] = val;
+      }
+      let startDate = "",
+        endDate = "",
+        tempDate = new Date(),
+        year = tempDate.getFullYear(),
+        month = tempDate.getMonth(),
+        day = tempDate.getDay();
+      function zero(num) {
+        if (num < 10) return `0${num}`;
+        else return num;
+      }
+      switch (val) {
+        case 1:
+          startDate = `${year}-01-01`;
+          endDate = `${year}-12-31`;
+          break;
+        case 2:
+          startDate = `${year}-${zero(month + 1)}-01`;
+          endDate = `${year}-${zero(month + 1)}-${zero(day)}`;
+          break;
+        case 3:
+          startDate = `${year}-${zero(month)}-01`;
+          endDate = `${year}-${zero(month)}-${zero(
+            new Date(year, month, 0).getDate()
+          )}`;
+          break;
+      }
+      api
+        .getApi("/report/devContract/getDevRank", {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+          startDate,
+          endDate,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200500) {
+            let temp = res.data.data || {};
+            this.newContractRank = temp.newContractRank || [
+              { realName: "realname", total: 3, rate: 89},
+              { realName: "realname", total: 7, rate: 1000 },
+              { realName: "realname", total: 8, rate: 60 },
+              { realName: "realname", total: 7, rate: 20 },
+            ];
+            this.renewContractRank = temp.renewContractRank;
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        })
+        .catch((err) => {
+          console.error("getDevRank", err);
+        });
+    },
+    /* 跳转至合同详情 */
+    routeContractDetail(row) {
+      this.$router.push("./contractDetail");
     },
   },
 };
 </script>
-
+<style>
+.warn-pop.el-popover {
+  min-width: 50px;
+  text-align: center;
+}
+</style>
 <style scoped lang="scss">
-/** 新增*/
+@import "../../assets/component.scss";
+/deep/ .custom-confirm-dialog {
+  border-radius: 4px;
+  .el-dialog__header {
+    padding: 24px 24px 8px;
+    border: none !important;
+    .el-dialog__title {
+      font-size: 16px;
+      color: rgba($color: #000, $alpha: 0.85);
+    }
+    .el-icon-question {
+      margin-right: 16px;
+      color: #fa8c16;
+      &:before {
+        font-size: 21px;
+      }
+    }
+  }
+  .el-dialog__body {
+    border: none !important;
+    .message-content {
+      padding-left: 40px;
+      line-height: 22px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      & .active {
+        color: #1890ff;
+        font-weight: 600;
+      }
+    }
+  }
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+}
+
 .quesition-icon {
   width: 16px;
   height: 16px;
@@ -508,6 +773,39 @@ export default {
     border: 1px solid #e6e7e9;
   }
 }
+.table-top-tip {
+  display: flex;
+  align-items: baseline;
+  margin: 0 0 16px;
+  padding: 8px;
+  border: 1px solid #bae7ff;
+  border-radius: 4px;
+  background: #e6f7ff;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 22px;
+  .el-icon-info {
+    color: #1890ff;
+    margin-right: 4px;
+  }
+  h4 {
+    font-size: 14px;
+    display: inline-block;
+  }
+  .tip-active {
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #1890ff;
+    &.right {
+      margin-left: auto;
+    }
+    &.warn {
+      color: rgba(250, 102, 20, 1);
+    }
+  }
+}
 .index-row {
   display: flex;
   align-items: flex-start;
@@ -515,6 +813,10 @@ export default {
   margin-bottom: 24px;
   & > div {
     flex: 1;
+  }
+  .table-row__btn {
+    cursor: pointer;
+    color: #1890ff;
   }
   .date-interval {
     margin: 0 0 0 auto;
@@ -554,29 +856,6 @@ export default {
         color: rgba(0, 0, 0, 0.65);
       }
     }
-  }
-}
-.bottom-box {
-  position: absolute;
-  height: 48px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0 24px 32px;
-  line-height: 48px;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  background: #f8f8f8;
-  border-radius: 2px;
-  font-size: 16px;
-  font-family: PingFangSC-Regular, PingFang SC;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.85);
-  .avtive {
-    font-weight: 600;
-    color: #1890ff;
   }
 }
 

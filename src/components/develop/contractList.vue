@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 23:11:12
+ * @LastEditTime: 2021-06-29 12:06:53
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -56,8 +56,9 @@
                   class="search-row-item"
                   :options="areaArr"
                   :clearable="true"
+                  :show-all-levels="true"
                   filterable
-                  :props="{ checkStrictly: true }"
+                  :props="{ checkStrictly: false }"
                 ></el-cascader>
               </el-form-item>
             </el-col>
@@ -152,6 +153,9 @@
               min-width="160"
               show-overflow-tooltip
             >
+              <template slot-scope="scope">
+                <span>{{ contractTypeArr[scope.row.dcType] || "" }}</span>
+              </template>
             </el-table-column>
             <el-table-column
               prop="startDate"
@@ -299,9 +303,31 @@
         </div>
       </div>
     </div>
-    <!-- 合同续签 -->
+    <!-- 重新提交审核 -->
     <el-dialog
-      title="是否删除该合同？"
+      :visible.sync="resubmitVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否重新提交审核？</div>
+      <div class="message-content">
+        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[currentContract.dcType] || ""}合同`
+        }}</span>
+        将被重新提交审核
+      </div>
+
+      <template slot="footer">
+        <el-button @click="resubmitVisible = false">取 消</el-button>
+        <el-button type="primary" @click="resubmitFun">确 定</el-button>
+      </template>
+    </el-dialog>
+    <!-- 合同删除 -->
+    <el-dialog
       :visible.sync="deleteContractVisible"
       width="388px"
       top="22vh"
@@ -309,14 +335,18 @@
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper custom-confirm-dialog"
     >
+      <div slot="title"><i class="el-icon-question"></i>是否删除该合同？</div>
       <div class="message-content">
-        确定后，<span class="active">保利心语花园二期</span> 的
-        <span class="active">首签合同</span> 将被重新提交审核
+        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[currentContract.dcType] || ""}合同`
+        }}</span>
+        将被删除
       </div>
 
       <template slot="footer">
         <el-button @click="deleteContractVisible = false">取 消</el-button>
-        <el-button type="primary" @click="deleteContractVisible = false">确 定</el-button>
+        <el-button type="primary" @click="deleteContractFun">确 定</el-button>
       </template>
     </el-dialog>
     <!-- 关联媒体至合同 -->
@@ -332,6 +362,8 @@
       :payLogDialogVisible.sync="payLogDialogVisible"
       :payApplyVisible.sync="payApplyVisible"
     ></pay-log>
+    <!-- 完成签约 -->
+    <sign-contract :signVisible="signVisible"></sign-contract>
   </div>
 </template>
 
@@ -347,6 +379,7 @@ import timeFormat from "../../commonFun/timeFormat.js";
 import PayLog from "./components/payLog.vue";
 import NextContractDialog from "./components/nextContractDialog.vue";
 import AddMediaToContract from "./components/addMediaToContract.vue";
+import SignContract from "./components/signContract";
 
 export default {
   name: "projectList",
@@ -355,6 +388,7 @@ export default {
     PayLog,
     NextContractDialog,
     AddMediaToContract,
+    SignContract,
   },
 
   data() {
@@ -492,11 +526,11 @@ export default {
       //加载中
       loading: false,
       // 录入媒体弹框
-      correlateMediaMode: true,
+      correlateMediaMode: false,
       // 续签合同
       mergeVisible: false,
       // 付款记录
-      payLogDialogVisible: false,
+      payLogDialogVisible: true,
       // 付款申请
       payApplyVisible: false,
       // 后台定义合同状态
@@ -514,7 +548,11 @@ export default {
       // 表格数据
       contractList: [],
       isDisable: false,
-      deleteContractVisible: false
+      currentContract: {},
+      deleteContractVisible: false,
+      signVisible: false,
+      resubmitVisible: false,
+      signVisible: false,
     };
   },
   created() {
@@ -523,11 +561,44 @@ export default {
     this.getCity();
   },
   methods: {
+    // 合同删除
+    deleteContractFun() {
+      return;
+      api
+        .postApi("/addsp/devContract/delete", {
+          dcID: this.currentContract.dcID,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.$message.success(res.data.MSG || "合同删除成功！");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
+    // 重新提交
+    resubmitFun() {
+      return;
+      api
+        .postApi("/addsp/devContract/changeDCState", {
+          dcID: this.currentContract.dcID,
+          passState: 1,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.$message.success(res.data.MSG || "重新提交成功！");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
     // 合同操作
     handleContract(row, operation) {
+      this.currentContract = row;
       switch (operation) {
         case "编辑":
-          this.$router.push("./newContract");
+          this.signVisible = true;
+          // this.$router.push("./newContract");
           break;
         case "删除":
           this.deleteContractVisible = true;
@@ -549,6 +620,7 @@ export default {
         case "审核":
           break;
         case "完成签约":
+          this.signVisible = true;
           break;
         case "合同终止":
           break;
@@ -612,7 +684,7 @@ export default {
 
     // 新建合同
     routeCreateContract() {
-      this.$router.push("./nextContract");
+      this.$router.push("./newContract");
     },
     // 跳转到合同详情页面
     ToDetail(row) {
@@ -623,6 +695,8 @@ export default {
 
     // 搜索数据格式化
     searchFormat() {
+      let rangeDate = this.searchInfo[this.searchInfo.rangeDateType],
+        rangeDateType = this.searchInfo.rangeDateType;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -630,11 +704,14 @@ export default {
         pagesize: this.pageSize,
         [this.searchInfo.keywordType]:
           this.searchInfo[this.searchInfo.keywordType],
-        [this.searchInfo.rangeDateType]:
-          this.searchInfo[this.searchInfo.rangeDateType],
-        districtId: this.searchInfo.districtId,
+        districtId:
+          this.searchInfo.districtId[this.searchInfo.districtId.length - 1],
         isVenueFee: this.searchInfo.isVenueFee,
       };
+      if (Array.isArray(rangeDate) && rangeDate.length == 2) {
+        params[rangeDateType + "Min"] = rangeDate[0];
+        params[rangeDateType + "Max"] = rangeDate[1];
+      }
 
       api.getApi("/addsp/devContract/list", params).then((res) => {
         if (res.data.SysCode == 200200) {
@@ -708,11 +785,18 @@ export default {
 /deep/ .custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
-    padding-bottom: 6px;
+    padding: 24px 24px 8px;
     border: none !important;
     .el-dialog__title {
       font-size: 16px;
       color: rgba($color: #000, $alpha: 0.85);
+    }
+    .el-icon-question {
+      margin-right: 16px;
+      color: #fa8c16;
+      &:before {
+        font-size: 21px;
+      }
     }
   }
   .el-dialog__body {
@@ -721,18 +805,36 @@ export default {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.45);
       line-height: 24px;
+      /* 完成签约和付款 */
+      .el-form-item {
+        &:last-child {
+          margin-bottom: 0;
+        }
+        .el-form-item__label {
+          padding: 0;
+          line-height: 32px;
+        }
+        .el-form-item__content {
+          line-height: 32px;
+        }
+        .el-date-editor {
+          width: 100%;
+        }
+      }
     }
     /* 重新提交和删除合同 */
     .message-content {
+      padding-left: 40px;
       line-height: 22px;
       font-size: 14px;
       font-weight: 400;
       color: rgba(0, 0, 0, 0.65);
       & .active {
-        color: #1890FF;
+        color: #1890ff;
         font-weight: 600;
       }
     }
+
     .el-select {
       width: 100%;
     }

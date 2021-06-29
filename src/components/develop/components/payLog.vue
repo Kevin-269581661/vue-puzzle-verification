@@ -2,14 +2,14 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 17:52:06
+ * @LastEditTime: 2021-06-29 17:40:04
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
   <div>
     <el-dialog
       title="付款记录"
-      :visible.sync="dialogVisible"
+      :visible.sync="payLogDialogVisible"
       width="418px"
       :before-close="handleClose"
       :close-on-click-modal="false"
@@ -56,6 +56,7 @@
                       icon="el-icon-warning"
                       icon-color="#FAAD14"
                       title="确定通过吗？"
+                      @confirm="agreeFun"
                     >
                       <el-dropdown-item slot="reference">通过</el-dropdown-item>
                     </el-popconfirm>
@@ -284,11 +285,20 @@
       </el-form>
       <span slot="footer">
         <div slot="footer" class="dialog-footer">
-          <el-button @click="resetPayApply(()=>{$emit('update:payApplyVisible', false)})">取 消</el-button>
+          <el-button
+            @click="
+              resetPayApply(() => {
+                $emit('update:payApplyVisible', false);
+              })
+            "
+            >取 消</el-button
+          >
           <el-button type="primary" @click="createPayRecord">确 定</el-button>
         </div>
       </span>
     </el-dialog>
+    <!-- 完成付款 -->
+    <finish-pay :finishPayVisible="finishPayVisible"></finish-pay>
   </div>
 </template>
 
@@ -297,10 +307,11 @@ import api from "../../../api/api";
 // 时间格式化
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "../../../components/common/components/dialogTable.vue";
+import finishPay from "./finishPay.vue";
 export default {
   name: "paylog",
   props: {
-    dialogVisible: {
+    payLogDialogVisible: {
       type: Boolean,
       default: () => false,
     },
@@ -335,6 +346,7 @@ export default {
   },
   components: {
     dialogTable,
+    finishPay,
   },
   data() {
     return {
@@ -360,184 +372,22 @@ export default {
       },
       payApplyFileList: [],
       sessionData: null,
-      matched: false,
-      trafficAndmType: {
-        excludeTrafficStateList: [],
-        excludeMTypeList: [],
-      },
       loading: false,
-      showDialogTable: false,
-      showFailDialogTable: false,
-      showAsignPointTableData: false,
-      intentionInfo: {
-        customerBudget: 0,
-        customerDemand: "",
-        pdEndDate: "",
-        pdStartDate: "",
-        planAdSpaceCount: 0,
-        planResCount: 0,
-      },
-      formDataObj: {
-        matchRange: "1",
-        pointDemand: [],
-        aFaceRate: 50,
-        aFaceRateChecked: false,
-        apExclude: "",
-        adLimits: [],
-        excludeTrafficStateList: [],
-        excludeMTypeList: [],
-      },
-      tipObj: {
-        selectLab1: 0,
-        selectLab2: 0,
-        selectLab3: 0,
-      },
-      intentionTableData: [],
-      intentionTableColumn: [
-        {
-          label: "资源",
-          prop: "resName",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "城市",
-          prop: "city",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "区域",
-          prop: "region",
-          minWidth: "100px",
-          tip: true,
-        },
-
-        {
-          label: "媒体数量(门)",
-          prop: "resMediaCount",
-          width: "120px",
-          align: "right",
-        },
-        {
-          label: "计划投放数量(面)",
-          prop: "planPdNum",
-          width: "160px",
-          align: "right",
-        },
-      ],
-      failTableData: [],
-      failTableColumn: [
-        {
-          label: "资源",
-          prop: "resName",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "城市",
-          prop: "city",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "区域",
-          prop: "region",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "排期",
-          prop: "period",
-          minWidth: "160px",
-          value: (row) => `${row.pdStartDate}~${row.pdEndDate}`,
-          tip: true,
-        },
-        {
-          label: "总媒体数(门)",
-          prop: "resMediaCount",
-          width: "120px",
-          align: "right",
-        },
-        {
-          label: "计划投放点位(面)",
-          prop: "planPdNum",
-          width: "160px",
-          align: "right",
-        },
-        {
-          label: "已配点位(面)",
-          prop: "actualPdNum",
-          width: "160px",
-          align: "right",
-        },
-        {
-          label: "失败原因",
-          prop: "failReasonDesc",
-          width: "160px",
-        },
-      ],
-      asignPointTableLoading: false,
-      asignPointTableData: [],
-      asignPointTableColumn: [
-        {
-          label: "资源",
-          prop: "resName",
-          minWidth: "160px",
-          tip: true,
-        },
-        {
-          label: "城市",
-          prop: "city",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "区域",
-          prop: "region",
-          minWidth: "100px",
-          tip: true,
-        },
-        {
-          label: "排期",
-          prop: "schedules",
-          minWidth: "180px",
-          tip: true,
-        },
-        {
-          label: "已配/计划",
-          prop: "mediaNum",
-          width: "100px",
-          value: (row) => `${row.actualPdNum}/${row.planPdNum}`,
-          align: "right",
-        },
-        {
-          label: "媒体名称",
-          prop: "mTitle",
-          width: "100px",
-        },
-        {
-          label: "投放面",
-          prop: "asLab",
-          width: "80px",
-          value: (row) => `${row.asLab}面`,
-        },
-      ],
+      finishPayVisible: false,
     };
   },
   watch: {
-    dialogVisible(val) {
-      val && this.getPayRecordList();
-    },
-    showMatchResult(val) {
-      val && (this.matched = true) && this.getSuccessPoint();
-    },
+    payLogDialogVisible: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        newVal && this.getPayRecordList();
+      },
+    }
   },
   created() {
     this.sessionData = sessFun.getSess();
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     //
     fileChange(file, fileList) {
@@ -590,7 +440,7 @@ export default {
                 if (res.data.SysCode == 200200) {
                 } else {
                   this.$message.warning(res.data.MSG || "");
-                  this.$emit('update:payApplyVisible', false);
+                  this.$emit("update:payApplyVisible", false);
                 }
               });
           } else {
@@ -599,6 +449,10 @@ export default {
           }
         });
       }
+    },
+    //
+    agreeFun() {
+      this.finishPayVisible = true;
     },
     // 付款申请不通过确认框
     disagreeFun() {
@@ -680,406 +534,7 @@ export default {
       oInput.style.display = "none";
       this.$message.success("复制成功");
     },
-    // 获取该用户下的配点次数
-    getMatchCnt() {
-      this.loading = true;
-      return new Promise((resolve) => {
-        api
-          .getApi("/addsp/match/getMatchCnt?apID=" + this.apID)
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-              // this.matchCnt = res.data.data||10
-              this.$emit("update:matchCnt", res.data.data || 10);
-              this.loading = false;
-              resolve(true);
-            } else {
-              sessFun.messageFun("warning", res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    },
-    // 重新配点
-    rematchPoint() {
-      this.$confirm(
-        this.sessionData.uType == "BD"
-          ? "本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？"
-          : "重新配点会清除原配点结果信息",
-        "是否重新配点？",
-        {
-          confirmButtonText: "确 定",
-          dangerouslyUseHTMLString: true,
-          type: "warning",
-          iconClass: "el-icon-question",
-          showCancelButton: true,
-          closeOnClickModal: false,
-          closeOnPressEscape: false,
-          showClose: false,
-          customClass: "messageBoxCustom messageBoxCustomWarning",
-        }
-      )
-        .then((_) => {
-          this.matched = false;
-          this.showAsignPointTableData = false;
-          this.$emit("openAddPoint");
-        })
-        .catch(() => {
-          sessFun.messageFun("info", "已取消");
-        });
-    },
-    // 配点结果添加到购物车
-    merge2ShopList() {
-      this.$emit("merge2ShopList", this.asignPointTableData);
-      this.showAsignPointTableData = false;
-      this.$emit("closeAddPoint");
-    },
-    // 销售保存配点结果到方案中
-    BDSaveMatchToPlan() {
-      this.$confirm(
-        "即将以本次配点结果覆盖方案中现有的点位，原保存的点位将被移除！",
-        "是否保存配点？",
-        {
-          confirmButtonText: "确 定",
-          dangerouslyUseHTMLString: true,
-          type: "warning",
-          iconClass: "el-icon-question",
-          showCancelButton: true,
-          closeOnClickModal: false,
-          closeOnPressEscape: false,
-          showClose: false,
-          customClass: "messageBoxCustom messageBoxCustomWarning",
-        }
-      )
-        .then((_) => {
-          this.$emit("merge2ShopList", this.asignPointTableData);
-          this.showAsignPointTableData = false;
-          this.$emit("closeAddPoint");
-        })
-        .catch(() => {
-          sessFun.messageFun("info", "已取消保存");
-        });
-    },
-    // 获取意向信息
-    getIntentionInfo() {
-      this.loading = true;
-      return new Promise((resolve) => {
-        api
-          .getApi("/addsp/proposal/getSummarize?apID=" + this.apID)
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-              resolve(true);
-              this.loading = false;
-              Object.assign(this.intentionInfo, res.data.data);
-            } else {
-              resolve(false);
-              sessFun.messageFun("warning", res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            resolve(false);
-            console.log(err);
-          });
-      });
-    },
-    // 意向小区列表
-    getIntentionList() {
-      api
-        .getApi("/addsp/proposal/getProposalResInfo?apID=" + this.apID)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.showDialogTable = true;
-            this.intentionTableData = res.data.data;
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // 配点
-    matchRes() {
-      let params = {};
-      if (this.formDataObj.aFaceRateChecked && this.sessionData.uType == "MD") {
-        params.aFaceRate = this.formDataObj.aFaceRate || 0;
-      } else if (this.sessionData.uType == "BD") {
-        params.aFaceRate = this.formDataObj.aFaceRate || 50;
-      }
-      this.formDataObj.pointDemand.forEach((item) => {
-        params[item] = true;
-      });
-      console.log("formDataObj", this.formDataObj, params);
-      new Promise((resolve, reject) => {
-        api
-          .postApi_json("/addsp/match/matchRes", {
-            ...params,
-            apID: this.apID,
-            isSingleMediaChoose: params.isSingleMediaChoose || false,
-            apExclude: this.formDataObj.apExclude,
-            adLimits: this.formDataObj.adLimits,
-            isSingleConnectChoose: params.isSingleConnectChoose || false,
-            isSpaceTimeLongFirst: params.isSpaceTimeLongFirst || false,
-            allMatch: this.formDataObj.matchRange * 1,
-            excludeMTypeList: this.formDataObj.excludeMTypeList,
-            excludeTrafficStateList: this.formDataObj.excludeTrafficStateList,
-          })
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-              resolve(res.data.data);
-              // 获取销售已配点次数
-              this.sessionData.uType == "BD" && this.getMatchCnt();
-            } else {
-              sessFun.messageFun("warning", res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }).then((matchRes) => {
-        this.reasonVisible = false;
-        if (matchRes) {
-          this.$confirm(
-            `计划投放<span style='color: #1890ff; font-weight: 600;'> ${
-              matchRes.planAdSpaceCount
-            } </span>个点位，成功<span style='color: #1890ff; font-weight: 600;'> ${
-              matchRes.faceCount
-            } </span>个，失败<span style='color: rgba(250, 173, 20, 1); font-weight: 600;'> ${
-              matchRes.planAdSpaceCount - matchRes.faceCount
-            } </span>个`,
-            "恭喜您，配点成功！",
-            {
-              confirmButtonText: "查看详情",
-              dangerouslyUseHTMLString: true,
-              type: "success",
-              showCancelButton: false,
-              closeOnClickModal: false,
-              closeOnPressEscape: false,
-              showClose: false,
-              customClass: "messageBoxCustom",
-            }
-          ).then(() => {
-            this.getSuccessPoint(matchRes);
-          });
-        } else if (matchRes === null) {
-          this.$confirm(`所选配点条件匹配不到任何点位`, "配点失败！", {
-            confirmButtonText: "关闭",
-            dangerouslyUseHTMLString: true,
-            type: "warning",
-            iconClass: "el-icon-question",
-            showCancelButton: false,
-            closeOnClickModal: false,
-            closeOnPressEscape: false,
-            showClose: false,
-            customClass: "messageBoxCustom messageBoxCustomWarning",
-          }).then(() => {
-            // this.dialogMatchRangeFormVisible = false
-          });
-        }
-      });
-    },
-    // 查询配点结果概要
-    getMatchSummary(apID) {
-      return new Promise((resolve) => {
-        api
-          .getApi("/addsp/match/matchSummary?apID=" + apID)
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-              Object.assign(this.tipObj, res.data.data);
-              if (Array.isArray(this.tipObj.proposalCountGroup)) {
-                this.tipObj.proposalCountGroup.forEach((item) => {
-                  if (item.resPdNum == 1) {
-                    this.tipObj.selectLab1 = item.resCount || 0;
-                  } else if (item.resPdNum == 2) {
-                    this.tipObj.selectLab2 = item.resCount || 0;
-                  } else if (item.resPdNum == 3) {
-                    this.tipObj.selectLab3 = item.resCount || 0;
-                  }
-                });
-              }
-              resolve(true);
-            } else {
-              sessFun.messageFun("warning", res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    },
-    // 查询配点成功结果
-    async getSuccessPoint(matchRes) {
-      if (matchRes) {
-        // 弹框中选择配点
-        Object.assign(this.tipObj, matchRes);
-        if (Array.isArray(this.tipObj.proposalCountGroup)) {
-          this.tipObj.proposalCountGroup.forEach((item) => {
-            if (item.resPdNum == 1) {
-              this.tipObj.selectLab1 = item.resCount || 0;
-            } else if (item.resPdNum == 2) {
-              this.tipObj.selectLab2 = item.resCount || 0;
-            } else if (item.resPdNum == 3) {
-              this.tipObj.selectLab3 = item.resCount || 0;
-            }
-          });
-        }
-      } else {
-        // 查看已配点方案的配点详情
-        // this.intentionInfo.resPdNumGroup = this.tipObj.proposalCountGroup||[]
-        // this.intentionInfo.planResCount = this.tipObj.planResCount||0
-      }
-      this.showAsignPointTableData = true;
-      this.asignPointTableLoading = true;
-      api
-        .getApi("/addsp/match/successProposal?apID=" + this.apID)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.asignPointTableData = res.data.data || [];
-            let getAdPrice = (data) => {
-              if (!data.asPrice) return 0;
-              if (data.mVehicle === "道闸") {
-                return data.asPrice / 100;
-              } else {
-                if (data.asPrice) {
-                  return data.asPrice / 700;
-                } else {
-                  if (data.grade === "A") {
-                    return 3080 / 7;
-                  } else if (data.grade === "B") {
-                    return 2380 / 7;
-                  } else if (data.grade === "C") {
-                    return 1800 / 7;
-                  } else {
-                    return 1900 / 7;
-                  }
-                }
-              }
-            };
-            for (let i = 0; i < this.asignPointTableData.length; i++) {
-              let item = this.asignPointTableData[i];
-              item.asIDs = item.asID;
-              item.asLabs = item.asLab;
-              item.buildPrice = item.hPrice / 100;
-              item.buildType = item.cType;
-              item.origin = item.region;
-              item.mediaName = item.mTitle;
-              item.mediaLevel = item.grade || "";
-              item.adLimit = item.notPush;
-              item.mapCenter = item.mapCenter || "--"; // 地图中心点名称
-              item.reference = "";
-              item.rid = item.cityCode;
-              item.address = item.address || "";
-              item.dNum = item.dNum || ""; // 出入口数
-              item.houseNum = item.hNum;
-              item.buildNum = item.fNum;
-              item.liveYear = item.chDay;
-              item.A_B = item.asLab;
-              item.checkBox = {
-                A: item.asLab == "A" ? true : false,
-                B: item.asLab == "B" ? true : false,
-                ABC: item.asLab == "ABC" ? true : false,
-              };
-              item.box = { A: false, B: false };
-              item.connData = {
-                connectResName: "",
-                connectMedia: "",
-                commentWorkRes: "",
-                commentworkMedia: "",
-              };
-              item.connID = item.connID || ""; // 连排门id
-              item.industryInfos = item.industryInfos || []; // 同行业资源回避
-              item.adPrice = getAdPrice(item); // 点位价格
-              item.mediaLevel = item.mediaLevel; // 媒体等级
-              item.asrID = item.asrID; // 所属公司id
-              item.asName = item.asName; // 所属公司名称
-              item.remark = item.remark;
-              item.trafficState = item.trafficState || "";
-              item.electrifyState = item.electrifyState || "";
-            }
-            this.asignPointTableLoading = false;
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // 查询配点失败结果
-    getFailRes() {
-      api
-        .getApi("/addsp/match/failProposal?apID=" + this.apID)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.failTableData = res.data.data || [];
-            this.showFailDialogTable = true;
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // 下载配点结果（成功和失败）
-    downLoadMatchResult() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      api.getApi_file("/addsp/match/export?apID=" + this.apID).then((res) => {
-        let blob = new Blob([res.data], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        let downloadElement = document.createElement("a");
-        let href = window.URL.createObjectURL(blob); //创建下载的链接
-        downloadElement.href = href;
-        downloadElement.download = decodeURIComponent(
-          res.headers["content-disposition"]
-        ).split("=")[1]; //下载后文件名
-        document.body.appendChild(downloadElement);
-        downloadElement.click(); //点击下载
-        document.body.removeChild(downloadElement); //下载完成移除元素
-        window.URL.revokeObjectURL(href); //释放掉blob对象
-        loading.close();
-      });
-    },
-    // 下载意向小区
-    export2Excel() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = [
-          "资源",
-          "城市",
-          "区域",
-          "排期",
-          "媒体数量（门）",
-          "计划投放数量（面）",
-        ];
-        const filterVal = [
-          "resName",
-          "city",
-          "region",
-          "period",
-          "resMediaCount",
-          "planPdNum",
-        ];
-        const data = this.formatJson(filterVal, this.intentionTableData);
-        export_json_to_excel(tHeader, data, "意向小区");
-        loading.close();
-      });
-    },
+
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) =>
@@ -1088,52 +543,7 @@ export default {
       );
     },
     handleClose(done) {
-      this.$emit("update:dialogVisible", false);
-    },
-    closeAsignPointTable() {
-      if (this.matched) {
-        this.showAsignPointTableData = false;
-        this.handleClose();
-        return;
-      }
-      this.$confirm("关闭后，所配点位将被清除", "是否取消配点？", {
-        confirmButtonText: "确 定",
-        dangerouslyUseHTMLString: true,
-        type: "warning",
-        iconClass: "el-icon-question",
-        showCancelButton: true,
-        closeOnClickModal: false,
-        closeOnPressEscape: false,
-        showClose: false,
-        customClass: "messageBoxCustom messageBoxCustomWarning",
-      })
-        .then((_) => {
-          this.showAsignPointTableData = false;
-          this.handleClose();
-        })
-        .catch(() => {
-          sessFun.messageFun("info", "已取消");
-        });
-    },
-    deleteAsignItem(scope, currentPage, currentPageSize) {
-      this.asignPointTableLoading = true;
-      api
-        .getApi("/addsp/match/removeSpace?id=" + scope.row.id)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.getMatchSummary(this.apID);
-            this.asignPointTableData.splice(
-              (currentPage - 1) * currentPageSize + scope.$index * 1,
-              1
-            );
-            this.asignPointTableLoading = false;
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.$emit("update:payLogDialogVisible", false);
     },
   },
 };
@@ -1413,15 +823,5 @@ export default {
     vertical-align: middle;
     background: rgba(0, 0, 0, 0.1);
   }
-}
-.merge-btn {
-  padding: 0 10px;
-}
-.cell-ellipsis {
-  min-width: 30px;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 23:26:45
+ * @LastEditTime: 2021-06-30 09:21:01
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -30,6 +30,7 @@
       </el-col>
     </el-row>
     <el-table
+      v-if="mediaRelList.length>0"
       :data="mediaRelList"
       border
       style="width: 100%"
@@ -322,25 +323,8 @@ export default {
                 fileName: "noticeBanner.png",
               },
             ];
-            this.mediaRelList = [
-              {
-                createTime: "2021-06-29T04:05:32.094Z",
-                createUser: 0,
-                dcID: 0,
-                id: 0,
-                installDate: "string",
-                installUserName: "string",
-                isFinish: 0,
-                isNew: 0,
-                mID: 0,
-                mState: 0,
-                mTitle: "string",
-                mType: "string",
-                state: 0,
-              },
-            ];
+            this.mediaRelList = tempObj.mediaRelList || [];
             this.getContractOperation();
-            this.$message.success(res.data.MSG || "");
           } else {
             this.$message.warning(res.data.MSG || "");
           }

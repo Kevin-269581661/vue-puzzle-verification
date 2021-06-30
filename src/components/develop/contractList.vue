@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 21:12:00
+ * @LastEditTime: 2021-06-30 15:30:52
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -138,6 +138,7 @@
             v-loading="loading"
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
+            @filter-change="filterChange"
           >
             <el-table-column
               prop="resName"
@@ -199,6 +200,7 @@
             </el-table-column>
 
             <el-table-column
+              column-key="isVenueFee"
               prop="venueFee"
               label="场地费"
               width="120"
@@ -206,7 +208,6 @@
                 { text: '无场地费', value: 0 },
                 { text: '有场地费', value: 1 },
               ]"
-              :filter-method="filterIsVenueFeeFun"
               :filter-multiple="false"
             >
             </el-table-column>
@@ -258,7 +259,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              class="tac"
+              column-key="dcState"
               prop="dcState"
               label="合同状态"
               min-width="160"
@@ -382,13 +383,9 @@
 
 <script>
 import api from "../../api/api.js";
-// 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
-// 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
-// import noSearchResult from "./components/noSearchResult.vue";
-import timeFormat from "../../commonFun/timeFormat.js";
 import PayLog from "./components/payLog.vue";
 import NextContractDialog from "./components/nextContractDialog.vue";
 import AddMediaToContract from "./components/addMediaToContract.vue";
@@ -397,7 +394,6 @@ import SignContract from "./components/signContract";
 export default {
   name: "projectList",
   components: {
-    // noSearchResult,
     PayLog,
     NextContractDialog,
     AddMediaToContract,
@@ -522,12 +518,13 @@ export default {
         contactsName: "",
         contractNo: "",
         districtId: "",
-        isVenueFee: "",
+        isVenueFee: [],
         startDate: "",
         endDate: "",
         signDate: "",
         payDate: "",
         createDate: "",
+        dcState: [],
       },
       // 分页信息
       pageSize: 10,
@@ -543,7 +540,7 @@ export default {
       // 续签合同
       mergeVisible: false,
       // 付款记录
-      payLogDialogVisible: true,
+      payLogDialogVisible: false,
       // 付款申请
       payApplyVisible: false,
       // 后台定义合同状态
@@ -557,7 +554,6 @@ export default {
         5: "合同到期",
         6: "强制终止",
       },
-      isReset: true,
       // 表格数据
       contractList: [],
       isDisable: false,
@@ -570,8 +566,8 @@ export default {
   },
   created() {
     this.getSessionData();
-    this.searchFormat();
     this.getCity();
+    this.searchFormat();
   },
   methods: {
     // 合同删除
@@ -610,8 +606,7 @@ export default {
       this.currentContract = row;
       switch (operation) {
         case "编辑":
-          this.signVisible = true;
-          // this.$router.push("./newContract");
+          this.$router.push({path: "./editContract", query: {resID: row.resID, dcID: row.id}});
           break;
         case "删除":
           this.deleteContractVisible = true;
@@ -655,19 +650,13 @@ export default {
     // 切换页码
     changePage(page) {
       this.currPage = page;
-      console.log("page----", page);
       this.searchFormat();
     },
     // 每页条数切换
     sizeChange(val) {
-      console.log("val----", val);
       this.pageSize = val;
       this.currPage = 1;
       this.searchFormat();
-    },
-
-    filterIsVenueFeeFun(value, row) {
-      return (this.searchInfo.isVenueFee = value);
     },
     // 获取session数据
     getSessionData() {
@@ -702,7 +691,10 @@ export default {
     // 跳转到合同详情页面
     ToDetail(row) {
       console.log("合同详情");
-      this.$router.push({ path: './contractDetail', query: { resID: row.resID }})
+      this.$router.push({
+        path: "./contractDetail",
+        query: { resID: row.resID },
+      });
     },
     // 跳转到编辑页面
     ToEdit(row) {},
@@ -720,7 +712,8 @@ export default {
           this.searchInfo[this.searchInfo.keywordType],
         districtId:
           this.searchInfo.districtId[this.searchInfo.districtId.length - 1],
-        isVenueFee: this.searchInfo.isVenueFee,
+        isVenueFee: this.searchInfo.isVenueFee.join(","),
+        dcState: this.searchInfo.dcState.join(",")
       };
       if (Array.isArray(rangeDate) && rangeDate.length == 2) {
         params[rangeDateType + "Min"] = rangeDate[0];
@@ -741,14 +734,7 @@ export default {
     // 重置
     contractSearchForm() {
       this.$refs["contractSearchForm"].resetFields();
-      return;
-
       this.currPage = 1;
-      this.isReset = false;
-      let timer = setTimeout(() => {
-        this.isReset = true;
-        clearTimeout(timer);
-      }, 1000);
       this.searchFormat();
     },
 
@@ -790,6 +776,23 @@ export default {
           console.log(err);
         });
     },
+    // 表头部分筛选
+    filterChange(filterObj) {
+      for (const key in filterObj) {
+        if (Object.hasOwnProperty.call(filterObj, key)) {
+          switch (key) {
+            case "dcState":
+              this.searchInfo.dcState = filterObj[key];
+              break;
+            case "isVenueFee":
+              this.searchInfo.isVenueFee = filterObj[key];
+          }
+        }
+      }
+      this.currPage = 1;
+      this.searchFormat();
+    },
+    // 导出该账户内所有合同
     exportContract() {},
   },
 };
@@ -866,10 +869,6 @@ a {
   color: #108ee9;
 }
 
-/*筛选*/
-/deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
-  margin-left: 0;
-}
 .search-row {
   /deep/ .el-form-item {
     display: flex;
@@ -890,11 +889,6 @@ a {
   .search-row-item {
     width: 100%;
   }
-}
-
-/deep/ .el-checkbox__label {
-  font-size: 10px;
-  color: #8a8a8a;
 }
 
 /*下拉搜索框*/

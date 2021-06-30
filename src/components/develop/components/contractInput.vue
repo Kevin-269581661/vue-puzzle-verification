@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 11:42:00
+ * @LastEditTime: 2021-06-30 18:35:38
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -551,11 +551,37 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() {
+    if (this.$route.path.indexOf("editContract") !== -1) {
+      this.getContractDetail((this.$route.query || {}).dcID);
+    }
+  },
   mounted: function () {
     this.customPermission = this.sessionData.customPermission;
   },
   methods: {
+    // 编辑时获取合同详情
+    getContractDetail(dcID = "") {
+      if (!dcID) return;
+      api
+        .getApi("/addsp/devContract/getContractDetail", {
+          dcID: dcID,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.contractForm = res.data.data || {};
+            this.fileList = [
+              {
+                fileUrl: "http://localhost:8080/static/images/noticeBanner.png",
+                fileName: "noticeBanner.png",
+              },
+            ];
+            this.$message.success(res.data.MSG || "");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
     //
     fileChange(file, fileList) {
       console.log("fileChange--", file);
@@ -654,13 +680,13 @@ export default {
         "ownership",
         "mediaCnt",
         "isVenueFee",
-        "isDevFee"
+        "isDevFee",
       ];
-      if(this.contractForm.isVenueFee) {
-        validateResArr.push(...["venuePayType", "venueFee", "venueDate"])
+      if (this.contractForm.isVenueFee) {
+        validateResArr.push(...["venuePayType", "venueFee", "venueDate"]);
       }
-      if(this.contractForm.isDevFee) {
-        validateResArr.push(...["devPayType", "devFee", "devDate"])
+      if (this.contractForm.isDevFee) {
+        validateResArr.push(...["devPayType", "devFee", "devDate"]);
       }
       let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
       for (let key of validateResArr) {

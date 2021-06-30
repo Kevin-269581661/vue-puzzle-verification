@@ -120,6 +120,7 @@ const developCommon = () => import('../components/develop/developCommon.vue')
 const developIndex = () => import('../components/develop/developIndex.vue')
 const contractCfg = () => import('../components/develop/contractCfg.vue')
 const newContract = () => import('../components/develop/newContract.vue')
+const editContract = () => import('../components/develop/editContract.vue')
 const nextContract = () => import('../components/develop/nextContract.vue')
 const contractDetail = () => import('../components/develop/contractDetail.vue')
 const contractList = () => import('../components/develop/contractList.vue')
@@ -418,6 +419,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/f_develop/messageList', component: messageList},
                         {path: '/f_develop/contractCfg', component: contractCfg},
                         {path: '/f_develop/newContract', component: newContract},
+                        {path: '/f_develop/editContract', component: editContract},
                         {path: '/f_develop/nextContract', component: nextContract},
                         {path: '/f_develop/contractDetail', component: contractDetail},
                         {path: '/f_develop/contractList', component: contractList}

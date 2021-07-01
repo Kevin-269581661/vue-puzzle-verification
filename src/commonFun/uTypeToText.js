@@ -9,9 +9,7 @@ uTypeToText.toText = function (uType) {
 		'BD': '销售',
 		'AD': '广告主',
 		'EP': '工程人员',
-		'DEV': '开发人员',
-		'DEV_ASSET': '资产人员',
-		'DEV_DIRECTOR': '开发总监'
+		'DEV': '开发人员'
 	}[uType]
 }
 

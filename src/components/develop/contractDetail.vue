@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 23:02:19
+ * @LastEditTime: 2021-07-01 10:24:48
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -87,7 +87,7 @@ export default {
         2: "补充协议",
         3: "加门合同",
       },
-      resID: this.$route.query.resID,
+      resID: this.$route.query.resID||"",
       originDataList: [],
       resName: "",
       resInfo: [],
@@ -102,7 +102,6 @@ export default {
   mounted() {
     // 获取该小区合同详情
     this.getContractDetailList();
-    // this.getContractDetail({ dcID: 8 });
   },
   methods: {
     getContractDetailList() {

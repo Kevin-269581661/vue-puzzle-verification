@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-30 15:30:52
+ * @LastEditTime: 2021-07-01 16:14:55
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -43,8 +43,8 @@
                     <!-- “业务员”只有开发总监与资产人员可筛选 -->
                     <template
                       v-if="
-                        sessionData.uType == 'DEV_DIRECTOR' ||
-                        sessionData.uType == 'DEV_ASSET'
+                        sessionData.devManageLevel == 1 ||
+                        sessionData.devManageLevel == 2
                       "
                     >
                       <el-option
@@ -403,11 +403,7 @@ export default {
   data() {
     return {
       // 角色
-      roleArr: {
-        DEV: "0",
-        DEV_ASSET: "1",
-        DEV_DIRECTOR: "2",
-      },
+      roleArr: ["0", "1", "2"],
       // 合同类型：0-首签  1-续约 2-加门 3-补充
       contractTypeArr: {
         0: "首签",
@@ -626,6 +622,7 @@ export default {
         case "付款记录":
           break;
         case "审核":
+          
           break;
         case "完成签约":
           this.signVisible = true;
@@ -636,7 +633,7 @@ export default {
     },
     // 获取当前列表操作权限
     getContractOperation(row) {
-      let tempNo = `${this.roleArr[this.sessionData.uType]}${row.dcType}${
+      let tempNo = `${this.roleArr[this.sessionData.devManageLevel]}${row.dcType}${
           row.dcState
         }`,
         tempArr = [];

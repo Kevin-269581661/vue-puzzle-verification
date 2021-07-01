@@ -2,8 +2,8 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 09:37:38
- * @FilePath: /frontend/src/components/develop/components/constractFinished.vue
+ * @LastEditTime: 2021-07-01 14:11:19
+ * @FilePath: /frontend/src/components/develop/components/contractFinished.vue
 -->
 <template>
   <div class="createSuccess">
@@ -15,7 +15,7 @@
     <div class="planPanel">
       <ul>
         <li><em>资源名称：</em>{{ resFormData.resName || "" }}</li>
-        <li><em>物业公司：</em>{{ resFormData.pmc || "" }}</li>
+        <li><em>物业公司：</em>{{ resFormData.pmcName || "" }}</li>
         <li>
           <em>合同期限：</em
           >{{

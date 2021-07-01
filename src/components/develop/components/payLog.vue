@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 17:40:04
+ * @LastEditTime: 2021-07-01 14:21:26
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -389,12 +389,10 @@ export default {
   },
   mounted() {},
   methods: {
-    //
     fileChange(file, fileList) {
       this.payApplyFileList = fileList;
       console.log("fileChange--", file);
     },
-    //
     fileProgress(event, file, fileList) {
       console.log("event--=-", event, fileList);
     },

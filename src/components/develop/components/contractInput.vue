@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-30 18:35:38
+ * @LastEditTime: 2021-07-01 15:00:27
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -85,12 +85,12 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="合同媒体数量" prop="mediaCnt">
+                  <el-form-item label="合同媒体数量" prop="mediaNewCnt">
                     <el-input-number
-                      v-model="contractForm.mediaCnt"
+                      v-model="contractForm.mediaNewCnt"
                       controls-position="right"
                       placeholder="请输入合同媒体数量"
-                      @blur="blurFun('mediaCnt')"
+                      @blur="blurFun('mediaNewCnt')"
                       :min="1"
                       :max="9999"
                     ></el-input-number>
@@ -144,10 +144,10 @@
                 <el-col :span="6">
                   <el-form-item
                     label="赠送门禁设备"
-                    prop="freeGuardrailDoorCnt"
+                    prop="freeAccessControlCnt"
                   >
                     <el-input-number
-                      v-model="contractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeAccessControlCnt"
                       controls-position="right"
                       placeholder="请输入赠送门禁设备数量"
                       :min="0"
@@ -156,9 +156,9 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="赠送IC卡" prop="freeGuardrailDoorCnt">
+                  <el-form-item label="赠送IC卡" prop="freeICCardCnt">
                     <el-input-number
-                      v-model="contractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeICCardCnt"
                       controls-position="right"
                       placeholder="请输入赠送IC卡数量"
                       :min="0"
@@ -167,9 +167,9 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="赠送ID卡" prop="freeGuardrailDoorCnt">
+                  <el-form-item label="赠送ID卡" prop="freeIDCardCnt">
                     <el-input-number
-                      v-model="contractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeIDCardCnt"
                       controls-position="right"
                       placeholder="请输入赠送ID卡数量"
                       :min="0"
@@ -178,9 +178,9 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="赠送护栏" prop="freeGuardrailDoorCnt">
+                  <el-form-item label="赠送护栏" prop="freeGuardrailCnt">
                     <el-input-number
-                      v-model="contractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeGuardrailCnt"
                       controls-position="right"
                       placeholder="请输入赠送护栏数量"
                       :min="0"
@@ -189,9 +189,9 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="赠送三辊闸" prop="freeGuardrailDoorCnt">
+                  <el-form-item label="赠送三辊闸" prop="freeTRGateCnt">
                     <el-input-number
-                      v-model="contractForm.freeGuardrailDoorCnt"
+                      v-model="contractForm.freeTRGateCnt"
                       controls-position="right"
                       placeholder="请输入赠送三辊闸数量"
                       :min="0"
@@ -244,7 +244,14 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
-                    <el-form-item label="场地费(元/年)" prop="venueFee">
+                    <el-form-item
+                      :label="
+                        contractForm.venuePayType == '固定费用付款'
+                          ? '场地费(元/年)'
+                          : '场地费(元/门/年)'
+                      "
+                      prop="venueFee"
+                    >
                       <el-input
                         v-model="contractForm.venueFee"
                         placeholder="请输入场地费"
@@ -258,7 +265,8 @@
                       <el-date-picker
                         v-model="contractForm.venueDate"
                         type="date"
-                        value-format="yyyy-MM-dd"
+                        format="MM 月 dd 日"
+                        value-format="MM-dd"
                         :editable="false"
                         placeholder="请选择场地费应付日期"
                         @blur="blurFun('venueDate')"
@@ -300,7 +308,14 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
-                    <el-form-item label="开发费(元/年)" prop="devFee">
+                    <el-form-item
+                      :label="
+                        contractForm.devPayType == '按年支付固定费用'
+                          ? '开发费(元/年)'
+                          : '开发费(元)'
+                      "
+                      prop="devFee"
+                    >
                       <el-input
                         v-model="contractForm.devFee"
                         placeholder="请输入开发费"
@@ -308,12 +323,16 @@
                       ></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col
+                    v-if="contractForm.devPayType == '按年支付固定费用'"
+                    :span="6"
+                  >
                     <el-form-item label="开发费应付日期" prop="devDate">
                       <el-date-picker
                         v-model="contractForm.devDate"
                         type="date"
-                        value-format="yyyy-MM-dd"
+                        format="MM 月 dd 日"
+                        value-format="MM-dd"
                         :editable="false"
                         placeholder="请选择开发费应付日期"
                         @blur="blurFun('devDate')"
@@ -364,13 +383,6 @@
                       icon="el-icon-upload2"
                       style="padding: 0 15px"
                       >上传文件</el-button
-                    >
-                    <el-button
-                      style="margin-left: 10px"
-                      size="small"
-                      type="success"
-                      @click="submitUpload"
-                      >上传到服务器</el-button
                     >
                   </el-upload>
                 </el-col>
@@ -439,16 +451,25 @@ export default {
       ],
       //资源表单
       contractForm: {
+        id: "", // 合同id
         contactsName: "", // 联系人
         contactsPhone: "", // 联系人手机号
         startDate: "", // 合同开始日期
         endDate: "", // 合同结束日期
         ownership: "", // 到期门体归属权
         remark: "", // 合同备注
-        mediaCnt: "", //合同媒体数量
+        mediaNewCnt: "", //合同媒体数量（首签和加门都是新增）
+
         freeCarGateCnt: "", // 赠送车场道闸
         freeGuardrailDoorCnt: "", // 赠送护栏门
+        freeGuardrailCnt: "", // 赠送的护栏个数
+        freeTRGateCnt: "", // 赠送的三辊闸个数
         freeWingGateCnt: "", // 赠送翼闸
+
+        freeAccessControlCnt: "", // 赠送门禁设备个数
+        freeICCardCnt: "", // 赠送IC卡个数
+        freeIDCardCnt: "", // 赠送ID卡个数
+
         isVenueFee: "", // 是否有场地费
         venuePayType: "", // 场地费付款方式
         venueFee: "", // 场地费
@@ -487,7 +508,7 @@ export default {
             trigger: ["change", "blur"],
           },
         ],
-        mediaCnt: [
+        mediaNewCnt: [
           { required: true, message: "请输入合同媒体数量!", trigger: "blur" },
         ],
         isVenueFee: [
@@ -565,35 +586,63 @@ export default {
       if (!dcID) return;
       api
         .getApi("/addsp/devContract/getContractDetail", {
-          dcID: dcID,
+          dcID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.contractForm = res.data.data || {};
-            this.fileList = [
-              {
-                fileUrl: "http://localhost:8080/static/images/noticeBanner.png",
-                fileName: "noticeBanner.png",
-              },
-            ];
+            const tempResultObj = res.data.data || {};
+            for (const key in this.contractForm) {
+              let tempValue = tempResultObj[key];
+              if (
+                Object.hasOwnProperty.call(this.contractForm, key) &&
+                tempValue !== null
+              ) {
+                if (
+                  (key == "venueDate" || key == "devDate") &&
+                  typeof tempValue == "number"
+                ) {
+                  // 日期（月 日）Number 转 String
+                  tempValue = (
+                    tempValue < 1000 ? "0" + tempValue : tempValue
+                  ).replace(/^(\d{2})/, "$1-");
+                }
+                if (
+                  (key == "venueFee" || key == "devFee") &&
+                  typeof tempValue == "number"
+                ) {
+                  // 金额 分 转 元
+                  tempValue = Math.floor(tempValue / 100);
+                }
+                this.contractForm[key] = tempValue;
+              }
+            }
+            this.fileList = tempResultObj.fileList || [];
             this.$message.success(res.data.MSG || "");
           } else {
             this.$message.warning(res.data.MSG || "");
           }
         });
     },
-    //
     fileChange(file, fileList) {
+      this.fileList = fileList;
       console.log("fileChange--", file);
     },
-    //
     fileProgress(event, file, fileList) {
       console.log("event--=-", event);
     },
     uploadSuccess(response, file, fileList) {
-      console.log("response", response);
+      console.log("response", response, file);
       if (response.SysCode == 200200) {
-        // 继续创建
+        file.fileUrl = response.data.fileUrl || "";
+        file.id = response.data.id || "";
+        // 提交合同
+        if (this.fileList.every((item) => item.id)) {
+          console.log("submitContract--");
+          this.$emit(
+            "submitContract",
+            this.fileList.map((item) => item.id).join(",")
+          );
+        }
       } else {
         this.$message.warning(response.MSG);
       }
@@ -602,9 +651,17 @@ export default {
       console.warn("上传失败", err);
       this.$message.warning("附件上传失败！");
     },
-    //
+    // 手动上传文件
     submitUpload() {
-      this.$refs.fileUpload.submit();
+      console.log("手动上传文件--");
+      if (this.fileList.every((item) => item.id)) {
+        this.$emit(
+          "submitContract",
+          this.fileList.map((item) => item.id).join(",")
+        );
+      } else {
+        this.$refs.fileUpload.submit();
+      }
     },
     // 资源输入框和下拉框失去光标
     blurFun(name) {
@@ -665,7 +722,6 @@ export default {
 
     // 表单验证
     submitForm() {
-      console.log("校验开始-----------");
       this.submitBtnIsAble = true;
       let timer = setTimeout(() => {
         this.submitBtnIsAble = false;
@@ -678,7 +734,7 @@ export default {
         "startDate",
         "endDate",
         "ownership",
-        "mediaCnt",
+        "mediaNewCnt",
         "isVenueFee",
         "isDevFee",
       ];
@@ -686,7 +742,10 @@ export default {
         validateResArr.push(...["venuePayType", "venueFee", "venueDate"]);
       }
       if (this.contractForm.isDevFee) {
-        validateResArr.push(...["devPayType", "devFee", "devDate"]);
+        let tempArr = ["devPayType", "devFee"];
+        this.contractForm.devPayType == "按年支付固定费用" &&
+          tempArr.push("devDate");
+        validateResArr.push(...tempArr);
       }
       let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
       for (let key of validateResArr) {

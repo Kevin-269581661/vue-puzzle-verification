@@ -214,15 +214,15 @@
                 devManageLevelArr: [
                     {
                         label: '开发人员',
-                        value: '0'
+                        value: 0
                     },
                     {
                         label: '资产人员',
-                        value: '1'
+                        value: 1
                     },
                     {
                         label: '开发总监',
-                        value: '2'
+                        value: 2
                     }
                 ],
                 // 媒体权限
@@ -245,7 +245,7 @@
                     boss: "",
                     position: "",
                     engineerLevel:'',
-                    devManageLevel: '',
+                    devManageLevel: 0,
                     mediaPermission:[],
                     phone: "",
                     division: "",
@@ -407,7 +407,7 @@
                         }
                         this.companyArr = result;
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.$message.warning(res.data.MSG);
                     }
                 }).catch(err=>{
                     console.log(err);
@@ -451,7 +451,7 @@
                     if(this.accountForm.company){
                         isOnlyID = true;
                     }else{
-                        Message.warning('请先选择所属公司');
+                        this.$message.warning('请先选择所属公司');
                         return;
                     }
                     if(isOnlyID){
@@ -476,10 +476,10 @@
                                             callback(results);
                                         }, 3000 * Math.random());
                                     }else{
-                                        Message.warning('该公司下没有此销售');
+                                        this.$message.warning('该公司下没有此销售');
                                     }
                                 }else{
-                                    Message.warning(res.data.MSG);
+                                    this.$message.warning(res.data.MSG);
                                 }
                             });
                     }
@@ -491,7 +491,7 @@
             //根据登录用户的权限设置创建新帐号的上级
             submitForm(formName) {
                 if(this.accountForm.role=='BD' && this.accountForm.saleManageLevel && (!this.accountForm.roleCity.length)){
-                    Message.warning('当前是想创建全国销售,请选择权限城市');
+                    this.$message.warning('当前是想创建全国销售,请选择权限城市');
                     return;
                 }
                 this.$refs[formName].validate(valid => {
@@ -556,7 +556,7 @@
                         console.log(res);
                         let data = res.data;
                         if (data.SysCode == 200200) {
-                            MessageBox.alert(data.MSG + "<br>", "修改用户", {
+                            this.$alert(data.MSG + "<br>", "修改用户", {
                                 showClose: false,
                                 dangerouslyUseHTMLString: true,
                                 confirmButtonText: "确定"
@@ -564,7 +564,7 @@
                                 this.resetForm();
                             });
                         } else {
-                            Message.warning(res.data.MSG);
+                            this.$message.warning(res.data.MSG);
                         }
                     })
                     .catch(err => {
@@ -586,7 +586,7 @@
                             })
                         } else {
                             if (data.SysCode == 200200) {
-                                MessageBox.alert(
+                                this.$alert(
                                     `创建成功，初始密码为<strong style="font-weight: 600">手机号+账号</strong>，建议首次登录后修改密码！`,
                                     "注册用户",
                                     {
@@ -598,7 +598,7 @@
                                     this.resetForm()
                                 });
                             } else {
-                                Message.warning(data.MSG);
+                                this.$message.warning(data.MSG);
                             }
                         }
                     }).catch(err => {
@@ -658,7 +658,7 @@
                                 this.accountForm = editInfo;
                                 this.roleSelect(editInfo.role);
                             }else{
-                                Message.warning(res.data.MSG);
+                                this.$message.warning(res.data.MSG);
                             }
                         }).catch(err =>{
                             console.log(err);
@@ -699,7 +699,7 @@
                         });
                         this.roleCityArr = result;
                     }else{
-                        Message.warning(res.data.MSG);
+                        this.$message.warning(res.data.MSG);
                     }
                 });
             },

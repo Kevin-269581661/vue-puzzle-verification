@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-30 09:21:01
+ * @LastEditTime: 2021-07-01 16:10:21
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -104,11 +104,7 @@ export default {
         6: "强制终止",
       },
       // 角色
-      roleArr: {
-        DEV: "0",
-        DEV_ASSET: "1",
-        DEV_DIRECTOR: "2",
-      },
+      roleArr: ["0", "1", "2"],
       operationAuthorityArr: {
         编辑: ["000", "001", "010", "020", "011", "021", "030", "031"],
         删除: [
@@ -209,7 +205,7 @@ export default {
     handleContract(operation) {
       switch (operation) {
         case "编辑":
-          this.$router.push("./newContract");
+          this.$router.push({path: "./editContract", query: {resID: this.contractObj.resID, dcID: this.contractObj.id}});
           break;
         case "删除":
           this.deleteContractVisible = true;
@@ -240,7 +236,7 @@ export default {
     // 获取当前列表操作权限
     getContractOperation() {
       let tempNo = `${
-          this.roleArr[JSON.parse(sessionStorage.getItem("session_data")).uType]
+          this.roleArr[JSON.parse(sessionStorage.getItem("session_data")).devManageLevel]
         }${this.contractObj.dcType}${this.contractObj.dcState}`,
         tempArr = [];
       for (const key in this.operationAuthorityArr) {
@@ -260,6 +256,8 @@ export default {
           if (res.data.SysCode == 200200) {
             let tempObj = res.data.data || {};
             this.contractObj = {
+              id: tempObj.id,
+              resID: tempObj.resID,
               dcType: tempObj.dcType,
               dcState: tempObj.dcState,
             };

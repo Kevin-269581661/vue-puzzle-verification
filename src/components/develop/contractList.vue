@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 16:14:55
+ * @LastEditTime: 2021-07-01 22:19:27
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -120,7 +120,11 @@
             >
               <el-button type="primary" @click="searchFormat">搜索</el-button>
               <el-button plain @click="contractSearchForm">重置</el-button>
-              <el-button plain size="small" @click="routeCreateContract"
+              <el-button
+                v-if="sessionData.devManageLevel == 0"
+                plain
+                size="small"
+                @click="routeCreateContract"
                 >新建</el-button
               >
               <el-button plain size="small" @click="exportContract"
@@ -160,6 +164,9 @@
               width="160"
               show-overflow-tooltip
             >
+              <template slot-scope="scope">
+                <span>{{ scope.row.originName || "待定" }}</span>
+              </template>
             </el-table-column>
             <el-table-column
               prop="dcType"
@@ -365,6 +372,7 @@
     </el-dialog>
     <!-- 关联媒体至合同 -->
     <add-media-to-contract
+      :dcID="currentContract.id"
       :correlateMediaMode.sync="correlateMediaMode"
     ></add-media-to-contract>
     <!-- 续签弹框 -->
@@ -378,6 +386,12 @@
     ></pay-log>
     <!-- 完成签约 -->
     <sign-contract :signVisible="signVisible"></sign-contract>
+    <!-- 合同审核 -->
+    <contract-review-dialog
+      :dcID="currentContract.id"
+      :contractReviewVisible.sync="contractReviewVisible"
+      @searchFormat="searchFormat"
+    ></contract-review-dialog>
   </div>
 </template>
 
@@ -390,6 +404,7 @@ import PayLog from "./components/payLog.vue";
 import NextContractDialog from "./components/nextContractDialog.vue";
 import AddMediaToContract from "./components/addMediaToContract.vue";
 import SignContract from "./components/signContract";
+import ContractReviewDialog from "./components/contractReviewDialog.vue";
 
 export default {
   name: "projectList",
@@ -398,6 +413,7 @@ export default {
     NextContractDialog,
     AddMediaToContract,
     SignContract,
+    ContractReviewDialog,
   },
 
   data() {
@@ -423,86 +439,100 @@ export default {
         7: "强制终止",
       },
       // 合同列表操作权限路径(000: 开发人员/首签/待审核)
+      /* operationAuthorityArr: {
+        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
+        删除: ["000", "00-1", "001", "002", "003", "010", "020", "01-1", "02-1", "011", "021", "012", "022", "013", "023", "030", "03-1", "031", "032"],
+        重新提交: ["00-1", "01-1", "02-1", "03-1"],
+        媒体录入: ["002", "012", "022", "032"],
+        续签: ["004", "005", "006", "014", "024", "015", "025", "016", "026", "034", "035", "036"],
+        补充协议: ["004", "014", "024", "034"],
+        加门: ["004", "014", "024", "034"],
+        付款: ["004", "005", "014", "024", "015", "025", "034", "035"],
+        付款记录: ["004", "005", "006", "014", "024", "015", "025", "016", "026", "034", "035", "036", "204", "205", "206", "214", "224", "215", "225", "216", "226", "104", "105", "106", "114", "124", "115", "125", "116", "126", "134", "135", "136"],
+        审核: ["200", "210", "220"],
+        完成签约: ["101", "111", "121", "131"],
+        合同终止: ["104", "114", "124", "134"],
+      }, */
       operationAuthorityArr: {
-        编辑: ["000", "001", "010", "020", "011", "021", "030", "031"],
+        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
         删除: [
           "000",
+          "00-1",
           "001",
           "002",
           "003",
-          "004",
           "010",
           "020",
+          "01-1",
+          "02-1",
           "011",
           "021",
           "012",
           "022",
           "013",
           "023",
-          "014",
-          "024",
           "030",
+          "03-1",
           "031",
           "032",
-          "033",
         ],
-        重新提交: ["001", "011", "021", "031"],
-        媒体录入: ["003", "013", "023", "033"],
+        重新提交: ["00-1", "01-1", "02-1", "03-1"],
+        媒体录入: ["002", "012", "022", "032"],
         续签: [
+          "004",
           "005",
           "006",
-          "007",
+          "014",
+          "024",
           "015",
           "025",
           "016",
           "026",
-          "017",
-          "027",
+          "034",
           "035",
           "036",
-          "037",
         ],
-        补充协议: ["005", "015", "025", "035"],
-        加门: ["005", "015", "025", "035"],
-        付款: ["005", "006", "015", "025", "016", "026", "035", "036"],
+        补充协议: ["004", "014", "024", "034"],
+        加门: ["004", "014", "024", "034"],
+        付款: ["004", "005", "014", "024", "015", "025", "034", "035"],
         付款记录: [
+          "004",
           "005",
           "006",
-          "007",
+          "014",
+          "024",
           "015",
           "025",
           "016",
           "026",
-          "017",
-          "027",
+          "034",
           "035",
           "036",
-          "037",
+          "204",
           "205",
           "206",
-          "207",
+          "214",
+          "224",
           "215",
           "225",
           "216",
           "226",
-          "217",
-          "227",
+          "104",
           "105",
           "106",
-          "107",
+          "114",
+          "124",
           "115",
           "125",
           "116",
           "126",
-          "117",
-          "127",
+          "134",
           "135",
           "136",
-          "137",
         ],
         审核: ["200", "210", "220"],
-        完成签约: ["102", "112", "122", "132"],
-        合同终止: ["105", "115", "125", "135"],
+        完成签约: ["101", "111", "121", "131"],
+        合同终止: ["104", "114", "124", "134"],
       },
       areaArr: [],
       // 搜索数据
@@ -541,7 +571,7 @@ export default {
       payApplyVisible: false,
       // 后台定义合同状态
       stateList: {
-        "-1": "审核不通过",
+        "-1": "不通过",
         0: "待审核",
         1: "待签约",
         2: "待安装",
@@ -558,12 +588,15 @@ export default {
       signVisible: false,
       resubmitVisible: false,
       signVisible: false,
+      // 合同审核弹框
+      contractReviewVisible: false,
     };
   },
   created() {
     this.getSessionData();
     this.getCity();
     this.searchFormat();
+    // this.getOperationArr()
   },
   methods: {
     // 合同删除
@@ -583,14 +616,15 @@ export default {
     },
     // 重新提交
     resubmitFun() {
-      return;
       api
         .postApi("/addsp/devContract/changeDCState", {
-          dcID: this.currentContract.dcID,
+          dcID: this.currentContract.id,
           passState: 1,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
+            this.searchFormat()
+            this.resubmitVisible = false;
             this.$message.success(res.data.MSG || "重新提交成功！");
           } else {
             this.$message.warning(res.data.MSG || "");
@@ -602,14 +636,19 @@ export default {
       this.currentContract = row;
       switch (operation) {
         case "编辑":
-          this.$router.push({path: "./editContract", query: {resID: row.resID, dcID: row.id}});
+          this.$router.push({
+            path: "./editContract",
+            query: { resID: row.resID, dcID: row.id },
+          });
           break;
         case "删除":
           this.deleteContractVisible = true;
           break;
         case "重新提交":
+          this.resubmitVisible = true;
           break;
         case "媒体录入":
+          this.correlateMediaMode = true;
           break;
         case "续签":
           break;
@@ -622,7 +661,7 @@ export default {
         case "付款记录":
           break;
         case "审核":
-          
+          this.contractReviewVisible = true;
           break;
         case "完成签约":
           this.signVisible = true;
@@ -633,10 +672,11 @@ export default {
     },
     // 获取当前列表操作权限
     getContractOperation(row) {
-      let tempNo = `${this.roleArr[this.sessionData.devManageLevel]}${row.dcType}${
-          row.dcState
-        }`,
+      let tempNo = `${this.roleArr[this.sessionData.devManageLevel]}${
+          row.dcType
+        }${row.dcState}`,
         tempArr = [];
+      console.log("tempNo---", tempNo);
       for (const key in this.operationAuthorityArr) {
         if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
           this.operationAuthorityArr[key].includes(tempNo) && tempArr.push(key);
@@ -710,7 +750,7 @@ export default {
         districtId:
           this.searchInfo.districtId[this.searchInfo.districtId.length - 1],
         isVenueFee: this.searchInfo.isVenueFee.join(","),
-        dcState: this.searchInfo.dcState.join(",")
+        dcState: this.searchInfo.dcState.join(","),
       };
       if (Array.isArray(rangeDate) && rangeDate.length == 2) {
         params[rangeDateType + "Min"] = rangeDate[0];

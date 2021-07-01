@@ -58,4 +58,19 @@ comma.noComma = function (price) {
 	}
 	return str;
 }
+var moneyFormat = function (value, prefix='', decimal=2) {
+	if(value==='' || value===undefined || value===null) {
+		return '--'
+	} else {
+		value = value||0 
+	}
+	try {
+		return prefix+value.toFixed(decimal).toString().replace(/(\d)(?=(?:(\d{3})+$)|(\d{3})+\.\d*$)/g, '$1,') // 将整数部分逢三一断
+	} catch (error) {
+		console.error(error)
+		return value
+	}
+}
 export default comma;
+export {moneyFormat};
+

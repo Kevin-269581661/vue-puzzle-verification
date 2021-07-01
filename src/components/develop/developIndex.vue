@@ -280,7 +280,7 @@
       </template>
     </el-dialog>
     <!-- 合同审核 -->
-    <contract-review-dialog :contractReviewVisible.sync="contractReviewVisible"></contract-review-dialog>
+    <contract-review-dialog :dcID="currentReviewDcID" :contractReviewVisible.sync="contractReviewVisible"></contract-review-dialog>
   </div>
 </template>
 
@@ -383,6 +383,7 @@ export default {
       dateInterval: 1,
       ignoreVisible: false,
       currentIgnore: null,
+      currentReviewDcID: "",
       statusMap: {
         1: {
           "-1": "审核不通过",
@@ -403,7 +404,7 @@ export default {
         },
       },
       // 合同审核弹框
-      contractReviewVisible: true
+      contractReviewVisible: false
     };
   },
   mounted() {
@@ -679,10 +680,17 @@ export default {
           console.error("getDevRank", err);
         });
     },
-    /* 跳转至合同详情 */
+    /* 跳转至合同详情（资产、开发） */
     routeContractDetail(row) {
-      this.$router.push("./contractDetail");
+      this.$router.push({path: "./contractDetail", query: {
+        resID: row.resID
+      }});
     },
+    // 总监审核
+    showContractReview() {
+      this.contractReviewVisible = true;
+      this.currentReviewDcID = row.dcID;
+    }
   },
 };
 </script>

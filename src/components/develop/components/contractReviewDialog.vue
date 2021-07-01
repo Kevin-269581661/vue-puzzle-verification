@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 20:22:17
+ * @LastEditTime: 2021-07-01 22:06:58
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -92,12 +92,16 @@
 
 <script>
 import api from "../../../api/api";
+import { moneyFormat } from "../../../commonFun/commaFormat";
 export default {
   name: "contractReviewDialog",
   props: {
     contractReviewVisible: {
       type: Boolean,
       default: () => false,
+    },
+    dcID: {
+      type: [Number, String],
     },
   },
   data() {
@@ -108,15 +112,21 @@ export default {
       fileList: [],
     };
   },
-  created() {
-    this.getContractDetail();
+  watch: {
+    contractReviewVisible: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        newVal && this.dcID && this.getContractDetail();
+      },
+    },
   },
+  created() {},
   methods: {
     // 获取合同详情
     getContractDetail() {
       api
         .getApi("/addsp/devContract/getContractDetail", {
-          dcID: 8,
+          dcID: this.dcID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -146,7 +156,7 @@ export default {
                   },
                   { label: "赠送IC卡", value: tempObj.freeICCardCnt },
                   { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
-                  // {label: "赠送护栏", value: tempObj.freeGuardrailDoorCnt},
+                  { label: "赠送护栏", value: tempObj.freeGuardrailCnt },
                   { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
                   { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
                 ],
@@ -159,15 +169,30 @@ export default {
                     value: tempObj.isVenueFee ? "是" : "否",
                   },
                   { label: "场地费付款方式", value: tempObj.venuePayType },
-                  { label: "场地费", value: tempObj.venueFee },
-                  { label: "场地费应付日期", value: tempObj.venueDate },
+                  {
+                    label: "场地费",
+                    value: moneyFormat(tempObj.venueFee / 100),
+                  },
+                  {
+                    label: "场地费应付日期",
+                    value: String(tempObj.venueDate || "").replace(
+                      /(\d{2})$/,
+                      "-$1"
+                    ),
+                  },
                   {
                     label: "是否有开发费",
                     value: tempObj.isDevFee ? "是" : "否",
                   },
                   { label: "开发费付款方式", value: tempObj.devPayType },
-                  { label: "开发费", value: tempObj.devFee },
-                  { label: "开发费应付日期", value: tempObj.devDate },
+                  { label: "开发费", value: moneyFormat(tempObj.devFee / 100) },
+                  {
+                    label: "开发费应付日期",
+                    value: String(tempObj.devDate || "").replace(
+                      /(\d{2})$/,
+                      "-$1"
+                    ),
+                  },
                 ],
               },
               {
@@ -175,13 +200,11 @@ export default {
                 content: [{ label: "物业规模(人数)", value: tempObj.resName }],
               },
             ];
-            this.fileList = [
-              {
-                fileUrl: "http://localhost:8080/static/images/noticeBanner.png",
-                fileName: "noticeBanner.png",
-              },
-            ];
-            this.$message.success(res.data.MSG || "");
+            tempObj.fileList = tempObj.fileList || [];
+            tempObj.fileList.forEach((item) => {
+              item.fileName = item.fileUrl.split("/").pop();
+            });
+            this.fileList = tempObj.fileList;
           } else {
             this.$message.warning(res.data.MSG || "");
           }
@@ -190,7 +213,7 @@ export default {
     // 合同审核通过
     changeContractState(flag) {
       let params = {
-        dcID: "",
+        dcID: this.dcID,
         passState: flag,
       };
       if (!flag) {
@@ -198,7 +221,9 @@ export default {
       }
       api.postApi("/addsp/devContract/changeDCState", params).then((res) => {
         if (res.data.SysCode == 200200) {
-          this.$emit('update:contractReviewVisible', false);
+          this.$emit("update:contractReviewVisible", false);
+          this.reasonVisible && (this.reasonVisible = false);
+          this.$emit("searchFormat");
           this.$message.success(res.data.MSG || "");
         } else {
           this.$message.warning(res.data.MSG || "");
@@ -216,7 +241,7 @@ export default {
     },
     handleClose(done) {
       this.$emit("update:contractReviewVisible", false);
-    }
+    },
   },
 };
 </script>

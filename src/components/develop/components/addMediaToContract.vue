@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 21:06:28
+ * @LastEditTime: 2021-07-01 22:23:33
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -247,6 +247,10 @@ export default {
     correlateMediaMode: {
       type: Boolean,
       default: () => false,
+    },
+    dcID: {
+      type: [Number, String],
+      default: () => "",
     },
   },
   components: {
@@ -510,6 +514,7 @@ export default {
       }
       api
         .postApi("/addsp/devContract/linkNewMedia", {
+          dcID: this.dcID,
           mIDs: this.selectionMediaList
             .reduce((pre, cur) => {
               if (cur.mID) {

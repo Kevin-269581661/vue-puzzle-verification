@@ -201,47 +201,102 @@
         <el-col :span="12">
           <index-custom-card height="520px">
             <template slot="head">
-              待录入媒体&nbsp;
-              <el-tooltip effect="dark" content="Top center" placement="top">
-                <ul slot="content">
-                  <li style="line-height: 20px">数据每5分钟更新一次</li>
-                </ul>
-                <img
-                  class="quesition-icon"
-                  src="../../assets/images/question_icon.png"
-                />
-              </el-tooltip>
+              待处理媒体
+              <el-radio-group
+                v-model="installOrDemolish"
+                size="small"
+                class="achievement-radio-group"
+              >
+                <el-radio-button label="installList"
+                  >待安装({{
+                    pendingMedia.installList.length
+                  }})</el-radio-button
+                >
+                <el-radio-button label="demolishList"
+                  >待拆除({{
+                    pendingMedia.demolishList.length
+                  }})</el-radio-button
+                >
+              </el-radio-group>
             </template>
             <template slot="content">
               <div style="padding: 20px 25px 10px">
                 <el-table
-                  :data="preLockArr"
-                  class="lock-table"
+                  :data="pendingMedia[installOrDemolish]"
                   border
                   max-height="486"
                 >
-                  <el-table-column prop="apName" label="序号" width="147">
+                  <el-table-column
+                    label="序号"
+                    width="150"
+                    type="index"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="resName"
+                    label="资源名称"
+                    min-width="200"
+                    show-overflow-tooltip
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="mTitle"
+                    label="媒体名称"
+                    min-width="200"
+                    show-overflow-tooltip
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="contractNo"
+                    label="合同编号"
+                    min-width="120"
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="mState"
+                    label="媒体状态"
+                    min-width="120"
+                    show-overflow-tooltip
+                  >
                     <template slot-scope="scope">
+                      {{ mediaStatusMap[scope.row.mState]||"--" }}
                     </template>
                   </el-table-column>
-                  <el-table-column prop="apName" label="媒体名称" min-width="200">
+                  <el-table-column label="操作">
                     <template slot-scope="scope">
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="apName" label="总安装媒体数" min-width="120">
-                    <template slot-scope="scope">
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="apName" label="总录入媒体数" min-width="120">
-                    <template slot-scope="scope">
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="apName" label="待录入媒体数" min-width="120">
-                    <template slot-scope="scope">
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="apName" label="操作">
-                    <template slot-scope="scope">
+                      <el-popconfirm
+                        v-if="scope.row.mState == 2"
+                        popper-class="handle-btn-pop"
+                        placement="top-end"
+                        confirm-button-text="是"
+                        cancel-button-text="否"
+                        cancel-button-type="default"
+                        icon="el-icon-warning"
+                        icon-color="#FAAD14"
+                        title="该媒体是否已完成安装"
+                        @confirm="() =>{
+                          Object.assign(currentInstallInfo, row);
+                          installVisible = true;
+                        }"
+                      >
+                        <span slot="reference" class="td-btn">完成安装</span>
+                      </el-popconfirm>
+                      <el-popconfirm
+                        v-else
+                        popper-class="handle-btn-pop"
+                        placement="top-end"
+                        confirm-button-text="是"
+                        cancel-button-text="否"
+                        cancel-button-type="default"
+                        icon="el-icon-warning"
+                        icon-color="#FAAD14"
+                        title="该媒体是否已完成拆除"
+                        @confirm="()=>{
+                          Object.assign(currentInstallInfo, row)
+                          confirmMediaStatus()
+                        }"
+                      >
+                        <span slot="reference" class="td-btn">完成拆除</span>
+                      </el-popconfirm>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -412,6 +467,46 @@
         >
       </p>
     </div>
+    <!-- 安装信息 -->
+    <el-dialog
+      title="请完成安装信息"
+      :visible.sync="installVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <el-form
+        v-model="currentInstallInfo"
+        label-width="70px"
+        class="content-form"
+      >
+        <el-form-item label="安装负责人：" prop="installUserName">
+          <el-input
+            placeholder="请填写安装负责人"
+            v-model.trim="currentInstallInfo.installUserName"
+            size="small"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="安装完成日期：" prop="installDate">
+          <el-date-picker
+            v-model="currentInstallInfo.installDate"
+            size="small"
+            align="right"
+            value-format="yyyy-MM-dd"
+            placeholder="请选择安装完成日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+
+      <template slot="footer">
+        <el-button @click="installVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmMediaStatus('install')">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -458,8 +553,6 @@ export default {
 
       isAllMedia: false,
       isShowNum: false,
-      // 勋章弹出框
-      // isShowMedal: false,
       linkArrNew: [
         {
           imgurl: require("../../assets/images/importPoint.png"),
@@ -524,17 +617,6 @@ export default {
           rank: 0,
         },
       ],
-      // 弹出框信息
-      /* currentImgInfo:{
-				url: '',
-				name: '',
-				num: '',
-				unit: '',
-				img1: '',
-				img2: '',
-				img3: '',
-				img4: '',
-			}, */
       // 弹窗贡献值
       contribute: {
         adPlanCount: 0,
@@ -628,6 +710,25 @@ export default {
       ],
       // 媒介预锁概况表格
       preLockArr: [],
+      // 待拆除和待安装媒体
+      pendingMedia: {
+        installList: [],
+        demolishList: [],
+      },
+      // 媒体状态
+      mediaStatusMap: {
+        0: "禁用",
+        1: "正常",
+        2: "待安装",
+        3: "待维修"
+      },
+      // 安装或拆除媒体切换
+      installOrDemolish: "installList",
+      installVisible: false,
+      currentInstallInfo: {
+        installUserName: "",
+        installDate: "",
+      },
     };
   },
   beforeCreate() {
@@ -756,7 +857,6 @@ export default {
       return arr[value];
     },
     getRank(type, value) {
-      // console.log('type---', type, value);
       let rank = 0;
       let oldArr = [];
       if (type == 1) {
@@ -778,32 +878,6 @@ export default {
       }
       return rank;
     },
-    /* showImg(index, value){
-			let curr = this.imginfo[index];
-			if(curr.rank == 1){
-				this.isShowMedal = false;
-			}else{
-				this.isShowMedal = true;
-			}
-			let str = '';
-			if(index == 0){
-				str = 'repoint';
-			}else if (index == 1){
-				str = 'assist';
-			}else {
-				str = 'release';
-			}
-			this.currentImgInfo = {
-				url: curr.url,
-				name: curr.name,
-				num: curr.num,
-				unit: curr.unit,
-				img2: require('../../assets/images/index/'+str+'-2.png'),
-				img3: require('../../assets/images/index/'+str+'-3.png'),
-				img4: require('../../assets/images/index/'+str+'-4.png'),
-				img5: require('../../assets/images/index/'+str+'-5.png'),
-			};
-		}, */
     // 应用中心跳转
     goToPage(item) {
       if (item) {
@@ -1115,6 +1189,75 @@ export default {
         })
         .finally((_) => {});
     },
+    // 获取待安装或待拆除媒体
+    getPendingMedia() {
+      api
+        .getApi("/report/devContract/getPendingMedia", {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            let installList = res.data.data.installList || [];
+            let demolishList = res.data.data.demolishList || [];
+            this.pendingMedia.installList = installList;
+            this.pendingMedia.demolishList = demolishList;
+          } else {
+            this.messageFun("warning", res.data.MSG);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    },
+    // 确认安装或拆除
+    confirmMediaStatus(install) {
+      console.log("confirmMediaStatus", this.currentInstallInfo);
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "CtrlMedia",
+        data: {
+          uid: this.sessionData.uID,
+          mid: this.currentInstallInfo.mID,
+          mstate: this.currentInstallInfo.mState,
+        },
+      };
+      if(install) {
+        params.data.installDate = this.currentInstallInfo.installDate;
+        params.data.installUserName = this.currentInstallInfo.installUserName;
+      }
+      api.postApi_new(this.apiVar.Media, params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          if(install) {
+            this.synDcState(1);
+          } else {
+            this.synDcState(0);
+          }
+        } else if (
+          res.data.SysCode === 200302 ||
+          res.data.MSG === "广告位已被占用"
+        ) {
+          this.$message.warning(res.data.MSG||"");
+        } else {
+          this.$message.warning(res.data.MSG||"状态更改失败");
+        }
+      });
+    },
+  },
+  // 媒体状态同步至合同状态
+  synDcState(state) {
+    api.postApi("/addsp/devContract/synDcState", {
+      dcID: this.currentInstallInfo.dcID,
+      state
+    }).then((res) => {
+        if (res.data.SysCode === 200200) {
+          this.installVisible && (this.installVisible = false);
+          this.$message.success(res.data.MSG||"更改成功！");
+        } else {
+          this.$message.warning(res.data.MSG||"状态更改失败");
+        }
+      });
   },
   beforeRouteEnter(to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用
@@ -1140,12 +1283,39 @@ export default {
     this.appCenter = appCenter;
     this.uploadEvent(1);
     this.allReportApi();
+    this.getPendingMedia();
   },
 };
 </script>
 
+<style lang="scss">
+.handle-btn-pop {
+  padding: 12px 16px;
+  .el-popconfirm__main {
+    margin-bottom: 12px;
+  }
+  .el-popconfirm__action {
+    .el-button {
+      height: 24px;
+      line-height: 24px;
+      font-size: 14px;
+      width: 50px;
+      min-width: unset;
+      & + .el-button {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+</style>
 <style scoped lang="scss">
 /** 新增*/
+.td-btn {
+  line-height: 21px;
+  font-size: 14px;
+  color: #1890ff;
+  cursor: default;
+}
 .quesition-icon {
   width: 16px;
   height: 16px;
@@ -1270,69 +1440,10 @@ export default {
     color: #1890ff;
   }
 }
-.pop-box {
-  border-radius: 2px;
-  line-height: 16px;
-  font-size: 12px;
-  font-weight: 400;
-  font-family: PingFangSC-Regular, PingFang SC;
-  .pop-title {
-    display: flex;
-    color: rgba(0, 0, 0, 0.85);
-    .target-btn {
-      margin: 0 0 2px auto;
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
-    .bottom-btn {
-      width: 64px;
-      height: 24px;
-      line-height: 24px;
-      margin: 8px auto 2px auto;
-      border: 1px solid #1890ff;
-      border-radius: 2px;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
-  }
-  .pop-item {
-    margin: 2px 0;
-    color: rgba(0, 0, 0, 0.65);
-  }
-}
 /**新增 */
 .ad_index_container {
   margin: 24px 64px;
   height: auto;
-}
-.h2_style {
-  font-family: PingFangSC-Medium;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
-  background: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  height: 52px;
-  line-height: 52px;
-  padding-left: 24px;
-  border-bottom: 1px solid #ececec;
-}
-.h2_style b {
-  font-weight: bold;
-}
-.h2_style span {
-  font-weight: normal;
-  /* margin-right: 24px; */
-}
-/deep/ .h2_style .el-date-editor {
-  font-weight: normal;
-  width: 120px;
-}
-.flex_box {
-  display: flex;
-  justify-content: space-between;
 }
 .media_index /deep/ .dialog_box .el-dialog {
   background: #fff;
@@ -1341,42 +1452,6 @@ export default {
   background-repeat: no-repeat;
   background-image: url("../../assets/images/index/modal-bg.png");
 }
-.dia_con {
-  text-align: center;
-}
-.top img {
-  width: 150px;
-}
-.span_style {
-  /* display: inline-block; */
-  font-size: 14px;
-  color: rgba(51, 51, 51, 0.85);
-}
-.img_modal {
-  margin-top: 40px;
-}
-.img_modal img {
-  width: 38px;
-  vertical-align: middle;
-}
-.line_style {
-  display: inline-block;
-  height: 2px;
-  width: 30px;
-  background: -webkit-linear-gradient(
-    left,
-    rgba(255, 255, 255, 0),
-    #d8d8d8,
-    rgba(255, 255, 255, 0)
-  );
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0),
-    #d8d8d8,
-    rgba(255, 255, 255, 0)
-  );
-}
-
 .rank_box {
   z-index: 1000;
   position: fixed;
@@ -1384,50 +1459,6 @@ export default {
   top: 35%;
   transform: translate(-50%, -35%);
   text-align: center;
-}
-.year-stat-container {
-  width: 100%;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-}
-.year-stat-box {
-  z-index: 1000;
-  position: absolute;
-  left: 50%;
-  top: 35%;
-  transform: translate(-50%, -35%);
-  text-align: center;
-  .year-stat-main {
-    width: 707.25px;
-    height: 240px;
-    position: relative;
-    .bg-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .qrcode-box {
-    position: absolute;
-    top: 40px;
-    right: 85px;
-    z-index: 999;
-    transform: rotate(-8deg);
-    background: #ffffff;
-    padding: 4px;
-  }
-  .close-icon {
-    width: 40px;
-    height: 40px;
-    margin-top: 34px;
-    cursor: pointer;
-  }
 }
 .ul_box {
   display: flex;
@@ -1538,29 +1569,8 @@ export default {
     top: -10px;
   }
 }
-
-.com_style {
-  font-family: PingFangSC-Medium;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
-  background: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  height: 40px;
-  line-height: 40px;
-  padding-left: 16px;
-}
-.com_loglistBox img {
-  width: 51px;
-  height: 62px;
-}
 .loglist_box {
   margin-top: 24px;
-}
-.img_point {
-  text-align: center;
-  color: #666;
-  margin-top: 20px;
 }
 
 /deep/ .echarts_tooltip_title {

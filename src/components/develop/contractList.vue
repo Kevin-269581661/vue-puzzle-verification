@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 22:19:27
+ * @LastEditTime: 2021-07-02 17:15:11
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -160,7 +160,7 @@
             </el-table-column>
             <el-table-column
               prop="originName"
-              label="合同线"
+              label="合同对象"
               width="160"
               show-overflow-tooltip
             >
@@ -372,8 +372,9 @@
     </el-dialog>
     <!-- 关联媒体至合同 -->
     <add-media-to-contract
-      :dcID="currentContract.id"
+      :currentContract="currentContract"
       :correlateMediaMode.sync="correlateMediaMode"
+      @searchFormat="searchFormat"
     ></add-media-to-contract>
     <!-- 续签弹框 -->
     <next-contract-dialog

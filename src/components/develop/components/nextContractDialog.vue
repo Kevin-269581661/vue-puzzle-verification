@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 16:47:18
+ * @LastEditTime: 2021-07-02 17:17:00
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -20,7 +20,7 @@
       <el-select
         multiple
         collapse-tags
-        placeholder="请选择合同线（可多选）"
+        placeholder="请选择合同对象（可多选）"
         v-model="mergeOriginList"
         size="small"
       >
@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      // 合同线列表
+      // 合同对象列表
       contractOriginList: [
         {
           originName: "西门/南门",
@@ -68,7 +68,7 @@ export default {
           originID: 10,
         },
       ],
-      // 需要合并的合同线
+      // 需要合并的合同对象
       mergeOriginList: [],
     };
   },
@@ -79,7 +79,7 @@ export default {
   },
   mounted() {},
   methods: {
-    // 获取可续签的合同线
+    // 获取可续签的合同对象
     getOriginList() {
       console.log("getOriginList---");
       api
@@ -97,7 +97,7 @@ export default {
       if(this.mergeOriginList.length>0) {
         this.$router.push("./nextContract");
       } else {
-        this.$message.warning("请选择合同线！")
+        this.$message.warning("请选择合同对象！")
       }
     },
   },

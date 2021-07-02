@@ -62,7 +62,7 @@
                 </el-table-column>
                 <el-table-column
                   show-overflow-tooltip
-                  label="合同线"
+                  label="合同对象"
                   width="230"
                 >
                   <template slot-scope="scope">
@@ -682,7 +682,8 @@ export default {
     },
     /* 跳转至合同详情（资产、开发） */
     routeContractDetail(row) {
-      this.$router.push({path: "./contractDetail", query: {
+      console.log("0-0", row.resID)
+      this.$router.push({path: "./f_develop/contractDetail", query: {
         resID: row.resID
       }});
     },

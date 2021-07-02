@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 10:24:48
+ * @LastEditTime: 2021-07-02 09:43:34
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -105,6 +105,10 @@ export default {
   },
   methods: {
     getContractDetailList() {
+      if(!this.resID) {
+        this.$message.warning("资源信息获取失败！");
+        return;
+      }
       api
         .getApi("/addsp/devContract/getContractDetailList", {
           resID: this.resID,

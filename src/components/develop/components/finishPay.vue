@@ -77,7 +77,7 @@ export default {
   watch: {},
   mounted() {},
   methods: {
-    // 获取可续签的合同线
+    // 获取可续签的合同对象
     finishPayFun() {
       console.log("finishPayForm---", this.finishPayForm);
       api

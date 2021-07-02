@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 22:23:33
+ * @LastEditTime: 2021-07-02 17:15:27
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -22,18 +22,17 @@
         <el-button type="primary" @click="showMediaList"
           >选择已有媒体</el-button
         >
-        <el-button type="primary" @click="newMediaVisible = true"
-          >创建新的媒体</el-button
-        >
+        <el-button type="primary" @click="showNewMedia">创建新的媒体</el-button>
       </span>
     </el-dialog>
     <dialog-table
+      v-loading="loading"
       title="选择已有媒体"
       width="944px"
-      v-loading="loading"
+      rowKey="mID"
+      :visible="addMediaVisible"
       :tableData="mediaTableData"
       :tableColumn="mediaTableColumn"
-      :visible="addMediaVisible"
       :paging="false"
       @closeDialog="addMediaVisible = false"
       @selectionChange="selectionChange"
@@ -43,7 +42,7 @@
         <h4>
           <span>
             请勾选下面列表中的
-            <span class="tip-active">{{ intentionInfo.mediaCount || "" }}</span>
+            <span class="tip-active">{{ currentContract.surplusInstallCnt || "" }}</span>
             个媒体
           </span>
         </h4>
@@ -59,7 +58,7 @@
       </template>
       <template slot="dialogFooter">
         <el-button @click="addMediaVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addMediaToContract">确 定</el-button>
+        <el-button type="primary" @click="addMediaToContract(selectionMediaList)">确 定</el-button>
       </template>
     </dialog-table>
 
@@ -117,14 +116,8 @@
                     size="small"
                     v-model="item.mstate"
                     placeholder="请选择媒体状态"
-                    @blur="adDoorBlur('mstate', key)"
-                    @change="selectMstate(item)"
                   >
-                    <el-option label="禁用" :value="'0' + key"></el-option>
-                    <el-option label="正常" :value="'1' + key"></el-option>
-                    <el-option label="待安装" :value="'2' + key"></el-option>
-                    <el-option label="待维修" :value="'3' + key"></el-option>
-                    <el-option label="已拆除" :value="'4' + key"></el-option>
+                    <el-option label="待安装" value="2"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -229,9 +222,7 @@
       </div>
       <span slot="footer">
         <el-button @click="newMediaVisible = false">取 消</el-button>
-        <el-button type="primary" @click="newMediaVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="creadMediaFun">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -248,9 +239,9 @@ export default {
       type: Boolean,
       default: () => false,
     },
-    dcID: {
-      type: [Number, String],
-      default: () => "",
+    currentContract: {
+      type: Object,
+      default: () => {},
     },
   },
   components: {
@@ -305,9 +296,6 @@ export default {
       loading: false,
       addMediaVisible: false,
       selectionMediaList: [],
-      intentionInfo: {
-        mediaCount: 3,
-      },
       mediaTableData: [],
       mediaTableColumn: [
         {
@@ -354,20 +342,7 @@ export default {
         },
       ],
       newMediaVisible: false,
-      arrMedia: [
-        {
-          mediaName: "", //媒体名称mtitle
-          usableNum: "2", //广告位面数pnum
-          mstate: "", //媒体状态mstate
-          doorType: "", // 门类型mType
-          adSizeW: "", //广告尺寸adsize
-          adSizeH: "", //广告尺寸
-          visualW: "", //可视画面adviewsize
-          visualH: "", //可视画面
-          mediaRemark: "", //备注 mrk
-          adLimit: [], //请选择广告限制 notpush
-        },
-      ],
+      arrMedia: [],
       adLimit: [],
       mediaRules: {
         mediaName: [
@@ -411,7 +386,7 @@ export default {
           {
             required: true,
             type: "string",
-            message: "不能为空且只能输入数字!",
+            message: "请输入数值",
             trigger: ["blur", "change"],
           },
           { validator: validatePrice, trigger: ["blur", "change"] },
@@ -420,7 +395,7 @@ export default {
           {
             required: true,
             type: "string",
-            message: "不能为空且只能输入数字!",
+            message: "请输入数值",
             trigger: ["blur", "change"],
           },
           { validator: validatePrice, trigger: ["blur", "change"] },
@@ -429,7 +404,7 @@ export default {
           {
             required: true,
             type: "string",
-            message: "不能为空且只能输入数字!",
+            message: "请输入数值",
             trigger: ["blur", "change"],
           },
           { validator: validatePrice, trigger: "change" },
@@ -438,7 +413,7 @@ export default {
           {
             required: true,
             type: "string",
-            message: "不能为空且只能输入数字!",
+            message: "请输入数值",
             trigger: ["blur", "change"],
           },
           { validator: validatePrice, trigger: ["blur", "change"] },
@@ -463,6 +438,83 @@ export default {
     this.getADLimit();
   },
   methods: {
+    // 批量创建媒体
+    creadMediaFun() {
+      let resID = this.currentContract.resID,
+          arr = [];
+      for (let i = 0; i < this.arrMedia.length; i++) {
+        let mediaForm = this.arrMedia[i];
+        if (
+          mediaForm.mediaName &&
+          mediaForm.mediaType &&
+          mediaForm.adSizeW &&
+          mediaForm.adSizeH
+        ) {
+          arr.push({
+            resID: resID,
+            uID: this.sessionData.uID,
+            mTitle: mediaForm.mediaName,
+            pNum: mediaForm.usableNum,
+            actualNum: mediaForm.usableNum,
+            adSize: mediaForm.adSizeW + "*" + mediaForm.adSizeH,
+            adViewSize: mediaForm.visualW + "*" + mediaForm.visualH,
+            notPush: mediaForm.adLimit.join("、"),
+            assetTag: mediaForm.assetId,
+            mType: mediaForm.doorType,
+            mImg: mediaForm.mImg || "",
+            mVehicle: mediaForm.mediaType,
+            mRemark: mediaForm.mediaRemark,
+            mState: mediaForm.mstate,
+          });
+        } else {
+          this.$message.warning("媒体信息错误！")
+          return;
+        }
+      }
+      let params = {
+        uid: this.sessionData.uID,
+        service: "CreateMediaBatch",
+        token: this.sessionData.token,
+        data: {
+          medias: arr,
+          rId: this.currentContract.districtId,
+        },
+      };
+      if (params.data.medias.length) {
+        api.postApi_new(this.apiVar.Media, params).then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.newMediaVisible = false;
+            this.addMediaToContract(res.data.data||[]);
+            this.$message.success(res.data.MSG || "媒体创建成功!");
+          } else {
+            this.$message.warning(res.data.MSG || "媒体创建失败！");
+          }
+        });
+      } else {
+        console.log("媒体数据为空");
+      }
+    },
+    // 显示新建媒体
+    showNewMedia() {
+      if (this.currentContract.surplusInstallCnt > 0) {
+        // 生成表单绑定数据
+        this.arrMedia = new Array(this.currentContract.surplusInstallCnt).fill({
+          mediaType: "广告门",
+          mediaName: "", //媒体名称mtitle
+          usableNum: "2", //广告位面数pnum
+          mstate: "", //媒体状态mstate
+          doorType: "", // 门类型mType
+          adSizeW: "", //广告尺寸adsize
+          adSizeH: "", //广告尺寸
+          visualW: "", //可视画面adviewsize
+          visualH: "", //可视画面
+          mediaRemark: "", //备注 mrk
+          adLimit: [], //请选择广告限制 notpush
+        });
+        this.arrMedia=JSON.parse(JSON.stringify(this.arrMedia));
+      }
+      this.newMediaVisible = true;
+    },
     // 获取广告限制列表
     getADLimit() {
       let params = {
@@ -476,7 +528,6 @@ export default {
           this.adLimit = (res.data.data || []).map((item) => {
             return { value: item.nTitle, label: item.nTitle };
           });
-          console.log("广告限制adLimit", this.adLimit);
         } else {
           this.$message.warning(res.data.MSG || "");
         }
@@ -498,7 +549,7 @@ export default {
         callback();
       }
     },
-    //
+    // 显示已有媒体列表
     showMediaList() {
       this.addMediaVisible = true;
       this.getMediaList();
@@ -508,14 +559,15 @@ export default {
       this.selectionMediaList = selection;
     },
     // 将已有媒体与合同关联
-    addMediaToContract() {
-      if (this.selectionMediaList.length == 0) {
-        this.$message.warning("选择媒体为空！");
+    addMediaToContract(mediaList) {
+      if (mediaList.length == 0) {
+        this.$message.warning("媒体数据为空！");
+        return;
       }
       api
         .postApi("/addsp/devContract/linkNewMedia", {
-          dcID: this.dcID,
-          mIDs: this.selectionMediaList
+          dcID: this.currentContract.id,
+          mIDs: mediaList
             .reduce((pre, cur) => {
               if (cur.mID) {
                 pre.push(cur.mID);
@@ -526,7 +578,11 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.mediaTableData = res.data.data || [];
+            this.$emit('update:correlateMediaMode', false);
+            this.newMediaVisible = false;
+            this.addMediaVisible = false;
+            this.$emit("searchFormat");
+            this.$message.success(res.data.MSG || "录入成功！");
           } else {
             this.$message.warning(res.data.MSG || "");
           }
@@ -536,7 +592,10 @@ export default {
     getMediaList() {
       this.loading = true;
       api
-        .getApi("/addsp/devContract/installMediaList?resID=40162")
+        .getApi(
+          "/addsp/devContract/installMediaList?resID=" +
+            this.currentContract.resID
+        )
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.mediaTableData = res.data.data || [];
@@ -671,6 +730,7 @@ export default {
       .el-input__inner {
         padding: 0 12px;
         border: none;
+        text-align: left;
       }
     }
     .divide-vertical {
@@ -692,6 +752,9 @@ export default {
     }
   }
   .el-form-item__content {
+    .el-input__inner {
+      text-align: left;
+    }
     .el-input-number {
       width: 100%;
     }

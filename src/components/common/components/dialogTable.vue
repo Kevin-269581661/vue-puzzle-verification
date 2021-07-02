@@ -13,6 +13,7 @@
     <div>
       <slot name="topTip"></slot>
       <el-table
+        :row-key="rowKey"
         :data="currentPagination"
         @selection-change="selectionChange"
         style="width: 100%"
@@ -84,6 +85,10 @@ export default {
     tableColumn: {
       type: Array,
       default: () => [],
+    },
+    rowKey: {
+      type: [Number, String],
+      default: () => ""
     },
     tableData: {
       type: Array,

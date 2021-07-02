@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 15:14:35
+ * @LastEditTime: 2021-07-02 17:49:20
  * @FilePath: /frontend/src/components/develop/editContract.vue
 -->
 <template>
@@ -160,9 +160,9 @@ export default {
         fileIDs
       };
       params.venueFee = params.venueFee * 100;
-      params.venueDate = params.venueDate.replace("-", "")*1;
+      params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
-      params.devDate = params.devDate.replace("-", "")*1;
+      params.devDate = params.devDate.replace("-", "");
       // 合同类型：0-首签 1-续约 2-加门 3-补充
       // params.dcType = 0;
       // 续约，加门或者补充时父单的id （首签时传0）

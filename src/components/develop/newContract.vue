@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 14:26:11
+ * @LastEditTime: 2021-07-02 18:25:09
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -110,7 +110,7 @@ export default {
     },
     /* 跳转至合同详情 */
     routeContractDetail() {
-      this.$router.push("./contractDetail")
+      this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
     },
     /* 第一步取消 */
     cancelFirstStep() {
@@ -137,7 +137,7 @@ export default {
         this.componentName = "contractFinished";
       }
     },
-    newContract() {
+    newContract(fileIDs) {
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -148,17 +148,19 @@ export default {
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
         ...this.contractFormData,
+        fileIDs
       };
       params.venueFee = params.venueFee * 100;
+      params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
+      params.devDate = params.devDate.replace("-", "");
       // 合同类型：0-首签 1-续约 2-加门 3-补充
       params.dcType = 0;
       // 续约，加门或者补充时父单的id （首签时传0）
       params.pID = 0;
-      // fileIDs
       return new Promise((resolve) => {
         api
-          .postApi("/addsp/devContract/create", params)
+          .postApi_json("/addsp/devContract/create", params)
           .then((res) => {
             console.log("创建合同", res);
             if (res.data.SysCode === 200200) {

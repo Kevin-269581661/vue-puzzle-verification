@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 14:04:55
+ * @LastEditTime: 2021-07-02 18:25:16
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -46,6 +46,7 @@
           ref="needValidForm"
           :contractFormData="contractFormData"
           :is="componentName"
+          @submitContract="newContract"
         ></component>
       </keep-alive>
     </div>
@@ -68,7 +69,7 @@
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
         <el-button type="default" @click="cancelFirstStep">合同列表</el-button>
-        <el-button type="primary" @click="secondStep">查看详情</el-button>
+        <el-button type="primary" @click="routeContractDetail">查看详情</el-button>
       </div>
     </div>
   </div>
@@ -100,6 +101,10 @@ export default {
   },
   mounted() {},
   methods: {
+    /* 跳转至合同详情 */
+    routeContractDetail() {
+      this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
+    },
     /* 第一步取消 */
     cancelFirstStep() {},
     /* 第一步进入第二部 */
@@ -123,13 +128,16 @@ export default {
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
         ...this.contractFormData,
+        fileIDs
       };
       params.venueFee = params.venueFee * 100;
+      params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
+      params.devDate = params.devDate.replace("-", "");
       // 合同类型：0-首签 1-续约 2-加门 3-补充
-      params.dcType = 0;
+      params.dcType = 1;
       // 续约，加门或者补充时父单的id （首签时传0）
-      params.pID = 0;
+      // params.pID = 0;
       // fileIDs
       return new Promise((resolve) => {
         api

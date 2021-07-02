@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 17:15:11
+ * @LastEditTime: 2021-07-02 18:49:45
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -391,7 +391,7 @@
     <contract-review-dialog
       :dcID="currentContract.id"
       :contractReviewVisible.sync="contractReviewVisible"
-      @searchFormat="searchFormat"
+      @refreshList="searchFormat"
     ></contract-review-dialog>
   </div>
 </template>
@@ -427,17 +427,6 @@ export default {
         1: "续签",
         2: "补充",
         3: "加门",
-      },
-      // 合同状态
-      contractStatusArr: {
-        0: "待审核",
-        1: "不通过",
-        2: "待签约",
-        3: "待安装",
-        4: "待拆除",
-        5: "正常",
-        6: "合同到期",
-        7: "强制终止",
       },
       // 合同列表操作权限路径(000: 开发人员/首签/待审核)
       /* operationAuthorityArr: {

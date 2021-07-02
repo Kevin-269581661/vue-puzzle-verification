@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 15:00:27
+ * @LastEditTime: 2021-07-02 18:26:37
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -616,7 +616,11 @@ export default {
                 this.contractForm[key] = tempValue;
               }
             }
-            this.fileList = tempResultObj.fileList || [];
+            tempResultObj.fileList = tempResultObj.fileList || [];
+            tempResultObj.fileList.forEach((item) => {
+              item.name = item.fileUrl.split("/").pop();
+            });
+            this.fileList = tempResultObj.fileList;
             this.$message.success(res.data.MSG || "");
           } else {
             this.$message.warning(res.data.MSG || "");

@@ -184,10 +184,15 @@
                 <el-table-column prop="price" label="操作">
                   <template slot-scope="scope">
                     <span
+                      v-if="sessionData.devManageLevel==2"
+                      class="table-row__btn"
+                      @click="showContractReview(scope.row)"
+                      >处理</span>
+                    <span
+                      v-else
                       class="table-row__btn"
                       @click="routeContractDetail(scope.row)"
-                      >查看</span
-                    >
+                      >查看</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -280,7 +285,7 @@
       </template>
     </el-dialog>
     <!-- 合同审核 -->
-    <contract-review-dialog :dcID="currentReviewDcID" :contractReviewVisible.sync="contractReviewVisible"></contract-review-dialog>
+    <contract-review-dialog :dcID="currentReviewDcID" :contractReviewVisible.sync="contractReviewVisible" @refreshList="getContractNews"></contract-review-dialog>
   </div>
 </template>
 
@@ -688,7 +693,7 @@ export default {
       }});
     },
     // 总监审核
-    showContractReview() {
+    showContractReview(row) {
       this.contractReviewVisible = true;
       this.currentReviewDcID = row.dcID;
     }

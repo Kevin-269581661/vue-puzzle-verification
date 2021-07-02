@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 22:06:58
+ * @LastEditTime: 2021-07-02 18:49:06
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -223,7 +223,7 @@ export default {
         if (res.data.SysCode == 200200) {
           this.$emit("update:contractReviewVisible", false);
           this.reasonVisible && (this.reasonVisible = false);
-          this.$emit("searchFormat");
+          this.$emit("refreshList");
           this.$message.success(res.data.MSG || "");
         } else {
           this.$message.warning(res.data.MSG || "");

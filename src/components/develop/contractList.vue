@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 18:49:45
+ * @LastEditTime: 2021-07-03 14:09:34
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -252,7 +252,7 @@
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.contractNo) }}</span>
+                <span>{{ scope.row.contractNo }}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -274,13 +274,13 @@
               fixed="right"
               :filters="
                 Object.keys(stateList).map((i) => {
-                  return { text: stateList[i], value: i };
+                  return { text: stateList[i].label, value: i };
                 })
               "
               :filter-multiple="true"
             >
               <template slot-scope="scope">{{
-                stateList[scope.row.dcState]
+                stateList[scope.row.dcState].label
               }}</template>
             </el-table-column>
             <el-table-column label="操作" width="100px" fixed="right">
@@ -398,13 +398,11 @@
 
 <script>
 import api from "../../api/api.js";
-import commaFormat from "../../commonFun/commaFormat.js";
-import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 import PayLog from "./components/payLog.vue";
 import NextContractDialog from "./components/nextContractDialog.vue";
 import AddMediaToContract from "./components/addMediaToContract.vue";
-import SignContract from "./components/signContract";
+import SignContract from "./components/signContract.vue";
 import ContractReviewDialog from "./components/contractReviewDialog.vue";
 
 export default {
@@ -419,7 +417,7 @@ export default {
 
   data() {
     return {
-      // 角色
+      // 角色：0-开发人员 1-资产人员 2-开发总监
       roleArr: ["0", "1", "2"],
       // 合同类型：0-首签  1-续约 2-加门 3-补充
       contractTypeArr: {
@@ -427,6 +425,17 @@ export default {
         1: "续签",
         2: "补充",
         3: "加门",
+      },
+      // 后台定义合同状态
+      stateList: {
+        "-1": {label: "不通过", color: "#F5222D"},
+        0: {label: "待审核", color: "#FFAA00"},
+        1: {label: "待签约", color: "#FFAA00"},
+        2: {label: "待安装", color: "#FFAA00"},
+        3: {label: "待拆除", color: "#FFAA00"},
+        4: {label: "正常", color: "#1890FF"},
+        5: {label: "合同到期", color: "#CDD4DA"},
+        6: {label: "强制终止", color: "#CDD4DA"},
       },
       // 合同列表操作权限路径(000: 开发人员/首签/待审核)
       /* operationAuthorityArr: {
@@ -559,42 +568,31 @@ export default {
       payLogDialogVisible: false,
       // 付款申请
       payApplyVisible: false,
-      // 后台定义合同状态
-      stateList: {
-        "-1": "不通过",
-        0: "待审核",
-        1: "待签约",
-        2: "待安装",
-        3: "待拆除",
-        4: "正常",
-        5: "合同到期",
-        6: "强制终止",
-      },
+      // 删除合同弹框
+      deleteContractVisible: false,
+      // 签约弹框
+      signVisible: false,
+      // 重新提交弹框
+      resubmitVisible: false,
+      // 合同审核弹框
+      contractReviewVisible: false,
       // 表格数据
       contractList: [],
       isDisable: false,
       currentContract: {},
-      deleteContractVisible: false,
-      signVisible: false,
-      resubmitVisible: false,
-      signVisible: false,
-      // 合同审核弹框
-      contractReviewVisible: false,
     };
   },
   created() {
     this.getSessionData();
     this.getCity();
     this.searchFormat();
-    // this.getOperationArr()
   },
   methods: {
     // 合同删除
     deleteContractFun() {
-      return;
       api
         .postApi("/addsp/devContract/delete", {
-          dcID: this.currentContract.dcID,
+          dcID: this.currentContract.id,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -689,28 +687,6 @@ export default {
     getSessionData() {
       this.sessionData = sessFun.getSess();
     },
-    // 时间格式规范预锁
-    formatTime(val) {
-      return dateFormat.toDate(val, "/");
-    },
-    // 价格加上逗号
-    priceFormat(price) {
-      return commaFormat.init(price);
-    },
-    routeSelect() {
-      if (this.sessionData.customPermission.proposalPermission == 1) {
-        // 直营
-        if (this.sessionData.uType == "BD") {
-          this.$router.push("./createPlan");
-        } else {
-          this.$router.push("./createPlanOld");
-        }
-      } else {
-        // 加盟
-        this.$router.push("./createPlanOld");
-      }
-    },
-
     // 新建合同
     routeCreateContract() {
       this.$router.push("./newContract");
@@ -755,16 +731,12 @@ export default {
         }
       });
     },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
-    },
     // 重置
     contractSearchForm() {
       this.$refs["contractSearchForm"].resetFields();
       this.currPage = 1;
       this.searchFormat();
     },
-
     // 获取权限城市
     getCity() {
       let info = {

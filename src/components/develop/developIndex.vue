@@ -50,7 +50,7 @@
                   </span>
                 </h4>
               </div>
-              <el-table :data="contractWarningList" border max-height="500">
+              <el-table :data="contractWarningList" border max-height="415">
                 <el-table-column
                   show-overflow-tooltip
                   label="资源名称"
@@ -132,10 +132,10 @@
       </el-row>
       <el-row class="index-row">
         <index-custom-card>
-          <template slot="head">合同动态</template>
+          <template slot="head">{{sessionData.devManageLevel==2?"待处理事项":"合同动态"}}</template>
           <template slot="content">
             <div style="padding: 24px">
-              <el-table :data="contractNews" border max-height="500">
+              <el-table :data="contractNews" border max-height="470">
                 <el-table-column
                   show-overflow-tooltip
                   label="资源名称"
@@ -148,7 +148,7 @@
                 <el-table-column
                   prop="contractNo"
                   label="合同编号"
-                  width="130"
+                  width="150"
                   show-overflow-tooltip
                 >
                 </el-table-column>
@@ -160,28 +160,28 @@
                 <el-table-column
                   prop="updateTime"
                   label="创建日期"
-                  width="130"
+                  min-width="160"
                   show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
                   prop="updateTime"
                   label="更新日期"
-                  width="130"
+                  min-width="160"
                   show-overflow-tooltip
                 >
                 </el-table-column>
-                <el-table-column prop="logType" label="审批类型" width="120">
+                <el-table-column prop="logType" label="审批类型" min-width="120">
                   <template slot-scope="scope">
                     {{ scope.row.logType == 2 ? "付款审批" : "合同审批" }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="cost" label="最新动态" width="120">
+                <el-table-column prop="cost" label="最新动态" min-width="120">
                   <template slot-scope="scope">
                     {{ statusMap[scope.row.logType][scope.row.state] || "--" }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="price" label="操作">
+                <el-table-column prop="price" label="操作" width="160">
                   <template slot-scope="scope">
                     <span
                       v-if="sessionData.devManageLevel==2"
@@ -200,7 +200,7 @@
           </template>
         </index-custom-card>
       </el-row>
-      <el-row class="index-row">
+      <el-row v-if="sessionData.devManageLevel==1||sessionData.devManageLevel==2" class="index-row">
         <index-custom-card>
           <template slot="head">
             业绩排行
@@ -247,7 +247,7 @@
                 <ul class="item-list">
                   <li
                     class="item"
-                    v-for="(rankItem, index) in newContractRank"
+                    v-for="(rankItem, index) in renewContractRank"
                     :key="index"
                   >
                     <span :title="rankItem.realName" class="label">{{
@@ -317,8 +317,7 @@ export default {
   },
   data() {
     return {
-      isAllMedia: false,
-      isShowNum: false,
+      sessionData: {},
       linkArrNew: [
         {
           imgurl: require("../../assets/images/gua.png"),
@@ -428,8 +427,6 @@ export default {
     getSession() {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
-      this.isAllMedia =
-        sess.uType == "MD" && sess.mediaManageLevel == 1 ? true : false;
       this.userInfo.userName = sess.realName;
       this.userInfo.role = this.sessionData.uType;
       this.userInfo.avator = sess.headPic
@@ -670,13 +667,8 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200500) {
             let temp = res.data.data || {};
-            this.newContractRank = temp.newContractRank || [
-              { realName: "realname", total: 3, rate: 89},
-              { realName: "realname", total: 7, rate: 1000 },
-              { realName: "realname", total: 8, rate: 60 },
-              { realName: "realname", total: 7, rate: 20 },
-            ];
-            this.renewContractRank = temp.renewContractRank;
+            this.newContractRank = temp.newContractRank || [];
+            this.renewContractRank = temp.renewContractRank || [];
           } else {
             this.$message.warning(res.data.MSG || "");
           }

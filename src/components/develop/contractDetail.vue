@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 09:43:34
+ * @LastEditTime: 2021-07-03 14:22:19
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -94,7 +94,6 @@ export default {
       activeTabName: "",
       detailArr: [],
       currentDcID: "",
-      // 合同状态和颜色映射
     };
   },
   watch: {},

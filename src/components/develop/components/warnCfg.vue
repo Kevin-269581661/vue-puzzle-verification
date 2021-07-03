@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-10 16:17:52
+ * @LastEditTime: 2021-07-03 11:09:27
  * @FilePath: /frontend/src/components/develop/components/warnCfg.vue
 -->
 <template>
@@ -39,11 +39,11 @@
           <div v-if="scope.row.operate">
             <span>{{ `${scope.row.warnTxt}` }}</span>
             <el-input-number
-              v-model="scope.row.time"
+              v-model="scope.row.tempDayCnt"
               controls-position="right"
               size="mini"
               :min="0"
-              :max="100"
+              :max="365"
               :precision="0"
               :step="1"
               step-strictly
@@ -52,7 +52,7 @@
           </div>
           <div v-else>
             <span>{{
-              `${scope.row.warnTxt}${scope.row.time}${scope.row.timeUnit}`
+              `${scope.row.warnTxt}${scope.row.dayCnt}${scope.row.timeUnit}`
             }}</span>
           </div>
         </template>
@@ -62,7 +62,7 @@
           <div v-if="scope.row.operate" class="operate-column">
             <span class="operate-column-btn" @click="saveFiled(scope.row)"
               >保存</span
-            >
+            >&nbsp;
             <span class="operate-column-btn" @click="cancelEditFiled(scope.row)"
               >取消</span
             >
@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import api from "../../../api/api";
 export default {
   name: "warnCfg",
   props: {},
@@ -86,38 +87,85 @@ export default {
     return {
       tableData: [
         {
+          warnType: 1,
           content: "合同即将到期",
           warnTxt: "距合同到期日期剩余",
-          time: 8,
-          timeUnit: "天",
-          operate: true,
-        },
-        {
-          content: "场地费待支付",
-          warnTxt: "距场地费待支付剩余",
-          time: 8,
+          dayCnt: "--",
           timeUnit: "天",
           operate: false,
         },
         {
+          warnType: 2,
+          content: "场地费待支付",
+          warnTxt: "距场地费待支付剩余",
+          dayCnt: "--",
+          timeUnit: "天",
+          operate: false,
+        },
+        {
+          warnType: 3,
           content: "开发费待支付",
           warnTxt: "距开发费待支付剩余",
-          time: 8,
+          dayCnt: "--",
           timeUnit: "天",
-          operate: true,
+          operate: false,
         },
       ],
-
       loading: false,
       totalNum: 0,
     };
   },
   watch: {},
   computed: {},
-  mounted() {},
+  mounted() {
+    // 获取该用户合同预警设置
+    this.getWarnList();
+  },
   methods: {
+    // 获取该用户合同预警设置
+    getWarnList() {
+      api.getApi("/addsp/devContractWarn/warnList").then((res) => {
+        if (res.data.SysCode == 200200) {
+          (res.data.data || []).forEach((item) => {
+            if (item.warnType > 0) {
+              let rowIndex = this.tableData.findIndex(
+                (rowData) => rowData.warnType == item.warnType
+              );
+              if (rowIndex != -1) {
+                this.tableData[rowIndex].dayCnt = item.dayCnt;
+                this.tableData[rowIndex].tempDayCnt = item.dayCnt;
+                this.tableData[rowIndex].id = item.id;
+              }
+            }
+          });
+        } else {
+          this.$message.warning(res.data.MSG || "获取预警信息失败！");
+        }
+      });
+    },
     saveFiled(row) {
       console.log("save--", row);
+      if (row.tempDayCnt) {
+        // 预警类型，1-合同到期预警 2-场地费预警 3-开发费预警
+        api
+          .postApi("/addsp/devContractWarn/createWarn", {
+            warnType: row.warnType,
+            dayCnt: row.tempDayCnt,
+            id: row.id || "",
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              row.dayCnt = row.tempDayCnt;
+              row.operate = false;
+              this.getWarnList()
+              this.$message.success(res.data.MSG || "保存成功！");
+            } else {
+              this.$message.warning(res.data.MSG || "保存失败！");
+            }
+          });
+      } else {
+        this.$message.warning("请先完成填写！");
+      }
     },
     editFiled(row) {
       row.operate = true;
@@ -126,7 +174,7 @@ export default {
     cancelEditFiled(row) {
       console.log("cancelEditFiled--");
       row.operate = false;
-    }
+    },
   },
 };
 </script>
@@ -149,7 +197,7 @@ export default {
         // line-height: 24px;
         margin: 0;
         .el-input__inner {
-          width: 64px;
+          width: 88px;
           // height: 24px;
           padding: 0 28px 0 8px;
           // line-height: 24px;
@@ -160,7 +208,7 @@ export default {
     .operate-column {
       color: #1890ff;
       .operate-column-btn {
-        cursor: default;
+        cursor: pointer;
       }
     }
   }

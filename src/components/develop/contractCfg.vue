@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 14:45:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-28 09:34:01
+ * @LastEditTime: 2021-07-03 10:32:36
  * @FilePath: /frontend/src/components/develop/contractCfg.vue
 -->
 <template>
@@ -14,10 +14,10 @@
     <el-container>
       <el-aside width="200px">
         <el-menu default-active="1">
-          <el-menu-item index="1" @click="showCom('customFiled')">
+          <!-- <el-menu-item index="1" @click="showCom('customFiled')">
             <span slot="title"> 自定义字段 </span>
-          </el-menu-item>
-          <el-menu-item index="2" @click="showCom('warnCfg')">
+          </el-menu-item> -->
+          <el-menu-item index="1" @click="showCom('warnCfg')">
             <span slot="title"> 合同预警 </span>
           </el-menu-item>
         </el-menu>
@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      comName: "customFiled"
+      comName: "warnCfg"
     };
   },
   computed: {},

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 18:16:50
+ * @LastEditTime: 2021-07-03 14:22:32
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -70,13 +70,94 @@
         </div>
       </el-col>
     </el-row>
+    <!-- 重新提交审核 -->
+    <el-dialog
+      :visible.sync="resubmitVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否重新提交审核？</div>
+      <div class="message-content">
+        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[currentContract.dcType] || ""}合同`
+        }}</span>
+        将被重新提交审核
+      </div>
+
+      <template slot="footer">
+        <el-button @click="resubmitVisible = false">取 消</el-button>
+        <el-button type="primary" @click="resubmitFun">确 定</el-button>
+      </template>
+    </el-dialog>
+    <!-- 合同删除 -->
+    <el-dialog
+      :visible.sync="deleteContractVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否删除该合同？</div>
+      <div class="message-content">
+        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[currentContract.dcType] || ""}合同`
+        }}</span>
+        将被删除
+      </div>
+
+      <template slot="footer">
+        <el-button @click="deleteContractVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteContractFun">确 定</el-button>
+      </template>
+    </el-dialog>
+    <!-- 关联媒体至合同 -->
+    <add-media-to-contract
+      :currentContract="currentContract"
+      :correlateMediaMode.sync="correlateMediaMode"
+      @searchFormat="searchFormat"
+    ></add-media-to-contract>
+    <!-- 续签弹框 -->
+    <next-contract-dialog
+      :mergeVisible.sync="mergeVisible"
+    ></next-contract-dialog>
+    <!-- 付款记录 -->
+    <pay-log
+      :payLogDialogVisible.sync="payLogDialogVisible"
+      :payApplyVisible.sync="payApplyVisible"
+    ></pay-log>
+    <!-- 完成签约 -->
+    <sign-contract :signVisible="signVisible"></sign-contract>
+    <!-- 合同审核 -->
+    <contract-review-dialog
+      :dcID="currentContract.id"
+      :contractReviewVisible.sync="contractReviewVisible"
+      @refreshList="searchFormat"
+    ></contract-review-dialog>
   </div>
 </template>
 
 <script>
 import api from "../../../api/api";
+import PayLog from "../components/payLog.vue";
+import NextContractDialog from "../components/nextContractDialog.vue";
+import AddMediaToContract from "../components/addMediaToContract.vue";
+import SignContract from "../components/signContract";
+import ContractReviewDialog from "../components/contractReviewDialog.vue";
 export default {
   name: "contractDetailCommon",
+  components: {
+    PayLog,
+    NextContractDialog,
+    AddMediaToContract,
+    SignContract,
+    ContractReviewDialog,
+  },
   props: {
     dcID: {
       type: [Number, String],
@@ -122,6 +203,22 @@ export default {
       operationArr: [],
       contractObj: {},
       mediaRelList: [],
+      // 录入媒体弹框
+      correlateMediaMode: false,
+      // 续签合同
+      mergeVisible: false,
+      // 付款记录
+      payLogDialogVisible: false,
+      // 付款申请
+      payApplyVisible: false,
+      // 删除合同弹框
+      deleteContractVisible: false,
+      // 签约弹框
+      signVisible: false,
+      // 重新提交弹框
+      resubmitVisible: false,
+      // 合同审核弹框
+      contractReviewVisible: false,
     };
   },
   watch: {
@@ -269,6 +366,73 @@ export default {
 };
 </script>
 <style lang="scss" scope>
+@import "../../../assets/component.scss";
+/deep/ .custom-confirm-dialog {
+  border-radius: 4px;
+  .el-dialog__header {
+    padding: 24px 24px 8px;
+    border: none !important;
+    .el-dialog__title {
+      font-size: 16px;
+      color: rgba($color: #000, $alpha: 0.85);
+    }
+    .el-icon-question {
+      margin-right: 16px;
+      color: #fa8c16;
+      &:before {
+        font-size: 21px;
+      }
+    }
+  }
+  .el-dialog__body {
+    border: none !important;
+    .content-form {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 24px;
+      /* 完成签约和付款 */
+      .el-form-item {
+        &:last-child {
+          margin-bottom: 0;
+        }
+        .el-form-item__label {
+          padding: 0;
+          line-height: 32px;
+        }
+        .el-form-item__content {
+          line-height: 32px;
+        }
+        .el-date-editor {
+          width: 100%;
+        }
+      }
+    }
+    /* 重新提交和删除合同 */
+    .message-content {
+      padding-left: 40px;
+      line-height: 22px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      & .active {
+        color: #1890ff;
+        font-weight: 600;
+      }
+    }
+
+    .el-select {
+      width: 100%;
+    }
+  }
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+}
 .media-table {
   margin: 16px 12px;
   width: calc(100% - 24px);

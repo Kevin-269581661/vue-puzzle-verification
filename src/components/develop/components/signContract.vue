@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 19:58:38
+ * @LastEditTime: 2021-07-03 14:40:08
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -72,7 +72,8 @@ export default {
     // 获取可续签的合同对象
     signContractFun() {
       console.log("signContractForm---", this.signContractForm);
-      api
+      if(this.signContractForm.signDate && this.signContractForm.contractNo) {
+        api
         .postApi("/addsp/devContract/changeDCState", this.signContractForm)
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -81,6 +82,9 @@ export default {
             this.$message.warning(res.data.MSG || "");
           }
         });
+      } else {
+        this.$message.warning("请完善签约内容！")
+      }
     },
   },
 };

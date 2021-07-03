@@ -2,14 +2,14 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 18:25:16
+ * @LastEditTime: 2021-07-03 23:46:46
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
   <div class="new-contract-page">
     <el-breadcrumb separator="/" class="contract-crumb">
       <el-breadcrumb-item>合同管理</el-breadcrumb-item>
-      <el-breadcrumb-item>续签合同</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ contractTypeArr[handleType] }}</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="content">
       <el-row style="text-align: center; padding: 32px 0">
@@ -44,6 +44,9 @@
       <keep-alive>
         <component
           ref="needValidForm"
+          :handleType="handleType"
+          :originIDs="originIDs"
+          :resFormData="resFormData"
           :contractFormData="contractFormData"
           :is="componentName"
           @submitContract="newContract"
@@ -53,23 +56,13 @@
     <div class="footer">
       <div v-if="activeStep == 1" class="footer-btn-group">
         <el-button type="default" @click="cancelFirstStep">取消</el-button>
-        <el-button type="primary" @click="secondStep">下一步</el-button>
+        <el-button type="primary" @click="secondStep">创建</el-button>
       </div>
       <div v-else-if="activeStep == 2" class="footer-btn-group">
-        <el-button type="default" @click="cancelFirstStep">取消</el-button>
-        <el-button
-          type="default"
-          @click="
-            activeStep = 1;
-            componentName = 'resInput';
-          "
-          >上一步</el-button
+        <el-button type="default" @click="routeContractList">合同列表</el-button>
+        <el-button type="primary" @click="routeContractDetail"
+          >查看详情</el-button
         >
-        <el-button type="primary" @click="thirdStep">保存</el-button>
-      </div>
-      <div v-else-if="activeStep == 3" class="footer-btn-group">
-        <el-button type="default" @click="cancelFirstStep">合同列表</el-button>
-        <el-button type="primary" @click="routeContractDetail">查看详情</el-button>
       </div>
     </div>
   </div>
@@ -88,25 +81,51 @@ export default {
   props: {},
   data() {
     return {
+      contractTypeArr: {
+        1: "续签合同",
+        2: "补充协议",
+        3: "加门合同",
+      },
+      handleType: 0,
+      sessionData: JSON.parse(sessionStorage.getItem("session_data")),
+      resFormData: {},
+
       activeStep: 1,
       componentName: "contractInput",
       contractFormData: {},
+      originIDs: "",
     };
   },
   watch: {},
   computed: {},
   created() {
-    // 填充部分合同信息
-    // this.contractFormData =
+    let queryParams = this.$route.query || {};
+    // 1-续签 2-补充 3-加门
+    this.handleType = queryParams.handleType;
+    this.resFormData.resName = queryParams.resName;
+    this.resFormData.pmcName = queryParams.pmcName;
+    this.resID = queryParams.resID;
+    this.originIDs = queryParams.originIDs;
   },
   mounted() {},
   methods: {
+    /* 跳转至合同列表 */
+    routeContractList() {
+      this.$router.push({
+        path: "./routeContractList"
+      });
+    },
     /* 跳转至合同详情 */
     routeContractDetail() {
-      this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
+      this.$router.push({
+        path: "./contractDetail",
+        query: { resID: this.resFormData.resID },
+      });
     },
     /* 第一步取消 */
-    cancelFirstStep() {},
+    cancelFirstStep() {
+      this.$router.go(-1);
+    },
     /* 第一步进入第二部 */
     async secondStep() {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
@@ -118,36 +137,46 @@ export default {
         this.componentName = "contractFinished";
       }
     },
-    newContract() {
+    async thirdStep() {
+      // 表单验证
+      let needValidFormResult = await this.$refs.needValidForm.submitForm();
+      if (needValidFormResult) {
+        this.contractFormData = this.$refs.needValidForm.contractForm;
+        // 文件上传（完成后继续提交合同信息）
+        this.$refs.needValidForm.submitUpload();
+      }
+    },
+    newContract(fileIDs) {
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
       let params = {
+        resID: this.resFormData.resID,
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
         ...this.contractFormData,
-        fileIDs
+        fileIDs,
       };
       params.venueFee = params.venueFee * 100;
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
       // 合同类型：0-首签 1-续约 2-加门 3-补充
-      params.dcType = 1;
+      params.dcType = this.handleType;
       // 续约，加门或者补充时父单的id （首签时传0）
-      // params.pID = 0;
-      // fileIDs
+      params.pID = this.originIDs;
       return new Promise((resolve) => {
         api
-          .postApi("/addsp/devContract/create", params)
+          .postApi_json("/addsp/devContract/create", params)
           .then((res) => {
-            console.log("创建合同", res);
             if (res.data.SysCode === 200200) {
               resolve(true);
+              this.activeStep = 3;
+              this.componentName = "contractFinished";
             } else {
-              sessFun.messageFun("warning", res.data.MSG);
+              this.$message.warning(res.data.MSG || "");
             }
           })
           .finally(() => {

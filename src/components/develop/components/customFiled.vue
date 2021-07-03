@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-18 14:17:12
+ * @LastEditTime: 2021-07-03 16:33:45
  * @FilePath: /frontend/src/components/develop/components/customFiled.vue
 -->
 <template>
@@ -181,10 +181,8 @@ export default {
     },
     editFiled(row) {
       row.operate = true;
-      console.log("edit--");
     },
     cancelEditFiled(row) {
-      console.log("cancelEditFiled--");
       row.operate = false;
     },
     handleClose() {

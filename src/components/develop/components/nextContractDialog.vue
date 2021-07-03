@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 17:17:00
+ * @LastEditTime: 2021-07-03 22:31:58
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -35,7 +35,7 @@
     </div>
 
     <template slot="footer">
-      <el-button @click="mergeVisible = false">取 消</el-button>
+      <el-button @click="$emit('update:mergeVisible', false)">取 消</el-button>
       <el-button type="primary" @click="routeNextContract">确 定</el-button>
     </template>
   </el-dialog>
@@ -50,6 +50,12 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    currentContract: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  created() {
   },
   data() {
     return {
@@ -83,7 +89,9 @@ export default {
     getOriginList() {
       console.log("getOriginList---");
       api
-        .getApi("/addsp/devContract/getOriginList", { dcID: "" })
+        .getApi("/addsp/devContract/getOriginList", {
+          resID: this.currentContract.resID,
+        })
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.contractOriginList = [];
@@ -94,10 +102,13 @@ export default {
     },
     // 调转到合同续签
     routeNextContract() {
-      if(this.mergeOriginList.length>0) {
-        this.$router.push("./nextContract");
+      if (this.mergeOriginList.length > 0) {
+        this.$router.push({
+          path: "./nextContract",
+          query: { resID: this.currentContract.resID, dcID: this.currentContract.id },
+        });
       } else {
-        this.$message.warning("请选择合同对象！")
+        this.$message.warning("请选择合同对象！");
       }
     },
   },

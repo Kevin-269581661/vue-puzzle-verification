@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:40:08
+ * @LastEditTime: 2021-07-03 14:54:39
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -49,6 +49,9 @@ import api from "../../../api/api";
 export default {
   name: "signContract",
   props: {
+    dcID: {
+      type: [Number, String],
+    },
     signVisible: {
       type: Boolean,
       default: () => false,
@@ -69,14 +72,18 @@ export default {
   },
   mounted() {},
   methods: {
-    // 获取可续签的合同对象
+    // 合同签约
     signContractFun() {
       console.log("signContractForm---", this.signContractForm);
       if(this.signContractForm.signDate && this.signContractForm.contractNo) {
         api
-        .postApi("/addsp/devContract/changeDCState", this.signContractForm)
-        .then((res) => {
+        .postApi("/addsp/devContract/changeDCState", {
+          ...this.signContractForm,
+          dcID: this.dcID
+        }).then((res) => {
           if (res.data.SysCode == 200200) {
+            this.$emit("update:signVisible", false);
+            this.$emit("refreshList");
             this.$message.success(res.data.MSG || "签约成功！");
           } else {
             this.$message.warning(res.data.MSG || "");

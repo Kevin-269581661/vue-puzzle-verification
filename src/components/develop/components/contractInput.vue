@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 18:26:37
+ * @LastEditTime: 2021-07-03 23:42:26
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -84,7 +84,7 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
-                <el-col :span="6">
+                <el-col v-if="handleType == 0" :span="6">
                   <el-form-item label="合同媒体数量" prop="mediaNewCnt">
                     <el-input-number
                       v-model="contractForm.mediaNewCnt"
@@ -96,6 +96,38 @@
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
+                <template v-else>
+                  <el-col :span="6">
+                    <el-form-item label="新增媒体数量" prop="mediaNewCnt">
+                      <el-input-number
+                        v-model="contractForm.mediaNewCnt"
+                        controls-position="right"
+                        placeholder="请输入合同媒体数量"
+                        @blur="blurFun('mediaNewCnt')"
+                        :min="0"
+                        :max="9999"
+                      ></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="拆除媒体" prop="demolishMediaIDs">
+                      <el-select
+                        size="small"
+                        placeholder="请选择要拆除媒体"
+                        v-model="contractForm.demolishMediaIDs"
+                        @blur="blurFun('demolishMediaIDs')"
+                      >
+                        <el-option
+                          v-for="item in demolishMediaList"
+                          :key="item.mID"
+                          :label="item.mTitle"
+                          :value="item.mID"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </template>
                 <el-col :span="6">
                   <el-form-item label="到期门体归属权" prop="ownership">
                     <el-select
@@ -342,8 +374,8 @@
                   </el-col>
                 </template>
               </el-row>
-              <el-form-item label="其它信息" class="baseInfo"></el-form-item>
-              <el-row :gutter="76" class="from_row">
+              <!-- <el-form-item label="其它信息" class="baseInfo"></el-form-item> -->
+              <!-- <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
                   <el-form-item label="物业规模(人数)" prop="developer">
                     <el-input
@@ -352,7 +384,7 @@
                     ></el-input>
                   </el-form-item>
                 </el-col>
-              </el-row>
+              </el-row> -->
               <el-form-item label="附件" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="8">
@@ -404,6 +436,14 @@ export default {
     resFormData: {
       type: Object,
       default: () => {},
+    },
+    handleType: {
+      type: [Number, String],
+      default: () => 0,
+    },
+    originIDs: {
+      type: [Number, String],
+      default: () => "",
     },
   },
   data() {
@@ -458,7 +498,8 @@ export default {
         endDate: "", // 合同结束日期
         ownership: "", // 到期门体归属权
         remark: "", // 合同备注
-        mediaNewCnt: "", //合同媒体数量（首签和加门都是新增）
+        mediaNewCnt: "", // 合同媒体数量（首签和加门都是新增）
+        demolishMediaIDs: "", // 合同拆除媒体
 
         freeCarGateCnt: "", // 赠送车场道闸
         freeGuardrailDoorCnt: "", // 赠送护栏门
@@ -568,19 +609,42 @@ export default {
       resData: { resID: "" }, // 创建资源成功，保存返回来的数据
       sessionData: sessFun.getSess(),
       submitBtnIsAble: false, // 防止多次点击
+      demolishMediaList: [],
     };
   },
   computed: {},
   watch: {},
   created() {
-    if (this.$route.path.indexOf("editContract") !== -1) {
-      this.getContractDetail((this.$route.query || {}).dcID);
+    if (
+      this.$route.path.indexOf("editContract") !== -1 ||
+      this.$route.path.indexOf("nextContract") !== -1
+    ) {
+      this.getContractDetail(this.originIDs.split(",")[0]);
     }
   },
   mounted: function () {
     this.customPermission = this.sessionData.customPermission;
+    console.log("----==", this.handleType);
+    if (this.handleType) {
+      this.getDemolishMediaList();
+    }
   },
   methods: {
+    // 获取可删除媒体
+    getDemolishMediaList() {
+      api
+        .getApi("/addsp/devContract/demolishMediaList", {
+          originIDs: this.originIDs,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.demolishMediaList = res.data.data || [];
+            this.$message.success(res.data.MSG || "");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
     // 编辑时获取合同详情
     getContractDetail(dcID = "") {
       if (!dcID) return;
@@ -591,6 +655,8 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             const tempResultObj = res.data.data || {};
+            this.resFormData.pmcName = tempResultObj.pmcName || "";
+            this.resFormData.resName = tempResultObj.resName || "";
             for (const key in this.contractForm) {
               let tempValue = tempResultObj[key];
               if (

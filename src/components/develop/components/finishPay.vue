@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 11:19:58
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-29 12:07:29
+ * @LastEditTime: 2021-07-03 21:38:33
  * @FilePath: /frontend/src/components/develop/components/finishPay.vue
 -->
 <template>
@@ -41,7 +41,7 @@
     </el-form>
 
     <template slot="footer">
-      <el-button @click="finishPayVisible = false">取 消</el-button>
+      <el-button @click="$emit('update:finishPayVisible', false)">取 消</el-button>
       <el-button type="primary" @click="finishPayFun">确 定</el-button>
     </template>
   </el-dialog>
@@ -79,11 +79,12 @@ export default {
   methods: {
     // 获取可续签的合同对象
     finishPayFun() {
-      console.log("finishPayForm---", this.finishPayForm);
+      this.finishPayForm.dcpID = this.payLog.id;
       api
         .postApi("/addsp/devContract/changePayState", this.finishPayForm)
         .then((res) => {
           if (res.data.SysCode == 200200) {
+            this.$emit("refreshPayLog");
             this.$message.success(res.data.MSG || "付款完成！");
           } else {
             this.$message.warning(res.data.MSG || "");

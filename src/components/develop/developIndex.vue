@@ -69,15 +69,33 @@
                     <span>{{ scope.row.originName || "--" }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column prop="contractNo" label="合同编号" width="100">
+                <el-table-column
+                  prop="contractNo"
+                  label="合同编号"
+                  width="100"
+                  show-overflow-tooltip
+                >
+                  <template slot-scope="scope">
+                    {{ scope.row.contractNo||"--" }}
+                  </template>
                 </el-table-column>
-                <el-table-column prop="pmcName" label="物业名称" width="100">
+                <el-table-column
+                  prop="pmcName"
+                  label="物业名称"
+                  width="100"
+                  show-overflow-tooltip
+                >
                 </el-table-column>
-                <el-table-column prop="date" label="合同日期" width="100">
+                <el-table-column
+                  prop="date"
+                  label="合同日期"
+                  width="100"
+                  show-overflow-tooltip
+                >
                 </el-table-column>
                 <el-table-column prop="fee" label="费用" width="100">
                   <template slot-scope="scope">
-                    {{ scope.row.warnType > 0 ? scope.row.fee : "--" }}
+                    {{ (scope.row.fee / 100) | moneyFormat("¥") }}
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -87,7 +105,7 @@
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    {{ warnTypeMap[scope.row.warnType] }}
+                    {{ scope.row.warnType || "--" }}
                   </template>
                 </el-table-column>
                 <el-table-column prop="dayDiffer" label="预警倒计时">
@@ -109,7 +127,7 @@
                       <mini-progress
                         slot="reference"
                         :target="0"
-                        :percentage="scope.row.rate * 100"
+                        :percentage="scope.row.rate"
                         :value="scope.row.dayDiffer"
                         :height="'20px'"
                         color="rgba(24, 144, 255, 1)"
@@ -118,7 +136,7 @@
                     <mini-progress
                       v-else
                       :target="0"
-                      :percentage="scope.row.restRate * 100"
+                      :percentage="scope.row.rate"
                       :value="scope.row.dayDiffer"
                       :height="'20px'"
                       color="rgba(24, 144, 255, 1)"
@@ -132,7 +150,9 @@
       </el-row>
       <el-row class="index-row">
         <index-custom-card>
-          <template slot="head">{{sessionData.devManageLevel==2?"待处理事项":"合同动态"}}</template>
+          <template slot="head">{{
+            sessionData.devManageLevel == 2 ? "待处理事项" : "合同动态"
+          }}</template>
           <template slot="content">
             <div style="padding: 24px">
               <el-table :data="contractNews" border max-height="470">
@@ -171,7 +191,11 @@
                   show-overflow-tooltip
                 >
                 </el-table-column>
-                <el-table-column prop="logType" label="审批类型" min-width="120">
+                <el-table-column
+                  prop="logType"
+                  label="审批类型"
+                  min-width="120"
+                >
                   <template slot-scope="scope">
                     {{ scope.row.logType == 2 ? "付款审批" : "合同审批" }}
                   </template>
@@ -184,15 +208,17 @@
                 <el-table-column prop="price" label="操作" width="160">
                   <template slot-scope="scope">
                     <span
-                      v-if="sessionData.devManageLevel==2"
+                      v-if="sessionData.devManageLevel == 2"
                       class="table-row__btn"
                       @click="showContractReview(scope.row)"
-                      >处理</span>
+                      >处理</span
+                    >
                     <span
                       v-else
                       class="table-row__btn"
                       @click="routeContractDetail(scope.row)"
-                      >查看</span>
+                      >查看</span
+                    >
                   </template>
                 </el-table-column>
               </el-table>
@@ -200,7 +226,12 @@
           </template>
         </index-custom-card>
       </el-row>
-      <el-row v-if="sessionData.devManageLevel==1||sessionData.devManageLevel==2" class="index-row">
+      <el-row
+        v-if="
+          sessionData.devManageLevel == 1 || sessionData.devManageLevel == 2
+        "
+        class="index-row"
+      >
         <index-custom-card>
           <template slot="head">
             业绩排行
@@ -285,7 +316,11 @@
       </template>
     </el-dialog>
     <!-- 合同审核 -->
-    <contract-review-dialog :dcID="currentReviewDcID" :contractReviewVisible.sync="contractReviewVisible" @refreshList="getContractNews"></contract-review-dialog>
+    <contract-review-dialog
+      :dcID="currentReviewDcID"
+      :contractReviewVisible.sync="contractReviewVisible"
+      @refreshList="getContractNews"
+    ></contract-review-dialog>
   </div>
 </template>
 
@@ -313,7 +348,7 @@ export default {
     chartCard,
     indexCustomCard,
     miniProgress,
-    contractReviewDialog
+    contractReviewDialog,
   },
   data() {
     return {
@@ -366,12 +401,6 @@ export default {
       // 合同预警列表
       contractWarningList: [],
       maxDayDiffer: 0,
-      // 合同预警类型
-      warnTypeMap: {
-        0: "合同即将到期",
-        1: "场地费待支付",
-        2: "开发费待支",
-      },
       contractTypeArr: {
         0: "首签",
         1: "续签",
@@ -408,7 +437,7 @@ export default {
         },
       },
       // 合同审核弹框
-      contractReviewVisible: false
+      contractReviewVisible: false,
     };
   },
   mounted() {
@@ -679,16 +708,19 @@ export default {
     },
     /* 跳转至合同详情（资产、开发） */
     routeContractDetail(row) {
-      console.log("0-0", row.resID)
-      this.$router.push({path: "./f_develop/contractDetail", query: {
-        resID: row.resID
-      }});
+      console.log("0-0", row.resID);
+      this.$router.push({
+        path: "./f_develop/contractDetail",
+        query: {
+          resID: row.resID,
+        },
+      });
     },
     // 总监审核
     showContractReview(row) {
       this.contractReviewVisible = true;
       this.currentReviewDcID = row.dcID;
-    }
+    },
   },
 };
 </script>

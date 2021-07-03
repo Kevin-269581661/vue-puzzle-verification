@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 14:21:26
+ * @LastEditTime: 2021-07-03 21:32:43
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -26,18 +26,33 @@
             >
               <div class="log-top">
                 <span class="log-top__timestamp">{{ logItem.updateTime }}</span>
-                <img
+                <!-- <img
                   class="pay-status"
                   src="../../../assets/images/develop/statusDanger.png"
                   alt=""
-                />
-                <el-tooltip content="原因：实付费用有问题" placement="top">
+                /> -->
+                <span
+                  :class="{ 'pay-status': true }"
+                  :style="{
+                    color: payState[logItem.payState].color,
+                    'border-color': payState[logItem.payState].color,
+                  }"
+                  >{{ payState[logItem.payState].label }}</span
+                >
+                <el-tooltip
+                  v-if="logItem.payState == -1"
+                  :content="'原因：' + logItem.failReason || '--'"
+                  placement="top"
+                >
                   <img
                     class="quesition-icon"
                     src="../../../assets/images/question_icon.png"
                   />
                 </el-tooltip>
                 <el-dropdown
+                  v-if="
+                    sessionData.devManageLevel == 2 && logItem.payState == 0
+                  "
                   :hide-on-click="false"
                   trigger="click"
                   size="medium"
@@ -56,7 +71,7 @@
                       icon="el-icon-warning"
                       icon-color="#FAAD14"
                       title="确定通过吗？"
-                      @confirm="agreeFun"
+                      @confirm="agreeFun(logItem)"
                     >
                       <el-dropdown-item slot="reference">通过</el-dropdown-item>
                     </el-popconfirm>
@@ -69,7 +84,7 @@
                       icon="el-icon-warning"
                       icon-color="#FAAD14"
                       title="确定不通过吗？"
-                      @confirm="disagreeFun"
+                      @confirm="disagreeFun(logItem)"
                     >
                       <el-dropdown-item slot="reference"
                         >不通过</el-dropdown-item
@@ -77,6 +92,42 @@
                     </el-popconfirm>
                   </el-dropdown-menu>
                 </el-dropdown>
+                <span
+                  v-if="
+                    sessionData.devManageLevel == 0 && logItem.payState == -1
+                  "
+                  class="el-dropdown-link"
+                  @click="$emit('update:payApplyVisible', true)"
+                >
+                  重新申请
+                </span>
+                <span
+                  v-if="
+                    sessionData.devManageLevel == 1 && logItem.payState == 1
+                  "
+                  class="el-dropdown-link"
+                  @click="finishPayFun(logItem)"
+                >
+                  完成付款
+                </span>
+                <el-popconfirm
+                  v-if="
+                    sessionData.devManageLevel == 2 && logItem.payState == 2
+                  "
+                  popper-class="handle-btn-pop"
+                  placement="top-end"
+                  confirm-button-text="确定"
+                  cancel-button-text="取消"
+                  cancel-button-type="default"
+                  icon="el-icon-warning"
+                  icon-color="#FAAD14"
+                  title="确定完成开票吗？"
+                  @confirm="finishReceipt(logItem)"
+                >
+                  <span slot="reference" class="el-dropdown-link">
+                    完成开票
+                  </span>
+                </el-popconfirm>
               </div>
 
               <li class="info-item">
@@ -168,7 +219,7 @@
 
       <template slot="footer">
         <el-button @click="reasonVisible = false">取 消</el-button>
-        <el-button type="primary" @click="changePayState">确 定</el-button>
+        <el-button type="primary" @click="changePayState(0)">确 定</el-button>
       </template>
     </el-dialog>
     <!-- 付款申请 -->
@@ -201,6 +252,23 @@
             <el-option label="场地费" :value="1"></el-option>
             <el-option label="开发费" :value="2"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="
+            currentContract[['venueDate', 'devDate'][payApplyForm.payType - 1]]
+          "
+          label="付款年份："
+          prop="finishYear"
+          :label-width="formLabelWidth"
+        >
+          <el-date-picker
+            v-model="payApplyForm.finishYear"
+            size="small"
+            type="year"
+            value-format="yyyy"
+            placeholder="请选择付款年份"
+          >
+          </el-date-picker>
         </el-form-item>
         <el-form-item
           class="special-padding"
@@ -293,12 +361,12 @@
             "
             >取 消</el-button
           >
-          <el-button type="primary" @click="createPayRecord">确 定</el-button>
+          <el-button type="primary" @click="submitUpload">确 定</el-button>
         </div>
       </span>
     </el-dialog>
     <!-- 完成付款 -->
-    <finish-pay :finishPayVisible="finishPayVisible"></finish-pay>
+    <finish-pay :finishPayVisible.sync="finishPayVisible" :payLog="currentLogItem" @refreshPayLog="getPayRecordList"></finish-pay>
   </div>
 </template>
 
@@ -319,29 +387,9 @@ export default {
       type: Boolean,
       default: () => false,
     },
-    showMatchResult: {
-      type: Boolean,
-      default: () => false,
-    },
-    apID: {
-      type: [String, Number],
-    },
-    rejectAdPlan: {
-      type: Array,
-      default: () => [],
-    },
-    ADLimit: {
-      type: Array,
-      default: () => [],
-    },
-    customPermission: {
+    currentContract: {
       type: Object,
       default: () => {},
-    },
-    // 销售配点次数
-    matchCnt: {
-      type: Number,
-      default: () => 10,
     },
   },
   components: {
@@ -350,13 +398,14 @@ export default {
   },
   data() {
     return {
+      loading: false,
       payLogArr: [],
       disagreeTxt: "",
       reasonVisible: false,
       formLabelWidth: "85px",
       payApplyForm: {
         payType: 1,
-        finshYear: 0,
+        finishYear: "",
         planPayTotal: 0,
         actualPayTotal: 0,
         bankAccount: "",
@@ -364,7 +413,12 @@ export default {
         remark: "",
       },
       payApplyFormRules: {
-        payType: [{ required: true, trigger: "blur" }],
+        payType: [
+          { required: true, message: "支付款项不能为空", trigger: "blur" },
+        ],
+        finishYear: [
+          { required: true, message: "付款年份不能为空", trigger: "blur" },
+        ],
         actualPayTotal: [
           { required: true, message: "付款金额不能为空", trigger: "blur" },
           { type: "number", message: "必须为数字值", trigger: "blur" },
@@ -374,6 +428,14 @@ export default {
       sessionData: null,
       loading: false,
       finishPayVisible: false,
+      currentLogItem: {},
+      payState: {
+        "-1": { label: "不通过", color: "#E51E28" },
+        0: { label: "待审核", color: "#FAAD14" },
+        1: { label: "待付款", color: "#FAAD14" },
+        2: { label: "待开票", color: "#FAAD14" },
+        3: { label: "已完成", color: "#CDD4DA" },
+      },
     };
   },
   watch: {
@@ -382,7 +444,7 @@ export default {
       handler(newVal, oldVal) {
         newVal && this.getPayRecordList();
       },
-    }
+    },
   },
   created() {
     this.sessionData = sessFun.getSess();
@@ -397,13 +459,17 @@ export default {
       console.log("event--=-", event, fileList);
     },
     uploadSuccess(response, file, fileList) {
-      console.log("response", response, file);
       if (response.SysCode == 200200) {
-        // 继续创建
         file.fileUrl = response.data.fileUrl || "";
         file.id = response.data.id || "";
+        // 继续付款
+        if (this.payApplyFileList.every((item) => item.id)) {
+          this.createPayRecord(
+            this.payApplyFileList.map((item) => item.id).join(",")
+          );
+        }
       } else {
-        this.$message.warning(response.MSG);
+        this.$message.warning(response.MSG || "");
       }
     },
     uploadError(err, file, fileList) {
@@ -418,104 +484,120 @@ export default {
         done();
       }
     },
-    // 提交付款申请
-    createPayRecord() {
-      if (!this.payApplyFileList.every((item) => item.id && item.fileUrl)) {
-        // 还有文件未上传
-        console.log("payApplyFileList", this.payApplyFileList);
-        this.$refs.fileUpload.submit();
+    // 手动上传文件
+    submitUpload() {
+      console.log("手动上传文件--");
+      if (this.payApplyFileList.every((item) => item.id)) {
+        this.createPayRecord(
+          this.payApplyFileList.map((item) => item.id).join(",")
+        );
       } else {
-        this.$refs.payApplyForm.validate((valid) => {
-          if (valid) {
-            console.log("success---", this.payApplyForm);
-            api
-              .postApi("/addsp/devContract/createPayRecord", {
-                ...this.payApplyForm,
-                dcID: "",
-                fileIDs: this.payApplyFileList.map((item) => item.id).join(","),
-              })
-              .then((res) => {
-                if (res.data.SysCode == 200200) {
-                } else {
-                  this.$message.warning(res.data.MSG || "");
-                  this.$emit("update:payApplyVisible", false);
-                }
-              });
-          } else {
-            console.warn("valid---");
-            return false;
-          }
-        });
+        // 还有文件未上传
+        this.$refs.fileUpload.submit();
       }
     },
-    //
-    agreeFun() {
+    // 提交付款申请
+    createPayRecord(fileIDs) {
+      this.$refs.payApplyForm.validate((valid) => {
+        if (valid) {
+          const loading = this.$loading({
+            text: "请耐心等待...",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          api
+            .postApi("/addsp/devContract/createPayRecord", {
+              ...this.payApplyForm,
+              dcID: this.currentContract.id,
+              fileIDs,
+            })
+            .then((res) => {
+              if (res.data.SysCode == 200200) {
+                this.$emit("refreshList");
+                this.$emit("update:payApplyVisible", false);
+              } else {
+                this.$message.warning(res.data.MSG || "");
+              }
+            })
+            .finally((res) => {
+              loading.close();
+            });
+        } else {
+          console.warn("valid---");
+        }
+      });
+    },
+    // 完成付款
+    finishPayFun(logItem) {
+      logItem.actualPayTotal = Number(logItem.actualPayTotal/100).toFixed(2);
+      this.currentLogItem=logItem;
       this.finishPayVisible = true;
     },
+    // 完成开票
+    finishReceipt(logItem) {
+      api
+        .postApi("/addsp/devContract/changePayState", {
+          dcpID: logItem.id,
+          passState: 1,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.getPayRecordList();
+          } else {
+            this.$message.warning(res.data.MSG || "完成开票失败！");
+          }
+        });
+    },
+    // 通过审核弹框
+    agreeFun(logItem) {
+      this.currentLogItem = logItem;
+      this.changePayState(1);
+    },
     // 付款申请不通过确认框
-    disagreeFun() {
+    disagreeFun(logItem) {
+      this.currentLogItem = logItem;
       this.reasonVisible = true;
     },
-    // 付款申请不通过
-    changePayState() {
-      console.log("不通过理由", this.disagreeTxt);
-      if (this.disagreeTxt !== 0)
-        api
-          .postApi("/addsp/devContract/changePayState", {
-            dcpID: "",
-            passState: 0,
-            failReason: "",
-          })
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-            } else {
-              this.$message.warning(res.data.MSG || "审核失败！");
-            }
-          });
+    // 付款申请审核
+    changePayState(flag) {
+      let params = {
+        dcpID: this.currentLogItem.id,
+        passState: flag,
+      };
+      if (!flag) {
+        if (this.disagreeTxt) {
+          params.failReason = this.disagreeTxt;
+        } else {
+          this.$message.warning("请输入不通过理由！");
+          return;
+        }
+      }
+      api.postApi("/addsp/devContract/changePayState", params).then((res) => {
+        if (res.data.SysCode == 200200) {
+          this.reasonVisible = false;
+          this.getPayRecordList();
+        } else {
+          this.$message.warning(res.data.MSG || "审核失败！");
+        }
+      });
     },
     // 获取付款记录
     getPayRecordList() {
+      this.loading = true;
       return new Promise((resolve) => {
         api
-          .getApi("/addsp/devContract/payRecordList?dcID=")
+          .getApi("/addsp/devContract/payRecordList", {
+            dcID: this.currentContract.id,
+          })
           .then((res) => {
             if (res.data.SysCode == 200200) {
+              this.payLogArr = res.data.data || [];
             } else {
               this.$message.warning(res.data.MSG);
             }
           })
           .finally(() => {
-            this.payLogArr = [
-              {
-                actualPayTotal: 0,
-                bankAccount: "string",
-                bankName: "string",
-                createTime: "2021-06-24 10:30:53",
-                createUser: 0,
-                dcID: 0,
-                fileIDs: "string",
-                fileList: [
-                  {
-                    createTime: "2021-06-24T10:30:53.613Z",
-                    dcID: 0,
-                    dcpID: 0,
-                    fileUrl: "string",
-                    id: 0,
-                    type: 0,
-                    uID: 0,
-                  },
-                ],
-                finishDate: "string",
-                id: 0,
-                payState: 0,
-                //payType: 1-场地费 2-开发费
-                payType: 1,
-                planPayTotal: 0,
-                remark: "string",
-                updateTime: "2021-06-24 10:30:53",
-              },
-            ];
-            this.payLogArr = this.payLogArr.concat(this.payLogArr);
+            this.loading = false;
           })
           .catch((err) => {
             console.log(err);
@@ -532,14 +614,6 @@ export default {
       oInput.style.display = "none";
       this.$message.success("复制成功");
     },
-
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) =>
-        filterVal.map((j) =>
-          j == "period" ? `${v.pdStartDate}-${v.pdEndDate}` : v[j]
-        )
-      );
-    },
     handleClose(done) {
       this.$emit("update:payLogDialogVisible", false);
     },
@@ -548,6 +622,7 @@ export default {
 </script>
 <style lang="scss">
 .el-dropdown-link {
+  margin: 0 0 0 auto;
   cursor: pointer;
   color: #409eff;
 }
@@ -653,8 +728,15 @@ export default {
       color: rgba(0, 0, 0, 0.85);
     }
     .pay-status {
-      width: 40px;
+      box-sizing: border-box;
+      height: 18px;
+      line-height: 18px;
+      padding: 0px 3px;
       margin-left: 8px;
+      border: solid 1px;
+      border-radius: 2px;
+      white-space: nowrap;
+      font-size: 12px;
     }
     .quesition-icon {
       width: 14px;
@@ -675,6 +757,7 @@ export default {
     }
   }
   .board {
+    min-height: 380px;
     padding: 16px 0;
     & + .board {
       border-top: 1px solid rgba(233, 233, 233, 1);
@@ -738,6 +821,9 @@ export default {
       line-height: unset;
       .el-input__inner {
         color: rgba(0, 0, 0, 0.65);
+      }
+      .el-date-editor {
+        width: 100%;
       }
       .el-input-group__append {
         padding: 4px 12px;

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:09:34
+ * @LastEditTime: 2021-07-03 22:47:45
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -279,9 +279,23 @@
               "
               :filter-multiple="true"
             >
-              <template slot-scope="scope">{{
-                stateList[scope.row.dcState].label
-              }}</template>
+              <template slot-scope="scope">
+                <div
+                  class="media-status-dot"
+                  :style="{ background: stateList[scope.row.dcState].color }"
+                ></div>
+                {{ stateList[scope.row.dcState].label }}
+                <el-tooltip
+                  v-if="scope.row.reason"
+                  :content="scope.row.reason || '--'"
+                  placement="top"
+                >
+                  <img
+                    class="quesition-icon"
+                    src="../../assets/images/question_icon.png"
+                  />
+                </el-tooltip>
+              </template>
             </el-table-column>
             <el-table-column label="操作" width="100px" fixed="right">
               <template slot-scope="scope">
@@ -378,21 +392,67 @@
     ></add-media-to-contract>
     <!-- 续签弹框 -->
     <next-contract-dialog
+      :currentContract="currentContract"
       :mergeVisible.sync="mergeVisible"
+      @refreshList="searchFormat"
     ></next-contract-dialog>
     <!-- 付款记录 -->
     <pay-log
+      :currentContract="currentContract"
       :payLogDialogVisible.sync="payLogDialogVisible"
       :payApplyVisible.sync="payApplyVisible"
+      @refreshList="searchFormat"
     ></pay-log>
     <!-- 完成签约 -->
-    <sign-contract :signVisible="signVisible"></sign-contract>
+    <sign-contract
+      :signVisible.sync="signVisible"
+      :dcID="currentContract.id"
+      @refreshList="searchFormat"
+    ></sign-contract>
     <!-- 合同审核 -->
     <contract-review-dialog
       :dcID="currentContract.id"
       :contractReviewVisible.sync="contractReviewVisible"
       @refreshList="searchFormat"
     ></contract-review-dialog>
+    <!-- 终止合同弹框 -->
+    <el-dialog
+      :visible.sync="terminateVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否终止该合同？</div>
+      <div class="message-content">
+        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[currentContract.dcType] || ""}合同`
+        }}</span>
+        将被终止
+      </div>
+      <div class="terminate">
+        <span class="terminate-title">请选择终止原因：</span>
+        <span
+          v-for="(reasonItem, index) in reasons"
+          :key="index"
+          :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
+          @click="reasonItem.selected = !reasonItem.selected"
+          >{{ reasonItem.label }}</span
+        >
+        <el-input
+          v-if="reasons[6].selected"
+          size="small"
+          placeholder="请填写其他原因"
+        ></el-input>
+      </div>
+
+      <template slot="footer">
+        <el-button @click="resubmitVisible = false">取 消</el-button>
+        <el-button type="primary" @click="resubmitFun">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -428,14 +488,14 @@ export default {
       },
       // 后台定义合同状态
       stateList: {
-        "-1": {label: "不通过", color: "#F5222D"},
-        0: {label: "待审核", color: "#FFAA00"},
-        1: {label: "待签约", color: "#FFAA00"},
-        2: {label: "待安装", color: "#FFAA00"},
-        3: {label: "待拆除", color: "#FFAA00"},
-        4: {label: "正常", color: "#1890FF"},
-        5: {label: "合同到期", color: "#CDD4DA"},
-        6: {label: "强制终止", color: "#CDD4DA"},
+        "-1": { label: "不通过", color: "#F5222D" },
+        0: { label: "待审核", color: "#FFAA00" },
+        1: { label: "待签约", color: "#FFAA00" },
+        2: { label: "待安装", color: "#FFAA00" },
+        3: { label: "待拆除", color: "#FFAA00" },
+        4: { label: "正常", color: "#1890FF" },
+        5: { label: "合同到期", color: "#CDD4DA" },
+        6: { label: "强制终止", color: "#CDD4DA" },
       },
       // 合同列表操作权限路径(000: 开发人员/首签/待审核)
       /* operationAuthorityArr: {
@@ -576,10 +636,22 @@ export default {
       resubmitVisible: false,
       // 合同审核弹框
       contractReviewVisible: false,
+      // 终止合同弹框
+      terminateVisible: false,
       // 表格数据
       contractList: [],
       isDisable: false,
       currentContract: {},
+      // 终止原因
+      reasons: [
+        { label: "业委会不通过", val: "", selected: false },
+        { label: "修路/封路", val: "", selected: false },
+        { label: "小区改造", val: "", selected: false },
+        { label: "更换物业", val: "", selected: false },
+        { label: "竞品取代", val: "", selected: false },
+        { label: "我方原因", val: "", selected: false },
+        { label: "其它", val: "", selected: false },
+      ],
     };
   },
   created() {
@@ -611,7 +683,7 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.searchFormat()
+            this.searchFormat();
             this.resubmitVisible = false;
             this.$message.success(res.data.MSG || "重新提交成功！");
           } else {
@@ -639,14 +711,25 @@ export default {
           this.correlateMediaMode = true;
           break;
         case "续签":
+          this.mergeVisible = true;
           break;
         case "补充协议":
+          this.$router.push({
+            path: "./nextContract",
+            query: { originIDs: row.id, handleType: 2 },
+          });
           break;
         case "加门":
+          this.$router.push({
+            path: "./nextContract",
+            query: { resID: row.resID, dcID: row.id },
+          });
           break;
         case "付款":
+          this.payApplyVisible = true;
           break;
         case "付款记录":
+          this.payLogDialogVisible = true;
           break;
         case "审核":
           this.contractReviewVisible = true;
@@ -911,5 +994,32 @@ a {
 .row-btn-group {
   clear: both;
   margin-bottom: 16px;
+}
+.media-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+.quesition-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  vertical-align: middle;
+  filter: brightness(0.75);
+}
+.tag-default {
+  box-sizing: border-box;
+  height: 32px;
+  line-height: 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8e8e8;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+.tag-active {
+  color: #1890FF;
+  border: 1px solid #1890ff;
 }
 </style>

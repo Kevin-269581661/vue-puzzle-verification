@@ -250,6 +250,9 @@
                     label="合同编号"
                     min-width="120"
                   >
+                  <template slot-scope="scope">
+                      {{ scope.row.contractNo || "--" }}
+                    </template>
                   </el-table-column>
                   <el-table-column
                     prop="mState"
@@ -258,7 +261,7 @@
                     show-overflow-tooltip
                   >
                     <template slot-scope="scope">
-                      {{ mediaStatusMap[scope.row.mState]||"--" }}
+                      {{ mediaStatusMap[scope.row.mState] || "--" }}
                     </template>
                   </el-table-column>
                   <el-table-column label="操作">
@@ -273,10 +276,12 @@
                         icon="el-icon-warning"
                         icon-color="#FAAD14"
                         title="该媒体是否已完成安装"
-                        @confirm="() =>{
-                          Object.assign(currentInstallInfo, row);
-                          installVisible = true;
-                        }"
+                        @confirm="
+                          () => {
+                            Object.assign(currentInstallInfo, scope.row);
+                            installVisible = true;
+                          }
+                        "
                       >
                         <span slot="reference" class="td-btn">完成安装</span>
                       </el-popconfirm>
@@ -290,10 +295,12 @@
                         icon="el-icon-warning"
                         icon-color="#FAAD14"
                         title="该媒体是否已完成拆除"
-                        @confirm="()=>{
-                          Object.assign(currentInstallInfo, row)
-                          confirmMediaStatus()
-                        }"
+                        @confirm="
+                          () => {
+                            Object.assign(currentInstallInfo, scope.row);
+                            confirmMediaStatus();
+                          }
+                        "
                       >
                         <span slot="reference" class="td-btn">完成拆除</span>
                       </el-popconfirm>
@@ -479,7 +486,7 @@
     >
       <el-form
         v-model="currentInstallInfo"
-        label-width="70px"
+        label-width="100px"
         class="content-form"
       >
         <el-form-item label="安装负责人：" prop="installUserName">
@@ -504,7 +511,9 @@
 
       <template slot="footer">
         <el-button @click="installVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmMediaStatus('install')">确 定</el-button>
+        <el-button type="primary" @click="confirmMediaStatus('install')"
+          >确 定</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -720,7 +729,7 @@ export default {
         0: "禁用",
         1: "正常",
         2: "待安装",
-        3: "待维修"
+        3: "待维修",
       },
       // 安装或拆除媒体切换
       installOrDemolish: "installList",
@@ -1203,7 +1212,7 @@ export default {
             this.pendingMedia.installList = installList;
             this.pendingMedia.demolishList = demolishList;
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG||"待处理媒体获取失败！");
           }
         })
         .catch((err) => {
@@ -1213,6 +1222,7 @@ export default {
     // 确认安装或拆除
     confirmMediaStatus(install) {
       console.log("confirmMediaStatus", this.currentInstallInfo);
+      let _this = this;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -1220,44 +1230,52 @@ export default {
         data: {
           uid: this.sessionData.uID,
           mid: this.currentInstallInfo.mID,
-          mstate: this.currentInstallInfo.mState,
+          mstate: install?1:4,
         },
       };
-      if(install) {
-        params.data.installDate = this.currentInstallInfo.installDate;
-        params.data.installUserName = this.currentInstallInfo.installUserName;
+      if (install) {
+        if(this.currentInstallInfo.installDate&&this.currentInstallInfo.installUserName) {
+          params.data.installDate = this.currentInstallInfo.installDate;
+          params.data.installUserName = this.currentInstallInfo.installUserName;
+        } else {
+          this.$message.warning("请完善安装信息！")
+          return
+        }
       }
       api.postApi_new(this.apiVar.Media, params).then((res) => {
         if (res.data.SysCode === 200200) {
-          if(install) {
-            this.synDcState(1);
+          if (install) {
+            _this.syncDcState(1);
           } else {
-            this.synDcState(0);
+            _this.syncDcState(0);
           }
         } else if (
           res.data.SysCode === 200302 ||
           res.data.MSG === "广告位已被占用"
         ) {
-          this.$message.warning(res.data.MSG||"");
+          this.$message.warning(res.data.MSG || "");
         } else {
-          this.$message.warning(res.data.MSG||"状态更改失败");
+          this.$message.warning(res.data.MSG || "状态更改失败");
         }
       });
     },
-  },
-  // 媒体状态同步至合同状态
-  synDcState(state) {
-    api.postApi("/addsp/devContract/synDcState", {
-      dcID: this.currentInstallInfo.dcID,
-      state
-    }).then((res) => {
-        if (res.data.SysCode === 200200) {
-          this.installVisible && (this.installVisible = false);
-          this.$message.success(res.data.MSG||"更改成功！");
-        } else {
-          this.$message.warning(res.data.MSG||"状态更改失败");
-        }
-      });
+    // 媒体状态同步至合同状态
+    syncDcState(state) {
+      api
+        .postApi("/addsp/devContract/synDcState", {
+          dcID: this.currentInstallInfo.dcID,
+          state,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.installVisible && (this.installVisible = false);
+            this.getPendingMedia()
+            this.$message.success(res.data.MSG || "更改成功！");
+          } else {
+            this.$message.warning(res.data.MSG || "状态更改失败");
+          }
+        });
+    },
   },
   beforeRouteEnter(to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用
@@ -1309,6 +1327,71 @@ export default {
 }
 </style>
 <style scoped lang="scss">
+@import "../../assets/component.scss";
+/deep/ .custom-confirm-dialog {
+  border-radius: 4px;
+  .el-dialog__header {
+    border: none !important;
+    .el-dialog__title {
+      font-size: 16px;
+      color: rgba($color: #000, $alpha: 0.85);
+    }
+    .el-icon-question {
+      margin-right: 16px;
+      color: #fa8c16;
+      &:before {
+        font-size: 21px;
+      }
+    }
+  }
+  .el-dialog__body {
+    border: none !important;
+    .content-form {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 24px;
+      .el-form-item {
+        &:last-child {
+          margin-bottom: 0;
+        }
+        .el-form-item__label {
+          padding: 0;
+          line-height: 32px;
+        }
+        .el-form-item__content {
+          line-height: 32px;
+        }
+        .el-date-editor {
+          width: 100%;
+        }
+      }
+    }
+    /* 重新提交和删除合同 */
+    .message-content {
+      padding-left: 40px;
+      line-height: 22px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      & .active {
+        color: #1890ff;
+        font-weight: 600;
+      }
+    }
+
+    .el-select {
+      width: 100%;
+    }
+  }
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+}
 /** 新增*/
 .td-btn {
   line-height: 21px;

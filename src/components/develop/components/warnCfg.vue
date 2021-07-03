@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 11:09:27
+ * @LastEditTime: 2021-07-03 16:33:37
  * @FilePath: /frontend/src/components/develop/components/warnCfg.vue
 -->
 <template>
@@ -169,10 +169,8 @@ export default {
     },
     editFiled(row) {
       row.operate = true;
-      console.log("edit--");
     },
     cancelEditFiled(row) {
-      console.log("cancelEditFiled--");
       row.operate = false;
     },
   },

@@ -1952,6 +1952,7 @@
                                 key.assetIdCommentData.updateTime = rKey.createTime
                                 adDoor = true
                             } else {
+                                // 编辑情况下
                                 key.isAssetIdError = false
                             }
                         }

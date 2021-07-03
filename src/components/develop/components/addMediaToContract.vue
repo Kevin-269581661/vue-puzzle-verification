@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 17:15:27
+ * @LastEditTime: 2021-07-03 16:31:23
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -42,7 +42,9 @@
         <h4>
           <span>
             请勾选下面列表中的
-            <span class="tip-active">{{ currentContract.surplusInstallCnt || "" }}</span>
+            <span class="tip-active">{{
+              currentContract.surplusInstallCnt
+            }}</span>
             个媒体
           </span>
         </h4>
@@ -58,7 +60,11 @@
       </template>
       <template slot="dialogFooter">
         <el-button @click="addMediaVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addMediaToContract(selectionMediaList)">确 定</el-button>
+        <el-button
+          type="primary"
+          @click="addMediaToContract(selectionMediaList)"
+          >确 定</el-button
+        >
       </template>
     </dialog-table>
 
@@ -110,7 +116,7 @@
                   </el-input-number>
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="媒体状态" prop="mstate">
                   <el-select
                     size="small"
@@ -119,6 +125,18 @@
                   >
                     <el-option label="待安装" value="2"></el-option>
                   </el-select>
+                </el-form-item>
+              </el-col> -->
+              <el-col :span="6">
+                <el-form-item
+                  label="资产编号"
+                  prop="assetId"
+                >
+                  <el-input
+                    size="small"
+                    v-model.trim="item.assetId"
+                    placeholder="例:0034FASF342-X21"
+                  ></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -248,6 +266,15 @@ export default {
     dialogTable,
   },
   data() {
+    //资产编号
+    let validateAssetId = (rule, value, callback) => {
+      let reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
+      if (reg.test(value)) {
+        callback(new Error("只能输入数字字母符号!"));
+      } else {
+        callback();
+      }
+    };
     let validateSpace = (rule, value, callback) => {
       this.isResError = false;
       if (value) {
@@ -292,6 +319,7 @@ export default {
         }
       }
     };
+
     return {
       loading: false,
       addMediaVisible: false,
@@ -309,11 +337,11 @@ export default {
           prop: "asCnt",
           minWidth: "90px",
         },
-        {
+        /* {
           label: "媒体状态",
           prop: "mState",
           minWidth: "90px",
-        },
+        }, */
         {
           label: "资产编号",
           prop: "assetTag",
@@ -364,8 +392,22 @@ export default {
           { validator: validateNum, trigger: "blur" },
           { required: true, message: "可投面数不能为空!", trigger: "change" },
         ],
-        mstate: [
+        /* mstate: [
           { required: true, message: "请选择媒体状态!", trigger: "change" },
+        ], */
+        assetId: [
+          {
+            required: true,
+            message: "资产编号不能为空!",
+            trigger: ["blur", "change"],
+          },
+          { validator: validateAssetId, trigger: "change" },
+          { validator: this.validateAssetTag, trigger: "blur" },
+          {
+            max: 40,
+            message: "最多只能输入40个字节!",
+            trigger: ["blur", "change"],
+          },
         ],
         doorType: [
           {
@@ -438,10 +480,70 @@ export default {
     this.getADLimit();
   },
   methods: {
+    //资产编号校验去重
+    validateAssetTag(rule, value, callback) {
+      console.log("_________资产编号是否重复_________", value);
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "GetMediaResInfo",
+        data: {
+          assetTag: value,
+          asrId: this.sessionData.asrID,
+        },
+      };
+      api.postApi_new(this.apiVar.Media, params).then((res) => {
+        if (res.data.SysCode == 200200) {
+          let resData = res.data.data;
+          if (resData.length) {
+            let flag = this.filterAssetId(resData, value);
+            if (flag) {
+              callback(new Error(" "));
+            } else {
+              callback();
+            }
+          } else {
+            let number = this.filterlocalAssetId(resData, value);
+            if (number >= 2) {
+              callback(new Error("这个资产编号已在该小区内存在!"));
+            } else {
+              callback();
+            }
+          }
+        } else {
+          this.$message.warning(res.data.MSG || "");
+        }
+      });
+    },
+    // 接口返回为空时校验当前是否有重复的
+    filterlocalAssetId(resData, value) {
+      let num = 0;
+      for (let key of this.arrMedia) {
+        if (key.assetId === value) {
+          key.isAssetIdError = false;
+          num++;
+        }
+      }
+      return num;
+    },
+    // 判断同资源下资产编号是否重复
+    filterAssetId(resData, value) {
+      let adDoor = false;
+      for (let key of this.arrMedia) {
+        if (key.assetId === value) {
+          adDoor = true;
+        }
+      }
+      if (adDoor) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     // 批量创建媒体
     creadMediaFun() {
       let resID = this.currentContract.resID,
-          arr = [];
+        arr = [];
       for (let i = 0; i < this.arrMedia.length; i++) {
         let mediaForm = this.arrMedia[i];
         if (
@@ -467,7 +569,7 @@ export default {
             mState: mediaForm.mstate,
           });
         } else {
-          this.$message.warning("媒体信息错误！")
+          this.$message.warning("媒体信息错误！");
           return;
         }
       }
@@ -484,7 +586,7 @@ export default {
         api.postApi_new(this.apiVar.Media, params).then((res) => {
           if (res.data.SysCode == 200200) {
             this.newMediaVisible = false;
-            this.addMediaToContract(res.data.data||[]);
+            this.addMediaToContract(res.data.data || []);
             this.$message.success(res.data.MSG || "媒体创建成功!");
           } else {
             this.$message.warning(res.data.MSG || "媒体创建失败！");
@@ -502,7 +604,7 @@ export default {
           mediaType: "广告门",
           mediaName: "", //媒体名称mtitle
           usableNum: "2", //广告位面数pnum
-          mstate: "", //媒体状态mstate
+          mstate: 2, //媒体状态此处新建都是2
           doorType: "", // 门类型mType
           adSizeW: "", //广告尺寸adsize
           adSizeH: "", //广告尺寸
@@ -511,7 +613,7 @@ export default {
           mediaRemark: "", //备注 mrk
           adLimit: [], //请选择广告限制 notpush
         });
-        this.arrMedia=JSON.parse(JSON.stringify(this.arrMedia));
+        this.arrMedia = JSON.parse(JSON.stringify(this.arrMedia));
       }
       this.newMediaVisible = true;
     },
@@ -578,13 +680,29 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.$emit('update:correlateMediaMode', false);
+            this.synDcState();
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
+    // 媒体状态同步至合同状态
+    synDcState() {
+      api
+        .postApi("/addsp/devContract/synDcState", {
+          dcID: this.currentContract.id,
+          state: 1, // 合同状态变更时，1发送站内信
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.$emit("update:correlateMediaMode", false);
             this.newMediaVisible = false;
             this.addMediaVisible = false;
             this.$emit("searchFormat");
             this.$message.success(res.data.MSG || "录入成功！");
+            this.$message.success(res.data.MSG || "更改成功！");
           } else {
-            this.$message.warning(res.data.MSG || "");
+            this.$message.warning(res.data.MSG || "状态更改失败！");
           }
         });
     },
@@ -598,7 +716,18 @@ export default {
         )
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.mediaTableData = res.data.data || [];
+            let tempMediaStatus = {
+              0: "禁用",
+              1: "正常",
+              2: "待安装",
+              3: "待维修",
+              4: "已拆除",
+            };
+            res.data.data = res.data.data || [];
+            res.data.data.forEach((item) => {
+              item.mState = tempMediaStatus[item.mState] || "--";
+            });
+            this.mediaTableData = res.data.data;
           } else {
             this.$message.warning(res.data.MSG || "");
           }

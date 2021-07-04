@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 16:38:58
+ * @LastEditTime: 2021-07-04 16:56:44
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -127,9 +127,9 @@
                 @click="routeCreateContract"
                 >新建</el-button
               >
-              <el-button plain size="small" @click="exportContract"
+              <!-- <el-button plain size="small" @click="exportContract"
                 >导出</el-button
-              >
+              > -->
             </el-col>
           </el-row>
         </el-form>
@@ -217,6 +217,9 @@
               ]"
               :filter-multiple="false"
             >
+              <template slot-scope="scope">
+                {{ scope.row.venueFee/100 | moneyFormat("¥") }}
+              </template>
             </el-table-column>
             <el-table-column
               prop="devFee"
@@ -224,6 +227,9 @@
               width="120"
               show-overflow-tooltip
             >
+            <template slot-scope="scope">
+                {{ scope.row.devFee/100 | moneyFormat("¥") }}
+              </template>
             </el-table-column>
             <el-table-column
               prop="payDate"
@@ -697,7 +703,7 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.searchFormat()
+            this.searchFormat();
             this.deleteContractVisible = false;
             this.$message.success(res.data.MSG || "合同删除成功！");
           } else {
@@ -734,7 +740,7 @@ export default {
                 dcID: row.id,
                 originID: row.originID || "",
                 handleType: row.dcType,
-                edit: 1
+                edit: 1,
               },
             });
           } else {

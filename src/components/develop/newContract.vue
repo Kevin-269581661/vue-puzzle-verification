@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 18:25:09
+ * @LastEditTime: 2021-07-04 16:55:22
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -114,7 +114,7 @@ export default {
     },
     /* 第一步取消 */
     cancelFirstStep() {
-      
+      this.$router.go(-1);
     },
     /* 第一步进入第二部 */
     async secondStep() {

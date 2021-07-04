@@ -260,6 +260,7 @@
             <el-row :gutter="0">
               <el-col :span="12">
                 <ul class="item-list">
+                  <li class="rank-title">新签</li>
                   <li
                     class="item"
                     v-for="(rankItem, index) in newContractRank"
@@ -279,6 +280,7 @@
               </el-col>
               <el-col :span="12">
                 <ul class="item-list">
+                  <li class="rank-title">续签</li>
                   <li
                     class="item"
                     v-for="(rankItem, index) in renewContractRank"
@@ -375,7 +377,7 @@ export default {
       // 应用中心
       appCenter: "",
       cardDataOther1: {
-        title: "本月新开发合同",
+        title: "本月首签合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "新增合同数量",
@@ -393,7 +395,7 @@ export default {
         data: [],
       },
       cardDataOther3: {
-        title: "本月完成安装资源",
+        title: "本月加门合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "安装数量",
@@ -641,8 +643,8 @@ export default {
     // 合同动态列表
     getContractNews() {
       let apiUri = "/report/devContract/getContractNews";
-      if(this.sessionData.devManageLevel == 2) {
-        apiUri = "/report/devContract/getVerifyDataList"
+      if (this.sessionData.devManageLevel == 2) {
+        apiUri = "/report/devContract/getVerifyDataList";
       }
       api
         .getApi(apiUri, {
@@ -672,7 +674,7 @@ export default {
         tempDate = new Date(),
         year = tempDate.getFullYear(),
         month = tempDate.getMonth(),
-        day = tempDate.getDay();
+        day = tempDate.getDate();
       function zero(num) {
         if (num < 10) return `0${num}`;
         else return num;
@@ -701,7 +703,7 @@ export default {
           endDate,
         })
         .then((res) => {
-          if (res.data.SysCode === 200500) {
+          if (res.data.SysCode === 200200) {
             let temp = res.data.data || {};
             this.newContractRank = temp.newContractRank || [];
             this.renewContractRank = temp.renewContractRank || [];
@@ -882,6 +884,12 @@ export default {
     height: 100%;
     padding: 16px 24px;
     box-sizing: border-box;
+    .rank-title {
+      margin-bottom: 7px;
+      line-height: 24px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+    }
     .item {
       display: flex;
       align-items: center;

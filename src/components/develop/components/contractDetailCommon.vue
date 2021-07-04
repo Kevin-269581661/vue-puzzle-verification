@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 22:09:55
+ * @LastEditTime: 2021-07-05 00:49:11
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -44,6 +44,23 @@
       class="media-table"
     >
       <el-table-column prop="mTitle" label="媒体名称" width="180">
+        <template slot-scope="scope">
+          <div class="media-cell">
+            <span>{{ scope.row.mTitle }}</span>
+            <img
+              class="media-img"
+              v-if="scope.row.isNew && scope.row.state == 1"
+              src="../../../assets/images/develop/media1.png"
+              alt=""
+            />
+            <img
+              class="media-img"
+              v-if="scope.row.isNew && scope.row.state == 0"
+              src="../../../assets/images/develop/media0.png"
+              alt=""
+            />
+          </div>
+        </template>
       </el-table-column>
       <el-table-column prop="mType" label="媒体类型" width="180">
       </el-table-column>
@@ -614,6 +631,7 @@ export default {
               item.fileName = item.fileUrl.split("/").pop();
             });
             this.fileList = tempObj.fileList;
+            // isNew: 本次合同新增和拆除媒体 state: 0-拆除 1-新增
             this.mediaRelList = tempObj.mediaRelList || [];
             this.getContractOperation();
           } else {
@@ -725,6 +743,16 @@ export default {
   .el-table__body-wrapper,
   .el-table__empty-block {
     min-height: unset;
+  }
+  .media-cell {
+    position: relative;
+    .media-img {
+      position: absolute;
+      right: 0;
+      top: 5px;
+      width: 32px;
+      height: 18px;
+    }
   }
 }
 .contract-borde {

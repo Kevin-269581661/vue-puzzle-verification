@@ -412,6 +412,9 @@ function addRoutes(role, proposal, retain) {
                     children: [
                         {path: '/f_develop', name:'developIndex', component: developIndex },
                         {path: '/f_develop/mediaList', component: mediaList},
+                        {path: '/f_develop/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                        {path: '/f_develop/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
+                        {path: '/f_develop/mediaDetail', component: mediaDetail},
                         {path: '/f_develop/myInfo', component: myInfo},
                         {path: '/f_develop/messageList', component: messageList},
                         {path: '/f_develop/questionAndAnswer', component: questionAndAnswer},

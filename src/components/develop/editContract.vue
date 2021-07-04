@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 15:36:47
+ * @LastEditTime: 2021-07-04 23:16:35
  * @FilePath: /frontend/src/components/develop/editContract.vue
 -->
 <template>
@@ -128,15 +128,25 @@ export default {
       this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
     },
     /* 第一步取消 */
-    cancelFirstStep() {},
+    cancelFirstStep() {
+      this.$router.push("./contractList");
+    },
     /* 第一步进入第二部 */
     async secondStep() {
       // 表单验证
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
+      let flag = false;
       if (needValidFormResult) {
         this.activeStep = 2;
-        this.resFormData = this.$refs.needValidForm.recForm;
-        this.componentName = "contractInput";
+        if(this.$refs.needValidForm.recForm.resID) {
+          flag = await this.$refs.needValidForm.postEditMsg();
+        } else {
+          flag = await this.$refs.needValidForm.createRes();
+        }
+        if(flag) {
+          this.resFormData = this.$refs.needValidForm.recForm;
+          this.componentName = "contractInput";
+        }
       }
     },
     async thirdStep() {
@@ -165,6 +175,9 @@ export default {
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
+      if(Array.isArray(params.demolishMediaIDs)) {
+        params.demolishMediaIDs = params.demolishMediaIDs.join(",");
+      }
       // 合同类型：0-首签 1-续约 2-加门 3-补充
       // params.dcType = 0;
       // 续约，加门或者补充时父单的id （首签时传0）

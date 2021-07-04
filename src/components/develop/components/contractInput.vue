@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 15:34:09
+ * @LastEditTime: 2021-07-04 21:54:36
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -449,6 +449,10 @@ export default {
     originID: {
       type: [Number, String],
       default: () => "",
+    },
+    startDate: {
+      type: String,
+      default: () => "",
     }
   },
   data() {
@@ -667,7 +671,7 @@ export default {
       if (!dcID) return;
       api
         .getApi("/addsp/devContract/getContractDetail", {
-          dcID,
+          dcID: dcID.split(",")[0]
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -699,6 +703,11 @@ export default {
                 }
                 this.contractForm[key] = tempValue;
               }
+            }
+            if(this.startDate) {
+              // 合同续签时合同开始日期
+              this.contractForm.startDate = this.startDate;
+              this.contractForm.endDate = "";
             }
             tempResultObj.fileList = tempResultObj.fileList || [];
             tempResultObj.fileList.forEach((item) => {
@@ -818,10 +827,12 @@ export default {
         "endDate",
         "ownership",
         "mediaNewCnt",
-        "demolishMediaIDs",
         "isVenueFee",
         "isDevFee",
       ];
+      if (this.handleType == 1 || this.handleType == 3) {
+        validateResArr.push("demolishMediaIDs")
+      }
       if (this.contractForm.isVenueFee) {
         validateResArr.push(...["venuePayType", "venueFee", "venueDate"]);
       }

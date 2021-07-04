@@ -1231,6 +1231,7 @@ export default {
           uid: this.sessionData.uID,
           mid: this.currentInstallInfo.mID,
           mstate: install?1:4,
+          source: 0
         },
       };
       if (install) {

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 16:55:22
+ * @LastEditTime: 2021-07-04 23:21:16
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -72,8 +72,12 @@
         <el-button type="primary" @click="thirdStep">保存</el-button>
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
-        <el-button type="default" @click="routeContractList">合同列表</el-button>
-        <el-button type="primary" @click="routeContractDetail">查看详情</el-button>
+        <el-button type="default" @click="routeContractList"
+          >合同列表</el-button
+        >
+        <el-button type="primary" @click="routeContractDetail"
+          >查看详情</el-button
+        >
       </div>
     </div>
   </div>
@@ -106,24 +110,35 @@ export default {
   methods: {
     /* 跳转至合同列表 */
     routeContractList() {
-      this.$router.push("./contractList")
+      this.$router.push("./contractList");
     },
     /* 跳转至合同详情 */
     routeContractDetail() {
-      this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
+      this.$router.push({
+        path: "./contractDetail",
+        query: { resID: this.resFormData.resID },
+      });
     },
     /* 第一步取消 */
     cancelFirstStep() {
-      this.$router.go(-1);
+      // this.$router.go(-1);
+      this.$router.push("./contractList");
     },
     /* 第一步进入第二部 */
     async secondStep() {
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
-      console.log("test1", needValidFormResult);
+      let flag = false;
       if (needValidFormResult) {
         this.activeStep = 2;
-        this.resFormData = this.$refs.needValidForm.recForm;
-        this.componentName = "contractInput";
+        if (this.$refs.needValidForm.recForm.resID) {
+          flag = await this.$refs.needValidForm.postEditMsg();
+        } else {
+          flag = await this.$refs.needValidForm.createRes();
+        }
+        if(flag) {
+          this.resFormData = this.$refs.needValidForm.recForm;
+          this.componentName = "contractInput";
+        }
       }
     },
     async thirdStep() {
@@ -148,12 +163,15 @@ export default {
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
         ...this.contractFormData,
-        fileIDs
+        fileIDs,
       };
       params.venueFee = params.venueFee * 100;
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
+      if (Array.isArray(params.demolishMediaIDs)) {
+        params.demolishMediaIDs = params.demolishMediaIDs.join(",");
+      }
       // 合同类型：0-首签 1-续约 2-加门 3-补充
       params.dcType = 0;
       // 续约，加门或者补充时父单的id （首签时传0）
@@ -166,7 +184,7 @@ export default {
             if (res.data.SysCode === 200200) {
               resolve(true);
             } else {
-              this.$message.warning(res.data.MSG||"");
+              this.$message.warning(res.data.MSG || "");
             }
           })
           .finally(() => {

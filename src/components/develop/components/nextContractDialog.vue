@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 10:51:49
+ * @LastEditTime: 2021-07-04 21:53:15
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -28,7 +28,7 @@
           v-for="(item, index) in contractOriginList"
           :key="index"
           :label="item.originName"
-          :value="item.originID"
+          :value="item.dcID + ',' + item.originID"
         >
         </el-option>
       </el-select>
@@ -55,25 +55,11 @@ export default {
       default: () => {},
     },
   },
-  created() {
-  },
+  created() {},
   data() {
     return {
       // 合同对象列表
-      contractOriginList: [
-        {
-          originName: "西门/南门",
-          originID: 12,
-        },
-        {
-          originName: "停车场",
-          originID: 11,
-        },
-        {
-          originName: "北门",
-          originID: 10,
-        },
-      ],
+      contractOriginList: [],
       // 需要合并的合同对象
       mergeOriginList: [],
     };
@@ -87,26 +73,56 @@ export default {
   methods: {
     // 获取可续签的合同对象
     getOriginList() {
-      console.log("getOriginList---");
       api
         .getApi("/addsp/devContract/getOriginList", {
           resID: this.currentContract.resID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.contractOriginList = [];
+            this.contractOriginList = res.data.data || [];
           } else {
             this.$message.warning(res.data.MSG || "");
           }
         });
     },
+    // 验证是否可以续签和补签
+    valiateNextContract(originIDs) {
+      return new Promise((resolve, reject) => {
+        api
+          .getApi("/addsp/devContract/valiateNextContract", {
+            originIDs,
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              resolve(res.data.data);
+            } else {
+              this.$message.warning("操作验证失败！");
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resolve(false);
+          });
+      });
+    },
     // 调转到合同续签
-    routeNextContract() {
+    async routeNextContract() {
       if (this.mergeOriginList.length > 0) {
-        this.$router.push({
-          path: "./nextContract",
-          query: { originIDs: this.currentContract.id, handleType: 1 },
+        let originIDs = [],
+          dcIDs = [];
+        this.mergeOriginList.forEach((item) => {
+          item = item.split(",");
+          dcIDs.push(item[0] || "");
+          originIDs.push(item[1] || "");
         });
+        dcIDs = dcIDs.join(",");
+        originIDs = originIDs.join(",");
+        let date = await this.valiateNextContract(originIDs);
+        date &&
+          this.$router.push({
+            path: "./nextContract",
+            query: { dcID: dcIDs, originID: originIDs, handleType: 1, date },
+          });
       } else {
         this.$message.warning("请选择合同对象！");
       }

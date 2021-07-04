@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 16:31:23
+ * @LastEditTime: 2021-07-04 19:47:25
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -62,7 +62,17 @@
         <el-button @click="addMediaVisible = false">取 消</el-button>
         <el-button
           type="primary"
-          @click="addMediaToContract(selectionMediaList)"
+          @click="
+            addMediaToContract(
+              selectionMediaList
+                .reduce((pre, cur) => {
+                  if (cur.mID) {
+                    pre.push(cur.mID);
+                  }
+                  return pre;
+                }, [])
+            )
+          "
           >确 定</el-button
         >
       </template>
@@ -128,10 +138,7 @@
                 </el-form-item>
               </el-col> -->
               <el-col :span="6">
-                <el-form-item
-                  label="资产编号"
-                  prop="assetId"
-                >
+                <el-form-item label="资产编号" prop="assetId">
                   <el-input
                     size="small"
                     v-model.trim="item.assetId"
@@ -586,7 +593,7 @@ export default {
         api.postApi_new(this.apiVar.Media, params).then((res) => {
           if (res.data.SysCode == 200200) {
             this.newMediaVisible = false;
-            this.addMediaToContract(res.data.data || []);
+            this.addMediaToContract((res.data.data || []));
             this.$message.success(res.data.MSG || "媒体创建成功!");
           } else {
             this.$message.warning(res.data.MSG || "媒体创建失败！");
@@ -614,8 +621,10 @@ export default {
           adLimit: [], //请选择广告限制 notpush
         });
         this.arrMedia = JSON.parse(JSON.stringify(this.arrMedia));
+        this.newMediaVisible = true;
+      } else {
+        this.$message.warning("该合同新增媒体数量已满足！");
       }
-      this.newMediaVisible = true;
     },
     // 获取广告限制列表
     getADLimit() {
@@ -669,14 +678,7 @@ export default {
       api
         .postApi("/addsp/devContract/linkNewMedia", {
           dcID: this.currentContract.id,
-          mIDs: mediaList
-            .reduce((pre, cur) => {
-              if (cur.mID) {
-                pre.push(cur.mID);
-              }
-              return pre;
-            }, [])
-            .join(","),
+          mIDs: mediaList.join(",")
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -698,7 +700,7 @@ export default {
             this.$emit("update:correlateMediaMode", false);
             this.newMediaVisible = false;
             this.addMediaVisible = false;
-            this.$emit("searchFormat");
+            this.$emit("refreshList");
             this.$message.success(res.data.MSG || "录入成功！");
             this.$message.success(res.data.MSG || "更改成功！");
           } else {

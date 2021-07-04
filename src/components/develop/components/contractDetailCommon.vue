@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 11:20:21
+ * @LastEditTime: 2021-07-04 22:09:55
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -15,8 +15,15 @@
         <div v-if="contractObj.contractNo" class="title-content">
           {{ `（${contractObj.contractNo}）` }}
         </div>
-        <div class="contract-status-name">
-          {{ stateList[contractObj.dcState] }}
+        <div
+          v-if="contractObj.dcState !== undefined"
+          class="contract-status-name"
+          :style="{
+            color: stateList[contractObj.dcState].color,
+            'border-color': stateList[contractObj.dcState].color,
+          }"
+        >
+          {{ stateList[contractObj.dcState].label }}
         </div>
       </el-col>
       <el-col :span="18" class="row-right">
@@ -24,13 +31,13 @@
           v-for="(item, index) in operationArr"
           :key="index"
           size="mini"
-          @click="handleContract(item)"
+          @click="handleContract(contractObj, item)"
           >{{ item }}</el-button
         >
       </el-col>
     </el-row>
     <el-table
-      v-if="mediaRelList.length>0"
+      v-if="mediaRelList.length > 0"
       :data="mediaRelList"
       border
       style="width: 100%"
@@ -40,12 +47,13 @@
       </el-table-column>
       <el-table-column prop="mType" label="媒体类型" width="180">
       </el-table-column>
-      <el-table-column prop="installUserName" label="安装负责人"> </el-table-column>
+      <el-table-column prop="installUserName" label="安装负责人">
+      </el-table-column>
       <el-table-column prop="installDate" label="安装/拆除完成日期">
       </el-table-column>
       <el-table-column prop="mState" label="媒体状态">
         <template slot-scope="scope">
-          {{mediaStatusMap[scope.row.mState]}}
+          {{ mediaStatusMap[scope.row.mState] }}
         </template>
       </el-table-column>
     </el-table>
@@ -124,11 +132,13 @@
     <add-media-to-contract
       :currentContract="contractObj"
       :correlateMediaMode.sync="correlateMediaMode"
-      @searchFormat="getContractDetail"
+      @refreshList="getContractDetail"
     ></add-media-to-contract>
     <!-- 续签弹框 -->
     <next-contract-dialog
+      :currentContract="contractObj"
       :mergeVisible.sync="mergeVisible"
+      @refreshList="getContractDetail"
     ></next-contract-dialog>
     <!-- 付款记录 -->
     <pay-log
@@ -138,13 +148,57 @@
       @refreshList="getContractDetail"
     ></pay-log>
     <!-- 完成签约 -->
-    <sign-contract :signVisible="signVisible"></sign-contract>
+    <sign-contract
+      :signVisible.sync="signVisible"
+      :dcID="contractObj.id"
+      @refreshList="getContractDetail"
+    ></sign-contract>
     <!-- 合同审核 -->
     <contract-review-dialog
       :dcID="contractObj.id"
       :contractReviewVisible.sync="contractReviewVisible"
       @refreshList="getContractDetail"
     ></contract-review-dialog>
+    <!-- 终止合同弹框 -->
+    <el-dialog
+      :visible.sync="terminateVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <div slot="title"><i class="el-icon-question"></i>是否终止该合同？</div>
+      <div class="message-content">
+        确定后，<span class="active">{{ contractObj.resName }}</span> 的
+        <span class="active">{{
+          `${contractTypeArr[contractObj.dcType] || ""}合同`
+        }}</span>
+        将被终止
+      </div>
+      <div class="terminate-box">
+        <span class="terminate-title">请选择终止原因：</span>
+        <span
+          v-for="(reasonItem, index) in reasons"
+          :key="index"
+          :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
+          @click="reasonItem.selected = !reasonItem.selected"
+          >{{ reasonItem.label }}</span
+        >
+        <el-input
+          class="terminate-input"
+          v-if="reasons[6].selected"
+          v-model="reasons[6].value"
+          size="small"
+          placeholder="请填写其他原因"
+        ></el-input>
+      </div>
+
+      <template slot="footer">
+        <el-button @click="terminateVisible = false">取 消</el-button>
+        <el-button type="primary" @click="terminateFun">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -177,31 +231,98 @@ export default {
       contractTypeArr: {
         0: "首签合同",
         1: "续签合同",
-        2: "补充协议",
-        3: "加门合同",
+        2: "加门合同",
+        3: "补充协议",
       },
       stateList: {
-        "-1": "审核不通过",
-        0: "待审核",
-        1: "待签约",
-        2: "待安装",
-        3: "待拆除",
-        4: "正常",
-        5: "合同到期",
-        6: "强制终止",
+        "-1": { label: "不通过", color: "#F5222D" },
+        0: { label: "待审核", color: "#FFAA00" },
+        1: { label: "待签约", color: "#FFAA00" },
+        2: { label: "待安装", color: "#FFAA00" },
+        3: { label: "待拆除", color: "#FFAA00" },
+        4: { label: "正常", color: "#1890FF" },
+        5: { label: "合同到期", color: "#CDD4DA" },
+        6: { label: "强制终止", color: "#CDD4DA" },
       },
       // 角色
       roleArr: ["0", "1", "2"],
       operationAuthorityArr: {
         编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
-        删除: ["000", "00-1", "001", "002", "003", "010", "020", "01-1", "02-1", "011", "021", "012", "022", "013", "023", "030", "03-1", "031", "032"],
+        删除: [
+          "000",
+          "00-1",
+          "001",
+          "002",
+          "003",
+          "010",
+          "020",
+          "01-1",
+          "02-1",
+          "011",
+          "021",
+          "012",
+          "022",
+          "013",
+          "033",
+          "030",
+          "03-1",
+          "031",
+          "032",
+        ],
         重新提交: ["00-1", "01-1", "02-1", "03-1"],
         媒体录入: ["002", "012", "022", "032"],
-        续签: ["004", "005", "006", "014", "024", "015", "025", "016", "026", "034", "035", "036"],
+        续签: [
+          "004",
+          "005",
+          "006",
+          "014",
+          "024",
+          "015",
+          "025",
+          "016",
+          "026",
+          "034",
+          "035",
+          "036",
+        ],
         补充协议: ["004", "014", "024", "034"],
         加门: ["004", "014", "024", "034"],
         付款: ["004", "005", "014", "024", "015", "025", "034", "035"],
-        付款记录: ["004", "005", "006", "014", "024", "015", "025", "016", "026", "034", "035", "036", "204", "205", "206", "214", "224", "215", "225", "216", "226", "104", "105", "106", "114", "124", "115", "125", "116", "126", "134", "135", "136"],
+        付款记录: [
+          "004",
+          "005",
+          "006",
+          "014",
+          "024",
+          "015",
+          "025",
+          "016",
+          "026",
+          "034",
+          "035",
+          "036",
+          "204",
+          "205",
+          "206",
+          "214",
+          "224",
+          "215",
+          "225",
+          "216",
+          "226",
+          "104",
+          "105",
+          "106",
+          "114",
+          "124",
+          "115",
+          "125",
+          "116",
+          "126",
+          "134",
+          "135",
+          "136",
+        ],
         审核: ["200", "210", "220"],
         完成签约: ["101", "111", "121", "131"],
         合同终止: ["104", "114", "124", "134"],
@@ -242,7 +363,7 @@ export default {
         1: "正常",
         2: "待安装",
         3: "待维修",
-        4: "已拆除"
+        4: "已拆除",
       },
     };
   },
@@ -256,6 +377,36 @@ export default {
   },
   created() {},
   methods: {
+    // 合同终止
+    terminateFun() {
+      if (this.reasons[6].selected && !this.reasons[6].value) {
+        this.$message.warning("请填写其它原因！");
+        return;
+      }
+      let stopReason = this.reasons.reduce((pre, cur) => {
+        cur.selected && cur.value !== "" && pre.push(cur.value);
+        return pre;
+      }, []);
+      if (stopReason.length) {
+        api
+          .postApi("/addsp/devContract/changeDCState", {
+            dcID: this.contractObj.id,
+            passState: 0,
+            stopReason: stopReason.join(","),
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              this.getContractDetail();
+              this.terminateVisible = false;
+              this.$message.success(res.data.MSG || "合同终止成功！");
+            } else {
+              this.$message.warning(res.data.MSG || "");
+            }
+          });
+      } else {
+        this.$message.warning("请选择终止原因");
+      }
+    },
     // 合同删除
     deleteContractFun() {
       api
@@ -264,6 +415,9 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
+            // this.getContractDetail();
+            this.$emit("refresh");
+            this.deleteContractVisible = false;
             this.$message.success(res.data.MSG || "合同删除成功！");
           } else {
             this.$message.warning(res.data.MSG || "");
@@ -287,43 +441,105 @@ export default {
           }
         });
     },
-
+    // 验证是否可以续签和补签
+    valiateNextContract(originIDs) {
+      return new Promise((resolve, reject) => {
+        api
+          .getApi("/addsp/devContract/valiateNextContract", {
+            originIDs,
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              resolve(true);
+            } else {
+              this.$message.warning("存在未完成审批！");
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resolve(false);
+          });
+      });
+    },
     // 合同操作
-    handleContract(operation) {
+    async handleContract(row, operation) {
+      this.contractObj = row;
       switch (operation) {
         case "编辑":
-          this.$router.push({path: "./editContract", query: {resID: this.contractObj.resID, dcID: this.contractObj.id}});
+          if (row.dcType > 0) {
+            this.$router.push({
+              path: "./nextContract",
+              query: {
+                dcID: row.id,
+                originID: row.originID || "",
+                handleType: row.dcType,
+                edit: 1,
+              },
+            });
+          } else {
+            this.$router.push({
+              path: "./editContract",
+              query: { resID: row.resID, dcID: row.id },
+            });
+          }
           break;
         case "删除":
           this.deleteContractVisible = true;
           break;
         case "重新提交":
+          this.resubmitVisible = true;
           break;
         case "媒体录入":
+          this.correlateMediaMode = true;
           break;
         case "续签":
+          this.mergeVisible = true;
           break;
         case "补充协议":
+          if (await this.valiateNextContract(row.originID)) {
+            this.$router.push({
+              path: "./nextContract",
+              query: {
+                dcID: row.id,
+                originID: row.originID || "",
+                handleType: 3,
+              },
+            });
+          }
           break;
         case "加门":
+          this.$router.push({
+            path: "./nextContract",
+            query: {
+              dcID: row.id,
+              originID: row.originID || "",
+              handleType: 2,
+            },
+          });
           break;
         case "付款":
+          this.payApplyVisible = true;
           break;
         case "付款记录":
+          this.payLogDialogVisible = true;
           break;
         case "审核":
+          this.contractReviewVisible = true;
           break;
         case "完成签约":
           this.signVisible = true;
           break;
         case "合同终止":
+          this.terminateVisible = true;
           break;
       }
     },
     // 获取当前列表操作权限
     getContractOperation() {
       let tempNo = `${
-          this.roleArr[JSON.parse(sessionStorage.getItem("session_data")).devManageLevel]
+          this.roleArr[
+            JSON.parse(sessionStorage.getItem("session_data")).devManageLevel
+          ]
         }${this.contractObj.dcType}${this.contractObj.dcState}`,
         tempArr = [];
       for (const key in this.operationAuthorityArr) {
@@ -391,7 +607,7 @@ export default {
                   { label: "开发费", value: tempObj.devFee },
                   { label: "开发费应付日期", value: tempObj.devDate },
                 ],
-              }
+              },
             ];
             tempObj.fileList = tempObj.fileList || [];
             tempObj.fileList.forEach((item) => {
@@ -417,9 +633,25 @@ export default {
   },
 };
 </script>
-<style lang="scss" scope>
-@import "../../../assets/component.scss";
-/deep/ .custom-confirm-dialog {
+<style lang="scss">
+.custom-dialog-wrapper {
+  .el-dialog__header {
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  }
+  .el-dialog__body {
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(233, 233, 233, 1);
+  }
+  .el-dialog__footer {
+    padding: 11px 20px;
+  }
+  .el-pagination__sizes .el-input--mini .el-input__inner {
+    height: 28px;
+  }
+}
+.custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
     padding: 24px 24px 8px;
@@ -485,16 +717,21 @@ export default {
     }
   }
 }
+</style>
+<style lang="scss" scope>
 .media-table {
   margin: 16px 12px;
   width: calc(100% - 24px);
-  .el-table__body-wrapper, .el-table__empty-block {
+  .el-table__body-wrapper,
+  .el-table__empty-block {
     min-height: unset;
   }
 }
-.contract-borde + .contract-borde {
+.contract-borde {
   padding: 18px 0;
-  border-top: 1px solid #E6E7E9;
+  & + .contract-borde {
+    border-top: 1px solid #e6e7e9;
+  }
 }
 .title-row {
   margin: 8px 12px;
@@ -559,7 +796,7 @@ export default {
   height: 22px;
   padding: 0 8px;
   margin-left: 8px;
-  background: #e6f7ff;
+  // background: #e6f7ff;
   border-radius: 2px;
   border: 1px solid #91d5ff;
   font-size: 12px;
@@ -592,6 +829,37 @@ export default {
     .el-icon-download {
       display: block;
     }
+  }
+}
+.terminate-box {
+  padding-left: 40px;
+  margin-top: 24px;
+  .terminate-title {
+    display: block;
+    line-height: 22px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  .tag-default {
+    display: inline-block;
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0px 12px;
+    margin: 8px 8px 0 0;
+    line-height: 32px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e8e8e8;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+  }
+  .terminate-input {
+    margin-top: 8px;
+  }
+  .tag-active {
+    color: #1890ff;
+    border: 1px solid #1890ff;
   }
 }
 </style>

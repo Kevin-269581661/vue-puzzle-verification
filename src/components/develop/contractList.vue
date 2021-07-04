@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 16:56:44
+ * @LastEditTime: 2021-07-04 23:39:35
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -218,7 +218,7 @@
               :filter-multiple="false"
             >
               <template slot-scope="scope">
-                {{ scope.row.venueFee/100 | moneyFormat("¥") }}
+                {{ (scope.row.venueFee / 100) | moneyFormat("¥") }}
               </template>
             </el-table-column>
             <el-table-column
@@ -227,8 +227,8 @@
               width="120"
               show-overflow-tooltip
             >
-            <template slot-scope="scope">
-                {{ scope.row.devFee/100 | moneyFormat("¥") }}
+              <template slot-scope="scope">
+                {{ (scope.row.devFee / 100) | moneyFormat("¥") }}
               </template>
             </el-table-column>
             <el-table-column
@@ -292,8 +292,8 @@
                 ></div>
                 {{ stateList[scope.row.dcState].label }}
                 <el-tooltip
-                  v-if="scope.row.reason"
-                  :content="scope.row.reason || '--'"
+                  v-if="scope.row.stopReason"
+                  :content="scope.row.stopReason || '--'"
                   placement="top"
                 >
                   <img
@@ -391,7 +391,7 @@
     <add-media-to-contract
       :currentContract="currentContract"
       :correlateMediaMode.sync="correlateMediaMode"
-      @searchFormat="searchFormat"
+      @refreshList="searchFormat"
     ></add-media-to-contract>
     <!-- 续签弹框 -->
     <next-contract-dialog
@@ -486,10 +486,10 @@ export default {
       roleArr: ["0", "1", "2"],
       // 合同类型：0-首签  1-续约 2-加门 3-补充
       contractTypeArr: {
-        0: "首签",
-        1: "续签",
-        2: "加门",
-        3: "补充",
+        0: "首签合同",
+        1: "续签合同",
+        2: "加门合同",
+        3: "补充协议",
       },
       // 后台定义合同状态
       stateList: {
@@ -649,13 +649,13 @@ export default {
       currentContract: {},
       // 终止原因
       reasons: [
-        { label: "业委会不通过", val: "业委会不通过", selected: false },
-        { label: "修路/封路", val: "修路/封路", selected: false },
-        { label: "小区改造", val: "小区改造", selected: false },
-        { label: "更换物业", val: "更换物业", selected: false },
-        { label: "竞品取代", val: "竞品取代", selected: false },
-        { label: "我方原因", val: "我方原因", selected: false },
-        { label: "其它", val: "", selected: false },
+        { label: "业委会不通过", value: "业委会不通过", selected: false },
+        { label: "修路/封路", value: "修路/封路", selected: false },
+        { label: "小区改造", value: "小区改造", selected: false },
+        { label: "更换物业", value: "更换物业", selected: false },
+        { label: "竞品取代", value: "竞品取代", selected: false },
+        { label: "我方原因", value: "我方原因", selected: false },
+        { label: "其它", value: "", selected: false },
       ],
     };
   },
@@ -728,8 +728,28 @@ export default {
           }
         });
     },
+    // 验证是否可以续签和补签
+    valiateNextContract(originIDs) {
+      return new Promise((resolve, reject) => {
+        api
+          .getApi("/addsp/devContract/valiateNextContract", {
+            originIDs,
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              resolve(true);
+            } else {
+              this.$message.warning("存在未完成审批！")
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resolve(false);
+          });
+      });
+    },
     // 合同操作
-    handleContract(row, operation) {
+    async handleContract(row, operation) {
       this.currentContract = row;
       switch (operation) {
         case "编辑":
@@ -763,14 +783,16 @@ export default {
           this.mergeVisible = true;
           break;
         case "补充协议":
-          this.$router.push({
-            path: "./nextContract",
-            query: {
-              dcID: row.id,
-              originID: row.originID || "",
-              handleType: 3,
-            },
-          });
+          if (await this.valiateNextContract(row.originID)) {
+            this.$router.push({
+              path: "./nextContract",
+              query: {
+                dcID: row.id,
+                originID: row.originID || "",
+                handleType: 3,
+              },
+            });
+          }
           break;
         case "加门":
           this.$router.push({

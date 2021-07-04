@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:22:19
+ * @LastEditTime: 2021-07-04 22:09:04
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -59,7 +59,7 @@
               </el-menu>
             </el-aside>
             <el-main>
-              <contractDetailCommon :dcID="currentDcID"></contractDetailCommon>
+              <contractDetailCommon :dcID="currentDcID" @refresh="getContractDetailList"></contractDetailCommon>
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -84,10 +84,10 @@ export default {
       contractTypeArr: {
         0: "首签合同",
         1: "续签合同",
-        2: "补充协议",
-        3: "加门合同",
+        2: "加门合同",
+        3: "补充协议",
       },
-      resID: this.$route.query.resID||"",
+      resID: this.$route.query.resID || "",
       originDataList: [],
       resName: "",
       resInfo: [],
@@ -104,7 +104,7 @@ export default {
   },
   methods: {
     getContractDetailList() {
-      if(!this.resID) {
+      if (!this.resID) {
         this.$message.warning("资源信息获取失败！");
         return;
       }
@@ -303,10 +303,23 @@ export default {
     }
     /deep/ .el-tabs__nav-scroll {
       padding-left: 44px;
-      line-height: 52px;
       font-size: 16px;
       font-weight: 500;
       color: #1890ff;
+      .el-tabs__item {
+        &.is-top {
+          height: 50px;
+          line-height: 50px;
+          max-width: 100px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          display: inline-block;
+        }
+        &.is-active {
+          // background-color: #fff;
+        }
+      }
     }
   }
 }

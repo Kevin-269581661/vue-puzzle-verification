@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 13:49:13
+ * @LastEditTime: 2021-07-04 22:17:36
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -525,12 +525,14 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
           });
+          let params = {
+            ...this.payApplyForm,
+            dcID: this.currentContract.id,
+            fileIDs,
+          };
+          params.actualPayTotal = params.actualPayTotal*100;
           api
-            .postApi("/addsp/devContract/createPayRecord", {
-              ...this.payApplyForm,
-              dcID: this.currentContract.id,
-              fileIDs,
-            })
+            .postApi("/addsp/devContract/createPayRecord", params)
             .then((res) => {
               if (res.data.SysCode == 200200) {
                 this.$emit("refreshList");
@@ -611,11 +613,11 @@ export default {
           })
           .then((res) => {
             if (res.data.SysCode == 200200) {
-              (res.data.data || []).forEach(item => {
-                item.fileList = item.fileList||[];
-                item.fileList.forEach(fileItem=>{
+              (res.data.data || []).forEach((item) => {
+                item.fileList = item.fileList || [];
+                item.fileList.forEach((fileItem) => {
                   fileItem.fileName = fileItem.fileUrl.split("/").pop();
-                })
+                });
               });
               this.payLogArr = res.data.data || [];
             } else {

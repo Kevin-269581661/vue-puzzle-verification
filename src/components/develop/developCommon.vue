@@ -21,9 +21,9 @@
                 <el-menu-item index="/f_develop/contractCfg">合同设置</el-menu-item>
             </el-submenu>
             <el-menu-item index="/f_develop/mediaList">媒体管理</el-menu-item>
-            <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
+            <!-- <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-submenu index="6" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

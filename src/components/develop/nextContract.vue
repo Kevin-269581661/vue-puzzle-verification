@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 16:22:06
+ * @LastEditTime: 2021-07-04 21:26:24
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -49,6 +49,7 @@
           :originID="originID"
           :resFormData="resFormData"
           :contractFormData="contractFormData"
+          :startDate="startDate"
           :is="componentName"
           @submitContract="newContract"
         ></component>
@@ -97,6 +98,7 @@ export default {
       dcID: "",
       originID: "",
       editFlag: 0,
+      startDate: ""
     };
   },
   watch: {},
@@ -111,13 +113,14 @@ export default {
     this.dcID = queryParams.dcID+"";
     this.originID = queryParams.originID||"";
     this.editFlag = queryParams.edit;
+    this.startDate = queryParams.date;
   },
   mounted() {},
   methods: {
     /* 跳转至合同列表 */
     routeContractList() {
       this.$router.push({
-        path: "./routeContractList"
+        path: "./contractList"
       });
     },
     /* 跳转至合同详情 */
@@ -129,7 +132,8 @@ export default {
     },
     /* 第一步取消 */
     cancelFirstStep() {
-      this.$router.go(-1);
+      // this.$router.go(-1);
+      this.$router.push("./contractList");
     },
     async secondStep() {
       // 表单验证
@@ -158,7 +162,7 @@ export default {
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
-      if(Array.isArray(params.demolishMediaIDs) && params.demolishMediaIDs.length) {
+      if(Array.isArray(params.demolishMediaIDs)) {
         params.demolishMediaIDs = params.demolishMediaIDs.join(",");
       }
       // 合同类型：0-首签 1-续约 2-加门 3-补充 此处无首签

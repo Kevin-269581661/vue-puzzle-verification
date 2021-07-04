@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-06-30 18:32:40
+ * @LastEditTime: 2021-07-04 23:24:45
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1066,7 +1066,7 @@ export default {
   },
   created() {
     this.getFangJiaWangCity();
-    if(this.$route.path.indexOf("editContract")!== -1) {
+    if (this.$route.path.indexOf("editContract") !== -1) {
       this.PathHaveEdit = true;
     }
   },
@@ -1074,7 +1074,7 @@ export default {
     this.customPermission = this.sessionData.customPermission;
     this.resUpdata = [];
     this.ShowRegion();
-    this.getDataFun((this.$route.query||{}).resID);
+    this.getDataFun((this.$route.query || {}).resID);
   },
   methods: {
     // 小区数据填充
@@ -1083,10 +1083,13 @@ export default {
         resData.latLng = resData.latLng.replace(/\,/g, ";");
       }
       this.recForm = {
-        rt: resData.resType+"",
+        rt: resData.resType + "",
         resName: resData.resName,
         resaddr: resData.resAddress || "", // 资源地址
-        city: resData.provinceId&&resData.cityId?[resData.provinceId, resData.cityId]:[],
+        city:
+          resData.provinceId && resData.cityId
+            ? [resData.provinceId, resData.cityId]
+            : [],
         resID: resData.resID || "", // 小区ID
         business: resData.tradingArea || "", // 商圈
         floorType: resData.cType, // 楼盘类型             // 出入数
@@ -1099,6 +1102,9 @@ export default {
         liveTime: resData.moveinTime || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度
+        discount: resData.discount || "",
+        liveRate: resData.liveRate || "",
+        otherAd: resData.otherAd || "",
         // 房价网信息
         resAlias: resData.alias || "", // 资源别名
         addressAlias: resData.addressAlias || "", // 地址别名
@@ -1124,12 +1130,12 @@ export default {
       this.resUpdata = (resData.fullViewUrl || "").split(",").map((item) => {
         return { name: "资源图片", url: item };
       });
-      this.recForm.city.length==2 && this.handleChange(this.recForm.city);
-      this.recForm.region = resData.rID+"";
+      this.recForm.city.length == 2 && this.handleChange(this.recForm.city);
+      this.recForm.region = resData.rID + "";
     },
     // 获取资源、媒体信息
-    getDataFun(resID="") {
-      if(!resID) return;
+    getDataFun(resID = "") {
+      if (!resID) return;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -1145,7 +1151,7 @@ export default {
             if (res.data.data === null || res.data.data === "") {
               this.$message.warning("媒体资源信息为空!");
             } else {
-              this.setFormData(res.data.data||{});
+              this.setFormData(res.data.data || {});
             }
           } else {
             this.$message.warning("资源详情获取异常!");
@@ -1248,7 +1254,7 @@ export default {
         closeOnClickModal: false,
       })
         .then(() => {
-          this.setFormData(obj||{});
+          this.setFormData(obj || {});
         })
         .catch((error) => {
           console.error("小区信息填充error", error);
@@ -1589,91 +1595,23 @@ export default {
         });
       }
     },
-    // 接口返回为空时校验当前是否有重复的
-    filterlocalAssetId(resData, value) {
-      let num = 0;
-      for (let key of this.arrMedia) {
-        if (key.mediaForm.assetId === value) {
-          key.isAssetIdError = false;
-          num++;
-        }
-      }
-      for (let rgKey of this.roadGateMedia) {
-        if (rgKey.roadGateForm.assetId === value) {
-          rgKey.isAssetIdError = false;
-          num++;
-        }
-      }
-      return num;
-    },
-    // 判断同资源下资产编号是否重复
-    filterAssetId(resData, value) {
-      let adDoor = false;
-      let roadGate = false;
-      for (let key of this.arrMedia) {
-        if (key.mediaForm.assetId === value) {
-          for (let rKey of resData) {
-            if (rKey.mId !== key.mediaForm.mid) {
-              key.isAssetIdError = true;
-              key.assetIdCommentData.mediaName = rKey.mediaName;
-              key.assetIdCommentData.resName = rKey.resName;
-              key.assetIdCommentData.updateTime = rKey.createTime;
-              adDoor = true;
-            } else {
-              key.isAssetIdError = false;
-            }
-          }
-        }
-      }
-      for (let key of this.roadGateMedia) {
-        if (key.roadGateForm.assetId === value) {
-          for (let rKey of resData) {
-            if (rKey.mId !== key.roadGateForm.mid) {
-              key.isAssetIdError = true;
-              key.assetIdCommentData.mediaName = rKey.mediaName;
-              key.assetIdCommentData.resName = rKey.resName;
-              key.assetIdCommentData.updateTime = rKey.createTime;
-              roadGate = true;
-            } else {
-              key.isAssetIdError = false;
-            }
-          }
-        }
-      }
-      if (adDoor || roadGate) {
-        return true;
-      } else {
-        return false;
-      }
-    },
 
     // 选择资源类型时的修改资源字段显示
     selectRec(val) {
       this.recForm.floorType = "";
-      /* if (val === "1") {
-        // 社区
-        this.floorType = this.village;
-      } else if (val === "2") {
-        // 写字楼
-        this.floorType = this.officeBuilding;
-      } */
     },
 
     //添加资源媒体
     createRes() {
-      console.log(this.arrMedia);
       this.recForm.uid = this.sessionData.uID;
       this.recForm.latlng = this.recForm.lat + ";" + this.recForm.lng;
       console.log("this.recForm", this.recForm);
-      for (let i = 0; i < this.arrMedia.length; i++) {
-        console.log("arrMedia", i, this.arrMedia[i].mediaForm);
-      }
       let recObj = {
         uid: this.recForm.uid,
         rid: Number(this.recForm.region),
         ta: this.recForm.business, // 所属商圈
         rt: this.recForm.rt, // 资源类型
-        resName: this.recForm.resName, // 资源名称
+        resname: this.recForm.resName, // 资源名称
         resaddr: this.recForm.resaddr, // 资源地址
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
         latlng: this.recForm.latlng, // 经纬度 重庆:9.61;106.47  北京:116.46;39.92 广州: 113.27;23.13  上海:121.29;31.11 深圳:113.46;22.27
@@ -1688,6 +1626,9 @@ export default {
         carFlow: this.recForm.carFlowrate, //车流量
         parkSpaceNum: this.recForm.carNumber, //车位数
         fullViewUrl: this.recForm.fullViewUrl, // 资源图片
+        liftType: this.recForm.liftType,
+        liveRate: this.recForm.liveRate,
+        otherAd: this.recForm.otherAd || "",
 
         city: this.resAddres.city,
         district: this.resAddres.area,
@@ -1722,31 +1663,39 @@ export default {
         token: this.sessionData.token,
         data: recObj,
       };
-      api
-        .postApi_new(this.apiVar.Media, params)
-        .then((res) => {
-          console.log("资源数据：", res.data);
-          let recData = res.data.data;
-          this.resData = recData;
-          if (res.data.SysCode == 200200) {
-            // 设置资源图片信息
-            this.resImg.ptid = recData.resID; // 资源图片的ptid就是资源的id
-            this.resImg.palt = this.recForm.resName + "-" + recData.rID;
-            this.creadMediaFun(0, 0);
-          } else if (
-            res.data.SysCode === 100302 ||
-            res.data.MSG === "登陆超时"
-          ) {
-            this.Editloading.close();
-          } else {
-            this.Editloading.close();
-            sessFun.messageFun("warning", "资源创建失败！");
-          }
-        })
-        .catch((err) => {
-          console.log("新建资源请求错误", err);
-          sessFun.messageFun("warning", "新建资源请求异常");
-        });
+      this.Editloading = this.$loading({
+        lock: true,
+        text: "资源创建中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      return new Promise((resolve) => {
+        api
+          .postApi_new(this.apiVar.Media, params)
+          .then((res) => {
+            console.log("资源数据：", res.data);
+            let recData = res.data.data;
+            this.resData = recData;
+            if (res.data.SysCode == 200200) {
+              // 设置资源图片信息
+              this.resImg.ptid = recData.resID; // 资源图片的ptid就是资源的id
+              this.resImg.palt = this.recForm.resName + "-" + recData.rID;
+              // this.creadMediaFun(0, 0);
+              this.recForm.resID = res.data.data.resID;
+              this.Editloading.close();
+              resolve(true);
+            } else {
+              this.Editloading.close();
+              this.$message.warning("资源创建失败！");
+              resolve(false);
+            }
+          })
+          .catch((err) => {
+            console.log("新建资源请求错误", err);
+            this.$message.warning("新建资源请求异常");
+            resolve(false);
+          });
+      });
     },
     // 资源图片上传前验证格式和大小
     beforeUpload_res(file) {
@@ -1911,26 +1860,13 @@ export default {
     },
     // 修改资源
     postEditMsg() {
-      //   uid     int【必填】     UserID
-      //     resid   int【必填】     资源ID
-      //     rid     int             地区id
-      //     ta      String          商圈名称
-      //     resName String          资源名称
-      //     resaddr String          资源地址
-      //     ct      String          楼盘类型
-      //     cd      String          入住时间
-      //     hp      int             楼盘价格
-      //     fn      int             楼栋数量
-      //     dn      int             出入口数量
-      //     hn      int             小区户数
       let uid = this.sessionData.uID;
-      this.recForm.uid = uid;
-      // let rID = sessionStorage.getItem('resID')
+      // this.recForm.uid = uid;
       let recObj = this.recForm;
       console.log("recObj", recObj);
       let SetResCTObj = {
-        resid: this.resData.resID,
-        rid: "",
+        resid: recObj.resID,
+        rid: Number(recObj.region),
         ta: recObj.business,
         resName: recObj.resName,
         resaddr: recObj.resaddr,
@@ -1941,11 +1877,14 @@ export default {
         fn: recObj.buildingNum,
         dn: recObj.doorwayNum,
         hn: recObj.households,
-        pmc: recObj.pmc,
+        pmc: recObj.pmcName,
         peopleFlow: recObj.peopleFlowrate,
         carFlow: recObj.carFlowrate,
         parkSpaceNum: recObj.carNumber,
         fullViewUrl: recObj.fullViewUrl || "",
+        liftType: recObj.liftType,
+        liveRate: recObj.liveRate,
+        otherAd: recObj.otherAd || "",
         // 房价网信息
         resAlias: recObj.resAlias || "", // 资源别名
         addressAlias: recObj.addressAlias, // 地址别名
@@ -1967,13 +1906,6 @@ export default {
         salesPhoneNumber: recObj.salesPhoneNumber, // 售楼电话
         discount: recObj.discount,
       };
-      let recDetail = JSON.parse(sessionStorage.getItem("recDetail"));
-      // 地区没有修改的时候
-      if (recObj.region === recDetail.cityArea) {
-        SetResCTObj.rid = recDetail.rid;
-      } else {
-        SetResCTObj.rid = Number(recObj.region);
-      }
       for (let key in SetResCTObj) {
         if (SetResCTObj[key] === undefined || SetResCTObj[key] === null) {
           SetResCTObj[key] = "";
@@ -1985,24 +1917,30 @@ export default {
         service: "SetResCT",
         data: SetResCTObj,
       };
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("修改资源信息", res);
-        if (res.data.SysCode == 200200) {
-          // 设置资源图片信息
-          console.log(
-            "m_boolean",
-            this.m_boolean,
-            "rt_boolean",
-            this.rt_boolean
-          );
-        } else {
-          if (res.data.SysCode == 100302 || res.data.MSG === "登陆超时") {
+      return new Promise((resolve) => {
+        this.Editloading = this.$loading({
+          lock: true,
+          text: "资源修改中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        api
+          .postApi_new(this.apiVar.Media, params)
+          .then((res) => {
+            console.log("修改资源信息", res);
+            if (res.data.SysCode == 200200) {
+              this.Editloading.close();
+              resolve(true);
+            } else {
+              this.$message.warning("资源保存失败！");
+              this.Editloading.close();
+              resolve(false);
+            }
+          })
+          .catch((error) => {
             this.Editloading.close();
-          } else {
-            sessFun.messageFun("warning", "资源保存失败");
-          }
-          this.Editloading.close();
-        }
+            resolve(false);
+          });
       });
     },
   },

@@ -2,13 +2,13 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 03:29:20
+ * @LastEditTime: 2021-07-05 03:55:00
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
   <div>
     <el-row type="flex" justify="space-between" class="title-row">
-      <el-col :span="6" class="row-left">
+      <el-col :span="8" class="row-left">
         <label class="title-label">{{
           contractTypeArr[contractObj.dcType]
         }}</label>
@@ -26,7 +26,7 @@
           {{ stateList[contractObj.dcState].label }}
         </div>
       </el-col>
-      <el-col :span="18" class="row-right">
+      <el-col :span="16" class="row-right">
         <el-button
           v-for="(item, index) in operationArr"
           :key="index"
@@ -394,6 +394,8 @@ export default {
     dcID: {
       immediate: true,
       handler(newVal, oldVal) {
+        /* clearTimeout(timeOut);
+        timeOut = setTimeout(() => {}, 500); */
         newVal && this.getContractDetail();
       },
     },
@@ -854,12 +856,12 @@ export default {
   height: 22px;
   padding: 0 8px;
   margin-left: 8px;
-  // background: #e6f7ff;
   border-radius: 2px;
   border: 1px solid #91d5ff;
+  line-height: 22px;
   font-size: 12px;
   color: #1890ff;
-  line-height: 22px;
+  white-space: nowrap;
 }
 .file-item {
   display: flex;

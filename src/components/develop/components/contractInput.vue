@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 23:42:26
+ * @LastEditTime: 2021-07-04 15:34:09
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -84,7 +84,7 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
-                <el-col v-if="handleType == 0" :span="6">
+                <el-col v-if="handleType == 0 || handleType == 2" :span="6">
                   <el-form-item label="合同媒体数量" prop="mediaNewCnt">
                     <el-input-number
                       v-model="contractForm.mediaNewCnt"
@@ -114,6 +114,7 @@
                       <el-select
                         size="small"
                         placeholder="请选择要拆除媒体"
+                        multiple=""
                         v-model="contractForm.demolishMediaIDs"
                         @blur="blurFun('demolishMediaIDs')"
                       >
@@ -441,10 +442,14 @@ export default {
       type: [Number, String],
       default: () => 0,
     },
-    originIDs: {
+    dcID: {
       type: [Number, String],
       default: () => "",
     },
+    originID: {
+      type: [Number, String],
+      default: () => "",
+    }
   },
   data() {
     let validateSpace = (rule, value, callback) => {
@@ -499,7 +504,7 @@ export default {
         ownership: "", // 到期门体归属权
         remark: "", // 合同备注
         mediaNewCnt: "", // 合同媒体数量（首签和加门都是新增）
-        demolishMediaIDs: "", // 合同拆除媒体
+        demolishMediaIDs: [], // 合同拆除媒体
 
         freeCarGateCnt: "", // 赠送车场道闸
         freeGuardrailDoorCnt: "", // 赠送护栏门
@@ -551,6 +556,12 @@ export default {
         ],
         mediaNewCnt: [
           { required: true, message: "请输入合同媒体数量!", trigger: "blur" },
+        ],
+        demolishMediaIDs: [
+          {
+            validator: this.checkDemolishMedia,
+            trigger: ["change", "blur"],
+          }
         ],
         isVenueFee: [
           { required: true, message: "请选择是否有场地费!", trigger: "change" },
@@ -615,26 +626,32 @@ export default {
   computed: {},
   watch: {},
   created() {
-    if (
-      this.$route.path.indexOf("editContract") !== -1 ||
-      this.$route.path.indexOf("nextContract") !== -1
-    ) {
-      this.getContractDetail(this.originIDs.split(",")[0]);
-    }
+    this.getContractDetail(this.dcID);
   },
   mounted: function () {
-    this.customPermission = this.sessionData.customPermission;
-    console.log("----==", this.handleType);
     if (this.handleType) {
       this.getDemolishMediaList();
     }
   },
   methods: {
+    // 拆除媒体不能全选
+    checkDemolishMedia(rule, value, callback) {
+      console.log("value--", value)
+      if (value) {
+        if (value.length == this.demolishMediaList.length) {
+          callback(new Error("拆除媒体不能全选!"));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    },
     // 获取可删除媒体
     getDemolishMediaList() {
       api
         .getApi("/addsp/devContract/demolishMediaList", {
-          originIDs: this.originIDs,
+          originIDs: this.originID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -657,6 +674,7 @@ export default {
             const tempResultObj = res.data.data || {};
             this.resFormData.pmcName = tempResultObj.pmcName || "";
             this.resFormData.resName = tempResultObj.resName || "";
+            this.resFormData.resID = tempResultObj.resID || "";
             for (const key in this.contractForm) {
               let tempValue = tempResultObj[key];
               if (
@@ -677,7 +695,7 @@ export default {
                   typeof tempValue == "number"
                 ) {
                   // 金额 分 转 元
-                  tempValue = Math.floor(tempValue / 100);
+                  tempValue = Number(tempValue / 100).toFixed(2);
                 }
                 this.contractForm[key] = tempValue;
               }
@@ -768,11 +786,6 @@ export default {
       } else {
         this.contractForm.fullViewUrl = res[0].pURL;
       }
-      console.log(
-        "this.contractForm",
-        this.contractForm,
-        this.contractForm.fullViewUrl
-      );
     },
     // 删除原资源图片，进行重新选择
     handleRemoveR(file, fileList) {
@@ -805,6 +818,7 @@ export default {
         "endDate",
         "ownership",
         "mediaNewCnt",
+        "demolishMediaIDs",
         "isVenueFee",
         "isDevFee",
       ];
@@ -834,13 +848,11 @@ export default {
       return Promise.all(validatesPro)
         .then((res) => {
           // 验证全部通过
-          console.log("验证全部通过", res);
           return true;
         })
         .catch((err) => {
           console.log("验证失败", err);
-          //验证失败 提示reject失败状态的值
-          sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
+          this.$message.warning("必填项信息不能为空或填写有误！");
           return false;
         });
     },

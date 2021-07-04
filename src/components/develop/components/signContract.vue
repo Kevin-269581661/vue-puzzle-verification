@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:54:39
+ * @LastEditTime: 2021-07-04 13:03:27
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -38,7 +38,7 @@
         </el-form>
 
       <template slot="footer">
-        <el-button @click="signVisible = false">取 消</el-button>
+        <el-button @click="$emit('update:signVisible', false)">取 消</el-button>
         <el-button type="primary" @click="signContractFun">确 定</el-button>
       </template>
     </el-dialog>

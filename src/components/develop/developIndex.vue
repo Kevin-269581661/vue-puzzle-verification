@@ -66,7 +66,7 @@
                   width="230"
                 >
                   <template slot-scope="scope">
-                    <span>{{ scope.row.originName || "--" }}</span>
+                    <span>{{ scope.row.originName || "待定" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -76,7 +76,7 @@
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    {{ scope.row.contractNo||"--" }}
+                    {{ scope.row.contractNo || "--" }}
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -171,6 +171,9 @@
                   width="150"
                   show-overflow-tooltip
                 >
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.contractNo || "--" }}</span>
+                  </template>
                 </el-table-column>
                 <el-table-column prop="dcType" label="合同类型" width="120">
                   <template slot-scope="scope">
@@ -178,7 +181,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="updateTime"
+                  prop="createTime"
                   label="创建日期"
                   min-width="160"
                   show-overflow-tooltip
@@ -637,8 +640,12 @@ export default {
     },
     // 合同动态列表
     getContractNews() {
+      let apiUri = "/report/devContract/getContractNews";
+      if(this.sessionData.devManageLevel == 2) {
+        apiUri = "/report/devContract/getVerifyDataList"
+      }
       api
-        .getApi("/report/devContract/getContractNews", {
+        .getApi(apiUri, {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
         })

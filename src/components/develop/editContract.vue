@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-02 17:49:20
+ * @LastEditTime: 2021-07-04 15:36:47
  * @FilePath: /frontend/src/components/develop/editContract.vue
 -->
 <template>
@@ -50,6 +50,8 @@
           ref="needValidForm"
           :resFormData="resFormData"
           :contractFormData="contractFormData"
+          :dcID="dcID"
+          :originID="originID"
           :is="componentName"
           @submitContract="editContract"
         ></component>
@@ -104,16 +106,16 @@ export default {
       componentName: "resInput",
       resFormData: {},
       contractFormData: {},
-      resID: "",
       dcID: "",
+      originID: ""
     };
   },
   watch: {},
   computed: {},
   created() {
-    // let query = this.$route.query||{};
-    // this.dcID = query.dcID;
-    // this.resID = query.resID;
+    let queryParams = this.$route.query || {};
+    this.dcID = queryParams.dcID+"";
+    this.originID = queryParams.originID+"";
   },
   mounted() {},
   methods: {
@@ -167,7 +169,6 @@ export default {
       // params.dcType = 0;
       // 续约，加门或者补充时父单的id （首签时传0）
       // params.pID = 0;
-      // fileIDs
       return new Promise((resolve) => {
         api
           .postApi_json("/addsp/devContract/create", params)

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 22:31:58
+ * @LastEditTime: 2021-07-04 10:51:49
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -105,7 +105,7 @@ export default {
       if (this.mergeOriginList.length > 0) {
         this.$router.push({
           path: "./nextContract",
-          query: { resID: this.currentContract.resID, dcID: this.currentContract.id },
+          query: { originIDs: this.currentContract.id, handleType: 1 },
         });
       } else {
         this.$message.warning("请选择合同对象！");

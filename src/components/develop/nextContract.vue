@@ -2,14 +2,14 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 23:46:46
+ * @LastEditTime: 2021-07-04 16:22:06
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
   <div class="new-contract-page">
     <el-breadcrumb separator="/" class="contract-crumb">
       <el-breadcrumb-item>合同管理</el-breadcrumb-item>
-      <el-breadcrumb-item>{{ contractTypeArr[handleType] }}</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ contractTypeArr[handleType].breadcrumb }}</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="content">
       <el-row style="text-align: center; padding: 32px 0">
@@ -35,7 +35,7 @@
           <span
             :class="['step-text', { 'step-text-active': item == activeStep }]"
             >{{
-              item === 1 ? "完善合同信息" : item === 2 ? "合同创建成功" : ""
+              item === 1 ? "完善合同信息" : item === 2 ? contractTypeArr[handleType].stepText : ""
             }}</span
           >
           <span v-if="item < 2" class="step-line"></span>
@@ -45,7 +45,8 @@
         <component
           ref="needValidForm"
           :handleType="handleType"
-          :originIDs="originIDs"
+          :dcID="dcID"
+          :originID="originID"
           :resFormData="resFormData"
           :contractFormData="contractFormData"
           :is="componentName"
@@ -82,9 +83,9 @@ export default {
   data() {
     return {
       contractTypeArr: {
-        1: "续签合同",
-        2: "补充协议",
-        3: "加门合同",
+        1: {breadcrumb: "续签合同", stepText: "合同续签成功"},
+        2: {breadcrumb: "加门合同", stepText: "合同创建成功"},
+        3: {breadcrumb: "补充协议", stepText: "补充协议创建成功"}
       },
       handleType: 0,
       sessionData: JSON.parse(sessionStorage.getItem("session_data")),
@@ -93,7 +94,9 @@ export default {
       activeStep: 1,
       componentName: "contractInput",
       contractFormData: {},
-      originIDs: "",
+      dcID: "",
+      originID: "",
+      editFlag: 0,
     };
   },
   watch: {},
@@ -105,7 +108,9 @@ export default {
     this.resFormData.resName = queryParams.resName;
     this.resFormData.pmcName = queryParams.pmcName;
     this.resID = queryParams.resID;
-    this.originIDs = queryParams.originIDs;
+    this.dcID = queryParams.dcID+"";
+    this.originID = queryParams.originID||"";
+    this.editFlag = queryParams.edit;
   },
   mounted() {},
   methods: {
@@ -126,18 +131,7 @@ export default {
     cancelFirstStep() {
       this.$router.go(-1);
     },
-    /* 第一步进入第二部 */
     async secondStep() {
-      let needValidFormResult = await this.$refs.needValidForm.submitForm();
-      console.log("test1", needValidFormResult);
-      if (needValidFormResult) {
-        this.contractFormData = this.$refs.needValidForm.contractForm;
-        await this.newContract();
-        this.activeStep = 2;
-        this.componentName = "contractFinished";
-      }
-    },
-    async thirdStep() {
       // 表单验证
       let needValidFormResult = await this.$refs.needValidForm.submitForm();
       if (needValidFormResult) {
@@ -147,6 +141,7 @@ export default {
       }
     },
     newContract(fileIDs) {
+      console.log("contractForm", this.contractFormData)
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -163,20 +158,26 @@ export default {
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
-      // 合同类型：0-首签 1-续约 2-加门 3-补充
-      params.dcType = this.handleType;
+      if(Array.isArray(params.demolishMediaIDs) && params.demolishMediaIDs.length) {
+        params.demolishMediaIDs = params.demolishMediaIDs.join(",");
+      }
+      // 合同类型：0-首签 1-续约 2-加门 3-补充 此处无首签
+      params.dcType = this.handleType*1;
       // 续约，加门或者补充时父单的id （首签时传0）
-      params.pID = this.originIDs;
+      params.pID = this.dcID;
+      // 多个合同续签时传originIDs
+      this.handleType == 1 && this.originID.split(",").length > 1 && (params.originIDs = this.originID);
+      !this.editFlag && delete params.id;
       return new Promise((resolve) => {
         api
           .postApi_json("/addsp/devContract/create", params)
           .then((res) => {
             if (res.data.SysCode === 200200) {
               resolve(true);
-              this.activeStep = 3;
+              this.activeStep = 2;
               this.componentName = "contractFinished";
             } else {
-              this.$message.warning(res.data.MSG || "");
+              this.$message.warning(res.data.MSG || "创建失败！");
             }
           })
           .finally(() => {

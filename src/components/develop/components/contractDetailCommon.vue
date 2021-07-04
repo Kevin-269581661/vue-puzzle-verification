@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:22:32
+ * @LastEditTime: 2021-07-04 11:20:21
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -19,7 +19,7 @@
           {{ stateList[contractObj.dcState] }}
         </div>
       </el-col>
-      <el-col :span="6" class="row-right">
+      <el-col :span="18" class="row-right">
         <el-button
           v-for="(item, index) in operationArr"
           :key="index"
@@ -40,10 +40,14 @@
       </el-table-column>
       <el-table-column prop="mType" label="媒体类型" width="180">
       </el-table-column>
-      <el-table-column prop="createUser" label="安装负责人"> </el-table-column>
+      <el-table-column prop="installUserName" label="安装负责人"> </el-table-column>
       <el-table-column prop="installDate" label="安装/拆除完成日期">
       </el-table-column>
-      <el-table-column prop="mState" label="媒体状态"> </el-table-column>
+      <el-table-column prop="mState" label="媒体状态">
+        <template slot-scope="scope">
+          {{mediaStatusMap[scope.row.mState]}}
+        </template>
+      </el-table-column>
     </el-table>
     <div v-for="(item, index) in detailArr" :key="index" class="contract-borde">
       <div class="emphasize-text">{{ item.title }}</div>
@@ -81,9 +85,9 @@
     >
       <div slot="title"><i class="el-icon-question"></i>是否重新提交审核？</div>
       <div class="message-content">
-        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        确定后，<span class="active">{{ contractObj.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[currentContract.dcType] || ""}合同`
+          `${contractTypeArr[contractObj.dcType] || ""}合同`
         }}</span>
         将被重新提交审核
       </div>
@@ -104,9 +108,9 @@
     >
       <div slot="title"><i class="el-icon-question"></i>是否删除该合同？</div>
       <div class="message-content">
-        确定后，<span class="active">{{ currentContract.resName }}</span> 的
+        确定后，<span class="active">{{ contractObj.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[currentContract.dcType] || ""}合同`
+          `${contractTypeArr[contractObj.dcType] || ""}合同`
         }}</span>
         将被删除
       </div>
@@ -118,9 +122,9 @@
     </el-dialog>
     <!-- 关联媒体至合同 -->
     <add-media-to-contract
-      :currentContract="currentContract"
+      :currentContract="contractObj"
       :correlateMediaMode.sync="correlateMediaMode"
-      @searchFormat="searchFormat"
+      @searchFormat="getContractDetail"
     ></add-media-to-contract>
     <!-- 续签弹框 -->
     <next-contract-dialog
@@ -128,16 +132,18 @@
     ></next-contract-dialog>
     <!-- 付款记录 -->
     <pay-log
+      :currentContract="contractObj"
       :payLogDialogVisible.sync="payLogDialogVisible"
       :payApplyVisible.sync="payApplyVisible"
+      @refreshList="getContractDetail"
     ></pay-log>
     <!-- 完成签约 -->
     <sign-contract :signVisible="signVisible"></sign-contract>
     <!-- 合同审核 -->
     <contract-review-dialog
-      :dcID="currentContract.id"
+      :dcID="contractObj.id"
       :contractReviewVisible.sync="contractReviewVisible"
-      @refreshList="searchFormat"
+      @refreshList="getContractDetail"
     ></contract-review-dialog>
   </div>
 </template>
@@ -219,6 +225,25 @@ export default {
       resubmitVisible: false,
       // 合同审核弹框
       contractReviewVisible: false,
+      // 终止合同弹框
+      terminateVisible: false,
+      reasons: [
+        { label: "业委会不通过", val: "", selected: false },
+        { label: "修路/封路", val: "", selected: false },
+        { label: "小区改造", val: "", selected: false },
+        { label: "更换物业", val: "", selected: false },
+        { label: "竞品取代", val: "", selected: false },
+        { label: "我方原因", val: "", selected: false },
+        { label: "其它", val: "", selected: false },
+      ],
+      // 媒体状态
+      mediaStatusMap: {
+        0: "禁用",
+        1: "正常",
+        2: "待安装",
+        3: "待维修",
+        4: "已拆除"
+      },
     };
   },
   watch: {
@@ -231,6 +256,38 @@ export default {
   },
   created() {},
   methods: {
+    // 合同删除
+    deleteContractFun() {
+      api
+        .postApi("/addsp/devContract/delete", {
+          dcID: this.contractObj.id,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.$message.success(res.data.MSG || "合同删除成功！");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
+    // 重新提交
+    resubmitFun() {
+      api
+        .postApi("/addsp/devContract/changeDCState", {
+          dcID: this.contractObj.id,
+          passState: 1,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.getContractDetail();
+            this.resubmitVisible = false;
+            this.$message.success(res.data.MSG || "重新提交成功！");
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        });
+    },
+
     // 合同操作
     handleContract(operation) {
       switch (operation) {
@@ -285,12 +342,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let tempObj = res.data.data || {};
-            this.contractObj = {
-              id: tempObj.id,
-              resID: tempObj.resID,
-              dcType: tempObj.dcType,
-              dcState: tempObj.dcState,
-            };
+            this.contractObj = tempObj;
             this.detailArr = [
               {
                 title: "基本信息",
@@ -436,6 +488,9 @@ export default {
 .media-table {
   margin: 16px 12px;
   width: calc(100% - 24px);
+  .el-table__body-wrapper, .el-table__empty-block {
+    min-height: unset;
+  }
 }
 .contract-borde + .contract-borde {
   padding: 18px 0;

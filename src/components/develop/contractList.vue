@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 22:47:45
+ * @LastEditTime: 2021-07-04 16:38:58
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -309,13 +309,10 @@
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
-                      v-for="(item, key, index) in operationAuthorityArr"
+                      v-for="(item, index) in getContractOperation(scope.row)"
                       :key="index"
-                      @click.native.prevent="handleContract(scope.row, key)"
-                      :disabled="
-                        getContractOperation(scope.row).indexOf(key) == -1
-                      "
-                      >{{ key }}
+                      @click.native.prevent="handleContract(scope.row, item)"
+                      >{{ item }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -432,7 +429,7 @@
         }}</span>
         将被终止
       </div>
-      <div class="terminate">
+      <div class="terminate-box">
         <span class="terminate-title">请选择终止原因：</span>
         <span
           v-for="(reasonItem, index) in reasons"
@@ -442,15 +439,17 @@
           >{{ reasonItem.label }}</span
         >
         <el-input
+          class="terminate-input"
           v-if="reasons[6].selected"
+          v-model="reasons[6].value"
           size="small"
           placeholder="请填写其他原因"
         ></el-input>
       </div>
 
       <template slot="footer">
-        <el-button @click="resubmitVisible = false">取 消</el-button>
-        <el-button type="primary" @click="resubmitFun">确 定</el-button>
+        <el-button @click="terminateVisible = false">取 消</el-button>
+        <el-button type="primary" @click="terminateFun">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -483,8 +482,8 @@ export default {
       contractTypeArr: {
         0: "首签",
         1: "续签",
-        2: "补充",
-        3: "加门",
+        2: "加门",
+        3: "补充",
       },
       // 后台定义合同状态
       stateList: {
@@ -529,7 +528,7 @@ export default {
           "012",
           "022",
           "013",
-          "023",
+          "033",
           "030",
           "03-1",
           "031",
@@ -644,12 +643,12 @@ export default {
       currentContract: {},
       // 终止原因
       reasons: [
-        { label: "业委会不通过", val: "", selected: false },
-        { label: "修路/封路", val: "", selected: false },
-        { label: "小区改造", val: "", selected: false },
-        { label: "更换物业", val: "", selected: false },
-        { label: "竞品取代", val: "", selected: false },
-        { label: "我方原因", val: "", selected: false },
+        { label: "业委会不通过", val: "业委会不通过", selected: false },
+        { label: "修路/封路", val: "修路/封路", selected: false },
+        { label: "小区改造", val: "小区改造", selected: false },
+        { label: "更换物业", val: "更换物业", selected: false },
+        { label: "竞品取代", val: "竞品取代", selected: false },
+        { label: "我方原因", val: "我方原因", selected: false },
         { label: "其它", val: "", selected: false },
       ],
     };
@@ -660,6 +659,36 @@ export default {
     this.searchFormat();
   },
   methods: {
+    // 合同终止
+    terminateFun() {
+      if (this.reasons[6].selected && !this.reasons[6].value) {
+        this.$message.warning("请填写其它原因！");
+        return;
+      }
+      let stopReason = this.reasons.reduce((pre, cur) => {
+        cur.selected && cur.value !== "" && pre.push(cur.value);
+        return pre;
+      }, []);
+      if (stopReason.length) {
+        api
+          .postApi("/addsp/devContract/changeDCState", {
+            dcID: this.currentContract.id,
+            passState: 0,
+            stopReason: stopReason.join(","),
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              this.searchFormat();
+              this.terminateVisible = false;
+              this.$message.success(res.data.MSG || "合同终止成功！");
+            } else {
+              this.$message.warning(res.data.MSG || "");
+            }
+          });
+      } else {
+        this.$message.warning("请选择终止原因");
+      }
+    },
     // 合同删除
     deleteContractFun() {
       api
@@ -668,6 +697,8 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
+            this.searchFormat()
+            this.deleteContractVisible = false;
             this.$message.success(res.data.MSG || "合同删除成功！");
           } else {
             this.$message.warning(res.data.MSG || "");
@@ -696,10 +727,22 @@ export default {
       this.currentContract = row;
       switch (operation) {
         case "编辑":
-          this.$router.push({
-            path: "./editContract",
-            query: { resID: row.resID, dcID: row.id },
-          });
+          if (row.dcType > 0) {
+            this.$router.push({
+              path: "./nextContract",
+              query: {
+                dcID: row.id,
+                originID: row.originID || "",
+                handleType: row.dcType,
+                edit: 1
+              },
+            });
+          } else {
+            this.$router.push({
+              path: "./editContract",
+              query: { resID: row.resID, dcID: row.id },
+            });
+          }
           break;
         case "删除":
           this.deleteContractVisible = true;
@@ -716,13 +759,21 @@ export default {
         case "补充协议":
           this.$router.push({
             path: "./nextContract",
-            query: { originIDs: row.id, handleType: 2 },
+            query: {
+              dcID: row.id,
+              originID: row.originID || "",
+              handleType: 3,
+            },
           });
           break;
         case "加门":
           this.$router.push({
             path: "./nextContract",
-            query: { resID: row.resID, dcID: row.id },
+            query: {
+              dcID: row.id,
+              originID: row.originID || "",
+              handleType: 2,
+            },
           });
           break;
         case "付款":
@@ -738,6 +789,7 @@ export default {
           this.signVisible = true;
           break;
         case "合同终止":
+          this.terminateVisible = true;
           break;
       }
     },
@@ -747,10 +799,12 @@ export default {
           row.dcType
         }${row.dcState}`,
         tempArr = [];
-      console.log("tempNo---", tempNo);
-      for (const key in this.operationAuthorityArr) {
-        if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
-          this.operationAuthorityArr[key].includes(tempNo) && tempArr.push(key);
+      if (row.isOperate) {
+        for (const key in this.operationAuthorityArr) {
+          if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
+            this.operationAuthorityArr[key].includes(tempNo) &&
+              tempArr.push(key);
+          }
         }
       }
       return tempArr;
@@ -782,9 +836,6 @@ export default {
         query: { resID: row.resID },
       });
     },
-    // 跳转到编辑页面
-    ToEdit(row) {},
-
     // 搜索数据格式化
     searchFormat() {
       let rangeDate = this.searchInfo[this.searchInfo.rangeDateType],
@@ -1008,18 +1059,35 @@ a {
   vertical-align: middle;
   filter: brightness(0.75);
 }
-.tag-default {
-  box-sizing: border-box;
-  height: 32px;
-  line-height: 32px;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e8e8e8;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.65);
-}
-.tag-active {
-  color: #1890FF;
-  border: 1px solid #1890ff;
+.terminate-box {
+  padding-left: 40px;
+  margin-top: 24px;
+  .terminate-title {
+    display: block;
+    line-height: 22px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  .tag-default {
+    display: inline-block;
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0px 12px;
+    margin: 8px 8px 0 0;
+    line-height: 32px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e8e8e8;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+  }
+  .terminate-input {
+    margin-top: 8px;
+  }
+  .tag-active {
+    color: #1890ff;
+    border: 1px solid #1890ff;
+  }
 }
 </style>

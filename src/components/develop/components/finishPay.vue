@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 11:19:58
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 21:38:33
+ * @LastEditTime: 2021-07-04 11:31:49
  * @FilePath: /frontend/src/components/develop/components/finishPay.vue
 -->
 <template>
@@ -16,7 +16,12 @@
     :close-on-click-modal="false"
     custom-class="custom-dialog-wrapper custom-confirm-dialog"
   >
-    <el-form v-model="finishPayForm" label-position="right" label-width="91px" class="content-form">
+    <el-form
+      v-model="finishPayForm"
+      label-position="right"
+      label-width="91px"
+      class="content-form"
+    >
       <el-form-item label="支付款项：">
         <el-input disabled v-model="payLog.payType" size="small"> </el-input>
       </el-form-item>
@@ -41,7 +46,9 @@
     </el-form>
 
     <template slot="footer">
-      <el-button @click="$emit('update:finishPayVisible', false)">取 消</el-button>
+      <el-button @click="$emit('update:finishPayVisible', false)"
+        >取 消</el-button
+      >
       <el-button type="primary" @click="finishPayFun">确 定</el-button>
     </template>
   </el-dialog>
@@ -85,6 +92,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.$emit("refreshPayLog");
+            this.$emit("update:finishPayVisible", false);
             this.$message.success(res.data.MSG || "付款完成！");
           } else {
             this.$message.warning(res.data.MSG || "");

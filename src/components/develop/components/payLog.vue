@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 21:32:43
+ * @LastEditTime: 2021-07-04 13:49:13
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -112,7 +112,7 @@
                 </span>
                 <el-popconfirm
                   v-if="
-                    sessionData.devManageLevel == 2 && logItem.payState == 2
+                    sessionData.devManageLevel == 1 && logItem.payState == 2
                   "
                   popper-class="handle-btn-pop"
                   placement="top-end"
@@ -178,13 +178,20 @@
                   {{ logItem.remark || "--" }}
                 </span>
               </li>
-              <div>
-                <!-- <div class="export_step_box">
-                            <img src="../../assets/images/export.png" alt="">
-                            《QADN-数据导入-模板》
-                            <a :href ='apiVar.qadnUrl + "/importTemplate/手动录入推荐理由.xlsx"'
-                            download="数据导入模板.xlsx" class="downloag_btn" @click="dowmLoadFun">点击下载<i class="el-icon-download"></i></a>
-                        </div> -->
+              <div v-if="logItem.fileList.length" class="append-box">
+                <div class="append-box__title">附件</div>
+                <div
+                  v-for="(fileitem, fileIndex) in logItem.fileList"
+                  :key="fileIndex"
+                  class="file-item"
+                >
+                  <i class="el-icon-document"></i>
+                  <span class="file-item__name">{{ fileitem.fileName }}</span>
+                  <i
+                    class="el-icon-download"
+                    @click="downloadFile(fileitem)"
+                  ></i>
+                </div>
               </div>
             </el-timeline-item>
           </el-timeline>
@@ -366,7 +373,11 @@
       </span>
     </el-dialog>
     <!-- 完成付款 -->
-    <finish-pay :finishPayVisible.sync="finishPayVisible" :payLog="currentLogItem" @refreshPayLog="getPayRecordList"></finish-pay>
+    <finish-pay
+      :finishPayVisible.sync="finishPayVisible"
+      :payLog="currentLogItem"
+      @refreshPayLog="getPayRecordList"
+    ></finish-pay>
   </div>
 </template>
 
@@ -451,6 +462,15 @@ export default {
   },
   mounted() {},
   methods: {
+    // 下载附件
+    downloadFile(item) {
+      var a = document.createElement("a");
+      a.download = item.fileName;
+      a.href = item.fileUrl;
+      $("body").append(a);
+      a.click();
+      $(a).remove();
+    },
     fileChange(file, fileList) {
       this.payApplyFileList = fileList;
       console.log("fileChange--", file);
@@ -529,8 +549,8 @@ export default {
     },
     // 完成付款
     finishPayFun(logItem) {
-      logItem.actualPayTotal = Number(logItem.actualPayTotal/100).toFixed(2);
-      this.currentLogItem=logItem;
+      logItem.actualPayTotal = Number(logItem.actualPayTotal / 100).toFixed(2);
+      this.currentLogItem = logItem;
       this.finishPayVisible = true;
     },
     // 完成开票
@@ -591,6 +611,12 @@ export default {
           })
           .then((res) => {
             if (res.data.SysCode == 200200) {
+              (res.data.data || []).forEach(item => {
+                item.fileList = item.fileList||[];
+                item.fileList.forEach(fileItem=>{
+                  fileItem.fileName = fileItem.fileUrl.split("/").pop();
+                })
+              });
               this.payLogArr = res.data.data || [];
             } else {
               this.$message.warning(res.data.MSG);
@@ -787,6 +813,47 @@ export default {
         height: 16px;
         vertical-align: middle;
         cursor: pointer;
+      }
+    }
+  }
+  .append-box {
+    margin-top: 8px;
+    border: 1px solid #e8e8e8;
+    .append-box__title {
+      height: 40px;
+      line-height: 40px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #f5f6fa;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      flex-flow: rwo nowrap;
+      box-sizing: border-box;
+      height: 32px;
+      padding: 7px 8px;
+      margin: 7px 0;
+      .el-icon-download {
+        display: none;
+        margin: 0 0 0 auto;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1890ff;
+      }
+      .file-item__name {
+        margin-left: 6px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        .el-icon-download {
+          display: block;
+        }
       }
     }
   }

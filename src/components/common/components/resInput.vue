@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 23:24:45
+ * @LastEditTime: 2021-07-05 01:56:41
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1227,17 +1227,41 @@ export default {
         return;
       }
     },
+    // 验证资源是否被其他合同占用
+    valiateResOccupy(resID) {
+      return new Promise((resolve) => {
+        api
+          .getApi("/addsp/devContract/valiateResOccupy", {
+            resID,
+          })
+          .then((res) => {
+            if (res.data.SysCode == 200200 && res.data.data == 0) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resolve(false);
+          });
+      });
+    },
     // 根据选择的小区获取所在区域
-    changeResName(item) {
-      let resInfo = item.info;
-      for (let key of this.regionOpt) {
-        if (key.label.includes(resInfo.district)) {
-          this.recForm.region = key.value;
-          this.resAddres.area = key.label;
-          break;
+    async changeResName(item) {
+      let notOccupyFlag = await this.valiateResOccupy(item.info.resID);
+      if (notOccupyFlag) {
+        let resInfo = item.info;
+        for (let key of this.regionOpt) {
+          if (key.label.includes(resInfo.district)) {
+            this.recForm.region = key.value;
+            this.resAddres.area = key.label;
+            break;
+          }
         }
+        this.setResInfo(resInfo);
+      } else {
+        this.$message.warning("该小区已被合同占用！")
       }
-      this.setResInfo(resInfo);
     },
     // 系统录入的资源信息进行页面填充
     setResInfo(obj) {

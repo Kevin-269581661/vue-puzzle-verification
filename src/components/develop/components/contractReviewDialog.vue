@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 14:52:14
+ * @LastEditTime: 2021-07-05 01:25:42
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -194,10 +194,6 @@ export default {
                     ),
                   },
                 ],
-              },
-              {
-                title: "其它信息",
-                content: [{ label: "物业规模(人数)", value: tempObj.resName }],
               },
             ];
             tempObj.fileList = tempObj.fileList || [];

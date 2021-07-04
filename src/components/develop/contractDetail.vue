@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 22:09:04
+ * @LastEditTime: 2021-07-05 02:03:15
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -320,6 +320,9 @@ export default {
           // background-color: #fff;
         }
       }
+    }
+    .el-main {
+      overflow: unset;
     }
   }
 }

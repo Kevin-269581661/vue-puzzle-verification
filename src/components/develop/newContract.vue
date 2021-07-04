@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 23:21:16
+ * @LastEditTime: 2021-07-05 01:20:01
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -51,6 +51,7 @@
           :resFormData="resFormData"
           :contractFormData="contractFormData"
           :is="componentName"
+          @submitContract="newContract"
         ></component>
       </keep-alive>
     </div>
@@ -146,10 +147,11 @@ export default {
       console.log("test1", needValidFormResult);
       if (needValidFormResult) {
         this.contractFormData = this.$refs.needValidForm.contractForm;
-        await this.newContract();
-        this.activeStep = 3;
-        console.log("-=-", this.resFormData, this.contractFormData);
-        this.componentName = "contractFinished";
+        this.$refs.needValidForm.submitUpload();
+        // await this.newContract();
+        // this.activeStep = 3;
+        // console.log("-=-", this.resFormData, this.contractFormData);
+        // this.componentName = "contractFinished";
       }
     },
     newContract(fileIDs) {
@@ -183,6 +185,8 @@ export default {
             console.log("创建合同", res);
             if (res.data.SysCode === 200200) {
               resolve(true);
+              this.activeStep = 3;
+              this.componentName = "contractFinished";
             } else {
               this.$message.warning(res.data.MSG || "");
             }

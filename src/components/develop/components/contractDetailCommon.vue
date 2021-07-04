@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 00:49:11
+ * @LastEditTime: 2021-07-05 01:30:32
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -221,6 +221,7 @@
 
 <script>
 import api from "../../../api/api";
+import { moneyFormat } from "../../../commonFun/commaFormat";
 import PayLog from "../components/payLog.vue";
 import NextContractDialog from "../components/nextContractDialog.vue";
 import AddMediaToContract from "../components/addMediaToContract.vue";
@@ -614,15 +615,30 @@ export default {
                     value: tempObj.isVenueFee ? "是" : "否",
                   },
                   { label: "场地费付款方式", value: tempObj.venuePayType },
-                  { label: "场地费", value: tempObj.venueFee },
-                  { label: "场地费应付日期", value: tempObj.venueDate },
+                  {
+                    label: "场地费",
+                    value: moneyFormat(tempObj.venueFee / 100),
+                  },
+                  {
+                    label: "场地费应付日期",
+                    value: String(tempObj.venueDate || "").replace(
+                      /(\d{2})$/,
+                      "-$1"
+                    ),
+                  },
                   {
                     label: "是否有开发费",
                     value: tempObj.isDevFee ? "是" : "否",
                   },
                   { label: "开发费付款方式", value: tempObj.devPayType },
-                  { label: "开发费", value: tempObj.devFee },
-                  { label: "开发费应付日期", value: tempObj.devDate },
+                  { label: "开发费", value: moneyFormat(tempObj.devFee / 100) },
+                  {
+                    label: "开发费应付日期",
+                    value: String(tempObj.devDate || "").replace(
+                      /(\d{2})$/,
+                      "-$1"
+                    ),
+                  },
                 ],
               },
             ];

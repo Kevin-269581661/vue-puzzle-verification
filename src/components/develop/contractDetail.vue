@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 02:03:15
+ * @LastEditTime: 2021-07-05 02:36:01
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -322,7 +322,7 @@ export default {
       }
     }
     .el-main {
-      overflow: unset;
+      overflow: hidden;
     }
   }
 }

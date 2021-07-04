@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 01:56:41
+ * @LastEditTime: 2021-07-05 02:23:12
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1127,9 +1127,11 @@ export default {
         ownershipType: resData.ownershipType || "", // 产权性质
         salesPhoneNumber: resData.salesPhoneNumber || "", // 售楼电话
       };
-      this.resUpdata = (resData.fullViewUrl || "").split(",").map((item) => {
-        return { name: "资源图片", url: item };
-      });
+      if (resData.fullViewUrl && resData.fullViewUrl.length) {
+        this.resUpdata = (resData.fullViewUrl || "").split(",").map((item) => {
+          return { name: "资源图片", url: item };
+        });
+      }
       this.recForm.city.length == 2 && this.handleChange(this.recForm.city);
       this.recForm.region = resData.rID + "";
     },
@@ -1260,7 +1262,7 @@ export default {
         }
         this.setResInfo(resInfo);
       } else {
-        this.$message.warning("该小区已被合同占用！")
+        this.$message.warning("该小区已被合同占用！");
       }
     },
     // 系统录入的资源信息进行页面填充
@@ -1836,51 +1838,6 @@ export default {
         this.mediaAddFun();
         clearTimeout(timer);
       }, 500);
-    },
-    // 组装要显示的资源图片
-    constructResImg() {
-      console.log("资源图片", this.recForm.fullViewUrl);
-      if (
-        this.recForm.fullViewUrl !== "" &&
-        this.recForm.fullViewUrl !== undefined &&
-        this.recForm.fullViewUrl !== null
-      ) {
-        this.recForm.fullViewUrl.split(",").forEach((item, index) => {
-          let resImg = { name: "资源图片", url: item };
-          this.resUpdata.push(resImg);
-        });
-      } else {
-        let uid = this.sessionData.uID;
-        let params = {
-          uid: uid,
-          token: this.sessionData.token,
-          ptype: "restype",
-          ptid: this.resData.resID,
-        };
-        api
-          .getApi(this.apiVar.UCAPI + "/GetImg", params)
-          .then((res) => {
-            console.log("资源图片的信息", res);
-            this.resUpdata = [];
-            if (res.data.length === 0) {
-              console.log("暂时没有该资源的图片");
-            } else if (Array.isArray(res.data)) {
-              res.data.forEach((item) => {
-                let resImg = { name: item.pAlt, url: item.pURL };
-                this.resUpdata.push(resImg);
-                if (this.recForm.fullViewUrl) {
-                  this.recForm.fullViewUrl =
-                    this.recForm.fullViewUrl + "," + item.pURL;
-                } else {
-                  this.recForm.fullViewUrl = item.pURL;
-                }
-              });
-            }
-          })
-          .catch((err) => {
-            console.log("error", err);
-          });
-      }
     },
     // 修改资源
     postEditMsg() {

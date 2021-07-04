@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 01:30:32
+ * @LastEditTime: 2021-07-05 03:29:20
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -70,7 +70,12 @@
       </el-table-column>
       <el-table-column prop="mState" label="媒体状态">
         <template slot-scope="scope">
-          {{ mediaStatusMap[scope.row.mState] }}
+          <span
+            class="media-state-dot"
+            :style="{ background: mediaStatusMap[scope.row.mState].color }"
+          >
+          </span>
+          {{ mediaStatusMap[scope.row.mState].label }}
         </template>
       </el-table-column>
     </el-table>
@@ -341,7 +346,7 @@ export default {
           "135",
           "136",
         ],
-        审核: ["200", "210", "220"],
+        审核: ["200", "210", "220", "230"],
         完成签约: ["101", "111", "121", "131"],
         合同终止: ["104", "114", "124", "134"],
       },
@@ -367,21 +372,21 @@ export default {
       // 终止合同弹框
       terminateVisible: false,
       reasons: [
-        { label: "业委会不通过", val: "", selected: false },
-        { label: "修路/封路", val: "", selected: false },
-        { label: "小区改造", val: "", selected: false },
-        { label: "更换物业", val: "", selected: false },
-        { label: "竞品取代", val: "", selected: false },
-        { label: "我方原因", val: "", selected: false },
-        { label: "其它", val: "", selected: false },
+        { label: "业委会不通过", value: "", selected: false },
+        { label: "修路/封路", value: "", selected: false },
+        { label: "小区改造", value: "", selected: false },
+        { label: "更换物业", value: "", selected: false },
+        { label: "竞品取代", value: "", selected: false },
+        { label: "我方原因", value: "", selected: false },
+        { label: "其它", value: "", selected: false },
       ],
       // 媒体状态
       mediaStatusMap: {
-        0: "禁用",
-        1: "正常",
-        2: "待安装",
-        3: "待维修",
-        4: "已拆除",
+        0: { label: "禁用", color: "rgba(245,34,45,1)" },
+        1: { label: "正常", color: "rgba(82,196,26,1)" },
+        2: { label: "待安装", color: "rgba(196,203,211,1)" },
+        3: { label: "待维修", color: "rgba(250,173,20,1)" },
+        4: { label: "已拆除", color: "rgba(24,144,255,1)" },
       },
     };
   },
@@ -560,9 +565,12 @@ export default {
           ]
         }${this.contractObj.dcType}${this.contractObj.dcState}`,
         tempArr = [];
-      for (const key in this.operationAuthorityArr) {
-        if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
-          this.operationAuthorityArr[key].includes(tempNo) && tempArr.push(key);
+      if (this.contractObj.isOperate) {
+        for (const key in this.operationAuthorityArr) {
+          if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
+            this.operationAuthorityArr[key].includes(tempNo) &&
+              tempArr.push(key);
+          }
         }
       }
       this.operationArr = tempArr;
@@ -759,6 +767,12 @@ export default {
   .el-table__body-wrapper,
   .el-table__empty-block {
     min-height: unset;
+  }
+  .media-state-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
   }
   .media-cell {
     position: relative;

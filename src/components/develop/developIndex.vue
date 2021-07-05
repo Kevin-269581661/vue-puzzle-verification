@@ -266,7 +266,7 @@
                     v-for="(rankItem, index) in newContractRank"
                     :key="index"
                   >
-                    <span :title="rankItem.realName" class="label">{{
+                    <span :title="rankItem.realName"  class="label">{{
                       rankItem.realName
                     }}</span>
                     <mini-progress
@@ -358,18 +358,7 @@ export default {
   data() {
     return {
       sessionData: {},
-      linkArrNew: [
-        {
-          imgurl: require("../../assets/images/gua.png"),
-          title: "合同设置",
-          link: "./f_develop/contractCfg",
-        },
-        {
-          imgurl: require("../../assets/images/addMedia.png"),
-          title: "新建合同",
-          link: "./f_develop/newContract",
-        },
-      ],
+      linkArrNew: [],
       userInfo: {
         userName: "",
         avator: require("../../assets/images/tvQNA_img3.jpg"),
@@ -448,7 +437,17 @@ export default {
   mounted() {
     this.getSession();
     if (this.sessionData.devManageLevel == 1) {
-      this.linkArrNew.pop();
+      this.linkArrNew.push({
+        imgurl: require("../../assets/images/gua.png"),
+        title: "合同设置",
+        link: "./f_develop/contractCfg",
+      });
+    } else if (this.sessionData.devManageLevel == 0) {
+      this.linkArrNew.push({
+        imgurl: require("../../assets/images/addMedia.png"),
+        title: "新建合同",
+        link: "./f_develop/newContract",
+      });
     }
     this.appCenter = appCenter;
     this.uploadEvent(1);
@@ -904,9 +903,11 @@ export default {
         margin-right: 8px;
         line-height: 20px;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.65);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
     }
   }

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 22:17:36
+ * @LastEditTime: 2021-07-05 18:50:39
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -472,7 +472,12 @@ export default {
       $(a).remove();
     },
     fileChange(file, fileList) {
-      this.payApplyFileList = fileList;
+      if (file.size <= 10 * 1024 * 1024) {
+        this.payApplyFileList = fileList;
+      } else {
+        this.$message.warning("文件大小不能超过10M!");
+        this.deleteErrorFile(file, fileList);
+      }
       console.log("fileChange--", file);
     },
     fileProgress(event, file, fileList) {
@@ -487,9 +492,22 @@ export default {
           this.createPayRecord(
             this.payApplyFileList.map((item) => item.id).join(",")
           );
+        } else {
+          console.warn("存在未上传合同");
         }
       } else {
+        this.deleteErrorFile(file, fileList);
         this.$message.warning(response.MSG || "");
+      }
+    },
+    deleteErrorFile(file, fileList) {
+      for (let i = 0; i < fileList.length; ) {
+        if (fileList[i].uid === file.uid) {
+          fileList.splice(i, 1);
+          break;
+        } else {
+          i++;
+        }
       }
     },
     uploadError(err, file, fileList) {
@@ -530,7 +548,7 @@ export default {
             dcID: this.currentContract.id,
             fileIDs,
           };
-          params.actualPayTotal = params.actualPayTotal*100;
+          params.actualPayTotal = params.actualPayTotal * 100;
           api
             .postApi("/addsp/devContract/createPayRecord", params)
             .then((res) => {

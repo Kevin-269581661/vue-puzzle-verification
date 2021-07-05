@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 03:29:05
+ * @LastEditTime: 2021-07-05 15:20:12
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -40,6 +40,7 @@
                   >
                     <el-option label="资源名称" value="resName"></el-option>
                     <el-option label="物业名称" value="pmcName"></el-option>
+                    <el-option label="合同编号" value="contractNo"></el-option>
                     <!-- “业务员”只有开发总监与资产人员可筛选 -->
                     <template
                       v-if="
@@ -50,10 +51,6 @@
                       <el-option
                         label="业务员"
                         value="contactsName"
-                      ></el-option>
-                      <el-option
-                        label="合同编号"
-                        value="contractNo"
                       ></el-option>
                     </template>
                   </el-select>
@@ -739,7 +736,7 @@ export default {
             if (res.data.SysCode == 200200) {
               resolve(true);
             } else {
-              this.$message.warning("存在未完成审批！")
+              this.$message.warning("存在未完成审批！");
               resolve(false);
             }
           })

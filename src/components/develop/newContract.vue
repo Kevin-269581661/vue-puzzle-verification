@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 01:20:01
+ * @LastEditTime: 2021-07-05 18:58:08
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -16,7 +16,7 @@
         <span v-for="item in 3" :key="item" class="step-item">
           <div
             v-if="item < activeStep"
-            class="number-circle number-circle--default"
+            class="number-circle number-circle--finished"
           >
             <i class="el-icon-check"></i>
           </div>
@@ -74,7 +74,7 @@
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
         <el-button type="default" @click="routeContractList"
-          >合同列表</el-button
+          >回到列表</el-button
         >
         <el-button type="primary" @click="routeContractDetail"
           >查看详情</el-button
@@ -244,6 +244,10 @@ export default {
     line-height: 32px;
     font-size: 16px;
     cursor: default;
+    &.number-circle--finished {
+      border: 1px solid #1890ff;
+      color: #1890ff;
+    }
     &.number-circle--active {
       background: #1890ff;
       color: #ffffff;

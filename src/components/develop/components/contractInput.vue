@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 21:54:36
+ * @LastEditTime: 2021-07-05 18:49:12
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -453,7 +453,7 @@ export default {
     startDate: {
       type: String,
       default: () => "",
-    }
+    },
   },
   data() {
     let validateSpace = (rule, value, callback) => {
@@ -530,6 +530,13 @@ export default {
         devDate: "", // 开发费应付日期
       },
       recRules: {
+        contactsName: [
+          {
+            required: true,
+            message: "请输入联系人名称!",
+            trigger: ["blur"],
+          },
+        ],
         contactsPhone: [
           {
             required: true,
@@ -565,7 +572,7 @@ export default {
           {
             validator: this.checkDemolishMedia,
             trigger: ["change", "blur"],
-          }
+          },
         ],
         isVenueFee: [
           { required: true, message: "请选择是否有场地费!", trigger: "change" },
@@ -640,7 +647,7 @@ export default {
   methods: {
     // 拆除媒体不能全选
     checkDemolishMedia(rule, value, callback) {
-      console.log("value--", value)
+      console.log("value--", value);
       if (value) {
         if (value.length == this.demolishMediaList.length) {
           callback(new Error("拆除媒体不能全选!"));
@@ -671,7 +678,7 @@ export default {
       if (!dcID) return;
       api
         .getApi("/addsp/devContract/getContractDetail", {
-          dcID: dcID.split(",")[0]
+          dcID: dcID.split(",")[0],
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -704,7 +711,7 @@ export default {
                 this.contractForm[key] = tempValue;
               }
             }
-            if(this.startDate) {
+            if (this.startDate) {
               // 合同续签时合同开始日期
               this.contractForm.startDate = this.startDate;
               this.contractForm.endDate = "";
@@ -721,11 +728,18 @@ export default {
         });
     },
     fileChange(file, fileList) {
+      // 文件大小不能超过10M
       this.fileList = fileList;
-      console.log("fileChange--", file);
+      if (file.size <= 10 * 1024 * 1024) {
+        this.fileList = fileList;
+      } else {
+        this.$message.warning("文件大小不能超过10M!");
+        this.deleteErrorFile(file, fileList);
+      }
+      console.log("fileChange--", file, fileList);
     },
     fileProgress(event, file, fileList) {
-      console.log("event--=-", event);
+      console.log("fileEvent--", event);
     },
     uploadSuccess(response, file, fileList) {
       console.log("response", response, file);
@@ -734,14 +748,26 @@ export default {
         file.id = response.data.id || "";
         // 提交合同
         if (this.fileList.every((item) => item.id)) {
-          console.log("submitContract--");
           this.$emit(
             "submitContract",
             this.fileList.map((item) => item.id).join(",")
           );
+        } else {
+          console.warn("存在未上传合同");
         }
       } else {
+        this.deleteErrorFile(file, fileList);
         this.$message.warning(response.MSG);
+      }
+    },
+    deleteErrorFile(file, fileList) {
+      for (let i = 0; i < fileList.length; ) {
+        if (fileList[i].uid === file.uid) {
+          fileList.splice(i, 1);
+          break;
+        } else {
+          i++;
+        }
       }
     },
     uploadError(err, file, fileList) {
@@ -831,7 +857,7 @@ export default {
         "isDevFee",
       ];
       if (this.handleType == 1 || this.handleType == 3) {
-        validateResArr.push("demolishMediaIDs")
+        validateResArr.push("demolishMediaIDs");
       }
       if (this.contractForm.isVenueFee) {
         validateResArr.push(...["venuePayType", "venueFee", "venueDate"]);

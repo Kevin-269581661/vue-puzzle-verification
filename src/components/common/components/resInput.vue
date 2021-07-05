@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 02:23:12
+ * @LastEditTime: 2021-07-05 18:24:02
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1098,7 +1098,7 @@ export default {
         peopleFlowrate: resData.peopleFlow || "", // 人流量
         carNumber: resData.parking || "", // 车位数
         carFlowrate: resData.carFlow || "", // 车流量
-        buildingPrice: resData.hPrice, // 楼盘价格
+        buildingPrice: (resData.hPrice/100).toFixed(0), // 楼盘价格
         liveTime: resData.moveinTime || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度

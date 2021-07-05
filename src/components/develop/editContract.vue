@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 23:16:35
+ * @LastEditTime: 2021-07-05 18:57:56
  * @FilePath: /frontend/src/components/develop/editContract.vue
 -->
 <template>
@@ -16,7 +16,7 @@
         <span v-for="item in 3" :key="item" class="step-item">
           <div
             v-if="item < activeStep"
-            class="number-circle number-circle--default"
+            class="number-circle number-circle--finished"
           >
             <i class="el-icon-check"></i>
           </div>
@@ -39,7 +39,7 @@
                 ? "完善资源信息"
                 : item === 2
                 ? "完善合同信息"
-                : "合同创建成功"
+                : "合同编辑成功"
             }}</span
           >
           <span v-if="item < 3" class="step-line"></span>
@@ -53,6 +53,7 @@
           :dcID="dcID"
           :originID="originID"
           :is="componentName"
+          :edit="true"
           @submitContract="editContract"
         ></component>
       </keep-alive>
@@ -76,7 +77,7 @@
       </div>
       <div v-else-if="activeStep == 3" class="footer-btn-group">
         <el-button type="default" @click="routeContractList"
-          >合同列表</el-button
+          >回到列表</el-button
         >
         <el-button type="primary" @click="routeContractDetail"
           >查看详情</el-button
@@ -247,6 +248,10 @@ export default {
     line-height: 32px;
     font-size: 16px;
     cursor: default;
+    &.number-circle--finished {
+      border: 1px solid #1890ff;
+      color: #1890ff;
+    }
     &.number-circle--active {
       background: #1890ff;
       color: #ffffff;

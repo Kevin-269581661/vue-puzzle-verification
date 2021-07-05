@@ -2,15 +2,15 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-01 14:11:19
+ * @LastEditTime: 2021-07-05 19:04:45
  * @FilePath: /frontend/src/components/develop/components/contractFinished.vue
 -->
 <template>
   <div class="createSuccess">
     <div class="successIcon">
       <img src="../../../assets/images/createSuccess.png" alt="" />
-      <h2>创建成功</h2>
-      <p>创建时间：{{ createDate }}</p>
+      <h2>{{ edit ? "编辑成功" : "创建成功" }}</h2>
+      <p>{{ `${edit ? "编辑时间" : "创建时间"}:${createDate}` }}</p>
     </div>
     <div class="planPanel">
       <ul>
@@ -18,9 +18,7 @@
         <li><em>物业公司：</em>{{ resFormData.pmcName || "" }}</li>
         <li>
           <em>合同期限：</em
-          >{{
-            `${contractFormData.startDate} 至 ${contractFormData.endDate}`
-          }}
+          >{{ `${contractFormData.startDate} 至 ${contractFormData.endDate}` }}
         </li>
       </ul>
     </div>
@@ -41,6 +39,10 @@ export default {
       type: Object,
       required: true,
       default: () => {},
+    },
+    edit: {
+      type: Boolean,
+      default: () => false,
     },
   },
   data() {
@@ -97,10 +99,11 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-content: center;
+  width: fit-content;
+  margin: 0 auto 0;
   height: 100%;
 }
 .planPanel ul li {
-  padding-left: 207px;
   text-align: left;
   font-size: 14px;
   color: #666666;

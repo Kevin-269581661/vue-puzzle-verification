@@ -643,7 +643,6 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.contractNews = res.data.data || [];
-            console.log("contractNews--", this.contractNews);
           } else {
             this.$message.warning(res.data.MSG);
           }

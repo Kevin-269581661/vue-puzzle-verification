@@ -82,9 +82,6 @@
 
 <style scoped lang="scss">
 * {font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ", "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;}
-li {
-
-}
 %flex-row-center {
     display: flex;
     align-items: center;

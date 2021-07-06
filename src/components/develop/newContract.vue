@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 18:58:08
+ * @LastEditTime: 2021-07-06 15:33:35
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -52,7 +52,16 @@
           :contractFormData="contractFormData"
           :is="componentName"
           @submitContract="newContract"
-        ></component>
+        >
+          <div v-if="activeStep == 3" slot="footer" class="footer-slot">
+            <el-button type="default" @click="routeContractList"
+              >回到列表</el-button
+            >
+            <el-button type="primary" @click="routeContractDetail"
+              >查看详情</el-button
+            >
+          </div>
+        </component>
       </keep-alive>
     </div>
     <div class="footer">
@@ -71,14 +80,6 @@
           >上一步</el-button
         >
         <el-button type="primary" @click="thirdStep">保存</el-button>
-      </div>
-      <div v-else-if="activeStep == 3" class="footer-btn-group">
-        <el-button type="default" @click="routeContractList"
-          >回到列表</el-button
-        >
-        <el-button type="primary" @click="routeContractDetail"
-          >查看详情</el-button
-        >
       </div>
     </div>
   </div>
@@ -122,7 +123,6 @@ export default {
     },
     /* 第一步取消 */
     cancelFirstStep() {
-      // this.$router.go(-1);
       this.$router.push("./contractList");
     },
     /* 第一步进入第二部 */
@@ -136,7 +136,7 @@ export default {
         } else {
           flag = await this.$refs.needValidForm.createRes();
         }
-        if(flag) {
+        if (flag) {
           this.resFormData = this.$refs.needValidForm.recForm;
           this.componentName = "contractInput";
         }
@@ -148,10 +148,6 @@ export default {
       if (needValidFormResult) {
         this.contractFormData = this.$refs.needValidForm.contractForm;
         this.$refs.needValidForm.submitUpload();
-        // await this.newContract();
-        // this.activeStep = 3;
-        // console.log("-=-", this.resFormData, this.contractFormData);
-        // this.componentName = "contractFinished";
       }
     },
     newContract(fileIDs) {
@@ -268,6 +264,14 @@ export default {
     border-top: 1px solid #e6e7e9;
     background: #fff;
     z-index: 9;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+  .footer-slot {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
     .el-button + .el-button {
       margin-left: 16px;
     }

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 18:57:56
+ * @LastEditTime: 2021-07-06 15:32:25
  * @FilePath: /frontend/src/components/develop/editContract.vue
 -->
 <template>
@@ -55,7 +55,16 @@
           :is="componentName"
           :edit="true"
           @submitContract="editContract"
-        ></component>
+        >
+          <div v-if="activeStep == 3" slot="footer" class="footer-slot">
+            <el-button type="default" @click="routeContractList"
+              >回到列表</el-button
+            >
+            <el-button type="primary" @click="routeContractDetail"
+              >查看详情</el-button
+            >
+          </div>
+        </component>
       </keep-alive>
     </div>
     <div class="footer">
@@ -74,14 +83,6 @@
           >上一步</el-button
         >
         <el-button type="primary" @click="thirdStep">保存</el-button>
-      </div>
-      <div v-else-if="activeStep == 3" class="footer-btn-group">
-        <el-button type="default" @click="routeContractList"
-          >回到列表</el-button
-        >
-        <el-button type="primary" @click="routeContractDetail"
-          >查看详情</el-button
-        >
       </div>
     </div>
   </div>
@@ -102,21 +103,20 @@ export default {
   props: {},
   data() {
     return {
-      sessionData: JSON.parse(sessionStorage.getItem("session_data")),
       activeStep: 1,
       componentName: "resInput",
       resFormData: {},
       contractFormData: {},
       dcID: "",
-      originID: ""
+      originID: "",
     };
   },
   watch: {},
   computed: {},
   created() {
     let queryParams = this.$route.query || {};
-    this.dcID = queryParams.dcID+"";
-    this.originID = queryParams.originID+"";
+    this.dcID = queryParams.dcID + "";
+    this.originID = queryParams.originID + "";
   },
   mounted() {},
   methods: {
@@ -126,7 +126,10 @@ export default {
     },
     /* 跳转至合同详情 */
     routeContractDetail() {
-      this.$router.push({path: "./contractDetail", query: {resID: this.resFormData.resID}});
+      this.$router.push({
+        path: "./contractDetail",
+        query: { resID: this.resFormData.resID },
+      });
     },
     /* 第一步取消 */
     cancelFirstStep() {
@@ -139,12 +142,12 @@ export default {
       let flag = false;
       if (needValidFormResult) {
         this.activeStep = 2;
-        if(this.$refs.needValidForm.recForm.resID) {
+        if (this.$refs.needValidForm.recForm.resID) {
           flag = await this.$refs.needValidForm.postEditMsg();
         } else {
           flag = await this.$refs.needValidForm.createRes();
         }
-        if(flag) {
+        if (flag) {
           this.resFormData = this.$refs.needValidForm.recForm;
           this.componentName = "contractInput";
         }
@@ -170,13 +173,13 @@ export default {
         resName: this.resFormData.resName,
         pmcName: this.resFormData.pmcName,
         ...this.contractFormData,
-        fileIDs
+        fileIDs,
       };
       params.venueFee = params.venueFee * 100;
       params.venueDate = params.venueDate.replace("-", "");
       params.devFee = params.devFee * 100;
       params.devDate = params.devDate.replace("-", "");
-      if(Array.isArray(params.demolishMediaIDs)) {
+      if (Array.isArray(params.demolishMediaIDs)) {
         params.demolishMediaIDs = params.demolishMediaIDs.join(",");
       }
       // 合同类型：0-首签 1-续约 2-加门 3-补充
@@ -272,6 +275,14 @@ export default {
     border-top: 1px solid #e6e7e9;
     background: #fff;
     z-index: 9;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+  .footer-slot {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
     .el-button + .el-button {
       margin-left: 16px;
     }

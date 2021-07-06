@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 19:04:45
+ * @LastEditTime: 2021-07-06 15:22:34
  * @FilePath: /frontend/src/components/develop/components/contractFinished.vue
 -->
 <template>
@@ -22,6 +22,7 @@
         </li>
       </ul>
     </div>
+    <slot name="footer"></slot>
   </div>
 </template>
 

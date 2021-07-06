@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 15:20:12
+ * @LastEditTime: 2021-07-06 10:25:40
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -89,7 +89,7 @@
                 >
                   <el-option label="合同开始日期" value="startDate"></el-option>
                   <el-option label="合同签约日期" value="signDate"></el-option>
-                  <el-option label="最近待付款日期" value="payDate"></el-option>
+                  <el-option label="最近付款日期" value="payDate"></el-option>
                   <el-option label="合同结束日期" value="endDate"></el-option>
                   <el-option label="创建日期" value="createDate"></el-option>
                 </el-select>
@@ -146,6 +146,7 @@
               label="资源名称"
               width="160"
               show-overflow-tooltip
+              fixed="left"
             >
               <template slot-scope="scope">
                 <span
@@ -160,6 +161,7 @@
               label="合同对象"
               width="160"
               show-overflow-tooltip
+              fixed="left"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.originName || "待定" }}</span>
@@ -170,6 +172,7 @@
               label="合同类型"
               min-width="160"
               show-overflow-tooltip
+              fixed="left"
             >
               <template slot-scope="scope">
                 <span>{{ contractTypeArr[scope.row.dcType] || "" }}</span>
@@ -230,7 +233,7 @@
             </el-table-column>
             <el-table-column
               prop="payDate"
-              label="最近待付款日期"
+              label="最近付款日期"
               width="160"
               show-overflow-tooltip
             >
@@ -261,7 +264,7 @@
             <el-table-column
               prop="createTime"
               label="创建日期"
-              width="120"
+              width="150"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -289,8 +292,8 @@
                 ></div>
                 {{ stateList[scope.row.dcState].label }}
                 <el-tooltip
-                  v-if="scope.row.stopReason"
-                  :content="scope.row.stopReason || '--'"
+                  v-if="stateList[scope.row.dcState].tip"
+                  :content="scope.row[stateList[scope.row.dcState].tip] || '--'"
                   placement="top"
                 >
                   <img
@@ -490,14 +493,14 @@ export default {
       },
       // 后台定义合同状态
       stateList: {
-        "-1": { label: "不通过", color: "#F5222D" },
+        "-1": { label: "不通过", color: "#F5222D", tip: "failReason" },
         0: { label: "待审核", color: "#FFAA00" },
         1: { label: "待签约", color: "#FFAA00" },
         2: { label: "待安装", color: "#FFAA00" },
         3: { label: "待拆除", color: "#FFAA00" },
         4: { label: "正常", color: "#1890FF" },
         5: { label: "合同到期", color: "#CDD4DA" },
-        6: { label: "强制终止", color: "#CDD4DA" },
+        6: { label: "强制终止", color: "#CDD4DA", tip: "stopReason" },
       },
       // 合同列表操作权限路径(000: 开发人员/首签/待审核)
       /* operationAuthorityArr: {

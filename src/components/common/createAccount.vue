@@ -184,7 +184,7 @@
                         value: 'EP'
                     },
                     {
-                        label: '开发人员',
+                        label: '开发',
                         value: 'DEV'
                     }
                 ],

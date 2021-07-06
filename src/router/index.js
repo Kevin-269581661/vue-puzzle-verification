@@ -115,7 +115,7 @@ const hotSource = () => import('../components/adOwner/hotSource.vue')
 //工程
 const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 
-// 楼盘开发人员
+// 楼盘开发
 const developCommon = () => import('../components/develop/developCommon.vue')
 const developIndex = () => import('../components/develop/developIndex.vue')
 const contractCfg = () => import('../components/develop/contractCfg.vue')
@@ -405,7 +405,7 @@ function addRoutes(role, proposal, retain) {
             break;
         case 'DEV':
             roleRoutes = [
-                //楼盘开发人员
+                //楼盘开发
                 {
                     path: '/',
                     component: developCommon,

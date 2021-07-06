@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 10:25:40
+ * @LastEditTime: 2021-07-06 16:57:26
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -50,7 +50,7 @@
                     >
                       <el-option
                         label="业务员"
-                        value="contactsName"
+                        value="createUserName"
                       ></el-option>
                     </template>
                   </el-select>
@@ -605,7 +605,7 @@ export default {
         rangeDateType: "startDate",
         resName: "",
         pmcName: "",
-        contactsName: "",
+        createUserName: "",
         contractNo: "",
         districtId: "",
         isVenueFee: [],
@@ -888,6 +888,7 @@ export default {
       api.getApi("/addsp/devContract/list", params).then((res) => {
         if (res.data.SysCode == 200200) {
           this.contractList = res.data.data || [];
+          this.totalNum = res.data.total||0;
         } else {
           this.$message.warning(res.data.MSG);
         }

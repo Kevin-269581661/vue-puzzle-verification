@@ -362,7 +362,7 @@ export default {
       // 应用中心
       appCenter: "",
       cardDataOther1: {
-        title: "本月首签合同",
+        title: "本月新签合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,
         valueAlias: "新增合同数量",

@@ -4,7 +4,7 @@
       <div class="index-top-row">
         <div class="left-layout">
           <personal-info
-            :user-info="userInfo"
+            :user-info="sessionData"
             :honorImg="[]"
             :imgSize="[51, 62]"
             :linkArr="linkArrNew"
@@ -359,10 +359,6 @@ export default {
     return {
       sessionData: {},
       linkArrNew: [],
-      userInfo: {
-        userName: "",
-        avator: require("../../assets/images/tvQNA_img3.jpg"),
-      },
       // 应用中心
       appCenter: "",
       cardDataOther1: {
@@ -459,12 +455,6 @@ export default {
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();
-      let sess = this.sessionData;
-      this.userInfo.userName = sess.realName;
-      this.userInfo.role = this.sessionData.uType;
-      this.userInfo.avator = sess.headPic
-        ? sess.headPic
-        : require("../../assets/images/index/niu.png");
     },
     // 应用中心跳转
     goToPage(item) {

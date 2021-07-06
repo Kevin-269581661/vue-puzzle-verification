@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 03:55:00
+ * @LastEditTime: 2021-07-06 11:39:57
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -117,7 +117,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ contractObj.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[contractObj.dcType] || ""}合同`
+          `${contractTypeArr[contractObj.dcType] || ""}`
         }}</span>
         将被重新提交审核
       </div>
@@ -140,7 +140,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ contractObj.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[contractObj.dcType] || ""}合同`
+          `${contractTypeArr[contractObj.dcType] || ""}`
         }}</span>
         将被删除
       </div>
@@ -194,7 +194,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ contractObj.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[contractObj.dcType] || ""}合同`
+          `${contractTypeArr[contractObj.dcType] || ""}`
         }}</span>
         将被终止
       </div>
@@ -255,7 +255,7 @@ export default {
         0: "首签合同",
         1: "续签合同",
         2: "加门合同",
-        3: "补充协议",
+        3: "补充协议合同",
       },
       stateList: {
         "-1": { label: "不通过", color: "#F5222D" },

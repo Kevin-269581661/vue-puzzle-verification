@@ -167,6 +167,7 @@
                     {text: '运营', value: 'OP'},
                     {text: '媒介', value: 'MD'},
                     {text: '销售', value: 'BD'},
+                    {text: '开发', value: 'DEV'},
                     // {text: '广告主', value: 'AD'},
                     {text: '工程人员', value: 'EP'}
                 ],

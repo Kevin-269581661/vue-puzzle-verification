@@ -180,7 +180,6 @@
                 this.avator = this.sessionData.headPic || require('../../assets/images/index/headimg.png')
                 let utype = this.sessionData.uType;
                 this.userName = uTypeToText.toText(utype) + "-" + this.sessionData.realName;
-                console.log(this.userName);
             },
             // 路由切换
             handleSelect(key, keyPath) {

@@ -3,7 +3,7 @@
     <div class="ad_index_container">
         <div class="index-top-row">
             <div class="left-layout">
-                <personal-info :cityRank='cityRank' :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew" :imgSize="[72, 72]">
+                <personal-info :cityRank='cityRank' :user-info="sessionData" :honor-img="companyHonor" :linkArr="linkArrNew" :imgSize="[72, 72]">
                     <template slot-scope="{showImgNum}">
                         <el-tooltip v-for="(item,index) of companyHonor" :key="index" effect="dark" placement="top">
                             <span v-if="item.title" slot="content">{{item.title}}</span>
@@ -501,14 +501,8 @@
             return {
                 hasMpvgl: false,
                 nowMonth: '',
-                sessionData: '',
+                sessionData: {},
                 isPlatform: false,      // 根据帐号所属公司id判断是否是否为平台商
-                // 表头登录账户信息
-                userInfo: {
-                    userName: '',
-                    greetings: '祝您开心每一天!',
-                    avator: require('../../assets/images/index/headimg.png'),
-                },
                 /* dataArr: [
                     {
                         name: '当月激活客户数',
@@ -793,7 +787,6 @@
         methods: {
             // 查看月详情
             catDetail(barData) {
-                // console.log('barData', barData)
                 this.catMonthDetail = barData.time||''
                 this.getSMResStockReport(1)
             },
@@ -1157,10 +1150,6 @@
                         break
                     }
                 }
-                this.userInfo.avator = this.sessionData.headPic || require('../../assets/images/index/headimg.png')
-                this.userInfo.role = this.sessionData.uType;
-                this.userInfo.userName = this.sessionData.realName
-                this.userInfo.endTime = timeFormat.returnDayCount(-1,'-')
                 // 本季度荣誉
                 if(this.isRetailCompany) {
                     this.getMedal()

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 02:36:01
+ * @LastEditTime: 2021-07-06 11:18:31
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -121,7 +121,7 @@ export default {
               { label: "楼盘类型", value: detailObj.cType },
               {
                 label: "楼盘价格",
-                value: commaFormat.init(Math.floor(detailObj.hPrice / 1000)),
+                value: commaFormat.init(Math.floor(detailObj.hPrice / 100)),
               },
               { label: "小区户数", value: detailObj.hNum },
               { label: "楼栋数量", value: detailObj.fNum },
@@ -130,7 +130,7 @@ export default {
               { label: "总安装媒体数", value: detailObj.totalInstallMediaCnt },
               {
                 label: "总付款金额",
-                value: commaFormat.init(Math.floor(detailObj.payTotal / 1000)),
+                value: commaFormat.init(Math.floor(detailObj.payTotal / 100)),
               },
             ];
             this.originDataList = detailObj.originDataList || [];
@@ -140,10 +140,8 @@ export default {
                 this.currentDcID =
                   this.originDataList[0].devContractDataList[0].dcID;
             }
-
-            this.$message.success(res.data.MSG || "");
           } else {
-            this.$message.warning(res.data.MSG || "");
+            this.$message.warning(res.data.MSG || "小区合同信息获取失败！");
           }
         });
     },
@@ -216,9 +214,8 @@ export default {
                 fileName: "noticeBanner.png",
               },
             ];
-            this.$message.success(res.data.MSG || "");
           } else {
-            this.$message.warning(res.data.MSG || "");
+            this.$message.warning(res.data.MSG || "合同详情获取失败！");
           }
         });
     },

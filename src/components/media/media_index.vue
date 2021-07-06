@@ -4,7 +4,7 @@
       <div class="index-top-row">
         <div class="left-layout">
           <personal-info
-            :user-info="userInfo"
+            :user-info="sessionData"
             :honor-img="companyHonor"
             :imgSize="[51, 62]"
             :linkArr="linkArrNew"
@@ -557,6 +557,7 @@ export default {
   },
   data() {
     return {
+      sessionData: {},
       hasMpvgl: false,
       activeTabsName: "pointDistribution",
 
@@ -589,11 +590,6 @@ export default {
           link: "./media/adsDialPlate",
         },
       ],
-      userInfo: {
-        userName: "",
-        greetings: "祝您开心每一天!",
-        avator: require("../../assets/images/tvQNA_img3.jpg"),
-      },
       // 勋章排名
       medalInfo: {
         point: 1,
@@ -759,14 +755,8 @@ export default {
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();
-      let sess = this.sessionData;
       this.isAllMedia =
-        sess.uType == "MD" && sess.mediaManageLevel == 1 ? true : false;
-      this.userInfo.userName = sess.realName;
-      this.userInfo.role = this.sessionData.uType;
-      this.userInfo.avator = sess.headPic
-        ? sess.headPic
-        : require("../../assets/images/index/niu.png");
+        this.sessionData.uType == "MD" && this.sessionData.mediaManageLevel == 1 ? true : false;
     },
     // 媒介贡献弹窗
     getContributeBox() {

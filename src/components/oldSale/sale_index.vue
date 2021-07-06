@@ -3,7 +3,7 @@
         <div class="ad_index_container">
             <div class="index-top-row">
                 <div class="left-layout">
-                    <personal-info :rank="rankInfo[0].rank||''" :user-info="userInfo" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
+                    <personal-info :rank="rankInfo[0].rank||''" :user-info="sessionData" :honor-img="companyHonor" :linkArr="linkArrNew"></personal-info>
                     <div class="card-group">
                         <el-row :gutter="24">
                             <el-col :span="8"><chart-card :cardData="cardData1"></chart-card></el-col>
@@ -210,6 +210,7 @@
         },
         data() {
             return {
+                sessionData: {},
                 hasMpvgl: false,
                 // 动效
                 isMonthlyRanking: false,
@@ -245,10 +246,6 @@
                         link: './sale/adsDialPlate'
                     },
                 ],
-                userInfo: {
-                    userName: '',
-                    greetings: '祝您开心每一天!'
-                },
                 dataArr: [
                     {
                         name: '当月激活客户数',
@@ -332,9 +329,6 @@
         methods: {
             getSession() {
                 this.sessionData = sessFun.getSess();
-                this.userInfo.userName = this.sessionData.realName;
-                this.userInfo.role = this.sessionData.uType;
-                this.userInfo.avator = this.sessionData.headPic ? this.sessionData.headPic : require('../../assets/images/index/niu.png')
             },
             resizeRank(price) {
                 let rankLength = document.getElementsByClassName('timeline')[0].offsetWidth;
@@ -417,8 +411,6 @@
                         this.dataArr[0].data = resInfo.customerCount;
                         this.dataArr[1].data = resInfo.orderCount;
                         this.dataArr[2].data = resInfo.apTotal / 100;
-
-                        this.userInfo.endTime = timeFormat.toDate(resInfo.time, '/');
                     } else {
                         Message.warning(res.data.MSG);
                     }

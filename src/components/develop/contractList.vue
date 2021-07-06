@@ -354,7 +354,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ currentContract.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[currentContract.dcType] || ""}合同`
+          `${contractTypeArr[currentContract.dcType] || ""}`
         }}</span>
         将被重新提交审核
       </div>
@@ -377,7 +377,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ currentContract.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[currentContract.dcType] || ""}合同`
+          `${contractTypeArr[currentContract.dcType] || ""}`
         }}</span>
         将被删除
       </div>
@@ -431,7 +431,7 @@
       <div class="message-content">
         确定后，<span class="active">{{ currentContract.resName }}</span> 的
         <span class="active">{{
-          `${contractTypeArr[currentContract.dcType] || ""}合同`
+          `${contractTypeArr[currentContract.dcType] || ""}`
         }}</span>
         将被终止
       </div>
@@ -489,7 +489,7 @@ export default {
         0: "首签合同",
         1: "续签合同",
         2: "加门合同",
-        3: "补充协议",
+        3: "补充协议合同",
       },
       // 后台定义合同状态
       stateList: {

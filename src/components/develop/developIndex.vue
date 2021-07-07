@@ -322,10 +322,16 @@
     </el-dialog>
     <!-- 合同审核 -->
     <contract-review-dialog
-      :dcID="currentReviewDcID"
+      :dcID="currentReview.dcID"
       :contractReviewVisible.sync="contractReviewVisible"
       @refreshList="getContractNews"
     ></contract-review-dialog>
+    <!-- 付款记录 -->
+    <pay-log
+      :currentContract="currentReview"
+      :payLogDialogVisible.sync="payLogDialogVisible"
+      @refreshList="getContractNews"
+    ></pay-log>
   </div>
 </template>
 
@@ -343,6 +349,7 @@ import chartCard from "../common/components/chartCard.vue";
 import indexCustomCard from "../common/components/indexCustomCard.vue";
 import miniProgress from "../common/components/miniProgress.vue";
 import contractReviewDialog from "./components/contractReviewDialog.vue";
+import payLog from "./components/payLog.vue";
 export default {
   name: "developIndex",
   components: {
@@ -354,6 +361,7 @@ export default {
     indexCustomCard,
     miniProgress,
     contractReviewDialog,
+    payLog
   },
   data() {
     return {
@@ -406,7 +414,7 @@ export default {
       dateInterval: 1,
       ignoreVisible: false,
       currentIgnore: null,
-      currentReviewDcID: "",
+      currentReview: {},
       statusMap: {
         1: {
           "-1": "审核不通过",
@@ -428,6 +436,7 @@ export default {
       },
       // 合同审核弹框
       contractReviewVisible: false,
+      payLogDialogVisible: false
     };
   },
   mounted() {
@@ -714,8 +723,15 @@ export default {
     },
     // 总监审核
     showContractReview(row) {
-      this.contractReviewVisible = true;
-      this.currentReviewDcID = row.dcID;
+      row.id = row.dcID;
+      this.currentReview = row;
+      if(row.logType == 2) {
+        // 付款审批
+        this.payLogDialogVisible = true;
+      } else {
+        // 合同审批
+        this.contractReviewVisible = true;
+      }
     },
   },
 };

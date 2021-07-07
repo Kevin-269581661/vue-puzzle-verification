@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 14:37:29
+ * @LastEditTime: 2021-07-07 16:36:00
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -577,6 +577,7 @@ export default {
           "206",
           "214",
           "224",
+          "234",
           "215",
           "225",
           "216",

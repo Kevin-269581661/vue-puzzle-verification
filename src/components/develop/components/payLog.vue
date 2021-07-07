@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 15:55:46
+ * @LastEditTime: 2021-07-07 16:41:08
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -848,6 +848,9 @@ export default {
     .active {
       color: rgba(24, 144, 255, 1);
       cursor: pointer;
+    }
+    .item-label {
+      white-space: nowrap;
     }
     .item-content {
       font-size: 14px;

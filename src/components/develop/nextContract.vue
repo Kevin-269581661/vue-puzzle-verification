@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 15:29:50
+ * @LastEditTime: 2021-07-07 22:57:48
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -155,7 +155,6 @@ export default {
       }
     },
     newContract(fileIDs) {
-      console.log("contractForm", this.contractFormData);
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -183,6 +182,11 @@ export default {
       this.handleType == 1 &&
         this.originID.split(",").length > 1 &&
         (params.originIDs = this.originID);
+      if (this.handleType == 3) {
+        // 补充协议保留原合同编号
+        params.contractNo = this.$refs.needValidForm.additional.contractNo;
+      }
+      // 非编辑时删除合同id
       !this.editFlag && delete params.id;
       return new Promise((resolve) => {
         api

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 17:02:31
+ * @LastEditTime: 2021-07-07 22:56:30
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -58,6 +58,12 @@
                 </el-col>
               </el-row>
               <el-row :gutter="76" class="from_row">
+                <el-col v-if="handleType > 0" :span="6">
+                  <el-form-item label="合同类型">
+                    <el-input v-model="contractTypeArr[handleType]" disabled>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
                 <el-col :span="6">
                   <el-form-item label="合同开始日期" prop="startDate">
                     <el-date-picker
@@ -494,6 +500,12 @@ export default {
       }
     };
     return {
+      contractTypeArr: {
+        0: "首签合同",
+        1: "续签合同",
+        2: "加门合同",
+        3: "补充协议",
+      },
       devPayTypeList: [
         { label: "按年支付固定费用", value: "按年支付固定费用" },
         { label: "一次性支付固定费用", value: "一次性支付固定费用" },
@@ -502,6 +514,7 @@ export default {
         { label: "固定费用付款", value: "固定费用付款" },
         { label: "按装门数付款", value: "按装门数付款" },
       ],
+      additional: {},
       //资源表单
       contractForm: {
         id: "", // 合同id
@@ -671,7 +684,11 @@ export default {
     // 校验结束日期
     validEndDate(rule, value, callback) {
       if (value) {
-        if (this.contractForm.startDate && this.contractForm.endDate && this.contractForm.endDate<this.contractForm.startDate) {
+        if (
+          this.contractForm.startDate &&
+          this.contractForm.endDate &&
+          this.contractForm.endDate < this.contractForm.startDate
+        ) {
           callback(new Error("合同结束日期必须大于合同开始日期!"));
         } else {
           callback();
@@ -682,7 +699,6 @@ export default {
     },
     // 拆除媒体不能全选
     checkDemolishMedia(rule, value, callback) {
-      console.log("value--", value);
       if (value) {
         if (value.length == this.demolishMediaList.length) {
           callback(new Error("拆除媒体不能全选!"));
@@ -721,6 +737,10 @@ export default {
             this.resFormData.pmcName = tempResultObj.pmcName || "";
             this.resFormData.resName = tempResultObj.resName || "";
             this.resFormData.resID = tempResultObj.resID || "";
+            Object.assign(this.additional, {
+              id: tempResultObj.id,
+              contractNo: tempResultObj.contractNo,
+            });
             for (const key in this.contractForm) {
               let tempValue = tempResultObj[key];
               if (
@@ -733,7 +753,7 @@ export default {
                 ) {
                   // 日期（月 日）Number 转 String
                   tempValue = (
-                    tempValue < 1000 ? "0" + tempValue : tempValue
+                    tempValue < 1000 ? "0" + tempValue : tempValue + ""
                   ).replace(/^(\d{2})/, "$1-");
                 }
                 if (

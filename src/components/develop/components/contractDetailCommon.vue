@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 16:36:12
+ * @LastEditTime: 2021-07-07 22:19:23
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -172,7 +172,7 @@
     <!-- 完成签约 -->
     <sign-contract
       :signVisible.sync="signVisible"
-      :dcID="contractObj.id"
+      :currentContract="contractObj"
       @refreshList="getContractDetail"
     ></sign-contract>
     <!-- 合同审核 -->
@@ -230,7 +230,7 @@ import { moneyFormat } from "../../../commonFun/commaFormat";
 import PayLog from "../components/payLog.vue";
 import NextContractDialog from "../components/nextContractDialog.vue";
 import AddMediaToContract from "../components/addMediaToContract.vue";
-import SignContract from "../components/signContract";
+import SignContract from "../components/signContract.vue";
 import ContractReviewDialog from "../components/contractReviewDialog.vue";
 export default {
   name: "contractDetailCommon",
@@ -255,7 +255,7 @@ export default {
         0: "首签合同",
         1: "续签合同",
         2: "加门合同",
-        3: "补充协议合同",
+        3: "补充协议",
       },
       stateList: {
         "-1": { label: "不通过", color: "#F5222D" },
@@ -588,6 +588,13 @@ export default {
           if (res.data.SysCode == 200200) {
             let tempObj = res.data.data || {};
             this.contractObj = tempObj;
+            for (const key in tempObj) {
+              if (Object.hasOwnProperty.call(tempObj, key)) {
+                if(tempObj[key]==undefined||tempObj[key]==null) {
+                  tempObj[key]="--";
+                }
+              }
+            }
             this.detailArr = [
               {
                 title: "基本信息",
@@ -600,6 +607,7 @@ export default {
                   { label: "合同结束日期", value: tempObj.endDate },
                   { label: "门体归属权", value: tempObj.ownership },
                   { label: "合同媒体数", value: tempObj.mediaCnt },
+                  { label: "合同备注", value: tempObj.remark||"--" },
                 ],
               },
               {
@@ -613,7 +621,7 @@ export default {
                   },
                   { label: "赠送IC卡", value: tempObj.freeICCardCnt },
                   { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
-                  // {label: "赠送护栏", value: tempObj.freeGuardrailDoorCnt},
+                  {label: "赠送护栏", value: tempObj.freeGuardrailCnt},
                   { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
                   { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
                 ],
@@ -633,8 +641,8 @@ export default {
                   {
                     label: "场地费应付日期",
                     value: String(tempObj.venueDate || "").replace(
-                      /(\d{2})$/,
-                      "-$1"
+                      /(\d{1,})(\d{2})$/,
+                      "$1月$2日"
                     ),
                   },
                   {
@@ -646,8 +654,8 @@ export default {
                   {
                     label: "开发费应付日期",
                     value: String(tempObj.devDate || "").replace(
-                      /(\d{2})$/,
-                      "-$1"
+                      /(\d{1,})(\d{2})$/,
+                      "$1月$2日"
                     ),
                   },
                 ],

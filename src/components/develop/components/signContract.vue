@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 13:03:27
+ * @LastEditTime: 2021-07-07 22:21:20
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -49,8 +49,9 @@ import api from "../../../api/api";
 export default {
   name: "signContract",
   props: {
-    dcID: {
-      type: [Number, String],
+    currentContract: {
+      type: Object,
+      default: () => {},
     },
     signVisible: {
       type: Boolean,
@@ -68,7 +69,9 @@ export default {
     };
   },
   watch: {
-    
+    currentContract(val) {
+      
+    }
   },
   mounted() {},
   methods: {
@@ -79,7 +82,7 @@ export default {
         api
         .postApi("/addsp/devContract/changeDCState", {
           ...this.signContractForm,
-          dcID: this.dcID
+          dcID: this.currentContract.id
         }).then((res) => {
           if (res.data.SysCode == 200200) {
             this.$emit("update:signVisible", false);

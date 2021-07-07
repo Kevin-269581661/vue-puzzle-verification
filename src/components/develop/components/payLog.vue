@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 16:41:08
+ * @LastEditTime: 2021-07-07 20:47:09
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -115,6 +115,7 @@
                     sessionData.devManageLevel == 1 && logItem.payState == 2
                   "
                   popper-class="handle-btn-pop"
+                  class="no-pop-wrap"
                   placement="top-end"
                   confirm-button-text="确定"
                   cancel-button-text="取消"
@@ -284,7 +285,7 @@
             value-format="yyyy"
             placeholder="请选择付款年份"
             :picker-options="{
-              disabledDate
+              disabledDate,
             }"
           >
           </el-date-picker>
@@ -479,8 +480,10 @@ export default {
     disabledDate(time) {
       if (this.currentContract.startDate && this.currentContract.endDate) {
         return !(
-          time.getFullYear() >= new Date(this.currentContract.startDate).getFullYear() &&
-          time.getFullYear() <= new Date(this.currentContract.endDate).getFullYear()
+          time.getFullYear() >=
+            new Date(this.currentContract.startDate).getFullYear() &&
+          time.getFullYear() <=
+            new Date(this.currentContract.endDate).getFullYear()
         );
       } else {
         return false;
@@ -538,7 +541,6 @@ export default {
       console.warn("上传失败", err);
       this.$message.warning(file.name + "附件上传失败！");
     },
-
     // 重置付款申请表单
     resetPayApply(done) {
       if (this.$refs.payApplyForm) {
@@ -581,6 +583,7 @@ export default {
             .then((res) => {
               if (res.data.SysCode == 200200) {
                 this.$emit("refreshList");
+                this.resetPayApply();
                 this.$emit("update:payApplyVisible", false);
               } else {
                 this.$message.warning(res.data.MSG || "");
@@ -597,11 +600,30 @@ export default {
     // 重新申请付款
     reApplyPayFun() {
       console.log("重新申请付款", logItem);
+      let {
+        id,
+        payType,
+        finishYear,
+        planPayTotal,
+        actualPayTotal,
+        bankAccount,
+        bankName,
+        remark,
+      } = logItem;
+      this.payApplyForm = {
+        id,
+        payType,
+        finishYear,
+        planPayTotal,
+        actualPayTotal,
+        bankAccount,
+        bankName,
+        remark,
+      };
       this.$emit("update:payApplyVisible", true);
     },
     // 完成付款
     finishPayFun(logItem) {
-      logItem.actualPayTotal = Number(logItem.actualPayTotal / 100).toFixed(2);
       this.currentLogItem = logItem;
       this.finishPayVisible = true;
     },
@@ -815,6 +837,9 @@ export default {
       border-radius: 2px;
       white-space: nowrap;
       font-size: 12px;
+    }
+    .no-pop-wrap {
+      margin: 0 0 0 auto;
     }
     .quesition-icon {
       width: 14px;

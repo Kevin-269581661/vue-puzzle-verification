@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 14:47:00
+ * @LastEditTime: 2021-07-07 21:27:07
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -150,6 +150,7 @@ export default {
                   { label: "合同结束日期", value: tempObj.endDate },
                   { label: "门体归属权", value: tempObj.ownership },
                   { label: "合同媒体数", value: tempObj.mediaCnt },
+                  { label: "合同备注", value: tempObj.remark||"--" },
                 ],
               },
               {
@@ -183,8 +184,8 @@ export default {
                   {
                     label: "场地费应付日期",
                     value: String(tempObj.venueDate || "").replace(
-                      /(\d{2})$/,
-                      "-$1"
+                      /(\d{1,})(\d{2})$/,
+                      "$1月$2日"
                     ),
                   },
                   {
@@ -196,8 +197,8 @@ export default {
                   {
                     label: "开发费应付日期",
                     value: String(tempObj.devDate || "").replace(
-                      /(\d{2})$/,
-                      "-$1"
+                      /(\d{1,})(\d{2})$/,
+                      "$1月$2日"
                     ),
                   },
                 ],

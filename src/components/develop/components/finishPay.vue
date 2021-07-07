@@ -2,11 +2,11 @@
  * @Author: penglei
  * @Date: 2021-06-29 11:19:58
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 17:36:49
+ * @LastEditTime: 2021-07-07 22:17:38
  * @FilePath: /frontend/src/components/develop/components/finishPay.vue
 -->
 <template>
-  <!-- 完成签约 -->
+  <!-- 完成付款 -->
   <el-dialog
     title="完成付款"
     :visible.sync="finishPayVisible"
@@ -23,11 +23,10 @@
       class="content-form"
     >
       <el-form-item label="支付款项：">
-        <el-input disabled v-model="payLog.payType" size="small"> </el-input>
+        <el-input disabled :value="['场地费', '开发费', '其它'][payLog.payType-1]" size="small"> </el-input>
       </el-form-item>
       <el-form-item label="实付金额：">
-        <el-input disabled :value="payLog.actualPayTotal/100" size="small">
-        </el-input>
+        <el-input disabled :value="Number(payLog.actualPayTotal/100).toFixed(2)" size="small"></el-input>
       </el-form-item>
       <el-form-item label="已开票/收据：" prop="isReceipt ">
         <el-radio v-model="finishPayForm.isReceipt" label="1">是</el-radio>
@@ -77,16 +76,20 @@ export default {
         passState: 1,
         dcpID: "",
         finishDate: undefined,
-        isReceipt: "",
+        isReceipt: "0",
       },
     };
   },
   watch: {},
   mounted() {},
   methods: {
-    // 获取可续签的合同对象
+    // 完成付款
     finishPayFun() {
       this.finishPayForm.dcpID = this.payLog.id;
+      if(!this.finishPayForm.finishDate) {
+        this.$message.warning("请选择付款日期！");
+        return;
+      }
       api
         .postApi("/addsp/devContract/changePayState", this.finishPayForm)
         .then((res) => {

@@ -99,13 +99,13 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  prop="warnType"
+                  prop="warnTypeName"
                   label="预警说明"
                   width="100"
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    {{ scope.row.warnType || "--" }}
+                    {{ scope.row.warnTypeName || "--" }}
                   </template>
                 </el-table-column>
                 <el-table-column prop="dayDiffer" label="预警倒计时">
@@ -403,7 +403,7 @@ export default {
         0: "首签合同",
         1: "续签合同",
         2: "加门合同",
-        3: "补充协议合同",
+        3: "补充协议",
       },
       // 合同动态列表
       contractNews: [],
@@ -599,12 +599,13 @@ export default {
     createWarnIgnore() {
       api
         .postApi("/addsp/devContractWarn/createWarnIgnore", {
-          warnType: row.warnType,
-          tokedcIDn: row.dcID,
+          warnType: this.currentIgnore.warnType,
+          dcID: this.currentIgnore.id*1,
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.ignoreVisible = false;
+            this.getContractWarningList();
           } else {
             this.$message.warning(res.data.MSG);
           }

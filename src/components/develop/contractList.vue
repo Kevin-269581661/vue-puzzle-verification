@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 16:36:00
+ * @LastEditTime: 2021-07-07 22:18:37
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -409,7 +409,7 @@
     <!-- 完成签约 -->
     <sign-contract
       :signVisible.sync="signVisible"
-      :dcID="currentContract.id"
+      :currentContract="currentContract"
       @refreshList="searchFormat"
     ></sign-contract>
     <!-- 合同审核 -->
@@ -489,7 +489,7 @@ export default {
         0: "首签合同",
         1: "续签合同",
         2: "加门合同",
-        3: "补充协议合同",
+        3: "补充协议",
       },
       // 后台定义合同状态
       stateList: {
@@ -873,7 +873,7 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         pageNum: this.currPage,
-        pagesize: this.pageSize,
+        pageSize: this.pageSize,
         [this.searchInfo.keywordType]:
           this.searchInfo[this.searchInfo.keywordType],
         districtId:

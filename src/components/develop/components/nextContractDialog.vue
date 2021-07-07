@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 09:58:32
+ * @LastEditTime: 2021-07-07 22:12:23
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -55,7 +55,6 @@ export default {
       default: () => {},
     },
   },
-  created() {},
   data() {
     return {
       // 合同对象列表
@@ -69,10 +68,12 @@ export default {
       val && this.getOriginList();
     },
   },
+  created() {},
   mounted() {},
   methods: {
     // 获取可续签的合同对象
     getOriginList() {
+      this.mergeOriginList = [];
       api
         .getApi("/addsp/devContract/getOriginList", {
           resID: this.currentContract.resID,
@@ -80,6 +81,18 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.contractOriginList = res.data.data || [];
+            if (this.currentContract.id && this.currentContract.originID) {
+              let dcIDAndOriginID = `${this.currentContract.id},${this.currentContract.originID}`;
+              for (let i = 0; i < this.contractOriginList.length; i++) {
+                let originItem = this.contractOriginList[i];
+                if (
+                  dcIDAndOriginID == `${originItem.dcID},${originItem.originID}`
+                ) {
+                  this.mergeOriginList = [dcIDAndOriginID];
+                }
+                break;
+              }
+            }
           } else {
             this.$message.warning(res.data.MSG || "");
           }

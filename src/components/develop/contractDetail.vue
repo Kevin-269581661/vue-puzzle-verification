@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 14:50:07
+ * @LastEditTime: 2021-07-07 21:06:43
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -149,87 +149,6 @@ export default {
             }
           } else {
             this.$message.warning(res.data.MSG || "小区合同信息获取失败！");
-          }
-        });
-    },
-    // 获取合同详情
-    getContractDetail(contractItem) {
-      api
-        .getApi("/addsp/devContract/getContractDetail", {
-          dcID: contractItem.dcID,
-        })
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            let tempObj = res.data.data || {};
-            for (const key in tempObj) {
-              if (Object.hasOwnProperty.call(tempObj, key)) {
-                if(tempObj[key]==undefined||tempObj[key]==null) {
-                  tempObj[key]="--";
-                }
-              }
-            }
-            this.detailArr = [
-              {
-                title: "基本信息",
-                content: [
-                  { label: "资源名称", value: tempObj.resName },
-                  { label: "物业公司", value: tempObj.pmcName },
-                  { label: "联系人", value: tempObj.contactsName },
-                  { label: "联系人手机号", value: tempObj.contactsPhone },
-                  { label: "合同开始日期", value: tempObj.startDate },
-                  { label: "合同结束日期", value: tempObj.endDate },
-                  { label: "门体归属权", value: tempObj.ownership },
-                  { label: "合同媒体数", value: tempObj.mediaCnt },
-                ],
-              },
-              {
-                title: "安装信息",
-                content: [
-                  { label: "赠送车场道闸", value: tempObj.freeCarGateCnt },
-                  { label: "赠送护栏门", value: tempObj.freeGuardrailDoorCnt },
-                  {
-                    label: "赠送门禁设备",
-                    value: tempObj.freeAccessControlCnt,
-                  },
-                  { label: "赠送IC卡", value: tempObj.freeICCardCnt },
-                  { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
-                  {label: "赠送护栏", value: tempObj.freeGuardrailCnt},
-                  { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
-                  { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
-                ],
-              },
-              {
-                title: "费用信息",
-                content: [
-                  {
-                    label: "是否有场地费",
-                    value: tempObj.isVenueFee ? "是" : "否",
-                  },
-                  { label: "场地费付款方式", value: tempObj.venuePayType },
-                  { label: "场地费", value: tempObj.venueFee },
-                  { label: "场地费应付日期", value: tempObj.venueDate },
-                  {
-                    label: "是否有开发费",
-                    value: tempObj.isDevFee ? "是" : "否",
-                  },
-                  { label: "开发费付款方式", value: tempObj.devPayType },
-                  { label: "开发费", value: tempObj.devFee },
-                  { label: "开发费应付日期", value: tempObj.devDate },
-                ],
-              },
-              {
-                title: "其它信息",
-                content: [{ label: "物业规模(人数)", value: tempObj.resName }],
-              },
-            ];
-            this.fileList = [
-              {
-                fileUrl: "http://localhost:8080/static/images/noticeBanner.png",
-                fileName: "noticeBanner.png",
-              },
-            ];
-          } else {
-            this.$message.warning(res.data.MSG || "合同详情获取失败！");
           }
         });
     },

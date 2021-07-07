@@ -483,7 +483,7 @@ export default {
           time.getFullYear() <= new Date(this.currentContract.endDate).getFullYear()
         );
       } else {
-        return true;
+        return false;
       }
     },
     // 下载附件

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 16:01:45
+ * @LastEditTime: 2021-07-07 17:02:31
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -83,11 +83,11 @@
                         disabledDate(time) {
                           if (contractForm.startDate) {
                             return (
-                              time.getTime() >=
+                              time.getTime() <=
                               new Date(contractForm.startDate).getTime()
                             );
                           } else {
-                            return true;
+                            return false;
                           }
                         },
                       }"
@@ -327,6 +327,7 @@
                     <el-select
                       v-model="contractForm.isDevFee"
                       placeholder="请选择是否有开发费"
+                      @change="isDevFeeChange"
                       @blur="blurFun('isDevFee')"
                     >
                       <el-option label="是" :value="1"></el-option>
@@ -341,6 +342,7 @@
                         placeholder="请选择开发费付款方式"
                         v-model="contractForm.devPayType"
                         @blur="blurFun('devPayType')"
+                        @change="devPayTypeChange"
                       >
                         <el-option
                           v-for="item in devPayTypeList"
@@ -387,17 +389,6 @@
                   </el-col>
                 </template>
               </el-row>
-              <!-- <el-form-item label="其它信息" class="baseInfo"></el-form-item> -->
-              <!-- <el-row :gutter="76" class="from_row">
-                <el-col :span="6">
-                  <el-form-item label="物业规模(人数)" prop="developer">
-                    <el-input
-                      v-model="contractForm.developer"
-                      placeholder=""
-                    ></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row> -->
               <el-form-item label="附件" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="8">
@@ -661,6 +652,22 @@ export default {
     }
   },
   methods: {
+    // 开发费重置
+    isDevFeeChange() {
+      this.contractForm.devPayType = "";
+      this.contractForm.devFee = "";
+      this.contractForm.devDate = "";
+    },
+    // 场地费重置
+    isVenueFeeChange() {
+      this.contractForm.venuePayType = "";
+      this.contractForm.venueFee = "";
+      this.contractForm.venueDate = "";
+    },
+    // devPayType
+    devPayTypeChange() {
+      this.contractForm.devDate = "";
+    },
     // 校验结束日期
     validEndDate(rule, value, callback) {
       if (value) {

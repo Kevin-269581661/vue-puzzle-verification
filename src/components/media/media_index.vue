@@ -278,6 +278,11 @@
                         title="该媒体是否已完成安装"
                         @confirm="
                           () => {
+                            currentInstallInfo = {
+                              assetTag: '',
+                              installUserName: '',
+                              installDate: '',
+                            };
                             Object.assign(currentInstallInfo, scope.row);
                             installVisible = true;
                           }
@@ -489,6 +494,14 @@
         label-width="100px"
         class="content-form"
       >
+        <el-form-item label="资产编号：" prop="assetTag">
+          <el-input
+            placeholder="请填写资产编号"
+            v-model.trim="currentInstallInfo.assetTag"
+            size="small"
+          >
+          </el-input>
+        </el-form-item>
         <el-form-item label="安装负责人：" prop="installUserName">
           <el-input
             placeholder="请填写安装负责人"
@@ -731,6 +744,7 @@ export default {
       installOrDemolish: "installList",
       installVisible: false,
       currentInstallInfo: {
+        assetTag: "",
         installUserName: "",
         installDate: "",
       },
@@ -1225,9 +1239,10 @@ export default {
         },
       };
       if (install) {
-        if(this.currentInstallInfo.installDate&&this.currentInstallInfo.installUserName) {
+        if(this.currentInstallInfo.installDate&&this.currentInstallInfo.installUserName&&this.currentInstallInfo.assetTag) {
           params.data.installDate = this.currentInstallInfo.installDate;
           params.data.installUserName = this.currentInstallInfo.installUserName;
+          params.data.assetTag = this.currentInstallInfo.assetTag;
         } else {
           this.$message.warning("请完善安装信息！")
           return

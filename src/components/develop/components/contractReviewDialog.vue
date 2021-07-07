@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 01:25:42
+ * @LastEditTime: 2021-07-07 14:47:00
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -26,7 +26,7 @@
             class="detail-item"
           >
             <label class="detail-item-label">{{ `${formItem.label}：` }}</label>
-            <div class="detail-item-content">{{ formItem.value || "" }}</div>
+            <div class="detail-item-content">{{ formItem.value }}</div>
           </el-col>
         </el-row>
       </div>
@@ -131,6 +131,13 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let tempObj = res.data.data || {};
+            for (const key in tempObj) {
+              if (Object.hasOwnProperty.call(tempObj, key)) {
+                if(tempObj[key]==undefined||tempObj[key]==null) {
+                  tempObj[key]="--";
+                }
+              }
+            }
             this.detailArr = [
               {
                 title: "基本信息",

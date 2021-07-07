@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 11:18:31
+ * @LastEditTime: 2021-07-07 14:50:07
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -23,7 +23,7 @@
           class="detail-item"
         >
           <label class="detail-item-label">{{ `${item.label}：` }}</label>
-          <div class="detail-item-content">{{ item.value || "" }}</div>
+          <div class="detail-item-content">{{ item.value }}</div>
         </el-col>
       </el-row>
     </div>
@@ -115,13 +115,20 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let detailObj = res.data.data;
+            for (const key in detailObj) {
+              if (Object.hasOwnProperty.call(detailObj, key)) {
+                if(detailObj[key]==undefined||detailObj[key]==null) {
+                  detailObj[key]="--";
+                }
+              }
+            }
             this.resName = detailObj.resName;
             this.resInfo = [
               { label: "资源地址", value: detailObj.resAddress },
               { label: "楼盘类型", value: detailObj.cType },
               {
                 label: "楼盘价格",
-                value: commaFormat.init(Math.floor(detailObj.hPrice / 100)),
+                value: commaFormat.format(Math.floor(detailObj.hPrice / 100)),
               },
               { label: "小区户数", value: detailObj.hNum },
               { label: "楼栋数量", value: detailObj.fNum },
@@ -154,6 +161,13 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let tempObj = res.data.data || {};
+            for (const key in tempObj) {
+              if (Object.hasOwnProperty.call(tempObj, key)) {
+                if(tempObj[key]==undefined||tempObj[key]==null) {
+                  tempObj[key]="--";
+                }
+              }
+            }
             this.detailArr = [
               {
                 title: "基本信息",
@@ -179,7 +193,7 @@ export default {
                   },
                   { label: "赠送IC卡", value: tempObj.freeICCardCnt },
                   { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
-                  // {label: "赠送护栏", value: tempObj.freeGuardrailDoorCnt},
+                  {label: "赠送护栏", value: tempObj.freeGuardrailCnt},
                   { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
                   { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
                 ],
@@ -307,7 +321,7 @@ export default {
         &.is-top {
           height: 50px;
           line-height: 50px;
-          max-width: 100px;
+          max-width: 156px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;

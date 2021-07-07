@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 16:57:26
+ * @LastEditTime: 2021-07-07 14:37:29
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -523,22 +523,22 @@ export default {
           "000",
           "00-1",
           "001",
-          "002",
-          "003",
+          // "002",
+          // "003",
           "010",
           "020",
           "01-1",
           "02-1",
           "011",
           "021",
-          "012",
-          "022",
-          "013",
-          "033",
+          // "012",
+          // "022",
+          // "013",
+          // "033",
           "030",
           "03-1",
           "031",
-          "032",
+          // "032",
         ],
         重新提交: ["00-1", "01-1", "02-1", "03-1"],
         媒体录入: ["002", "012", "022", "032"],
@@ -739,7 +739,7 @@ export default {
             if (res.data.SysCode == 200200) {
               resolve(true);
             } else {
-              this.$message.warning("存在未完成审批！");
+              this.$message.warning("尚有续签/补充协议申请未完成！");
               resolve(false);
             }
           })

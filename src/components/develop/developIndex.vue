@@ -76,7 +76,7 @@
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    {{ scope.row.contractNo || "--" }}
+                    <span @click="routeContractDetail(scope.row)" class="table-row__btn">{{ scope.row.contractNo || "--" }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -392,10 +392,10 @@ export default {
       contractWarningList: [],
       maxDayDiffer: 0,
       contractTypeArr: {
-        0: "首签",
-        1: "续签",
-        2: "补充",
-        3: "加门",
+        0: "首签合同",
+        1: "续签合同",
+        2: "加门合同",
+        3: "补充协议合同",
       },
       // 合同动态列表
       contractNews: [],
@@ -705,7 +705,6 @@ export default {
     },
     /* 跳转至合同详情（资产、开发） */
     routeContractDetail(row) {
-      console.log("0-0", row.resID);
       this.$router.push({
         path: "./f_develop/contractDetail",
         query: {

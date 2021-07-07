@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 18:49:12
+ * @LastEditTime: 2021-07-07 16:01:45
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -79,6 +79,18 @@
                       value-format="yyyy-MM-dd"
                       :editable="false"
                       placeholder="请选择合同结束日期"
+                      :picker-options="{
+                        disabledDate(time) {
+                          if (contractForm.startDate) {
+                            return (
+                              time.getTime() >=
+                              new Date(contractForm.startDate).getTime()
+                            );
+                          } else {
+                            return true;
+                          }
+                        },
+                      }"
                       @blur="blurFun('endDate')"
                     >
                     </el-date-picker>
@@ -406,6 +418,7 @@
                     :on-change="fileChange"
                     :on-progress="fileProgress"
                     :on-success="uploadSuccess"
+                    :before-remove="beforeRemove"
                     :on-error="uploadError"
                     :auto-upload="false"
                     :multiple="false"
@@ -557,6 +570,10 @@ export default {
             message: "请选择合同结束日期!",
             trigger: "blur",
           },
+          {
+            validator: this.validEndDate,
+            trigger: "blur",
+          },
         ],
         ownership: [
           {
@@ -595,7 +612,6 @@ export default {
             trigger: ["change", "blur"],
           },
         ],
-
         venueDate: [
           {
             required: true,
@@ -645,6 +661,18 @@ export default {
     }
   },
   methods: {
+    // 校验结束日期
+    validEndDate(rule, value, callback) {
+      if (value) {
+        if (this.contractForm.startDate && this.contractForm.endDate && this.contractForm.endDate<this.contractForm.startDate) {
+          callback(new Error("合同结束日期必须大于合同开始日期!"));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    },
     // 拆除媒体不能全选
     checkDemolishMedia(rule, value, callback) {
       console.log("value--", value);
@@ -773,6 +801,9 @@ export default {
     uploadError(err, file, fileList) {
       console.warn("上传失败", err);
       this.$message.warning("附件上传失败！");
+    },
+    beforeRemove(file, fileList) {
+      this.fileList = fileList;
     },
     // 手动上传文件
     submitUpload() {

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 19:47:25
+ * @LastEditTime: 2021-07-07 16:07:53
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -137,7 +137,7 @@
                   </el-select>
                 </el-form-item>
               </el-col> -->
-              <el-col :span="6">
+              <!-- <el-col :span="6">
                 <el-form-item label="资产编号" prop="assetId">
                   <el-input
                     size="small"
@@ -145,9 +145,9 @@
                     placeholder="例:0034FASF342-X21"
                   ></el-input>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="6">
-                <el-form-item label=" 媒体类型" prop="doorType">
+                <el-form-item label=" 门体类型" prop="doorType">
                   <el-input
                     size="small"
                     v-model="item.doorType"
@@ -274,14 +274,14 @@ export default {
   },
   data() {
     //资产编号
-    let validateAssetId = (rule, value, callback) => {
+    /* let validateAssetId = (rule, value, callback) => {
       let reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
       if (reg.test(value)) {
         callback(new Error("只能输入数字字母符号!"));
       } else {
         callback();
       }
-    };
+    }; */
     let validateSpace = (rule, value, callback) => {
       this.isResError = false;
       if (value) {
@@ -372,7 +372,7 @@ export default {
         },
         {
           label: "广告限制",
-          prop: "assetTag",
+          prop: "notPush",
           tip: true,
         },
       ],
@@ -402,7 +402,7 @@ export default {
         /* mstate: [
           { required: true, message: "请选择媒体状态!", trigger: "change" },
         ], */
-        assetId: [
+        /* assetId: [
           {
             required: true,
             message: "资产编号不能为空!",
@@ -415,11 +415,11 @@ export default {
             message: "最多只能输入40个字节!",
             trigger: ["blur", "change"],
           },
-        ],
+        ], */
         doorType: [
           {
             required: true,
-            message: "媒体类型不能为空!",
+            message: "门体类型不能为空!",
             trigger: ["blur", "change"],
           },
           { validator: validateSpace, trigger: ["blur", "change"] },
@@ -488,7 +488,7 @@ export default {
   },
   methods: {
     //资产编号校验去重
-    validateAssetTag(rule, value, callback) {
+    /* validateAssetTag(rule, value, callback) {
       console.log("_________资产编号是否重复_________", value);
       let params = {
         uid: this.sessionData.uID,
@@ -521,9 +521,9 @@ export default {
           this.$message.warning(res.data.MSG || "");
         }
       });
-    },
+    }, */
     // 接口返回为空时校验当前是否有重复的
-    filterlocalAssetId(resData, value) {
+    /* filterlocalAssetId(resData, value) {
       let num = 0;
       for (let key of this.arrMedia) {
         if (key.assetId === value) {
@@ -532,9 +532,9 @@ export default {
         }
       }
       return num;
-    },
+    }, */
     // 判断同资源下资产编号是否重复
-    filterAssetId(resData, value) {
+    /* filterAssetId(resData, value) {
       let adDoor = false;
       for (let key of this.arrMedia) {
         if (key.assetId === value) {
@@ -546,7 +546,7 @@ export default {
       } else {
         return false;
       }
-    },
+    }, */
     // 批量创建媒体
     creadMediaFun() {
       let resID = this.currentContract.resID,
@@ -568,7 +568,7 @@ export default {
             adSize: mediaForm.adSizeW + "*" + mediaForm.adSizeH,
             adViewSize: mediaForm.visualW + "*" + mediaForm.visualH,
             notPush: mediaForm.adLimit.join("、"),
-            assetTag: mediaForm.assetId,
+            // assetTag: mediaForm.assetId,
             mType: mediaForm.doorType,
             mImg: mediaForm.mImg || "",
             mVehicle: mediaForm.mediaType,
@@ -693,7 +693,7 @@ export default {
       api
         .postApi("/addsp/devContract/synDcState", {
           dcID: this.currentContract.id,
-          state: 1, // 合同状态变更时，1发送站内信
+          state: 0
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
@@ -754,12 +754,12 @@ export default {
     font-size: 16px;
     font-weight: 600;
     line-height: 22px;
-    border-bottom: unset;
+    border-bottom: unset !important;
     text-align: center;
     color: rgba(0, 0, 0, 0.85);
   }
   .el-dialog__body {
-    border-bottom: unset;
+    border-bottom: unset !important;
   }
   .el-dialog__footer {
     padding: 0 24px 24px;

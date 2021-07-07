@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 11:19:58
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 11:31:49
+ * @LastEditTime: 2021-07-06 17:36:49
  * @FilePath: /frontend/src/components/develop/components/finishPay.vue
 -->
 <template>
@@ -26,7 +26,7 @@
         <el-input disabled v-model="payLog.payType" size="small"> </el-input>
       </el-form-item>
       <el-form-item label="实付金额：">
-        <el-input disabled v-model="payLog.actualPayTotal" size="small">
+        <el-input disabled :value="payLog.actualPayTotal/100" size="small">
         </el-input>
       </el-form-item>
       <el-form-item label="已开票/收据：" prop="isReceipt ">

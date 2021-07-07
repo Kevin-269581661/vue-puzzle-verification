@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-04 21:53:15
+ * @LastEditTime: 2021-07-07 09:58:32
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -96,7 +96,7 @@ export default {
             if (res.data.SysCode == 200200) {
               resolve(res.data.data);
             } else {
-              this.$message.warning("操作验证失败！");
+              this.$message.warning("尚有续签/补充协议申请未完成！");
               resolve(false);
             }
           })

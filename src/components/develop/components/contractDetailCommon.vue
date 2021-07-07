@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 11:39:57
+ * @LastEditTime: 2021-07-07 14:51:07
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -62,7 +62,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="mType" label="媒体类型" width="180">
+      <el-table-column prop="mType" label="门体类型" width="180">
       </el-table-column>
       <el-table-column prop="installUserName" label="安装负责人">
       </el-table-column>
@@ -89,7 +89,7 @@
           class="detail-item"
         >
           <label class="detail-item-label">{{ `${formItem.label}：` }}</label>
-          <div class="detail-item-content">{{ formItem.value || "" }}</div>
+          <div class="detail-item-content">{{ formItem.value }}</div>
         </el-col>
       </el-row>
     </div>
@@ -275,22 +275,22 @@ export default {
           "000",
           "00-1",
           "001",
-          "002",
-          "003",
+          // "002",
+          // "003",
           "010",
           "020",
           "01-1",
           "02-1",
           "011",
           "021",
-          "012",
-          "022",
-          "013",
-          "033",
+          // "012",
+          // "022",
+          // "013",
+          // "033",
           "030",
           "03-1",
           "031",
-          "032",
+          // "032",
         ],
         重新提交: ["00-1", "01-1", "02-1", "03-1"],
         媒体录入: ["002", "012", "022", "032"],
@@ -477,7 +477,7 @@ export default {
             if (res.data.SysCode == 200200) {
               resolve(true);
             } else {
-              this.$message.warning("存在未完成审批！");
+              this.$message.warning("尚有续签/补充协议申请未完成！");
               resolve(false);
             }
           })

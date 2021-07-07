@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 18:50:39
+ * @LastEditTime: 2021-07-07 15:55:46
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -97,7 +97,7 @@
                     sessionData.devManageLevel == 0 && logItem.payState == -1
                   "
                   class="el-dropdown-link"
-                  @click="$emit('update:payApplyVisible', true)"
+                  @click="reApplyPayFun(logItem)"
                 >
                   重新申请
                 </span>
@@ -170,6 +170,15 @@
                 <span class="item-label">开户行：</span>
                 <span class="item-content ellipsis">
                   {{ logItem.bankName || "--" }}
+                </span>
+              </li>
+              <li
+                v-if="logItem.payState == 2 || logItem.payState == 3"
+                class="info-item"
+              >
+                <span class="item-label">付款完成日期：</span>
+                <span class="item-content ellipsis">
+                  {{ logItem.finishDate || "--" }}
                 </span>
               </li>
               <li class="info-item">
@@ -274,6 +283,9 @@
             type="year"
             value-format="yyyy"
             placeholder="请选择付款年份"
+            :picker-options="{
+              disabledDate
+            }"
           >
           </el-date-picker>
         </el-form-item>
@@ -344,6 +356,7 @@
             :on-change="fileChange"
             :on-progress="fileProgress"
             :on-success="uploadSuccess"
+            :before-remove="beforeRemove"
             :on-error="uploadError"
             :auto-upload="false"
             :multiple="false"
@@ -462,6 +475,17 @@ export default {
   },
   mounted() {},
   methods: {
+    // 付款年份限制
+    disabledDate(time) {
+      if (this.currentContract.startDate && this.currentContract.endDate) {
+        return !(
+          time.getFullYear() >= new Date(this.currentContract.startDate).getFullYear() &&
+          time.getFullYear() <= new Date(this.currentContract.endDate).getFullYear()
+        );
+      } else {
+        return true;
+      }
+    },
     // 下载附件
     downloadFile(item) {
       var a = document.createElement("a");
@@ -522,6 +546,9 @@ export default {
         done();
       }
     },
+    beforeRemove(file, fileList) {
+      this.payApplyFileList = fileList;
+    },
     // 手动上传文件
     submitUpload() {
       console.log("手动上传文件--");
@@ -566,6 +593,11 @@ export default {
           console.warn("valid---");
         }
       });
+    },
+    // 重新申请付款
+    reApplyPayFun() {
+      console.log("重新申请付款", logItem);
+      this.$emit("update:payApplyVisible", true);
     },
     // 完成付款
     finishPayFun(logItem) {
@@ -855,7 +887,7 @@ export default {
       box-sizing: border-box;
       height: 32px;
       padding: 7px 8px;
-      margin: 7px 0;
+      margin: 7px 4px;
       .el-icon-download {
         display: none;
         margin: 0 0 0 auto;

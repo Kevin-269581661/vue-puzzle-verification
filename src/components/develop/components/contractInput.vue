@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:56:30
+ * @LastEditTime: 2021-07-08 09:27:19
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -734,7 +734,9 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             const tempResultObj = res.data.data || {};
-            this.resFormData.pmcName = tempResultObj.pmcName || "";
+            if(this.handleType>=0) {
+              this.resFormData.pmcName = tempResultObj.pmcName || "";
+            }
             this.resFormData.resName = tempResultObj.resName || "";
             this.resFormData.resID = tempResultObj.resID || "";
             Object.assign(this.additional, {

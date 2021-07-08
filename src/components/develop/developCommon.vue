@@ -9,7 +9,7 @@
             @select="handleSelect"
             background-color="#fff"
             active-text-color="#1890FF">
-            <el-menu-item index="">
+            <el-menu-item index="" class="no-hover" style="cursor: default; pointer-events: none;">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>

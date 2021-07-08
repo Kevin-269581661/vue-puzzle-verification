@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 17:20:53
+ * @LastEditTime: 2021-07-08 18:35:50
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -129,7 +129,7 @@
               <li class="info-item">
                 <span class="item-label">支付款项：</span>
                 <span class="item-content">
-                  {{ ["场地费", "开发费"][logItem.payType - 1] || "" }}
+                  {{ ["场地费", "开发费", "其它"][logItem.payType - 1] || "" }}
                 </span>
               </li>
               <li class="info-item">

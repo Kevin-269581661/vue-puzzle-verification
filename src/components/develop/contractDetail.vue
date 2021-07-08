@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 17:48:01
+ * @LastEditTime: 2021-07-08 18:01:12
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -246,7 +246,7 @@ export default {
         padding: 0 30px;
         .custom-tab-laber {
           height: 34px;
-          line-height: 34px;
+          line-height: 40px;
           max-width: 156px;
           overflow: hidden;
           white-space: nowrap;

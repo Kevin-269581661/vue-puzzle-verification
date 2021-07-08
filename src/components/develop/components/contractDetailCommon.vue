@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 16:23:33
+ * @LastEditTime: 2021-07-08 22:18:54
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -242,6 +242,10 @@ export default {
     ContractReviewDialog,
   },
   props: {
+    originID: {
+      type: [Number, String],
+      default: "",
+    },
     dcID: {
       type: [Number, String],
       default: "",
@@ -719,10 +723,11 @@ export default {
   .el-dialog__header {
     padding: 24px 24px 8px;
     border: none !important;
-    .el-dialog__title {
+    font-weight: 600;
+    /* .el-dialog__title {
       font-size: 16px;
       color: rgba($color: #000, $alpha: 0.85);
-    }
+    } */
     .el-icon-question {
       margin-right: 16px;
       color: #fa8c16;

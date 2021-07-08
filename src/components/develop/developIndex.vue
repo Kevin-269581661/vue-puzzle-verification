@@ -750,10 +750,12 @@ export default {
   .el-dialog__header {
     padding: 24px 24px 8px;
     border: none !important;
-    .el-dialog__title {
+    font-weight: 600;
+    /* .el-dialog__title {
       font-size: 16px;
+      font-weight: 600;
       color: rgba($color: #000, $alpha: 0.85);
-    }
+    } */
     .el-icon-question {
       margin-right: 16px;
       color: #fa8c16;

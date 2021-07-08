@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 18:01:12
+ * @LastEditTime: 2021-07-08 22:32:16
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -28,25 +28,36 @@
       </el-row>
     </div>
     <div class="tab-container">
-      <el-tabs v-model="activeTabName" type="border-card">
+      <el-tabs
+        v-model="activeTabName"
+        type="border-card"
+        @tab-click="handleTabClick"
+      >
         <el-tab-pane
           v-for="(item, index) in originDataList"
           :key="index"
           :name="item.poriginID + ''"
           class="custom-tabs__content"
         >
-          <el-tooltip slot="label" :content="item.originName || '待定'" placement="top" effect="light">
-            <span class="custom-tab-laber">{{ item.originName || "待定" }}</span>
+          <el-tooltip
+            slot="label"
+            :content="item.originName || '待定'"
+            placement="top"
+            effect="light"
+          >
+            <span class="custom-tab-laber">{{
+              item.originName || "待定"
+            }}</span>
           </el-tooltip>
           <el-container>
             <el-aside width="200px">
-              <el-menu default-active="0">
+              <el-menu :default-active="currentDcID + ''">
                 <el-menu-item
                   v-for="(
                     contractItem, contractIndex
                   ) in item.devContractDataList"
                   :key="contractIndex"
-                  :index="contractIndex + ''"
+                  :index="contractItem.dcID + ''"
                   @click="currentDcID = contractItem.dcID"
                 >
                   <div slot="title">
@@ -108,6 +119,15 @@ export default {
     this.getContractDetailList();
   },
   methods: {
+    handleTabClick(tab) {
+      let originIndex = this.originDataList.findIndex(
+        (item) => this.activeTabName == item.poriginID
+      );
+      if (originIndex != -1) {
+        let contractArr = this.originDataList[originIndex].devContractDataList;
+        contractArr[0] && (this.currentDcID = contractArr[0].dcID);
+      }
+    },
     getContractDetailList() {
       if (!this.resID) {
         this.$message.warning("资源信息获取失败！");

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 10:20:09
+ * @LastEditTime: 2021-07-08 21:46:25
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -293,7 +293,7 @@
                 {{ stateList[scope.row.dcState].label }}
                 <el-tooltip
                   v-if="stateList[scope.row.dcState].tip"
-                  :content="scope.row[stateList[scope.row.dcState].tip] || '--'"
+                  :content="scope.row[stateList[scope.row.dcState].tip].replace(',', '、') || '--'"
                   placement="top"
                 >
                   <img
@@ -970,10 +970,11 @@ export default {
   .el-dialog__header {
     padding: 24px 24px 8px;
     border: none !important;
-    .el-dialog__title {
+    font-weight: 600;
+    /* .el-dialog__title {
       font-size: 16px;
       color: rgba($color: #000, $alpha: 0.85);
-    }
+    } */
     .el-icon-question {
       margin-right: 16px;
       color: #fa8c16;

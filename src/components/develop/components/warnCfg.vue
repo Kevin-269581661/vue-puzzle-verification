@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 17:16:43
+ * @LastEditTime: 2021-07-08 21:55:02
  * @FilePath: /frontend/src/components/develop/components/warnCfg.vue
 -->
 <template>
@@ -52,7 +52,7 @@
           </div>
           <div v-else>
             <span>{{
-              `${scope.row.warnTxt}${scope.row.dayCnt}${scope.row.timeUnit}`
+              `${scope.row.warnTxt} ${scope.row.dayCnt} ${scope.row.timeUnit}`
             }}</span>
           </div>
         </template>

@@ -220,9 +220,10 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             item.status = 1;
+            // 后台有延迟
             setTimeout(() => {
               this.getUnreadCount();
-            }, 500);
+            }, 1000);
           }
         });
     },
@@ -233,7 +234,10 @@ export default {
           for (let data of this.messageList) {
             data.status = 1;
           }
-          this.getUnreadCount();
+          // 后台有延迟
+          setTimeout(() => {
+            this.getUnreadCount();
+          }, 1000);
         } else {
           this.$message.warning(res.data.MSG);
         }

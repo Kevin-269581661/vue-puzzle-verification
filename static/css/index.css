@@ -57,8 +57,8 @@
 }
 
 .el-table__body-wrapper::-webkit-scrollbar {
-    width: 4px;
-    background: #FAFAFA;
+    /* width: 4px; */
+    /* background: #FAFAFA; */
 }
 
 .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/

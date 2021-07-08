@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-05 18:24:02
+ * @LastEditTime: 2021-07-08 15:29:25
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -31,7 +31,6 @@
                       placeholder="请选择资源类型"
                       :disabled="PathHaveEdit"
                       @change="selectRec"
-                      @blur="blurFun('rt')"
                     >
                       <el-option label="写字楼" value="2"></el-option>
                       <el-option label="社区" value="1"></el-option>
@@ -47,7 +46,6 @@
                       :show-all-levels="false"
                       placeholder="请选择所属城市"
                       filterable
-                      @blur="blurFun('city')"
                       @change="handleChange"
                     >
                     </el-cascader>
@@ -58,9 +56,8 @@
                     <el-select
                       v-model="recForm.region"
                       placeholder="请选择所属区域"
-                      :clearable="true"
+                      clearable
                       @change="getRegion"
-                      @blur="blurFun('region')"
                     >
                       <el-option
                         v-for="item in regionOpt"
@@ -80,7 +77,6 @@
                       placeholder=""
                       :trigger-on-focus="false"
                       @select="changeResName"
-                      @blur="blurFun('resName')"
                     >
                     </el-autocomplete>
                     <el-button
@@ -128,7 +124,6 @@
                     <el-input
                       v-model="recForm.resaddr"
                       placeholder="例：广州大道中100号"
-                      @blur="blurFun('resaddr')"
                       style="width: 100%"
                       class="el-from-item-address"
                     >
@@ -240,7 +235,6 @@
                     <el-select
                       v-model="recForm.floorType"
                       placeholder="请选择资源类型"
-                      @blur="blurFun('floorType')"
                     >
                       <el-option
                         v-for="item in floorType[recForm.rt]"
@@ -296,7 +290,6 @@
                       format="yyyy 年"
                       :editable="false"
                       placeholder="请选择年份"
-                      @blur="blurFun('liveTime')"
                     >
                     </el-date-picker>
                   </el-form-item>
@@ -409,7 +402,6 @@
                     <el-select
                       v-model="recForm.liftType"
                       placeholder="请选择有无电梯"
-                      @blur="blurFun('liftType')"
                     >
                       <el-option
                         v-for="(item, index) in liftTypeList"
@@ -439,7 +431,6 @@
                     <el-input
                       v-model="recForm.pmcName"
                       placeholder="物业公司单位名称"
-                      @blur="blurFun('pmcName')"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -834,7 +825,7 @@ export default {
           {
             required: true,
             message: "请选择所属区域!",
-            trigger: ["blur", "change"],
+            trigger: ["change"],
           },
         ],
         addressAlias: [
@@ -1038,7 +1029,7 @@ export default {
     };
   },
   computed: {
-    changeLatLng() {
+    /* changeLatLng() {
       if (
         this.resAddres.city &&
         this.resAddres.area &&
@@ -1054,15 +1045,15 @@ export default {
       } else {
         return false;
       }
-    },
+    }, */
   },
   watch: {
-    changeLatLng(val) {
+    /* changeLatLng(val) {
       clearTimeout(this.queryTimeout);
       this.queryTimeout = setTimeout(() => {
         this.querySearchAsync(val);
       }, 500);
-    },
+    }, */
   },
   created() {
     this.getFangJiaWangCity();
@@ -1099,7 +1090,7 @@ export default {
         carNumber: resData.parking || "", // 车位数
         carFlowrate: resData.carFlow || "", // 车流量
         buildingPrice: (resData.hPrice/100).toFixed(0), // 楼盘价格
-        liveTime: resData.moveinTime || "", // 入住年份
+        liveTime: resData.chDay || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度
         discount: resData.discount || "",
@@ -1181,7 +1172,7 @@ export default {
     },
     //获取区域
     getRegion(val) {
-      console.log("val", val);
+      console.log("获取区域--", val);
       for (let key of this.regionOpt) {
         if (key.value == val) {
           this.resAddres.area = key.label;
@@ -1560,20 +1551,6 @@ export default {
         region.push(obj);
       }
       this.regionOpt = region;
-      console.log("this.regionOpt", this.regionOpt);
-    },
-    // 资源输入框和下拉框失去光标
-    blurFun(name) {
-      console.log("name", name);
-      // 手动触发校验
-      this.$refs.recForm.validateField(name, (valid) => {
-        console.log("错误提示信息", valid);
-        if (!valid) {
-          // console.log("校验通过");
-        } else {
-          // console.log("校验不通过");
-        }
-      });
     },
     // 按所属公司的城市区域检查是否有重复的资源名称
     isHaveCommenName(rule, value, callback) {

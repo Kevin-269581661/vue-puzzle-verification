@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:12:23
+ * @LastEditTime: 2021-07-08 15:27:42
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -19,7 +19,6 @@
     <div class="content-form">
       <el-select
         multiple
-        collapse-tags
         placeholder="请选择合同对象（可多选）"
         v-model="mergeOriginList"
         size="small"

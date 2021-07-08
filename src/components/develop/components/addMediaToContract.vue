@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 16:07:53
+ * @LastEditTime: 2021-07-08 15:43:09
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -147,7 +147,7 @@
                 </el-form-item>
               </el-col> -->
               <el-col :span="6">
-                <el-form-item label=" 门体类型" prop="doorType">
+                <el-form-item label="门体类型" prop="doorType">
                   <el-input
                     size="small"
                     v-model="item.doorType"
@@ -557,7 +557,8 @@ export default {
           mediaForm.mediaName &&
           mediaForm.mediaType &&
           mediaForm.adSizeW &&
-          mediaForm.adSizeH
+          mediaForm.adSizeH &&
+          mediaForm.doorType
         ) {
           arr.push({
             resID: resID,
@@ -612,7 +613,7 @@ export default {
           mediaName: "", //媒体名称mtitle
           usableNum: "2", //广告位面数pnum
           mstate: 2, //媒体状态此处新建都是2
-          doorType: "", // 门类型mType
+          doorType: "",
           adSizeW: "", //广告尺寸adsize
           adSizeH: "", //广告尺寸
           visualW: "", //可视画面adviewsize

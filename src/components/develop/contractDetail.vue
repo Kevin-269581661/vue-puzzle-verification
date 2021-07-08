@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 21:06:43
+ * @LastEditTime: 2021-07-08 15:26:06
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -137,7 +137,7 @@ export default {
               { label: "总安装媒体数", value: detailObj.totalInstallMediaCnt },
               {
                 label: "总付款金额",
-                value: commaFormat.init(Math.floor(detailObj.payTotal / 100)),
+                value: "¥" + commaFormat.init(Math.floor(detailObj.payTotal / 100)),
               },
             ];
             this.originDataList = detailObj.originDataList || [];

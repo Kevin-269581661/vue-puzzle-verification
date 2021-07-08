@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:18:37
+ * @LastEditTime: 2021-07-08 10:20:09
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -828,11 +828,14 @@ export default {
           row.dcType
         }${row.dcState}`,
         tempArr = [];
-      if (row.isOperate) {
-        for (const key in this.operationAuthorityArr) {
-          if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
-            this.operationAuthorityArr[key].includes(tempNo) &&
+      for (const key in this.operationAuthorityArr) {
+        if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
+          if (this.operationAuthorityArr[key].includes(tempNo)) {
+            if (key == "付款记录") {
               tempArr.push(key);
+            } else {
+              row.isOperate && tempArr.push(key);
+            }
           }
         }
       }
@@ -889,7 +892,7 @@ export default {
       api.getApi("/addsp/devContract/list", params).then((res) => {
         if (res.data.SysCode == 200200) {
           this.contractList = res.data.data || [];
-          this.totalNum = res.data.total||0;
+          this.totalNum = res.data.total || 0;
         } else {
           this.$message.warning(res.data.MSG);
         }

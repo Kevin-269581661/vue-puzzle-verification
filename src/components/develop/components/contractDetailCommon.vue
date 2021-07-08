@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:19:23
+ * @LastEditTime: 2021-07-08 10:39:33
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -568,11 +568,15 @@ export default {
           ]
         }${this.contractObj.dcType}${this.contractObj.dcState}`,
         tempArr = [];
-      if (this.contractObj.isOperate) {
-        for (const key in this.operationAuthorityArr) {
-          if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
-            this.operationAuthorityArr[key].includes(tempNo) &&
+      // 同一合同对象里有最新的合同之后，旧合同不应该再有其他功能可操作（除付款记录）
+      for (const key in this.operationAuthorityArr) {
+        if (Object.hasOwnProperty.call(this.operationAuthorityArr, key)) {
+          if (this.operationAuthorityArr[key].includes(tempNo)) {
+            if (key == "付款记录") {
               tempArr.push(key);
+            } else {
+              this.contractObj.isOperate && tempArr.push(key);
+            }
           }
         }
       }
@@ -590,10 +594,14 @@ export default {
             this.contractObj = tempObj;
             for (const key in tempObj) {
               if (Object.hasOwnProperty.call(tempObj, key)) {
-                if(tempObj[key]==undefined||tempObj[key]==null) {
-                  tempObj[key]="--";
+                if (tempObj[key] == undefined || tempObj[key] == null) {
+                  tempObj[key] = "--";
                 }
               }
+            }
+            let tempBaseInfoArr = [];
+            if(tempObj.dcState==-1) {
+              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.stopReason })
             }
             this.detailArr = [
               {
@@ -607,7 +615,9 @@ export default {
                   { label: "合同结束日期", value: tempObj.endDate },
                   { label: "门体归属权", value: tempObj.ownership },
                   { label: "合同媒体数", value: tempObj.mediaCnt },
-                  { label: "合同备注", value: tempObj.remark||"--" },
+                  { label: "合同签约日期", value: tempObj.signDate },
+                  ...tempBaseInfoArr,
+                  { label: "合同备注", value: tempObj.remark || "--" },
                 ],
               },
               {
@@ -621,7 +631,7 @@ export default {
                   },
                   { label: "赠送IC卡", value: tempObj.freeICCardCnt },
                   { label: "赠送ID卡", value: tempObj.freeIDCardCnt },
-                  {label: "赠送护栏", value: tempObj.freeGuardrailCnt},
+                  { label: "赠送护栏", value: tempObj.freeGuardrailCnt },
                   { label: "赠送三辊闸", value: tempObj.freeTRGateCnt },
                   { label: "赠送翼闸", value: tempObj.freeWingGateCnt },
                 ],

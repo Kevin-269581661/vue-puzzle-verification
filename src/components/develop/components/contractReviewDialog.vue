@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 21:27:07
+ * @LastEditTime: 2021-07-08 10:40:13
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -138,6 +138,10 @@ export default {
                 }
               }
             }
+            let tempBaseInfoArr = [];
+            if(tempObj.dcState==-1) {
+              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.stopReason })
+            }
             this.detailArr = [
               {
                 title: "基本信息",
@@ -150,6 +154,8 @@ export default {
                   { label: "合同结束日期", value: tempObj.endDate },
                   { label: "门体归属权", value: tempObj.ownership },
                   { label: "合同媒体数", value: tempObj.mediaCnt },
+                  { label: "合同签约日期", value: tempObj.signDate },
+                  ...tempBaseInfoArr,
                   { label: "合同备注", value: tempObj.remark||"--" },
                 ],
               },

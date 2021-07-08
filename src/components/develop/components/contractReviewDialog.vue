@@ -140,7 +140,7 @@ export default {
             }
             let tempBaseInfoArr = [];
             if(tempObj.dcState==-1) {
-              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.stopReason })
+              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.failReason })
             }
             this.detailArr = [
               {

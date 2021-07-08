@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-03 16:33:37
+ * @LastEditTime: 2021-07-08 17:16:43
  * @FilePath: /frontend/src/components/develop/components/warnCfg.vue
 -->
 <template>
@@ -91,6 +91,7 @@ export default {
           content: "合同即将到期",
           warnTxt: "距合同到期日期剩余",
           dayCnt: "--",
+          tempDayCnt: "",
           timeUnit: "天",
           operate: false,
         },
@@ -99,6 +100,7 @@ export default {
           content: "场地费待支付",
           warnTxt: "距场地费待支付剩余",
           dayCnt: "--",
+          tempDayCnt: "",
           timeUnit: "天",
           operate: false,
         },
@@ -107,6 +109,7 @@ export default {
           content: "开发费待支付",
           warnTxt: "距开发费待支付剩余",
           dayCnt: "--",
+          tempDayCnt: "",
           timeUnit: "天",
           operate: false,
         },

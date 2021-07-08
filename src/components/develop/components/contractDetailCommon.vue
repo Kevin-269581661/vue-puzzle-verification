@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 10:39:33
+ * @LastEditTime: 2021-07-08 16:23:33
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -601,7 +601,7 @@ export default {
             }
             let tempBaseInfoArr = [];
             if(tempObj.dcState==-1) {
-              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.stopReason })
+              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.failReason })
             }
             this.detailArr = [
               {

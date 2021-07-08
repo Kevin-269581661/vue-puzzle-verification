@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 14:04:07
+ * @LastEditTime: 2021-07-08 17:20:53
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -907,6 +907,7 @@ export default {
   .board1 {
     .info-item {
       display: flex;
+      align-items: center;
       margin-top: 4px;
       color: rgba(0, 0, 0, 0.85);
       .active {

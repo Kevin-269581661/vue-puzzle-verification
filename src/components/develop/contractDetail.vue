@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 15:26:06
+ * @LastEditTime: 2021-07-08 17:48:01
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -32,10 +32,12 @@
         <el-tab-pane
           v-for="(item, index) in originDataList"
           :key="index"
-          :label="item.originName || '待定'"
           :name="item.poriginID + ''"
           class="custom-tabs__content"
         >
+          <el-tooltip slot="label" :content="item.originName || '待定'" placement="top" effect="light">
+            <span class="custom-tab-laber">{{ item.originName || "待定" }}</span>
+          </el-tooltip>
           <el-container>
             <el-aside width="200px">
               <el-menu default-active="0">
@@ -59,7 +61,10 @@
               </el-menu>
             </el-aside>
             <el-main>
-              <contractDetailCommon :dcID="currentDcID" @refresh="getContractDetailList"></contractDetailCommon>
+              <contractDetailCommon
+                :dcID="currentDcID"
+                @refresh="getContractDetailList"
+              ></contractDetailCommon>
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -117,8 +122,8 @@ export default {
             let detailObj = res.data.data;
             for (const key in detailObj) {
               if (Object.hasOwnProperty.call(detailObj, key)) {
-                if(detailObj[key]==undefined||detailObj[key]==null) {
-                  detailObj[key]="--";
+                if (detailObj[key] == undefined || detailObj[key] == null) {
+                  detailObj[key] = "--";
                 }
               }
             }
@@ -137,7 +142,8 @@ export default {
               { label: "总安装媒体数", value: detailObj.totalInstallMediaCnt },
               {
                 label: "总付款金额",
-                value: "¥" + commaFormat.init(Math.floor(detailObj.payTotal / 100)),
+                value:
+                  "¥" + commaFormat.init(Math.floor(detailObj.payTotal / 100)),
               },
             ];
             this.originDataList = detailObj.originDataList || [];
@@ -229,25 +235,23 @@ export default {
       box-shadow: unset;
     }
     .custom-tabs__content {
-      margin: 0 20px;
+      // margin: 0 20px;
     }
     /deep/ .el-tabs__nav-scroll {
-      padding-left: 44px;
+      // padding-left: 44px;
       font-size: 16px;
       font-weight: 500;
       color: #1890ff;
       .el-tabs__item {
-        &.is-top {
-          height: 50px;
-          line-height: 50px;
+        padding: 0 30px;
+        .custom-tab-laber {
+          height: 34px;
+          line-height: 34px;
           max-width: 156px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
           display: inline-block;
-        }
-        &.is-active {
-          // background-color: #fff;
         }
       }
     }

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 15:43:09
+ * @LastEditTime: 2021-07-08 16:21:38
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -714,8 +714,10 @@ export default {
       this.loading = true;
       api
         .getApi(
-          "/addsp/devContract/installMediaList?resID=" +
-            this.currentContract.resID
+          "/addsp/devContract/installMediaList", {
+            resID: this.currentContract.resID,
+            excludeDcID: this.currentContract.id
+          }
         )
         .then((res) => {
           if (res.data.SysCode == 200200) {

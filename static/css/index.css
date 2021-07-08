@@ -151,14 +151,14 @@ body .el-table colgroup.gutter {
 
 /* tab切换样式有框框覆盖 */
 .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
-    background-color: transparent;
-    border: none;
+    /* background-color: transparent;
+    border: none; */
 }
 .el-tabs--border-card>.el-tabs__header .el-tabs__item{
-    border: none;
+    /* border: none; */
 }
 .el-tabs__item:focus.is-active.is-focus:not(:active){
-    box-shadow: none;
+    /* box-shadow: none; */
 }
 
 /*滚动条*/

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 20:47:09
+ * @LastEditTime: 2021-07-08 14:04:07
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -17,7 +17,7 @@
     >
       <div v-loading="loading">
         <div class="board board1">
-          <el-timeline class="info-list">
+          <el-timeline v-if="payLogArr.length" class="info-list">
             <el-timeline-item
               v-for="(logItem, index) in payLogArr"
               :key="index"
@@ -26,11 +26,6 @@
             >
               <div class="log-top">
                 <span class="log-top__timestamp">{{ logItem.updateTime }}</span>
-                <!-- <img
-                  class="pay-status"
-                  src="../../../assets/images/develop/statusDanger.png"
-                  alt=""
-                /> -->
                 <span
                   :class="{ 'pay-status': true }"
                   :style="{
@@ -205,6 +200,9 @@
               </div>
             </el-timeline-item>
           </el-timeline>
+          <div v-else class="empty-log">
+            <no-search-result></no-search-result>
+          </div>
         </div>
       </div>
       <span slot="footer">
@@ -268,6 +266,7 @@
           >
             <el-option label="场地费" :value="1"></el-option>
             <el-option label="开发费" :value="2"></el-option>
+            <el-option label="其它" :value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -297,7 +296,7 @@
           :label-width="formLabelWidth"
         >
           <el-input
-            placeholder="请输入付款金额"
+            :placeholder="feePlaceHolder"
             v-model.number="payApplyForm.actualPayTotal"
             size="small"
             maxlength="7"
@@ -401,9 +400,14 @@ import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "../../../components/common/components/dialogTable.vue";
 import finishPay from "./finishPay.vue";
+import noSearchResult from "../../../components/common/components/noSearchResult.vue";
 export default {
   name: "paylog",
   props: {
+    currentContract: {
+      type: Object,
+      default: () => {},
+    },
     payLogDialogVisible: {
       type: Boolean,
       default: () => false,
@@ -412,14 +416,11 @@ export default {
       type: Boolean,
       default: () => false,
     },
-    currentContract: {
-      type: Object,
-      default: () => {},
-    },
   },
   components: {
     dialogTable,
     finishPay,
+    noSearchResult,
   },
   data() {
     return {
@@ -432,7 +433,7 @@ export default {
         payType: 1,
         finishYear: "",
         planPayTotal: 0,
-        actualPayTotal: 0,
+        actualPayTotal: "",
         bankAccount: "",
         bankName: "",
         remark: "",
@@ -448,10 +449,12 @@ export default {
           { required: true, message: "付款金额不能为空", trigger: "blur" },
           { type: "number", message: "必须为数字值", trigger: "blur" },
         ],
+        bankAccount: [
+          { pattern: /^[\da-zA-Z]{1,}$/, message: '请输入数字或英文字母', trigger: "blur" },
+        ]
       },
       payApplyFileList: [],
       sessionData: null,
-      loading: false,
       finishPayVisible: false,
       currentLogItem: {},
       payState: {
@@ -461,6 +464,7 @@ export default {
         2: { label: "待开票", color: "#FAAD14" },
         3: { label: "已完成", color: "#CDD4DA" },
       },
+      feePlaceHolder: "请输入付款金额",
     };
   },
   watch: {
@@ -470,12 +474,37 @@ export default {
         newVal && this.getPayRecordList();
       },
     },
+    "payApplyForm.payType": {
+      handler(newPayType) {
+        this.payTypeChange(newPayType);
+      },
+      // immediate: true,
+    },
+    currentContract: {
+      handler(newContract) {
+        this.payTypeChange(this.payApplyForm.payType);
+      },
+      immediate: true,
+    },
   },
   created() {
     this.sessionData = sessFun.getSess();
   },
   mounted() {},
   methods: {
+    // 支付款项改变时触发
+    payTypeChange(newPayType) {
+      // 应付金额
+      let tempFee =
+        this.currentContract[["venueFee", "devFee"][newPayType - 1]];
+      if (tempFee !== null && tempFee !== undefined) {
+        this.feePlaceHolder = `应付金额：${Math.floor(tempFee / 100)}`;
+        // this.payApplyForm.actualPayTotal = Math.floor(tempFee / 100);
+      } else {
+        // this.payApplyForm.actualPayTotal = 0;
+        this.feePlaceHolder = "请输入付款金额";
+      }
+    },
     // 付款年份限制
     disabledDate(time) {
       if (this.currentContract.startDate && this.currentContract.endDate) {
@@ -580,11 +609,16 @@ export default {
           params.actualPayTotal = params.actualPayTotal * 100;
           api
             .postApi("/addsp/devContract/createPayRecord", params)
-            .then((res) => {
+            .then(async (res) => {
               if (res.data.SysCode == 200200) {
+                this.resetPayApply(() => {
+                  this.$emit("update:payApplyVisible", false);
+                });
+                // 重新申请需要手动更改状态
+                if (this.payApplyForm.id) {
+                  await this.changePayState(1);
+                }
                 this.$emit("refreshList");
-                this.resetPayApply();
-                this.$emit("update:payApplyVisible", false);
               } else {
                 this.$message.warning(res.data.MSG || "");
               }
@@ -598,7 +632,7 @@ export default {
       });
     },
     // 重新申请付款
-    reApplyPayFun() {
+    reApplyPayFun(logItem) {
       console.log("重新申请付款", logItem);
       let {
         id,
@@ -613,13 +647,14 @@ export default {
       this.payApplyForm = {
         id,
         payType,
-        finishYear,
+        finishYear: finishYear + "",
         planPayTotal,
-        actualPayTotal,
+        actualPayTotal: Math.floor(actualPayTotal / 100),
         bankAccount,
         bankName,
         remark,
       };
+      this.currentLogItem = logItem;
       this.$emit("update:payApplyVisible", true);
     },
     // 完成付款
@@ -629,18 +664,8 @@ export default {
     },
     // 完成开票
     finishReceipt(logItem) {
-      api
-        .postApi("/addsp/devContract/changePayState", {
-          dcpID: logItem.id,
-          passState: 1,
-        })
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.getPayRecordList();
-          } else {
-            this.$message.warning(res.data.MSG || "完成开票失败！");
-          }
-        });
+      this.currentLogItem = logItem;
+      this.changePayState(1);
     },
     // 通过审核弹框
     agreeFun(logItem) {
@@ -666,13 +691,22 @@ export default {
           return;
         }
       }
-      api.postApi("/addsp/devContract/changePayState", params).then((res) => {
-        if (res.data.SysCode == 200200) {
-          this.reasonVisible = false;
-          this.getPayRecordList();
-        } else {
-          this.$message.warning(res.data.MSG || "审核失败！");
-        }
+      return new Promise((resolve) => {
+        api
+          .postApi("/addsp/devContract/changePayState", params)
+          .then((res) => {
+            if (res.data.SysCode == 200200) {
+              this.reasonVisible && (this.reasonVisible = false);
+              this.getPayRecordList();
+              resolve(true);
+            } else {
+              this.$message.warning(res.data.MSG || "操作失败！");
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resolve(false);
+          });
       });
     },
     // 获取付款记录
@@ -854,6 +888,10 @@ export default {
       margin-left: auto;
     }
   }
+  .el-dialog__body {
+    max-height: 500px !important;
+    overflow: auto !important;
+  }
   .el-dialog__footer {
     .el-button + .el-button {
       margin-left: 10px;
@@ -866,34 +904,43 @@ export default {
       border-top: 1px solid rgba(233, 233, 233, 1);
     }
   }
-  .board1 .info-item {
-    display: flex;
-    margin-top: 4px;
-    color: rgba(0, 0, 0, 0.85);
-    .active {
-      color: rgba(24, 144, 255, 1);
-      cursor: pointer;
-    }
-    .item-label {
-      white-space: nowrap;
-    }
-    .item-content {
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 22px;
-      &.ellipsis {
-        width: 270px;
-        display: inline-block;
-        vertical-align: text-bottom;
-        overflow: hidden;
-      }
-      .copy-img {
-        width: 16px;
-        height: 16px;
-        vertical-align: middle;
+  .board1 {
+    .info-item {
+      display: flex;
+      margin-top: 4px;
+      color: rgba(0, 0, 0, 0.85);
+      .active {
+        color: rgba(24, 144, 255, 1);
         cursor: pointer;
       }
+      .item-label {
+        white-space: nowrap;
+      }
+      .item-content {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 22px;
+        &.ellipsis {
+          width: 270px;
+          display: inline-block;
+          vertical-align: text-bottom;
+          overflow: hidden;
+        }
+        .copy-img {
+          width: 16px;
+          height: 16px;
+          vertical-align: middle;
+          cursor: pointer;
+        }
+      }
+    }
+    .empty-log {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 100px;
+      text-align: center;
     }
   }
   .append-box {

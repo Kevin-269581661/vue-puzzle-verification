@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:21:20
+ * @LastEditTime: 2021-07-08 11:20:41
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -22,6 +22,7 @@
               placeholder="请输入合同编号"
               v-model.trim="signContractForm.contractNo"
               size="small"
+              :disabled="currentContract.dcType==3"
             >
             </el-input>
           </el-form-item>
@@ -70,7 +71,9 @@ export default {
   },
   watch: {
     currentContract(val) {
-      
+      if(val.contractNo && val.dcType==3) {
+        this.signContractForm.contractNo = val.contractNo;
+      }
     }
   },
   mounted() {},

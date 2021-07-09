@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 18:35:50
+ * @LastEditTime: 2021-07-09 10:13:32
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -520,12 +520,45 @@ export default {
     },
     // 下载附件
     downloadFile(item) {
-      var a = document.createElement("a");
-      a.download = item.fileName;
-      a.href = item.fileUrl;
-      $("body").append(a);
-      a.click();
-      $(a).remove();
+      let fileFormat = item.fileName.split(".").pop();
+      if (
+        [
+          "png",
+          "jpg",
+          "jpeg",
+          "bmp",
+          "gif",
+          "webp",
+          "psd",
+          "svg",
+          "tiff",
+        ].includes(fileFormat)
+      ) {
+        // 图片下载
+        let image = new Image();
+        image.setAttribute("crossOrigin", "anonymous");
+        image.onload = function () {
+          let canvas = document.createElement("canvas");
+          canvas.width = image.width;
+          canvas.height = image.height;
+          let context = canvas.getContext("2d");
+          context.drawImage(image, 0, 0, image.width, image.height);
+          let url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+          let a = document.createElement("a"); // 生成一个a元素
+          let event = new MouseEvent("click"); // 创建一个单击事件
+          a.download = item.fileName; // 设置图片名称
+          a.href = url; // 将生成的URL设置为a.href属性
+          a.dispatchEvent(event); // 触发a的单击事件
+        };
+        image.src = item.fileUrl;
+      } else {
+        var a = document.createElement("a");
+        a.download = item.fileName;
+        a.href = item.fileUrl;
+        document.body.appendChild(a);
+        a.click(); //点击下载
+        document.body.removeChild(a); //下载完成移除元素
+      }
     },
     fileChange(file, fileList) {
       if (file.size <= 10 * 1024 * 1024) {

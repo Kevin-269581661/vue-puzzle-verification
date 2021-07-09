@@ -124,6 +124,18 @@ export default {
           label: "订单通知",
           value: 2,
         },
+        {
+          label: "合同通知",
+          value: 3,
+        },
+        {
+          label: "付款通知",
+          value: 4,
+        },
+        {
+          label: "装门通知",
+          value: 5,
+        },
       ],
       messageList: [],
       // system:'http://192.168.1.239:8021/system/message',

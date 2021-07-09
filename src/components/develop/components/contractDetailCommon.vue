@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 15:12:12
+ * @LastEditTime: 2021-07-09 18:11:11
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -447,7 +447,6 @@ export default {
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            // this.getContractDetail();
             this.$emit("refresh");
             this.deleteContractVisible = false;
             this.$message.success(res.data.MSG || "合同删除成功！");

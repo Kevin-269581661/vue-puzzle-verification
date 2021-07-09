@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 15:27:34
+ * @LastEditTime: 2021-07-09 18:31:59
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -141,13 +141,13 @@
               <li class="info-item">
                 <span class="item-label">应付金额：</span>
                 <span class="item-content">
-                  {{ (logItem.planPayTotal / 100) | moneyFormat("¥") }}
+                  {{ (logItem.planPayTotal / 100) | moneyFormat("¥", 0) }}
                 </span>
               </li>
               <li class="info-item">
                 <span class="item-label">实付金额：</span>
                 <span class="item-content">
-                  {{ (logItem.actualPayTotal / 100) | moneyFormat("¥") }}
+                  {{ (logItem.actualPayTotal / 100) | moneyFormat("¥", 0) }}
                 </span>
               </li>
               <li class="info-item">
@@ -296,7 +296,7 @@
           :label-width="formLabelWidth"
         >
           <el-input
-            :placeholder="feePlaceHolder"
+            :placeholder="payApplyForm.payType==3?'请输入付款金额':`应付金额：${payApplyForm.planPayTotal}`"
             v-model.number="payApplyForm.actualPayTotal"
             size="small"
             maxlength="7"
@@ -467,8 +467,7 @@ export default {
         1: { label: "待付款", color: "#FAAD14" },
         2: { label: "待开票", color: "#FAAD14" },
         3: { label: "已完成", color: "#CDD4DA" },
-      },
-      feePlaceHolder: "请输入付款金额",
+      }
     };
   },
   watch: {
@@ -509,15 +508,12 @@ export default {
           this.currentContract.mediaCnt
         ) {
           // 场地费(元/门/年)
-          this.feePlaceHolder = `应付金额：${Number(
+          this.payApplyForm.planPayTotal = Number(
             (tempFee * this.currentContract.mediaCnt) / 100
-          ).toFixed(0)}`;
+          ).toFixed(0);
         } else {
-          this.feePlaceHolder = `应付金额：${Number(tempFee / 100).toFixed(0)}`;
+          this.payApplyForm.planPayTotal = Number(tempFee / 100).toFixed(0);
         }
-      } else {
-        // 其它费用
-        this.feePlaceHolder = "请输入付款金额";
       }
     },
     // 付款年份限制
@@ -655,6 +651,7 @@ export default {
             fileIDs,
           };
           params.actualPayTotal = params.actualPayTotal * 100;
+          params.planPayTotal = params.planPayTotal * 100;
           api
             .postApi("/addsp/devContract/createPayRecord", params)
             .then(async (res) => {
@@ -697,7 +694,7 @@ export default {
         payType,
         finishYear: finishYear + "",
         planPayTotal,
-        actualPayTotal: Math.floor(actualPayTotal / 100),
+        actualPayTotal: Number(actualPayTotal / 100).toFixed(0),
         bankAccount,
         bankName,
         remark,

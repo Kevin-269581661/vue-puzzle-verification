@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 22:32:16
+ * @LastEditTime: 2021-07-09 14:03:36
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -73,6 +73,7 @@
             </el-aside>
             <el-main>
               <contractDetailCommon
+                v-if="item.poriginID==activeTabName"
                 :dcID="currentDcID"
                 @refresh="getContractDetailList"
               ></contractDetailCommon>

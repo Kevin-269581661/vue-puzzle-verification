@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 11:37:10
+ * @LastEditTime: 2021-07-09 14:09:52
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -471,82 +471,16 @@ export default {
     };
   },
   watch: {
-    /* correlateMediaMode: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        console.log("addMediaVisible", newVal);
-        newVal && this.getMediaList();
-        // newVal && this.getMediaList();
-      },
-    }, */
+    newMediaVisible(val) {
+      if(val) {
+        this.getADLimit();
+      }
+    }
   },
   created() {
     this.sessionData = sessFun.getSess();
   },
-  mounted() {
-    this.getADLimit();
-  },
   methods: {
-    //资产编号校验去重
-    /* validateAssetTag(rule, value, callback) {
-      console.log("_________资产编号是否重复_________", value);
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "GetMediaResInfo",
-        data: {
-          assetTag: value,
-          asrId: this.sessionData.asrID,
-        },
-      };
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        if (res.data.SysCode == 200200) {
-          let resData = res.data.data;
-          if (resData.length) {
-            let flag = this.filterAssetId(resData, value);
-            if (flag) {
-              callback(new Error(" "));
-            } else {
-              callback();
-            }
-          } else {
-            let number = this.filterlocalAssetId(resData, value);
-            if (number >= 2) {
-              callback(new Error("这个资产编号已在该小区内存在!"));
-            } else {
-              callback();
-            }
-          }
-        } else {
-          this.$message.warning(res.data.MSG || "");
-        }
-      });
-    }, */
-    // 接口返回为空时校验当前是否有重复的
-    /* filterlocalAssetId(resData, value) {
-      let num = 0;
-      for (let key of this.arrMedia) {
-        if (key.assetId === value) {
-          key.isAssetIdError = false;
-          num++;
-        }
-      }
-      return num;
-    }, */
-    // 判断同资源下资产编号是否重复
-    /* filterAssetId(resData, value) {
-      let adDoor = false;
-      for (let key of this.arrMedia) {
-        if (key.assetId === value) {
-          adDoor = true;
-        }
-      }
-      if (adDoor) {
-        return true;
-      } else {
-        return false;
-      }
-    }, */
     // 批量创建媒体
     creadMediaFun() {
       let resID = this.currentContract.resID,
@@ -743,10 +677,6 @@ export default {
         .finally((res) => {
           this.loading = false;
         });
-    },
-
-    handleClose(done) {
-      this.newMediaVisible = false;
     },
   },
 };

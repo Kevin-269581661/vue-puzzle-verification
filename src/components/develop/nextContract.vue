@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-07 22:57:48
+ * @LastEditTime: 2021-07-09 17:44:21
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -100,7 +100,11 @@ export default {
       },
       handleType: 0,
       sessionData: JSON.parse(sessionStorage.getItem("session_data")),
-      resFormData: {},
+      resFormData: {
+        resID: "",
+        resName: "",
+        pmcName: "",
+      },
 
       activeStep: 1,
       componentName: "contractInput",
@@ -117,9 +121,9 @@ export default {
     let queryParams = this.$route.query || {};
     // 1-续签 2-补充 3-加门
     this.handleType = queryParams.handleType;
-    this.resFormData.resName = queryParams.resName;
-    this.resFormData.pmcName = queryParams.pmcName;
-    this.resID = queryParams.resID;
+    // this.resFormData.resName = queryParams.resName;
+    // this.resFormData.pmcName = queryParams.pmcName;
+    // this.resID = queryParams.resID;
     this.dcID = queryParams.dcID + "";
     this.originID = queryParams.originID + "";
     this.editFlag = queryParams.edit;

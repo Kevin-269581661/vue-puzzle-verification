@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 10:18:21
+ * @LastEditTime: 2021-07-09 15:27:34
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -450,8 +450,12 @@ export default {
           { type: "number", message: "必须为数字值", trigger: "blur" },
         ],
         bankAccount: [
-          { pattern: /^[\da-zA-Z]{1,}$/, message: '请输入数字或英文字母', trigger: "blur" },
-        ]
+          {
+            pattern: /^[\da-zA-Z]{1,}$/,
+            message: "请输入数字或英文字母",
+            trigger: "blur",
+          },
+        ],
       },
       payApplyFileList: [],
       sessionData: null,
@@ -494,14 +498,25 @@ export default {
   methods: {
     // 支付款项改变时触发
     payTypeChange(newPayType) {
-      // 应付金额
-      let tempFee =
-        this.currentContract[["venueFee", "devFee"][newPayType - 1]];
+      // 支付款项
+      let payType = ["venueFee", "devFee"][newPayType - 1],
+        // 应付金额
+        tempFee = this.currentContract[payType];
       if (tempFee !== null && tempFee !== undefined) {
-        this.feePlaceHolder = `应付金额：${Math.floor(tempFee / 100)}`;
-        // this.payApplyForm.actualPayTotal = Math.floor(tempFee / 100);
+        if (
+          newPayType == 1 &&
+          this.currentContract.venuePayType == "按装门数付款" &&
+          this.currentContract.mediaCnt
+        ) {
+          // 场地费(元/门/年)
+          this.feePlaceHolder = `应付金额：${Number(
+            (tempFee * this.currentContract.mediaCnt) / 100
+          ).toFixed(0)}`;
+        } else {
+          this.feePlaceHolder = `应付金额：${Number(tempFee / 100).toFixed(0)}`;
+        }
       } else {
-        // this.payApplyForm.actualPayTotal = 0;
+        // 其它费用
         this.feePlaceHolder = "请输入付款金额";
       }
     },
@@ -1008,6 +1023,9 @@ export default {
         margin-left: 6px;
         font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       &:hover {
         background: rgba(0, 0, 0, 0.04);
@@ -1070,7 +1088,7 @@ export default {
   }
   .el-dialog__header {
     padding: 16px 24px;
-    border-bottom: unset;
+    border-bottom: unset !important;
     .el-dialog__title {
       font-size: 16px;
       font-weight: 600;
@@ -1080,7 +1098,7 @@ export default {
   }
   .el-dialog__body {
     padding: 0 24px;
-    border-bottom: unset;
+    border-bottom: unset !important;
   }
   .el-dialog__footer {
     padding: 8px 24px 24px;

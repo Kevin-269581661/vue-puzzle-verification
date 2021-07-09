@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 10:51:30
+ * @LastEditTime: 2021-07-09 17:48:17
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -25,14 +25,18 @@
               ></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
-                  <el-form-item label="资源名称" prop="resName">
+                  <el-form-item label="资源名称">
                     <el-input v-model="resFormData.resName" disabled>
                     </el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="物业公司" prop="pmcName">
-                    <el-input v-model="resFormData.pmcName" disabled></el-input>
+                  <el-form-item label="物业公司" :required="handleType==1">
+                    <el-input
+                      v-model="resFormData.pmcName"
+                      placeholder="物业公司单位名称"
+                      :disabled="handleType > 1"
+                    ></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -102,7 +106,7 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
-                <el-col v-if="handleType == 0 || handleType == 2" :span="6">
+                <!-- <el-col v-if="handleType == 0 || handleType == 2" :span="6">
                   <el-form-item label="合同媒体数量" prop="mediaNewCnt">
                     <el-input-number
                       v-model="contractForm.mediaNewCnt"
@@ -114,41 +118,41 @@
                       :precision="0"
                     ></el-input-number>
                   </el-form-item>
+                </el-col> -->
+                <!-- <template v-else> -->
+                <el-col :span="6">
+                  <el-form-item label="新增媒体数量" prop="mediaNewCnt">
+                    <el-input-number
+                      v-model="contractForm.mediaNewCnt"
+                      controls-position="right"
+                      placeholder="请输入合同媒体数量"
+                      @blur="blurFun('mediaNewCnt')"
+                      :min="0"
+                      :max="999"
+                      :precision="0"
+                    ></el-input-number>
+                  </el-form-item>
                 </el-col>
-                <template v-else>
-                  <el-col :span="6">
-                    <el-form-item label="新增媒体数量" prop="mediaNewCnt">
-                      <el-input-number
-                        v-model="contractForm.mediaNewCnt"
-                        controls-position="right"
-                        placeholder="请输入合同媒体数量"
-                        @blur="blurFun('mediaNewCnt')"
-                        :min="0"
-                        :max="999"
-                        :precision="0"
-                      ></el-input-number>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-form-item label="拆除媒体" prop="demolishMediaIDs">
-                      <el-select
-                        size="small"
-                        placeholder="请选择要拆除媒体"
-                        multiple=""
-                        v-model="contractForm.demolishMediaIDs"
-                        @blur="blurFun('demolishMediaIDs')"
+                <el-col v-if="handleType == 1 || handleType == 3" :span="6">
+                  <el-form-item label="拆除媒体" prop="demolishMediaIDs">
+                    <el-select
+                      size="small"
+                      placeholder="请选择要拆除媒体"
+                      multiple=""
+                      v-model="contractForm.demolishMediaIDs"
+                      @blur="blurFun('demolishMediaIDs')"
+                    >
+                      <el-option
+                        v-for="item in demolishMediaList"
+                        :key="item.mID"
+                        :label="item.mTitle"
+                        :value="item.mID"
                       >
-                        <el-option
-                          v-for="item in demolishMediaList"
-                          :key="item.mID"
-                          :label="item.mTitle"
-                          :value="item.mID"
-                        >
-                        </el-option>
-                      </el-select>
-                    </el-form-item>
-                  </el-col>
-                </template>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <!-- </template> -->
                 <el-col :span="6">
                   <el-form-item label="到期门体归属权" prop="ownership">
                     <el-select
@@ -456,7 +460,11 @@ export default {
   props: {
     resFormData: {
       type: Object,
-      default: () => {},
+      default: {
+        resID: "",
+        resName: "",
+        pmcName: "",
+      },
     },
     handleType: {
       type: [Number, String],
@@ -644,7 +652,13 @@ export default {
             trigger: "change",
           },
         ],
-        devFee: [{ required: true, message: "请输入开发费!", trigger: "blur" }],
+        devFee: [
+          { required: true, message: "请输入开发费!", trigger: "blur" },
+          {
+            validator: validatePrice,
+            trigger: ["change", "blur"],
+          },
+        ],
         devDate: [
           {
             required: true,
@@ -658,7 +672,6 @@ export default {
       PathHaveEdit: false, // 新建/编辑
       doUpload: this.apiVar.qadnUrl + "/advertisement/UpLoad",
 
-      Editloading: true, // 提交时的loading
       resData: { resID: "" }, // 创建资源成功，保存返回来的数据
       sessionData: sessFun.getSess(),
       submitBtnIsAble: false, // 防止多次点击
@@ -744,15 +757,23 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             const tempResultObj = res.data.data || {};
+            Object.assign(this.additional, {
+              id: tempResultObj.id,
+              // 补充协议保留原合同编号
+              contractNo: tempResultObj.contractNo,
+            });
+            this.resFormData.resName = tempResultObj.resName || "";
+            this.resFormData.resID = tempResultObj.resID || "";
             if (this.handleType >= 0) {
               this.resFormData.pmcName = tempResultObj.pmcName || "";
             }
-            this.resFormData.resName = tempResultObj.resName || "";
-            this.resFormData.resID = tempResultObj.resID || "";
-            Object.assign(this.additional, {
-              id: tempResultObj.id,
-              contractNo: tempResultObj.contractNo,
-            });
+            if (this.handleType == 2) {
+              // 加门合同只保留部分信息
+              this.contractForm.contactsName = tempResultObj.contactsName || "";
+              this.contractForm.contactsPhone =
+                tempResultObj.contactsPhone || "";
+              return;
+            }
             for (const key in this.contractForm) {
               let tempValue = tempResultObj[key];
               if (
@@ -844,7 +865,11 @@ export default {
       this.fileList = fileList;
     },
     // 手动上传文件
-    submitUpload() {
+    async submitUpload() {
+      // 续签时可以编辑物业名称
+      if (this.handleType == 1) {
+        await this.postEditMsg();
+      }
       console.log("手动上传文件--");
       if (this.fileList.every((item) => item.id)) {
         this.$emit(
@@ -866,6 +891,47 @@ export default {
         } else {
           console.log("校验不通过");
         }
+      });
+    },
+    // 修改资源
+    postEditMsg() {
+      if(!this.resFormData.pmcName) {
+        this.$message.warning("请输入物业公司单位名称！");
+        return;
+      }
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "SetResCT",
+        data: {
+          resid: this.resFormData.resID,
+          pmc: this.resFormData.pmcName || "",
+        },
+      };
+      return new Promise((resolve) => {
+        let resLoading = this.$loading({
+          lock: true,
+          text: "资源修改中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        api
+          .postApi_new(this.apiVar.Media, params)
+          .then((res) => {
+            console.log("修改资源信息", res);
+            if (res.data.SysCode == 200200) {
+              resLoading.close();
+              resolve(true);
+            } else {
+              this.$message.warning("资源保存失败！");
+              resLoading.close();
+              resolve(false);
+            }
+          })
+          .catch((error) => {
+            resLoading.close();
+            resolve(false);
+          });
       });
     },
     // 资源图片上传前验证格式和大小

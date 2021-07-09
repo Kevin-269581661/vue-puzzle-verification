@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 12:05:15
+ * @LastEditTime: 2021-07-09 15:12:12
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -947,6 +947,7 @@ export default {
     color: rgba(0, 0, 0, 0.65);
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
   &:hover {
     background: rgba(0, 0, 0, 0.04);

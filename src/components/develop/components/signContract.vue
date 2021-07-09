@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 12:08:15
+ * @LastEditTime: 2021-07-09 14:29:50
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -16,7 +16,7 @@
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper custom-confirm-dialog"
     >
-        <el-form v-model="signContractForm" label-width="70px" class="content-form">
+        <el-form :model="signContractForm" ref="signForm" label-width="70px" class="content-form">
           <el-form-item label="合同编号：" prop="contractNo">
             <el-input
               placeholder="请输入合同编号"
@@ -63,18 +63,17 @@ export default {
     return {
       // 签约表单数据
       signContractForm: {
-        passState: 1,
         signDate: undefined,
         contractNo: ""
       },
     };
   },
   watch: {
-    currentContract(val) {
-      if(val.contractNo && val.dcType==3) {
-        this.signContractForm.contractNo = val.contractNo;
+    signVisible(val) {
+      if(val) {
+        this.currentContract.contractNo && this.currentContract.dcType==3 && (this.signContractForm.contractNo = this.currentContract.contractNo);
       } else {
-        this.signContractForm.contractNo = ""
+        this.$refs.signForm.resetFields();
       }
     }
   },
@@ -87,6 +86,7 @@ export default {
         api
         .postApi("/addsp/devContract/changeDCState", {
           ...this.signContractForm,
+          passState: 1,
           dcID: this.currentContract.id
         }).then((res) => {
           if (res.data.SysCode == 200200) {

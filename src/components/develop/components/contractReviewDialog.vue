@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 10:13:06
+ * @LastEditTime: 2021-07-09 15:11:57
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -484,6 +484,9 @@ export default {
       margin-left: 6px;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     &:hover {
       background: rgba(0, 0, 0, 0.04);

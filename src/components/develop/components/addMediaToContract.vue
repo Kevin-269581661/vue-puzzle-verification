@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 16:21:38
+ * @LastEditTime: 2021-07-09 11:37:10
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -692,7 +692,7 @@ export default {
     // 媒体状态同步至合同状态
     synDcState() {
       api
-        .postApi("/addsp/devContract/synDcState", {
+        .postApi_json("/addsp/devContract/synDcState", {
           dcID: this.currentContract.id,
           state: 0
         })

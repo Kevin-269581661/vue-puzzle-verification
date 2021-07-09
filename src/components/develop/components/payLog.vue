@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 10:13:32
+ * @LastEditTime: 2021-07-09 10:18:21
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -135,7 +135,7 @@
               <li class="info-item">
                 <span class="item-label">申请人：</span>
                 <span class="item-content">
-                  {{ logItem.createUser || "--" }}
+                  {{ logItem.createUserName || "--" }}
                 </span>
               </li>
               <li class="info-item">

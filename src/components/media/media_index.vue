@@ -280,8 +280,8 @@
                           () => {
                             currentInstallInfo = {
                               assetTag: '',
-                              installUserName: '',
-                              installDate: '',
+                              operater: '',
+                              operateDate: '',
                             };
                             Object.assign(currentInstallInfo, scope.row);
                             installVisible = true;
@@ -303,7 +303,7 @@
                         @confirm="
                           () => {
                             Object.assign(currentInstallInfo, scope.row);
-                            confirmMediaStatus();
+                            uninstallVisible = true;
                           }
                         "
                       >
@@ -502,17 +502,17 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="安装负责人：" prop="installUserName">
+        <el-form-item label="安装负责人：" prop="operater">
           <el-input
             placeholder="请填写安装负责人"
-            v-model.trim="currentInstallInfo.installUserName"
+            v-model.trim="currentInstallInfo.operater"
             size="small"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="安装完成日期：" prop="installDate">
+        <el-form-item label="安装完成日期：" prop="operateDate">
           <el-date-picker
-            v-model="currentInstallInfo.installDate"
+            v-model="currentInstallInfo.operateDate"
             size="small"
             align="right"
             value-format="yyyy-MM-dd"
@@ -525,6 +525,48 @@
       <template slot="footer">
         <el-button @click="installVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmMediaStatus('install')"
+          >确 定</el-button
+        >
+      </template>
+    </el-dialog>
+    <!-- 安装信息 -->
+    <el-dialog
+      title="请完成拆除信息"
+      :visible.sync="uninstallVisible"
+      width="388px"
+      top="22vh"
+      :show-close="false"
+      :close-on-click-modal="false"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    >
+      <el-form
+        v-model="currentInstallInfo"
+        label-width="100px"
+        class="content-form"
+      >
+        <el-form-item label="拆除负责人：" prop="operater">
+          <el-input
+            placeholder="请填写拆除负责人"
+            v-model.trim="currentInstallInfo.operater"
+            size="small"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="拆除完成日期：" prop="operateDate">
+          <el-date-picker
+            v-model="currentInstallInfo.operateDate"
+            size="small"
+            align="right"
+            value-format="yyyy-MM-dd"
+            placeholder="请选择拆除完成日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+
+      <template slot="footer">
+        <el-button @click="uninstallVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmMediaStatus()"
           >确 定</el-button
         >
       </template>
@@ -743,10 +785,11 @@ export default {
       // 安装或拆除媒体切换
       installOrDemolish: "installList",
       installVisible: false,
+      uninstallVisible: false,
       currentInstallInfo: {
         assetTag: "",
-        installUserName: "",
-        installDate: "",
+        operater: "",
+        operateDate: "",
       },
     };
   },
@@ -1225,7 +1268,6 @@ export default {
     },
     // 确认安装或拆除
     confirmMediaStatus(install) {
-      console.log("confirmMediaStatus", this.currentInstallInfo);
       let _this = this;
       let params = {
         uid: this.sessionData.uID,
@@ -1235,25 +1277,27 @@ export default {
           uid: this.sessionData.uID,
           mid: this.currentInstallInfo.mID,
           mstate: install?1:4,
+          // 区分该操作的位置，判断是否校验被合同占用
           source: 0
         },
       };
       if (install) {
-        if(this.currentInstallInfo.installDate&&this.currentInstallInfo.installUserName&&this.currentInstallInfo.assetTag) {
-          params.data.installDate = this.currentInstallInfo.installDate;
-          params.data.installUserName = this.currentInstallInfo.installUserName;
+        if(this.currentInstallInfo.operateDate&&this.currentInstallInfo.operater&&this.currentInstallInfo.assetTag) {
           params.data.assetTag = this.currentInstallInfo.assetTag;
         } else {
-          this.$message.warning("请完善安装信息！")
-          return
+          this.$message.warning("请完善安装信息！");
+          return;
         }
+      } else if(!(this.currentInstallInfo.operateDate&&this.currentInstallInfo.operater)) {
+        this.$message.warning("请完善拆除信息！");
+        return;
       }
       api.postApi_new(this.apiVar.Media, params).then((res) => {
         if (res.data.SysCode === 200200) {
           if (install) {
-            _this.syncDcState(1);
+            _this.syncDcState(1, this.currentInstallInfo);
           } else {
-            _this.syncDcState(0);
+            _this.syncDcState(0, this.currentInstallInfo);
           }
         } else if (
           res.data.SysCode === 200302 ||
@@ -1266,15 +1310,21 @@ export default {
       });
     },
     // 媒体状态同步至合同状态
-    syncDcState(state) {
+    syncDcState(state, currentInstallInfo) {
       api
-        .postApi("/addsp/devContract/synDcState", {
+        .postApi_json("/addsp/devContract/synDcState", {
           dcID: this.currentInstallInfo.dcID,
           state,
+          updateMediaData: {
+            mID: currentInstallInfo.mID,
+            operateDate: currentInstallInfo.operateDate,
+            operater: currentInstallInfo.operater,
+          }
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.installVisible && (this.installVisible = false);
+            this.uninstallVisible && (this.uninstallVisible = false);
             this.getPendingMedia()
             this.$message.success(res.data.MSG || "更改成功！");
           } else {

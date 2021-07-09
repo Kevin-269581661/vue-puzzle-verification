@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 09:39:47
+ * @LastEditTime: 2021-07-09 10:51:30
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -110,7 +110,8 @@
                       placeholder="请输入合同媒体数量"
                       @blur="blurFun('mediaNewCnt')"
                       :min="1"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -123,7 +124,8 @@
                         placeholder="请输入合同媒体数量"
                         @blur="blurFun('mediaNewCnt')"
                         :min="0"
-                        :max="9999"
+                        :max="999"
+                        :precision="0"
                       ></el-input-number>
                     </el-form-item>
                   </el-col>
@@ -177,7 +179,8 @@
                       controls-position="right"
                       placeholder="请输入赠送道闸数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -188,7 +191,8 @@
                       controls-position="right"
                       placeholder="请输入赠送护栏门数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -202,7 +206,8 @@
                       controls-position="right"
                       placeholder="请输入赠送门禁设备数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -213,7 +218,8 @@
                       controls-position="right"
                       placeholder="请输入赠送IC卡数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -224,7 +230,8 @@
                       controls-position="right"
                       placeholder="请输入赠送ID卡数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -235,7 +242,8 @@
                       controls-position="right"
                       placeholder="请输入赠送护栏数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -246,7 +254,8 @@
                       controls-position="right"
                       placeholder="请输入赠送三辊闸数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -257,7 +266,8 @@
                       controls-position="right"
                       placeholder="请输入赠送翼闸数量"
                       :min="0"
-                      :max="9999"
+                      :max="999"
+                      :precision="0"
                     ></el-input-number>
                   </el-form-item>
                 </el-col>
@@ -588,6 +598,7 @@ export default {
         ],
         mediaNewCnt: [
           { required: true, message: "请输入合同媒体数量!", trigger: "blur" },
+          { type: "number", message: "请输入数值!", trigger: "blur" },
         ],
         demolishMediaIDs: [
           {
@@ -733,7 +744,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             const tempResultObj = res.data.data || {};
-            if(this.handleType>=0) {
+            if (this.handleType >= 0) {
               this.resFormData.pmcName = tempResultObj.pmcName || "";
             }
             this.resFormData.resName = tempResultObj.resName || "";

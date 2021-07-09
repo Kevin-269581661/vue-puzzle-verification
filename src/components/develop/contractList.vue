@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 21:46:25
+ * @LastEditTime: 2021-07-09 11:57:19
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -442,7 +442,9 @@
           :key="index"
           :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
           @click="reasonItem.selected = !reasonItem.selected"
-          >{{ reasonItem.label }}</span
+          >
+          <i v-if="reasonItem.label=='其它'" class="el-icon-edit"></i>
+          {{ reasonItem.label }}</span
         >
         <el-input
           class="terminate-input"

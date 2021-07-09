@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 09:48:56
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 11:20:41
+ * @LastEditTime: 2021-07-09 12:08:15
  * @FilePath: /frontend/src/components/develop/components/signContract.vue
 -->
 <template>
@@ -73,6 +73,8 @@ export default {
     currentContract(val) {
       if(val.contractNo && val.dcType==3) {
         this.signContractForm.contractNo = val.contractNo;
+      } else {
+        this.signContractForm.contractNo = ""
       }
     }
   },

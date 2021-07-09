@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 10:00:44
+ * @LastEditTime: 2021-07-09 12:05:15
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -64,9 +64,9 @@
       </el-table-column>
       <el-table-column prop="mType" label="门体类型" width="180">
       </el-table-column>
-      <el-table-column prop="installUserName" label="安装负责人">
+      <el-table-column prop="operater" label="安装/拆除负责人">
       </el-table-column>
-      <el-table-column prop="installDate" label="安装/拆除完成日期">
+      <el-table-column prop="operateDate" label="安装/拆除完成日期">
       </el-table-column>
       <el-table-column prop="mState" label="媒体状态">
         <template slot-scope="scope">
@@ -205,7 +205,9 @@
           :key="index"
           :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
           @click="reasonItem.selected = !reasonItem.selected"
-          >{{ reasonItem.label }}</span
+          >
+          <i v-if="reasonItem.label=='其它'" class="el-icon-edit"></i>
+          {{ reasonItem.label }}</span
         >
         <el-input
           class="terminate-input"
@@ -377,12 +379,12 @@ export default {
       // 终止合同弹框
       terminateVisible: false,
       reasons: [
-        { label: "业委会不通过", value: "", selected: false },
-        { label: "修路/封路", value: "", selected: false },
-        { label: "小区改造", value: "", selected: false },
-        { label: "更换物业", value: "", selected: false },
-        { label: "竞品取代", value: "", selected: false },
-        { label: "我方原因", value: "", selected: false },
+        { label: "业委会不通过", value: "业委会不通过", selected: false },
+        { label: "修路/封路", value: "修路/封路", selected: false },
+        { label: "小区改造", value: "小区改造", selected: false },
+        { label: "更换物业", value: "更换物业", selected: false },
+        { label: "竞品取代", value: "竞品取代", selected: false },
+        { label: "我方原因", value: "我方原因", selected: false },
         { label: "其它", value: "", selected: false },
       ],
       // 媒体状态

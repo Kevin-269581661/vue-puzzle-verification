@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 11:57:19
+ * @LastEditTime: 2021-07-11 16:49:52
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -293,7 +293,12 @@
                 {{ stateList[scope.row.dcState].label }}
                 <el-tooltip
                   v-if="stateList[scope.row.dcState].tip"
-                  :content="scope.row[stateList[scope.row.dcState].tip].replace(',', '、') || '--'"
+                  :content="
+                    scope.row[stateList[scope.row.dcState].tip].replace(
+                      ',',
+                      '、'
+                    ) || '--'
+                  "
                   placement="top"
                 >
                   <img
@@ -442,8 +447,8 @@
           :key="index"
           :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
           @click="reasonItem.selected = !reasonItem.selected"
-          >
-          <i v-if="reasonItem.label=='其它'" class="el-icon-edit"></i>
+        >
+          <i v-if="reasonItem.label == '其它'" class="el-icon-edit"></i>
           {{ reasonItem.label }}</span
         >
         <el-input
@@ -457,7 +462,9 @@
 
       <template slot="footer">
         <el-button @click="terminateVisible = false">取 消</el-button>
-        <el-button type="primary" @click="terminateFun">确 定</el-button>
+        <el-button v-preventReClick type="primary" @click="terminateFun"
+          >确 定</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -473,7 +480,7 @@ import SignContract from "./components/signContract.vue";
 import ContractReviewDialog from "./components/contractReviewDialog.vue";
 
 export default {
-  name: "projectList",
+  name: "contracList",
   components: {
     PayLog,
     NextContractDialog,
@@ -662,6 +669,7 @@ export default {
       ],
     };
   },
+
   created() {
     this.getSessionData();
     this.getCity();

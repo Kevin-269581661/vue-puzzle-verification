@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 15:33:35
+ * @LastEditTime: 2021-07-12 20:43:42
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -79,7 +79,7 @@
           "
           >上一步</el-button
         >
-        <el-button type="primary" @click="thirdStep">保存</el-button>
+        <el-button type="primary" @click="thirdStep">创建</el-button>
       </div>
     </div>
   </div>

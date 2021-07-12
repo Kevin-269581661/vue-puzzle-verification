@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 18:31:59
+ * @LastEditTime: 2021-07-12 22:41:06
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -26,14 +26,11 @@
             >
               <div class="log-top">
                 <span class="log-top__timestamp">{{ logItem.updateTime }}</span>
-                <span
-                  :class="{ 'pay-status': true }"
-                  :style="{
-                    color: payState[logItem.payState].color,
-                    'border-color': payState[logItem.payState].color,
-                  }"
-                  >{{ payState[logItem.payState].label }}</span
-                >
+                <img
+                  class="pay-status"
+                  :src="payState[logItem.payState].url"
+                  alt=""
+                />
                 <el-tooltip
                   v-if="logItem.payState == -1"
                   :content="'原因：' + logItem.failReason || '--'"
@@ -154,12 +151,20 @@
                 <span class="item-label">银行账号：</span>
                 <span class="item-content ellipsis">
                   {{ logItem.bankAccount || "--" }}
-                  <img
+                  <svg
                     class="copy-img"
-                    src="../../../assets/images/develop/copy.png"
-                    alt=""
                     @click="copyBankAccount(logItem.bankAccount || '--')"
-                  />
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path
+                      d="M7 6V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1.001 1.001 0 0 1 3 21l.003-14c0-.552.45-1 1.007-1H7zM5.003 8L5 20h10V8H5.003zM9 6h8v10h2V4H9v2z"
+                      fill="rgba(188,197,199,0.72)"
+                    />
+                  </svg>
                 </span>
               </li>
               <li class="info-item">
@@ -218,7 +223,7 @@
       top="22vh"
       :show-close="false"
       :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+      custom-class="custom-dialog-wrapper form-dialog"
     >
       <div class="content-form">
         <el-input
@@ -296,7 +301,11 @@
           :label-width="formLabelWidth"
         >
           <el-input
-            :placeholder="payApplyForm.payType==3?'请输入付款金额':`应付金额：${payApplyForm.planPayTotal}`"
+            :placeholder="
+              payApplyForm.payType == 3
+                ? '请输入付款金额'
+                : `应付金额：${payApplyForm.planPayTotal}`
+            "
             v-model.number="payApplyForm.actualPayTotal"
             size="small"
             maxlength="7"
@@ -335,6 +344,7 @@
             type="textarea"
             placeholder="请输入备注信息"
             v-model.trim="payApplyForm.remark"
+            autosize
             size="small"
           ></el-input>
         </el-form-item>
@@ -365,7 +375,7 @@
               slot="trigger"
               size="small"
               icon="el-icon-upload2"
-              style="padding: 0 15px"
+              style="padding: 0 15px; color: rgba(0, 0, 0, 0.65)"
               >上传文件</el-button
             >
           </el-upload>
@@ -462,12 +472,32 @@ export default {
       finishPayVisible: false,
       currentLogItem: {},
       payState: {
-        "-1": { label: "不通过", color: "#E51E28" },
-        0: { label: "待审核", color: "#FAAD14" },
-        1: { label: "待付款", color: "#FAAD14" },
-        2: { label: "待开票", color: "#FAAD14" },
-        3: { label: "已完成", color: "#CDD4DA" },
-      }
+        "-1": {
+          label: "不通过",
+          color: "#E51E28",
+          url: "../../../static/images/payFail.png",
+        },
+        0: {
+          label: "待审核",
+          color: "#FAAD14",
+          url: "../../../static/images/payWait.png",
+        },
+        1: {
+          label: "待付款",
+          color: "#FAAD14",
+          url: "../../../static/images/payFail.png",
+        },
+        2: {
+          label: "待开票",
+          color: "#FAAD14",
+          url: "../../../static/images/payFail.png",
+        },
+        3: {
+          label: "已完成",
+          color: "#CDD4DA",
+          url: "../../../static/images/payFinish.png",
+        },
+      },
     };
   },
   watch: {
@@ -880,6 +910,12 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+/* 不通过理由 */
+/deep/ .form-dialog {
+  .el-dialog__header {
+    padding: 16px 24px 24px;
+  }
+}
 /* 付款记录 */
 /deep/ .pay-log-dialog {
   .el-timeline-item__wrapper {
@@ -907,15 +943,8 @@ export default {
       color: rgba(0, 0, 0, 0.85);
     }
     .pay-status {
-      box-sizing: border-box;
       height: 18px;
-      line-height: 18px;
-      padding: 0px 3px;
       margin-left: 8px;
-      border: solid 1px;
-      border-radius: 2px;
-      white-space: nowrap;
-      font-size: 12px;
     }
     .no-pop-wrap {
       margin: 0 0 0 auto;
@@ -1008,7 +1037,7 @@ export default {
       box-sizing: border-box;
       height: 32px;
       padding: 7px 8px;
-      margin: 7px 4px;
+      margin: 7px 4px 2px;
       .el-icon-download {
         display: none;
         margin: 0 0 0 auto;
@@ -1029,6 +1058,7 @@ export default {
         border-radius: 4px;
         .el-icon-download {
           display: block;
+          cursor: pointer;
         }
       }
     }
@@ -1059,11 +1089,18 @@ export default {
       line-height: 32px;
       white-space: nowrap;
       color: rgba(0, 0, 0, 0.85);
+      &:before {
+        margin-right: 0;
+      }
     }
     .el-form-item__content {
       line-height: unset;
       .el-input__inner {
+        font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
+      }
+      .el-textarea__inner {
+        font-size: 14px;
       }
       .el-date-editor {
         width: 100%;
@@ -1099,11 +1136,9 @@ export default {
   }
   .el-dialog__footer {
     padding: 8px 24px 24px;
-    .dialog-footer__button {
-      word-spacing: -1em;
-      .el-button + .el-button {
-        margin-left: 16px;
-      }
+    word-spacing: -1em;
+    .el-button + .el-button {
+      margin-left: 16px;
     }
   }
 }

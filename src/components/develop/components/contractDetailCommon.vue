@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 18:11:11
+ * @LastEditTime: 2021-07-12 23:48:23
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -31,6 +31,7 @@
           v-for="(item, index) in operationArr"
           :key="index"
           size="mini"
+          :type="item=='编辑'?'primary':'default'"
           @click="handleContract(contractObj, item)"
           >{{ item }}</el-button
         >
@@ -94,7 +95,7 @@
       </el-row>
     </div>
     <!-- 附件 -->
-    <div class="emphasize-text">附件</div>
+    <div v-if="fileList.length" class="emphasize-text">附件</div>
     <el-row :gutter="46" class="content-row">
       <el-col :span="8">
         <div v-for="(item, index) in fileList" :key="index" class="file-item">
@@ -205,8 +206,8 @@
           :key="index"
           :class="{ 'tag-default': true, 'tag-active': reasonItem.selected }"
           @click="reasonItem.selected = !reasonItem.selected"
-          >
-          <i v-if="reasonItem.label=='其它'" class="el-icon-edit"></i>
+        >
+          <i v-if="reasonItem.label == '其它'" class="el-icon-edit"></i>
           {{ reasonItem.label }}</span
         >
         <el-input
@@ -276,7 +277,6 @@ export default {
       // 角色
       roleArr: ["0", "1", "2"],
       operationAuthorityArr: {
-        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
         删除: [
           "000",
           "00-1",
@@ -298,6 +298,7 @@ export default {
           "031",
           // "032",
         ],
+        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
         重新提交: ["00-1", "01-1", "02-1", "03-1"],
         媒体录入: ["002", "012", "022", "032"],
         续签: [
@@ -826,10 +827,19 @@ export default {
 <style lang="scss" scope>
 .media-table {
   margin: 16px 12px;
-  width: calc(100% - 24px);
+  width: calc(100% - 24px) !important;
   .el-table__body-wrapper,
   .el-table__empty-block {
     min-height: unset;
+  }
+  .el-table__row {
+    td {
+      height: 46px;
+      .cell {
+        height: 25px;
+        line-height: 25px;
+      }
+    }
   }
   .media-state-dot {
     display: inline-block;
@@ -849,7 +859,7 @@ export default {
   }
 }
 .contract-borde {
-  padding: 18px 0;
+  padding: 14px 0;
   & + .contract-borde {
     border-top: 1px solid #e6e7e9;
   }
@@ -858,6 +868,7 @@ export default {
   margin: 8px 12px;
   .title-label,
   .title-content {
+    font-weight: 600;
     white-space: nowrap;
   }
   .row-left {
@@ -871,6 +882,14 @@ export default {
   }
   .row-right {
     text-align: right;
+    word-spacing: -1em;
+    font-size: 14px;
+    .el-button--default {
+      border-color: #D9D9D9FF;
+    }
+    .el-button + .el-button {
+      margin-left: 8px;
+    }
   }
 }
 .content-row {
@@ -914,6 +933,7 @@ export default {
   }
 }
 .contract-status-name {
+  box-sizing: border-box;
   height: 22px;
   padding: 0 8px;
   margin-left: 8px;
@@ -931,7 +951,7 @@ export default {
   box-sizing: border-box;
   height: 32px;
   padding: 0 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   .el-icon-download {
     display: none;
     margin: 0 0 0 auto;
@@ -953,6 +973,7 @@ export default {
     border-radius: 4px;
     .el-icon-download {
       display: block;
+      cursor: pointer;
     }
   }
 }

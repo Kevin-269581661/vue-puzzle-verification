@@ -93,7 +93,7 @@
                 <el-table-column
                   prop="date"
                   label="合同日期"
-                  width="140"
+                  width="200"
                   show-overflow-tooltip
                 >
                 </el-table-column>
@@ -186,14 +186,14 @@
                 </el-table-column>
                 <el-table-column
                   prop="createTime"
-                  label="创建日期"
+                  label="创建时间"
                   min-width="160"
                   show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
                   prop="updateTime"
-                  label="更新日期"
+                  label="更新时间"
                   min-width="160"
                   show-overflow-tooltip
                 >
@@ -239,7 +239,7 @@
         "
         class="index-row"
       >
-        <index-custom-card>
+        <index-custom-card :height="'unset'">
           <template slot="head">
             业绩排行
             <div class="date-interval">
@@ -447,7 +447,7 @@ export default {
     this.getSession();
     if (this.sessionData.devManageLevel == 1) {
       this.linkArrNew.push({
-        imgurl: require("../../assets/images/gua.png"),
+        imgurl: require("../../assets/images/contractConfig.png"),
         title: "合同设置",
         link: "./f_develop/contractCfg",
       });
@@ -741,10 +741,17 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss">
 .warn-pop.el-popover {
+  padding: 8px;
   min-width: 50px;
+  font-size: 14px;
+  color: #1890ff;
+  line-height: 22px;
   text-align: center;
+  span {
+    cursor: pointer;
+  }
 }
 </style>
 <style scoped lang="scss">
@@ -752,7 +759,7 @@ export default {
 /deep/ .custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
-    padding: 24px 24px 8px;
+    padding: 24px 24px 8px !important;
     border: none !important;
     font-weight: 600;
     /* .el-dialog__title {
@@ -764,7 +771,7 @@ export default {
       margin-right: 16px;
       color: #fa8c16;
       &:before {
-        font-size: 21px;
+        font-size: 24px;
       }
     }
   }
@@ -892,10 +899,11 @@ export default {
   }
   .item-list {
     height: 100%;
+    min-height: 240px;
     padding: 16px 24px;
     box-sizing: border-box;
     .rank-title {
-      margin-bottom: 7px;
+      margin-bottom: 25px;
       line-height: 24px;
       font-weight: 600;
       color: rgba(0, 0, 0, 0.85);
@@ -903,13 +911,13 @@ export default {
     .item {
       display: flex;
       align-items: center;
-      margin: 9px 0;
+      margin: 9px 0 18px;
       .progress {
         flex: 1;
         cursor: pointer;
       }
       .label {
-        width: 56px;
+        width: 116px;
         height: 20px;
         margin-right: 8px;
         line-height: 20px;
@@ -924,7 +932,7 @@ export default {
   }
   /deep/ .el-table__body-wrapper,
   /deep/ .el-table__empty-block {
-    min-height: unset;
+    min-height: 160px;
   }
 }
 /**新增 */

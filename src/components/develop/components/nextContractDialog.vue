@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 15:27:42
+ * @LastEditTime: 2021-07-12 17:38:43
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -14,7 +14,7 @@
     top="22vh"
     :show-close="false"
     :close-on-click-modal="false"
-    custom-class="custom-dialog-wrapper custom-confirm-dialog"
+    custom-class="custom-dialog-wrapper adjust-dialog"
   >
     <div class="content-form">
       <el-select
@@ -144,4 +144,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .adjust-dialog {
+  border-radius: 4px;
+  .el-dialog__header {
+    padding: 16px 24px 24px;
+    border: none !important;
+    font-weight: 600;
+  }
+  .el-dialog__body {
+    border: none !important;
+    .content-form {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 24px;
+    }
+    .el-select {
+      width: 100%;
+    }
+  }
+  .el-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px;
+    .el-button + .el-button {
+      margin-left: 16px;
+    }
+  }
+}
 </style>

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 14:09:52
+ * @LastEditTime: 2021-07-12 17:30:20
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -683,6 +683,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 /deep/ .correlate-mode__dialog {
+  .el-dialog {
+    border-radius: 4px;
+  }
   .el-dialog__header {
     font-size: 16px;
     font-weight: 600;
@@ -695,10 +698,11 @@ export default {
     border-bottom: unset !important;
   }
   .el-dialog__footer {
-    padding: 0 24px 24px;
+    padding: 0 24px 24px !important;
     .el-button {
       width: 100%;
       & + .el-button {
+        margin-left: 0;
         margin-top: 8px;
       }
     }

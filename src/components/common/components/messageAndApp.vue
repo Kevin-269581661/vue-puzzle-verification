@@ -5,7 +5,6 @@
         v-if="sessionData.uType == 'DEV'"
         :value="messageUnread"
         :max="99"
-        class="item"
       >
         <el-radio-button label="2">消息通知</el-radio-button>
       </el-badge>
@@ -41,7 +40,7 @@
                   <span class="notice-title">{{ item.title || "" }}</span>
                 </div>
                 <div
-                  class="notice-content"
+                  class="notice-content message-part"
                   v-html="item.messagePart1 || ''"
                 ></div>
                 <div class="time-distance">
@@ -373,6 +372,7 @@ export default {
     padding: 8px 16px;
   }
   /deep/ .el-badge__content.is-fixed {
+    min-width: 6px;
     z-index: 9;
   }
   .carousel-box {
@@ -483,6 +483,9 @@ export default {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        .message-part {
+          font-size: 14px;
         }
         .notice-content {
           overflow: hidden;

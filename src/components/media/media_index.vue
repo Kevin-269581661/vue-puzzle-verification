@@ -199,7 +199,7 @@
 
       <el-row :gutter="24" class="index-row">
         <el-col :span="12">
-          <index-custom-card height="520px">
+          <index-custom-card :height="'unset'">
             <template slot="head">
               待处理媒体
               <el-radio-group
@@ -220,11 +220,11 @@
               </el-radio-group>
             </template>
             <template slot="content">
-              <div style="padding: 20px 25px 10px">
+              <div style="padding: 20px 25px 32px;">
                 <el-table
                   :data="pendingMedia[installOrDemolish]"
                   border
-                  max-height="486"
+                  max-height="320"
                 >
                   <el-table-column
                     label="序号"
@@ -1387,6 +1387,7 @@ export default {
 /deep/ .custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
+    padding: 16px 24px 24px !important;
     border: none !important;
     .el-dialog__title {
       font-size: 16px;
@@ -1453,7 +1454,7 @@ export default {
   line-height: 21px;
   font-size: 14px;
   color: #1890ff;
-  cursor: default;
+  cursor: pointer;
 }
 .quesition-icon {
   width: 16px;

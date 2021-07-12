@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 15:11:57
+ * @LastEditTime: 2021-07-12 23:48:01
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -13,7 +13,7 @@
       :visible.sync="contractReviewVisible"
       :close-on-click-modal="false"
       :before-close="handleClose"
-      custom-class="custom-dialog-wrapper contract-detail-page"
+      custom-class="custom-dialog-wrapper contract-detail-dialog"
       center
     >
       <div v-for="(item, index) in detailArr" :key="index">
@@ -32,7 +32,7 @@
       </div>
       <!-- 附件 -->
       <div class="emphasize-text">附件</div>
-      <el-row :gutter="46" class="content-row">
+      <el-row v-if="fileList.length" :gutter="46" class="content-row">
         <el-col :span="8">
           <div v-for="(item, index) in fileList" :key="index" class="file-item">
             <i class="el-icon-document"></i>
@@ -310,21 +310,14 @@ export default {
 }
 </style>
 <style lang="scss" scope>
-/deep/ .custom-confirm-dialog {
+.custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {
-    padding: 24px 24px 8px;
+    padding: 16px 24px 24px !important;
     border: none !important;
     .el-dialog__title {
       font-size: 16px;
       color: rgba($color: #000, $alpha: 0.85);
-    }
-    .el-icon-question {
-      margin-right: 16px;
-      color: #fa8c16;
-      &:before {
-        font-size: 21px;
-      }
     }
   }
   .el-dialog__body {
@@ -333,50 +326,19 @@ export default {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.45);
       line-height: 24px;
-      /* 完成签约和付款 */
-      .el-form-item {
-        &:last-child {
-          margin-bottom: 0;
-        }
-        .el-form-item__label {
-          padding: 0;
-          line-height: 32px;
-        }
-        .el-form-item__content {
-          line-height: 32px;
-        }
-        .el-date-editor {
-          width: 100%;
-        }
-      }
-    }
-    /* 重新提交和删除合同 */
-    .message-content {
-      padding-left: 40px;
-      line-height: 22px;
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.65);
-      & .active {
-        color: #1890ff;
-        font-weight: 600;
-      }
-    }
-
-    .el-select {
-      width: 100%;
     }
   }
   .el-dialog__footer {
     display: flex;
     justify-content: flex-end;
     padding: 24px;
+    word-spacing: -1em;
     .el-button + .el-button {
       margin-left: 16px;
     }
   }
 }
-.contract-detail-page {
+.contract-detail-dialog {
   position: relative;
   .title-row {
     margin: 8px 24px;
@@ -472,7 +434,7 @@ export default {
     box-sizing: border-box;
     height: 32px;
     padding: 0 8px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     .el-icon-download {
       display: none;
       margin: 0 0 0 auto;
@@ -493,7 +455,14 @@ export default {
       border-radius: 4px;
       .el-icon-download {
         display: block;
+        cursor: pointer;
       }
+    }
+  }
+  .el-dialog__footer {
+    word-spacing: -1em;
+    [popper-class^="handle-btn-pop"] {
+      margin-left: 16px;
     }
   }
 }

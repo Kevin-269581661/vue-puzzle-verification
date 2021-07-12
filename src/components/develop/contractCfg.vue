@@ -34,8 +34,6 @@
 <script>
 import customFiled from "./components/customFiled.vue"
 import warnCfg from "./components/warnCfg.vue"
-import sessFun from "../../commonFun/sessFun.js";
-import api from "../../api/api";
 export default {
   name: "contractCfg",
   components: {

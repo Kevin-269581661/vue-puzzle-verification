@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 14:41:10
+ * @LastEditTime: 2021-07-12 19:58:22
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -74,7 +74,7 @@
                     <el-autocomplete
                       v-model="recForm.resName"
                       :fetch-suggestions="getResListByResName"
-                      placeholder=""
+                      placeholder="新增小区或搜索已有小区"
                       :trigger-on-focus="false"
                       @select="changeResName"
                     >
@@ -261,6 +261,7 @@
                 <el-col :span="6">
                   <el-form-item label="楼栋数量" prop="buildingNum">
                     <el-input-number
+                      size="small"
                       v-model="recForm.buildingNum"
                       controls-position="right"
                       :min="0"
@@ -415,6 +416,7 @@
                 <el-col :span="6">
                   <el-form-item label="入住率(%)" prop="liveRate">
                     <el-input-number
+                      size="small"
                       v-model="recForm.liveRate"
                       placeholder="请输入入住率"
                       :controls="false"
@@ -1206,7 +1208,7 @@ export default {
               let results = [];
               for (let key of res.data.data) {
                 results.push({
-                  value: key.resName,
+                  value: key.resName + "-" + key.resAddress,
                   info: key,
                 });
               }
@@ -2042,12 +2044,14 @@ export default {
   width: 100%;
   height: 34px;
 }
-
+.el-date-editor {
+  width: 100%;
+}
 /deep/ .el-input__inner,
 .el-input-number {
   height: 32px;
   text-align: left;
-  line-height: 35px;
+  line-height: 32px;
   padding-right: 20px;
   text-align: left;
 }

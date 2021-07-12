@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 12:02:33
+ * @LastEditTime: 2021-07-12 23:42:34
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -14,7 +14,7 @@
     <div class="detail-common">
       <el-row>
         <el-col :span="24">
-          <span class="detail-common-title">{{ resName || "" }}</span>
+          <div class="detail-common-title">{{ resName || "" }}</div>
         </el-col>
         <el-col
           :span="6"
@@ -65,7 +65,7 @@
                       {{ contractTypeArr[contractItem.dcType] }}
                     </div>
                     <div class="contract-date">
-                      {{ contractItem.createTime.split(" ")[0] }}
+                      {{ timeFormat(contractItem.createTime.split(" ")[0]) }}
                     </div>
                   </div>
                 </el-menu-item>
@@ -73,7 +73,7 @@
             </el-aside>
             <el-main>
               <contractDetailCommon
-                v-if="item.poriginID==activeTabName"
+                v-if="item.poriginID == activeTabName"
                 :dcID="currentDcID"
                 @refresh="getContractDetailList"
               ></contractDetailCommon>
@@ -82,6 +82,9 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <el-button class="page-bottom-btn" @click="routeContractList"
+      >返回</el-button
+    >
   </div>
 </template>
 
@@ -120,6 +123,20 @@ export default {
     this.getContractDetailList();
   },
   methods: {
+    timeFormat(date) {
+      try {
+        let dateObj = new Date(date);
+        return `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
+      } catch (error) {
+        console.error("合同日期--date", error);
+        return "";
+      }
+    },
+    routeContractList() {
+      this.$router.push({
+        path: "./contractList",
+      });
+    },
     handleTabClick(tab) {
       let originIndex = this.originDataList.findIndex(
         (item) => this.activeTabName == item.poriginID
@@ -191,31 +208,39 @@ export default {
 .contract-detail-page {
   margin: 0 60px;
   position: relative;
+  /deep/ .el-tabs__content {
+    padding: 32px 0 32px 0;
+  }
   .el-menu {
     box-sizing: border-box;
     height: 100%;
-    padding: 7px 0;
+    border-right: 1px solid #e6e7e9;
   }
   .el-menu-item {
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     .contract-name {
+      padding: 0 12px;
       line-height: 20px;
       font-size: 14px;
     }
     .contract-date {
+      padding: 0 12px;
       margin-top: 2px;
       line-height: 18px;
       font-size: 12px;
       font-weight: 400;
       color: rgba(0, 0, 0, 0.45);
     }
-    .is-active {
+    &.is-active {
       font-weight: 600;
       color: #1890ff;
       background-color: #e9f7fe;
       border-right: 2px solid #1890ff;
+      .contract-date {
+        color: #1890ff;
+      }
     }
   }
   .detail-item {
@@ -240,10 +265,10 @@ export default {
     background: #ffffff;
     border: 1px solid #e6e7e9;
     .detail-common-title {
-      margin: 8px 24px 0;
+      margin: 8px 24px;
       line-height: 28px;
       font-size: 20px;
-      font-weight: 500;
+      font-weight: 600;
       color: rgba(0, 0, 0, 0.85);
     }
   }
@@ -280,6 +305,10 @@ export default {
     .el-main {
       overflow: hidden;
     }
+  }
+  .page-bottom-btn {
+    margin: 23px auto 17px;
+    display: block;
   }
 }
 </style>

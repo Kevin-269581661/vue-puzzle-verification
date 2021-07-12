@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 15:32:00
+ * @LastEditTime: 2021-07-12 23:11:20
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -299,12 +299,14 @@
                 {{ stateList[scope.row.dcState].label }}
                 <el-tooltip
                   v-if="stateList[scope.row.dcState].tip"
-                  :content="
+                  popper-class="reason-tip"
+                  :content="`原因：
+                  ${
                     scope.row[stateList[scope.row.dcState].tip].replace(
                       ',',
                       '、'
                     ) || '--'
-                  "
+                  }`"
                   placement="top"
                 >
                   <img
@@ -317,6 +319,7 @@
             <el-table-column label="操作" width="80px" fixed="right">
               <template slot-scope="scope">
                 <el-dropdown
+                  v-if="getContractOperation(scope.row).length"
                   size="small"
                   trigger="click"
                   placement="bottom-start"
@@ -333,6 +336,7 @@
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
+                <span v-else>--</span>
               </template>
             </el-table-column>
           </el-table>
@@ -533,7 +537,6 @@ export default {
         合同终止: ["104", "114", "124", "134"],
       }, */
       operationAuthorityArr: {
-        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
         删除: [
           "000",
           "00-1",
@@ -555,6 +558,7 @@ export default {
           "031",
           // "032",
         ],
+        编辑: ["000", "00-1", "010", "020", "01-1", "02-1", "030", "03-1"],
         重新提交: ["00-1", "01-1", "02-1", "03-1"],
         媒体录入: ["002", "012", "022", "032"],
         续签: [
@@ -682,6 +686,18 @@ export default {
     this.searchFormat();
   },
   methods: {
+    // 重置终止原因
+    resetReason() {
+      this.reasons = [
+        { label: "业委会不通过", value: "业委会不通过", selected: false },
+        { label: "修路/封路", value: "修路/封路", selected: false },
+        { label: "小区改造", value: "小区改造", selected: false },
+        { label: "更换物业", value: "更换物业", selected: false },
+        { label: "竞品取代", value: "竞品取代", selected: false },
+        { label: "我方原因", value: "我方原因", selected: false },
+        { label: "其它", value: "", selected: false },
+      ];
+    },
     // 合同终止
     terminateFun() {
       if (this.reasons[6].selected && !this.reasons[6].value) {
@@ -834,6 +850,7 @@ export default {
           this.signVisible = true;
           break;
         case "合同终止":
+          this.resetReason();
           this.terminateVisible = true;
           break;
       }
@@ -979,6 +996,13 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.reason-tip {
+  line-height: 22px;
+  font-size: 14px;
+  color: #fff;
+}
+</style>
 <style lang="scss" scoped>
 @import "../../assets/component.scss";
 /deep/ .custom-confirm-dialog {
@@ -995,7 +1019,7 @@ export default {
       margin-right: 16px;
       color: #fa8c16;
       &:before {
-        font-size: 21px;
+        font-size: 24px;
       }
     }
   }
@@ -1137,8 +1161,14 @@ a {
     color: rgba(0, 0, 0, 0.65);
     cursor: pointer;
   }
+  .tag-default:nth-child(4) {
+    margin-right: 0;
+  }
   .terminate-input {
     margin-top: 8px;
+    /deep/ .el-input__inner {
+      font-size: 14px;
+    }
   }
   .tag-active {
     color: #1890ff;

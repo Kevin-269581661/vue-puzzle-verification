@@ -2,15 +2,15 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-06 15:22:34
+ * @LastEditTime: 2021-07-12 20:50:51
  * @FilePath: /frontend/src/components/develop/components/contractFinished.vue
 -->
 <template>
-  <div class="createSuccess">
+  <div class="create-success">
     <div class="successIcon">
       <img src="../../../assets/images/createSuccess.png" alt="" />
       <h2>{{ edit ? "编辑成功" : "创建成功" }}</h2>
-      <p>{{ `${edit ? "编辑时间" : "创建时间"}:${createDate}` }}</p>
+      <p>{{ `${edit ? "编辑时间" : "创建时间"}：${createDate}` }}</p>
     </div>
     <div class="planPanel">
       <ul>
@@ -54,7 +54,7 @@ export default {
   watch: {},
   computed: {},
   mounted() {
-    this.createDate = timeFormat.returnDayCount(0, "/");
+    this.createDate = timeFormat.returnDayCount(0, "-");
   },
   methods: {},
 };
@@ -62,8 +62,8 @@ export default {
 
 <style lang="scss" scoped>
 /*完成创建*/
-.createSuccess {
-  padding-bottom: 48px;
+.create-success {
+  padding-bottom: 32px;
 }
 .successIcon img {
   width: 72px;
@@ -105,14 +105,15 @@ export default {
   height: 100%;
 }
 .planPanel ul li {
+  margin-bottom: 16px;
+  line-height: 22px;
   text-align: left;
   font-size: 14px;
-  color: #666666;
-  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.85);
 }
 
 .planPanel ul li em {
   font-size: 14px;
-  color: #333333;
+  color: rgba(0, 0, 0, 0.65);
 }
 </style>

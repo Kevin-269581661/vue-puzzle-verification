@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-09 16:28:22
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 21:55:02
+ * @LastEditTime: 2021-07-12 21:51:20
  * @FilePath: /frontend/src/components/develop/components/warnCfg.vue
 -->
 <template>
@@ -11,7 +11,6 @@
     <el-table
       :data="tableData"
       style="width: 100%"
-      height="500px"
       v-loading="loading"
       element-loading-text="玩命加载中..."
       element-loading-spinner="el-icon-loading"
@@ -160,7 +159,7 @@ export default {
             if (res.data.SysCode == 200200) {
               row.dayCnt = row.tempDayCnt;
               row.operate = false;
-              this.getWarnList()
+              this.getWarnList();
               this.$message.success(res.data.MSG || "保存成功！");
             } else {
               this.$message.warning(res.data.MSG || "保存失败！");
@@ -182,34 +181,43 @@ export default {
 
 <style lang="scss" scoped>
 .custom-title {
-  text-align: left;
   padding-bottom: 24px;
+  line-height: 22px;
+  text-align: left;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
 }
 
-/deep/ .custom-filed-table.el-table tr {
-  th,
-  td {
-    // height: 46px;
-    .cell {
-      // height: 25px;
-      // line-height: 25px;
-      .el-input-number {
-        width: unset;
-        // line-height: 24px;
-        margin: 0;
-        .el-input__inner {
-          width: 88px;
-          // height: 24px;
-          padding: 0 28px 0 8px;
+/deep/ .custom-filed-table.el-table {
+  .el-table__body-wrapper,
+  .el-table__empty-block {
+    min-height: unset;
+  }
+  tr {
+    th,
+    td {
+      // height: 46px;
+      .cell {
+        // height: 25px;
+        // line-height: 25px;
+        .el-input-number {
+          width: unset;
           // line-height: 24px;
-          text-align: center;
+          margin: 0;
+          .el-input__inner {
+            width: 88px;
+            // height: 24px;
+            padding: 0 28px 0 8px;
+            // line-height: 24px;
+            text-align: center;
+          }
         }
       }
-    }
-    .operate-column {
-      color: #1890ff;
-      .operate-column-btn {
-        cursor: pointer;
+      .operate-column {
+        color: #1890ff;
+        .operate-column-btn {
+          cursor: pointer;
+        }
       }
     }
   }

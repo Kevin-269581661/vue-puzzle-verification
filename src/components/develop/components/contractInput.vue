@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 10:45:46
+ * @LastEditTime: 2021-07-12 14:14:12
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -1030,17 +1030,17 @@ export default {
         });
     },
     //重置表单数据
-    resetForm() {
+    /* resetForm() {
       this.$refs["contractForm"].resetFields();
-    },
+    }, */
     // 清除表单校验
-    clearFromValidate() {
+    /* clearFromValidate() {
       console.log("清除表单校验------");
       let timer = setTimeout(() => {
         this.$refs["contractForm"].clearValidate();
         clearTimeout(timer);
       }, 500);
-    },
+    }, */
   },
 };
 </script>

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 14:08:49
+ * @LastEditTime: 2021-07-12 14:41:10
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -508,7 +508,7 @@
                         <el-upload
                           :action="doUpload"
                           list-type="picture-card"
-                          :file-list="resUpdata[imgItem-1] ? [resUpdata[imgItem-1]] : []"
+                          :file-list="resUpdata[imgItem-1]"
                           :on-success="res=>handleDownSuccess(res, imgItem)"
                           :on-preview="handlePictureCardPreview_res"
                           :before-upload="beforeUpload_res"
@@ -528,7 +528,7 @@
                       <el-upload
                         :action="doUpload"
                         list-type="picture-card"
-                        :file-list="resUpdata"
+                        :file-list="resUpdata[0]"
                         :limit="1"
                         :on-success="res=>handleDownSuccess(res, 1)"
                         :on-preview="handlePictureCardPreview_res"
@@ -950,7 +950,11 @@ export default {
         ptid: "", // 关联类型对应唯一ID
         ptp: "media", // 关联类型区分属性
       },
-      resUpdata: [], // 编辑资源时显示已有图片
+      resUpdata: [
+        [],
+        [],
+        []
+      ], // 编辑资源时显示已有图片
 
       Editloading: true, // 提交时的loading
       throwCity: "", // 用户权限不为全国时，根据uWho确定可选城市
@@ -1020,7 +1024,7 @@ export default {
   },
   mounted: function () {
     this.customPermission = this.sessionData.customPermission;
-    this.resUpdata = [];
+    // this.resUpdata = [];
     this.ShowRegion();
     this.getDataFun((this.$route.query || {}).resID);
   },
@@ -1091,7 +1095,7 @@ export default {
         peopleFlowrate: resData.peopleFlow || "", // 人流量
         carNumber: resData.parking || "", // 车位数
         carFlowrate: resData.carFlow || "", // 车流量
-        buildingPrice: (resData.hPrice / 100).toFixed(0), // 楼盘价格
+        buildingPrice: resData.hPrice>=0?(resData.hPrice / 100).toFixed(0):"", // 楼盘价格
         liveTime: resData.chDay || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度
@@ -1122,7 +1126,7 @@ export default {
       };
       if (resData.fullViewUrl && resData.fullViewUrl.length) {
         this.resUpdata = (resData.fullViewUrl || "").split(",").map((item) => {
-          return { name: "资源图片", url: item };
+          return [{ name: "资源图片", url: item }];
         });
       }
       this.recForm.city.length == 2 && this.handleChange(this.recForm.city);
@@ -1724,7 +1728,7 @@ export default {
       } else {
         this.recForm.fullViewUrl = pURL;
       }
-      this.resUpdata[index-1] = { name: "资源图片", url: pURL };
+      // this.resUpdata[index-1] = { name: "资源图片", url: pURL };
       console.log("resUpdata", this.resUpdata);
     },
     // 删除原资源图片，进行重新选择
@@ -1739,7 +1743,7 @@ export default {
             return file.url != item;
           }
         });
-        this.resUpdata.splice(index-1, 1);
+        // this.resUpdata.splice(index-1, 1);
         console.log("resUpdata", this.resUpdata);
         this.recForm.fullViewUrl = resArr.join(",");
       }
@@ -1750,7 +1754,7 @@ export default {
       this.resImgUrl = file.url;
       this.resImgDialog = true;
     },
-    /* // 表单验证 resFrom:资源表单
+    // 表单验证 resFrom:资源表单
     submitForm() {
       console.log("校验开始-----------");
       this.submitBtnIsAble = true;
@@ -1800,7 +1804,7 @@ export default {
           sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
           return false;
         });
-    }, */
+    },
     /* //重置表单数据
     resetForm() {
       this.$refs["recForm"].resetFields();

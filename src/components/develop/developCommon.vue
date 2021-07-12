@@ -9,22 +9,19 @@
             @select="handleSelect"
             background-color="#fff"
             active-text-color="#1890FF">
-            <el-menu-item index="" class="no-hover" style="cursor: default; pointer-events: none;">
+            <el-menu-item index="1" class="no-hover" style="cursor: default; pointer-events: none;">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
             <el-menu-item index="/f_develop">首页</el-menu-item>
-            <el-submenu index="3" :show-timeout="80">
+            <el-submenu index="2" :show-timeout="80">
                 <template slot="title">合同管理</template>
                 <el-menu-item index="/f_develop/contractList">合同列表</el-menu-item>
                 <el-menu-item v-if="sessionData.devManageLevel==1" index="/f_develop/contractCfg">合同设置</el-menu-item>
             </el-submenu>
             <el-menu-item index="/f_develop/mediaList">媒体管理</el-menu-item>
-            <!-- <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
-                <messageNotice></messageNotice>
-            </el-menu-item> -->
-            <el-submenu index="6" class="user_center" popper-class="user_center_item" :show-timeout="80">
+            <el-submenu index="3" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}

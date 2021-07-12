@@ -32,7 +32,7 @@
         </div>
       </div>
       <el-row class="index-row">
-        <index-custom-card>
+        <index-custom-card :height="'unset'">
           <template slot="head"> 合同预警 </template>
           <template slot="content">
             <div style="padding: 24px">
@@ -50,11 +50,11 @@
                   </span>
                 </h4>
               </div>
-              <el-table :data="contractWarningList" border max-height="415">
+              <el-table :data="contractWarningList" border max-height="320">
                 <el-table-column
                   show-overflow-tooltip
                   label="资源名称"
-                  width="230"
+                  width="170"
                 >
                   <template slot-scope="scope">
                     <span>{{ scope.row.resName || "" }}</span>
@@ -63,7 +63,7 @@
                 <el-table-column
                   show-overflow-tooltip
                   label="合同对象"
-                  width="230"
+                  width="200"
                 >
                   <template slot-scope="scope">
                     <span>{{ scope.row.originName || "待定" }}</span>
@@ -72,24 +72,28 @@
                 <el-table-column
                   prop="contractNo"
                   label="合同编号"
-                  width="100"
+                  width="110"
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
-                    <span @click="routeContractDetail(scope.row)" class="table-row__btn">{{ scope.row.contractNo || "--" }}</span>
+                    <span
+                      @click="routeContractDetail(scope.row)"
+                      class="table-row__btn"
+                      >{{ scope.row.contractNo || "--" }}</span
+                    >
                   </template>
                 </el-table-column>
                 <el-table-column
                   prop="pmcName"
                   label="物业名称"
-                  width="100"
+                  width="120"
                   show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
                   prop="date"
                   label="合同日期"
-                  width="100"
+                  width="140"
                   show-overflow-tooltip
                 >
                 </el-table-column>
@@ -101,7 +105,7 @@
                 <el-table-column
                   prop="warnTypeName"
                   label="预警说明"
-                  width="100"
+                  width="120"
                   show-overflow-tooltip
                 >
                   <template slot-scope="scope">
@@ -149,13 +153,13 @@
         </index-custom-card>
       </el-row>
       <el-row class="index-row">
-        <index-custom-card>
+        <index-custom-card :height="'unset'">
           <template slot="head">{{
             sessionData.devManageLevel == 2 ? "待处理事项" : "合同动态"
           }}</template>
           <template slot="content">
             <div style="padding: 24px">
-              <el-table :data="contractNews" border max-height="470">
+              <el-table :data="contractNews" border max-height="320">
                 <el-table-column
                   show-overflow-tooltip
                   label="资源名称"
@@ -266,7 +270,7 @@
                     v-for="(rankItem, index) in newContractRank"
                     :key="index"
                   >
-                    <span :title="rankItem.realName"  class="label">{{
+                    <span :title="rankItem.realName" class="label">{{
                       rankItem.realName
                     }}</span>
                     <mini-progress
@@ -361,7 +365,7 @@ export default {
     indexCustomCard,
     miniProgress,
     contractReviewDialog,
-    payLog
+    payLog,
   },
   data() {
     return {
@@ -436,7 +440,7 @@ export default {
       },
       // 合同审核弹框
       contractReviewVisible: false,
-      payLogDialogVisible: false
+      payLogDialogVisible: false,
     };
   },
   mounted() {
@@ -449,7 +453,7 @@ export default {
       });
     } else if (this.sessionData.devManageLevel == 0) {
       this.linkArrNew.push({
-        imgurl: require("../../assets/images/addMedia.png"),
+        imgurl: require("../../assets/images/contract.png"),
         title: "新建合同",
         link: "./f_develop/newContract",
       });
@@ -600,7 +604,7 @@ export default {
       api
         .postApi("/addsp/devContractWarn/createWarnIgnore", {
           warnType: this.currentIgnore.warnType,
-          dcID: this.currentIgnore.id*1,
+          dcID: this.currentIgnore.id * 1,
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
@@ -726,7 +730,7 @@ export default {
     showContractReview(row) {
       row.id = row.dcID;
       this.currentReview = row;
-      if(row.logType == 2) {
+      if (row.logType == 2) {
         // 付款审批
         this.payLogDialogVisible = true;
       } else {
@@ -918,8 +922,11 @@ export default {
       }
     }
   }
+  /deep/ .el-table__body-wrapper,
+  /deep/ .el-table__empty-block {
+    min-height: unset;
+  }
 }
-
 /**新增 */
 .ad_index_container {
   margin: 24px 64px;

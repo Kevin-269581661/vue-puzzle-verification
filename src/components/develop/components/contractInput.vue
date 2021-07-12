@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 17:48:17
+ * @LastEditTime: 2021-07-12 10:45:46
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -35,7 +35,7 @@
                     <el-input
                       v-model="resFormData.pmcName"
                       placeholder="物业公司单位名称"
-                      :disabled="handleType > 1"
+                      :disabled="handleType != 1"
                     ></el-input>
                   </el-form-item>
                 </el-col>
@@ -684,6 +684,7 @@ export default {
     this.getContractDetail(this.dcID);
   },
   mounted: function () {
+    console.log("handleType", this.handleType)
     if (this.handleType) {
       this.getDemolishMediaList();
     }

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-11 16:49:52
+ * @LastEditTime: 2021-07-12 11:24:03
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -144,7 +144,7 @@
             <el-table-column
               prop="resName"
               label="资源名称"
-              width="160"
+              width="170"
               show-overflow-tooltip
               fixed="left"
             >
@@ -159,18 +159,18 @@
             <el-table-column
               prop="originName"
               label="合同对象"
-              width="160"
+              width="180"
               show-overflow-tooltip
               fixed="left"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.originName || "待定" }}</span>
+                <span>{{ (scope.row.originName||"待定").replace(",", "/") }}</span>
               </template>
             </el-table-column>
             <el-table-column
               prop="dcType"
               label="合同类型"
-              min-width="160"
+              min-width="110"
               show-overflow-tooltip
               fixed="left"
             >
@@ -181,28 +181,30 @@
             <el-table-column
               prop="startDate"
               label="合同开始日期"
-              min-width="160"
+              min-width="140"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="endDate"
               label="合同结束日期"
-              width="160"
+              width="140"
               align="right"
             >
             </el-table-column>
             <el-table-column
               prop="mediaCnt"
               label="合同媒体数"
-              min-width="120"
+              min-width="100"
+              align="right"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="installMediaCnt"
               label="已装媒体数"
-              min-width="120"
+              min-width="100"
+              align="right"
             >
             </el-table-column>
 
@@ -210,7 +212,8 @@
               column-key="isVenueFee"
               prop="venueFee"
               label="场地费"
-              width="120"
+              width="100"
+              align="right"
               :filters="[
                 { text: '无场地费', value: 0 },
                 { text: '有场地费', value: 1 },
@@ -224,7 +227,8 @@
             <el-table-column
               prop="devFee"
               label="开发费"
-              width="120"
+              width="100"
+              align="right"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -234,11 +238,11 @@
             <el-table-column
               prop="payDate"
               label="最近付款日期"
-              width="160"
+              width="140"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
-                {{ scope.row.nearPayDate || "" }}
+                {{ scope.row.nearPayDate || "--" }}
               </template>
             </el-table-column>
             <el-table-column
@@ -275,7 +279,7 @@
               column-key="dcState"
               prop="dcState"
               label="合同状态"
-              min-width="160"
+              min-width="120"
               show-overflow-tooltip
               fixed="right"
               :filters="
@@ -308,7 +312,7 @@
                 </el-tooltip>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="100px" fixed="right">
+            <el-table-column label="操作" width="80px" fixed="right">
               <template slot-scope="scope">
                 <el-dropdown
                   size="small"

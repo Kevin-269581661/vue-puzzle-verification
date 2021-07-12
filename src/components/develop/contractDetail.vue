@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 14:03:36
+ * @LastEditTime: 2021-07-12 12:02:33
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -175,6 +175,7 @@ export default {
                   this.originDataList[0].devContractDataList[0].dcID;
             }
           } else {
+            this.originDataList = [];
             this.$message.warning(res.data.MSG || "小区合同信息获取失败！");
           }
         });

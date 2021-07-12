@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-08 15:29:25
+ * @LastEditTime: 2021-07-12 14:08:49
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -498,8 +498,9 @@
                 <el-col :span="24">
                   <el-row v-if="customPermission.patrolPermission" type="flex">
                     <el-form-item
+                      v-for="(imgItem) in 3"
+                      :key="imgItem"
                       label=""
-                      prop="mImg"
                       class="left_form_item"
                       style="width: 120px"
                     >
@@ -507,11 +508,11 @@
                         <el-upload
                           :action="doUpload"
                           list-type="picture-card"
-                          :file-list="resUpdata[0] ? [resUpdata[0]] : []"
-                          :on-success="handleDownSuccess"
+                          :file-list="resUpdata[imgItem-1] ? [resUpdata[imgItem-1]] : []"
+                          :on-success="res=>handleDownSuccess(res, imgItem)"
                           :on-preview="handlePictureCardPreview_res"
                           :before-upload="beforeUpload_res"
-                          :on-remove="handleRemoveR"
+                          :on-remove="(file, fileList)=>handleRemoveR(file, fileList, imgItem)"
                         >
                           <i class="el-icon-plus"></i>
                         </el-upload>
@@ -520,63 +521,19 @@
                         </el-dialog>
                       </div>
                     </el-form-item>
-                    <el-form-item
-                      label=""
-                      prop="mImg"
-                      class="left_form_item"
-                      style="width: 120px"
-                    >
-                      <div class="upload_img_wrap" style="width: 120px">
-                        <el-upload
-                          :action="doUpload"
-                          list-type="picture-card"
-                          :file-list="resUpdata[1] ? [resUpdata[1]] : []"
-                          :on-success="handleDownSuccess"
-                          :on-preview="handlePictureCardPreview_res"
-                          :before-upload="beforeUpload_res"
-                          :on-remove="handleRemoveR"
-                        >
-                          <i class="el-icon-plus"></i>
-                        </el-upload>
-                      </div>
-                    </el-form-item>
-                    <el-form-item
-                      label=""
-                      prop="mImg"
-                      class="left_form_item"
-                      style="width: 120px"
-                    >
-                      <div class="upload_img_wrap" style="width: 120px">
-                        <el-upload
-                          :action="doUpload"
-                          list-type="picture-card"
-                          :file-list="resUpdata[2] ? [resUpdata[2]] : []"
-                          :on-success="handleDownSuccess"
-                          :on-preview="handlePictureCardPreview_res"
-                          :before-upload="beforeUpload_res"
-                          :on-remove="handleRemoveR"
-                        >
-                          <i class="el-icon-plus"></i>
-                        </el-upload>
-                      </div>
-                    </el-form-item>
+                    
                   </el-row>
-                  <el-form-item
-                    v-else
-                    label=""
-                    prop="mImg"
-                    class="left_form_item"
-                  >
+                  <el-form-item v-else label="" class="left_form_item">
                     <div class="upload_img_wrap" style="width: 120px">
                       <el-upload
                         :action="doUpload"
                         list-type="picture-card"
                         :file-list="resUpdata"
                         :limit="1"
-                        :on-success="handleDownSuccess"
+                        :on-success="res=>handleDownSuccess(res, 1)"
                         :on-preview="handlePictureCardPreview_res"
                         :before-upload="beforeUpload_res"
-                        :on-remove="handleRemoveR"
+                        :on-remove="(file, fileList)=>handleRemoveR(file, fileList, 1)"
                       >
                         <i class="el-icon-plus"></i>
                       </el-upload>
@@ -1068,6 +1025,51 @@ export default {
     this.getDataFun((this.$route.query || {}).resID);
   },
   methods: {
+    // 组装要显示的资源图片
+    /* constructResImg() {
+      console.log("资源图片", this.recForm.fullViewUrl);
+      if (
+        this.recForm.fullViewUrl !== "" &&
+        this.recForm.fullViewUrl !== undefined &&
+        this.recForm.fullViewUrl !== null
+      ) {
+        this.recForm.fullViewUrl.split(",").forEach((item, index) => {
+          let resImg = { name: "资源图片", url: item };
+          this.resUpdata.push(resImg);
+        });
+      } else {
+        let uid = this.sessionData.uID;
+        let params = {
+          uid: uid,
+          token: this.sessionData.token,
+          ptype: "restype",
+          ptid: this.resData.resID,
+        };
+        api
+          .getApi(this.apiVar.UCAPI + "/GetImg", params)
+          .then((res) => {
+            console.log("资源图片的信息", res);
+            this.resUpdata = [];
+            if (res.data.length === 0) {
+              console.log("暂时没有该资源的图片");
+            } else if (Array.isArray(res.data)) {
+              res.data.forEach((item) => {
+                let resImg = { name: item.pAlt, url: item.pURL };
+                this.resUpdata.push(resImg);
+                if (this.recForm.fullViewUrl) {
+                  this.recForm.fullViewUrl =
+                    this.recForm.fullViewUrl + "," + item.pURL;
+                } else {
+                  this.recForm.fullViewUrl = item.pURL;
+                }
+              });
+            }
+          })
+          .catch((err) => {
+            console.log("error", err);
+          });
+      }
+    }, */
     // 小区数据填充
     setFormData(resData) {
       if (resData.latLng.includes(",")) {
@@ -1089,7 +1091,7 @@ export default {
         peopleFlowrate: resData.peopleFlow || "", // 人流量
         carNumber: resData.parking || "", // 车位数
         carFlowrate: resData.carFlow || "", // 车流量
-        buildingPrice: (resData.hPrice/100).toFixed(0), // 楼盘价格
+        buildingPrice: (resData.hPrice / 100).toFixed(0), // 楼盘价格
         liveTime: resData.chDay || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度
@@ -1714,17 +1716,19 @@ export default {
       return isJPG && isLt2M;
     },
     // 资源图片上传成功
-    handleDownSuccess(res) {
+    handleDownSuccess(res, index) {
       console.log("上传资源图片", res);
+      let pURL = res[0].pURL;
       if (this.recForm.fullViewUrl) {
-        this.recForm.fullViewUrl = this.recForm.fullViewUrl + "," + res[0].pURL;
+        this.recForm.fullViewUrl = this.recForm.fullViewUrl + "," + pURL;
       } else {
-        this.recForm.fullViewUrl = res[0].pURL;
+        this.recForm.fullViewUrl = pURL;
       }
-      console.log("this.recForm", this.recForm, this.recForm.fullViewUrl);
+      this.resUpdata[index-1] = { name: "资源图片", url: pURL };
+      console.log("resUpdata", this.resUpdata);
     },
     // 删除原资源图片，进行重新选择
-    handleRemoveR(file, fileList) {
+    handleRemoveR(file, fileList, index) {
       console.log("删除或修改了资源图片", file, fileList);
       if (this.recForm.fullViewUrl && file.url) {
         let tempPicArr = this.recForm.fullViewUrl.split(",");
@@ -1735,6 +1739,8 @@ export default {
             return file.url != item;
           }
         });
+        this.resUpdata.splice(index-1, 1);
+        console.log("resUpdata", this.resUpdata);
         this.recForm.fullViewUrl = resArr.join(",");
       }
     },
@@ -1744,7 +1750,7 @@ export default {
       this.resImgUrl = file.url;
       this.resImgDialog = true;
     },
-    // 表单验证 resFrom:资源表单
+    /* // 表单验证 resFrom:资源表单
     submitForm() {
       console.log("校验开始-----------");
       this.submitBtnIsAble = true;
@@ -1794,8 +1800,8 @@ export default {
           sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
           return false;
         });
-    },
-    //重置表单数据
+    }, */
+    /* //重置表单数据
     resetForm() {
       this.$refs["recForm"].resetFields();
     },
@@ -1806,7 +1812,7 @@ export default {
         this.$refs["recForm"].clearValidate();
         clearTimeout(timer);
       }, 500);
-    },
+    }, */
     // 通过点击添加媒体跳转而来直接滚动到底部
     scrollBottom() {
       let timer = setTimeout(() => {

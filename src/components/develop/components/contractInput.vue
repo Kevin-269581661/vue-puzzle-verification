@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 23:50:11
+ * @LastEditTime: 2021-07-13 01:01:57
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -101,19 +101,6 @@
                     </el-date-picker>
                   </el-form-item>
                 </el-col>
-                <!-- <el-col v-if="handleType == 0 || handleType == 2" :span="6">
-                  <el-form-item label="合同媒体数量" prop="mediaNewCnt">
-                    <el-input-number
-                      v-model="contractForm.mediaNewCnt"
-                      controls-position="right"
-                      placeholder="请输入合同媒体数量"
-                      :min="1"
-                      :max="999"
-                      :precision="0"
-                    ></el-input-number>
-                  </el-form-item>
-                </el-col> -->
-                <!-- <template v-else> -->
                 <el-col :span="6">
                   <el-form-item label="新增媒体数量" prop="mediaNewCnt">
                     <el-input-number
@@ -461,6 +448,10 @@ export default {
       type: [Number, String],
       default: () => 0,
     },
+    edit: {
+      type: Boolean,
+      default: () => false,
+    },
     dcID: {
       type: [Number, String],
       default: () => "",
@@ -533,7 +524,7 @@ export default {
         endDate: "", // 合同结束日期
         ownership: "", // 到期门体归属权
         remark: "", // 合同备注
-        mediaNewCnt: "", // 合同媒体数量（首签和加门都是新增）
+        mediaNewCnt: 1, // 合同媒体数量（首签和加门都是新增）
         demolishMediaIDs: [], // 合同拆除媒体
 
         freeCarGateCnt: "", // 赠送车场道闸
@@ -598,6 +589,7 @@ export default {
         mediaNewCnt: [
           { required: true, message: "请输入合同媒体数量!", trigger: "blur" },
           { type: "number", message: "请输入数值!", trigger: "blur" },
+          { validator: this.checkMediaNewCnt, trigger: "blur" },
         ],
         demolishMediaIDs: [
           {
@@ -660,7 +652,6 @@ export default {
       },
 
       fileList: [],
-      PathHaveEdit: false, // 新建/编辑
       doUpload: this.apiVar.qadnUrl + "/advertisement/UpLoad",
 
       resData: { resID: "" }, // 创建资源成功，保存返回来的数据
@@ -713,6 +704,14 @@ export default {
         callback();
       }
     },
+    // 加门合同，新增数量不能为0
+    checkMediaNewCnt(rule, value, callback) {
+      if (this.handleType == 2 && value == 0) {
+        callback(new Error("加门合同，新增数量不能为0!"));
+      } else {
+        callback();
+      }
+    },
     // 拆除媒体不能全选
     checkDemolishMedia(rule, value, callback) {
       if (value) {
@@ -759,7 +758,7 @@ export default {
             if (this.handleType >= 0) {
               this.resFormData.pmcName = tempResultObj.pmcName || "";
             }
-            if (this.handleType == 2) {
+            if (this.handleType == 2 && !this.edit) {
               // 加门合同只保留部分信息
               this.contractForm.id = tempResultObj.id;
               this.contractForm.contactsName = tempResultObj.contactsName || "";
@@ -1064,7 +1063,9 @@ export default {
   line-height: 32px;
   text-align: left;
 }
-
+/deep/ .el-input-number .el-input__suffix {
+  right: 42px !important;
+}
 /deep/ .el-form-item {
   margin-bottom: 16px;
 }

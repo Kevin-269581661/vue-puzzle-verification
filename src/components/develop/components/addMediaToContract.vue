@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 17:30:20
+ * @LastEditTime: 2021-07-13 01:00:09
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -217,7 +217,6 @@
                     size="small"
                     v-model="item.adLimit"
                     multiple
-                    collapse-tags
                     placeholder="请选择广告限制"
                   >
                     <el-option

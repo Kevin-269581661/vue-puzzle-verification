@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 22:41:06
+ * @LastEditTime: 2021-07-13 00:36:14
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -223,7 +223,7 @@
       top="22vh"
       :show-close="false"
       :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper form-dialog"
+      custom-class="custom-dialog-wrapper custom-confirm-dialog form-dialog"
     >
       <div class="content-form">
         <el-input
@@ -724,7 +724,7 @@ export default {
         payType,
         finishYear: finishYear + "",
         planPayTotal,
-        actualPayTotal: Number(actualPayTotal / 100).toFixed(0),
+        actualPayTotal: Number(actualPayTotal / 100),
         bankAccount,
         bankName,
         remark,
@@ -913,7 +913,7 @@ export default {
 /* 不通过理由 */
 /deep/ .form-dialog {
   .el-dialog__header {
-    padding: 16px 24px 24px;
+    padding: 16px 24px 24px !important;
   }
 }
 /* 付款记录 */

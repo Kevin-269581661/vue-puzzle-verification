@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 19:58:22
+ * @LastEditTime: 2021-07-13 00:58:33
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -384,9 +384,10 @@
               </el-row>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
-                  <el-form-item label="其他社区广告" prop="otherAd">
+                  <el-form-item label="其它社区广告" prop="otherAd">
                     <el-select
                       v-model="recForm.otherAd"
+                      multiple
                       placeholder="请选择已有的其他社区广告"
                     >
                       <el-option
@@ -730,7 +731,7 @@ export default {
         carFlowrate: "", // 车流量
         liveRate: undefined, // 入住率
         liftType: "", // 有无电梯
-        otherAd: "", // 同社区其他广告
+        otherAd: [], // 同社区其他广告
         buildingPrice: "", // 楼盘价格
         liveTime: "",
         lng: "",
@@ -1103,7 +1104,7 @@ export default {
         lng: resData.latLng.split(";")[1], // 纬度
         discount: resData.discount || "",
         liveRate: resData.liveRate || "",
-        otherAd: resData.otherAd || "",
+        otherAd: resData.otherAd?(resData.otherAd).split(","):[],
         // 房价网信息
         resAlias: resData.alias || "", // 资源别名
         addressAlias: resData.addressAlias || "", // 地址别名
@@ -1639,7 +1640,7 @@ export default {
         fullViewUrl: this.recForm.fullViewUrl, // 资源图片
         liftType: this.recForm.liftType,
         liveRate: this.recForm.liveRate,
-        otherAd: this.recForm.otherAd || "",
+        otherAd: this.recForm.otherAd.join(","),
 
         city: this.resAddres.city,
         district: this.resAddres.area,
@@ -1854,7 +1855,7 @@ export default {
         fullViewUrl: recObj.fullViewUrl || "",
         liftType: recObj.liftType,
         liveRate: recObj.liveRate,
-        otherAd: recObj.otherAd || "",
+        otherAd: recObj.otherAd.join(","),
         // 房价网信息
         resAlias: recObj.resAlias || "", // 资源别名
         addressAlias: recObj.addressAlias, // 地址别名

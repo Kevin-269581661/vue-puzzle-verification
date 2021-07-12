@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 11:24:03
+ * @LastEditTime: 2021-07-12 15:32:00
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -131,7 +131,7 @@
           </el-row>
         </el-form>
 
-        <div class="table_wrap">
+        <div>
           <el-table
             border
             :data="contractList"
@@ -164,7 +164,9 @@
               fixed="left"
             >
               <template slot-scope="scope">
-                <span>{{ (scope.row.originName||"待定").replace(",", "/") }}</span>
+                <span>{{
+                  (scope.row.originName || "待定").replace(",", "/")
+                }}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -258,7 +260,7 @@
             <el-table-column
               prop="contractNo"
               label="合同编号"
-              width="120"
+              width="140"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -268,7 +270,7 @@
             <el-table-column
               prop="createTime"
               label="创建日期"
-              width="150"
+              width="170"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -1090,8 +1092,13 @@ a {
     border-radius: 0 4px 4px 0;
   }
 }
+@media all and (max-width: 1680px) {
+  .row-btn-group {
+    width: 100%;
+  }
+}
 .row-btn-group {
-  clear: both;
+  white-space: nowrap;
   margin-bottom: 16px;
 }
 .media-status-dot {

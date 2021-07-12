@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 14:14:12
+ * @LastEditTime: 2021-07-12 15:42:21
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -770,6 +770,7 @@ export default {
             }
             if (this.handleType == 2) {
               // 加门合同只保留部分信息
+              this.contractForm.id = tempResultObj.id;
               this.contractForm.contactsName = tempResultObj.contactsName || "";
               this.contractForm.contactsPhone =
                 tempResultObj.contactsPhone || "";

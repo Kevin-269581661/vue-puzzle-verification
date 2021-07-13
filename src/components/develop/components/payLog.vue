@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 00:36:14
+ * @LastEditTime: 2021-07-13 11:34:31
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -480,17 +480,17 @@ export default {
         0: {
           label: "待审核",
           color: "#FAAD14",
-          url: "../../../static/images/payWait.png",
+          url: "../../../static/images/payReview.png",
         },
         1: {
           label: "待付款",
           color: "#FAAD14",
-          url: "../../../static/images/payFail.png",
+          url: "../../../static/images/payWait.png",
         },
         2: {
           label: "待开票",
           color: "#FAAD14",
-          url: "../../../static/images/payFail.png",
+          url: "../../../static/images/payBill.png",
         },
         3: {
           label: "已完成",

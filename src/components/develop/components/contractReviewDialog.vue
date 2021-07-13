@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 14:21:35
+ * @LastEditTime: 2021-07-13 18:22:21
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -31,7 +31,12 @@
         </el-row>
       </div>
       <!-- 附件 -->
-      <div v-if="fileList.length" class="emphasize-text">附件</div>
+      <div v-if="fileList.length" class="emphasize-text">
+        附件
+        <span class="download-all" @click="downloadAll(fileList)"
+          >下载全部</span
+        >
+      </div>
       <el-row :gutter="46" class="content-row">
         <el-col :span="8">
           <div v-for="(item, index) in fileList" :key="index" class="file-item">
@@ -121,7 +126,7 @@ export default {
     },
     reasonVisible(val) {
       this.disagreeTxt = "";
-    }
+    },
   },
   created() {},
   methods: {
@@ -136,14 +141,17 @@ export default {
             let tempObj = res.data.data || {};
             for (const key in tempObj) {
               if (Object.hasOwnProperty.call(tempObj, key)) {
-                if(tempObj[key]==undefined||tempObj[key]==null) {
-                  tempObj[key]="--";
+                if (tempObj[key] == undefined || tempObj[key] == null) {
+                  tempObj[key] = "--";
                 }
               }
             }
             let tempBaseInfoArr = [];
-            if(tempObj.dcState==-1) {
-              tempBaseInfoArr.push({ label: "不通过原因", value: tempObj.failReason })
+            if (tempObj.dcState == -1) {
+              tempBaseInfoArr.push({
+                label: "不通过原因",
+                value: tempObj.failReason,
+              });
             }
             this.detailArr = [
               {
@@ -159,7 +167,7 @@ export default {
                   { label: "合同媒体数", value: tempObj.mediaCnt },
                   { label: "合同签约日期", value: tempObj.signDate },
                   ...tempBaseInfoArr,
-                  { label: "合同备注", value: tempObj.remark||"--" },
+                  { label: "合同备注", value: tempObj.remark || "--" },
                 ],
               },
               {
@@ -242,6 +250,10 @@ export default {
           this.$message.warning(res.data.MSG || "");
         }
       });
+    },
+    // 下载全部附件
+    downloadAll(fileList = []) {
+      fileList.forEach((item) => this.downloadFile(item));
     },
     // 下载附件
     downloadFile(item) {
@@ -366,6 +378,7 @@ export default {
     padding: 0 23px;
   }
   .emphasize-text {
+    display: flex;
     padding: 10px 16px;
     margin: 24px 12px 8px;
     line-height: 22px;
@@ -373,6 +386,13 @@ export default {
     font-weight: 600;
     background: #f5f6fa;
     color: #333333;
+    .download-all {
+      margin-left: auto;
+      font-weight: 400;
+      font-size: 14px;
+      color: #1890ff;
+      cursor: pointer;
+    }
   }
   .detail-item {
     display: flex;
@@ -463,6 +483,7 @@ export default {
     }
   }
   .el-dialog__body {
+    min-height: 320px;
     padding-bottom: 24px !important;
   }
   .el-dialog__footer {

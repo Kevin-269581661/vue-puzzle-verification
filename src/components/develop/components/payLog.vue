@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 11:34:31
+ * @LastEditTime: 2021-07-13 18:45:16
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -189,7 +189,12 @@
                 </span>
               </li>
               <div v-if="logItem.fileList.length" class="append-box">
-                <div class="append-box__title">附件</div>
+                <div class="append-box__title">
+                  附件
+                  <span class="download-all" @click="downloadAll(logItem.fileList)"
+                    >下载全部</span
+                  >
+                </div>
                 <div
                   v-for="(fileitem, fileIndex) in logItem.fileList"
                   :key="fileIndex"
@@ -558,6 +563,10 @@ export default {
       } else {
         return false;
       }
+    },
+    // 下载全部附件
+    downloadAll(fileList = []) {
+      fileList.forEach((item) => this.downloadFile(item));
     },
     // 下载附件
     downloadFile(item) {
@@ -1022,6 +1031,7 @@ export default {
     margin-top: 8px;
     border: 1px solid #e8e8e8;
     .append-box__title {
+      display: flex;
       height: 40px;
       line-height: 40px;
       padding: 0 12px;
@@ -1029,6 +1039,13 @@ export default {
       font-weight: 600;
       background: #f5f6fa;
       color: rgba(0, 0, 0, 0.85);
+      .download-all {
+        margin-left: auto;
+        font-weight: 400;
+        font-size: 14px;
+        color: #1890ff;
+        cursor: pointer;
+      }
     }
     .file-item {
       display: flex;

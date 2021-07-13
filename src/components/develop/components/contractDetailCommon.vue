@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 17:27:18
+ * @LastEditTime: 2021-07-13 17:59:26
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -31,7 +31,7 @@
           v-for="(item, index) in operationArr"
           :key="index"
           size="mini"
-          :type="item=='编辑'?'primary':'default'"
+          :type="item == '编辑' ? 'primary' : 'default'"
           @click="handleContract(contractObj, item)"
           >{{ item }}</el-button
         >
@@ -618,8 +618,39 @@ export default {
               tempBaseInfoArr.push({
                 label: "不通过原因",
                 value: tempObj.failReason,
-                tip: true
+                tip: true,
               });
+            }
+            let selectDevFee = [],
+              selectVenFee = [];
+            if (tempObj.isDevFee) {
+              selectDevFee = [
+                { label: "开发费付款方式", value: tempObj.devPayType },
+                { label: "开发费", value: moneyFormat(tempObj.devFee / 100) },
+                {
+                  label: "开发费应付日期",
+                  value: String(tempObj.devDate || "").replace(
+                    /(\d{1,})(\d{2})$/,
+                    "$1月$2日"
+                  ),
+                },
+              ];
+            }
+            if (tempObj.isVenueFee) {
+              selectVenFee = [
+                { label: "场地费付款方式", value: tempObj.venuePayType },
+                {
+                  label: "场地费",
+                  value: moneyFormat(tempObj.venueFee / 100),
+                },
+                {
+                  label: "场地费应付日期",
+                  value: String(tempObj.venueDate || "").replace(
+                    /(\d{1,})(\d{2})$/,
+                    "$1月$2日"
+                  ),
+                },
+              ];
             }
             this.detailArr = [
               {
@@ -661,31 +692,12 @@ export default {
                     label: "是否有场地费",
                     value: tempObj.isVenueFee ? "是" : "否",
                   },
-                  { label: "场地费付款方式", value: tempObj.venuePayType },
-                  {
-                    label: "场地费",
-                    value: moneyFormat(tempObj.venueFee / 100),
-                  },
-                  {
-                    label: "场地费应付日期",
-                    value: String(tempObj.venueDate || "").replace(
-                      /(\d{1,})(\d{2})$/,
-                      "$1月$2日"
-                    ),
-                  },
+                  ...selectVenFee,
                   {
                     label: "是否有开发费",
                     value: tempObj.isDevFee ? "是" : "否",
                   },
-                  { label: "开发费付款方式", value: tempObj.devPayType },
-                  { label: "开发费", value: moneyFormat(tempObj.devFee / 100) },
-                  {
-                    label: "开发费应付日期",
-                    value: String(tempObj.devDate || "").replace(
-                      /(\d{1,})(\d{2})$/,
-                      "$1月$2日"
-                    ),
-                  },
+                  ...selectDevFee,
                 ],
               },
             ];
@@ -894,7 +906,7 @@ export default {
     word-spacing: -1em;
     font-size: 14px;
     .el-button--default {
-      border-color: #D9D9D9FF;
+      border-color: #d9d9d9ff;
     }
     .el-button + .el-button {
       margin-left: 8px;

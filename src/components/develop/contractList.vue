@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 14:09:44
+ * @LastEditTime: 2021-07-13 18:30:48
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -165,7 +165,7 @@
             >
               <template slot-scope="scope">
                 <span>{{
-                  (scope.row.originName || "待定").replace(",", "/")
+                  (scope.row.originName || "待定").replace(/,/g, "/")
                 }}</span>
               </template>
             </el-table-column>
@@ -303,7 +303,7 @@
                   :content="`原因：
                   ${
                     scope.row[stateList[scope.row.dcState].tip].replace(
-                      ',',
+                      /,/g,
                       '、'
                     ) || '--'
                   }`"

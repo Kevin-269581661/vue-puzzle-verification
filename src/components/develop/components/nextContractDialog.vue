@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 09:17:27
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 17:38:43
+ * @LastEditTime: 2021-07-13 15:17:21
  * @FilePath: /frontend/src/components/develop/components/nextContractDialog.vue
 -->
 <template>
@@ -88,8 +88,8 @@ export default {
                   dcIDAndOriginID == `${originItem.dcID},${originItem.originID}`
                 ) {
                   this.mergeOriginList = [dcIDAndOriginID];
+                  break;
                 }
-                break;
               }
             }
           } else {

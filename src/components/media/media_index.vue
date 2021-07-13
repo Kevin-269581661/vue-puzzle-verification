@@ -267,7 +267,7 @@
                   <el-table-column label="操作">
                     <template slot-scope="scope">
                       <el-popconfirm
-                        v-if="scope.row.mState == 2"
+                        v-if="installOrDemolish == 'installList'"
                         popper-class="handle-btn-pop"
                         placement="top-end"
                         confirm-button-text="是"
@@ -781,6 +781,7 @@ export default {
         1: "正常",
         2: "待安装",
         3: "待维修",
+        4: "已拆除"
       },
       // 安装或拆除媒体切换
       installOrDemolish: "installList",

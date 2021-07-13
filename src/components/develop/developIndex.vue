@@ -41,7 +41,7 @@
                 <h4>
                   <span>
                     近
-                    <span class="tip-active">{{ maxDayDiffer }}</span>
+                    <span class="tip-active">{{ maxDayDiffCnt }}</span>
                     天内，待处理的预警合同共有
                     <span class="tip-active">{{
                       contractWarningList.length
@@ -402,7 +402,7 @@ export default {
       },
       // 合同预警列表
       contractWarningList: [],
-      maxDayDiffer: 0,
+      maxDayDiffCnt: 0,
       contractTypeArr: {
         0: "首签合同",
         1: "续签合同",
@@ -626,15 +626,9 @@ export default {
           token: this.sessionData.token,
         })
         .then((res) => {
-          if (res.data.SysCode === 200200) {
-            this.contractWarningList = res.data.data || [];
-            this.maxDayDiffer = this.contractWarningList.reduce((pre, cur) => {
-              if (cur.dayDiffer > pre) {
-                return cur.dayDiffer;
-              } else {
-                return pre;
-              }
-            }, 1);
+          if (res.data.SysCode === 200200 && res.data.data) {
+            this.contractWarningList = res.data.data.hpDevWarnDataList || [];
+            this.maxDayDiffCnt = res.data.data.maxDayDiffCnt||"";
           } else {
             this.$message.warning(res.data.MSG);
           }

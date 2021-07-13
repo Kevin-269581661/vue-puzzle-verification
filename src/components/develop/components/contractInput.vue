@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 09:49:58
+ * @LastEditTime: 2021-07-13 11:12:46
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -755,7 +755,8 @@ export default {
             });
             this.resFormData.resName = tempResultObj.resName || "";
             this.resFormData.resID = tempResultObj.resID || "";
-            if (this.handleType >= 0) {
+            if (this.handleType > 0) {
+              // 首签编辑除外
               this.resFormData.pmcName = tempResultObj.pmcName || "";
             }
             if (this.handleType == 2 && !this.edit) {

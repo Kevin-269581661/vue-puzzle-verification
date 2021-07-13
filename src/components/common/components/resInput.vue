@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 00:58:33
+ * @LastEditTime: 2021-07-13 11:07:52
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -991,33 +991,6 @@ export default {
       queryTimeout: null,
       fangJiaWangPrivateCity: [], // 房价网权限城市
     };
-  },
-  computed: {
-    /* changeLatLng() {
-      if (
-        this.resAddres.city &&
-        this.resAddres.area &&
-        this.recForm.resName &&
-        this.recForm.resaddr
-      ) {
-        return (
-          this.resAddres.city +
-          this.resAddres.area +
-          this.recForm.resName +
-          this.recForm.resaddr
-        );
-      } else {
-        return false;
-      }
-    }, */
-  },
-  watch: {
-    /* changeLatLng(val) {
-      clearTimeout(this.queryTimeout);
-      this.queryTimeout = setTimeout(() => {
-        this.querySearchAsync(val);
-      }, 500);
-    }, */
   },
   created() {
     this.getFangJiaWangCity();

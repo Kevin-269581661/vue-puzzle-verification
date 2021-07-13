@@ -8,12 +8,14 @@
     <div class="list-wrap">
       <h5>消息列表</h5>
       <div class="table-wrap">
-        <el-row class="input-wrap">
-          <el-col :span="7">
-            <span>消息类型:</span>
+        <el-row :gutter="46" class="custom-form-row">
+          <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" class="form-item-wrap">
+            <span class="form-item__laber">消息类型：</span>
             <el-select
+              class="form-item__content"
               v-model="searchInfo.messageType"
               placeholder="请选择消息类型"
+              size="small"
               clearable
             >
               <el-option
@@ -24,12 +26,13 @@
               ></el-option>
             </el-select>
           </el-col>
-          <el-col :span="7">
-            <span>消息日期:</span>
+          <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" class="form-item-wrap">
+            <span class="form-item__laber">消息日期：</span>
             <el-date-picker
-              class="input-with-select"
+              class="form-item__content"
               v-model="searchInfo.date"
               type="daterange"
+              size="small"
               range-separator="-"
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
@@ -38,14 +41,16 @@
             >
             </el-date-picker>
           </el-col>
-          <el-col :span="7">
-            <span>消息内容:</span>
+          <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" class="form-item-wrap">
+            <span class="form-item__laber">消息内容：</span>
             <el-input
+              class="form-item__content"
               v-model="searchInfo.info"
               placeholder="请输入消息内容"
+              size="small"
             ></el-input>
           </el-col>
-          <el-col :span="3" style="text-align: right">
+          <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" style="text-align: right" class="form-item-wrap">
             <el-button type="primary" icon="el-icon-search" @click="search()"
               >搜索</el-button
             >
@@ -234,16 +239,24 @@ export default {
   box-sizing: border-box;
 }
 
-/deep/ .input-wrap .el-input,
-/deep/ .input-wrap .el-input__inner,
-/deep/ .input-wrap .el-range-editor.el-input__inner {
-  height: 32px;
-  width: 240px;
-}
-
-/deep/ .input-wrap .el-date-editor .el-range__icon,
-/deep/ .input-wrap .el-date-editor .el-range-separator {
-  line-height: 26px;
+.custom-form-row {
+  .form-item-wrap {
+    display: flex;
+    align-items: center;
+    flex-flow: row nowrap;
+    margin-bottom: 16px;
+    .form-item__laber {
+      white-space: nowrap;
+      color: rgba(0,0,0,0.65);
+    }
+    .form-item__content {
+      flex-grow: 1;
+    }
+    .el-button + .el-button {
+      word-spacing: -1em;
+      margin-left: 16px;
+    }
+  }
 }
 
 /deep/ .el-button {
@@ -263,10 +276,6 @@ export default {
   margin: 100px 0 120px;
   text-align: center;
 }
-.mess-ul {
-  margin-top: 16px;
-}
-
 .mess-li {
   border-radius: 4px 4px 0px 0px;
   border: 1px solid #e8e8e8;

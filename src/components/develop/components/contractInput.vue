@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 13:33:15
+ * @LastEditTime: 2021-07-13 14:54:14
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -666,12 +666,17 @@ export default {
     this.getContractDetail(this.dcID);
   },
   mounted: function () {
-    console.log("handleType", this.handleType);
     if (this.handleType) {
       this.getDemolishMediaList();
     }
   },
   methods: {
+    // 续签、补充协议的新增媒体数都应默认初始为0
+    resetMediaNewCnt() {
+      if (!this.edit && (this.handleType == 1 || this.handleType == 3)) {
+        this.$set(this.contractForm, "mediaNewCnt", 0);
+      }
+    },
     // 开发费重置
     isDevFeeChange() {
       this.contractForm.devPayType = "";
@@ -706,7 +711,7 @@ export default {
     },
     // 加门合同，新增数量不能为0
     checkMediaNewCnt(rule, value, callback) {
-      if ((this.handleType == 2 || this.handleType == 0)  && value == 0) {
+      if ((this.handleType == 2 || this.handleType == 0) && value == 0) {
         callback(new Error("新增媒体数量不能为0!"));
       } else {
         callback();
@@ -793,6 +798,7 @@ export default {
                 this.contractForm[key] = tempValue;
               }
             }
+            this.resetMediaNewCnt();
             if (this.startDate) {
               // 合同续签时合同开始日期
               this.contractForm.startDate = this.startDate;

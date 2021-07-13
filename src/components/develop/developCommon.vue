@@ -110,13 +110,12 @@
         },
         computed:{
             isActive(val) {
-                console.log(val, 'isActive', this.$route.path)
                 let path = this.$route.path
                 let routePath = ''
-                if (path.includes('/createAccount')) {
-                    // routePath = '/admin/accountList'
+                if (path.includes('/contractDetail')) {
+                    routePath = '/f_develop/contractList'
                 } else if(path.includes('/mediaDetail')){
-                    // routePath = '/admin/mediaList'
+                    routePath = '/f_develop/mediaList'
                 } else {
                     routePath = path
                 }

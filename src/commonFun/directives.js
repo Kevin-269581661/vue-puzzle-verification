@@ -26,22 +26,4 @@ directives.preventReClick = Vue.directive('preventReClick', {
     }
 })
 
-// v-trackEventMatomo="{ path: $route.path, componentName: $options.name }"
-directives.trackEventMatomo = Vue.directive('trackEventMatomo', {
-    bind: function (el, binding, vnode) {
-        el.addEventListener('click', () => {
-            console.log("el=====",
-            {
-                path: binding.value.path,
-                componentName: binding.value.componentName,
-                text: el.innerText,
-                asName: userInfo.asName,
-                uType: userInfo.uType,
-                username: userInfo.username,
-                tag: vnode.tag,
-            })
-        })
-    }
-})
-
 export default directives;

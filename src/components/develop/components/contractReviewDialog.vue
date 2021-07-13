@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 23:48:01
+ * @LastEditTime: 2021-07-13 09:59:52
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -31,8 +31,8 @@
         </el-row>
       </div>
       <!-- 附件 -->
-      <div class="emphasize-text">附件</div>
-      <el-row v-if="fileList.length" :gutter="46" class="content-row">
+      <div v-if="fileList.length" class="emphasize-text">附件</div>
+      <el-row :gutter="46" class="content-row">
         <el-col :span="8">
           <div v-for="(item, index) in fileList" :key="index" class="file-item">
             <i class="el-icon-document"></i>
@@ -458,6 +458,9 @@ export default {
         cursor: pointer;
       }
     }
+  }
+  .el-dialog__body {
+    padding-bottom: 24px !important;
   }
   .el-dialog__footer {
     word-spacing: -1em;

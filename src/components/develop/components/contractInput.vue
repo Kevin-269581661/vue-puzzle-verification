@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 01:01:57
+ * @LastEditTime: 2021-07-13 09:49:58
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -706,8 +706,8 @@ export default {
     },
     // 加门合同，新增数量不能为0
     checkMediaNewCnt(rule, value, callback) {
-      if (this.handleType == 2 && value == 0) {
-        callback(new Error("加门合同，新增数量不能为0!"));
+      if ((this.handleType == 2 || this.handleType == 0)  && value == 0) {
+        callback(new Error("新增媒体数量不能为0!"));
       } else {
         callback();
       }

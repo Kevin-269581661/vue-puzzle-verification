@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 01:00:09
+ * @LastEditTime: 2021-07-13 10:47:24
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -54,7 +54,7 @@
           width="54px"
           type="selection"
           align="center"
-          :reserve-selection="true"
+          :reserve-selection="false"
         >
         </el-table-column>
       </template>
@@ -64,13 +64,12 @@
           type="primary"
           @click="
             addMediaToContract(
-              selectionMediaList
-                .reduce((pre, cur) => {
-                  if (cur.mID) {
-                    pre.push(cur.mID);
-                  }
-                  return pre;
-                }, [])
+              selectionMediaList.reduce((pre, cur) => {
+                if (cur.mID) {
+                  pre.push(cur.mID);
+                }
+                return pre;
+              }, [])
             )
           "
           >确 定</el-button
@@ -471,10 +470,10 @@ export default {
   },
   watch: {
     newMediaVisible(val) {
-      if(val) {
+      if (val) {
         this.getADLimit();
       }
-    }
+    },
   },
   created() {
     this.sessionData = sessFun.getSess();
@@ -527,7 +526,7 @@ export default {
         api.postApi_new(this.apiVar.Media, params).then((res) => {
           if (res.data.SysCode == 200200) {
             this.newMediaVisible = false;
-            this.addMediaToContract((res.data.data || []));
+            this.addMediaToContract(res.data.data || []);
             this.$message.success(res.data.MSG || "媒体创建成功!");
           } else {
             this.$message.warning(res.data.MSG || "媒体创建失败！");
@@ -596,8 +595,12 @@ export default {
     },
     // 显示已有媒体列表
     showMediaList() {
-      this.addMediaVisible = true;
-      this.getMediaList();
+      if (this.currentContract.surplusInstallCnt > 0) {
+        this.addMediaVisible = true;
+        this.getMediaList();
+      } else {
+        this.$message.warning("该合同新增媒体数量已满足！");
+      }
     },
     // 表格勾选媒体数据
     selectionChange(selection) {
@@ -612,7 +615,7 @@ export default {
       api
         .postApi("/addsp/devContract/linkNewMedia", {
           dcID: this.currentContract.id,
-          mIDs: mediaList.join(",")
+          mIDs: mediaList.join(","),
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -627,7 +630,7 @@ export default {
       api
         .postApi_json("/addsp/devContract/synDcState", {
           dcID: this.currentContract.id,
-          state: 0
+          state: 0,
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
@@ -646,12 +649,10 @@ export default {
     getMediaList() {
       this.loading = true;
       api
-        .getApi(
-          "/addsp/devContract/installMediaList", {
-            resID: this.currentContract.resID,
-            excludeDcID: this.currentContract.id
-          }
-        )
+        .getApi("/addsp/devContract/installMediaList", {
+          resID: this.currentContract.resID,
+          excludeDcID: this.currentContract.id,
+        })
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let tempMediaStatus = {

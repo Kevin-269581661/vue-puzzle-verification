@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 23:11:20
+ * @LastEditTime: 2021-07-13 10:00:55
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -28,7 +28,7 @@
               <el-form-item label="关键字：" :prop="searchInfo.keywordType">
                 <el-input
                   placeholder="请输入内容"
-                  v-model="searchInfo[searchInfo.keywordType]"
+                  v-model.trim="searchInfo[searchInfo.keywordType]"
                   size="small"
                   class="search-row-item"
                 >

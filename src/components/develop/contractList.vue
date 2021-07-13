@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 10:00:55
+ * @LastEditTime: 2021-07-13 14:09:44
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -204,7 +204,7 @@
             </el-table-column>
             <el-table-column
               prop="installMediaCnt"
-              label="已装媒体数"
+              label="新装媒体数"
               min-width="100"
               align="right"
             >

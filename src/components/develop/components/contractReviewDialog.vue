@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 09:59:52
+ * @LastEditTime: 2021-07-13 14:21:35
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -119,6 +119,9 @@ export default {
         newVal && this.dcID && this.getContractDetail();
       },
     },
+    reasonVisible(val) {
+      this.disagreeTxt = "";
+    }
   },
   created() {},
   methods: {

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 11:12:46
+ * @LastEditTime: 2021-07-13 13:33:15
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -750,6 +750,7 @@ export default {
             const tempResultObj = res.data.data || {};
             Object.assign(this.additional, {
               id: tempResultObj.id,
+              dcState: tempResultObj.dcState,
               // 补充协议保留原合同编号
               contractNo: tempResultObj.contractNo,
             });

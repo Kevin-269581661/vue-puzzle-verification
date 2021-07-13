@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 23:48:23
+ * @LastEditTime: 2021-07-13 13:24:06
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>

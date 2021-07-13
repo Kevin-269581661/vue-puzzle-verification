@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-09 17:44:21
+ * @LastEditTime: 2021-07-13 13:38:54
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -64,6 +64,9 @@
             <el-button type="default" @click="routeContractList"
               >回到列表</el-button
             >
+            <el-button v-if="editFlag && currentContract.dcState ==-1" type="default" @click="resubmitVisible=true"
+              >提交审核</el-button
+            >
             <el-button type="primary" @click="routeContractDetail"
               >查看详情</el-button
             >
@@ -77,6 +80,8 @@
         <el-button type="primary" @click="secondStep">创建</el-button>
       </div>
     </div>
+    <resubmitConfirm :resubmitVisible.sync="resubmitVisible"
+      :currentContract="currentContract"></resubmitConfirm>
   </div>
 </template>
 
@@ -84,11 +89,13 @@
 import api from "../../api/api.js";
 import contractInput from "./components/contractInput.vue";
 import contractFinished from "./components/contractFinished.vue";
+import resubmitConfirm from "./components/resubmitConfirm.vue";
 export default {
   name: "newContract",
   components: {
     contractInput,
     contractFinished,
+    resubmitConfirm
   },
   props: {},
   data() {
@@ -105,7 +112,6 @@ export default {
         resName: "",
         pmcName: "",
       },
-
       activeStep: 1,
       componentName: "contractInput",
       contractFormData: {},
@@ -113,6 +119,8 @@ export default {
       originID: "",
       editFlag: 0,
       startDate: "",
+      currentContract: {},
+      resubmitVisible: false
     };
   },
   watch: {},
@@ -198,6 +206,10 @@ export default {
           .then((res) => {
             if (res.data.SysCode === 200200) {
               resolve(true);
+              if(this.editFlag) {
+                this.currentContract = res.data.data;
+                this.currentContract.dcState = this.$refs.needValidForm.additional.dcState;
+              }
               this.activeStep = 2;
               this.componentName = "contractFinished";
             } else {

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 11:07:52
+ * @LastEditTime: 2021-07-13 16:44:01
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1005,51 +1005,6 @@ export default {
     this.getDataFun((this.$route.query || {}).resID);
   },
   methods: {
-    // 组装要显示的资源图片
-    /* constructResImg() {
-      console.log("资源图片", this.recForm.fullViewUrl);
-      if (
-        this.recForm.fullViewUrl !== "" &&
-        this.recForm.fullViewUrl !== undefined &&
-        this.recForm.fullViewUrl !== null
-      ) {
-        this.recForm.fullViewUrl.split(",").forEach((item, index) => {
-          let resImg = { name: "资源图片", url: item };
-          this.resUpdata.push(resImg);
-        });
-      } else {
-        let uid = this.sessionData.uID;
-        let params = {
-          uid: uid,
-          token: this.sessionData.token,
-          ptype: "restype",
-          ptid: this.resData.resID,
-        };
-        api
-          .getApi(this.apiVar.UCAPI + "/GetImg", params)
-          .then((res) => {
-            console.log("资源图片的信息", res);
-            this.resUpdata = [];
-            if (res.data.length === 0) {
-              console.log("暂时没有该资源的图片");
-            } else if (Array.isArray(res.data)) {
-              res.data.forEach((item) => {
-                let resImg = { name: item.pAlt, url: item.pURL };
-                this.resUpdata.push(resImg);
-                if (this.recForm.fullViewUrl) {
-                  this.recForm.fullViewUrl =
-                    this.recForm.fullViewUrl + "," + item.pURL;
-                } else {
-                  this.recForm.fullViewUrl = item.pURL;
-                }
-              });
-            }
-          })
-          .catch((err) => {
-            console.log("error", err);
-          });
-      }
-    }, */
     // 小区数据填充
     setFormData(resData) {
       if (resData.latLng.includes(",")) {
@@ -1078,6 +1033,7 @@ export default {
         discount: resData.discount || "",
         liveRate: resData.liveRate || "",
         otherAd: resData.otherAd?(resData.otherAd).split(","):[],
+        fullViewUrl: resData.fullViewUrl||"",
         // 房价网信息
         resAlias: resData.alias || "", // 资源别名
         addressAlias: resData.addressAlias || "", // 地址别名

@@ -220,7 +220,7 @@
               </el-radio-group>
             </template>
             <template slot="content">
-              <div style="padding: 20px 25px 32px;">
+              <div style="padding: 20px 25px 32px">
                 <el-table
                   :data="pendingMedia[installOrDemolish]"
                   border
@@ -250,7 +250,7 @@
                     label="合同编号"
                     min-width="120"
                   >
-                  <template slot-scope="scope">
+                    <template slot-scope="scope">
                       {{ scope.row.contractNo || "--" }}
                     </template>
                   </el-table-column>
@@ -781,7 +781,7 @@ export default {
         1: "正常",
         2: "待安装",
         3: "待维修",
-        4: "已拆除"
+        4: "已拆除",
       },
       // 安装或拆除媒体切换
       installOrDemolish: "installList",
@@ -814,7 +814,9 @@ export default {
     getSession() {
       this.sessionData = sessFun.getSess();
       this.isAllMedia =
-        this.sessionData.uType == "MD" && this.sessionData.mediaManageLevel == 1 ? true : false;
+        this.sessionData.uType == "MD" && this.sessionData.mediaManageLevel == 1
+          ? true
+          : false;
     },
     // 媒介贡献弹窗
     getContributeBox() {
@@ -1260,7 +1262,7 @@ export default {
             this.pendingMedia.installList = installList;
             this.pendingMedia.demolishList = demolishList;
           } else {
-            this.$message.warning(res.data.MSG||"待处理媒体获取失败！");
+            this.$message.warning(res.data.MSG || "待处理媒体获取失败！");
           }
         })
         .catch((err) => {
@@ -1269,29 +1271,57 @@ export default {
     },
     // 确认安装或拆除
     confirmMediaStatus(install) {
-      let _this = this;
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "CtrlMedia",
-        data: {
-          uid: this.sessionData.uID,
-          mid: this.currentInstallInfo.mID,
-          mstate: install?1:4,
-          // 区分该操作的位置，判断是否校验被合同占用
-          source: 0
-        },
-      };
-      if (install) {
-        if(this.currentInstallInfo.operateDate&&this.currentInstallInfo.operater&&this.currentInstallInfo.assetTag) {
-          params.data.assetTag = this.currentInstallInfo.assetTag;
-        } else {
-          this.$message.warning("请完善安装信息！");
-          return;
-        }
-      } else if(!(this.currentInstallInfo.operateDate&&this.currentInstallInfo.operater)) {
+      let _this = this,
+        params = null;
+
+      if (
+        install &&
+        !(
+          this.currentInstallInfo.operateDate &&
+          this.currentInstallInfo.operater &&
+          this.currentInstallInfo.assetTag
+        )
+      ) {
+        this.$message.warning("请完善安装信息！");
+        return;
+      }
+      if (
+        !install &&
+        !(
+          this.currentInstallInfo.operateDate &&
+          this.currentInstallInfo.operater
+        )
+      ) {
         this.$message.warning("请完善拆除信息！");
         return;
+      }
+      if (install) {
+        params = {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+          service: "CtrlMedia",
+          data: {
+            uid: this.sessionData.uID,
+            mid: this.currentInstallInfo.mID,
+            mstate: 1,
+            // 区分该操作的位置，判断是否校验被合同占用
+            source: 0,
+            assetTag: this.currentInstallInfo.assetTag,
+          },
+        };
+      } else {
+        // 拆除
+        params = {
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+          service: "AddDismantleRecord",
+          data: {
+            mID: this.currentInstallInfo.mID,
+            resName: this.currentInstallInfo.resName,
+            rId: this.currentInstallInfo.districtId,
+            source: 0
+          },
+        };
       }
       api.postApi_new(this.apiVar.Media, params).then((res) => {
         if (res.data.SysCode === 200200) {
@@ -1320,13 +1350,13 @@ export default {
             mID: currentInstallInfo.mID,
             operateDate: currentInstallInfo.operateDate,
             operater: currentInstallInfo.operater,
-          }
+          },
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.installVisible && (this.installVisible = false);
             this.uninstallVisible && (this.uninstallVisible = false);
-            this.getPendingMedia()
+            this.getPendingMedia();
             this.$message.success(res.data.MSG || "更改成功！");
           } else {
             this.$message.warning(res.data.MSG || "状态更改失败");

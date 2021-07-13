@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 13:24:06
+ * @LastEditTime: 2021-07-13 17:27:18
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -90,7 +90,15 @@
           class="detail-item"
         >
           <label class="detail-item-label">{{ `${formItem.label}：` }}</label>
-          <div class="detail-item-content">{{ formItem.value }}</div>
+          <el-tooltip
+            v-if="formItem.tip"
+            :content="formItem.value"
+            placement="top"
+            effect="light"
+          >
+            <div class="detail-item-content">{{ formItem.value }}</div>
+          </el-tooltip>
+          <div v-else class="detail-item-content">{{ formItem.value }}</div>
         </el-col>
       </el-row>
     </div>
@@ -610,6 +618,7 @@ export default {
               tempBaseInfoArr.push({
                 label: "不通过原因",
                 value: tempObj.failReason,
+                tip: true
               });
             }
             this.detailArr = [

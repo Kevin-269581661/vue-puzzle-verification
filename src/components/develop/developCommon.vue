@@ -15,11 +15,12 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/f_develop">首页</el-menu-item>
-            <el-submenu index="2" :show-timeout="80">
+            <el-submenu v-if="sessionData.devManageLevel==1" index="2" :show-timeout="80">
                 <template slot="title">合同管理</template>
                 <el-menu-item index="/f_develop/contractList">合同列表</el-menu-item>
-                <el-menu-item v-if="sessionData.devManageLevel==1" index="/f_develop/contractCfg">合同设置</el-menu-item>
+                <el-menu-item index="/f_develop/contractCfg">合同设置</el-menu-item>
             </el-submenu>
+            <el-menu-item v-else index="/f_develop/contractList">合同列表</el-menu-item>
             <el-menu-item index="/f_develop/mediaList">媒体管理</el-menu-item>
             <el-submenu index="3" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">

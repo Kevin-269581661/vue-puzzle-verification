@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 18:22:21
+ * @LastEditTime: 2021-07-14 18:12:15
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -257,45 +257,21 @@ export default {
     },
     // 下载附件
     downloadFile(item) {
-      let fileFormat = item.fileName.split(".").pop();
-      if (
-        [
-          "png",
-          "jpg",
-          "jpeg",
-          "bmp",
-          "gif",
-          "webp",
-          "psd",
-          "svg",
-          "tiff",
-        ].includes(fileFormat)
-      ) {
-        // 图片下载
-        let image = new Image();
-        image.setAttribute("crossOrigin", "anonymous");
-        image.onload = function () {
-          let canvas = document.createElement("canvas");
-          canvas.width = image.width;
-          canvas.height = image.height;
-          let context = canvas.getContext("2d");
-          context.drawImage(image, 0, 0, image.width, image.height);
-          let url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
-          let a = document.createElement("a"); // 生成一个a元素
-          let event = new MouseEvent("click"); // 创建一个单击事件
-          a.download = item.fileName; // 设置图片名称
-          a.href = url; // 将生成的URL设置为a.href属性
-          a.dispatchEvent(event); // 触发a的单击事件
-        };
-        image.src = item.fileUrl;
-      } else {
-        var a = document.createElement("a");
-        a.download = item.fileName;
-        a.href = item.fileUrl;
-        document.body.appendChild(a);
-        a.click(); //点击下载
-        document.body.removeChild(a); //下载完成移除元素
-      }
+      api.getApi_file(item.fileUrl).then((res) => {
+        if (res) {
+          let blobUrl = window.URL.createObjectURL(res.data);
+          let link = document.createElement("a");
+          document.body.appendChild(link);
+          link.style.display = "none";
+          link.href = blobUrl;
+          link.download = item.fileName;
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } else {
+          return;
+        }
+      });
     },
     handleClose(done) {
       this.$emit("update:contractReviewVisible", false);

@@ -506,7 +506,7 @@ export default {
     this.getSession();
     this.getCompany();
     this.getInitEditInfo();
-    if (this.sessionData.asrID<8 || this.sessionData.asrID==1013) {
+    if (this.sessionData.asrID < 8 || this.sessionData.asrID == 1013) {
       this.roleArr.push({
         label: "开发",
         value: "DEV",
@@ -618,6 +618,21 @@ export default {
         this.accountForm.backstagePermission = 0;
         this.showBackstagePermission = true;
       }
+
+      let devIndex = this.roleArr.findIndex((item)=>item.value=="DEV");
+      if (val == 1013) {
+        if(devIndex==-1) {
+          this.roleArr.push({
+            label: "开发",
+            value: "DEV",
+          });
+        }
+      } else {
+        this.roleArr.splice(devIndex, 1);
+        console.log("devIndex", devIndex,this.roleArr)
+        this.accountForm.role = "";
+      }
+      
     },
     // 输入账号获取上级信息(远程搜索)
     querySearchAsync(queryString, callback) {

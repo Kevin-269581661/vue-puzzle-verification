@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 20:43:42
+ * @LastEditTime: 2021-07-15 23:30:10
  * @FilePath: /frontend/src/components/develop/newContract.vue
 -->
 <template>
@@ -79,7 +79,7 @@
           "
           >上一步</el-button
         >
-        <el-button type="primary" @click="thirdStep">创建</el-button>
+        <el-button type="primary" :disabled="disableCreateBtn" @click="thirdStep">创建</el-button>
       </div>
     </div>
   </div>
@@ -104,6 +104,7 @@ export default {
       componentName: "resInput",
       resFormData: {},
       contractFormData: {},
+      disableCreateBtn: false,
     };
   },
   watch: {},
@@ -151,6 +152,8 @@ export default {
       }
     },
     newContract(fileIDs) {
+      if(this.disableCreateBtn) return;
+      this.disableCreateBtn = true;
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -180,6 +183,7 @@ export default {
           .then((res) => {
             console.log("创建合同", res);
             if (res.data.SysCode === 200200) {
+              this.disableCreateBtn = false;
               resolve(true);
               this.activeStep = 3;
               this.componentName = "contractFinished";

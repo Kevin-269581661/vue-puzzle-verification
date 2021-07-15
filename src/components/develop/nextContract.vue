@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 10:03:35
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 13:38:54
+ * @LastEditTime: 2021-07-15 23:26:06
  * @FilePath: /frontend/src/components/develop/nextContract.vue
 -->
 <template>
@@ -77,7 +77,7 @@
     <div class="footer">
       <div v-if="activeStep == 1" class="footer-btn-group">
         <el-button type="default" @click="cancelFirstStep">取消</el-button>
-        <el-button type="primary" @click="secondStep">创建</el-button>
+        <el-button type="primary" :disabled="disableCreateBtn" @click="secondStep">创建</el-button>
       </div>
     </div>
     <resubmitConfirm :resubmitVisible.sync="resubmitVisible"
@@ -120,7 +120,8 @@ export default {
       editFlag: 0,
       startDate: "",
       currentContract: {},
-      resubmitVisible: false
+      resubmitVisible: false,
+      disableCreateBtn: false
     };
   },
   watch: {},
@@ -167,6 +168,8 @@ export default {
       }
     },
     newContract(fileIDs) {
+      if(this.disableCreateBtn) return;
+      this.disableCreateBtn = true;
       let loading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -205,6 +208,7 @@ export default {
           .postApi_json("/addsp/devContract/create", params)
           .then((res) => {
             if (res.data.SysCode === 200200) {
+              this.disableCreateBtn = false;
               resolve(true);
               if(this.editFlag) {
                 this.currentContract = res.data.data;

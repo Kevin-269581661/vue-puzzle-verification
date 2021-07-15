@@ -11,3 +11,15 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 .el-pagination__total {
   color: rgba(0, 0, 0, 0.45);
 }
+.el-form-item__label {
+  color: rgba(0, 0, 0, 0.65);
+}
+.el-input__inner {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.25);
+  }
+}
+.el-tabs__nav-wrap::after {
+  height: 1px;
+}

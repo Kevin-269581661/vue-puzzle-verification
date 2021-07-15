@@ -60,7 +60,7 @@ export default {
   },
   watch: {
     hasMpvgl(val) {
-      if (val === true) {
+      if (this.actived && val === true) {
         let time1 = setTimeout(() => {
           this.setMap();
           clearTimeout(time1)

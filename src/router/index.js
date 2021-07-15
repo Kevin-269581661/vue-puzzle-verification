@@ -115,8 +115,15 @@ const hotSource = () => import('../components/adOwner/hotSource.vue')
 //工程
 const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
 
-
-
+// 楼盘开发
+const developCommon = () => import('../components/develop/developCommon.vue')
+const developIndex = () => import('../components/develop/developIndex.vue')
+const contractCfg = () => import('../components/develop/contractCfg.vue')
+const newContract = () => import('../components/develop/newContract.vue')
+const editContract = () => import('../components/develop/editContract.vue')
+const nextContract = () => import('../components/develop/nextContract.vue')
+const contractDetail = () => import('../components/develop/contractDetail.vue')
+const contractList = () => import('../components/develop/contractList.vue')
 
 //亲邻科技上刊报告
 const Report = () => import('../components/h5/Report.vue')
@@ -145,7 +152,7 @@ let router = new Router({
     routes: staticRoutes
 })
 let roleRoutes = []
-function addRoutes(role, old, retain) {
+function addRoutes(role, proposal, retain) {
     !retain && resetRouter()
     switch (role) {
         case 'SM':
@@ -238,19 +245,19 @@ function addRoutes(role, old, retain) {
         case 'MD':
             //媒介
             let tempMD = null
-            if(old) {
-                // 加盟媒介和直营媒介
+            if(proposal) {
+                // 直营媒介
                 tempMD = [
-                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
-                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}}
-                ]
-            } else {
-                tempMD = [
-                    // 直营媒介
                     {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
                     {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}},
                     {path: '/media/editPlan', component: editPlan, meta:{title: '编辑方案'}},
                     {path: '/media/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
+                ]
+            } else {
+                // 加盟媒介和直营媒介
+                tempMD = [
+                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}}
                 ]
             }
             roleRoutes = [
@@ -295,26 +302,26 @@ function addRoutes(role, old, retain) {
             break;
         case 'BD':
             let tempBD = null
-            if(old) {
-                // 加盟销售
-                tempBD = [
-                    {path: '/sale', component: oldSaleIndex},
-                    {path: '/sale/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
-                    {path: '/sale/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}},
-                ]
-            } else {
+            if(proposal) {
                 // 直营销售
                 tempBD = [
                     {path: '/sale', component: saleIndex},
                     {path: '/sale/createPlan', component: createPlan, meta:{title: '创建方案'}},
                     {path: '/sale/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}},
                 ]
+            } else {
+                // 加盟销售
+                tempBD = [
+                    {path: '/sale', component: oldSaleIndex},
+                    {path: '/sale/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/sale/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}},
+                ]
             }
             roleRoutes = [
                 //销售
                 {
                     path: '/',
-                    component: old?oldSaleCommon:saleCommon,
+                    component: proposal?saleCommon:oldSaleCommon,
                     children: [
                         ...tempBD,
                         {path: '/sale/createClient', component: createClient},
@@ -396,6 +403,32 @@ function addRoutes(role, old, retain) {
                     ]
                 }]
             break;
+        case 'DEV':
+            roleRoutes = [
+                //楼盘开发
+                {
+                    path: '/',
+                    component: developCommon,
+                    children: [
+                        {path: '/f_develop', name:'developIndex', component: developIndex },
+                        {path: '/f_develop/mediaList', component: mediaList},
+                        {path: '/f_develop/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                        {path: '/f_develop/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
+                        {path: '/f_develop/mediaDetail', component: mediaDetail},
+                        {path: '/f_develop/myInfo', component: myInfo},
+                        {path: '/f_develop/messageList', component: messageList},
+                        {path: '/f_develop/questionAndAnswer', component: questionAndAnswer},
+                        {path: '/f_develop/maintainList', component: maintainList},
+                        {path: '/f_develop/messageList', component: messageList},
+                        {path: '/f_develop/contractCfg', component: contractCfg},
+                        {path: '/f_develop/newContract', component: newContract},
+                        {path: '/f_develop/editContract', component: editContract},
+                        {path: '/f_develop/nextContract', component: nextContract},
+                        {path: '/f_develop/contractDetail', component: contractDetail},
+                        {path: '/f_develop/contractList', component: contractList}
+                    ]
+                }]
+            break;
     }
     router.addRoutes(roleRoutes)
 }
@@ -409,8 +442,8 @@ const resetRouter = () => {
 if(document.location.pathname.indexOf('/login') !== -1 || document.location.pathname == '/') {
     // 刷新登录页触发
 } else {
-    // 刷新非登录页，不用重置路由
+    // 刷新非登录页，保留原路由
     let session_data = JSON.parse(sessionStorage.getItem("session_data")||'{}')
-    session_data.uType && addRoutes(session_data.uType, session_data.customPermission.proposalPermission == 0, true)
+    session_data.uType && addRoutes(session_data.uType, session_data.customPermission.proposalPermission == 1, true)
 }
 export {router, addRoutes}

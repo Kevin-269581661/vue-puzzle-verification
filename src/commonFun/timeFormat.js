@@ -169,7 +169,7 @@ timeFormat.compareTime = function (arr, sField, eField) {
 
 //时间戳转化为刚刚/N分钟前/今天几点几分/昨天几点几分等
 timeFormat.timestampFormat = function (timestamp) {
-    function zeroize(num) {
+  function zeroize(num) {
 		return (String(num).length == 1 ? '0' : '') + num;
 	}
 	let curTimestamp = new Date().getTime(); //当前时间戳

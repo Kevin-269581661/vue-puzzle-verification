@@ -1,10 +1,10 @@
 <template>
     <div class="row-box">
         <div class="item-one">
-            <img :src="userInfo.avator" alt="" class="avator-round">
+            <img :src="userInfo.headPic||'../../../static/images/niu.png'" alt="" class="avator-round">
             <ul class="item-one-column">
-                <li class="bold-text">{{userInfo.userName || ''}}</li>
-                <li class="normal-text">{{userInfo.role | uTypeToText}}</li>
+                <li class="bold-text">{{userInfo.realName || ''}}</li>
+                <li class="normal-text">{{userInfo | uTypeToText}}</li>
             </ul>
             <div v-if="cityRank" class="item-one-column item-one-board">
                 <span class="bold-text">第{{cityRank}}名</span>
@@ -25,7 +25,6 @@
 
 <script>
     import homeLink from './homeLinkNew.vue';
-    import uTypeToText from "../../../commonFun/uTypeToText.js";
     export default {
         name: "personalInfo",
         components: {
@@ -83,9 +82,6 @@
 
 <style scoped lang="scss">
 * {font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ", "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;}
-li {
-
-}
 %flex-row-center {
     display: flex;
     align-items: center;

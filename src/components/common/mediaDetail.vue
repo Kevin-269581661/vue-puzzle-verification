@@ -19,7 +19,7 @@
                                    v-qadn-mta-h5="{id: 'a002_b005_c000_d000_bt025_ck03'}">编辑</el-button>
                     </div>
                 </div>
-                <div class="ad_mediaInfoPanel" v-model="resData">
+                <div class="ad_mediaInfoPanel">
                     <div class="ad_mediaInfoPanel_row">
                         <h3>基本信息</h3>
                         <el-row type="flex" class="row-bg row_box">
@@ -156,6 +156,17 @@
                             </el-col>
                             <el-col :span="6">
                                 <span class="ad_mediaInfoPanel_row_title">人流量：</span><span>{{resData.peopleFlowrate}}</span>
+                            </el-col>
+                        </el-row>
+                        <el-row class="row-bg row_box">
+                            <el-col :span="6">
+                                <span class="ad_mediaInfoPanel_row_title">其他社区广告：</span><span>{{resData.otherAd || '--'}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <span class="ad_mediaInfoPanel_row_title">有无电梯：</span><span>{{resData.liftType || '--'}}</span>
+                            </el-col>
+                            <el-col :span="6">
+                                <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span><span>{{resData.liveRate}}</span>
                             </el-col>
                         </el-row>
                     </div>
@@ -451,6 +462,9 @@
                     carFlowrate: 0,     // 车流量
                     pmc: '',            //所属物业
                     fullViewUrl:'',     // 资源图片
+                    otherAd: "",
+                    liftType: "",
+                    liveRate: "",
                 },
                 activeMedia: 'first',
                 mediaList: [],       // 广告门媒体
@@ -574,6 +588,9 @@
                                 city: resData.city,
                                 cityArea: resData.district,
                                 updateRecord: resData.updateRecord,         // 小区信息更新时间
+                                otherAd: resData.otherAd,
+                                liftType: resData.liftType,
+                                liveRate: resData.liveRate,
                                 // 房价网信息
                                 resAlias: resData.alias,                                  // 资源别名
                                 addressAlias: resData.addressAlias,                          // 地址别名

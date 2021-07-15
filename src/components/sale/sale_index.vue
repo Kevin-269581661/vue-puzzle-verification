@@ -5,7 +5,7 @@
         <div class="left-layout">
           <personal-info
             :rank="rankInfo[0].rank || ''"
-            :user-info="userInfo"
+            :user-info="sessionData"
             :honor-img="companyHonor"
             :linkArr="linkArrNew"
           ></personal-info>
@@ -322,6 +322,7 @@ export default {
   },
   data() {
     return {
+      sessionData: {},
       hasMpvgl: false,
       // 动效
       isMonthlyRanking: false,
@@ -351,16 +352,7 @@ export default {
           title: "新建客户",
           link: "./sale/createClient",
         },
-        // {
-        //     imgurl: require('../../assets/images/gua.png'),
-        //     title: '点位表盘',
-        //     link: './sale/adsDialPlate'
-        // },
       ],
-      userInfo: {
-        userName: "",
-        greetings: "祝您开心每一天!",
-      },
       dataArr: [
         {
           name: "当月激活客户数",
@@ -450,11 +442,6 @@ export default {
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();
-      this.userInfo.userName = this.sessionData.realName;
-      this.userInfo.role = this.sessionData.uType;
-      this.userInfo.avator = this.sessionData.headPic
-        ? this.sessionData.headPic
-        : require("../../assets/images/index/niu.png");
     },
     resizeRank(price) {
       let rankLength = document.getElementsByClassName("timeline")[0]
@@ -544,8 +531,6 @@ export default {
             this.dataArr[0].data = resInfo.customerCount;
             this.dataArr[1].data = resInfo.orderCount;
             this.dataArr[2].data = resInfo.apTotal / 100;
-
-            this.userInfo.endTime = timeFormat.toDate(resInfo.time, "/");
           } else {
             Message.warning(res.data.MSG);
           }

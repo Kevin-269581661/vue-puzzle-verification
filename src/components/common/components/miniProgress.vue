@@ -8,7 +8,7 @@
       <div
         class="progress"
         :style="{ backgroundColor: color, width: percentage + '%', height: height }"
-      ><div class="value" :style="{ 'line-height': height }">{{value}}</div></div>
+      ><div class="value" :style="{ 'line-height': height, 'color': value<=0?'#1890ff':'' }">{{value}}</div></div>
     </div>
   </div>
 </template>
@@ -40,6 +40,8 @@ export default {
   },
   data() {
     return {};
+  },
+  mounted() {
   },
   methods: {},
 };

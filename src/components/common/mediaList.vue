@@ -10,6 +10,7 @@
             <div class="mediaList_container">
                 <div class="handel_ul">
                     <li class="handel_ul_li handel_ul_li_select">
+                        <span class="li-label">关键字：</span>
                         <el-input placeholder="请输入内容" v-model="keyword" class="input-with-select"
                                   size="small" @change="initData">
                             <el-select v-model="selectInfo" slot="prepend" placeholder="请选择">
@@ -23,6 +24,7 @@
                         </el-input>
                     </li>
                     <li class="handel_ul_li handel_ul_li_city">
+                        <span class="li-label">城市：</span>
                         <el-cascader
                             :options="cityOptions"
                             v-model="selectedOptions"
@@ -37,6 +39,7 @@
                         </el-cascader>
                     </li>
                     <li class="handel_ul_li handel_ul_li_area">
+                        <span class="li-label">区域：</span>
                         <el-select v-model="selectRName" placeholder="请选择区域" :clearable="true"
                                    style="width: 100%" size="small" @change="getRegion">
                             <el-option v-for="item in regionOpt"
@@ -54,12 +57,7 @@
                         <el-button plain @click="newMedia" v-if="showNewBtn"
                                    v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt013_ck03'}">新建</el-button>
                         <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
-                       <!-- <el-button plain @click="maintain" v-if="!showImportBtn"
-                                   v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt018_ck03'}">维护管理</el-button>-->
-<!--                        <el-button plain @click="exportRes" v-if="!showImportBtn">资源导出</el-button>-->
-                    </li>
-                    <li class="handel_ul_li push_map_btn">
-                        <el-button plain @click="showPushMap" v-if="showImportBtn">推送地图</el-button>
+                        <el-button v-if="showImportBtn" plain @click="showPushMap">推送地图</el-button>
                     </li>
                 </div>
                 <div class="table_wrap">
@@ -1608,8 +1606,7 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
     /deep/ .el-table-filter{
         height: 400px !important;
         overflow-y:auto !important;
@@ -1638,36 +1635,31 @@
     }
 
     /*过滤条件样式*/
-    .handel_ul{
+    .handel_ul {
         list-style:none;
-        overflow: hidden;
+        display: flex;
+        align-items: center;
     }
 
-    .handel_ul_li{
-        float: left;
-        margin-right: 8px;
+    .handel_ul_li {
+        // float: left;
+        // flex-grow: 1;
+        display: flex;
+        align-items: center;
+        flex-flow: row nowrap;
+        width: 25%;
+        margin-right: 46px;
+        .li-label {
+            font-size: 14px;
+            white-space: nowrap;
+            color: rgba(0,0,0,0.65);
+        }
     }
 
-    .handel_ul_li_select{
-        width: 23%;
-    }
-
-    .handel_ul_li_city{
-        width: 15%;
-    }
-
-    .handel_ul_li_area{
-        width: 15%;
-    }
-
-    .handel_ul_li_btn{
-        /*width: 37.5%;*/
-    }
-    .push_map_btn{
-        width: 6.5%;
-        float: left;
-        text-align: right;
-        margin-right: 0
+    .handel_ul_li_btn {
+        .el-button+.el-button {
+            margin-left: 16px;
+        }
     }
     /*下拉搜索框*/
     /deep/ .el-input-group__prepend {

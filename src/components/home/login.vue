@@ -255,61 +255,59 @@ export default {
         } */
         loginParams = { username: name, pwd: pass };
       }
-      api
-        .postApi(this.apiVar.UCAPI + "/Login", loginParams)
-        .then((res) => {
-          let userMsg = res.data;
-          console.log("登录返回的数据", res.data);
-          if (userMsg) {
-            if (!userMsg.SysCode) {
-              // 储存行业信息
-              this.getIndustry();
-              userMsg.username = name;
-              sessionStorage.setItem("session_data", JSON.stringify(userMsg));
-              if (userMsg.uType === "SM") {
-                addRoutes("SM");
-                this.$router.push("/superOperate");
-              } else if (userMsg.uType === "MD") {
-                if (userMsg.customPermission.proposalPermission == 1) {
-                  // 判断直营媒介
-                  addRoutes("MD");
-                } else {
-                  // 判断加盟媒介(旧权限)
-                  addRoutes("MD", true);
-                }
-                this.$router.push("/media");
-              } else if (userMsg.uType === "BD") {
-                sessionStorage.setItem("username", name); // 用户为销售时，存起username以便创建方案的时候使用
-                if (userMsg.customPermission.proposalPermission == 1) {
-                  // 判断直营销售
-                  addRoutes("BD");
-                } else {
-                  // 判断加盟销售(旧权限)
-                  addRoutes("BD", true);
-                }
-                this.$router.push("/sale");
-              } else if (userMsg.uType === "AD") {
-                addRoutes("AD");
-                this.$router.push("/adOwner");
-              } else if (userMsg.uType === "OP") {
-                addRoutes("OP");
-                this.$router.push("/operate");
-              } else if (userMsg.uType === "SA") {
-                addRoutes("SA");
-                this.$router.push("/admin");
-              } else if (
-                userMsg.uType === "EP" &&
-                userMsg.backstagePermission == 1
-              ) {
-                addRoutes("EP");
-                this.$router.push("/f_engineer/orderList");
+      api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
+        let userMsg = res.data;
+        console.log('登录返回的数据', res.data)
+        if (userMsg) {
+          if (!userMsg.SysCode) {
+            // 储存行业信息
+            this.getIndustry();
+            userMsg.username = name
+            sessionStorage.setItem("session_data", JSON.stringify(userMsg));
+            if (userMsg.uType === 'SM') {
+              addRoutes('SM')
+              this.$router.push('/superOperate')
+            } else if (userMsg.uType === 'MD') {
+              if(userMsg.customPermission.proposalPermission == 1) {
+                // 判断直营媒介
+                addRoutes('MD', true)
               } else {
-                Message({
-                  message: "账号角色权限异常",
-                  type: "warning",
-                });
+                // 判断加盟媒介(旧权限)
+                addRoutes('MD')
               }
+              this.$router.push('/media')
+            } else if (userMsg.uType === 'BD') {
+              sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
+              if(userMsg.customPermission.proposalPermission == 1) {
+                // 判断直营销售
+                addRoutes('BD', true)
+              } else {
+                // 判断加盟销售(旧权限)
+                addRoutes('BD')
+              }
+              this.$router.push('/sale')
+            } else if (userMsg.uType === 'AD') {
+              addRoutes('AD')
+              this.$router.push('/adOwner')
+            } else if (userMsg.uType === 'OP') {
+              addRoutes('OP')
+              this.$router.push('/operate')
+            } else if (userMsg.uType === 'SA') {
+              addRoutes('SA')
+              this.$router.push('/admin')
+            } else if (userMsg.uType === 'DEV') {
+              addRoutes('DEV')
+              this.$router.push('/f_develop')
+            } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
+              addRoutes('EP')
+              this.$router.push('/f_engineer/orderList')
             } else {
+              Message({
+                message: '账号角色权限异常',
+                type: 'warning'
+              })
+            }
+          } else {
               if (userMsg.SysCode == "400403") {
                 Message({
                   message: "账号角色权限不足",
@@ -445,32 +443,35 @@ export default {
           } else if (isLogin.uType === "MD") {
             if (isLogin.customPermission.proposalPermission == 1) {
               // 判断直营媒介
-              addRoutes("MD");
+              addRoutes('MD', true)
             } else {
               // 判断加盟媒介(旧权限)
-              addRoutes("MD", true);
+              addRoutes('MD')
             }
             this.$router.push("/media");
           } else if (isLogin.uType === "BD") {
             if (isLogin.customPermission.proposalPermission == 1) {
               // 判断直营销售
-              addRoutes("BD");
+              addRoutes('BD', true)
             } else {
               // 判断加盟销售(旧权限)
-              addRoutes("BD", true);
+              addRoutes('BD')
             }
-            this.$router.push("/sale");
-          } else if (isLogin.uType === "OP") {
-            addRoutes("OP");
-            this.$router.push("/operate");
-          } else if (isLogin.uType === "AD") {
-            addRoutes("AD");
-            this.$router.push("/adOwner");
-          } else if (isLogin.uType === "SA") {
-            addRoutes("SA");
-            this.$router.push("/admin");
-          } else if (isLogin.uType === "EP") {
-            addRoutes("EP");
+            this.$router.push('/sale')
+          } else if (isLogin.uType === 'OP') {
+            addRoutes('OP')
+            this.$router.push('/operate')
+          } else if (isLogin.uType === 'AD') {
+            addRoutes('AD')
+            this.$router.push('/adOwner')
+          } else if (isLogin.uType === 'SA') {
+            addRoutes('SA')
+            this.$router.push('/admin')
+          } else if (isLogin.uType === 'DEV') {
+            addRoutes('DEV')
+            this.$router.push('/f_develop')
+          } else if (isLogin.uType === 'EP') {
+            addRoutes('EP')
             // 是否开通后台权限由小程序端判断
             this.$router.push("/f_engineer/orderList");
           } else {

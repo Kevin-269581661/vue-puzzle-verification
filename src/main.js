@@ -15,11 +15,12 @@ import '../static/css/element-variables.scss'
 // MintUI
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
+
+import 'default-passive-events'
 import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);
 Vue.use(SlideVerify);
-
 //echarts
 import echarts from 'echarts';
 Vue.prototype.$echarts = echarts;
@@ -34,8 +35,15 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局变量
 import { apiVar } from './utils/config.js'
 Vue.prototype.apiVar = apiVar;
-Vue.filter('uTypeToText', function (uType) {
-	return { 'SA': '系统管理员','SM': '超级管理员', 'OP': '运营', 'MD': '媒介','BD': '销售','AD': '广告主', 'EP': '工程人员'}[uType]
+Vue.filter('uTypeToText', function (userInfo) {
+	if(userInfo) {
+		if(userInfo.uType == "DEV") {
+			return {0: "开发人员", 1: "资产人员", 2: "开发总监"}[userInfo.devManageLevel]
+		}
+		return { 'SA': '系统管理员','SM': '超级管理员', 'OP': '运营', 'MD': '媒介','BD': '销售','AD': '广告主', 'EP': '工程人员', 'DEV': '开发' }[userInfo.uType]
+	} else {
+		return ""
+	}
 })
 Vue.filter('moneyFormat', function (value, prefix='', decimal=2) {
 	if(value==='' || value===undefined || value===null) {
@@ -96,7 +104,7 @@ router.beforeEach((to, from, next) => {
 	next();
 });
 
-//全局拦截器携带token
+// axios.defaults.withCredentials = true;
 axios.interceptors.request.use(
 	config => {
 		let sessionStr = sessionStorage.getItem('session_data');

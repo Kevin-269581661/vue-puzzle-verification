@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-14 18:13:50
+ * @LastEditTime: 2021-07-15 17:31:42
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -30,7 +30,7 @@
         <el-button
           v-for="(item, index) in operationArr"
           :key="index"
-          size="mini"
+          size="small"
           :type="item == '编辑' ? 'primary' : 'default'"
           @click="handleContract(contractObj, item)"
           >{{ item }}</el-button
@@ -44,7 +44,7 @@
       style="width: 100%"
       class="media-table"
     >
-      <el-table-column prop="mTitle" label="媒体名称" width="180">
+      <el-table-column prop="mTitle" label="媒体名称" width="320">
         <template slot-scope="scope">
           <div class="media-cell">
             <span>{{ scope.row.mTitle }}</span>
@@ -63,7 +63,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="mType" label="门体类型" width="180">
+      <el-table-column prop="mType" label="门体类型" width="200">
       </el-table-column>
       <el-table-column prop="operater" label="安装/拆除负责人">
       </el-table-column>
@@ -82,7 +82,7 @@
     </el-table>
     <div v-for="(item, index) in detailArr" :key="index" class="contract-borde">
       <div class="emphasize-text">{{ item.title }}</div>
-      <el-row :gutter="46" class="content-row">
+      <el-row class="content-row">
         <el-col
           v-for="(formItem, formIndex) in item.content"
           :key="formIndex"
@@ -103,16 +103,23 @@
       </el-row>
     </div>
     <!-- 附件 -->
-    <div v-if="fileList.length" class="emphasize-text">附件</div>
-    <el-row :gutter="46" class="content-row">
-      <el-col :span="8">
-        <div v-for="(item, index) in fileList" :key="index" class="file-item">
-          <i class="el-icon-document"></i>
-          <span class="file-item__name">{{ item.fileName }}</span>
-          <i class="el-icon-download" @click="downloadFile(item)"></i>
-        </div>
-      </el-col>
-    </el-row>
+    <div v-if="fileList.length" class="contract-borde">
+      <div class="emphasize-text">
+        附件
+        <span class="download-all" @click="downloadAll(fileList)"
+          >下载全部</span
+        >
+      </div>
+      <el-row class="content-row">
+        <el-col :span="8">
+          <div v-for="(item, index) in fileList" :key="index" class="file-item">
+            <i class="el-icon-document"></i>
+            <span class="file-item__name">{{ item.fileName }}</span>
+            <i class="el-icon-download" @click="downloadFile(item)"></i>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <!-- 重新提交审核 -->
     <el-dialog
       :visible.sync="resubmitVisible"
@@ -714,6 +721,10 @@ export default {
           }
         });
     },
+    // 下载全部附件
+    downloadAll(fileList = []) {
+      fileList.forEach((item) => this.downloadFile(item));
+    },
     // 下载附件
     downloadFile(item) {
       api.getApi_file(item.fileUrl).then((res) => {
@@ -731,7 +742,7 @@ export default {
           return;
         }
       });
-    }
+    },
   },
 };
 </script>
@@ -823,8 +834,7 @@ export default {
 </style>
 <style lang="scss" scope>
 .media-table {
-  margin: 16px 12px;
-  width: calc(100% - 24px) !important;
+  margin: 16px 0 28px;
   .el-table__body-wrapper,
   .el-table__empty-block {
     min-height: unset;
@@ -855,6 +865,9 @@ export default {
     }
   }
 }
+.media-table + .contract-borde {
+  border-top: 1px solid #e6e7e9;
+}
 .contract-borde {
   padding: 14px 0;
   & + .contract-borde {
@@ -862,7 +875,7 @@ export default {
   }
 }
 .title-row {
-  margin: 8px 12px;
+  margin: 8px 0;
   .title-label,
   .title-content {
     font-weight: 600;
@@ -890,22 +903,28 @@ export default {
   }
 }
 .content-row {
-  padding: 0 12px;
+  // padding: 0 12px;
 }
 .emphasize-text {
-  padding: 10px 0;
-  margin: 0 12px 8px;
+  padding: 12px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #333333;
+  color: rgba(0, 0, 0, 0.85);
   line-height: 22px;
+  .download-all {
+    margin-left: auto;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1890ff;
+    cursor: pointer;
+  }
 }
 .detail-item {
   display: flex;
   align-items: center;
   line-height: 22px;
   font-size: 14px;
-  padding: 8px 24px;
+  padding: 8px 0;
   .detail-item-label {
     white-space: nowrap;
     color: rgba(0, 0, 0, 0.85);
@@ -947,7 +966,6 @@ export default {
   flex-flow: rwo nowrap;
   box-sizing: border-box;
   height: 32px;
-  padding: 0 8px;
   margin-bottom: 6px;
   .el-icon-download {
     display: none;

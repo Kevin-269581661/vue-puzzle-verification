@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-15 10:52:08
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-12 20:50:51
+ * @LastEditTime: 2021-07-15 17:23:57
  * @FilePath: /frontend/src/components/develop/components/contractFinished.vue
 -->
 <template>
@@ -110,6 +110,9 @@ export default {
   text-align: left;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.85);
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .planPanel ul li em {

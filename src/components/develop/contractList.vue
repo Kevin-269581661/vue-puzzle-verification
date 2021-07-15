@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-14 09:41:25
+ * @LastEditTime: 2021-07-15 14:56:43
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -183,15 +183,14 @@
             <el-table-column
               prop="startDate"
               label="合同开始日期"
-              min-width="140"
+              width="132"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="endDate"
               label="合同结束日期"
-              width="140"
-              align="right"
+              width="132"
             >
             </el-table-column>
             <el-table-column
@@ -240,7 +239,7 @@
             <el-table-column
               prop="payDate"
               label="最近付款日期"
-              width="140"
+              width="132"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -260,7 +259,7 @@
             <el-table-column
               prop="contractNo"
               label="合同编号"
-              width="140"
+              width="180"
               show-overflow-tooltip
             >
               <template slot-scope="scope">

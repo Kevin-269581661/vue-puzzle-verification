@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-16 20:01:37
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 18:57:33
+ * @LastEditTime: 2021-07-15 17:53:06
  * @FilePath: /frontend/src/components/develop/contractDetail.vue
 -->
 <template>
@@ -41,12 +41,11 @@
         >
           <el-tooltip
             slot="label"
-            :content="item.originName || '待定'"
+            :content="item.originName.replace(/,/g, '、') || '待定'"
             placement="top"
-            effect="light"
           >
             <span class="custom-tab-laber">{{
-              item.originName || "待定"
+              item.originName.replace(/,/g, "、") || "待定"
             }}</span>
           </el-tooltip>
           <el-container>
@@ -275,18 +274,14 @@ export default {
   }
   .tab-container {
     margin-top: 16px;
-    min-height: 900px;
+    min-height: 600px;
     background: #ffffff;
     border: 1px solid #e6e7e9;
     .el-tabs--border-card {
       border: 0;
       box-shadow: unset;
     }
-    .custom-tabs__content {
-      // margin: 0 20px;
-    }
     /deep/ .el-tabs__nav-scroll {
-      // padding-left: 44px;
       font-size: 16px;
       font-weight: 500;
       color: #1890ff;
@@ -304,6 +299,7 @@ export default {
       }
     }
     .el-main {
+      padding: 20px 32px;
       overflow: hidden;
     }
   }

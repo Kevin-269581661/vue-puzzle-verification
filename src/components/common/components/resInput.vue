@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 16:44:01
+ * @LastEditTime: 2021-07-15 18:10:39
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -501,7 +501,7 @@
                 <el-col :span="24">
                   <el-row v-if="customPermission.patrolPermission" type="flex">
                     <el-form-item
-                      v-for="(imgItem) in 3"
+                      v-for="imgItem in 3"
                       :key="imgItem"
                       label=""
                       class="left_form_item"
@@ -511,11 +511,14 @@
                         <el-upload
                           :action="doUpload"
                           list-type="picture-card"
-                          :file-list="resUpdata[imgItem-1]"
-                          :on-success="res=>handleDownSuccess(res, imgItem)"
+                          :file-list="resUpdata[imgItem - 1]"
+                          :on-success="(res) => handleDownSuccess(res, imgItem)"
                           :on-preview="handlePictureCardPreview_res"
                           :before-upload="beforeUpload_res"
-                          :on-remove="(file, fileList)=>handleRemoveR(file, fileList, imgItem)"
+                          :on-remove="
+                            (file, fileList) =>
+                              handleRemoveR(file, fileList, imgItem)
+                          "
                         >
                           <i class="el-icon-plus"></i>
                         </el-upload>
@@ -524,7 +527,6 @@
                         </el-dialog>
                       </div>
                     </el-form-item>
-                    
                   </el-row>
                   <el-form-item v-else label="" class="left_form_item">
                     <div class="upload_img_wrap" style="width: 120px">
@@ -533,10 +535,12 @@
                         list-type="picture-card"
                         :file-list="resUpdata[0]"
                         :limit="1"
-                        :on-success="res=>handleDownSuccess(res, 1)"
+                        :on-success="(res) => handleDownSuccess(res, 1)"
                         :on-preview="handlePictureCardPreview_res"
                         :before-upload="beforeUpload_res"
-                        :on-remove="(file, fileList)=>handleRemoveR(file, fileList, 1)"
+                        :on-remove="
+                          (file, fileList) => handleRemoveR(file, fileList, 1)
+                        "
                       >
                         <i class="el-icon-plus"></i>
                       </el-upload>
@@ -953,11 +957,7 @@ export default {
         ptid: "", // 关联类型对应唯一ID
         ptp: "media", // 关联类型区分属性
       },
-      resUpdata: [
-        [],
-        [],
-        []
-      ], // 编辑资源时显示已有图片
+      resUpdata: [[], [], []], // 编辑资源时显示已有图片
 
       Editloading: true, // 提交时的loading
       throwCity: "", // 用户权限不为全国时，根据uWho确定可选城市
@@ -1026,14 +1026,15 @@ export default {
         peopleFlowrate: resData.peopleFlow || "", // 人流量
         carNumber: resData.parking || "", // 车位数
         carFlowrate: resData.carFlow || "", // 车流量
-        buildingPrice: resData.hPrice>=0?(resData.hPrice / 100).toFixed(0):"", // 楼盘价格
+        buildingPrice:
+          resData.hPrice >= 0 ? (resData.hPrice / 100).toFixed(0) : "", // 楼盘价格
         liveTime: resData.chDay || "", // 入住年份
         lat: resData.latLng.split(";")[0], // 经度
         lng: resData.latLng.split(";")[1], // 纬度
         discount: resData.discount || "",
         liveRate: resData.liveRate || "",
-        otherAd: resData.otherAd?(resData.otherAd).split(","):[],
-        fullViewUrl: resData.fullViewUrl||"",
+        otherAd: resData.otherAd ? resData.otherAd.split(",") : [],
+        fullViewUrl: resData.fullViewUrl || "",
         // 房价网信息
         resAlias: resData.alias || "", // 资源别名
         addressAlias: resData.addressAlias || "", // 地址别名
@@ -1138,7 +1139,7 @@ export default {
               let results = [];
               for (let key of res.data.data) {
                 results.push({
-                  value: key.resName + "-" + key.resAddress,
+                  value: key.resName,
                   info: key,
                 });
               }
@@ -1846,7 +1847,6 @@ export default {
   },
 };
 </script>
-
 <style lang="scss" scoped>
 /deep/ .ad_index_footer {
   text-align: center;
@@ -2049,7 +2049,7 @@ export default {
 
 /deep/ .el-form-item.baseInfo {
   width: calc(100% - 64px);
-  margin: 18px 32px 10px;
+  margin: 12px 32px 18px;
   padding-left: 16px;
   background: rgba(245, 246, 250, 1);
 }

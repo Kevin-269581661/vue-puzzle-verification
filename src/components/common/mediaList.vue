@@ -1643,10 +1643,11 @@
 
     .handel_ul_li {
         // float: left;
-        flex-grow: 1;
+        // flex-grow: 1;
         display: flex;
         align-items: center;
         flex-flow: row nowrap;
+        width: 25%;
         margin-right: 46px;
         .li-label {
             font-size: 14px;

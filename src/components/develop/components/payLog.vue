@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-14 18:14:49
+ * @LastEditTime: 2021-07-15 16:06:14
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -374,7 +374,7 @@
             :before-remove="beforeRemove"
             :on-error="uploadError"
             :auto-upload="false"
-            :multiple="false"
+            :multiple="true"
           >
             <el-button
               slot="trigger"

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-14 18:12:15
+ * @LastEditTime: 2021-07-15 17:42:55
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -71,7 +71,7 @@
       top="22vh"
       :show-close="false"
       :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper custom-confirm-dialog"
+      custom-class="custom-dialog-wrapper custom-reason-dialog"
     >
       <div class="content-form">
         <el-input
@@ -301,7 +301,7 @@ export default {
 }
 </style>
 <style lang="scss" scope>
-.custom-confirm-dialog {
+.custom-reason-dialog {
   border-radius: 4px;
   .el-dialog__header {
     padding: 16px 24px 24px !important;
@@ -322,7 +322,7 @@ export default {
   .el-dialog__footer {
     display: flex;
     justify-content: flex-end;
-    padding: 24px;
+    padding: 24px !important;
     word-spacing: -1em;
     .el-button + .el-button {
       margin-left: 16px;
@@ -361,7 +361,7 @@ export default {
     font-size: 16px;
     font-weight: 600;
     background: #f5f6fa;
-    color: #333333;
+    color: rgba(0, 0, 0, 0.85);
     .download-all {
       margin-left: auto;
       font-weight: 400;

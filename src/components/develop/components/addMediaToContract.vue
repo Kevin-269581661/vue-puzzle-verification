@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 10:47:24
+ * @LastEditTime: 2021-07-15 15:58:59
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -638,8 +638,6 @@ export default {
             this.newMediaVisible = false;
             this.addMediaVisible = false;
             this.$emit("refreshList");
-            this.$message.success(res.data.MSG || "录入成功！");
-            this.$message.success(res.data.MSG || "更改成功！");
           } else {
             this.$message.warning(res.data.MSG || "状态更改失败！");
           }
@@ -691,7 +689,7 @@ export default {
     font-weight: 600;
     line-height: 22px;
     border-bottom: unset !important;
-    text-align: center;
+    text-align: center !important;
     color: rgba(0, 0, 0, 0.85);
   }
   .el-dialog__body {

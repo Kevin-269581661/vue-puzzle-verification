@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 15:58:59
+ * @LastEditTime: 2021-07-15 20:56:47
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -693,6 +693,7 @@ export default {
     color: rgba(0, 0, 0, 0.85);
   }
   .el-dialog__body {
+    padding: 0 24px !important;
     border-bottom: unset !important;
   }
   .el-dialog__footer {

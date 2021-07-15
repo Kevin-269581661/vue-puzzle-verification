@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-16 00:10:15
+ * @LastEditTime: 2021-07-16 00:32:18
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -715,7 +715,7 @@ export default {
       this.payApplyForm = {
         id,
         payType,
-        finishYear: finishYear||"" + "",
+        finishYear: (finishYear||"") + "",
         planPayTotal,
         actualPayTotal: Number(actualPayTotal / 100),
         bankAccount,

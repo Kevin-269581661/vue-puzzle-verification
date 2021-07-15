@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 16:06:14
+ * @LastEditTime: 2021-07-15 18:16:32
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -180,6 +180,14 @@
                 <span class="item-label">付款完成日期：</span>
                 <span class="item-content ellipsis">
                   {{ logItem.finishDate || "--" }}
+                </span>
+              </li>
+              <li
+                class="info-item"
+              >
+                <span class="item-label">付款年份：</span>
+                <span class="item-content ellipsis">
+                  {{ logItem.finishYear || "--" }}
                 </span>
               </li>
               <li class="info-item">

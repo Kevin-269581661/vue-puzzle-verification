@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 23:52:07
+ * @LastEditTime: 2021-07-16 00:10:15
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -33,7 +33,7 @@
                 />
                 <el-tooltip
                   v-if="logItem.payState == -1"
-                  :content="'原因：' + logItem.failReason || '--'"
+                  :content="'原因：' + (logItem.failReason || '--')"
                   placement="top"
                 >
                   <img

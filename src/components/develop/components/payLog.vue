@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 18:16:32
+ * @LastEditTime: 2021-07-15 23:52:07
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -715,7 +715,7 @@ export default {
       this.payApplyForm = {
         id,
         payType,
-        finishYear: finishYear + "",
+        finishYear: finishYear||"" + "",
         planPayTotal,
         actualPayTotal: Number(actualPayTotal / 100),
         bankAccount,
@@ -751,13 +751,8 @@ export default {
         dcpID: this.currentLogItem.id,
         passState: flag,
       };
-      if (!flag) {
-        if (this.disagreeTxt) {
-          params.failReason = this.disagreeTxt;
-        } else {
-          this.$message.warning("请输入不通过理由！");
-          return;
-        }
+      if (!flag && this.disagreeTxt) {
+        params.failReason = this.disagreeTxt;
       }
       return new Promise((resolve) => {
         api

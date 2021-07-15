@@ -876,6 +876,7 @@ export default {
                     ? result.backstagePermission
                     : 0,
                 };
+                this.companyChange(editInfo.company);
                 console.log("editInfo-----", editInfo);
                 this.accountForm = editInfo;
                 this.roleSelect(editInfo.role);

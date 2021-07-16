@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 20:53:40
+ * @LastEditTime: 2021-07-16 09:41:28
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -754,7 +754,7 @@ export default {
     border-bottom: 1px solid rgba(233, 233, 233, 1);
   }
   .el-dialog__body {
-    padding: 0 24px !important;
+    padding: 0 24px;
     border-bottom: 1px solid rgba(233, 233, 233, 1);
   }
   .el-dialog__footer {

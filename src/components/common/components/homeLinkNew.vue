@@ -120,8 +120,6 @@
                 if(item.title === '地图选点') {
                     this.showMapModel()
                 } else if(item.title === '导出空位') {
-                    // 类别 动作 名称 值
-                    _paq.push(["trackEvent", "click", "导出空位", JSON.stringify(item), "测试值"]);
                     this.isOpenDownload=true
                 } else {
                     // document.location.href=item.link

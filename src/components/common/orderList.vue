@@ -16,6 +16,7 @@
                             <el-option label="订单名称" value="1"></el-option>
                             <el-option label="客户名称" value="2"></el-option>
                             <el-option v-if="role !== 'EP'" label="合同编号" value="3"></el-option>
+                            <el-option v-if="role=='MD'" label="所属销售" value="4"></el-option>
                         </el-select>
                     </el-input>
                     <div style="margin-left: -30px">
@@ -448,7 +449,7 @@
                 let {select, keyword, rangeDate, company, cityWord, status, orderby, desc, dateType} = this.searchInfo;
                 info = {
                     ...info,
-                    ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})),
+                    ...(keyword && (select == '1' && {orderName: keyword}) || (select == '2' && {customerName: keyword}) || (select == '3' && {contractNum: keyword})||(select == '4' && {saleName: keyword})),
                     ...(rangeDate && {beginTime: rangeDate[0], endTime: rangeDate[1]}),
                     ...(status !== '' && status >= 0 && {state: status}),
                     ...(company && {asrID: company}),

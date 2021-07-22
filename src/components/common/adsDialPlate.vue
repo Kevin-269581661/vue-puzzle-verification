@@ -13,11 +13,15 @@
             </el-tabs>
             <div class="tab_conten">
                 <el-row :gutter="32" class="tab_conten_row">
-                    <el-col :span="6">
+                    <el-col :span="4">
                         <span class="search_label">资源名称:</span>
                         <el-input v-model="resName" size="small" placeholder="请输入内容"></el-input>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :span="4">
+                      <span class="search_label">资产编号:</span>
+                      <el-input v-model="assetTag" size="small" placeholder="请输入内容"></el-input>
+                    </el-col>
+                    <el-col :span="4">
                         <span class="search_label">城市区域:</span>
                         <el-cascader
                             :options="areaList"
@@ -185,6 +189,8 @@
                 activeTabName: 'adDoor',
                 // 搜索的资源名称
                 resName: '',
+                //资产编号
+                assetTag:'', 
                 cityRid: '',
                 // 选择的区域
                 areaRid:[],
@@ -345,11 +351,15 @@
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
                     resName: this.resName,
+                    assetTag:this.assetTag,
                     cityId: this.areaRid[0],//this.cityRid,
                     districtId: this.areaRid[1],
                 }
                 if(!params.resName){
                     delete params.resName
+                }
+                if(!params.assetTag){
+                    delete params.assetTag
                 }
                 if(!params.districtId){
                     delete params.cityId
@@ -538,9 +548,9 @@
         color: #1890FF;
     }
 
-    /deep/ #tab-roadGate{
+    /* /deep/ #tab-roadGate{
         margin-left: 18px;
-    }
+    } */
 
     /deep/ .el-tabs__active-bar{
         width: 68px !important;

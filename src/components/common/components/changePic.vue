@@ -240,7 +240,7 @@
         </div>
 
         <!-- 换画弹出框 -->
-        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false">
+        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" @close='cancel'>
             <el-row class="dialog_pic">
                 <span>资源名称:</span>
                 <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
@@ -283,7 +283,7 @@
 
             <div class="table-wrap">
                 <el-table :data="pointArr" border height="535" ref="multipleTable" v-loading="dialogPage.pointLoading"
-                          @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
+                          @select="handleSelect" @select-all="handleSelectAll" class="table_mater" @filter-change="headerFilter" >
                     <el-table-column type="selection" width="41px" scope="scope">
                     </el-table-column>
                     <el-table-column prop="picUrl" label="" width="50" class="change-pic-icon">
@@ -300,7 +300,7 @@
                     </el-table-column>
                     <el-table-column prop="cityName" label="城市" width="90">
                     </el-table-column>
-                    <el-table-column prop="districtName" label="区域" width="90">
+                    <el-table-column prop="districtName" label="区域" width="90" :filters="cityFilterList" column-key='districtIdList'>
                     </el-table-column>
                     <el-table-column prop="mapCenterInfo" label="地图中心点" align="center" width="100"
                                      show-overflow-tooltip>
@@ -308,7 +308,7 @@
                             <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="timeRange" label="排期" min-width="120">
+                    <el-table-column prop="timeRange" label="排期" min-width="120" :filters="scheduleList" column-key='schDateList'>
                     </el-table-column>
                     <el-table-column prop="replaceDate" label="换画日期">
                         <template slot-scope="scope">
@@ -653,6 +653,8 @@
                     ],
                     // 地图中心点列表
                     mapArr: [],
+                    districtIdList:[], //区域表头筛选
+                    schDateList:[]//排期表头筛选
                 },
                 // 弹出框分页信息
                 dialogPage: {
@@ -717,6 +719,7 @@
                 // selectNum:0,//当前选择的点位
                 handleFlag:false,
                 isEdit:false,//是编辑或新增换画
+                cityFilterList:[] //区域表头筛选list
             };
         },
         mounted() {
@@ -726,6 +729,8 @@
             this.getImgArr();
             // 获取城市区域
             this.getCitys();
+            //获取换画表头城市筛选列表
+            this.getRegionAreaList()
             // 获取资源列表
             this.getResArr();
             console.log('scheduleList', this.scheduleList)
@@ -1281,7 +1286,7 @@
             // 搜索数据格式化
             searchDataFormat() {
                 console.log(this.isEdit);
-                let {resName, picState, mapName} = this.dialogInfo;
+                let {resName, picState, mapName,districtIdList,schDateList} = this.dialogInfo;
                 let {currInfoPage, pageSize} = this.dialogPage;
                 let info = {
                     pageNum: currInfoPage,
@@ -1290,7 +1295,10 @@
                     // replaceRecordId: this.painList[this.activePainIndex].id,
                     ...(resName.length && {resIds: resName}),
                     ...(mapName && {mapCenterInfo: mapName}),
-                    ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState})
+                    ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState}),
+                    ...(districtIdList.length && {districtIdList}),
+                    ...(schDateList.length && {schDateList}),
+
                 };
                 info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id
                 return info;
@@ -1754,6 +1762,7 @@
                 this.shoplist = [];
                 this.selectList = [];
                 this.$emit('hidePainModal','false');
+                this.$refs.multipleTable.clearFilter() //重置表头筛选条件
                 // this.selectNum = 0;
                 // this.search();
             }
@@ -2329,9 +2338,36 @@
                 });
             }
             ,
+             // 表头筛选
+            headerFilter(obj) {
+              this.dialogInfo[Object.keys(obj)[0]] = obj[Object.keys(obj)[0]]
+              this.searchPoint()
+            },
+            getRegionAreaList() {
+                let info = {
+                    apId: sessionStorage.getItem('order_apid'),
+                };
+                api.getApi(this.apiVar.replace + "/plan/regionAreaList", info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        let resArr = res.data.data;
+                        //处理数据得到表头筛选数据
+                        this.cityFilterList =[]
+                           resArr.map(i=>{
+                             this.cityFilterList.push({
+                               text:i.districtName,
+                               value:i.districtId,
+                             })
+                           })
+                    } else {
+                        sessFun.messageFun(res.data.MSG);
+                    }
+                });
+            },
         },
     }
     ;
+ 
 </script>
 
 <style lang="scss" scoped>

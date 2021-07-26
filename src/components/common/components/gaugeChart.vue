@@ -4,7 +4,6 @@
 
 <script>
 import { Chart, registerShape } from "@antv/g2";
-
 export default {
   name: "gaugeChart",
   components: {},
@@ -25,7 +24,6 @@ export default {
   },
   watch: {
     gaugeData(newVal, oldVal) {
-      // console.log('000', newVal)
       this.render()
     }
   },
@@ -189,18 +187,5 @@ export default {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
-}
-li {
-}
-%flex-row-center {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-}
-%flex-column-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-flow: column nowrap;
 }
 </style>

@@ -691,6 +691,7 @@ export default {
       isSlideDown: true,
 
       cardData1: {
+        name: "cardData1",
         type: "bar",
         title: "明日预锁到期方案",
         tip: "数据每5分钟更新一次，指明日将到期自动解锁的方案数量",
@@ -701,6 +702,7 @@ export default {
         data: [],
       },
       cardData2: {
+        name: "cardData2",
         type: "bar",
         title: "本月发布订单",
         tip: "数据每5分钟更新一次，本月该媒介发布的订单数量",
@@ -711,6 +713,7 @@ export default {
         data: [],
       },
       cardData3: {
+        name: "cardData3",
         type: "bar",
         title: "本月创建方案",
         tip: "数据每5分钟更新一次，本月该媒介协助创建的方案数量",
@@ -721,6 +724,7 @@ export default {
         data: [],
       },
       cardDataOther1: {
+        name: "cardDataOther1",
         title: "社区总数",
         tip: "数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和",
         value: 0,
@@ -730,6 +734,7 @@ export default {
         data: [],
       },
       cardDataOther2: {
+        name: "cardDataOther2",
         title: "在刊点位",
         tip: "数据每5分钟更新一次，当前正在被投放的点位数量",
         value: 0,
@@ -744,6 +749,7 @@ export default {
         },
       },
       cardDataOther3: {
+        name: "cardDataOther3",
         title: "禁用点位",
         tip: "数据每5分钟更新一次，公司禁用的总点位数",
         value: 0,

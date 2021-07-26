@@ -374,6 +374,7 @@ export default {
       // 应用中心
       appCenter: "",
       cardDataOther1: {
+        name: "cardDataOther1",
         title: "本月新签合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,
@@ -383,6 +384,7 @@ export default {
         data: [],
       },
       cardDataOther2: {
+        name: "cardDataOther2",
         title: "本月续签合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,
@@ -392,6 +394,7 @@ export default {
         data: [],
       },
       cardDataOther3: {
+        name: "cardDataOther3",
         title: "本月加门合同",
         tip: "统计时间：本月1号起至昨天",
         value: 0,

@@ -223,15 +223,4 @@ export default {
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
 }
-%flex-row-center {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-}
-%flex-column-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-flow: column nowrap;
-}
 </style>

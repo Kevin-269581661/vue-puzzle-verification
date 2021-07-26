@@ -293,6 +293,7 @@
                 appCenter: '',
                 isSlideDown: true,
                 cardData1: {
+                    name: "cardData1",
                     title: '本月成交金额',
                     tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
                     value: 0,
@@ -303,6 +304,7 @@
                     data: []
                 },
                 cardData2: {
+                    name: "cardData2",
                     title: '本月订单',
                     tip: '数据每5分钟更新一次，统计当月发布的订单数量',
                     value: 0,
@@ -312,6 +314,7 @@
                     data: []
                 },
                 cardData3: {
+                    name: "cardData3",
                     title: '本月激活客户',
                     tip: '数据每5分钟更新一次，统计该销售当月发布过订单的客户数量',
                     value: 0,

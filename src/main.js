@@ -6,6 +6,7 @@ import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
 import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
+Vue.config.performance = true;
 
 // ElementUI
 import ElementUI from 'element-ui'
@@ -24,9 +25,6 @@ Vue.use(SlideVerify);
 //echarts
 import echarts from 'echarts';
 Vue.prototype.$echarts = echarts;
-
-import Viser from 'viser-vue'
-Vue.use(Viser)
 
 // axios
 import axios from 'axios'

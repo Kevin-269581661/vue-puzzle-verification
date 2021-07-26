@@ -5,70 +5,135 @@
         <span class="chart-card-title">{{ cardData.title }}</span>
         <span class="chart-card-action">
           <el-tooltip :content="cardData.tip || ''" placement="top">
-            <img class="quesition-icon" src="../../../assets/images/question_icon.png" />
+            <img
+              class="quesition-icon"
+              src="../../../assets/images/question_icon.png"
+            />
           </el-tooltip>
         </span>
       </div>
       <div class="row">
         <div class="row-left">
           <countTo
-            style="font-size: 28px; color: rgba(0, 0, 0, 0.85); fontFamily: DIN-Medium;"
+            style="
+              font-size: 28px;
+              color: rgba(0, 0, 0, 0.85);
+              fontfamily: DIN-Medium;
+            "
             :startVal="oldTotal || 0"
             :endVal="cardData.value || 0"
             :duration="500"
             :prefix="cardData.prefix"
             :suffix="cardData.suffix"
-            :decimals='cardData.decimals || 0'
+            :decimals="cardData.decimals || 0"
             @callback="mountedCallback"
           ></countTo>
         </div>
         <div class="row-right">
-            <trend
-                :term="cardData.trendLabel"
-                :percentage="cardData.compare"
-              ></trend>
+          <trend
+            :term="cardData.trendLabel"
+            :percentage="cardData.compare"
+          ></trend>
         </div>
       </div>
     </div>
     <div class="chart-card-content">
-      <v-chart
+      <bar-chart
         v-if="cardData.type"
-        :forceFit="true"
-        :height="height"
-        :data="cardData.data"
+        :chartCfg="{
+          container: cardData.name,
+          autoFit: true,
+          height: height,
+          padding: [16],
+        }"
+        :barType="cardData.type"
         :scale="scale"
-        :padding="[16, 'auto', 'auto', 'auto']"
-      >
-        <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis v-if="cardData.type == 'bar'" dataKey="week" :tickLine="{length: 0}" :line="{stroke: '#E8E8E8'}" :label="{autoRotate: false, formatter: formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
-        <v-axis v-if="cardData.type == 'stackBar'" dataKey="week" :tickLine="{length: 0}" :line="{stroke: '#E8E8E8'}" :label="{autoRotate: false, formatter: formatter2, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
-        <v-tooltip :hideMarkers="false"/>
-        
-        <v-bar v-if="cardData.type == 'bar'" position="week*value" :color="stackColor[1][1]" />
-        <v-stack-bar v-if="cardData.type == 'stackBar'" position="week*value" :color="stackColor" />
-      </v-chart>
-
-      <v-chart
+        :legend="false"
+        :axis="{
+          value: {
+            show: false,
+          },
+          week: {
+            line: { stroke: '#E8E8E8' },
+            tickLine: null,
+            label: {
+              autoRotate: false,
+              autoHide: false,
+              autoEllipsis: true,
+              formatter: cardData.type == 'stackBar' ? formatter2 : formatter1,
+              style: {
+                fill: 'rgb(0, 0, 0)',
+                opacity: 0.45,
+              },
+            },
+          },
+        }"
+        :tooltip="{
+          showMarkers: false,
+          shared: true,
+          enterable: true,
+          domStyles: {
+            'g2-tooltip': {
+              background: 'rgba(255, 255, 255, .85)',
+            },
+          },
+        }"
+        :color="cardData.type == 'stackBar' ? stackColor : barColor"
+        :chartData="cardData.data"
+      ></bar-chart>
+      <area-chart
         v-else
-        :forceFit="true"
-        :height="height"
-        :data="cardData.data"
+        :chartCfg="{
+          container: cardData.name,
+          autoFit: true,
+          height: height,
+          padding: [16],
+        }"
         :scale="scale"
-        :padding="[16, 'auto', 'auto', 'auto']"
-      >
-        <v-axis dataKey="value" :show="false"></v-axis>
-        <v-axis dataKey="week" :line="{stroke: '#E8E8E8'}" :tickLine="{length: 0}" :label="{autoRotate: false, formatter: cardData.formatter || formatter1, textStyle: {fill: 'rgb(0, 0, 0)', opacity: 0.45}}"></v-axis>
-        <v-tooltip :shared="false" :hideMarkers="false" />
-        <v-smooth-line
-          position="week*value"
-          :size="3"
-          color="#1890ff"
-        />
-        <v-smooth-area
-          position="week*value"
-          :color="['l(90) 0:#d2eaff 1:#fff']"
-        />
-      </v-chart>
+        :legend="false"
+        :axis="{
+          value: {
+            show: false,
+          },
+          week: {
+            line: { stroke: '#E8E8E8' },
+            tickLine: null,
+            label: {
+              autoRotate: false,
+              autoHide: false,
+              autoEllipsis: true,
+              formatter: cardData.formatter || formatter1,
+              style: {
+                fill: 'rgb(0, 0, 0)',
+                opacity: 0.45,
+              },
+            },
+          },
+        }"
+        :tooltip="{
+          showMarkers: true,
+          shared: false,
+          enterable: true,
+          domStyles: {
+            'g2-tooltip': {
+              background: 'rgba(255, 255, 255, .85)',
+            },
+          },
+        }"
+        :line="{
+          position: 'week*value',
+          size: 2,
+          color: ['#1890ff'],
+        }"
+        :area="{
+          position: 'week*value',
+          style: {
+            fill: 'l(90) 0:#1890FFFF 1:#fff',
+            fillOpacity: 0.2,
+          },
+        }"
+        :chartData="cardData.data"
+      ></area-chart>
     </div>
     <div class="chart-card-footer">
       <div class="field">
@@ -81,9 +146,11 @@
 <script>
 import countTo from "vue-count-to";
 import Trend from "./Trend.vue";
+import BarChart from "./barChart.vue";
+import AreaChart from "./areaChart.vue";
 export default {
   name: "chartCard",
-  components: { countTo, Trend },
+  components: { countTo, Trend, BarChart, AreaChart },
   props: {
     cardData: {
       type: Object,
@@ -101,10 +168,6 @@ export default {
       type: String,
       default: "#1890FF",
     },
-    tipAlias: {
-      type: String,
-      default: "y",
-    },
     showTip: {
       type: Boolean,
       default: true,
@@ -112,44 +175,42 @@ export default {
   },
   data() {
     return {
-      scale: [
-        {
-          dataKey: "value",
+      scale: {
+        value: {
           min: 0,
-          alias: this.cardData.valueAlias || ''
+          alias: this.cardData.valueAlias || "",
         },
-        {
-          dataKey: "week",
-          type: 'cat',
-          min: 0,
-          max: 1,
-          // tickCount: 7,
-          range: [ 0, 1 ]
-        }
-      ],
-      stackColor: ['name', ['#69B7FF', '#1890FF']],
+        week: {
+          type: "cat",
+          range: [0, 1],
+        },
+      },
+      stackColor: ["name", ["#69B7FF", "#1890FF"]],
+      barColor: ["#1890FF"],
       height: 107,
       oldTotal: 0,
     };
   },
-  mounted(){
-  },
+  mounted() {},
   methods: {
     mountedCallback() {
       this.oldTotal = this.cardData.value;
     },
     formatter1(text, item, index) {
-      if(index%2 === 1 && index > 0 && index < 12) {
-        return this.cardData.data[index].dateStr
+      if (index % 2 === 1 && index > 0 && index < 12) {
+        return this.cardData.data[index].dateStr;
+      } else {
+        return "";
       }
     },
     formatter2(text, item, index) {
-        if(index%2 === 1 && index > 0 && index < 12) {
-          return `第${index+1}周`
-        }
-    }
+      if (index % 2 === 1 && index > 0 && index < 12) {
+        return `第${index + 1}周`;
+      } else {
+        return "";
+      }
+    },
   },
-  mounted() {},
 };
 </script>
 
@@ -183,19 +244,17 @@ export default {
   position: relative;
   height: 202px;
   padding: 20px 24px 15px;
-  border: 1px solid #E6E7E9;
+  border: 1px solid #e6e7e9;
   box-sizing: border-box;
   background: #fff;
 }
 .chart-card-header {
   position: relative;
   overflow: hidden;
-  // width: 100%;
 
   .meta {
     position: relative;
     overflow: hidden;
-    // width: 100%;
     color: rgba(0, 0, 0, 0.45);
     font-size: 14px;
     line-height: 22px;
@@ -247,7 +306,6 @@ export default {
 .chart-card-content {
   position: relative;
   margin-bottom: 12px;
-  // width: 100%;
 }
 .quesition-icon {
   width: 16px;

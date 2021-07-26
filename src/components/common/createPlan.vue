@@ -1814,6 +1814,7 @@ export default {
                 "广告限制",
                 "点位备注",
                 "媒体数量(面)",
+                "地图中心点",
               ];
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
@@ -1890,6 +1891,7 @@ export default {
             notPush: item.allNotPush || "--",
             remark: item.allremark || "--",
             adsNum: item.adsNum || 0,
+            mapCente:item.mapCenter || '--'
           };
           let customPermission = JSON.parse(
             sessionStorage.getItem("session_data")
@@ -2032,6 +2034,7 @@ export default {
               "广告限制",
               "点位备注",
               "媒体数量(面)",
+              "地图中心点"
             ];
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
@@ -2109,6 +2112,7 @@ export default {
               notPush: item.allNotPush || "",
               remark: item.allremark || "",
               adsNum: item.adsNum,
+              mapCenter:item.mapCenter || ""
             };
             if (
               (this.sessionData.uType == "MD" &&

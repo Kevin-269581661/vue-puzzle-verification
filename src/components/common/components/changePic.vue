@@ -240,37 +240,72 @@
         </div>
 
         <!-- 换画弹出框 -->
-        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" @close='cancel'>
-            <el-row class="dialog_pic">
-                <span>资源名称:</span>
-                <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
-                    <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                </el-select>
-                <span>换画状态:</span>
-                <el-select v-model="dialogInfo.picState" placeholder="请选择换画状态" size="small">
-                    <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label"
-                               :value="item.value"></el-option>
-                </el-select>
-                <span>地图中心点:</span>
-                <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
-                    <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label"
-                               :value="item.value"></el-option>
-                </el-select>
-                <el-button plain @click="searchPoint()">搜索</el-button>
-                <el-button plain @click="resetPoint()">重置</el-button>
-                <el-dropdown>
-                    <el-button type="primary">
-                        批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
-                        <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" width="1134px" >
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>资源名称:</span>
+                    <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
+                        <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
+                                  :value="item.value">
+                        </el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>城市区域:</span>
+                    <el-cascader v-model="dialogInfo.districtIdList" placeholder="请选择城市区域" :options="regionAreaList"   filterable></el-cascader>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>投放排期:</span>
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="dialogInfo.schDateList" @change="arr=>changeScheduleSelect(arr, 'schDateList', 'scheduleList')">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
                 <!--<el-button type="primary" @click="showUpload()">换画</el-button>-->
                 <!--<el-button plain @click="cancelPain()">取消换画</el-button>-->
+            </el-row>
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
+               <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>换画状态:</span>
+                    <el-select v-model="dialogInfo.picState" placeholder="请选择换画状态" size="small">
+                      <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label"
+                               :value="item.value"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>地图中心:</span>
+                    <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
+                      <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label"
+                                :value="item.value"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle' justify="space-between">
+                    <div class="btn_wrapper">
+                      <el-button type="primary"  icon="el-icon-search" @click="searchPoint()">搜索</el-button>
+                      <el-button plain @click="resetPoint()" class="resetBtn">重置</el-button>
+                    </div>
+                    <el-dropdown>
+                      <el-button class="batchBtn">
+                          批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+                      </el-button>
+                      <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
+                          <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-row>
+                </el-col>
             </el-row>
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>
@@ -283,7 +318,7 @@
 
             <div class="table-wrap">
                 <el-table :data="pointArr" border height="535" ref="multipleTable" v-loading="dialogPage.pointLoading"
-                          @select="handleSelect" @select-all="handleSelectAll" class="table_mater" @filter-change="headerFilter" >
+                          @select="handleSelect" @select-all="handleSelectAll" class="table_mater">
                     <el-table-column type="selection" width="41px" scope="scope">
                     </el-table-column>
                     <el-table-column prop="picUrl" label="" width="50" class="change-pic-icon">
@@ -300,7 +335,7 @@
                     </el-table-column>
                     <el-table-column prop="cityName" label="城市" width="90">
                     </el-table-column>
-                    <el-table-column prop="districtName" label="区域" width="90" :filters="cityFilterList" column-key='districtIdList'>
+                    <el-table-column prop="districtName" label="区域" width="90">
                     </el-table-column>
                     <el-table-column prop="mapCenterInfo" label="地图中心点" align="center" width="100"
                                      show-overflow-tooltip>
@@ -308,7 +343,7 @@
                             <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="timeRange" label="排期" min-width="120" :filters="scheduleList" column-key='schDateList'>
+                    <el-table-column prop="timeRange" label="排期" min-width="120">
                     </el-table-column>
                     <el-table-column prop="replaceDate" label="换画日期">
                         <template slot-scope="scope">
@@ -653,8 +688,8 @@
                     ],
                     // 地图中心点列表
                     mapArr: [],
-                    districtIdList:[], //区域表头筛选
-                    schDateList:[]//排期表头筛选
+                    districtIdList:[],//区域搜索列表
+                    schDateList:[]//排期搜索列表
                 },
                 // 弹出框分页信息
                 dialogPage: {
@@ -719,7 +754,7 @@
                 // selectNum:0,//当前选择的点位
                 handleFlag:false,
                 isEdit:false,//是编辑或新增换画
-                cityFilterList:[] //区域表头筛选list
+                regionAreaList:[],//换画区域城市
             };
         },
         mounted() {
@@ -729,7 +764,7 @@
             this.getImgArr();
             // 获取城市区域
             this.getCitys();
-            //获取换画表头城市筛选列表
+            //获取换画城市列表
             this.getRegionAreaList()
             // 获取资源列表
             this.getResArr();
@@ -878,6 +913,7 @@
             },
             // 上下刊搜索图片
             searchImg() {
+               console.log(this.publishSearchInfo,'this.publishSearchInfo;this.publishSearchInfo;');
                 let {citySelect, allhouse, allPic} = this.publishSearchInfo;
                 if (citySelect.length || allhouse || allPic) {
                     this.pageInfo.currPage = 1;
@@ -1262,6 +1298,8 @@
                     resName: [],
                     picState: "",
                     mapName: "",
+                    schDateList:[],
+                    districtIdList:[]
                 };
                 this.shoplist = [];
                 this.selectList = [];
@@ -1296,9 +1334,9 @@
                     ...(resName.length && {resIds: resName}),
                     ...(mapName && {mapCenterInfo: mapName}),
                     ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState}),
-                    ...(districtIdList.length && {districtIdList}),
-                    ...(schDateList.length && {schDateList}),
-
+                    //后端要求查全部，就不传该字段
+                    ...(districtIdList.length>1 && {districtIdList:districtIdList[1]}),
+                    ...((schDateList[0] != '全部'&& schDateList.length) && {schDateList})
                 };
                 info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id
                 return info;
@@ -1570,7 +1608,9 @@
                 let info = {
                     resName: [],
                     picState: "",
-                    mapName: ""
+                    mapName: "",
+                    districtIdList:[],
+                    schDateList:[]
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,
@@ -1762,7 +1802,6 @@
                 this.shoplist = [];
                 this.selectList = [];
                 this.$emit('hidePainModal','false');
-                this.$refs.multipleTable.clearFilter() //重置表头筛选条件
                 // this.selectNum = 0;
                 // this.search();
             }
@@ -2336,13 +2375,8 @@
                 }).catch(res => {
                     console.log(res);
                 });
-            }
-            ,
-             // 表头筛选
-            headerFilter(obj) {
-              this.dialogInfo[Object.keys(obj)[0]] = obj[Object.keys(obj)[0]]
-              this.searchPoint()
             },
+            //获取换画区域
             getRegionAreaList() {
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
@@ -2352,17 +2386,21 @@
                     if (res.data.SysCode == 200200) {
                         let resArr = res.data.data;
                         //处理数据得到表头筛选数据
-                        this.cityFilterList =[]
-                           resArr.map(i=>{
-                             this.cityFilterList.push({
-                               text:i.districtName,
-                               value:i.districtId,
-                             })
-                           })
+                        let result = this.formatCitys(resArr);
+                        this.regionAreaList = result
                     } else {
                         sessFun.messageFun(res.data.MSG);
                     }
                 });
+            },
+            //换画弹出窗选择排期
+            changeScheduleSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                    this.dialogInfo[target].splice(allIndex, 1)
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                    this.dialogInfo[target] = ['全部']
+                }
             },
         },
     }
@@ -2757,35 +2795,56 @@
 
     /* 弹出框 */
     .dialog_pic {
-        display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         position: relative;
+      span {
+        width: 70px;
+        height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 22px;
     }
-
-    .dialog_pic span {
-        margin-right: 6px;
-    }
-
-    .dialog_pic .el-input {
+      .el-input {
         width: auto;
     }
-
-    .dialog_pic /deep/ .el-select {
-        margin-right: 10px;
-    }
-
-    .dialog_pic /deep/ .el-dropdown {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
-    .dialog_pic /deep/ .el-button {
+      /deep/ .el-select{
+        width: 270px;
+        height: 32px;
+        .el-input__inner{
+          height: 32px;
+        }
+      }
+      /deep/ .el-cascader{
+        width: 270px;
+        height: 32px;
+        line-height: 32px;
+        .el-input__inner{
+        height: 32px;
+      }
+        .el-input__suffix{
+          height: 32px;
+        }
+      }
+      /deep/ .el-button {
         margin-right: 5px;
     }
-
-    .dialog_pic /deep/ .el-dropdown .el-button {
+      /deep/ .el-dropdown .el-button {
         width: 94px;
+    }
+      /deep/ .resetBtn, /deep/ .batchBtn{
+        span{
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.65);
+          line-height: 22px;
+        }
+      }
+      /deep/ .batchBtn{
+        margin-right: 0;
+      }
     }
 
     .car-title {

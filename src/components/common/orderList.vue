@@ -16,7 +16,7 @@
                             <el-option label="订单名称" value="1"></el-option>
                             <el-option label="客户名称" value="2"></el-option>
                             <el-option v-if="role !== 'EP'" label="合同编号" value="3"></el-option>
-                            <el-option v-if="role=='MD'" label="所属销售" value="4"></el-option>
+                            <el-option v-if="role == 'MD'" label="所属销售" value="4"></el-option>
                         </el-select>
                     </el-input>
                     <div style="margin-left: -30px">

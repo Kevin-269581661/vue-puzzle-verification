@@ -53,6 +53,9 @@
             <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
+                        <schedule-alter 
+                          :detailData="orderDetail"
+                        />
                         <div class="first-wrap box-wrap">
                             <el-row class="search-row">
                                 <el-col>
@@ -673,7 +676,7 @@
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
     import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
-    
+    import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
     export default {
         name: "orderDetail",
         components: {
@@ -686,7 +689,8 @@
             changePic,
             noSearchResult,
             changeOrderPrice,
-            changeProposalOrderPrice
+            changeProposalOrderPrice,
+            ScheduleAlter
         },
         data() {
             return {

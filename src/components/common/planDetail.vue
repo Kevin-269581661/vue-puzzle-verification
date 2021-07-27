@@ -45,6 +45,9 @@
             <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
+                      <schedule-alter 
+                        :detailData="planDetail"
+                      />
                         <div class="first-wrap box-wrap">
                             <div class="table_wrap">
                                 <el-table border :data="currentPagination" style="width: 100%" max-height="500"> :default-sort="{prop: 'recName', order: 'descending'}"  v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
@@ -217,14 +220,15 @@ import {
     Message,
     MessageBox
 } from "element-ui";
-
+import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 export default {
     name: "planDetail",
     components: {
         apQuotation,
         material,
         detail,
-        addPoint
+        addPoint,
+        ScheduleAlter
         // elTable: Table,
         // elTableColumn: TableColumn,
         // elTabs: Tabs,
@@ -877,7 +881,7 @@ export default {
         },
         filterTimeRange(value, row) {
             return row.timeRange === value;
-        }
+        },
     },
 };
 </script>

@@ -5,10 +5,10 @@
                 placement="top">
       <slot slot="content">
         <div>
-          <p v-for="(item,index) in scheduleData "
+          <div v-for="(item,index) in scheduleData "
              :key="index">
             {{getScheduleStr(item,index,true)}}
-          </p>
+          </div>
         </div>
       </slot>
       <alter class="alter_class">

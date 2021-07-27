@@ -1179,7 +1179,7 @@
                         remark: data.remark,
                         trafficState: data.trafficState,
                         electrifyState: data.electrifyState,
-                        mapCenter:data.mapCenter||''
+                        mapCenter:data.mapCenterName||'--'
                     };
                     resultArr.push(obj);
                 }

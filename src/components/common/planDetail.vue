@@ -375,7 +375,7 @@ export default {
                     trafficState: data.trafficState||'',
                     electrifyState: data.electrifyState||'',
                     asName: data.asName,
-                    mapCenter:data.mapCenter || ''
+                    mapCenter:data.mapCenterName || '--'
                 };
                 resultArr.push(obj);
             }

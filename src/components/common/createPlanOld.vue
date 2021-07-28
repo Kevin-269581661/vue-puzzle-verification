@@ -2031,7 +2031,7 @@
                             peopleFlow: item.peopleFlow || '--',
                             notPush: item.allNotPush || '--',
                             remark: item.allremark || '--',
-                            adsNum: item.adsNum || 0
+                            adsNum: item.adsNum || 0,
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
@@ -2202,7 +2202,7 @@
                                 chDay: item.chDay,
                                 notPush: item.allNotPush || '',
                                 remark: item.allremark || '',
-                                adsNum: item.adsNum
+                                adsNum: item.adsNum,
                             };
                             if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                                 obj.asNames = item.asNames

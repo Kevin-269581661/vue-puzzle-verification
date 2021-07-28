@@ -36,7 +36,7 @@
         },
         methods:{
             expenseTrend(){
-                let ageTrend = this.$echarts.init(document.getElementById(this.id));
+                let ageTrend = echarts.init(document.getElementById(this.id));
                 let dataAxis = this.name;
                 let data1 = this.data;
                 let option = {
@@ -204,7 +204,7 @@
                         }
                     ]
                 };
-                this.ChartLineGraph = this.$echarts.init(myChart);
+                this.ChartLineGraph = echarts.init(myChart);
                 this.ChartLineGraph.setOption(option);
                 this.ChartLineGraph.resize();
                 window.addEventListener('resize', function(){

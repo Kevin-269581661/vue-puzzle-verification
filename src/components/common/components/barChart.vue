@@ -2,14 +2,13 @@
  * @Author: penglei
  * @Date: 2021-07-19 15:24:30
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-23 17:36:02
+ * @LastEditTime: 2021-07-28 15:13:31
  * @FilePath: /frontend/src/components/common/components/barChart.vue
 -->
 <template>
   <div :id="chartCfg.container"></div>
 </template>
 <script>
-import { Chart } from "@antv/g2";
 export default {
   name: "barChart",
   props: {
@@ -46,26 +45,30 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      Chart: null
+    };
+  },
+  computed: {
+    renderFlag() {
+      return Array.isArray(this.chartData) && this.chartData.length && this.Chart
+    }
   },
   watch: {
-    chartData(val) {
-      if (Array.isArray(val)) {
-        console.log("chartInstance.changeData");
-        // chartInstance.changeData(val);
-        this.newChart(val);
+    renderFlag(val) {
+      if (val) {
+        this.newChart(this.chartData);
       }
     },
   },
-  mounted() {
-    // this.newChart(this.chartData);
-  },
-  beforeDestroy() {
-    // chartInstance && chartInstance.destroy();
+  beforeCreate() {
+    import(/* webpackChunkName: "g2Chart" */ '@antv/g2').then(_=>{
+      this.Chart = _.Chart;
+    })
   },
   methods: {
     newChart(chartData) {
-      let chart = new Chart(this.chartCfg);
+      let chart = new this.Chart(this.chartCfg);
       chart.data(chartData);
       chart.scale(this.scale);
       chart.legend(this.legend);

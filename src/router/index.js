@@ -1,132 +1,132 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const login = () => import( '../components/home/login.vue')
+const login = () => import(/* webpackChunkName: "login" */ '../components/home/login.vue')
 //修改密码
-const changePwd = () => import('../components/home/changePwd.vue')
+const changePwd = () => import(/* webpackChunkName: "changePwd" */ '../components/home/changePwd.vue')
 // 修改个人信息
-const myInfo = () => import('../components/home/myInfo.vue')
+const myInfo = () => import(/* webpackChunkName: "myInfo" */ '../components/home/myInfo.vue')
 // 方案分享页面
-const shareADList = () => import('../components/common/shareADList.vue')
-const shareADListProposal = () => import('../components/common/shareADListProposal.vue')
+const shareADList = () => import(/* webpackChunkName: "shareADList" */ '../components/common/shareADList.vue')
+const shareADListProposal = () => import(/* webpackChunkName: "shareADListProposal" */ '../components/common/shareADListProposal.vue')
 //Q&A
-const questionAndAnswer =()=> import('../components/common/questionAndAnswer')
+const questionAndAnswer =()=> import(/* webpackChunkName: "questionAndAnswer" */ '../components/common/questionAndAnswer')
 //404
-const NotFountPage = () => import('../components/common/NotFoundPage.vue')
+const NotFountPage = () => import(/* webpackChunkName: "NotFountPage" */ '../components/common/NotFoundPage.vue')
 //管理员
-const admin = () => import('../components/admin/adminCommon.vue')
-const SMqinlinzk = () => import('../components/admin/SMqinlinzk.vue')
-const ADlimitList = () => import('../components/admin/ADlimitList.vue')
-const notice = () => import('../components/admin/notice.vue')
+const admin = () => import(/* webpackChunkName: "adminCommon" */ '../components/admin/adminCommon.vue')
+const SMqinlinzk = () => import(/* webpackChunkName: "SMqinlinzk" */ '../components/admin/SMqinlinzk.vue')
+const ADlimitList = () => import(/* webpackChunkName: "ADlimitList" */ '../components/admin/ADlimitList.vue')
+const notice = () => import(/* webpackChunkName: "notice" */ '../components/admin/notice.vue')
 
 // 空点导出
-const emptyPoint = () => import('../components/common/downEmptyPoint.vue')
+const emptyPoint = () => import(/* webpackChunkName: "downEmptyPoint" */ '../components/common/downEmptyPoint.vue')
 
 //公用页面
-const mediaInput = () => import('../components/common/mediaInput.vue')
-const mediaDetail = () => import('../components/common/mediaDetail.vue')
-const mediaList = () => import('../components/common/mediaList.vue')
-const clientList = () => import('../components/common/clientList.vue')
-const planList = () => import('../components/common/planList.vue')
-const publishPriceList = () => import('../components/common/publishPriceList.vue')
-const createAccount = () => import('../components/common/createAccount.vue')
-const accountList = () => import('../components/common/accountList.vue')
-const orderList = () => import('../components/common/orderList.vue')
-const clientDetail = () => import('../components/common/clientDetail.vue')
+const mediaInput = () => import(/* webpackChunkName: "mediaInput" */ '../components/common/mediaInput.vue')
+const mediaDetail = () => import(/* webpackChunkName: "mediaDetail" */ '../components/common/mediaDetail.vue')
+const mediaList = () => import(/* webpackChunkName: "mediaList" */ '../components/common/mediaList.vue')
+const clientList = () => import(/* webpackChunkName: "clientList" */ '../components/common/clientList.vue')
+const planList = () => import(/* webpackChunkName: "planList" */ '../components/common/planList.vue')
+const publishPriceList = () => import(/* webpackChunkName: "publishPriceList" */ '../components/common/publishPriceList.vue')
+const createAccount = () => import(/* webpackChunkName: "createAccount" */ '../components/common/createAccount.vue')
+const accountList = () => import(/* webpackChunkName: "accountList" */ '../components/common/accountList.vue')
+const orderList = () => import(/* webpackChunkName: "orderList" */ '../components/common/orderList.vue')
+const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 直营销售创建意向方案
-const createPlan = () => import('../components/common/createPlan.vue')
+const createPlan = () => import(/* webpackChunkName: "createPlan" */ '../components/common/createPlan.vue')
 // 加盟销售和媒介或直营媒介创建方案（保持原逻辑）
-const createPlanOld = () => import('../components/common/createPlanOld.vue')
+const createPlanOld = () => import(/* webpackChunkName: "createPlanOld" */ '../components/common/createPlanOld.vue')
 // 加盟销售和媒介编辑方案或直营媒介编辑非意向方案（保持原逻辑）
-const editPlanOld = () => import('../components/common/editPlanOld.vue')
+const editPlanOld = () => import(/* webpackChunkName: "editPlanOld" */ '../components/common/editPlanOld.vue')
 // 直营媒介编辑已配点意向方案或者给未配点意向方案进行配点或者编辑非意向方案点位（原逻辑增加配点组件并根据是否有意向方案加以权限控制）
-const editPlan = () => import('../components/common/editPlan.vue')
+const editPlan = () => import(/* webpackChunkName: "editPlan" */ '../components/common/editPlan.vue')
 // 直营媒介或销售编辑未配点意向方案的意向
-const editEmptyPointPlan = () => import('../components/common/editEmptyPointPlan.vue')
-const planDetail = () => import('../components/common/planDetail.vue')
-const planEmptyPointDetail = () => import('../components/common/planEmptyPointDetail.vue')
-const orderDetail = () => import('../components/common/orderDetail.vue')
-const photoGallery = () => import('../components/common/photoGallery.vue')
-const advertTV = () => import('../components/common/advertTV.vue')
-const tvOrderList = () => import('../components/common/tvOrderList.vue')
-const tvOrderDetail = () => import('../components/common/tvOrderDetail.vue')
-const settingPrice = () => import('../components/common/settingPrice.vue')
-const maintainList = () => import('../components/common/maintainList.vue')
-const companyList = () => import('../components/common/companyList.vue')
-const compact = () => import('../components/common/compact.vue')
-const paintedPath = () => import('../components/common/paintedPath.vue')
-const adsDialPlate = () => import('../components/common/adsDialPlate.vue')
-const messageList = () => import('../components/common/messageList.vue')
-const communityRank = () => import('../components/common/communityRank.vue')
-const portraitDetail = () => import('../components/common/portraitDetail.vue')
-const qinLinMap = () => import('../components/common/qinLinMap.vue')
-const resContrastMap = () => import('../components/common/resContrastMap.vue')
+const editEmptyPointPlan = () => import(/* webpackChunkName: "editEmptyPointPlan" */ '../components/common/editEmptyPointPlan.vue')
+const planDetail = () => import(/* webpackChunkName: "planDetail" */ '../components/common/planDetail.vue')
+const planEmptyPointDetail = () => import(/* webpackChunkName: "planEmptyPointDetail" */ '../components/common/planEmptyPointDetail.vue')
+const orderDetail = () => import(/* webpackChunkName: "orderDetail" */ '../components/common/orderDetail.vue')
+const photoGallery = () => import(/* webpackChunkName: "photoGallery" */ '../components/common/photoGallery.vue')
+const advertTV = () => import(/* webpackChunkName: "advertTV" */ '../components/common/advertTV.vue')
+const tvOrderList = () => import(/* webpackChunkName: "tvOrderList" */ '../components/common/tvOrderList.vue')
+const tvOrderDetail = () => import(/* webpackChunkName: "tvOrderDetail" */ '../components/common/tvOrderDetail.vue')
+const settingPrice = () => import(/* webpackChunkName: "settingPrice" */ '../components/common/settingPrice.vue')
+const maintainList = () => import(/* webpackChunkName: "maintainList" */ '../components/common/maintainList.vue')
+const companyList = () => import(/* webpackChunkName: "companyList" */ '../components/common/companyList.vue')
+const compact = () => import(/* webpackChunkName: "compact" */ '../components/common/compact.vue')
+const paintedPath = () => import(/* webpackChunkName: "paintedPath" */ '../components/common/paintedPath.vue')
+const adsDialPlate = () => import(/* webpackChunkName: "adsDialPlate" */ '../components/common/adsDialPlate.vue')
+const messageList = () => import(/* webpackChunkName: "messageList" */ '../components/common/messageList.vue')
+const communityRank = () => import(/* webpackChunkName: "communityRank" */ '../components/common/communityRank.vue')
+const portraitDetail = () => import(/* webpackChunkName: "portraitDetail" */ '../components/common/portraitDetail.vue')
+const qinLinMap = () => import(/* webpackChunkName: "qinLinMap" */ '../components/common/qinLinMap.vue')
+const resContrastMap = () => import(/* webpackChunkName: "resContrastMap" */ '../components/common/resContrastMap.vue')
 
 // 下载进度页面
-const progressDown = () => import('../components/common/progressDown.vue')
+const progressDown = () => import(/* webpackChunkName: "progressDown" */ '../components/common/progressDown.vue')
 
 //地图选点中转页面
 // const mapMessage = () => import('../components/common/mapMessage.vue')
 
 //超级运营
-const adminIndex = () => import('../components/superOperate/superOperate_index.vue')
-const superOperateCommon = () => import('../components/superOperate/superOperateCommon.vue')
-const dataAnalysis = () => import('../components/superOperate/dataAnalysis.vue')
-const communityPortrait = () => import('../components/superOperate/communityPortrait')
+const adminIndex = () => import(/* webpackChunkName: "superOperateIndex" */ '../components/superOperate/superOperate_index.vue')
+const superOperateCommon = () => import(/* webpackChunkName: "superOperateCommon" */ '../components/superOperate/superOperateCommon.vue')
+const dataAnalysis = () => import(/* webpackChunkName: "dataAnalysis" */ '../components/superOperate/dataAnalysis.vue')
+const communityPortrait = () => import(/* webpackChunkName: "communityPortrait" */ '../components/superOperate/communityPortrait')
 
 //普通运营
-const operateIndex = () => import('../components/operate/operate_index.vue')
-const operateCommon = () => import('../components/operate/operateCommon.vue')
+const operateIndex = () => import(/* webpackChunkName: "operateIndex" */ '../components/operate/operate_index.vue')
+const operateCommon = () => import(/* webpackChunkName: "operateCommon" */ '../components/operate/operateCommon.vue')
 
 //媒介
-const mediaIndex = () => import('../components/media/media_index.vue')
-const mediaCommon = () => import('../components/media/mediaCommon.vue')
-const projectList = () => import('../components/common/projectList.vue')
-const projectDetail = () => import('../components/common/projectDetail.vue')
-const paintedCount = () => import('../components/common/paintedCount.vue')
+const mediaIndex = () => import(/* webpackChunkName: "mediaIndex" */  '../components/media/media_index.vue')
+const mediaCommon = () => import(/* webpackChunkName: "mediaCommon" */  '../components/media/mediaCommon.vue')
+const projectList = () => import(/* webpackChunkName: "projectList" */  '../components/common/projectList.vue')
+const projectDetail = () => import(/* webpackChunkName: "projectDetail" */  '../components/common/projectDetail.vue')
+const paintedCount = () => import(/* webpackChunkName: "paintedCount" */  '../components/common/paintedCount.vue')
 
 
 //销售
-const saleIndex = () => import('../components/sale/sale_index.vue')
-const createClient = () => import('../components/sale/createClient.vue')
-const editClient = () => import('../components/sale/editClient.vue')
-const saleCommon = () => import('../components/sale/saleCommon.vue')
+const saleIndex = () => import(/* webpackChunkName: "saleIndex" */  '../components/sale/sale_index.vue')
+const createClient = () => import(/* webpackChunkName: "createClient" */  '../components/sale/createClient.vue')
+const editClient = () => import(/* webpackChunkName: "editClient" */  '../components/sale/editClient.vue')
+const saleCommon = () => import(/* webpackChunkName: "saleCommon" */  '../components/sale/saleCommon.vue')
 
 // 加盟公司销售
-const oldSaleIndex = () => import('../components/oldSale/sale_index.vue')
-const oldSaleCommon = () => import('../components/oldSale/saleCommon.vue')
+const oldSaleIndex = () => import(/* webpackChunkName: "saleIndex" */ '../components/oldSale/sale_index.vue')
+const oldSaleCommon = () => import(/* webpackChunkName: "saleCommon" */ '../components/oldSale/saleCommon.vue')
 
 //广告主
-const adOwnerIndex = () => import('../components/adOwner/adOwner_index.vue')
-const adOwnerCommon = () => import('../components/adOwner/adOwnerCommon.vue')
-const ADReport = () => import('../components/adOwner/ADqinlinzkReport.vue')
-const ADqinlinzk = () => import('../components/adOwner/ADqinlinzk.vue')
-const totalView = () => import('../components/adOwner/totalView.vue')
-const trafficTrend = () => import('../components/adOwner/trafficTrends.vue')
-const resVisitors = () => import('../components/adOwner/resVisitors.vue')
-const accessPeriod = () => import('../components/adOwner/accessPeriod.vue')
-const residentAttr = () => import('../components/adOwner/residentAttr.vue')
-const costPreferences = () => import('../components/adOwner/costPreferences.vue')
-const ADorderDetail = () => import('../components/adOwner/ADorderDetail.vue')
-const visitFrequency = () => import('../components/adOwner/visitFrequency.vue')
-const hotSource = () => import('../components/adOwner/hotSource.vue')
+const adOwnerIndex = () => import(/* webpackChunkName: "adOwnerIndex" */ '../components/adOwner/adOwner_index.vue')
+const adOwnerCommon = () => import(/* webpackChunkName: "adOwnerCommon" */ '../components/adOwner/adOwnerCommon.vue')
+const ADReport = () => import(/* webpackChunkName: "ADqinlinzkReport" */ '../components/adOwner/ADqinlinzkReport.vue')
+const ADqinlinzk = () => import(/* webpackChunkName: "ADqinlinzk" */ '../components/adOwner/ADqinlinzk.vue')
+const totalView = () => import(/* webpackChunkName: "totalView" */ '../components/adOwner/totalView.vue')
+const trafficTrend = () => import(/* webpackChunkName: "trafficTrends" */ '../components/adOwner/trafficTrends.vue')
+const resVisitors = () => import(/* webpackChunkName: "resVisitors" */ '../components/adOwner/resVisitors.vue')
+const accessPeriod = () => import(/* webpackChunkName: "accessPeriod" */ '../components/adOwner/accessPeriod.vue')
+const residentAttr = () => import(/* webpackChunkName: "residentAttr" */ '../components/adOwner/residentAttr.vue')
+const costPreferences = () => import(/* webpackChunkName: "costPreferences" */ '../components/adOwner/costPreferences.vue')
+const ADorderDetail = () => import(/* webpackChunkName: "ADorderDetail" */ '../components/adOwner/ADorderDetail.vue')
+const visitFrequency = () => import(/* webpackChunkName: "visitFrequency" */ '../components/adOwner/visitFrequency.vue')
+const hotSource = () => import(/* webpackChunkName: "hotSource" */ '../components/adOwner/hotSource.vue')
 
 
 //工程
-const engineerCommon = () => import('../components/engineer/engineerCommon.vue')
+const engineerCommon = () => import(/* webpackChunkName: "engineerCommon" */ '../components/engineer/engineerCommon.vue')
 
 // 楼盘开发
-const developCommon = () => import('../components/develop/developCommon.vue')
-const developIndex = () => import('../components/develop/developIndex.vue')
-const contractCfg = () => import('../components/develop/contractCfg.vue')
-const newContract = () => import('../components/develop/newContract.vue')
-const editContract = () => import('../components/develop/editContract.vue')
-const nextContract = () => import('../components/develop/nextContract.vue')
-const contractDetail = () => import('../components/develop/contractDetail.vue')
-const contractList = () => import('../components/develop/contractList.vue')
+const developCommon = () => import(/* webpackChunkName: "developCommon" */ '../components/develop/developCommon.vue')
+const developIndex = () => import(/* webpackChunkName: "developIndex" */ '../components/develop/developIndex.vue')
+const contractCfg = () => import(/* webpackChunkName: "contractCfg" */ '../components/develop/contractCfg.vue')
+const newContract = () => import(/* webpackChunkName: "newContract" */ '../components/develop/newContract.vue')
+const editContract = () => import(/* webpackChunkName: "editContract" */ '../components/develop/editContract.vue')
+const nextContract = () => import(/* webpackChunkName: "nextContract" */ '../components/develop/nextContract.vue')
+const contractDetail = () => import(/* webpackChunkName: "contractDetail" */ '../components/develop/contractDetail.vue')
+const contractList = () => import(/* webpackChunkName: "contractList" */ '../components/develop/contractList.vue')
 
 //亲邻科技上刊报告
-const Report = () => import('../components/h5/Report.vue')
+const Report = () => import(/* webpackChunkName: "Report" */ '../components/h5/Report.vue')
 
 Vue.use(Router);
 const staticRoutes = [{path: '/', redirect: '/login'},

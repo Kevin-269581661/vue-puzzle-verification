@@ -218,7 +218,6 @@
 </template>
 
 <script>
-
     import api from "../../api/api.js";
     import "echarts-wordcloud/dist/echarts-wordcloud";
     import "echarts-wordcloud/dist/echarts-wordcloud.min";
@@ -304,7 +303,7 @@
 
             //性别情况
             sexChartFn() {
-                this.sexChart = this.$echarts.init(this.$refs.sexChart)
+                this.sexChart = echarts.init(this.$refs.sexChart)
                 this.sexChart.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -358,7 +357,7 @@
             },
             //年龄分布
             ageChartFn() {
-                this.ageChart = this.$echarts.init(this.$refs.ageChart)
+                this.ageChart = echarts.init(this.$refs.ageChart)
                 this.ageChart.setOption({
                     color: ['#1890FF'],
                     tooltip: {
@@ -437,7 +436,7 @@
             },
             //教育水平
             eduChartFn() {
-                this.eduChart = this.$echarts.init(this.$refs.eduChart)
+                this.eduChart = echarts.init(this.$refs.eduChart)
                 this.eduChart.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -491,7 +490,7 @@
             },
             //消费水平
             spendChartFn() {
-                this.spendChart = this.$echarts.init(this.$refs.spendChart)
+                this.spendChart = echarts.init(this.$refs.spendChart)
                 this.spendChart.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -545,7 +544,7 @@
             },
             //资产状况
             assetsChartFn() {
-                this.assetsChart = this.$echarts.init(this.$refs.assetsChart)
+                this.assetsChart = echarts.init(this.$refs.assetsChart)
                 this.assetsChart.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -599,7 +598,7 @@
             },
             //人生阶段
             lifeChartFn() {
-                this.lifeChart = this.$echarts.init(this.$refs.lifeChart)
+                this.lifeChart = echarts.init(this.$refs.lifeChart)
                 this.lifeChart.setOption({
                     color: ['#1890FF'],
                     tooltip: {
@@ -679,7 +678,7 @@
             },
             //工作分类
             jobChartFn() {
-                this.jobChart = this.$echarts.init(this.$refs.jobChart)
+                this.jobChart = echarts.init(this.$refs.jobChart)
                 this.jobChart.setOption({
                     color: ['#1890FF'],
                     tooltip: {
@@ -766,7 +765,7 @@
                     return obj
                 });
                 // console.log(wordList);
-                this.wordCloud = this.$echarts.init(this.$refs.wordCloudBox)
+                this.wordCloud = echarts.init(this.$refs.wordCloudBox)
                 this.wordCloud.setOption({
                     series: [{
                         type: 'wordCloud',
@@ -836,7 +835,7 @@
             },
             //二级标签柱状图
             tag2chartFn() {
-                this.tag2chart = this.$echarts.init(this.$refs.tag2chart)
+                this.tag2chart = echarts.init(this.$refs.tag2chart)
                 this.tag2chart.setOption({
                     legend: {
                         left: 'center',
@@ -933,7 +932,7 @@
             },
             //三级标签柱状图
             tag3chartFn() {
-                this.tag3chart = this.$echarts.init(this.$refs.tag3chart)
+                this.tag3chart = echarts.init(this.$refs.tag3chart)
                 this.tag3chart.setOption({
                     legend: {
                         left: 'center',

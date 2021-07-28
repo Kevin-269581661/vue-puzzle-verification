@@ -233,7 +233,6 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import shareMobile from "./shareADList_mobile"
     import shareAdMap from "./map/shareHelpADMap"
-import { ContinuousLegend } from '@antv/g2/lib/dependents';
 
     export default {
         name: "shareADListProposal",

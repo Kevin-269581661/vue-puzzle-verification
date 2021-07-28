@@ -575,7 +575,6 @@
 </template>
 
 <script>
-import { Button, Message } from "element-ui";
 import timeFormat from "../../commonFun/timeFormat.js";
 import homeLink from "../common/components/homeLink.vue";
 import { api } from "../../api/api";
@@ -592,8 +591,6 @@ import ringChart from "../common/components/ringChart.vue";
 import miniProgress from "../common/components/miniProgress.vue";
 import pointDistribution from "../common/components/pointDistribution.vue";
 import publishRate from "../common/components/publishRate.vue";
-
-import QRCode from "qrcodejs2";
 var visible = null;
 export default {
   name: "media_index",
@@ -607,8 +604,7 @@ export default {
     ringChart,
     miniProgress,
     pointDistribution,
-    publishRate,
-    QRCode,
+    publishRate
   },
   data() {
     return {
@@ -745,6 +741,8 @@ export default {
         formatter: (text, item, index) => {
           if (index % 2 === 1 && index > 0 && index < 12) {
             return text.substr(5);
+          } else {
+            return "";
           }
         },
       },
@@ -760,6 +758,8 @@ export default {
         formatter: (text, item, index) => {
           if (index % 2 === 1 && index > 0 && index < 12) {
             return text.substr(5);
+          } else {
+            return "";
           }
         },
       },
@@ -841,7 +841,7 @@ export default {
               asCount: resinfo.asCount,
             };
           } else {
-            Message.warning(res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -903,7 +903,7 @@ export default {
             }
             this.companyHonor = this.comimgInfo.concat(this.imginfo);
           } else {
-            Message.warning(res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1045,7 +1045,7 @@ export default {
               compare: temp.unlockPlanIncrRate,
             });
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1067,7 +1067,7 @@ export default {
               compare: temp.fanganIncrRate,
             });
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1085,7 +1085,7 @@ export default {
               compare: temp.resIncrRate,
             });
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1107,7 +1107,7 @@ export default {
               compare: temp.banIncrRate,
             });
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1185,7 +1185,7 @@ export default {
               });
             }
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1232,7 +1232,7 @@ export default {
               ],
             ];
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {
@@ -1246,7 +1246,7 @@ export default {
           if (res.data.SysCode === 200200) {
             this.preLockArr = res.data.data || [];
           } else {
-            this.messageFun("warning", res.data.MSG);
+            this.$message.warning(res.data.MSG || "");
           }
         })
         .catch((err) => {

@@ -3,12 +3,8 @@
 </template>
 
 <script>
-import { DataView } from "@antv/data-set";
-import { Chart } from "@antv/g2";
-
 export default {
   name: "nestPieChart",
-  components: {},
   props: {
     sourceData: {
       type: Array,
@@ -21,22 +17,37 @@ export default {
   },
   data() {
     return {
+      Chart: null,
+      DataView: null,
       chartInstance: null,
     };
   },
+  computed: {
+    renderFlag() {
+      return (
+        Array.isArray(this.sourceData) && this.sourceData.length && this.Chart && this.DataView
+      );
+    },
+  },
   watch: {
-    sourceData(newVal, oldVal) {
-      if (newVal.length > 0) {
-        // console.log("renData", newVal);
-        this.render(newVal);
+    renderFlag(val) {
+      if (val) {
+        this.render(this.sourceData);
       }
     },
   },
-  mounted() {},
+  beforeCreate() {
+    import(/* webpackChunkName: "g2Chart" */ "@antv/g2").then((_) => {
+      this.Chart = _.Chart;
+    });
+    import(/* webpackChunkName: "g2Chart" */ "@antv/data-set").then((_) => {
+      this.DataView = _.DataView;
+    });
+  },
   methods: {
     render(data) {
       if (this.chartInstance == null) {
-        this.chartInstance = new Chart({
+        this.chartInstance = new this.Chart({
           container: this.container,
           autoFit: true,
           height: 450,
@@ -44,7 +55,7 @@ export default {
         });
       }
       // 通过 DataSet 计算百分比
-      const dv = new DataView();
+      const dv = new this.DataView();
       dv.source(data).transform({
         type: "percent",
         field: "value",
@@ -120,7 +131,7 @@ export default {
       });
 
       const outterView = this.chartInstance.createView();
-      const dv1 = new DataView();
+      const dv1 = new this.DataView();
       // console.log("dv1data", data);
       dv1.source(data).transform({
         type: "percent",
@@ -199,7 +210,6 @@ export default {
       this.chartInstance.render();
     },
   },
-  mounted() {},
 };
 </script>
 

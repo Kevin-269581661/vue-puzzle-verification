@@ -323,85 +323,6 @@
                 </el-row>
             </el-card>
         </div>
-        <!--机会挖掘-->
-        <!-- <div class="data_read_box">
-            <el-card  class="box-card" shadow="never">
-                <div slot="header" class="clearfix">
-                    <span class="box_card_title">机会挖掘</span>
-                    <div class="box_card_title_right right_date_select">
-                        <el-date-picker
-                            v-model="chanceFindDate"
-                            size="small"
-                            type="daterange"
-                            value-format="yyyy/MM/dd"
-                            format="yyyy/MM/dd"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            :clearable="false"
-                            @change="changeFindDate">
-                        </el-date-picker>
-                    </div>
-                </div>
-                <el-row :gutter="16">
-                    <el-col :span="12" class="el_col_echarts">
-                        <p class="echarts_title">用户总量：{{chanceFindUserNum}}个</p>
-                        <div class="bar_charts el_col_bar" id="chance_find" ref="chanceFindPie"
-                             style="height: 320px;width: 100%"
-                             v-loading="chanceFindPieLoading"
-                             element-loading-text="玩命加载中..."
-                             element-loading-background="rgba(255, 255, 255)">
-                        </div>
-                    </el-col>
-                    <el-col :span="12">
-                        <div class="el_col_bar el_col_table">
-                            <el-table
-                                :data="chanceFindTable"
-                                class="chance_find_table"
-                                style="width: 100%"
-                                v-loading="chanceFindTableLoading"
-                                element-loading-text="玩命加载中..."
-                                element-loading-background="rgba(255, 255, 255)">
-                                <el-table-column
-                                    prop="name"
-                                    label="客户名称"
-                                    min-width="125"
-                                    :show-overflow-tooltip="true">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="bTitle"
-                                    label="品牌"
-                                    min-width="125"
-                                    :show-overflow-tooltip="true">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="cooperation"
-                                    label="合作情况"
-                                    min-width="90">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="status"
-                                    min-width="90"
-                                    label="最新状态">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="time"
-                                    min-width="90"
-                                    label="更新时间">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="saler"
-                                    label="所属销售">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.saler || '--'}}</span>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </el-col>
-                </el-row>
-            </el-card>
-        </div> -->
     </div>
 </template>
 
@@ -616,11 +537,6 @@
                         return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(this.timeData.maxYear)
                     }
                 },
-                // adSaleOptionsStar: {
-                //     disabledDate: (time) => {
-                //         return time.getTime() < Date.parse('2015/01') || time.getTime() > Date.parse(this.timeData.maxYear)
-                //     }
-                // },
             }
         },
         props:{
@@ -768,6 +684,7 @@
             },
             // 数据总览-接口
             getTotalData(){
+                console.log('this.dateRange', this.dateRange)
                 this.totalDataBarLoading = true
                 let params = {
                     uid: this.sessionData.uID,
@@ -840,8 +757,7 @@
                 if(this.totalDataBarEcharts){
                     this.totalDataBarEcharts.dispose()
                 }
-                this.totalDataBarEcharts = this.$echarts.init(this.$refs.totalDataBar);
-                // console.log('totalDataBar',this.totalDataBar)
+                this.totalDataBarEcharts = echarts.init(this.$refs.totalDataBar);
                 this.totalDataBarEcharts.setOption({
                     tooltip: {
                         trigger: 'axis',
@@ -1068,7 +984,7 @@
                 if(this.toDayPreceptBarEcharts){
                     this.toDayPreceptBarEcharts.dispose()
                 }
-                this.toDayPreceptBarEcharts = this.$echarts.init(this.$refs.toDayPreceptBar);
+                this.toDayPreceptBarEcharts = echarts.init(this.$refs.toDayPreceptBar);
                 console.log('toDayPreceptBarEcharts',this.toDayPreceptBarEcharts)
                 this.toDayPreceptBarEcharts.setOption({
                     legend: {
@@ -1368,7 +1284,7 @@
                 if(this.adSaleBarEcharts){
                     this.adSaleBarEcharts.dispose()
                 }
-                this.adSaleBarEcharts = this.$echarts.init(this.$refs.adSaleBar);
+                this.adSaleBarEcharts = echarts.init(this.$refs.adSaleBar);
                 let option =  {
                     tooltip: {
                         trigger: 'axis',
@@ -1623,7 +1539,7 @@
                 if(this.adSalePieEcharts){
                     this.adSalePieEcharts.dispose()
                 }
-                this.adSalePieEcharts = this.$echarts.init(this.$refs.adSalePie)
+                this.adSalePieEcharts = echarts.init(this.$refs.adSalePie)
                 let total = 0
                 for(let key of this.mediaSaleData.data){
                     total += key.value
@@ -1807,7 +1723,7 @@
                 if(this.adInventoriedPieEcharts){
                     this.adInventoriedPieEcharts.dispose()
                 }
-                this.adInventoriedPieEcharts = this.$echarts.init(this.$refs.adInventoriedPie)
+                this.adInventoriedPieEcharts = echarts.init(this.$refs.adInventoriedPie)
                 let total = 0
                 for(let key of this.beenWeekOfSurfaceData.data){
                     total += key.value
@@ -1887,7 +1803,7 @@
                 if(this.adInventoryPieEcharts){
                     this.adInventoryPieEcharts.dispose()
                 }
-                this.adInventoryPieEcharts = this.$echarts.init(this.$refs.adInventoryPie)
+                this.adInventoryPieEcharts = echarts.init(this.$refs.adInventoryPie)
                 let total = 0
                 for(let key of this.futureWeekOfSurfaceData.data){
                     total += key.value
@@ -2052,7 +1968,7 @@
                 if (this.chanceFindPieEcharts) {
                     this.chanceFindPieEcharts.dispose()
                 }
-                this.chanceFindPieEcharts = this.$echarts.init(this.$refs.chanceFindPie)
+                this.chanceFindPieEcharts = echarts.init(this.$refs.chanceFindPie)
                 let total = 0
                 for (let key of this.chanceFindPieData.data) {
                     total += key.value

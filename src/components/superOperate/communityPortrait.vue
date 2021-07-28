@@ -345,7 +345,7 @@
 <script>
     import api from '../../api/api';
     import sessFun from '../../commonFun/sessFun';
-    import noSearchResult from '../common/components/noSearchResult'
+    import noSearchResult from '../common/components/noSearchResult';
     export default {
         name: "communityPortrait",
         components:{
@@ -653,7 +653,7 @@
                 if(this.sexPieEcharts){
                     this.sexPieEcharts.dispose()
                 }
-                this.sexPieEcharts = this.$echarts.init(this.$refs.sexConditionPie);
+                this.sexPieEcharts = echarts.init(this.$refs.sexConditionPie);
                 this.sexPieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -745,7 +745,7 @@
                 if(this.marriagePieEcharts){
                     this.marriagePieEcharts.dispose()
                 }
-                this.marriagePieEcharts = this.$echarts.init(this.$refs.marriagePie);
+                this.marriagePieEcharts = echarts.init(this.$refs.marriagePie);
                 this.marriagePieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -837,7 +837,7 @@
                 if(this.childrenForecastPieEcharts){
                     this.childrenForecastPieEcharts.dispose()
                 }
-                this.childrenForecastPieEcharts = this.$echarts.init(this.$refs.childrenForecastPie);
+                this.childrenForecastPieEcharts = echarts.init(this.$refs.childrenForecastPie);
                 this.childrenForecastPieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -927,7 +927,7 @@
                 if(this.ageDataBarEcharts){
                     this.ageDataBarEcharts.dispose()
                 }
-                this.ageDataBarEcharts = this.$echarts.init(this.$refs.ageDataBar)
+                this.ageDataBarEcharts = echarts.init(this.$refs.ageDataBar)
                 this.ageDataBarEcharts.setOption({
                     tooltip: {
                         trigger: 'axis',
@@ -1088,7 +1088,7 @@
                 if(this.haveCarPieEcharts){
                     this.haveCarPieEcharts.dispose()
                 }
-                this.haveCarPieEcharts = this.$echarts.init(this.$refs.haveCarPie);
+                this.haveCarPieEcharts = echarts.init(this.$refs.haveCarPie);
                 this.haveCarPieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -1164,7 +1164,7 @@
                 if(this.haveHousePieEcharts){
                     this.haveHousePieEcharts.dispose()
                 }
-                this.haveHousePieEcharts = this.$echarts.init(this.$refs.haveHousePie);
+                this.haveHousePieEcharts = echarts.init(this.$refs.haveHousePie);
                 this.haveHousePieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -1271,7 +1271,7 @@
                 if(this.purchasingPowerPieEcharts){
                     this.purchasingPowerPieEcharts.dispose()
                 }
-                this.purchasingPowerPieEcharts = this.$echarts.init(this.$refs.purchasingPowerPie);
+                this.purchasingPowerPieEcharts = echarts.init(this.$refs.purchasingPowerPie);
                 this.purchasingPowerPieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',
@@ -1362,7 +1362,7 @@
                 if(this.mobilePhonePieEcharts){
                     this.mobilePhonePieEcharts.dispose()
                 }
-                this.mobilePhonePieEcharts = this.$echarts.init(this.$refs.mobilePhonePie);
+                this.mobilePhonePieEcharts = echarts.init(this.$refs.mobilePhonePie);
                 this.mobilePhonePieEcharts.setOption ({
                     tooltip: {
                         trigger: 'item',

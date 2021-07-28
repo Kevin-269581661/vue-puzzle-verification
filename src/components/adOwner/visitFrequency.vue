@@ -53,12 +53,11 @@
     import commaFormat from "../../commonFun/commaFormat.js";
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js'
-
     export default {
+        name: "visitFrequency",
         props: {
             selectRes: {}
         },
-        name: "visitFrequency",
         data() {
             return {
                 oneData: [
@@ -100,7 +99,7 @@
         },
         methods: {
             onePie() {
-                let onePie = this.$echarts.init(this.$refs.onePie);
+                let onePie = echarts.init(this.$refs.onePie);
                 onePie.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -148,7 +147,7 @@
                 });
             },
             twoPie() {
-                let twoPie = this.$echarts.init(this.$refs.twoPie);
+                let twoPie = echarts.init(this.$refs.twoPie);
                 twoPie.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -197,7 +196,7 @@
                 });
             },
             threePie() {
-                let threePie = this.$echarts.init(this.$refs.threePie);
+                let threePie = echarts.init(this.$refs.threePie);
                 threePie.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -246,7 +245,7 @@
                 });
             },
             fourPie() {
-                let fourPie = this.$echarts.init(this.$refs.fourPie);
+                let fourPie = echarts.init(this.$refs.fourPie);
                 fourPie.setOption({
                     tooltip: {
                         trigger: 'item',

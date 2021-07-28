@@ -22,9 +22,6 @@ import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);
 Vue.use(SlideVerify);
-//echarts
-import echarts from 'echarts';
-Vue.prototype.$echarts = echarts;
 
 // axios
 import axios from 'axios'

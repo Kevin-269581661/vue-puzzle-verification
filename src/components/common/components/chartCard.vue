@@ -42,6 +42,7 @@
         v-if="cardData.type"
         :chartCfg="{
           container: cardData.name,
+          renderer: 'svg',
           autoFit: true,
           height: height,
           padding: [16],
@@ -85,6 +86,7 @@
         v-else
         :chartCfg="{
           container: cardData.name,
+          renderer: 'svg',
           autoFit: true,
           height: height,
           padding: [16],
@@ -191,7 +193,6 @@ export default {
       oldTotal: 0,
     };
   },
-  mounted() {},
   methods: {
     mountedCallback() {
       this.oldTotal = this.cardData.value;

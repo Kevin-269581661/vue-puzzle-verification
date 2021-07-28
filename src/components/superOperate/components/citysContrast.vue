@@ -589,7 +589,7 @@
             },
             // 全国地图
             chinaMap() {
-                this.chinaMapEcharts = this.$echarts.init(this.$refs.chinaMap);
+                this.chinaMapEcharts = echarts.init(this.$refs.chinaMap);
                 this.chinaMapEcharts.setOption({
                     tooltip: {
                         trigger: 'item',
@@ -842,7 +842,7 @@
                 if(this.cityBattleLineEcharts){
                     this.cityBattleLineEcharts.dispose()
                 }
-                this.cityBattleLineEcharts = this.$echarts.init(this.$refs.cityBattleLine);
+                this.cityBattleLineEcharts = echarts.init(this.$refs.cityBattleLine);
                 let that = this
                 this.cityBattleLineEcharts.setOption({
                         color: this.colorArr,
@@ -1000,7 +1000,7 @@
                 if(this.cityPercentBattleEchart){
                     this.cityPercentBattleEchart.dispose()
                 }
-                this.cityPercentBattleEchart = this.$echarts.init(this.$refs.cityPercentBattleBar);
+                this.cityPercentBattleEchart = echarts.init(this.$refs.cityPercentBattleBar);
                 this.cityPercentBattleEchart.setOption({
                     color: ['#4AA6FC'],
                     tooltip: {
@@ -1276,7 +1276,7 @@
             },
             // 城市关键数据对比 - 饼图
             keyDataPie() {
-                this.keyDataPieEcharts = this.$echarts.init(this.$refs.keyDataPie);
+                this.keyDataPieEcharts = echarts.init(this.$refs.keyDataPie);
                 this.keyDataPieEcharts.setOption({
                     tooltip: {
                         trigger: 'item',

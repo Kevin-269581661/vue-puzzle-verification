@@ -2,7 +2,7 @@
 
 var timeFormat = {};
 // 获取时间年月日
-timeFormat.toDate = function (time, format = '-') {
+timeFormat.toDate = function (time, format = '-', locale) {
 	let result = '';
 	if (time) {
 		if(typeof time === 'number') {
@@ -13,21 +13,56 @@ timeFormat.toDate = function (time, format = '-') {
 		let year = time.getFullYear();
 		let month = time.getMonth() + 1;//js从0开始取
 		let date = time.getDate();
-
-		if (month < 10) {
-			month = "0" + month;
+		if(locale == "zh-cn") {
+			result = year + '年' + month + '月' + date + '日'; //2009年06月12日
+		} else {
+			if (month < 10) {
+				month = "0" + month;
+			}
+			if (date < 10) {
+				date = "0" + date;
+			}
+			result = year + format + month + format + date; //2009-06-12
 		}
-		if (date < 10) {
-			date = "0" + date;
-		}
-
-		result = year + format + month + format + date; //2009-06-12
 	}
 	return result;
 };
-
-
-
+// 获取月初
+timeFormat.beginOfMonth = function (time, format = '/') {
+	let result = '';
+	if (time) {
+		if(typeof time === 'number') {
+			time = new Date(time)
+		} else {
+			time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
+		}
+		let year = time.getFullYear(), 
+				month = time.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month;
+		}
+		result = year + format + month + format + "01"; //2009-06-01
+	}
+	return result;
+};
+// 获取月末
+timeFormat.endOfMonth = function (time, format = '/') {
+	let result = '';
+	if (time) {
+		if(typeof time === 'number') {
+			time = new Date(time)
+		} else {
+			time = new Date(Date.parse(time.toString().replace(/[-\.]/g, "/")));
+		}
+		let year = time.getFullYear(), 
+				month = time.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month;
+		}
+		result = year + format + month + format + new Date(year, month, 0).getDate(); //2009-06-01
+	}
+	return result;
+};
 // 获取时间年月日时分秒
 timeFormat.toDateTime = function (time, format = '-') {
 	let result = '';

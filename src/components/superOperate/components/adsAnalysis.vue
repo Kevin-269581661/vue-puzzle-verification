@@ -346,7 +346,6 @@
     import timeFormat from '../../../commonFun/timeFormat';
     import noSearchResult from "../../../components/common/components/noSearchResult";
     import sessFun from '../../../commonFun/sessFun';
-    import moment from "moment";
     import monthRange from '../../common/components/monthRange.vue';
     export default {
         name: "adsAnalysis",
@@ -488,8 +487,8 @@
                 let endTime = timeFormat.returnMonthCount(0,'-')
                 this.pointDate = [starTime,endTime]               // 点位使用概况
                 this.pointDateDay = this.pointDate.concat()
-                starTime = moment(starTime, 'YYYY-MM').startOf("month").format('YYYY-MM-DD')
-                endTime = moment(endTime, 'YYYY-MM').endOf("month").format('YYYY-MM-DD')
+                starTime = timeFormat.beginOfMonth(starTime)
+                endTime = timeFormat.endOfMonth(endTime)
                 this.resSearchDate = [starTime,endTime]          // 社区上刊率列表
                 this.adsSearchDate = [starTime,endTime]           // 点位上刊率列表
             },
@@ -691,8 +690,8 @@
             CreatDateChange(params, dateRange){
                 if(Array.isArray(params) && params.length === 2) {
                     let [dateStart, dateEnd] = dateRange
-                    dateStart = dateStart?moment(dateStart, 'YYYY-MM').startOf("month").format('YYYY-MM-DD'):dateStart
-                    dateEnd = dateEnd?moment(dateEnd, 'YYYY-MM').endOf("month").format('YYYY-MM-DD'):dateEnd
+                    dateStart = dateStart?timeFormat.beginOfMonth(dateStart):dateStart
+                    dateEnd = dateEnd?timeFormat.endOfMonth(dateEnd):dateEnd
                     this[params[1]] = [dateStart, dateEnd]
                     params = params[0]
                 }

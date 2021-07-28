@@ -331,7 +331,6 @@
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
     import sessFun from '../../../commonFun/sessFun';
-    import moment from "moment";
     import countTo from "vue-count-to";
     import monthRange from '../../common/components/monthRange.vue';
     export default {
@@ -689,8 +688,8 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: moment(this.dateRange[0], 'YYYY-MM').startOf("month").format('YYYY/MM/DD'),
-                    endDate: moment(this.dateRange[1], 'YYYY-MM').endOf("month").format('YYYY/MM/DD'),
+                    startDate: timeFormat.beginOfMonth(this.dateRange[0]),
+                    endDate: timeFormat.endOfMonth(this.dateRange[1]),
                     asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {

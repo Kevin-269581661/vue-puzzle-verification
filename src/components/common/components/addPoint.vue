@@ -36,7 +36,7 @@
             <li class="info-item">
               <span class="item-label">投放排期：</span>
               <span class="item-content">
-                {{ `${moment(intentionInfo.pdStartDate).format('LL')}-${moment(intentionInfo.pdEndDate).format('LL')}` }}
+                {{ `${timeFormat.toDate(intentionInfo.pdStartDate, "", "zh-cn")}-${timeFormat.toDate(intentionInfo.pdEndDate, "", "zh-cn")}` }}
               </span>
             </li>
             <li class="info-item">
@@ -388,12 +388,9 @@
 
 <script>
 import api from "../../../api/api";
-// 时间格式化
-import moment from "moment";
 import timeFormat from "../../../commonFun/timeFormat.js";
 import sessFun from "../../../commonFun/sessFun.js";
 import dialogTable from "./dialogTable.vue";
-moment.locale('zh-cn')
 export default {
   name: "addPoint",
   props: {
@@ -431,7 +428,7 @@ export default {
   },
   data() {
     return {
-      moment,
+      timeFormat,
       sessionData: null,
       matched: false,
       trafficAndmType: {

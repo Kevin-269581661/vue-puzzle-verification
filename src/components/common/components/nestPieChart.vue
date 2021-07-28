@@ -40,7 +40,7 @@ export default {
     import(/* webpackChunkName: "g2Chart" */ "@antv/g2").then((_) => {
       this.Chart = _.Chart;
     });
-    import(/* webpackChunkName: "g2Chart" */ "@antv/data-set").then((_) => {
+    import(/* webpackChunkName: "g2DataSet" */ "@antv/data-set").then((_) => {
       this.DataView = _.DataView;
     });
   },

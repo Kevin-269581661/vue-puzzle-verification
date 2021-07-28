@@ -29,7 +29,8 @@ module.exports = {
     })
   ],
     externals: {
-        "BMapLib": "BMapLib"
+        "BMapLib": "BMapLib",
+        "echarts": "echarts"
     },
   resolve: {
     extensions: ['.js', '.vue', '.json'],

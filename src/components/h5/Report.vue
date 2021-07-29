@@ -31,11 +31,11 @@
                     <el-tab-pane label="投放详情" name="first">
                         <div class="first-wrap box-wrap">
                             <div class="search-wrap">
-                                <el-select v-model="select" placeholder="请选择" class="type-select">
+                                <el-select size="small" v-model="select" placeholder="请选择" class="type-select">
                                     <el-option v-for="item in typeSelect" :key="item.value" :label="item.label"
                                                :value="item.value"></el-option>
                                 </el-select>
-                                <el-input v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput"
+                                <el-input size="small" v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput"
                                           @change="initData"></el-input>
                                 <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()"
                                            v-qadn-mta-h5="{id: 'a006_b011_c011_d006_bt146_ck01'}">搜索
@@ -213,7 +213,7 @@
                     <ul>
                         <li>
                             <span>选择模板：</span>
-                            <el-select class="pptx-select" v-model="templateType" placeholder="请选择" @change="templateChange">
+                            <el-select class="pptx-select" size="small" v-model="templateType" placeholder="请选择" @change="templateChange">
                                 <el-option value="0" label="通用模板"></el-option>
                                 <el-option value="1" label="定制模板"></el-option>
                             </el-select>
@@ -236,7 +236,7 @@
                         <!-- 亲粤邻定制 -->
                         <li v-if="templateType !== null && templateType == 1 && customizeCode == '2'">
                             <span>导出排版：</span>
-                            <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
+                            <el-select size="small" class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/(点*页)"></el-option>
                                 <el-option value="3" label="3张/(点*页)"></el-option>
                                 <el-option value="4" label="4张/(点*页)"></el-option>
@@ -246,7 +246,7 @@
                         <!-- 通用模板 -->
                         <li v-if="templateType !== null && templateType == 0">
                             <span>导出排版：</span>
-                            <el-select class="pptx-select" v-model="pptxType" placeholder="请选择">
+                            <el-select size="small" class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/页"></el-option>
                                 <el-option value="3" label="3张/页"></el-option>
                                 <el-option value="4" label="4张/页"></el-option>
@@ -264,7 +264,7 @@
                         </li>
                         <li>
                             <span>导出条件：</span>
-                            <el-select multiple class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件" @change="changeCondition">
+                            <el-select size="small" multiple class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件" @change="changeCondition">
                                 <el-option v-for="(item, index) in conditionArr" :key="index" :value="index" :label="item"></el-option>
                             </el-select>
                         </li>
@@ -1193,7 +1193,7 @@
         background: #1890ff;
         border-radius: 4px;
         width: 76px;
-        height: 34px;
+        /* height: 34px; */
         position: relative;
         left: 16px;
         padding: 0;
@@ -1219,7 +1219,7 @@
 
     .el-input {
         width: 300px;
-        height: 34px;
+        /* height: 34px; */
     }
 
     /deep/ .el-table td,
@@ -1237,7 +1237,7 @@
         border-bottom-right-radius: 0;
         padding-right: 0;
         padding-left: 10px;
-        height: 34px;
+        /* height: 34px; */
     }
 
     .searchInput /deep/ .el-input__inner,
@@ -1246,7 +1246,7 @@
         position: relative;
         left: 7px;
         top: 0;
-        height: 34px;
+        /* height: 34px; */
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
     }

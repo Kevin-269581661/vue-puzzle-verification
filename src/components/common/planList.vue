@@ -330,7 +330,7 @@
             :close-on-click-modal="false"
             custom-class="Import_dialog"
             :show-close="false"
-            width="472px">
+            width="448px">
             <p class="info_box" v-show="isShowExportTag">
                 <i class="el-icon-warning" style="color:#1890FF"></i>
                 {{exportResStep === 1 ? '第一步：填写导出的基本参数' : exportResStep === 2 ?
@@ -339,18 +339,29 @@
             </p>
             <ul class="export_ul" v-show="exportResStep === 1">
                 <li>
-                    <span>匹配城市：</span>
-                    <el-select size="small" v-model="exportInfo.citys" filterable placeholder="请选择城市" @change="exportCityFun">
-                        <el-option v-for="(key,index) in exportRescityList"
-                                   :key="index"
-                                   :label="key.label"
-                                   :value="key.value">
-                        </el-option>
+                    <span>投放排期：</span>
+                    <el-date-picker
+                        v-model="exportInfo.date"
+                        size="small"
+                        type="daterange"
+                        range-separator="⇀"
+                        align="right"
+                        value-format="yyyy-MM-dd"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
+                    </el-date-picker>
+                </li>
+                <li>
+                    <span>媒体类型：</span>
+                    <el-select size="small" v-model="exportInfo.mVehicle" placeholder="请选择媒体类型">
+                        <el-option label="仅有广告门" value="广告门"></el-option>
+                        <el-option label="仅有道闸" value="道闸"></el-option>
+                        <el-option label="广告门或道闸" value=""></el-option>
                     </el-select>
                 </li>
                 <li>
                     <span>匹配范围：</span>
-                    <el-input size="small" class="radius_input" placeholder="请输入半径距离"
+                    <el-input size="small" class="radius_input" placeholder="请输入1 ~ 10000的整数"
                               v-model="exportInfo.radius">
                         <template slot="append">米</template>
                     </el-input>
@@ -411,52 +422,14 @@
     import pointState from './components/pointState.vue';
     // 筛选过滤
     import filterFormat from "../../commonFun/filterTableData.js";
-
-    import {
-        Button,
-        CheckboxGroup,
-        Checkbox,
-        Input,
-        Dropdown,
-        DropdownItem,
-        DropdownMenu,
-        Row,
-        Table,
-        TableColumn,
-        DatePicker,
-        Tooltip,
-        Dialog,
-        MessageBox,
-        Message,
-        Select,
-        Option,
-        Loading
-    } from "element-ui";
     import timeFormat from '../../commonFun/timeFormat.js';
-
     export default {
         name: "projectList",
         components: {
             downloadVacancy,
             noSearchResult,
             pointState,
-            elButton: Button,
-            elCheckboxGroup: CheckboxGroup,
-            elCheckbox: Checkbox,
-            elInput: Input,
-            elDropdown: Dropdown,
-            elDropdownItem: DropdownItem,
-            elDropdownMenu: DropdownMenu,
-            elRow: Row,
-            elTable: Table,
-            elTableColumn: TableColumn,
-            elDatePicker: DatePicker,
-            elTooltip: Tooltip,
-            elDialog: Dialog,
-            elSelect: Select,
-            elOption: Option
         },
-
         data() {
             return {
                 // 搜索数据
@@ -548,18 +521,17 @@
                 exportRescityList: [],
                 isResExport: false,
                 // 当前步骤
-                exportAction: '/advertisement/GetCenterPointRes',
+                exportAction: '/image/GetCenterPointRes',
                 exportResStep: 1,
-                exportInfo:{
-                    citys: [],
+                exportInfo: {
                     cityName: '',
+                    date: '',
+                    mVehicle: '',
                     radius: '',
                     type: '',
                 },
                 // 导出时到提示标签
                 isShowExportTag: true,
-                // 请求参数
-                exportParams: {cityId: '',asrId:'',type:'',radius:''},
                 // 上传的文件
                 exportFileData: [],
                 // 导出中
@@ -583,7 +555,6 @@
                 this.getSubSaleList()
             };
             this.getCity()
-            
         },
         methods: {
             // 切换页码
@@ -843,7 +814,7 @@
                     lock: true,
                     text: '正在查询是否有未完成的方案',
                     spinner: 'el-icon-loading',
-                    background: 'rgba(0, 0, 0, 0.5)'
+                    background: 'rgba(0, 0, 0, 0.7)'
                 });
                 let params = {
                     uid: this.sessionData.uID,
@@ -1000,26 +971,6 @@
                                 this.getPlanList(text.apID, text.suID).then((resolve)=> {
                                     this.publishPlanDialog = true
                                 })
-                                /* MessageBox.prompt("合同编号:", {
-                                    confirmButtonText: "是",
-                                    cancelButtonText: "否",
-                                    inputPattern: /^[^\u4e00-\u9fa5]{0,}$/,
-                                    inputErrorMessage: "只能输入数字,字母,字符",
-                                    inputValue: this.QCinfo
-                                })
-                                .then(() => {
-                                    this.Ctrlloading = Loading.service(
-                                        {
-                                            text: "请耐心等待...",
-                                            spinner: "el-icon-loading",
-                                            background: "rgba(0, 0, 0, 0.7)"
-                                        }
-                                    );
-                                    // 保存合同编号
-                                    this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
-                                }).catch(() => {
-                                    Message.info('已取消操作');
-                                }); */
                             } else {
                                 this.messageFun('warning', res.data.MSG);
                             }
@@ -1031,13 +982,11 @@
             // 提交
             commitRelease() {
                 if(/^[^\u4e00-\u9fa5]{0,}$/.test(this.QCinfo)) {
-                    this.Ctrlloading = Loading.service(
-                        {
-                            text: "请耐心等待...",
-                            spinner: "el-icon-loading",
-                            background: "rgba(0, 0, 0, 0.7)"
-                        }
-                    );
+                    this.Ctrlloading = this.$loading({
+                        text: '请耐心等待...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.5)'
+                    });
                     // 保存合同编号
                     this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
                 } else {
@@ -1195,13 +1144,11 @@
                         this.dialogVisible = true;
                     } else {
                         //地方媒介
-                        this.Ctrlloading = Loading.service(
-                            {
-                                text: "请耐心等待...",
-                                spinner: "el-icon-loading",
-                                background: "rgba(0, 0, 0, 0.7)"
-                            }
-                        );
+                        this.Ctrlloading = this.$loading({
+                            text: '请耐心等待...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
                         if (this.isLock) {
                             this.LockCity(this.cityList, 'L');
                         } else {
@@ -1260,13 +1207,11 @@
                         this.dialogVisible = true;
                     } else {
                         //地方媒介
-                        this.Ctrlloading = Loading.service(
-                            {
-                                text: "请耐心等待...",
-                                spinner: "el-icon-loading",
-                                background: "rgba(0, 0, 0, 0.7)"
-                            }
-                        );
+                        this.Ctrlloading = this.$loading({
+                            text: '请耐心等待...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
                         if (this.isLock) {
                             this.LockCity(this.cityList, 'L');
                         } else {
@@ -1348,19 +1293,20 @@
             },
             cancelLock() {
                 this.dialogVisible = false;
-                Message.info("已取消操作");
+                this.$message({
+                    type: 'info',
+                    message: '已取消操作'
+                });
             },
             // 确定预锁
             confirmLock() {
                 console.log(this.cityChoose);
                 if (this.cityChoose.length) {
-                    this.Ctrlloading = Loading.service(
-                        {
-                            text: "请耐心等待...",
-                            spinner: "el-icon-loading",
-                            background: "rgba(0, 0, 0, 0.7)"
-                        }
-                    );
+                    this.Ctrlloading = this.$loading({
+                        text: '请耐心等待...',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    });
                     let arr = [];
                     for (let select of this.cityChoose) {
                         for (let data of this.cityList) {
@@ -1455,7 +1401,7 @@
             },
             // 弹出框修改路径
             changeRoute() {
-                MessageBox.confirm(
+                this.$confirm(
                     `存在点位被占，是否修改方案？`,
                     "提示",
                     {
@@ -1468,7 +1414,10 @@
                         this.ToEdit(this.currentItem);
                     })
                     .catch(() => {
-                        Message.info("已取消操作");
+                        this.$message({
+                            type: 'info',
+                            message: '已取消操作'
+                        });
                     });
             },
             // 搜索（优化）
@@ -1639,7 +1588,10 @@
                     }
                    
                 }).catch(() => {
-                    Message.info('取消成功')
+                    this.$message({
+                        type: 'info',
+                        message: '取消成功'
+                    });
                 })
             },
             // 继续创建
@@ -1648,7 +1600,7 @@
                     lock: true,
                     text: '方案数据获取中...',
                     spinner: 'el-icon-loading',
-                    background: 'rgba(0, 0, 0, 0.5)'
+                    background: 'rgba(0, 0, 0, 0.7)'
                 });
                 if(this.IsSevenBD){
                     this.$router.push("./createPlan?unfinishedPlan");
@@ -1685,8 +1637,9 @@
                 // 数据初始化
                 this.exportResStep = 1
                 this.exportInfo = {
-                    citys: [],
                     cityName: '',
+                    date: '',
+                    mVehicle: '',
                     radius: '',
                     type: '',
                 }
@@ -1717,8 +1670,8 @@
             //周边小区导出下一步
             nextExportRes() {
                 if (this.exportResStep === 1) {
-                    if (!this.exportInfo.citys.length) {
-                        sessFun.messageFun('warning', '请选择城市')
+                    if(!Array.isArray(this.exportInfo.date)) {
+                        sessFun.messageFun('warning', '请选择投放排期')
                         return
                     }
                     if (!this.exportInfo.radius) {
@@ -1743,13 +1696,6 @@
                     this.isBroundImport = true
                     if(this.exportFileData.length) {
                         sessFun.messageFun('warning','导出excel可能需要一分钟甚至更长时间!')
-                        this.exportParams = {
-                            radius: this.exportInfo.radius,
-                            cityId: this.exportInfo.citys,
-                            asrId: this.sessionData.asrID,
-                            type: this.exportInfo.type
-                        }
-                        console.log(this.exportParams)
                         this.importBroundRes()
                     } else {
                         sessFun.messageFun('warning', '请先上传文件！')
@@ -1762,13 +1708,23 @@
                 let formData = new FormData();
                 formData.append('file', this.exportFileData[0]);
                 formData.append('radius', this.exportInfo.radius);
-                formData.append('cityId', this.exportInfo.citys);
+                formData.append('startDate', this.exportInfo.date[0]);
+                formData.append('endDate', this.exportInfo.date[1]);
+                formData.append('mVehicle', this.exportInfo.mVehicle);
                 formData.append('asrId', this.sessionData.asrID);
                 formData.append('type', this.exportInfo.type);
+                console.log("formData--", formData);
                 // 上传文件
                 api.postExportFile(this.exportAction, formData, 'blob').then(res => {
-                    console.log('导出周边小区',res,res.data.type)
-                    if(res.data.type === 'text/html') {
+                    // if(res.data.SysCode == 200) {
+                        const tempPage = window.open('', '_blank');
+                        let routeUrl = this.$router.resolve({
+                            path: "/progressDown",
+                            query: {downtype: 3, uqKey: res.data.data||""},
+                        });
+                        tempPage.location = routeUrl.href;
+                    // }
+                    /* if(res.data.type === 'text/html') {
                         let reader = new FileReader();
                         reader.readAsText(res.data, 'utf-8');
                         reader.onload =  ()=> {
@@ -1781,14 +1737,16 @@
                         let downloadElement = document.createElement('a');
                         let href = window.URL.createObjectURL(blob); //创建下载的链接
                         downloadElement.href = href;
-                        downloadElement.download = this.exportInfo.cityName + '.xlsx'  //下载后文件名
+                        console.log("res.headers", res.headers)
+                        downloadElement.download = decodeURIComponent(res.headers['content-disposition']).split('=')[1]; //下载后文件名
+                        // downloadElement.download = this.exportInfo.cityName + '.xlsx'  //下载后文件名
                         document.body.appendChild(downloadElement);
                         downloadElement.click();
                         document.body.removeChild(downloadElement);         //下载完成移除元素
                         window.URL.revokeObjectURL(href);                   //释放掉blob对象
                         this.isResExport = false
                         sessFun.messageFun('success','导出成功')
-                    }
+                    } */
                     this.isBroundImport = false
                 }).catch(res => {
                     console.log(res);
@@ -1883,6 +1841,7 @@
 
     /deep/ .el-date-editor .el-range-separator {
         font-size: 14px;
+        color: rgba(0, 0, 0, 0.25);
     }
 
     /*日期控件*/
@@ -1891,12 +1850,6 @@
         margin-left: 2px;
         position: relative;
     }
-
-    /deep/ .el-range-separator {
-        position: relative;
-        top: -2px;
-    }
-
     /deep/ .search_row .el-input__inner {
         width: 185px;
     }
@@ -2031,37 +1984,6 @@
         margin-right: 5px;
     }
 
-    /*资源导出*/
-    .export_step_box{
-        border: 1px solid rgba(218,218,218,1);
-        padding: 12px 18px;
-        color: rgba(102,102,102,1);
-        font-size: 15px;
-        position: relative;
-    }
-
-    .export_ul .el-select{
-        width: 82%;
-    }
-
-    .radius_input.el-input-group{
-        width: 82%;
-    }
-
-    .export_ul li{
-        margin-bottom: 16px;
-    }
-
-    .export_ul li:last-child{
-        margin-bottom: 0;
-    }
-
-    .export_ul li>span{
-        width: 70px;
-        text-align: right;
-        display: inline-block;
-    }
-
     .info_box {
         height:32px;
         background:rgba(230, 247, 255, 1);
@@ -2082,12 +2004,6 @@
         position: absolute;
         top: 9px;
         right: 8px;
-    }
-
-    .export_step_box img{
-        width: 24px;
-        height: 27px;
-        vertical-align: middle;
     }
 
     .downloag_btn{
@@ -2130,20 +2046,67 @@
             }
         }
     }
-    /deep/ .Import_dialog .el-upload-list__item{
-        width: 100%;
-    }
+    /deep/ .Import_dialog {
+        border-radius: 4px;
+        .el-dialog__header {
+            padding: 12px 24px 16px;
+        }
+        .el-dialog__body {
+            padding: 0 24px 16px;
+        }
+        .el-dialog__footer {
+            padding: 0 24px 24px;
+        }
+        .el-upload-list__item{
+            width: 100%;
+        }
+        .el-upload-dragger{
+            padding-top: 9%;
+            width: 408px;
+            height: 135px;
+            background: rgba(0, 0, 0, 0.06);
+        }
+        .el-upload-dragger img{
+            width: 28px;
+            height: 30px;
+        }
 
-    /deep/ .Import_dialog .el-upload-dragger{
-        padding-top: 9%;
-        width: 424px;
-        height: 135px;
-        background: rgba(0, 0, 0, 0.06);
-    }
+        .export_step_box {
+            border: 1px solid rgba(218,218,218,1);
+            padding: 12px 18px;
+            color: rgba(102,102,102,1);
+            font-size: 15px;
+            position: relative;
+            img{
+                width: 24px;
+                height: 27px;
+                vertical-align: middle;
+            }
+        }
 
-    /deep/ .Import_dialog .el-upload-dragger img{
-        width: 28px;
-        height: 30px;
+        .export_ul {
+            li{
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+                .el-select,
+                .el-date-editor--daterange,
+                .radius_input.el-input-group {
+                    width: calc(100% - 70px);
+                }
+                .radius_input .el-input-group__append {
+                    padding: 0 12px;
+                }
+                &>span{
+                    width: 70px;
+                    text-align: right;
+                    display: inline-block;
+                }
+            }
+            li:last-child{
+                margin-bottom: 0;
+            }
+        }
     }
     .u-bk-btn{
         padding: 0 3px;

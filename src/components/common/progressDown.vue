@@ -17,7 +17,8 @@ export default {
         return{
             currper: 0,
             myInterval: '',
-            second: 0
+            second: 0,
+            routeQuery: null
         }
     },
     methods:{
@@ -84,12 +85,48 @@ export default {
                 clearInterval(this.myInterval);
             });
         },
+        // 周边资源导出
+        getBroundResProcess() {
+            if((this.routeQuery && this.routeQuery.uqKey)) {
+                this.$message.warning("资源参数获取错误！");
+            }
+            api.postExportFile('/image/GetCenterPointRes', {uqKey: this.routeQuery.uqKey}).then(res =>{
+                if(res.data.SysCode == 200200){
+                    let resinfo = res.data.data;
+                    this.currper = parseInt(Number(resinfo.rate));
+                    if(this.currper >= 100){
+                        clearInterval(this.myInterval);
+                        let downloadElement = document.createElement('a');
+                        let href = resinfo.url;
+                        downloadElement.href = href;
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click(); //点击下载
+                        document.body.removeChild(downloadElement); //下载完成移除元素
+                        this.$alert('请在下载工具里查看文件', '文件成功生成', {
+                            confirmButtonText: '知道了',
+                        });
+                    } else {
+                        clearInterval(this.myInterval);
+                        this.$message.warning(resinfo.msg);
+                    }
+                } else {
+                    clearInterval(this.myInterval);
+                    this.$message.warning(res.data.MSG);
+                }
+            }).catch(res =>{
+                console.log(res);
+                clearInterval(this.myInterval);
+            });
+        }
     },
     created(){
+        this.routeQuery = this.$route.query;
         if(this.$route.query.downtype == 1){
             this.getProcess();
-        }else if(this.$route.query.downtype == 2){
+        } else if(this.$route.query.downtype == 2){
             this.getPPTProcess();
+        } else if(this.$route.query.downtype == 3) {
+            this.getBroundResProcess();
         }
     },
     mounted(){
@@ -101,6 +138,8 @@ export default {
                     this.getProcess();
                 }else if(this.$route.query.downtype == 2){
                     this.getPPTProcess();
+                } else if(this.$route.query.downtype == 3) {
+                    this.getBroundResProcess();
                 }
             }, 1)
             this.second = this.second+5

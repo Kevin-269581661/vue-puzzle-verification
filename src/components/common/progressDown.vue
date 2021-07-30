@@ -1,6 +1,7 @@
 <template>
     <div class="down_page">
-        <el-progress :width="120" type="circle" :percentage="currper" :status="currper==100?'success':''"></el-progress>
+        <el-progress v-if="currper==100" :width="120" type="circle" :percentage="currper" status="success"></el-progress>
+        <el-progress v-else :width="120" type="circle" :percentage="currper"></el-progress>
         <p class="text_style">{{currper==100?'生成完成，请在下载工具里查看文件':'正在生成中，请等待…'}}</p>
         <span v-if="currper<100" class="nav">已耗时 {{Math.ceil(second/60)}} 分钟，<a class="nav-text" href="https://apps.qinlinad.com/rapidDownload.html" target="_blank">立即加速</a></span>
         <div class="file_style" v-if="currper == 100">
@@ -87,10 +88,13 @@ export default {
         },
         // 周边资源导出
         getBroundResProcess() {
-            if((this.routeQuery && this.routeQuery.uqKey)) {
+            if(!(this.routeQuery && this.routeQuery.uqKey)) {
                 this.$message.warning("资源参数获取错误！");
+                return;
             }
-            api.postExportFile('/image/GetCenterPointRes', {uqKey: this.routeQuery.uqKey}).then(res =>{
+            let formData = new FormData();
+            formData.append('uqKey', this.routeQuery.uqKey);
+            api.postExportFile('/image/GetCenterPointRes', formData).then(res =>{
                 if(res.data.SysCode == 200200){
                     let resinfo = res.data.data;
                     this.currper = parseInt(Number(resinfo.rate));
@@ -105,9 +109,6 @@ export default {
                         this.$alert('请在下载工具里查看文件', '文件成功生成', {
                             confirmButtonText: '知道了',
                         });
-                    } else {
-                        clearInterval(this.myInterval);
-                        this.$message.warning(resinfo.msg);
                     }
                 } else {
                     clearInterval(this.myInterval);

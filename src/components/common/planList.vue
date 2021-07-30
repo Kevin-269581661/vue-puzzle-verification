@@ -64,9 +64,6 @@
                                    v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位
                         </el-button>
                         <el-button plain @click="exportRes" v-if="isShowExportBtn">资源导出</el-button>
-                        <!--<el-button plain v-if="!isNation" @click="goToDiaPlate" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt042_ck03'}">点位表盘
-                        </el-button>-->
                     </template>
                 </div>
                 <div class="table_wrap">
@@ -518,13 +515,11 @@
                 isNation: true,
                 isSale: false,//销售权限
                 // 资源导出
-                exportRescityList: [],
                 isResExport: false,
                 // 当前步骤
                 exportAction: '/image/GetCenterPointRes',
                 exportResStep: 1,
                 exportInfo: {
-                    cityName: '',
                     date: '',
                     mVehicle: '',
                     radius: '',
@@ -554,7 +549,6 @@
             if (this.isSale) {
                 this.getSubSaleList()
             };
-            this.getCity()
         },
         methods: {
             // 切换页码
@@ -1613,31 +1607,10 @@
             /**
              * 周边小区导出
              * */
-            // 获取权限城市
-            getCity() {
-                let info = {
-                    "token": this.sessionData.token,
-                    "uid": this.sessionData.uID
-                };
-                api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', {}).then(res => {
-                    console.log(res.data);
-                    if (res.data.SysCode == 300200) {
-                        this.exportRescityList = res.data.data.map(item=>{
-                            return {
-                                label: item.rName,
-                                value: item.rID.toString()
-                            }
-                        })
-                    } else {
-                        sessFun.messageFun('warning',res.data.MSG || '城市下拉获取异常')
-                    }
-                });
-            },
             exportRes() {
                 // 数据初始化
                 this.exportResStep = 1
                 this.exportInfo = {
-                    cityName: '',
                     date: '',
                     mVehicle: '',
                     radius: '',
@@ -1645,16 +1618,6 @@
                 }
                 this.exportFileData = []
                 this.isResExport = true
-            },
-            exportCityFun(val) {
-                console.log('val',val)
-                if (val.length) {
-                    for(let key of this.exportRescityList) {
-                        if(key.value == val) {
-                            this.exportInfo.cityName = key.label
-                        }
-                    }
-                }
             },
             exportUploadFile(params) {
                 this.exportFileData = [];
@@ -1688,7 +1651,6 @@
                         return
                     }
                     this.exportResStep += 1
-                    console.log('exportInfo',this.exportInfo)
                 } else if (this.exportResStep < 3) {
                     this.exportResStep += 1
                 } else {
@@ -1711,45 +1673,21 @@
                 formData.append('startDate', this.exportInfo.date[0]);
                 formData.append('endDate', this.exportInfo.date[1]);
                 formData.append('mVehicle', this.exportInfo.mVehicle);
-                formData.append('asrId', this.sessionData.asrID);
                 formData.append('type', this.exportInfo.type);
-                console.log("formData--", formData);
                 // 上传文件
-                api.postExportFile(this.exportAction, formData, 'blob').then(res => {
-                    // if(res.data.SysCode == 200) {
-                        const tempPage = window.open('', '_blank');
+                const tempPage = window.open('', '_blank');
+                api.postExportFile(this.exportAction, formData).then(res => {
+                    if(res.data.SysCode == 200200) {
                         let routeUrl = this.$router.resolve({
                             path: "/progressDown",
-                            query: {downtype: 3, uqKey: res.data.data||""},
+                            query: {downtype: 3, uqKey: res.data.data.uqKey||""},
                         });
                         tempPage.location = routeUrl.href;
-                    // }
-                    /* if(res.data.type === 'text/html') {
-                        let reader = new FileReader();
-                        reader.readAsText(res.data, 'utf-8');
-                        reader.onload =  ()=> {
-                            let resData = JSON.parse(reader.result);
-                            console.log('data',resData)
-                            sessFun.messageFun('warning', resData.MSG || '导出异常！')
-                        }
-                    } else {
-                        let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-                        let downloadElement = document.createElement('a');
-                        let href = window.URL.createObjectURL(blob); //创建下载的链接
-                        downloadElement.href = href;
-                        console.log("res.headers", res.headers)
-                        downloadElement.download = decodeURIComponent(res.headers['content-disposition']).split('=')[1]; //下载后文件名
-                        // downloadElement.download = this.exportInfo.cityName + '.xlsx'  //下载后文件名
-                        document.body.appendChild(downloadElement);
-                        downloadElement.click();
-                        document.body.removeChild(downloadElement);         //下载完成移除元素
-                        window.URL.revokeObjectURL(href);                   //释放掉blob对象
-                        this.isResExport = false
-                        sessFun.messageFun('success','导出成功')
-                    } */
-                    this.isBroundImport = false
+                    }
+                    this.isBroundImport = false;
+                    this.isResExport = false;
                 }).catch(res => {
-                    console.log(res);
+                    console.error("导出周边小区" ,res);
                 });
             },
         },

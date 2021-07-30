@@ -14,7 +14,7 @@
             <div class="tab_conten">
                 <div :gutter="32" class="tab_conten_row">
                     <div class="row-unit">
-                        <span class="search_label">关键字：</span>
+                        <span class="search_label">关键词：</span>
                         <el-input
                             placeholder="请输入关键词"
                             v-model="searchInfo[searchInfo.keywordType]"

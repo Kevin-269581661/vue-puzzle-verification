@@ -10,8 +10,8 @@
         <h2>订单列表</h2>
       </div>
       <div class="mediaList_container">
-        <div class="flex_box search_row">
-          <div class="row-unit">
+        <el-row class="search_row" :gutter="36">
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">关键词：</span>
             <el-input
               placeholder="请输入内容"
@@ -37,10 +37,10 @@
                 ></el-option>
               </el-select>
             </el-input>
-          </div>
-          <div class="row-unit">
+          </el-col>
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">日期：</span>
-            <div style="margin-left: -30px">
+            <div class="date-group">
               <el-select
                 size="small"
                 v-model="searchInfo.dateType"
@@ -56,7 +56,7 @@
                 size="small"
                 v-model="searchInfo.rangeDate"
                 type="daterange"
-                range-separator="-"
+                range-separator="⇀"
                 format="yyyy-MM-dd"
                 value-format="yyyy-MM-dd"
                 start-placeholder="选择日期"
@@ -64,8 +64,8 @@
               >
               </el-date-picker>
             </div>
-          </div>
-          <div class="row-unit">
+          </el-col>
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">城市：</span>
             <el-select
               v-model="searchInfo.company"
@@ -94,8 +94,8 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </div>
-          <div class="row-unit">
+          </el-col>
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">订单状态：</span>
             <el-select
               v-model="searchInfo.status"
@@ -109,23 +109,25 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </div>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            @click="search()"
-            :disabled="!isSearch"
-            v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt105_ck01' }"
-            >搜索
-          </el-button>
-          <el-button
-            plain
-            @click="reset()"
-            :disabled="!isReset"
-            v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt106_ck02' }"
-            >重置
-          </el-button>
-        </div>
+          </el-col>
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              @click="search()"
+              :disabled="!isSearch"
+              v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt105_ck01' }"
+              >搜索
+            </el-button>
+            <el-button
+              plain
+              @click="reset()"
+              :disabled="!isReset"
+              v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt106_ck02' }"
+              >重置
+            </el-button>
+          </el-col>
+        </el-row>
         <div class="table_wrap">
           <el-table
             border
@@ -325,11 +327,6 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <!--<el-dropdown-item-->
-                    <!--:disabled="(scope.row.apState==0)||(scope.row.apState==5)||(role!='SM') "-->
-                    <!--@click.native.prevent="finishOrder(scope.row)" class="finish"-->
-                    <!--v-qadn-mta-h5="{id: 'a006_b000_c000_d000_bt108_ck04'}">结束订单-->
-                    <!--</el-dropdown-item>-->
                     <el-dropdown-item
                       v-if="
                         !(
@@ -1270,24 +1267,6 @@ a {
   margin-left: 0;
 }
 
-.date-type-select {
-  position: relative;
-  left: 30px;
-  z-index: 9;
-  width: 104px;
-}
-
-.date-type-select /deep/ .el-input__inner {
-  width: 104px !important;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  color: rgb(144, 147, 153);
-}
-
-.date-type-select /deep/ .el-input.is-focus .el-input__inner {
-  border-color: #dcdfe6;
-}
-
 /deep/ .el-checkbox__label {
   font-size: 10px;
   color: #8a8a8a;
@@ -1300,25 +1279,55 @@ a {
   position: relative;
 }
 
-/deep/ .el-range-separator {
-  position: relative;
-  top: -2px;
-}
 /deep/ .search_row {
   display: flex;
   flex-wrap: wrap;
-  /* .el-input__inner {
+  .el-input__inner,
+  .el-input-group,
+  .el-select--small {
+    width: 100%;
+  }
+  .date-group {
+    display: flex;
+    align-items: center;
+    flex-flow: row nowrap;
+    margin-left: -30px;
+    .el-range-separator {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.25);
+    }
+  }
+  .date-type-select {
+    position: relative;
+    left: 30px;
+    z-index: 9;
     width: 140px;
-  } */
+    .el-input__inner {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .date-type-select /deep/ .el-input__inner {
+    width: 104px !important;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    color: rgb(144, 147, 153);
+  }
+
+  .date-type-select /deep/ .el-input.is-focus .el-input__inner {
+    border-color: #dcdfe6;
+  }
   .row-unit {
-      display: flex;
-      align-items: baseline;
-      flex-grow: 1;
-      margin-bottom: 16px;
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 16px;
   }
   .search_label {
     display: inline-block;
     white-space: nowrap;
+    width: 70px;
+    text-align: right;
     font-size: 14px;
     color: rgba(0, 0, 0, 0.85);
   }
@@ -1349,14 +1358,6 @@ a {
   margin-left: 2px;
 }
 
-/deep/ .el-date-editor--daterange.el-input__inner {
-  width: 240px;
-}
-
-/deep/ .el-date-editor {
-  width: 245px;
-}
-
 /deep/ .el-date-editor i,
 /deep/ .el-date-editor input,
 /deep/ .el-date-editor span {
@@ -1376,10 +1377,6 @@ a {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   width: 104px;
-}
-
-/deep/ .el-input-group--prepend .el-input__inner {
-  width: 185px;
 }
 
 /*操作*/

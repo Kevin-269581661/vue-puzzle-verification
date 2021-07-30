@@ -1674,6 +1674,9 @@
                 formData.append('endDate', this.exportInfo.date[1]);
                 formData.append('mVehicle', this.exportInfo.mVehicle);
                 formData.append('type', this.exportInfo.type);
+                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 0)||(this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 0)) {
+                    formData.append('asrId', this.sessionData.asrID);
+                }
                 // 上传文件
                 const tempPage = window.open('', '_blank');
                 api.postExportFile(this.exportAction, formData).then(res => {
@@ -1683,6 +1686,8 @@
                             query: {downtype: 3, uqKey: res.data.data.uqKey||""},
                         });
                         tempPage.location = routeUrl.href;
+                    } else {
+                        this.$message.warning(res.data.MSG || "");
                     }
                     this.isBroundImport = false;
                     this.isResExport = false;

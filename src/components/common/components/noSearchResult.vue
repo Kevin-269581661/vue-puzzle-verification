@@ -1,7 +1,9 @@
 <template>
     <div>
         <img src="../../../assets/images/nofound.png" alt="没有找到记录" width="122" height="83" />
-        <p class="not_search">未查询到记录</p>
+        <slot>
+            <p class="not_search">未查询到记录</p>
+        </slot>
     </div>
 </template>
 

@@ -1335,7 +1335,7 @@
                     ...(mapName && {mapCenterInfo: mapName}),
                     ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState}),
                     //后端要求查全部，就不传该字段
-                    ...(districtIdList.length>1 && {districtIdList:districtIdList[1]}),
+                    ...(districtIdList.length>1 && {districtIdList:[districtIdList[1]]}),
                     ...((schDateList[0] != '全部'&& schDateList.length) && {schDateList})
                 };
                 info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id

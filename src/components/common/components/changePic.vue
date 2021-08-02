@@ -261,9 +261,9 @@
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
                     <span>投放排期:</span>
-                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="dialogInfo.schDateList" @change="arr=>changeScheduleSelect(arr, 'schDateList', 'scheduleList')">
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="dialogInfo.schDateList" @change="arr=>changeScheduleSelect(arr, 'schDateList', 'launchDateList')">
                             <el-option label="全部" value="全部"></el-option>
-                            <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                            <el-option v-for="(dateRangeItem, rangeIndex) in launchDateList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                   </el-row>
                 </el-col>
@@ -755,6 +755,7 @@
                 handleFlag:false,
                 isEdit:false,//是编辑或新增换画
                 regionAreaList:[],//换画区域城市
+                launchDateList:[], //换画排期筛选列表launchDateList
             };
         },
         mounted() {
@@ -768,6 +769,8 @@
             this.getRegionAreaList()
             // 获取资源列表
             this.getResArr();
+            //得到换画排期筛选列表
+            this.getAdChangeLaunchDateList()
             console.log('scheduleList', this.scheduleList)
         },
         watch: {
@@ -2401,6 +2404,24 @@
                 } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
                     this.dialogInfo[target] = ['全部']
                 }
+            },
+            //得到换画排期筛选列表
+            getAdChangeLaunchDateList() {
+                let apID = sessionStorage.getItem("order_apid");
+                let info = {
+                    apID
+                };
+                api.getApi(this.apiVar.Advertisement + "/GetAdChangeLaunchDateList", info)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.launchDateList = (res.data.data || []).map(item=>{return {text: item, value: item}})
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                    });
             },
         },
     }

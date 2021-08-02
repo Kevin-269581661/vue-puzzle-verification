@@ -584,7 +584,7 @@
             },
             activeName(newVal, oldVal) {
                 console.log('数据概览newVal', newVal, 'oldVal', oldVal)
-                this.activeName = newVal
+                // this.activeName = newVal
                 if (!this.isGetData) {
                     console.log('统一调用接口', this.isGetData)
                     // 统一调用接口
@@ -604,7 +604,7 @@
                     // 广告库存 - 右侧
                     this.initAdInventoryPie();
                     // 机会挖掘
-                    this.initChanceFindPie();
+                    // this.initChanceFindPie();
                 }
             }
         },
@@ -633,9 +633,6 @@
                 this.getAdInventoriedData();
                 // 广告库存 - 右侧
                 this.getAdInventoryData();
-                // 机会挖掘
-                // this.getChanceFindEcharts();
-                // this.getChanceFindTable();
                 this.oldSelectCity = this.selectCity
                 this.adSaleActiveWeek = '0'
                 this.isGetData = true
@@ -654,7 +651,7 @@
                     this.adInventoriedPieEcharts && this.adInventoriedPieEcharts.resize();
                     this.adInventoryPieEcharts && this.adInventoryPieEcharts.resize();
                     // 机会挖掘
-                    this.chanceFindPieEcharts && this.chanceFindPieEcharts.resize();
+                    // this.chanceFindPieEcharts && this.chanceFindPieEcharts.resize();
                 });
             },
             // 设置初始时间
@@ -664,9 +661,9 @@
                 this.toDay = endTime;
                 this.dateRange = [new Date(), new Date()];
                 // 设置机会挖掘默认时间
-                let starTime = timeFormat.returnDayCount(-30,'/')
-                this.chanceFindDate = [starTime, endTime]
-                console.log('starTime',starTime,'endTime',endTime)
+                // let starTime = timeFormat.returnDayCount(-30,'/')
+                // this.chanceFindDate = [starTime, endTime]
+                // console.log('starTime',starTime,'endTime',endTime)
                 this.timeData.maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
             },
             /*  数据总量  */
@@ -1879,75 +1876,6 @@
                 })
                 this.adInventoryLoading = false
             },
-            /*  机会挖掘  */
-            /* changeFindDate(){
-                this.getChanceFindEcharts()
-                this.getChanceFindTable()
-            }, */
-            // 左侧图表接口
-            /* getChanceFindEcharts(){
-                this.chanceFindPieLoading = true
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    startDate: this.chanceFindDate[0],
-                    endDate: this.chanceFindDate[1],
-                    asrIds: this.returnAsrID()
-                }
-                // console.log('机会挖掘饼状图params',params)
-                api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
-                    console.log('机会挖掘饼状图接口res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
-                        let dataObj = res.data.data
-                        let dataArr = []
-                        // let userNum = 0
-                        for (let key in dataObj) {
-                            // userNum += dataObj[key] ? dataObj[key] : 0
-                            if (key === 'firstCooperation') {
-                                dataArr[0] = {value: dataObj[key], name: '初购客户'}
-                            } else if (key === 'multipleCooperation') {
-                                dataArr[1] = {value: dataObj[key], name: '复购客户'}
-                            } else if (key === 'unCooperation') {
-                                dataArr[2] = {value: dataObj[key] || 0, name: '未合作'}
-                            } else if (key === 'silenceCooperation') {
-                                dataArr[3] = {value: dataObj[key] || 0, name: '沉默客户'}
-                            }
-                        }
-                        this.chanceFindUserNum = dataObj.totalUser
-                        this.chanceFindPieData.data = dataArr;
-                        this.initChanceFindPie();
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG)
-                    }
-                })
-            }, */
-            // 表格接口 getCustomerCooperative
-            /* getChanceFindTable(){
-                this.chanceFindTableLoading = true
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    startDate: this.chanceFindDate[0],
-                    endDate: this.chanceFindDate[1],
-                    // pageNo: 1,
-                    // pageSize: 5000,
-                    asrIds: this.returnAsrID()
-                }
-                api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
-                    console.log('机会挖掘表格接口res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout();
-                    } else if (res.data.SysCode === 200200) {
-                        let dataObj = res.data.data
-                        this.setChanceFindTabelData(dataObj)
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG)
-                    }
-                    this.chanceFindTableLoading = false
-                })
-            }, */
             setChanceFindTabelData(dataList) {
                 let arr = []
                 for (let key of dataList) {
@@ -1963,7 +1891,7 @@
                 this.chanceFindTable = arr
             },
             // 饼状图
-            initChanceFindPie() {
+            /* initChanceFindPie() {
                 if (this.chanceFindPieEcharts) {
                     this.chanceFindPieEcharts.dispose()
                 }
@@ -2070,7 +1998,7 @@
                     ]
                 })
                 this.chanceFindPieLoading = false
-            },
+            }, */
             // 设置周下拉选项
             setWeekSelectList(list){
                 console.log('list',list)

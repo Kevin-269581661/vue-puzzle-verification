@@ -47,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="pointData-wrap" v-model="adsUserData"
+                <div class="pointData-wrap"
                      v-loading="pointDataLoading"
                      element-loading-text="玩命加载中..."
                      element-loading-background="rgba(255, 255, 255)">
@@ -487,8 +487,8 @@
                 let endTime = timeFormat.returnMonthCount(0,'-')
                 this.pointDate = [starTime,endTime]               // 点位使用概况
                 this.pointDateDay = this.pointDate.concat()
-                starTime = timeFormat.beginOfMonth(starTime)
-                endTime = timeFormat.endOfMonth(endTime)
+                starTime = timeFormat.beginOfMonth(starTime, "-")
+                endTime = timeFormat.endOfMonth(endTime, "-")
                 this.resSearchDate = [starTime,endTime]          // 社区上刊率列表
                 this.adsSearchDate = [starTime,endTime]           // 点位上刊率列表
             },
@@ -690,8 +690,8 @@
             CreatDateChange(params, dateRange){
                 if(Array.isArray(params) && params.length === 2) {
                     let [dateStart, dateEnd] = dateRange
-                    dateStart = dateStart?timeFormat.beginOfMonth(dateStart):dateStart
-                    dateEnd = dateEnd?timeFormat.endOfMonth(dateEnd):dateEnd
+                    dateStart = dateStart?timeFormat.beginOfMonth(dateStart, "-"):dateStart
+                    dateEnd = dateEnd?timeFormat.endOfMonth(dateEnd, "-"):dateEnd
                     this[params[1]] = [dateStart, dateEnd]
                     params = params[0]
                 }

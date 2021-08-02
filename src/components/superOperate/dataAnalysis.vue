@@ -13,7 +13,7 @@
                     </el-option>
                 </el-select>
             </div>
-            <el-tabs v-model="activeName" @tab-click="tabHandleClick">
+            <el-tabs v-model="activeName">
                 <el-tab-pane label="数据概览" name="first"><!--v-if="isQinLinCity"-->
                     <data-read :sessionData="sessionData" :directNameList="directNameList" :headerCityList="headerCityList"
                                :selectCity="selectCity" :activeName="activeName"></data-read>
@@ -156,10 +156,6 @@
                     this.messageFun('warning', '直营公司获取异常')
                     // this.activeName = 'third'
                 })
-            },
-            // tabs切换
-            tabHandleClick(val){
-
             },
             // 全局选择城市
             changeCity(value){

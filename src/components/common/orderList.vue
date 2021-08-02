@@ -65,14 +65,13 @@
               </el-date-picker>
             </div>
           </el-col>
-          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <span class="search_label">城市：</span>
+          <el-col v-if="isAll" class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+            <span class="search_label">所属公司：</span>
             <el-select
               v-model="searchInfo.company"
               placeholder="请选择所属公司"
               filterable
               size="small"
-              v-if="isAll"
             >
               <el-option
                 v-for="item of companyData"
@@ -81,6 +80,9 @@
                 :value="item.value"
               ></el-option>
             </el-select>
+          </el-col>
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+            <span class="search_label">城市：</span>
             <el-select
               v-model="searchInfo.cityWord"
               placeholder="请选择城市"
@@ -1426,8 +1428,9 @@ a {
 }
 .plan-type {
   position: absolute;
-  top: 17px;
+  top: 50%;
   right: 10px;
+  transform: translateY(-50%);
   padding: 0 4px;
   line-height: 18px;
   border-radius: 2px;

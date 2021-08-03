@@ -39,8 +39,8 @@
                 </el-form-item>
                 <el-form-item label="投放排期:" class="tag-overflow">
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
-                        <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                        <el-option class="date_range_class" label="全部" value="全部"></el-option>
+                        <el-option class="date_range_class" v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="物料备注:" class="tag-overflow">
@@ -245,7 +245,7 @@
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
                     <span>资源名称:</span>
-                    <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
+                    <el-select v-model="dialogInfo.resName" collapse-tags multiple filterable placeholder="请输入资源名称" size="small">
                         <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
                                   :value="item.value">
                         </el-option>
@@ -945,7 +945,12 @@
             changeSelect(arr=[], target, optionsArr) {
                 let allIndex = arr.indexOf('全部')
                 if(allIndex!==-1 && arr.length>1) {
-                    this.publishSearchInfo[target].splice(allIndex, 1)
+                  if(allIndex == 0){
+                     this.publishSearchInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.publishSearchInfo[target] = ['全部']
+                  }
                 } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
                     this.publishSearchInfo[target] = ['全部']
                 }
@@ -1315,6 +1320,10 @@
                 this.getMapArr();
                 // 获取表格数据
                 this.searchInfoFun();
+                //获取换画城市区域
+                this.getRegionAreaList()
+                //得到换画排期筛选列表
+                this.getAdChangeLaunchDateList()
             },
             /**
              *  选择换画点位弹出框
@@ -2400,8 +2409,14 @@
             changeScheduleSelect(arr=[], target, optionsArr) {
                 let allIndex = arr.indexOf('全部')
                 if(allIndex!==-1 && arr.length>1) {
-                    this.dialogInfo[target].splice(allIndex, 1)
+                  if(allIndex == 0){
+                     this.dialogInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.dialogInfo[target] = ['全部']
+                  }
                 } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                  // 不存在全部但是全选了
                     this.dialogInfo[target] = ['全部']
                 }
             },
@@ -2437,6 +2452,9 @@
         display: inline-block;
         text-overflow: ellipsis;
         vertical-align: middle;
+    }
+    .date_range_class{
+      width:218px
     }
     /deep/ .el-input__icon {
         line-height: unset;

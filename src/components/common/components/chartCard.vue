@@ -45,7 +45,7 @@
           renderer: 'svg',
           autoFit: true,
           height: height,
-          padding: [16, 16, 32, 16],
+          padding: [16, 8, 32, 8],
         }"
         :barType="cardData.type"
         :scale="scale"
@@ -89,7 +89,7 @@
           renderer: 'svg',
           autoFit: true,
           height: height,
-          padding: [16, 16, 32, 16],
+          padding: [16, 0, 32, 0],
         }"
         :scale="scale"
         :legend="false"

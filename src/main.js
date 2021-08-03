@@ -17,7 +17,6 @@ import '../static/css/element-variables.scss'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
-import 'default-passive-events'
 import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);

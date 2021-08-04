@@ -33,10 +33,10 @@
                         </el-dialog>
                         <div class="handleBtn">
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
-                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画
+                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换 画
                             </el-button>
                             <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                size="small" value="换点" placeholder="换点" class="change-point-select">
+                                size="small" value="换 点" placeholder="换 点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
                                     v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
                                     @click.native="changeHandleType(1)"></el-option>
@@ -2440,7 +2440,7 @@
         
     }
     .change-point-select {
-        width: 100px;
+        width: 74px;
         margin-left: 8px;
         :hover, :focus {
             color: #409EFF;
@@ -2451,6 +2451,12 @@
         }
         /deep/ .el-input__inner {
             text-align: center;
+        }
+        /deep/ .el-input--suffix .el-input__inner{
+          padding-right: 20px;
+        }
+        /deep/ .el-input__suffix{
+          right:1px
         }
     }
     .add-point-select {

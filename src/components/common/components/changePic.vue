@@ -240,11 +240,11 @@
         </div>
 
         <!-- 换画弹出框 -->
-        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" width="1134px" >
+        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" width="1134px" custom-class="change_pic_class">
             <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
-                    <span>资源名称:</span>
+                    <span>资源名称：</span>
                     <el-select v-model="dialogInfo.resName" collapse-tags multiple filterable placeholder="请输入资源名称" size="small">
                         <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
                                   :value="item.value">
@@ -254,13 +254,13 @@
                 </el-col>
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
-                    <span>城市区域:</span>
+                    <span>城市区域：</span>
                     <el-cascader v-model="dialogInfo.districtIdList" placeholder="请选择城市区域" :options="regionAreaList"   filterable></el-cascader>
                   </el-row>
                 </el-col>
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
-                    <span>投放排期:</span>
+                    <span>投放排期：</span>
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="dialogInfo.schDateList" @change="arr=>changeScheduleSelect(arr, 'schDateList', 'launchDateList')">
                             <el-option label="全部" value="全部"></el-option>
                             <el-option v-for="(dateRangeItem, rangeIndex) in launchDateList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
@@ -273,7 +273,7 @@
             <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
                <el-col :span="8">
                   <el-row type="flex"  align='middle'>
-                    <span>换画状态:</span>
+                    <span>换画状态：</span>
                     <el-select v-model="dialogInfo.picState" placeholder="请选择换画状态" size="small">
                       <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label"
                                :value="item.value"></el-option>
@@ -282,7 +282,7 @@
                 </el-col>
                 <el-col :span="8">
                   <el-row type="flex"  align='middle'>
-                    <span>地图中心:</span>
+                    <span>地图中心：</span>
                     <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
                       <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label"
                                 :value="item.value"></el-option>
@@ -329,7 +329,7 @@
                     </el-table-column>
                     <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                     </el-table-column>
-                    <el-table-column prop="mTitle" label="媒体" width="70" show-overflow-tooltip>
+                    <el-table-column prop="mTitle" label="媒体" min-width="70" show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column prop="asLab" label="面" width="50">
                     </el-table-column>
@@ -343,7 +343,7 @@
                             <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="timeRange" label="排期" min-width="120">
+                    <el-table-column prop="timeRange" label="排期" min-width="140">
                     </el-table-column>
                     <el-table-column prop="replaceDate" label="换画日期">
                         <template slot-scope="scope">
@@ -372,23 +372,35 @@
                         <no-search-result></no-search-result>
                     </div>
                 </el-table>
-                <div class="ad_pagination" v-if="dialogPage.totalInfoPage">
-                    <el-pagination
-                        background
-                        layout="total, sizes, prev, pager, next, jumper"
-                        @current-change="changePainPage"
-                        @size-change="painSizeChange"
-                        :page-sizes="[10, 20, 50,100,500]"
-                        :current-page.sync="dialogPage.currInfoPage"
-                        :page-size="dialogPage.pageSize"
-                        :total="pointInfo.pointNum">
-                    </el-pagination>
+                <div class="table_footer">
+                  <div class="marked_wrapper">
+                    <div class="marked_item">
+                      <img class="marked_img" src="../../../assets/images/changeIcon_1.png" alt="">
+                      <span class="marked_word">已录入换画信息</span>
+                    </div>
+                    <div class="marked_item">
+                      <img class="marked_img" src="../../../assets/images/changeIcon_2.png" alt="">
+                      <span class="marked_word">未录入换画信息</span>
+                    </div>
+                  </div>
+                  <div class="ad_pagination" v-if="dialogPage.totalInfoPage">
+                      <el-pagination
+                          background
+                          layout="total, sizes, prev, pager, next, jumper"
+                          @current-change="changePainPage"
+                          @size-change="painSizeChange"
+                          :page-sizes="[10, 20, 50,100,500]"
+                          :current-page.sync="dialogPage.currInfoPage"
+                          :page-size="dialogPage.pageSize"
+                          :total="pointInfo.pointNum">
+                      </el-pagination>
+                  </div>
                 </div>
             </div>
-            <p style="text-align:center;margin-top:20px;">
+            <div slot="footer"  class="dialog_btn_wrapper">
                 <el-button plain size="small" @click="cancel()">取消</el-button>
                 <el-button type="primary" size="small" @click="saveAll()">确认</el-button>
-            </p>
+            </div>
         </el-dialog>
         <!--编辑换画-->
         <el-dialog
@@ -3083,8 +3095,6 @@
             width: 312px;
         } */
     }
-</style>
-<style>
     .el-tooltip__popper.is-dark {
         max-width: 250px;
         word-break: break-all;
@@ -3094,5 +3104,68 @@
     .change-pic-detail-modal /deep/ .el-dialog__body {
         padding: 5px 24px;
     }
+    //换画框样式
+     /deep/ .change_pic_class{
+     .el-dialog__header{
+       border-bottom: 1px solid #E9E9E9;
+       margin-bottom: 24px;
+     }
+     .btn_wrapper{
+       display: flex;
+       justify-content: space-between;
+       width: 156px;
+       .el-button{
+         margin:0;
+       }
+     }
+      .el-table--border td:first-child .cell{
+       padding-left: 14px;
+     }
+     .table-wrap{
+       .table_footer{
+         display:flex;
+         justify-content: space-between;
+         margin-top: 16px;
+         margin-bottom: 24px;
+         .marked_wrapper{
+           display: flex;
+           .marked_item{
+             display:flex;
+             align-items: center;
+             margin-right: 16px;
+            .marked_word{
+              font-size: 12px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: rgba(0, 0, 0, 0.45);
+              line-height: 32px;
+              vertical-align: middle;
+            }
+            .marked_img{
+              position: static;
+              display: block;
+              margin-right: 2px;
+              height: 16px;
+              width:  16px;
+            }
+           }
+           
+         }
+         .ad_pagination{
+           margin-top: 0;
+           .el-pagination__editor{
+             padding: 0;
+           }
+         }
+       }
+      
+     }
+     .el-dialog__body{
+       padding: 0 24px;
+     }
+     .el-dialog__footer{
+       border-top: 1px solid #E9E9E9;
+       padding:11px 0;
+     }
+    }
 </style>
-

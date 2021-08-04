@@ -582,7 +582,9 @@
         display: flex;
         align-items: center;
         .row-unit {
+            width: 280px;
             flex-grow: 1;
+            flex-shrink: 1;
             display: flex;
             align-items: center;
             & + .row-unit {
@@ -591,6 +593,7 @@
             .search_label{
                 display: inline-block;
                 white-space: nowrap;
+                width: 70px;
                 font-size: 14px;
                 color: rgba(0, 0, 0, 0.85);
             }
@@ -605,6 +608,9 @@
                 }
                 .el-cascader .el-input{
                     width: 100%;
+                }
+                ::placeholder {
+                    font-size: 14px;
                 }
             }
         }

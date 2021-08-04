@@ -50,21 +50,24 @@
                         <el-option label="已预锁" value="2"></el-option>
                         <el-option label="未预锁" value="1"></el-option>
                     </el-select>
-                    <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch"
-                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt038_ck01'}" class="marginR">搜索
-                    </el-button>
-                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR"
-                               v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt039_ck02'}">重置
-                    </el-button>
-                    <template v-if="showNewBtn || !isNation">
-                        <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt040_ck03'}">新建
-                        </el-button>
-                        <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
-                                   v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">导空位
-                        </el-button>
-                        <el-button plain @click="exportRes" v-if="isShowExportBtn">资源导出</el-button>
-                    </template>
+                    <div class="btn_wrapper">
+                      <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch"
+                                 v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt038_ck01'}" class="marginR">搜索
+                      </el-button>
+                      <el-button plain @click="reset()" :disabled="!isReset" class="marginR"
+                                 v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt039_ck02'}">重置
+                      </el-button>
+                      <template v-if="showNewBtn || !isNation">
+                          <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR"
+                                     v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt040_ck03'}">新建
+                          </el-button>
+                          <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
+                                     v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">空位导出
+                          </el-button>
+                          <el-button plain @click="exportRes" v-if="isShowExportBtn">门店导点</el-button>
+                      </template>
+                    </div>
+                 
                 </div>
                 <div class="table_wrap">
                     <el-table border :data="currentPlan" style="width: 100%" @sort-change="sortChange"
@@ -322,7 +325,7 @@
 
         <!--周边小区导出-->
         <el-dialog
-            :title="`资源导出(`+ exportResStep +`/3)` "
+            :title="`门店导点(`+ exportResStep +`/3)` "
             :visible.sync="isResExport"
             :close-on-click-modal="false"
             custom-class="Import_dialog"
@@ -350,7 +353,7 @@
                 </li>
                 <li>
                     <span>媒体类型：</span>
-                    <el-select size="small" v-model="exportInfo.mVehicle" placeholder="请选择媒体类型">
+                    <el-select class="m_ehicle_class" size="small" v-model="exportInfo.mVehicle" placeholder="请选择媒体类型">
                         <el-option label="仅有广告门" value="广告门"></el-option>
                         <el-option label="仅有道闸" value="道闸"></el-option>
                         <el-option label="广告门或道闸" value=""></el-option>
@@ -1995,10 +1998,14 @@
             padding: 12px 24px 16px;
         }
         .el-dialog__body {
-            padding: 0 24px 16px;
+            padding: 0 24px 24px;
+            input::-webkit-input-placeholder{
+              font-size: 14px;
+            }
         }
         .el-dialog__footer {
             padding: 0 24px 24px;
+            text-align: center;
         }
         .el-upload-list__item{
             width: 100%;
@@ -2039,6 +2046,7 @@
                 }
                 .radius_input .el-input-group__append {
                     padding: 0 12px;
+                    font-size: 14px;
                 }
                 &>span{
                     width: 70px;
@@ -2049,6 +2057,11 @@
             li:last-child{
                 margin-bottom: 0;
             }
+        }
+        .m_ehicle_class{
+          input{
+            font-size: 14px;
+          }
         }
     }
     .u-bk-btn{

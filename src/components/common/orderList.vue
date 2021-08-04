@@ -97,7 +97,7 @@
               ></el-option>
             </el-select>
           </el-col>
-          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+          <!-- <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">订单状态：</span>
             <el-select
               v-model="searchInfo.status"
@@ -111,7 +111,7 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </el-col>
+          </el-col> -->
           <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <el-button
               type="primary"
@@ -139,6 +139,7 @@
             v-loading="loading"
             element-loading-text="玩命加载中"
             element-loading-spinner="el-icon-loading"
+            @filter-change="filterChange"
           >
             <el-table-column
               label="订单名称"
@@ -300,10 +301,13 @@
             </el-table-column>
             <el-table-column
               class="Status"
+              column-key="apState"
               prop="apState"
               label="状态"
               min-width="6%"
               show-overflow-tooltip
+              :filters="stateList"
+              :filter-multiple="false"
             >
               <template slot-scope="scope">
                 <point-state
@@ -1250,6 +1254,13 @@ export default {
         }
       });
     },
+    //表头筛选投放状态
+    filterChange(filters){
+        console.log('filters',filters)
+        let {apState}  = filters
+        this.searchInfo.status = apState[0]
+        this.search()
+    },
   },
 };
 </script>
@@ -1324,11 +1335,20 @@ a {
     display: flex;
     align-items: baseline;
     margin-bottom: 16px;
+    .el-input__inner{
+       font-size: 14px;
+       &::-webkit-input-placeholder{
+         font-size: 14px;
+       }
+    }
+    .el-range-input::-webkit-input-placeholder{
+      font-size: 14px;
+    }
   }
   .search_label {
     display: inline-block;
     white-space: nowrap;
-    width: 70px;
+    min-width: 70px;
     text-align: right;
     font-size: 14px;
     color: rgba(0, 0, 0, 0.85);

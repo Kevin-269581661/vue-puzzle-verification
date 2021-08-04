@@ -4,22 +4,26 @@
                 effect="dark"
                 placement="top">
       <slot slot="content">
-        <div>
-          <div v-for="(item,index) in scheduleData "
-             :key="index">
+        <div class="content_wrapper">
+          <div class="content_item"
+               v-for="(item,index) in scheduleData "
+               :key="index">
             {{getScheduleStr(item,index,true)}}
           </div>
         </div>
       </slot>
       <alter class="alter_class">
-        <span>
+        <span class="span_class">
           共
           <b>{{scheduleData.length}}</b>
-          个排期,分别为:
-          <span v-for="(item,index) in scheduleData "
-                :key="index">
-            {{getScheduleStr(item,index)}}
+          个排期，分别为：
+          <span class="schedule_text_wrapper" >
+            <span class="span_class" v-for="(item,index) in scheduleData "
+                  :key="index">
+              {{getScheduleStr(item,index)}}
+            </span>
           </span>
+         
         </span>
       </alter>
     </el-tooltip>
@@ -95,11 +99,13 @@ export default {
     },
     //根据scheduleData 获得scheduleStr
     getScheduleStr(item, index, istooltip = false) {
-      let { pbStar, pbEnd, dateNum, sideCount, dateType } = item
-      let unit = dateType == 1 ? '天' : '周'
-      let last = index == this.scheduleData.length - 1 ? '' : ','
+      let { pbStar, pbEnd, dateNum, sideCount, weekNum } = item
+      // let unit = dateType == 1 ? '天' : '周'
+      let last = index == this.scheduleData.length - 1 ? '' : '、'
       istooltip && (last = '')
-      return `${pbStar}-${pbEnd}(${dateNum + unit}，${sideCount}面)${last}`
+      let weekStr = weekNum ? `${weekNum}周` : ''
+      let dateStr = dateNum ? `${dateNum}天` : ''
+      return `${pbStar}-${pbEnd}（${weekStr}${dateStr}，${sideCount}面）${last}`
     },
   },
 }
@@ -107,14 +113,24 @@ export default {
 
 <style lang="scss" scoped>
 .alter_class {
-  span {
+  .span_class{
     font-size: 14px;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.65);
   }
+  .schedule_text_wrapper{
+    font-size: 0;
+  } 
+  
   b {
     color: #1890ff;
+  }
+}
+.content_wrapper {
+  .content_item {
+    line-height: 18px;
+    word-break: break-all;
   }
 }
 </style>

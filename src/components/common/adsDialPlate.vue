@@ -133,7 +133,7 @@
                                         </p>
                                     </div>
                                     <div slot="reference" class="color_chunk"
-                                         :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_2'">
+                                         :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && (scope.row[item.dayOfMonth].status == 1 || scope.row[item.dayOfMonth].status == 2) ? 'color_chunk_1' : 'color_chunk_2'">
                                                 <span v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].isStartPoint == 1"
                                                       class="warningInfoColor beginWarningInfo color_chunk_3">
                                                 </span>

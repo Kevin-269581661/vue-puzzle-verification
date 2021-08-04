@@ -2454,7 +2454,7 @@
         vertical-align: middle;
     }
     .date_range_class{
-      width:218px
+      width:225px
     }
     /deep/ .el-input__icon {
         line-height: unset;

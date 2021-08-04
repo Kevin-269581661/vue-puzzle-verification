@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 17:42:55
+ * @LastEditTime: 2021-08-04 14:41:49
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -204,6 +204,10 @@ export default {
                       /(\d{1,})(\d{2})$/,
                       "$1月$2日"
                     ),
+                  },
+                  {
+                    label: "场地费备注",
+                    value: tempObj.venueRemark || "--",
                   },
                   {
                     label: "是否有开发费",

@@ -1329,11 +1329,11 @@
                 rowData: {},
                 changeBeforMediaState: '',
                 customPermission: {},  //巡点权限
-                queryTimeout: null,
+                // queryTimeout: null,
                 fangJiaWangPrivateCity: []// 房价网权限城市
             };
         },
-        computed: {
+        /* computed: {
             changeLatLng() {
                 if(this.resAddres.city && this.resAddres.area && this.recForm.resname && this.recForm.resaddr) {
                     return this.resAddres.city + this.resAddres.area + this.recForm.resname + this.recForm.resaddr
@@ -1349,7 +1349,7 @@
                     this.querySearchAsync(val)
                 }, 500);
             }
-        },
+        }, */
         created() {
             this.getFangJiaWangCity()
         },

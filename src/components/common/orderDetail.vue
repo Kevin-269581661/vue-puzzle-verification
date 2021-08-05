@@ -1003,25 +1003,8 @@
                 //重置页数页码
                 this.currPage = 1;
                 this.pageSize = 10;
-                this.dialogChangePoint = false
-                this.getSetPoint()
-                /*   MessageBox.confirm(
-                       '确定后，设置的换点将被全部清除',
-                       "是否确定取消更换点位",
-                       {
-                           dangerouslyUseHTMLString: true,
-                           confirmButtonText: "确定",
-                           cancelButtonText: "取消",
-                           type: "warning"
-                       }
-                   ).then(() => {
-                       this.initListData()
-                       this.dialogChangePoint = false
-                       this.getSetPoint()
-                   })
-                       .catch(() => {
-
-                       });*/
+                this.dialogChangePoint = false;
+                this.getSetPoint();
             },
             //更换点位对话框-完成
             doneChangePoint() {
@@ -1214,6 +1197,7 @@
             // 判断是否是有换点跳转过来的？
             isChangePoint() {
                 let isChange = sessionStorage.getItem('change_point');
+                sessionStorage.removeItem("change_point");
                 if (isChange == 'yes') {
                     return true;
                 }
@@ -1899,7 +1883,6 @@
             //点击换点
             changeHandleType(handleType) {
                 this.handleType = handleType
-                sessionStorage.setItem('change_point', 'yes');
                 this.initListData()
                 this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true

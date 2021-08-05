@@ -1690,7 +1690,12 @@
                         });
                         tempPage.location = routeUrl.href;
                     } else {
-                        this.$message.warning(res.data.MSG || "");
+                        this.$message({
+                            message: res.data.MSG || "导出失败！",
+                            type: 'warning',
+                            showClose: true,
+                            duration: 0
+                        });
                     }
                     this.isBroundImport = false;
                     this.isResExport = false;

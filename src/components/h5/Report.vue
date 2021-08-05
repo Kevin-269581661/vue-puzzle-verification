@@ -212,7 +212,7 @@
                 <div>
                     <ul>
                         <li>
-                            <span>选择模板：</span>
+                            <span class="form-label">选择模板：</span>
                             <el-select class="pptx-select" size="small" v-model="templateType" placeholder="请选择" @change="templateChange">
                                 <el-option value="0" label="通用模板"></el-option>
                                 <el-option value="1" label="定制模板"></el-option>
@@ -235,7 +235,7 @@
                         <!-- 南宁定制不用选择导出排版 -->
                         <!-- 亲粤邻定制 -->
                         <li v-if="templateType !== null && templateType == 1 && customizeCode == '2'">
-                            <span>导出排版：</span>
+                            <span class="form-label">导出排版：</span>
                             <el-select size="small" class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/(点*页)"></el-option>
                                 <el-option value="3" label="3张/(点*页)"></el-option>
@@ -245,7 +245,7 @@
                         </li>
                         <!-- 通用模板 -->
                         <li v-if="templateType !== null && templateType == 0">
-                            <span>导出排版：</span>
+                            <span class="form-label">导出排版：</span>
                             <el-select size="small" class="pptx-select" v-model="pptxType" placeholder="请选择">
                                 <el-option value="2" label="2张/页"></el-option>
                                 <el-option value="3" label="3张/页"></el-option>
@@ -254,7 +254,7 @@
                         </li>
                         <!--存在多个档期时显示-->
                         <li v-if="(Info.name=='SK'||Info.name=='XK')&&periodArr.length>1">
-                            <span>选择档期：</span>
+                            <span class="form-label">选择档期：</span>
                             <div class="date-wrap">
                                 <el-checkbox  v-model="checkAllDate" @change="chooseAllDate">全部档期</el-checkbox>
                                 <el-checkbox-group class="date-group-wrap" v-model="checkPeriodArr" @change="chooseDate">
@@ -263,7 +263,7 @@
                             </div>
                         </li>
                         <li>
-                            <span>导出条件：</span>
+                            <span class="form-label">导出条件：</span>
                             <el-select size="small" multiple class="pptx-select" v-model="pptxFilter" placeholder="(选填)选择其他导出条件" @change="changeCondition">
                                 <el-option v-for="(item, index) in conditionArr" :key="index" :value="index" :label="item"></el-option>
                             </el-select>
@@ -1111,7 +1111,7 @@
     };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .ad_mediaMana_wrap {
         width: 100%;
         padding-top: 32px;
@@ -1518,6 +1518,9 @@
         display: flex;
         /*align-items: center;*/
         margin-bottom: 16px;
+        .form-label {
+            white-space: nowrap;
+        }
     }
     .pptx-dialog li .date-wrap /deep/ .el-checkbox{
         width: 272px;

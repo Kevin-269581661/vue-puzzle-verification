@@ -219,6 +219,7 @@
                       v-model="selectValue"
                       slot="prepend"
                       class="type-select"
+                      size="small"
                       @change="initData"
                     >
                       <el-option
@@ -2274,9 +2275,6 @@ export default {
       this.dialogVisible();
       console.log("inport----data----shoplist", this.shopingList);
     },
-    // 根据导入方案返回的数据,设置购物车所需要的数据格式
-    setShopDataByImport(arr) {
-    },
     // 判断点位是否已存在购物车(同点位同排期去重、同点位排期交叉则合并、同点位排期联系则合并)
     isHaveDiffPush(obj) {
       console.log("obj----", obj, this.shopingList);
@@ -3393,7 +3391,6 @@ export default {
       console.log(this.IsAll, this.currPageSelect, this.currPageAsLength);
     },
     // planList的勾选
-    // TODO:planList的勾选
     hadADByshop(data) {
       let shopAD = data;
       if (this.activeRName === shopAD.city) {
@@ -3840,26 +3837,6 @@ export default {
         }
       });
     },
-    //Promise存储草稿
-    changeApInfoPromise() {
-      this.importDraftsConfig.suID = this.BDData.uid;
-      this.importDraftsConfig.type = this.importDraftsType;
-      this.importDraftsConfig.resList = JSON.stringify(this.importDraftsList);
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        ...this.importDraftsConfig,
-      };
-      return new Promise((resolve, reject) => {
-        api.postApi(this.apiVar.CreateAdBackUp, params).then((response) => {
-          if (response.data.SysCode == 200200) {
-            return resolve(response.data.data);
-          } else {
-            return resolve("");
-          }
-        });
-      });
-    },
     // 设置方案信息
     setPlanInfo() {
       let returnData = this.unfinishedData;
@@ -4202,7 +4179,6 @@ export default {
 
 .el-input {
   width: 300px;
-  height: 34px !important;
   border-radius: 4px;
 }
 

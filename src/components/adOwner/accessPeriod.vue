@@ -1,5 +1,4 @@
 <script>
-    import echarts from 'echarts';
     import api from "../../api/api.js";
     import timeFormat from '../../commonFun/timeFormat.js'
     import commaFormat from '../../commonFun/commaFormat.js'

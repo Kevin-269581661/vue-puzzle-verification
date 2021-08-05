@@ -628,7 +628,7 @@ export default {
           });
         } else if(val != 1013 && devIndex!=-1) {
           this.roleArr.splice(devIndex, 1);
-          this.accountForm.role = "";
+          // this.accountForm.role = "";
         }
       }
 

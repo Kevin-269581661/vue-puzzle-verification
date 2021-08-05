@@ -6,10 +6,6 @@
 <script>
     export default {
         props:{
-            // data:{
-            //     default: {},
-            //     type: Object
-            // },
             data:{
                 default: [],
                 type: Array
@@ -87,7 +83,7 @@
 
                     ]
                 };
-                this.ChartLineGraph = this.$echarts.init(myChart);
+                this.ChartLineGraph = echarts.init(myChart);
                 this.ChartLineGraph.setOption(option);
                 this.ChartLineGraph.resize();
                 window.addEventListener('resize', function(){

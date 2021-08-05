@@ -182,26 +182,9 @@ import { api } from "../../api/api.js";
 import commaFormat from "../../commonFun/commaFormat.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
-import {
-    Table,
-    TableColumn,
-    Tabs,
-    TabPane,
-    Button,
-    Message,
-    MessageBox
-} from "element-ui";
 import timeFormat from '../../commonFun/timeFormat.js';
-
 export default {
     name: "planDetail",
-    components: {
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elTabs: Tabs,
-        elTabPane: TabPane,
-        elButton: Button,
-    },
     data() {
         return {
             // 社区绑定值
@@ -683,7 +666,7 @@ export default {
         },
         // 客户数
         clientLine() {
-            let clientLine = this.$echarts.init(this.$refs.clientLine);
+            let clientLine = echarts.init(this.$refs.clientLine);
             // alert(1);
             clientLine.setOption({
                 color: ["#92bdee"],

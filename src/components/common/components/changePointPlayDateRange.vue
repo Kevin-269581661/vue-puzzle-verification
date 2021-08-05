@@ -92,9 +92,6 @@
 // 时间格式化
 import timeFormat from "../../../commonFun/timeFormat.js";
 import { api } from "../../../api/api.js";
-// excel导出
-// import sheetExcel from "../../../commonFun/sheetExcel.js";
-
 export default {
   name: "changePointPlayDateRange",
   props: {

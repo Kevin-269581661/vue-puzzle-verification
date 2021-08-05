@@ -28,7 +28,7 @@
           infinite-scroll-delay="800"
           infinite-scroll-distance="50"
         >
-          <transition-group name="slide-fade">
+          <transition-group v-if="messageList.length" name="slide-fade">
             <li
               v-show="item.status == 0"
               class="app-item"
@@ -49,6 +49,9 @@
               </div>
             </li>
           </transition-group>
+          <no-search-result class="message-empty">
+            <p slot class="not_search">暂无消息</p>
+          </no-search-result>
         </ul>
         <div class="btn-group__bottom">
           <span class="btn-item" @click="readAll">一键已读</span>
@@ -137,8 +140,12 @@
 import sessFun from "../../../commonFun/sessFun.js";
 import timeFormat from "../../../commonFun/timeFormat";
 import { api } from "../../../api/api";
+import noSearchResult from "./noSearchResult.vue";
 export default {
   name: "messageAndApp",
+  components: {
+    noSearchResult
+  },
   props: {
     appCenter: {
       type: [Object, String, Array],
@@ -392,6 +399,14 @@ export default {
     .message-list {
       padding-left: 21px !important;
       padding-bottom: 48px !important;
+    }
+    .message-empty {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 32%;
+      transform: translateY(-50%);
     }
     .app-list {
       overflow-y: scroll;

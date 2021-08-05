@@ -39,8 +39,8 @@
                 </el-form-item>
                 <el-form-item label="投放排期:" class="tag-overflow">
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
-                        <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                        <el-option class="date_range_class" label="全部" value="全部"></el-option>
+                        <el-option class="date_range_class" v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="物料备注:" class="tag-overflow">
@@ -240,37 +240,72 @@
         </div>
 
         <!-- 换画弹出框 -->
-        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false">
-            <el-row class="dialog_pic">
-                <span>资源名称:</span>
-                <el-select v-model="dialogInfo.resName" multiple filterable placeholder="请输入资源名称" size="small">
-                    <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
-                               :value="item.value">
-                    </el-option>
-                </el-select>
-                <span>换画状态:</span>
-                <el-select v-model="dialogInfo.picState" placeholder="请选择换画状态" size="small">
-                    <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label"
-                               :value="item.value"></el-option>
-                </el-select>
-                <span>地图中心点:</span>
-                <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
-                    <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label"
-                               :value="item.value"></el-option>
-                </el-select>
-                <el-button plain @click="searchPoint()">搜索</el-button>
-                <el-button plain @click="resetPoint()">重置</el-button>
-                <el-dropdown>
-                    <el-button type="primary">
-                        批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
-                        <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+        <el-dialog title="选择换画点位" :visible.sync="isShowPic" :show-close="false" width="1134px" custom-class="change_pic_class">
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>资源名称：</span>
+                    <el-select v-model="dialogInfo.resName" collapse-tags multiple filterable placeholder="请输入资源名称" size="small">
+                        <el-option v-for="item in dialogInfo.resArr" :key="item.value" :label="item.label"
+                                  :value="item.value">
+                        </el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>城市区域：</span>
+                    <el-cascader v-model="dialogInfo.districtIdList" placeholder="请选择城市区域" :options="regionAreaList"   filterable></el-cascader>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>投放排期：</span>
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="dialogInfo.schDateList" @change="arr=>changeScheduleSelect(arr, 'schDateList', 'launchDateList')">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(dateRangeItem, rangeIndex) in launchDateList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
                 <!--<el-button type="primary" @click="showUpload()">换画</el-button>-->
                 <!--<el-button plain @click="cancelPain()">取消换画</el-button>-->
+            </el-row>
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
+               <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>换画状态：</span>
+                    <el-select v-model="dialogInfo.picState" placeholder="请选择换画状态" size="small">
+                      <el-option v-for="(item, index) of dialogInfo.stateArr" :key="index" :label="item.label"
+                               :value="item.value"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>地图中心：</span>
+                    <el-select v-model="dialogInfo.mapName" placeholder="请选择地图中心点" size="small" filterable>
+                      <el-option v-for="(item, index) of dialogInfo.mapArr" :key="index" :label="item.label"
+                                :value="item.value"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle' justify="space-between">
+                    <div class="btn_wrapper">
+                      <el-button type="primary"  icon="el-icon-search" @click="searchPoint()">搜索</el-button>
+                      <el-button plain @click="resetPoint()" class="resetBtn">重置</el-button>
+                    </div>
+                    <el-dropdown>
+                      <el-button class="batchBtn">
+                          批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+                      </el-button>
+                      <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item @click.native="showUpload()">换画</el-dropdown-item>
+                          <el-dropdown-item @click.native="cancelPain('all')">取消换画</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-row>
+                </el-col>
             </el-row>
             <div class="car-title">
                 <i class="el-icon-info" style="color: #1890FF;"></i>
@@ -294,7 +329,7 @@
                     </el-table-column>
                     <el-table-column prop="resName" label="资源" show-overflow-tooltip>
                     </el-table-column>
-                    <el-table-column prop="mTitle" label="媒体" width="70" show-overflow-tooltip>
+                    <el-table-column prop="mTitle" label="媒体" min-width="70" show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column prop="asLab" label="面" width="50">
                     </el-table-column>
@@ -308,7 +343,7 @@
                             <span>{{ scope.row.mapCenterInfo || '--'}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="timeRange" label="排期" min-width="120">
+                    <el-table-column prop="timeRange" label="排期" min-width="140">
                     </el-table-column>
                     <el-table-column prop="replaceDate" label="换画日期">
                         <template slot-scope="scope">
@@ -337,23 +372,35 @@
                         <no-search-result></no-search-result>
                     </div>
                 </el-table>
-                <div class="ad_pagination" v-if="dialogPage.totalInfoPage">
-                    <el-pagination
-                        background
-                        layout="total, sizes, prev, pager, next, jumper"
-                        @current-change="changePainPage"
-                        @size-change="painSizeChange"
-                        :page-sizes="[10, 20, 50,100,500]"
-                        :current-page.sync="dialogPage.currInfoPage"
-                        :page-size="dialogPage.pageSize"
-                        :total="pointInfo.pointNum">
-                    </el-pagination>
+                <div class="table_footer">
+                  <div class="marked_wrapper">
+                    <div class="marked_item">
+                      <img class="marked_img" src="../../../assets/images/changeIcon_1.png" alt="">
+                      <span class="marked_word">已录入换画信息</span>
+                    </div>
+                    <div class="marked_item">
+                      <img class="marked_img" src="../../../assets/images/changeIcon_2.png" alt="">
+                      <span class="marked_word">未录入换画信息</span>
+                    </div>
+                  </div>
+                  <div class="ad_pagination" v-if="dialogPage.totalInfoPage">
+                      <el-pagination
+                          background
+                          layout="total, sizes, prev, pager, next, jumper"
+                          @current-change="changePainPage"
+                          @size-change="painSizeChange"
+                          :page-sizes="[10, 20, 50,100,500]"
+                          :current-page.sync="dialogPage.currInfoPage"
+                          :page-size="dialogPage.pageSize"
+                          :total="pointInfo.pointNum">
+                      </el-pagination>
+                  </div>
                 </div>
             </div>
-            <p style="text-align:center;margin-top:20px;">
+            <div slot="footer"  class="dialog_btn_wrapper">
                 <el-button plain size="small" @click="cancel()">取消</el-button>
                 <el-button type="primary" size="small" @click="saveAll()">确认</el-button>
-            </p>
+            </div>
         </el-dialog>
         <!--编辑换画-->
         <el-dialog
@@ -653,6 +700,8 @@
                     ],
                     // 地图中心点列表
                     mapArr: [],
+                    districtIdList:[],//区域搜索列表
+                    schDateList:[]//排期搜索列表
                 },
                 // 弹出框分页信息
                 dialogPage: {
@@ -717,6 +766,8 @@
                 // selectNum:0,//当前选择的点位
                 handleFlag:false,
                 isEdit:false,//是编辑或新增换画
+                regionAreaList:[],//换画区域城市
+                launchDateList:[], //换画排期筛选列表launchDateList
             };
         },
         mounted() {
@@ -726,8 +777,12 @@
             this.getImgArr();
             // 获取城市区域
             this.getCitys();
+            //获取换画城市列表
+            this.getRegionAreaList()
             // 获取资源列表
             this.getResArr();
+            //得到换画排期筛选列表
+            this.getAdChangeLaunchDateList()
             console.log('scheduleList', this.scheduleList)
         },
         watch: {
@@ -873,6 +928,7 @@
             },
             // 上下刊搜索图片
             searchImg() {
+               console.log(this.publishSearchInfo,'this.publishSearchInfo;this.publishSearchInfo;');
                 let {citySelect, allhouse, allPic} = this.publishSearchInfo;
                 if (citySelect.length || allhouse || allPic) {
                     this.pageInfo.currPage = 1;
@@ -901,7 +957,12 @@
             changeSelect(arr=[], target, optionsArr) {
                 let allIndex = arr.indexOf('全部')
                 if(allIndex!==-1 && arr.length>1) {
-                    this.publishSearchInfo[target].splice(allIndex, 1)
+                  if(allIndex == 0){
+                     this.publishSearchInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.publishSearchInfo[target] = ['全部']
+                  }
                 } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
                     this.publishSearchInfo[target] = ['全部']
                 }
@@ -1257,6 +1318,8 @@
                     resName: [],
                     picState: "",
                     mapName: "",
+                    schDateList:[],
+                    districtIdList:[]
                 };
                 this.shoplist = [];
                 this.selectList = [];
@@ -1269,6 +1332,10 @@
                 this.getMapArr();
                 // 获取表格数据
                 this.searchInfoFun();
+                //获取换画城市区域
+                this.getRegionAreaList()
+                //得到换画排期筛选列表
+                this.getAdChangeLaunchDateList()
             },
             /**
              *  选择换画点位弹出框
@@ -1281,7 +1348,7 @@
             // 搜索数据格式化
             searchDataFormat() {
                 console.log(this.isEdit);
-                let {resName, picState, mapName} = this.dialogInfo;
+                let {resName, picState, mapName,districtIdList,schDateList} = this.dialogInfo;
                 let {currInfoPage, pageSize} = this.dialogPage;
                 let info = {
                     pageNum: currInfoPage,
@@ -1290,7 +1357,10 @@
                     // replaceRecordId: this.painList[this.activePainIndex].id,
                     ...(resName.length && {resIds: resName}),
                     ...(mapName && {mapCenterInfo: mapName}),
-                    ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState})
+                    ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState}),
+                    //后端要求查全部，就不传该字段
+                    ...(districtIdList.length>1 && {districtIdList:[districtIdList[1]]}),
+                    ...((schDateList[0] != '全部'&& schDateList.length) && {schDateList})
                 };
                 info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id
                 return info;
@@ -1562,7 +1632,9 @@
                 let info = {
                     resName: [],
                     picState: "",
-                    mapName: ""
+                    mapName: "",
+                    districtIdList:[],
+                    schDateList:[]
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,
@@ -2327,11 +2399,61 @@
                 }).catch(res => {
                     console.log(res);
                 });
-            }
-            ,
+            },
+            //获取换画区域
+            getRegionAreaList() {
+                let info = {
+                    apId: sessionStorage.getItem('order_apid'),
+                };
+                api.getApi(this.apiVar.replace + "/plan/regionAreaList", info).then(res => {
+                    console.log(res.data);
+                    if (res.data.SysCode == 200200) {
+                        let resArr = res.data.data;
+                        //处理数据得到表头筛选数据
+                        let result = this.formatCitys(resArr);
+                        this.regionAreaList = result
+                    } else {
+                        sessFun.messageFun(res.data.MSG);
+                    }
+                });
+            },
+            //换画弹出窗选择排期
+            changeScheduleSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                  if(allIndex == 0){
+                     this.dialogInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.dialogInfo[target] = ['全部']
+                  }
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                  // 不存在全部但是全选了
+                    this.dialogInfo[target] = ['全部']
+                }
+            },
+            //得到换画排期筛选列表
+            getAdChangeLaunchDateList() {
+                let apID = sessionStorage.getItem("order_apid");
+                let info = {
+                    apID
+                };
+                api.getApi(this.apiVar.Advertisement + "/GetAdChangeLaunchDateList", info)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.SysCode == 200200) {
+                            this.launchDateList = (res.data.data || []).map(item=>{return {text: item, value: item}})
+                        } else {
+                            Message.warning(res.data.MSG);
+                        }
+                    })
+                    .catch(res => {
+                    });
+            },
         },
     }
     ;
+ 
 </script>
 
 <style lang="scss" scoped>
@@ -2342,6 +2464,9 @@
         display: inline-block;
         text-overflow: ellipsis;
         vertical-align: middle;
+    }
+    .date_range_class{
+      width:225px
     }
     /deep/ .el-input__icon {
         line-height: unset;
@@ -2721,35 +2846,56 @@
 
     /* 弹出框 */
     .dialog_pic {
-        display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         position: relative;
+      span {
+        width: 70px;
+        height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 22px;
     }
-
-    .dialog_pic span {
-        margin-right: 6px;
-    }
-
-    .dialog_pic .el-input {
+      .el-input {
         width: auto;
     }
-
-    .dialog_pic /deep/ .el-select {
-        margin-right: 10px;
-    }
-
-    .dialog_pic /deep/ .el-dropdown {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
-    .dialog_pic /deep/ .el-button {
+      /deep/ .el-select{
+        width: 270px;
+        height: 32px;
+        .el-input__inner{
+          height: 32px;
+        }
+      }
+      /deep/ .el-cascader{
+        width: 270px;
+        height: 32px;
+        line-height: 32px;
+        .el-input__inner{
+        height: 32px;
+      }
+        .el-input__suffix{
+          height: 32px;
+        }
+      }
+      /deep/ .el-button {
         margin-right: 5px;
     }
-
-    .dialog_pic /deep/ .el-dropdown .el-button {
+      /deep/ .el-dropdown .el-button {
         width: 94px;
+    }
+      /deep/ .resetBtn, /deep/ .batchBtn{
+        span{
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.65);
+          line-height: 22px;
+        }
+      }
+      /deep/ .batchBtn{
+        margin-right: 0;
+      }
     }
 
     .car-title {
@@ -2949,8 +3095,6 @@
             width: 312px;
         } */
     }
-</style>
-<style>
     .el-tooltip__popper.is-dark {
         max-width: 250px;
         word-break: break-all;
@@ -2960,5 +3104,68 @@
     .change-pic-detail-modal /deep/ .el-dialog__body {
         padding: 5px 24px;
     }
+    //换画框样式
+     /deep/ .change_pic_class{
+     .el-dialog__header{
+       border-bottom: 1px solid #E9E9E9;
+       margin-bottom: 24px;
+     }
+     .btn_wrapper{
+       display: flex;
+       justify-content: space-between;
+       width: 156px;
+       .el-button{
+         margin:0;
+       }
+     }
+      .el-table--border td:first-child .cell{
+       padding-left: 14px;
+     }
+     .table-wrap{
+       .table_footer{
+         display:flex;
+         justify-content: space-between;
+         margin-top: 16px;
+         margin-bottom: 24px;
+         .marked_wrapper{
+           display: flex;
+           .marked_item{
+             display:flex;
+             align-items: center;
+             margin-right: 16px;
+            .marked_word{
+              font-size: 12px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: rgba(0, 0, 0, 0.45);
+              line-height: 32px;
+              vertical-align: middle;
+            }
+            .marked_img{
+              position: static;
+              display: block;
+              margin-right: 2px;
+              height: 16px;
+              width:  16px;
+            }
+           }
+           
+         }
+         .ad_pagination{
+           margin-top: 0;
+           .el-pagination__editor{
+             padding: 0;
+           }
+         }
+       }
+      
+     }
+     .el-dialog__body{
+       padding: 0 24px;
+     }
+     .el-dialog__footer{
+       border-top: 1px solid #E9E9E9;
+       padding:11px 0;
+     }
+    }
 </style>
-

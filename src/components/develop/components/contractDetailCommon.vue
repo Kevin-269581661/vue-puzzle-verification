@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-16 09:41:28
+ * @LastEditTime: 2021-08-04 14:39:50
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -657,6 +657,10 @@ export default {
                     "$1月$2日"
                   ),
                 },
+                {
+                  label: "场地费备注",
+                  value: tempObj.venueRemark || "--",
+                }
               ];
             }
             this.detailArr = [

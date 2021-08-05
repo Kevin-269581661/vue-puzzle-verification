@@ -3,9 +3,6 @@
 </template>
 
 <script>
-import { DataView } from "@antv/data-set";
-import { Chart } from "@antv/g2";
-
 export default {
   name: "ringChart",
   components: {},
@@ -21,28 +18,46 @@ export default {
   },
   data() {
     return {
-      chartInstance: null
+      Chart: null,
+      DataView: null,
+      chartInstance: null,
     };
   },
-  watch: {
-    sourceData(newVal, oldVal) {
-      if (newVal.length > 0) {
-        this.render(newVal);
+  computed: {
+    renderFlag() {
+      if(Array.isArray(this.sourceData) && this.sourceData.length && this.Chart && this.DataView) {
+        return this.sourceData
+      } else {
+        return false
       }
     },
   },
-  mounted() {},
+  watch: {
+    renderFlag(val) {
+      if (val) {
+        this.render(this.sourceData);
+      }
+    },
+  },
+  beforeCreate() {
+    import(/* webpackChunkName: "g2Chart" */ "@antv/g2").then((_) => {
+      this.Chart = _.Chart;
+    });
+    import(/* webpackChunkName: "g2DataSet" */ "@antv/data-set").then((_) => {
+      this.DataView = _.DataView;
+    });
+  },
   methods: {
     render(data) {
-      if(this.chartInstance == null) {
-        this.chartInstance = new Chart({
+      if (this.chartInstance == null) {
+        this.chartInstance = new this.Chart({
           container: this.container,
           autoFit: true,
           height: 450,
-          padding: [-30, 0, 0 , 0],
+          padding: [-30, 0, 0, 0],
         });
       }
-      const dv = new DataView();
+      const dv = new this.DataView();
       dv.source(data).transform({
         type: "percent",
         field: "count",
@@ -67,7 +82,7 @@ export default {
         .interval()
         .adjust("stack")
         .position("percent")
-        .color("item", ['#1890FF', '#6ECB53', '#FAAD14', '#FF7875'])
+        .color("item", ["#1890FF", "#6ECB53", "#FAAD14", "#FF7875"])
         .style({
           fillOpacity: 1,
         })
@@ -84,23 +99,23 @@ export default {
           },
         });
       this.chartInstance.interaction("element-active");
-      let temp = (this.sourceData || []).reduce((total, num)=>{
-        return total + num.count*1
+      let temp = (this.sourceData || []).reduce((total, num) => {
+        return total + num.count * 1;
       }, 0);
       // if(temp == 0) return;
       this.chartInstance.annotation().clear(true);
       this.chartInstance.annotation().text({
-        position: ['50%', '50%'],
-        content: '媒体总数',
+        position: ["50%", "50%"],
+        content: "媒体总数",
         style: {
           fontSize: 16,
-          fill: 'rgba(0, 0, 0, 0.85)',
-          textAlign: 'center'
+          fill: "rgba(0, 0, 0, 0.85)",
+          textAlign: "center",
         },
         offsetY: -50,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '50%'],
+        position: ["50%", "50%"],
         content: temp,
         style: {
           fontSize: 48,
@@ -121,85 +136,85 @@ export default {
       //   offsetY: 100,
       // });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '●',
+        position: ["50%", "55%"],
+        content: "●",
         style: {
           fontSize: 16,
           fill: "#1890FF",
           textAlign: "center",
         },
         offsetX: -115,
-        offsetY: 0
+        offsetY: 0,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '正常',
+        position: ["50%", "55%"],
+        content: "正常",
         style: {
           fontSize: 14,
-          fill: "rgba(0, 0, 0, 0.65)"
+          fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -105
+        offsetX: -105,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '●',
+        position: ["50%", "55%"],
+        content: "●",
         style: {
           fontSize: 16,
           fill: "#6ECB53",
         },
         offsetX: -65,
-        offsetY: 0
+        offsetY: 0,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '待安装',
+        position: ["50%", "55%"],
+        content: "待安装",
         style: {
           fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -50
+        offsetX: -50,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '●',
+        position: ["50%", "55%"],
+        content: "●",
         style: {
           fontSize: 16,
-          fill: "#FAAD14"
+          fill: "#FAAD14",
         },
         offsetX: 5,
-        offsetY: 0
+        offsetY: 0,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '待维修',
+        position: ["50%", "55%"],
+        content: "待维修",
         style: {
           fontSize: 14,
-          fill: "rgba(0, 0, 0, 0.65)"
+          fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: 20
+        offsetX: 20,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '●',
+        position: ["50%", "55%"],
+        content: "●",
         style: {
           fontSize: 16,
           fill: "#FF7875",
-          textBaseline: 'middle',
-          lineHeight: 40
+          textBaseline: "middle",
+          lineHeight: 40,
         },
         offsetX: 75,
-        offsetY: 0
+        offsetY: 0,
       });
       this.chartInstance.annotation().text({
-        position: ['50%', '55%'],
-        content: '禁用',
+        position: ["50%", "55%"],
+        content: "禁用",
         style: {
           fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
-          textBaseline: 'middle',
-          lineHeight: 40
+          textBaseline: "middle",
+          lineHeight: 40,
         },
-        offsetX: 90
+        offsetX: 90,
       });
       this.chartInstance.render();
     },
@@ -215,23 +230,12 @@ export default {
   justify-content: center;
 }
 @font-face {
-    font-family: 'DINEngschrift';
-    src: url('../../../assets/font/DINEngschrift-Alternate.otf');
+  font-family: "DINEngschrift";
+  src: url("../../../assets/font/DINEngschrift-Alternate.otf");
 }
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
-}
-%flex-row-center {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-}
-%flex-column-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-flow: column nowrap;
 }
 </style>

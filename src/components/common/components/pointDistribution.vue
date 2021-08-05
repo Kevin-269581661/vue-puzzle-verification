@@ -33,7 +33,6 @@
   </div>
 </template>
 <script>
-import $ from "jquery";
 import { initMap, whiteStyle, cityCenter } from "@/commonFun/mapCommon.js";
 import api from "../../../api/api";
 import sessFun from "../../../commonFun/sessFun.js";

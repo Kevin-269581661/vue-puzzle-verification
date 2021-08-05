@@ -323,85 +323,6 @@
                 </el-row>
             </el-card>
         </div>
-        <!--机会挖掘-->
-        <!-- <div class="data_read_box">
-            <el-card  class="box-card" shadow="never">
-                <div slot="header" class="clearfix">
-                    <span class="box_card_title">机会挖掘</span>
-                    <div class="box_card_title_right right_date_select">
-                        <el-date-picker
-                            v-model="chanceFindDate"
-                            size="small"
-                            type="daterange"
-                            value-format="yyyy/MM/dd"
-                            format="yyyy/MM/dd"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            :clearable="false"
-                            @change="changeFindDate">
-                        </el-date-picker>
-                    </div>
-                </div>
-                <el-row :gutter="16">
-                    <el-col :span="12" class="el_col_echarts">
-                        <p class="echarts_title">用户总量：{{chanceFindUserNum}}个</p>
-                        <div class="bar_charts el_col_bar" id="chance_find" ref="chanceFindPie"
-                             style="height: 320px;width: 100%"
-                             v-loading="chanceFindPieLoading"
-                             element-loading-text="玩命加载中..."
-                             element-loading-background="rgba(255, 255, 255)">
-                        </div>
-                    </el-col>
-                    <el-col :span="12">
-                        <div class="el_col_bar el_col_table">
-                            <el-table
-                                :data="chanceFindTable"
-                                class="chance_find_table"
-                                style="width: 100%"
-                                v-loading="chanceFindTableLoading"
-                                element-loading-text="玩命加载中..."
-                                element-loading-background="rgba(255, 255, 255)">
-                                <el-table-column
-                                    prop="name"
-                                    label="客户名称"
-                                    min-width="125"
-                                    :show-overflow-tooltip="true">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="bTitle"
-                                    label="品牌"
-                                    min-width="125"
-                                    :show-overflow-tooltip="true">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="cooperation"
-                                    label="合作情况"
-                                    min-width="90">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="status"
-                                    min-width="90"
-                                    label="最新状态">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="time"
-                                    min-width="90"
-                                    label="更新时间">
-                                </el-table-column>
-                                <el-table-column
-                                    prop="saler"
-                                    label="所属销售">
-                                    <template slot-scope="scope">
-                                        <span>{{scope.row.saler || '--'}}</span>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </el-col>
-                </el-row>
-            </el-card>
-        </div> -->
     </div>
 </template>
 
@@ -410,7 +331,6 @@
     import commaFormat from '../../../commonFun/commaFormat';
     import timeFormat from '../../../commonFun/timeFormat';
     import sessFun from '../../../commonFun/sessFun';
-    import moment from "moment";
     import countTo from "vue-count-to";
     import monthRange from '../../common/components/monthRange.vue';
     export default {
@@ -616,11 +536,6 @@
                         return time.getTime() < Date.parse('2015/01/01') || time.getTime() > Date.parse(this.timeData.maxYear)
                     }
                 },
-                // adSaleOptionsStar: {
-                //     disabledDate: (time) => {
-                //         return time.getTime() < Date.parse('2015/01') || time.getTime() > Date.parse(this.timeData.maxYear)
-                //     }
-                // },
             }
         },
         props:{
@@ -669,7 +584,7 @@
             },
             activeName(newVal, oldVal) {
                 console.log('数据概览newVal', newVal, 'oldVal', oldVal)
-                this.activeName = newVal
+                // this.activeName = newVal
                 if (!this.isGetData) {
                     console.log('统一调用接口', this.isGetData)
                     // 统一调用接口
@@ -689,7 +604,7 @@
                     // 广告库存 - 右侧
                     this.initAdInventoryPie();
                     // 机会挖掘
-                    this.initChanceFindPie();
+                    // this.initChanceFindPie();
                 }
             }
         },
@@ -718,9 +633,6 @@
                 this.getAdInventoriedData();
                 // 广告库存 - 右侧
                 this.getAdInventoryData();
-                // 机会挖掘
-                // this.getChanceFindEcharts();
-                // this.getChanceFindTable();
                 this.oldSelectCity = this.selectCity
                 this.adSaleActiveWeek = '0'
                 this.isGetData = true
@@ -739,7 +651,7 @@
                     this.adInventoriedPieEcharts && this.adInventoriedPieEcharts.resize();
                     this.adInventoryPieEcharts && this.adInventoryPieEcharts.resize();
                     // 机会挖掘
-                    this.chanceFindPieEcharts && this.chanceFindPieEcharts.resize();
+                    // this.chanceFindPieEcharts && this.chanceFindPieEcharts.resize();
                 });
             },
             // 设置初始时间
@@ -749,9 +661,9 @@
                 this.toDay = endTime;
                 this.dateRange = [new Date(), new Date()];
                 // 设置机会挖掘默认时间
-                let starTime = timeFormat.returnDayCount(-30,'/')
-                this.chanceFindDate = [starTime, endTime]
-                console.log('starTime',starTime,'endTime',endTime)
+                // let starTime = timeFormat.returnDayCount(-30,'/')
+                // this.chanceFindDate = [starTime, endTime]
+                // console.log('starTime',starTime,'endTime',endTime)
                 this.timeData.maxYear = timeFormat.getSpecifiedDateStr(this.toDay,-12)
             },
             /*  数据总量  */
@@ -768,12 +680,13 @@
             },
             // 数据总览-接口
             getTotalData(){
+                console.log('this.dateRange', this.dateRange)
                 this.totalDataBarLoading = true
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    startDate: moment(this.dateRange[0], 'YYYY-MM').startOf("month").format('YYYY/MM/DD'),
-                    endDate: moment(this.dateRange[1], 'YYYY-MM').endOf("month").format('YYYY/MM/DD'),
+                    startDate: timeFormat.beginOfMonth(this.dateRange[0]),
+                    endDate: timeFormat.endOfMonth(this.dateRange[1]),
                     asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getOverview', params).then(res => {
@@ -840,8 +753,7 @@
                 if(this.totalDataBarEcharts){
                     this.totalDataBarEcharts.dispose()
                 }
-                this.totalDataBarEcharts = this.$echarts.init(this.$refs.totalDataBar);
-                // console.log('totalDataBar',this.totalDataBar)
+                this.totalDataBarEcharts = echarts.init(this.$refs.totalDataBar);
                 this.totalDataBarEcharts.setOption({
                     tooltip: {
                         trigger: 'axis',
@@ -1068,7 +980,7 @@
                 if(this.toDayPreceptBarEcharts){
                     this.toDayPreceptBarEcharts.dispose()
                 }
-                this.toDayPreceptBarEcharts = this.$echarts.init(this.$refs.toDayPreceptBar);
+                this.toDayPreceptBarEcharts = echarts.init(this.$refs.toDayPreceptBar);
                 console.log('toDayPreceptBarEcharts',this.toDayPreceptBarEcharts)
                 this.toDayPreceptBarEcharts.setOption({
                     legend: {
@@ -1368,7 +1280,7 @@
                 if(this.adSaleBarEcharts){
                     this.adSaleBarEcharts.dispose()
                 }
-                this.adSaleBarEcharts = this.$echarts.init(this.$refs.adSaleBar);
+                this.adSaleBarEcharts = echarts.init(this.$refs.adSaleBar);
                 let option =  {
                     tooltip: {
                         trigger: 'axis',
@@ -1623,7 +1535,7 @@
                 if(this.adSalePieEcharts){
                     this.adSalePieEcharts.dispose()
                 }
-                this.adSalePieEcharts = this.$echarts.init(this.$refs.adSalePie)
+                this.adSalePieEcharts = echarts.init(this.$refs.adSalePie)
                 let total = 0
                 for(let key of this.mediaSaleData.data){
                     total += key.value
@@ -1807,7 +1719,7 @@
                 if(this.adInventoriedPieEcharts){
                     this.adInventoriedPieEcharts.dispose()
                 }
-                this.adInventoriedPieEcharts = this.$echarts.init(this.$refs.adInventoriedPie)
+                this.adInventoriedPieEcharts = echarts.init(this.$refs.adInventoriedPie)
                 let total = 0
                 for(let key of this.beenWeekOfSurfaceData.data){
                     total += key.value
@@ -1887,7 +1799,7 @@
                 if(this.adInventoryPieEcharts){
                     this.adInventoryPieEcharts.dispose()
                 }
-                this.adInventoryPieEcharts = this.$echarts.init(this.$refs.adInventoryPie)
+                this.adInventoryPieEcharts = echarts.init(this.$refs.adInventoryPie)
                 let total = 0
                 for(let key of this.futureWeekOfSurfaceData.data){
                     total += key.value
@@ -1964,75 +1876,6 @@
                 })
                 this.adInventoryLoading = false
             },
-            /*  机会挖掘  */
-            /* changeFindDate(){
-                this.getChanceFindEcharts()
-                this.getChanceFindTable()
-            }, */
-            // 左侧图表接口
-            /* getChanceFindEcharts(){
-                this.chanceFindPieLoading = true
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    startDate: this.chanceFindDate[0],
-                    endDate: this.chanceFindDate[1],
-                    asrIds: this.returnAsrID()
-                }
-                // console.log('机会挖掘饼状图params',params)
-                api.getApi(this.apiVar.report + '/api/v2/getCustomerInfo', params).then(res => {
-                    console.log('机会挖掘饼状图接口res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout()
-                    } else if (res.data.SysCode === 200200) {
-                        let dataObj = res.data.data
-                        let dataArr = []
-                        // let userNum = 0
-                        for (let key in dataObj) {
-                            // userNum += dataObj[key] ? dataObj[key] : 0
-                            if (key === 'firstCooperation') {
-                                dataArr[0] = {value: dataObj[key], name: '初购客户'}
-                            } else if (key === 'multipleCooperation') {
-                                dataArr[1] = {value: dataObj[key], name: '复购客户'}
-                            } else if (key === 'unCooperation') {
-                                dataArr[2] = {value: dataObj[key] || 0, name: '未合作'}
-                            } else if (key === 'silenceCooperation') {
-                                dataArr[3] = {value: dataObj[key] || 0, name: '沉默客户'}
-                            }
-                        }
-                        this.chanceFindUserNum = dataObj.totalUser
-                        this.chanceFindPieData.data = dataArr;
-                        this.initChanceFindPie();
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG)
-                    }
-                })
-            }, */
-            // 表格接口 getCustomerCooperative
-            /* getChanceFindTable(){
-                this.chanceFindTableLoading = true
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    startDate: this.chanceFindDate[0],
-                    endDate: this.chanceFindDate[1],
-                    // pageNo: 1,
-                    // pageSize: 5000,
-                    asrIds: this.returnAsrID()
-                }
-                api.getApi(this.apiVar.report + '/api/v2/getCustomerCooperative', params).then(res => {
-                    console.log('机会挖掘表格接口res', res)
-                    if (res.data.SysCode === 100302 || res.data.MSG === '登陆超时') {
-                        sessFun.loginTimeout();
-                    } else if (res.data.SysCode === 200200) {
-                        let dataObj = res.data.data
-                        this.setChanceFindTabelData(dataObj)
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG)
-                    }
-                    this.chanceFindTableLoading = false
-                })
-            }, */
             setChanceFindTabelData(dataList) {
                 let arr = []
                 for (let key of dataList) {
@@ -2048,11 +1891,11 @@
                 this.chanceFindTable = arr
             },
             // 饼状图
-            initChanceFindPie() {
+            /* initChanceFindPie() {
                 if (this.chanceFindPieEcharts) {
                     this.chanceFindPieEcharts.dispose()
                 }
-                this.chanceFindPieEcharts = this.$echarts.init(this.$refs.chanceFindPie)
+                this.chanceFindPieEcharts = echarts.init(this.$refs.chanceFindPie)
                 let total = 0
                 for (let key of this.chanceFindPieData.data) {
                     total += key.value
@@ -2155,7 +1998,7 @@
                     ]
                 })
                 this.chanceFindPieLoading = false
-            },
+            }, */
             // 设置周下拉选项
             setWeekSelectList(list){
                 console.log('list',list)

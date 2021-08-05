@@ -375,7 +375,10 @@
 <script>
     import api from "../../api/api.js";
     import sessFun from "../../commonFun/sessFun.js";
-    import XLSX from 'xlsx'
+    var XLSX = null;
+    import(/* webpackChunkName: "XLSX" */ "xlsx").then((res) => {
+        XLSX = res;
+    });
     export default {
         name: "createPlan",
         components: {},

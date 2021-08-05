@@ -118,7 +118,6 @@
 // 时间格式化
 import timeFormat from "../../../commonFun/timeFormat.js";
 import { api } from "../../../api/api.js";
-// import sheetExcel from "../../../commonFun/sheetExcel.js";
 
 export default {
   name: "importPointByExcel",

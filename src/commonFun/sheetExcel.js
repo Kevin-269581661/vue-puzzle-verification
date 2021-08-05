@@ -25,7 +25,10 @@
 // otherHead = ['http://www.qinlinad.com', '', '', '', '', '', '', '', '', '', '', '', ''];
 // head为表头， arr为数据数组，otherhead为合并内容
 
-import XLSX from 'xlsx';
+var XLSX = null;
+import(/* webpackChunkName: "XLSX" */ "xlsx").then((res) => {
+    XLSX = res;
+});
 let sheetExcel = {};
 sheetExcel.toDownload = function(head, arr, title='', otherHead=[]){
     console.log('arr----', arr);

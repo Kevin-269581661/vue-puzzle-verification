@@ -470,11 +470,9 @@
     import indexCustomCard from '../common/components/indexCustomCard.vue';
     import waveBar from '../common/components/waveBar.vue';
     import miniProgress from '../common/components/miniProgress.vue';
-    import liquidChart from '../common/components/liquidChart.vue';
     import nestPieChart from '../common/components/nestPieChart.vue';
     import pointDistribution from '../common/components/pointDistribution.vue';
     import publishRate from '../common/components/publishRate.vue';
-
     import homeLink from '../common/components/homeLink.vue';
     import timeFormat from '../../commonFun/timeFormat'
     import commaFormat from '../../commonFun/commaFormat'
@@ -492,7 +490,6 @@
             waveBar,
             miniProgress,
             indexCustomCard,
-            liquidChart,
             nestPieChart,
             pointDistribution,
             publishRate
@@ -640,6 +637,7 @@
                 },
                 
                 cardData1: {
+                    name: "cardData1",
                     title: '本年销售额',
                     tip: '数据截止至昨日，销售额数据来源为统计周期内发布的订单金额总和',
                     value: 0,
@@ -651,6 +649,7 @@
                     data: []
                 },
                 cardData2: {
+                    name: "cardData2",
                     title: '本年订单数',
                     tip: '数据截止至昨日，订单总数数数据来源为统计周期内发布的订单数量总和',
                     value: 0,
@@ -661,6 +660,7 @@
                     data: []
                 },
                 cardData3: {
+                    name: "cardData3",
                     title: '总客户数',
                     tip: '数据截止至昨日，客户数数据来源为统计周期内新建的客户数总和',
                     value: 0,
@@ -671,6 +671,7 @@
                     data: []
                 },
                 cardDataOther1: {
+                    name: "cardDataOther1",
                     type: 'stackBar',
                     title: '媒体总数',
                     tip: '数据截止至昨日，媒体总数数据来源为统计周期内新增的各类型媒体数量总和',
@@ -681,6 +682,7 @@
                     data: []
                 },
                 cardDataOther2: {
+                    name: "cardDataOther2",
                     type: 'bar',
                     title: '社区总数',
                     tip: '数据截止至昨日，社区总数数据来源为统计周期内新增的社区数量总和',
@@ -692,6 +694,7 @@
                     data: []
                 },
                 cardDataOther3: {
+                    name: "cardDataOther3",
                     type: 'bar',
                     title: '昨日上刊率',
                     tip: '数据截止至昨日，上刊率计算公式为统计周期内周一至周日点位投放总面*天与该时间内可投放总面*天的百分比',
@@ -970,7 +973,6 @@
                 }).finally(_=>{
                     
                 })
-                // 
                 !this.isPlatform&&this.getSMResStockRankReport()
             },
             // 资源库存排名
@@ -1350,24 +1352,6 @@
                     }
                 })
             },
-            //超级运营顶部内容详情
-            /* getHeaderData(){
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token
-                }
-                api.getApi(this.apiVar.report + '/GetSMOverview',params).then(res=>{
-                    // console.log('超级运营顶部内容详情',res)
-                    let resData = res.data.data;
-                    if(res.data.SysCode == 200200 && resData ){
-                        this.dataArr[0].data = resData.companyCount
-                        this.dataArr[1].data = resData.apCount
-                        this.dataArr[2].data = Math.floor(resData.pdTotal / 100)
-                    } else {
-                        this.messageFun('warning','暂无数据')
-                    }
-                })
-            }, */
             // 图表tabs切换
             tabHandleClick(tab, event){
                 this.activeTabsName = tab.name
@@ -1573,7 +1557,7 @@
             },
             // 金额图表
             setTurnoverBar() {
-                this.turnoverEcharts = this.$echarts.init(this.$refs.turnoverDataBar);
+                this.turnoverEcharts = echarts.init(this.$refs.turnoverDataBar);
                 let that = this
                 // 第二个参数为true,不会和之前的option合并
                 this.turnoverEcharts.setOption({
@@ -1787,7 +1771,7 @@
             },
             // 订单数柱状图
             setOrderBar() {
-                this.orderEcharts = this.$echarts.init(this.$refs.orderDataBar);
+                this.orderEcharts = echarts.init(this.$refs.orderDataBar);
                 this.orderEcharts.setOption({
                     title: {
                         text: '订单数',

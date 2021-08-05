@@ -1503,7 +1503,7 @@
                 if(this.keyDataLineEchart){
                     this.keyDataLineEchart.dispose()
                 }
-                this.keyDataLineEchart = this.$echarts.init(this.$refs.keyDataLine)
+                this.keyDataLineEchart = echarts.init(this.$refs.keyDataLine)
                 let that = this
                 this.keyDataLineEchart.setOption({
                     tooltip: {
@@ -1631,7 +1631,7 @@
                 if(this.KeyDataBarEchart){
                     this.KeyDataBarEchart.dispose()
                 }
-                this.KeyDataBarEchart = this.$echarts.init(this.$refs.keyDataBar);
+                this.KeyDataBarEchart = echarts.init(this.$refs.keyDataBar);
                 console.log('KeyDataBarEchart',this.addkeyDataKind)
                 let that = this
                 this.KeyDataBarEchart.setOption({
@@ -1930,7 +1930,7 @@
                 if(this.busOrderLineEchart){
                     this.busOrderLineEchart.dispose()
                 }
-                this.busOrderLineEchart = this.$echarts.init(this.$refs.orderLine);
+                this.busOrderLineEchart = echarts.init(this.$refs.orderLine);
                 this.busOrderLineEchart.setOption({
                     color: this.colorArr,
                     tooltip: {
@@ -2102,7 +2102,7 @@
                 if(this.allOrderPieEcharts){
                     this.allOrderPieEcharts.dispose()
                 }
-                this.allOrderPieEcharts = this.$echarts.init(this.$refs.allOrderPie);
+                this.allOrderPieEcharts = echarts.init(this.$refs.allOrderPie);
                 let that = this
                 this.allOrderPieEcharts.setOption({
                     tooltip: {
@@ -2266,7 +2266,7 @@
                     if (this.PropertyRankEchart) {
                         this.PropertyRankEchart.dispose()
                     }
-                    this.PropertyRankEchart = this.$echarts.init(this.$refs.PropertyRank);
+                    this.PropertyRankEchart = echarts.init(this.$refs.PropertyRank);
                     this.PropertyRankEchart.setOption({
                         tooltip: {
                             trigger: 'axis',
@@ -2450,7 +2450,7 @@
                     if(this.adOwnerRankEcharts){
                         this.adOwnerRankEcharts.dispose()
                     }
-                    this.adOwnerRankEcharts = this.$echarts.init(this.$refs.adOwnerRank);
+                    this.adOwnerRankEcharts = echarts.init(this.$refs.adOwnerRank);
                     this.adOwnerRankEcharts.setOption({
                         tooltip: {
                             trigger: 'axis',
@@ -2621,7 +2621,7 @@
                     if(this.salesRankEcharts){
                         this.salesRankEcharts.dispose()
                     }
-                    this.salesRankEcharts = this.$echarts.init(this.$refs.salesRank);
+                    this.salesRankEcharts = echarts.init(this.$refs.salesRank);
                     this.salesRankEcharts.setOption({
                         tooltip: {
                             trigger: 'axis',

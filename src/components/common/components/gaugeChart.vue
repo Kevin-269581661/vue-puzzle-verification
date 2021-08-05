@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import { Chart, registerShape } from "@antv/g2";
-
 export default {
   name: "gaugeChart",
   components: {},
@@ -15,25 +13,39 @@ export default {
     },
     gaugeData: {
       type: Object,
-      default: ()=>{}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
-      chartInstance: null
+      Chart: null,
+      registerShape: null,
+      chartInstance: null,
     };
   },
+  computed: {
+    renderFlag() {
+      return (
+        Object.keys(this.gaugeData).length && this.Chart && this.registerShape
+      );
+    },
+  },
   watch: {
-    gaugeData(newVal, oldVal) {
-      // console.log('000', newVal)
-      this.render()
-    }
+    renderFlag(val) {
+      val && this.render();
+    },
+  },
+  beforeCreate() {
+    import(/* webpackChunkName: "g2Chart" */ "@antv/g2").then((_) => {
+      this.Chart = _.Chart;
+      this.registerShape = _.registerShape;
+    });
   },
   methods: {
     render() {
-      if(this.chartInstance == null) {
+      if (this.chartInstance == null) {
         // 自定义Shape 部分
-        registerShape("point", "pointer", {
+        this.registerShape("point", "pointer", {
           draw(cfg, container) {
             const group = container.addGroup();
             const center = this.parsePoint({ x: 0, y: 0 }); // 获取极坐标系下画布中心点
@@ -63,14 +75,21 @@ export default {
             return group;
           },
         });
-        this.chartInstance = new Chart({
+        this.chartInstance = new this.Chart({
           container: this.container,
           autoFit: true,
           height: 450,
           padding: [-60, 0, 60, 0],
         });
       }
-      const data = [{ value: this.gaugeData.finshProcess/100 > 1 ? 100 : this.gaugeData.finshProcess}];
+      const data = [
+        {
+          value:
+            this.gaugeData.finshProcess / 100 > 1
+              ? 100
+              : this.gaugeData.finshProcess,
+        },
+      ];
       this.chartInstance.data(data);
       this.chartInstance.scale("value", {
         min: 0,
@@ -102,14 +121,14 @@ export default {
           count: 3,
           length: -24,
           style: {
-              stroke: "rgba(0, 0, 0, 0.35)"
-          }
+            stroke: "rgba(0, 0, 0, 0.35)",
+          },
         },
         tickLine: {
           length: -24,
           style: {
-              stroke: "rgba(0, 0, 0, 0.35)"
-          }
+            stroke: "rgba(0, 0, 0, 0.35)",
+          },
         },
         grid: null,
       });
@@ -172,35 +191,19 @@ export default {
       });
 
       this.chartInstance.render();
-    }
-  },
-  mounted() {
-    
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
 @font-face {
-    font-family: 'DINEngschrift';
-    src: url('../../../assets/font/DINEngschrift-Alternate.otf');
+  font-family: "DINEngschrift";
+  src: url("../../../assets/font/DINEngschrift-Alternate.otf");
 }
 * {
   font-family: "Helvetica Neue", Helvetica, Arial, "PingFang ",
     "Hiragino Sans GB" "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
     sans-serif;
-}
-li {
-}
-%flex-row-center {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-}
-%flex-column-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-flow: column nowrap;
 }
 </style>

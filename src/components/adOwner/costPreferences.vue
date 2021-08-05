@@ -3,17 +3,6 @@
         <div class="right-content-wrap">
             <div class="right-title">
                 <h1>消费偏好: <i>{{formatTime(selectRes.bdsday)+'-'+formatTime(selectRes.bdday)}}</i></h1>
-                <!--<div class="houseAttr">-->
-                <!--<span>住户属性：</span>-->
-                <!--<span>-->
-                <!--<el-radio-group size="mini" v-model="houseAttr">-->
-                <!--<el-radio-button label="人流"></el-radio-button>-->
-                <!--<el-radio-button label="社区人流"></el-radio-button>-->
-                <!--<el-radio-button label="居民"></el-radio-button>-->
-                <!--<el-radio-button label="访客"></el-radio-button>-->
-                <!--</el-radio-group>-->
-                <!--</span>-->
-                <!--</div>-->
                 <div class="costType">
                     <span>消费分类：</span>
                     <span>

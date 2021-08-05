@@ -6,6 +6,7 @@ import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
 import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
+Vue.config.performance = true;
 
 // ElementUI
 import ElementUI from 'element-ui'
@@ -16,17 +17,10 @@ import '../static/css/element-variables.scss'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
-import 'default-passive-events'
 import App from './App'
 Vue.use(ElementUI);
 Vue.use(MintUI);
 Vue.use(SlideVerify);
-//echarts
-import echarts from 'echarts';
-Vue.prototype.$echarts = echarts;
-
-import Viser from 'viser-vue'
-Vue.use(Viser)
 
 // axios
 import axios from 'axios'

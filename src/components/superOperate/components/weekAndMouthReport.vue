@@ -32,7 +32,7 @@
                                 <el-col :span="7" class="text_right">数量</el-col>
                             </el-row>
                             <ul class="table_ul">
-                                <li class="table_ul_li" v-for="(item,index) in issueReportTableData">
+                                <li class="table_ul_li" v-for="(item,index) in issueReportTableData" :key="index">
                                     <el-row>
                                         <el-col :span="7" style="padding-left: 16px">{{index+1}}</el-col>
                                         <el-col :span="10" class="text_right">{{item.name}}</el-col>
@@ -334,7 +334,7 @@
                 if (this.issueReportPieEcharts) {
                     this.issueReportPieEcharts.dispose()
                 }
-                this.issueReportPieEcharts = this.$echarts.init(this.$refs.issueReportBar)
+                this.issueReportPieEcharts = echarts.init(this.$refs.issueReportBar)
                 let total = 0
                 for (let key of this.issueReportPieData.data) {
                     total += key.value

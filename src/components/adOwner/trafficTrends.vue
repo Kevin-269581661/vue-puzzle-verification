@@ -1,5 +1,4 @@
 <script>
-import echarts from 'echarts';
 import { api } from '../../api/api';
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";

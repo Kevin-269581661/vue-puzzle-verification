@@ -12,13 +12,28 @@
                 <el-tab-pane label="道闸" name="roadGate" class="el_tab_roadGate" style="text-align: right;"></el-tab-pane>
             </el-tabs>
             <div class="tab_conten">
-                <el-row :gutter="32" class="tab_conten_row">
-                    <el-col :span="6">
-                        <span class="search_label">资源名称:</span>
-                        <el-input v-model="resName" size="small" placeholder="请输入内容"></el-input>
-                    </el-col>
-                    <el-col :span="6">
-                        <span class="search_label">城市区域:</span>
+                <div :gutter="32" class="tab_conten_row">
+                    <div class="row-unit">
+                        <span class="search_label">关键词：</span>
+                        <el-input
+                            placeholder="请输入关键词"
+                            v-model="searchInfo[searchInfo.keywordType]"
+                            size="small"
+                            class="search-row-item"
+                            >
+                            <el-select
+                                v-model="searchInfo.keywordType"
+                                slot="prepend"
+                                size="small"
+                                placeholder="请输入关键词"
+                            >
+                                <el-option label="资源名称" value="resName"></el-option>
+                                <el-option label="资产编号" value="assetTag"></el-option>
+                            </el-select>
+                            </el-input>
+                    </div>
+                    <div class="row-unit">
+                        <span class="search_label">城市区域：</span>
                         <el-cascader
                             :options="areaList"
                             v-model="areaRid"
@@ -28,30 +43,32 @@
                             filterable
                             :clearable="true"
                             size="small"
-                            @change="changeArea">
+                            @change="changeArea"
+                            class="search-row-item">
                         </el-cascader>
-                    </el-col>
-                    <el-col :span="7">
-                        <span class="search_label">查询范围:</span>
+                    </div>
+                    <div class="row-unit">
+                        <span class="search_label">查询范围：</span>
                         <el-date-picker
                             v-model="dateInput"
-                            type="daterange"
                             size="small"
+                            type="daterange"
+                            range-separator="⇀"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
                             value-format="yyyy/MM/dd"
                             format="yyyy/MM/dd"
-                            class="date-select"
+                            class="date-select search-row-item"
                             @change="dateChange"
                             :picker-options="pickerOptions">
                         </el-date-picker>
-                    </el-col>
-                    <el-col :span="5">
+                    </div>
+                    <div class="btn-group">
                         <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun"
                                    v-qadn-mta-h5="{id: 'a005_b000_c000_d000_bt103_ck01'}">搜索</el-button>
                         <el-button @click="clearSearch" v-qadn-mta-h5="{id: 'a005_b000_c000_d000_bt104_ck02'}">重置</el-button>
-                    </el-col>
-                </el-row>
+                    </div>
+                </div>
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
                     <el-table
                         v-loading="tableLoading"
@@ -116,7 +133,7 @@
                                         </p>
                                     </div>
                                     <div slot="reference" class="color_chunk"
-                                         :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 1 ? 'color_chunk_1' : 'color_chunk_2'">
+                                         :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && (scope.row[item.dayOfMonth].status == 1 || scope.row[item.dayOfMonth].status == 2) ? 'color_chunk_1' : 'color_chunk_2'">
                                                 <span v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].isStartPoint == 1"
                                                       class="warningInfoColor beginWarningInfo color_chunk_3">
                                                 </span>
@@ -183,8 +200,11 @@
                 tableLoading: true,
                 // 当前tab
                 activeTabName: 'adDoor',
-                // 搜索的资源名称
-                resName: '',
+                searchInfo: {
+                    keywordType: "resName",
+                    resName: "",
+                    assetTag: "",
+                },
                 cityRid: '',
                 // 选择的区域
                 areaRid:[],
@@ -275,7 +295,7 @@
                 console.log('tab切换',this.activeTabName)
                 this.pageData.pageNum = 1
                 this.pageData.pageSize = 10
-                this.resName = ''
+                this.searchInfo.resName = ''
                 this.areaRid = []
                 this.getTableData()
                 this.setFixedTableHieght()
@@ -344,12 +364,15 @@
                     mVehicle: this.activeTabName == 'adDoor' ? '广告门' : this.activeTabName == 'roadGate' ? '道闸' : '',
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
-                    resName: this.resName,
+                    [this.searchInfo.keywordType]: this.searchInfo[this.searchInfo.keywordType],
                     cityId: this.areaRid[0],//this.cityRid,
                     districtId: this.areaRid[1],
                 }
                 if(!params.resName){
                     delete params.resName
+                }
+                if(!params.assetTag){
+                    delete params.assetTag
                 }
                 if(!params.districtId){
                     delete params.cityId
@@ -446,7 +469,8 @@
             },
             // 重置搜索
             clearSearch(){
-                this.resName = ''
+                this.searchInfo.resName = ''
+                this.searchInfo.assetTag = ''
                 this.areaRid = []
                 this.pageData.pageNum = 1
                 this.pageData.pageSize = 10
@@ -491,7 +515,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     /*面包屑*/
     .ad_breadcrumb{
         height: 42px;
@@ -538,9 +562,9 @@
         color: #1890FF;
     }
 
-    /deep/ #tab-roadGate{
+    /* /deep/ #tab-roadGate{
         margin-left: 18px;
-    }
+    } */
 
     /deep/ .el-tabs__active-bar{
         width: 68px !important;
@@ -554,22 +578,46 @@
     }
 
     /*搜索块*/
-    .search_label{
-        font-size: 14px;
-        color: #666;
-        display: inline-block;
-    }
-
-    /deep/ .tab_conten_row .el-input{
-        width: calc(100% - 67px);
-    }
-    /*区域下拉*/
-    /deep/ .tab_conten_row .el-cascader{
-        width: calc(100% - 67px);
-    }
-    /*区域下拉*/
-    /deep/ .tab_conten_row .el-cascader .el-input{
-        width: 100%;
+    .tab_conten_row {
+        display: flex;
+        align-items: center;
+        .row-unit {
+            width: 280px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            display: flex;
+            align-items: center;
+            & + .row-unit {
+                margin-left: 32px;
+            }
+            .search_label{
+                display: inline-block;
+                white-space: nowrap;
+                width: 70px;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.85);
+            }
+            /deep/ .el-date-editor .el-range-separator {
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.25);
+            }
+            .search-row-item {
+                width: 100%;
+                /deep/ .el-input-group__prepend .el-input__inner {
+                    width: 100px;
+                }
+                .el-cascader .el-input{
+                    width: 100%;
+                }
+                ::placeholder {
+                    font-size: 14px;
+                }
+            }
+        }
+        .btn-group {
+            display: flex;
+            margin-left: 32px;
+        }
     }
 
     /deep/ .el-button {
@@ -624,7 +672,6 @@
     .color_chunk{
         width: 32px;
         height: 32px;
-        border-radius: 3px
     }
     /*预锁*/
     .color_chunk_0{
@@ -700,6 +747,7 @@
     }
 
     /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;

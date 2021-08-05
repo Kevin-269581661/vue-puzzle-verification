@@ -33,10 +33,10 @@
                         </el-dialog>
                         <div class="handleBtn">
                             <el-button type="plain" @click="changePain()" v-if="role=='MD'"
-                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换画
+                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换 画
                             </el-button>
                             <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
-                                size="small" value="换点" placeholder="换点" class="change-point-select">
+                                size="small" value="换 点" placeholder="换 点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
                                     v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
                                     @click.native="changeHandleType(1)"></el-option>
@@ -53,6 +53,9 @@
             <div class="mediaList_wrap margin_16_64">
                 <el-tabs v-model="planPanel" @tab-click="handleClick()">
                     <el-tab-pane label="选点排期" name="first">
+                        <schedule-alter 
+                          :detailData="orderDetail"
+                        />
                         <div class="first-wrap box-wrap">
                             <el-row class="search-row">
                                 <el-col>
@@ -224,13 +227,13 @@
                     </el-tab-pane>
                     <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
                         <div class="changepic_box" v-show="planPanel=='sixth'">
-                            <change-pic :type="3" :firstTime="false" :from-type="fromType" :order-detail="orderDetail"></change-pic>
+                            <change-pic :type="3" :firstTime="false" :scheduleList="scheduleList" :from-type="fromType" :order-detail="orderDetail"></change-pic>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
                 <!--换画弹框-->
                 <div class="changepic_box FIRSTTIME" v-if="showPainModal">
-                    <change-pic :firstTime="showPainModal" :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()" @hidePainModal="hidePainModal()"></change-pic>
+                    <change-pic :scheduleList="scheduleList" :firstTime="showPainModal" :type="3" :planPanel="planPanel" :from-type="fromType" :order-detail="orderDetail" @toSixthTab="toSixthTab()" @hidePainModal="hidePainModal()"></change-pic>
                 </div>
                 <!--添加点位对话框-->
                 <el-dialog title="添加点位"
@@ -673,7 +676,7 @@
     import changePic from "./components/changePic.vue";
     import changeOrderPrice from "./components/changeOrderPrice.vue";
     import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
-    
+    import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
     export default {
         name: "orderDetail",
         components: {
@@ -686,7 +689,8 @@
             changePic,
             noSearchResult,
             changeOrderPrice,
-            changeProposalOrderPrice
+            changeProposalOrderPrice,
+            ScheduleAlter
         },
         data() {
             return {
@@ -999,25 +1003,8 @@
                 //重置页数页码
                 this.currPage = 1;
                 this.pageSize = 10;
-                this.dialogChangePoint = false
-                this.getSetPoint()
-                /*   MessageBox.confirm(
-                       '确定后，设置的换点将被全部清除',
-                       "是否确定取消更换点位",
-                       {
-                           dangerouslyUseHTMLString: true,
-                           confirmButtonText: "确定",
-                           cancelButtonText: "取消",
-                           type: "warning"
-                       }
-                   ).then(() => {
-                       this.initListData()
-                       this.dialogChangePoint = false
-                       this.getSetPoint()
-                   })
-                       .catch(() => {
-
-                       });*/
+                this.dialogChangePoint = false;
+                this.getSetPoint();
             },
             //更换点位对话框-完成
             doneChangePoint() {
@@ -1175,14 +1162,15 @@
                         remark: data.remark,
                         trafficState: data.trafficState,
                         electrifyState: data.electrifyState,
+                        mapCenter:data.mapCenterName||'--'
                     };
                     resultArr.push(obj);
                 }
 
                 require.ensure([], () => {
                     const {export_json_to_excel} = require('../../vendorExcel/Export2Excel');
-                    const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸', '可视画面', '广告限制', '媒体备注', '详细地址'];
-                    const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress'];
+                    const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸', '可视画面', '广告限制', '媒体备注', '详细地址', '地图中心点'];
+                    const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress', 'mapCenter'];
                     if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
                         tHeader.push('归属公司');
                         filterVal.push('asName')
@@ -1209,6 +1197,7 @@
             // 判断是否是有换点跳转过来的？
             isChangePoint() {
                 let isChange = sessionStorage.getItem('change_point');
+                sessionStorage.removeItem("change_point");
                 if (isChange == 'yes') {
                     return true;
                 }
@@ -1894,7 +1883,6 @@
             //点击换点
             changeHandleType(handleType) {
                 this.handleType = handleType
-                sessionStorage.setItem('change_point', 'yes');
                 this.initListData()
                 this.handleTime = new Date().getTime()
                 this.dialogChangePoint = true
@@ -2435,7 +2423,7 @@
         
     }
     .change-point-select {
-        width: 100px;
+        width: 74px;
         margin-left: 8px;
         :hover, :focus {
             color: #409EFF;
@@ -2446,6 +2434,12 @@
         }
         /deep/ .el-input__inner {
             text-align: center;
+        }
+        /deep/ .el-input--suffix .el-input__inner{
+          padding-right: 20px;
+        }
+        /deep/ .el-input__suffix{
+          right:1px
         }
     }
     .add-point-select {
@@ -2476,7 +2470,7 @@
     }
 
     /deep/ .el-dialog__body {
-        padding: 5px 24px 32px;
+        padding: 5px 24px;
 
     }
 

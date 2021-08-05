@@ -971,6 +971,7 @@
 <style lang="scss" scoped>
 @import '../../../assets/component.scss';
     .box-wrap {
+        margin-bottom: 32px;
         background-color: #fff;
     }
 

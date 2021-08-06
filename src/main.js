@@ -4,6 +4,7 @@ import Vue from 'vue'
 import {router} from './router'
 import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
+import matomoRule from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
 Vue.config.performance = true;

@@ -132,8 +132,8 @@
                     </div>
                 </div>
                 <div class="content_bottom_btn">
-                    <el-button type="primary" @click="submitData" v-qadn-mta-h5="{id: 'a001_b003_c000_d000_bt009_ck03'}">保存</el-button>
-                    <el-button plain @click="goBack" v-qadn-mta-h5="{id: 'a001_b003_c000_d000_bt010_ck03'}">取消</el-button>
+                    <el-button type="primary" @click="submitData" >保存</el-button>
+                    <el-button plain @click="goBack" >取消</el-button>
                 </div>
             </div>
         </div>

@@ -65,7 +65,7 @@
                     class="searchBtn"
                     @click="searchFun"
                     :disabled="searchBtnAbled"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt049_ck01' }"
+                    
                     >搜索
                   </el-button>
                 </div>
@@ -82,14 +82,14 @@
                     class="map"
                     icon="el-icon-location-outline"
                     @click="setMapParams"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt050_ck03' }"
+                    
                     >地图
                   </el-button>
                   <el-button
                     type="success"
                     class="importXle"
                     @click.native.prevent="importFanan('res')"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt051_ck04' }"
+                    
                   >
                     导入小区
                   </el-button>
@@ -2988,14 +2988,6 @@ export default {
       let s =
         date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(); //date.getSeconds();
       return Y + M + D + h + m + s;
-    },
-    // 事件埋点(无法使用模板指令时)--广告门，道闸
-    MtaStatFun(mtaStatIdAdDoor, mtaStatIdRoadGate) {
-      if (this.activeName == 1) {
-        MtaH5.clickStat(mtaStatIdAdDoor);
-      } else if (this.activeName == 2) {
-        MtaH5.clickStat(mtaStatIdRoadGate);
-      }
     },
   },
   // 页面销毁

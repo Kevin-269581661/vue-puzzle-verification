@@ -44,7 +44,7 @@
                                 <div>
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
                                                class="searchBtn" @click="searchFun" :disabled="searchBtnAbled"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
+                                               >搜索
                                     </el-button>
                                 </div>
                                 <div class="shopcar" @click="dialogVisible()">
@@ -57,7 +57,7 @@
                                 <el-col>
                                     <el-button type="primary" class="map" icon="el-icon-location-outline"
                                                @click="setMapParams"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图
+                                               >地图
                                     </el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
@@ -65,13 +65,13 @@
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item @click.native.prevent="importFanan('res')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt051_ck04'}">导入小区</el-dropdown-item>
+                                                              >导入小区</el-dropdown-item>
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt052_ck04'}">导入点位</el-dropdown-item>
+                                                              >导入点位</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案</el-button>
+                                               >复制方案</el-button>
                                     <el-button plain @click="matchPoint">智能配点</el-button>
                                 </el-col>
                             </el-row>
@@ -590,9 +590,9 @@
                                             <el-col :span="16" style="text-align:right;">
                                                 <span class="button_point">
                                                     <el-button @click="getMapADList" size="small" class="mapBtn" :disabled="mapBtn"
-                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                               >获取地图选点</el-button>
                                                     <!-- <el-button plain @click="getShareADList" size="small" class="mapBtn"
-                                                               v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button> -->
+                                                               >更新客户选点</el-button> -->
                                                 </span>
                                                 <el-dropdown class="match-point-dropdown" size="small" split-button type="primary" @command="changeEvent">
                                                     快捷配点
@@ -628,7 +628,7 @@
                                             被占点位:<span style="color:#FF7958;">{{ADLockNum}}</span>
                                         </el-row>
                                         <span class="change_scheduling" @click="changeAdsSchedule"
-                                              v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt060_ck04' : 'a004_b008_c001_d002_bt075_ck04'}">
+                                              >
                                             更换排期
                                         </span>
                                         <el-table
@@ -748,7 +748,7 @@
                                                 <template slot-scope="scope">
                                                     <span style="cursor: pointer;color: #1890ff"
                                                         @click="deleteRow(scope.row)"
-                                                          v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
+                                                          >
                                                         <i class="el-icon-delete" style="color: #108DE7;font-size: 20px;margin-left: 7px"></i>
                                                     </span>
                                                 </template>
@@ -779,10 +779,10 @@
 
                                     <div class="shop-cart-footer">
                                         <el-button @click="goBack" type="default"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt071_ck08'}">返回
+                                                   >返回
                                         </el-button>
                                         <el-button @click="next" type="primary"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">编辑完成
+                                                   >编辑完成
                                         </el-button>
                                     </div>
                                 </div>
@@ -839,17 +839,17 @@
         </div>
         <div class="content_bottom_btn">
             <!-- <el-button plain @click="prev" v-if="active == 2" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步</el-button> -->
+                       >上一步</el-button> -->
             <el-button plain @click="goBack" v-if="active == 1" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消</el-button>
+                       >取消</el-button>
             <!-- <el-button @click="next" v-if="active == 0 || active == 1" type="primary"
-                       v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">
+                       >
                 下一步
             </el-button> -->
             <el-button @click="next" v-if="active == 1" type="primary"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">编辑完成</el-button>
+                       >编辑完成</el-button>
             <!-- <el-button plain @click="next('workInSync')" v-if="active == 2"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt090_ck03'}">协同选点</el-button> -->
+                       >协同选点</el-button> -->
             <div class="finishBtn" v-if="active == 2">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
                 <el-button plain type="default" @click="ToDetail">查看方案</el-button>
@@ -3516,35 +3516,27 @@
                     switch (val){
                         case 1:
                             this.clearADLock();
-                            this.MtaStatFun('a004_b008_c001_d001_bt063_ck04','a004_b008_c001_d002_bt078_ck04');
                             break;
                         case 2:
                             this.removeNoShareAD();
-                            this.MtaStatFun('a004_b008_c001_d001_bt064_ck04','a004_b008_c001_d002_bt079_ck04');
                             break;
                         case 3:
                             this.removeCommentIndustryAds('res');
-                            this.MtaStatFun('a004_b008_c001_d001_bt065_ck04','a004_b008_c001_d002_bt080_ck04');
                             break;
                         case 4:
                             this.removeCommentIndustryAds('media');
-                            this.MtaStatFun('a004_b008_c001_d001_bt066_ck04','a004_b008_c001_d002_bt081_ck04');
                             break;
                         case 5:
                             this.containNuminRes(1);
-                            this.MtaStatFun('a004_b008_c001_d001_bt067_ck04','a004_b008_c001_d002_bt082_ck04');
                             break;
                         case 6:
                             this.containNuminRes(2);
-                            this.MtaStatFun('a004_b008_c001_d001_bt068_ck04','a004_b008_c001_d002_bt083_ck04');
                             break;
                         case 7:
                             this.removeAllType('A');
-                            this.MtaStatFun('a004_b008_c001_d001_bt069_ck04','a004_b008_c001_d002_bt084_ck04');
                             break;
                         case 8:
                             this.removeAllType('B');
-                            this.MtaStatFun('a004_b008_c001_d001_bt070_ck04','a004_b008_c001_d002_bt085_ck04');
                             break;
                         case 9:
                             this.removeNoProposal();
@@ -3771,8 +3763,6 @@
                         on: {
                             click: (event)=>{
                                 this.clearShop()
-                                // （广告门，道闸）
-                                this.MtaStatFun('a004_b008_c001_d001_bt059_ck04','a004_b008_c001_d002_bt074_ck04')
                             }
                         }
                     },[
@@ -4942,14 +4932,6 @@
 
                     this.searchBtnAbled = false
                 })
-            },
-            // 事件埋点(无法使用模板指令时)--广告门，道闸
-            MtaStatFun(mtaStatIdAdDoor,mtaStatIdRoadGate) {
-                if(this.activeName == 1) {
-                    MtaH5.clickStat(mtaStatIdAdDoor)
-                } else if(this.activeName == 2) {
-                    MtaH5.clickStat(mtaStatIdRoadGate)
-                }
             },
             // 配点结果合并到购物车
             merge2ShopList(matchPoint) {

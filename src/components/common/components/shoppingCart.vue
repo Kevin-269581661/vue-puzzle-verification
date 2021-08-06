@@ -18,13 +18,10 @@
                   size="small"
                   class="mapBtn"
                   :disabled="mapBtn"
-                  v-qadn-mta-h5="{
-                    id: 'a004_b008_c001_d001_bt061_ck05',
-                  }"
                   >获取地图选点</el-button
                 >
                 <el-button v-if="apState!=null" plain @click="getShareADList" size="small" class="mapBtn"
-                  v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt062_ck05'}">更新客户选点</el-button>
+                  >更新客户选点</el-button>
               </span>
               <!-- 2-移除可投数量为0的意向小区 3-移除未配点小区 4-移除非客户选点的小区 -->
               <el-dropdown v-if="apState!=null" size="small" type="primary">
@@ -157,12 +154,6 @@
                 <span
                   style="cursor: pointer; color: #1890ff"
                   @click="deleteRow($event, scope.row)"
-                  v-qadn-mta-h5="{
-                    id:
-                      activeName == 1
-                        ? 'a004_b008_c001_d001_bt058_ck04'
-                        : 'a004_b008_c001_d002_bt073_ck04',
-                  }"
                 >
                   <i
                     class="el-icon-delete"
@@ -211,7 +202,7 @@
               v-else
               @click="next"
               type="goon"
-              v-qadn-mta-h5="{ id: 'a004_b008_c001_d001_bt072_ck03' }"
+              
               >创建方案
             </el-button>
           </div>
@@ -370,11 +361,6 @@ export default {
           on: {
             click: () => {
               this.clearShop();
-              // （广告门，道闸）
-              this.MtaStatFun(
-                "a004_b008_c001_d001_bt059_ck04",
-                "a004_b008_c001_d002_bt074_ck04"
-              );
             },
           },
         },
@@ -393,14 +379,6 @@ export default {
     // 清空购物车
     clearShop() {
       this.$emit("shoppongCartClearData");
-    },
-    // 事件埋点(无法使用模板指令时)--广告门，道闸
-    MtaStatFun(mtaStatIdAdDoor, mtaStatIdRoadGate) {
-      if (this.activeName == 1) {
-        MtaH5.clickStat(mtaStatIdAdDoor);
-      } else if (this.activeName == 2) {
-        MtaH5.clickStat(mtaStatIdRoadGate);
-      }
     },
   },
   computed: {

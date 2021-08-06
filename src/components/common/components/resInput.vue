@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 18:10:39
+ * @LastEditTime: 2021-08-06 10:30:24
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -142,11 +142,6 @@
                   <div
                     class="lng_lat_map_btn"
                     @click="openBmap"
-                    v-qadn-mta-h5="{
-                      id: PathHaveEdit
-                        ? 'a002_b006_c000_d000_bt029_ck04'
-                        : 'a002_b004_c000_d000_bt020_ck04',
-                    }"
                   >
                     <i class="el-icon-location-outline"></i>
                     地图获取

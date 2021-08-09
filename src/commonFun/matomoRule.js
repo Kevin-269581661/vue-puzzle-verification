@@ -34,7 +34,6 @@ function eventClickFun(e) {
 }
 
 // 通过递归查找父级标签是否有值
-
 function getEventText(target, num) {
     let text = ""
     if (target.innerText) {
@@ -47,5 +46,5 @@ function getEventText(target, num) {
 }
 
 window.onload = function () {
-    document.documentElement.addEventListener('click', eventClickFun);
+    document.documentElement.addEventListener('click', eventClickFun, true);
 }

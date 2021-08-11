@@ -27,7 +27,7 @@ function eventClickFun(e) {
     }
     // 上报事件
     try {
-        text && text.indexOf('\n') == -1 && _paq.push(["trackEvent", "click", JSON.stringify(matomoPushData)]);
+        text && text.indexOf('\n') == -1 && _paq.push(["trackEvent", "click", JSON.stringify(matomoPushData), "点击事件"]);
     } catch (error) {
         console.warn(error)
     }

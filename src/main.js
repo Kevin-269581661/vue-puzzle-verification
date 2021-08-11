@@ -69,6 +69,14 @@ import './components/common/map/MarkerClusterer.js'
 
 router.beforeEach((to, from, next) => {
 	console.log('process.env---', process.env);
+	try {
+		_paq.push(["trackEvent", "route", JSON.stringify({
+			from: from.path||"",
+			to: to.path||""
+		}), "页面跳转"]);
+	} catch (error) {
+		console.error("页面跳转埋点：", error);
+	}
 	// 路由发生变化修改页面title
 	if (to.meta.title) {
 			document.title = to.meta.title

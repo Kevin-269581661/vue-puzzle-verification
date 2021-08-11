@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-13 14:54:14
+ * @LastEditTime: 2021-08-11 17:38:42
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -205,7 +205,7 @@
                       controls-position="right"
                       placeholder="请输入赠送IC卡数量"
                       :min="0"
-                      :max="999"
+                      :max="99999"
                       :precision="0"
                     ></el-input-number>
                   </el-form-item>
@@ -218,7 +218,7 @@
                       controls-position="right"
                       placeholder="请输入赠送ID卡数量"
                       :min="0"
-                      :max="999"
+                      :max="99999"
                       :precision="0"
                     ></el-input-number>
                   </el-form-item>

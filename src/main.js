@@ -4,7 +4,7 @@ import Vue from 'vue'
 import {router} from './router'
 import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
-import matomoRule from './commonFun/matomoRule'
+import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
 Vue.config.performance = true;
@@ -69,14 +69,7 @@ import './components/common/map/MarkerClusterer.js'
 
 router.beforeEach((to, from, next) => {
 	console.log('process.env---', process.env);
-	try {
-		_paq.push(["trackEvent", "route", JSON.stringify({
-			from: from.path||"",
-			to: to.path||""
-		}), "页面跳转"]);
-	} catch (error) {
-		console.error("页面跳转埋点：", error);
-	}
+	emitRouteEvent(to, from);
 	// 路由发生变化修改页面title
 	if (to.meta.title) {
 			document.title = to.meta.title

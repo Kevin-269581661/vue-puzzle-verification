@@ -18,7 +18,7 @@
                             <p>{{orderDetail.apQC}}
                                 <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true"
                                    :class="{changeCID:!usableBtn}"
-                                   v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt118_ck10'}"></i>
+                                   ></i>
                             </p>
                         </h4>
                         <!--修改合同号对话框-->
@@ -26,19 +26,18 @@
                             <el-input v-model="apQC"></el-input>
                             <span slot="footer" class="dialog-footer">
                                 <el-button plain @click="cancelChangeID"
-                                           v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt120_ck08'}">取 消</el-button>
+                                           >取 消</el-button>
                                 <el-button type="primary" @click="confirmChangeID"
-                                           v-qadn-mta-h5="{id: 'a006_b011_c005_d000_bt119_ck08'}">确 定</el-button>
+                                           >确 定</el-button>
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <el-button type="plain" @click="changePain()" v-if="role=='MD'"
-                                       v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt110_ck04'}">换 画
+                            <el-button type="plain" @click="changePain()" v-if="role=='MD'">换 画
                             </el-button>
                             <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
                                 size="small" value="换 点" placeholder="换 点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
-                                    v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt109_ck10'}"
+                                    
                                     @click.native="changeHandleType(1)"></el-option>
                                 <el-option label="终止点位" value="2" @click.native="changeHandleType(2)"></el-option>
                                 <el-option label="新增点位" value="3" @click.native="changeHandleType(3)"></el-option>
@@ -63,20 +62,20 @@
                                     <el-input placeholder="请输入资源名称进行搜索" v-model="keyword" class="input-with-select"
                                               style="width: 260px"></el-input>
                                     <el-button type="primary" icon="el-icon-search" @click="search('current')"
-                                               v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}"
+                                               
                                                style="position: relative;top: 2px;margin-left: 3px">
                                         搜索
                                     </el-button>
                                     <el-button style="position: relative;top: 2px" @click="reset('current')" plain>重置
                                     </el-button>
-                                    <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">添加点位</el-button>-->
+                                    <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" >添加点位</el-button>-->
                                     <el-button style="float: right;position: relative;top: 2px;margin-left: 3px" plain
                                                type="default" v-if="(role!='EP')"
                                                @click="getPointRecord">更改记录
                                     </el-button>
                                     <el-button plain type="default" icon="el-icon-download"
                                                @click="export2Excel(orderDetail.apName)" :disabled="isDown"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c006_d000_bt122_ck05'}"
+                                               
                                                style="position: relative;top: 2px;float: right;margin-right: 3px">导出
                                     </el-button>
                                     <el-button v-if="customPermission.pptPermission.gzqylPermission" style="position: relative;top: 2px;float: right;margin-right: 3px" @click="showRecommendation">推荐理由</el-button>
@@ -172,7 +171,7 @@
                                          <template slot-scope="scope">
                                              <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
                                              <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
-                                                   v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止</span>
+                                                   >终止</span>
                                          </template>
                                      </el-table-column>-->
 
@@ -244,9 +243,9 @@
                     :show-close="true">
                     <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
                     <span slot="footer" class="dialog-footer">
-                        <el-button plain @click="cancelAddPoint" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt154_ck08'}">取 消</el-button>
+                        <el-button plain @click="cancelAddPoint" >取 消</el-button>
                         <el-button type="primary" @click="confirmAddPoint"
-                            v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt153_ck08'}">确 定</el-button>
+                            >确 定</el-button>
                     </span>
                 </el-dialog>
                 <!--excel导入点位对话框-->
@@ -282,7 +281,7 @@
                                 <el-input placeholder="请输入资源名称进行搜索" v-model="changeKeyword" class="input-with-select"
                                           style="width: 200px"></el-input>
                                 <el-button type="primary" @click="search('change')" icon="el-icon-search"
-                                           v-qadn-mta-h5="{id: showHandel ? 'a006_b011_c012_d000_bt149_ck01' : 'a006_b011_c006_d000_bt121_ck01'}"
+                                           
                                            style="position: relative;top: 2px;margin-left: 3px">搜索
                                 </el-button>
                                 <el-button plain @click="reset('change')" style="position: relative;top: 2px">重置
@@ -290,16 +289,16 @@
                                 <div style="float: right; display: flex;">
                                     <el-button v-if="handleType===1" plain @click="changePointPlayDateRange">更改排期</el-button>
                                     <el-button v-else-if="handleType===2" plain @click="stopPoint('stop')"
-                                        v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt151_ck05'}">终止点位
+                                        >终止点位
                                     </el-button>
                                     <el-select v-else-if="handleType===3" size="mini" value="新增点位" placeholder="新增点位" class="add-point-select">
                                         <el-option label="手动添加" value="1"
-                                            v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}"
+                                            
                                             @click.native="showAddPointDialog"></el-option>
                                         <el-option label="导入点位" value="2" @click.native="excelAddPointDialog"></el-option>
                                     </el-select>
                                     <!-- <el-button type="primary" @click="showAddPointDialog"
-                                               v-qadn-mta-h5="{id: 'a006_b011_c012_d000_bt150_ck04'}">新增点位
+                                               >新增点位
                                     </el-button> -->
                                 </div>
                             </el-col>
@@ -647,7 +646,7 @@
             </div>
             <!-- 返回框 -->
             <div class="content_bottom_btn">
-                <el-button plain type="default" @click="goBack" v-qadn-mta-h5="{id: 'a006_b011_c000_d000_bt111_ck03'}">
+                <el-button plain type="default" @click="goBack" >
                     返回
                 </el-button>
             </div>
@@ -1216,20 +1215,14 @@
                 this.citySelect = [];
                 if (this.planPanel == "first") {
                     this.getSetPoint()
-                    MtaH5.clickStat('a006_b011_c000_d000_bt112_ck09')
                 } else if (this.planPanel == "second") {
                     this.$refs.apQuotation.judgeIsDetail()
-                    MtaH5.clickStat('a006_b011_c000_d000_bt113_ck09')
                 } else if (this.planPanel == "third") {
-                    MtaH5.clickStat('a006_b011_c000_d000_bt114_ck09')
                 } else if (this.planPanel == "forth") {
                     this.getAdMaterialRemarkList()
-                    MtaH5.clickStat('a006_b011_c000_d000_bt115_ck09')
                 } else if (this.planPanel == "fifth") {
                     this.getAdMaterialRemarkList()
-                    MtaH5.clickStat('a006_b011_c000_d000_bt116_ck09')
                 } else if (this.planPanel == "sixth") {
-                    MtaH5.clickStat('a006_b011_c000_d000_bt117_ck09')
                 }
 
             },

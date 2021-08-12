@@ -10,7 +10,7 @@
                     </el-input>
                     <el-date-picker v-model="dateInput" :picker-options="pickerOptions" type="daterange" start-placeholder="开始日期"  value-format="yyyy/MM/dd" format="yyyy/MM/dd" style="width: 260px;margin-left: 16px" size="small" end-placeholder="结束日期" >
                     </el-date-picker>
-                    <el-button style="margin-left: 16px" type="primary" icon="el-icon-search" @click="searchFun" size="small" v-qadn-mta-h5="{id: 'a006_b011_c012_d009_bt152_ck01'}">搜索</el-button>
+                    <el-button style="margin-left: 16px" type="primary" icon="el-icon-search" @click="searchFun" size="small" >搜索</el-button>
                 </div>
             </div>
             <!--类型区域选择面板-->

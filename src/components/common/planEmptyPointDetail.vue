@@ -43,7 +43,7 @@
                   type="primary"
                   @click="edit()"
                   v-if="customPermission.proposalPermission && (role == 'MD' || role == 'BD')"
-                  v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt097_ck03' }"
+                  
                   >编辑</el-button
                 >
               </template>
@@ -251,7 +251,7 @@
           icon="el-icon-download"
           class="searchBtn"
           v-if="planPanel == 'first'"
-          v-qadn-mta-h5="{ id: 'a004_b010_c002_d000_bt102_ck04' }"
+          
           @click="export2Excel(planDetail.apName)"
           :disabled="isDown"
           >导出</el-button
@@ -260,7 +260,7 @@
           plain
           class="cancel"
           @click="goBack()"
-          v-qadn-mta-h5="{ id: 'a004_b010_c000_d000_bt098_ck03' }"
+          
           >返回</el-button
         >
       </div>
@@ -496,10 +496,6 @@ export default {
     },
     // tab点击
     handleClick() {
-      // if (this.planPanel == "first") {
-      //   this.getSetPoint();
-      //   MtaH5.clickStat("a004_b010_c000_d000_bt099_ck09");
-      // }
     },
     // 获取选点排期列表数据
     getInitData() {

@@ -51,19 +51,12 @@
                         <el-option label="未预锁" value="1"></el-option>
                     </el-select>
                     <div class="btn_wrapper">
-                      <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch"
-                                 v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt038_ck01'}" class="marginR">搜索
+                      <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索
                       </el-button>
-                      <el-button plain @click="reset()" :disabled="!isReset" class="marginR"
-                                 v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt039_ck02'}">重置
-                      </el-button>
+                      <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
                       <template v-if="showNewBtn || !isNation">
-                          <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR"
-                                     v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt040_ck03'}">新建
-                          </el-button>
-                          <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR"
-                                     v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt041_ck04'}">空位导出
-                          </el-button>
+                          <el-button plain v-if="showNewBtn" @click="addOne()" class="marginR">新建</el-button>
+                          <el-button plain v-if="showNewBtn" @click="isOpenDownload=true" class="marginR">空位导出</el-button>
                           <el-button plain @click="exportRes" v-if="isShowExportBtn">门店导点</el-button>
                       </template>
                     </div>
@@ -170,19 +163,19 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
                                                           :disabled="isDisable || scope.row.apState !== -1"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">配点
+                                                          >配点
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="preload(scope.row)"
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.canLock))"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt043_ck04'}">预锁
+                                                          >预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="release(scope.row)"
                                                           :disabled="isDisable||(scope.row.apState!==1|| ( scope.row.apState!=1 &&  scope.row.apControlLevel !== 1))"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt044_ck04'}">发布
+                                                          >发布
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)"
                                                           :disabled="isDisable||(scope.row.apState!==1|| (scope.row.apState==1 && !scope.row.unLock))"
-                                                          v-qadn-mta-h5="{id: 'a004_b000_c000_d000_bt045_ck04'}">解除预锁
+                                                          >解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
                                                           v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">

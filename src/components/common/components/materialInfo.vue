@@ -4,7 +4,7 @@
             <p class="search-row" style="float: right;">
                 <el-button v-if="orderApType==1" type="" size="small" @click="uploadMaterial()">下载物料素材</el-button>
                 <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder"
-                           v-qadn-mta-h5="{id: 'a006_b011_c008_d000_bt123_ck04'}">添加物料信息
+                           >添加物料信息
                 </el-button>
             </p>
             <el-radio-group v-model="mediaType" size="medium">
@@ -73,10 +73,10 @@
                             </el-select>
                         </p>
                         <el-button size="small" plain @click="searchInfo()" :disabled="!isSearch"
-                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt124_ck01'}">搜索
+                                >搜索
                         </el-button>
                         <el-button plain size="small" @click="resetInfo()" :disabled="!isReset"
-                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt125_ck02'}">重置
+                                >重置
                         </el-button>
                     </div>
                     <div>
@@ -86,12 +86,12 @@
                                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown" class="dropdown-menu">
-                                <el-dropdown-item v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt126_ck04'}"
+                                <el-dropdown-item 
                                                 @click.native="openAllPic()">
                                     添加画像
                                 </el-dropdown-item>
                                 <el-dropdown-item @click.native="openAllRemark()"
-                                                v-qadn-mta-h5="{id: 'a006_b011_c008_d005_bt127_ck04'}">
+                                                >
                                     添加备注
                                 </el-dropdown-item>
                                 <el-dropdown-item @click.native="deleteMaterInfo('all')">

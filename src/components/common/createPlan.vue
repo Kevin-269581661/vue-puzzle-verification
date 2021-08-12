@@ -263,7 +263,7 @@
                     class="searchBtn"
                     @click="searchFun"
                     :disabled="searchBtnAbled"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt049_ck01' }"
+                    
                     >搜索
                   </el-button>
                 </div>
@@ -280,14 +280,14 @@
                     class="map"
                     icon="el-icon-location-outline"
                     @click="setMapParams"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt050_ck03' }"
+                    
                     >地图
                   </el-button>
                   <el-button
                     type="success"
                     class="importXle"
                     @click.native.prevent="importFanan('res')"
-                    v-qadn-mta-h5="{ id: 'a004_b008_c000_d000_bt051_ck04' }"
+                    
                   >
                     导入小区
                   </el-button>
@@ -828,7 +828,7 @@
         @click="prev"
         v-if="active == 1"
         type="default"
-        v-qadn-mta-h5="{ id: 'a004_b009_c000_d000_bt088_ck03' }"
+        
         >上一步
       </el-button>
       <el-button
@@ -836,7 +836,7 @@
         @click="clearData"
         v-if="active === 0"
         type="default"
-        v-qadn-mta-h5="{ id: 'a004_b007_c000_d000_bt047_ck03' }"
+        
         >取消
       </el-button>
       <!-- 空点导出 -->
@@ -845,7 +845,7 @@
         v-if="active === 0"
         type="default"
         @click="exportEmpty()"
-        v-qadn-mta-h5="{ id: 'a004_b007_c000_d000_bt048_ck04' }"
+        
         >导空点
       </el-button>
 
@@ -853,12 +853,6 @@
         @click="next"
         v-if="active == 0"
         type="primary"
-        v-qadn-mta-h5="{
-          id:
-            active == 0
-              ? 'a004_b007_c000_d000_bt046_ck03'
-              : 'a004_b008_c000_d000_bt057_ck03',
-        }"
       >
         下一步
       </el-button>
@@ -866,7 +860,7 @@
         @click="next"
         v-if="active == 2"
         type="primary"
-        v-qadn-mta-h5="{ id: 'a004_b009_c000_d000_bt089_ck03' }"
+        
         >创建方案
       </el-button> -->
 

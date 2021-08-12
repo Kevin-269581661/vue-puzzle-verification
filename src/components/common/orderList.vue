@@ -118,14 +118,12 @@
               icon="el-icon-search"
               @click="search()"
               :disabled="!isSearch"
-              v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt105_ck01' }"
               >搜索
             </el-button>
             <el-button
               plain
               @click="reset()"
               :disabled="!isReset"
-              v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt106_ck02' }"
               >重置
             </el-button>
           </el-col>
@@ -343,7 +341,6 @@
                       "
                       @click.native.prevent="finishOrder(scope.row)"
                       class="finish"
-                      v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt108_ck04' }"
                       >结束订单
                     </el-dropdown-item>
                     <!-- <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item> -->
@@ -355,7 +352,6 @@
                       "
                       @click.native.prevent="changePoint(scope.row)"
                       class="update"
-                      v-qadn-mta-h5="{ id: 'a006_b000_c000_d000_bt107_ck03' }"
                       >更换点位
                     </el-dropdown-item>
                   </el-dropdown-menu>

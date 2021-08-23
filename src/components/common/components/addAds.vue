@@ -640,7 +640,7 @@
                         this.FAInfo = info;
                         this.sUID = this.FAInfo.suID
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if (this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1') {
+                        if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
                             this.getCityList()

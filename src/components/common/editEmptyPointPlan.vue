@@ -1304,7 +1304,7 @@ export default {
     getsessionData() {
       this.sessionData = sessFun.getSess();
       this.customPermission = this.sessionData.customPermission;
-      if (this.sessionData.uType === "BD") {
+      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         this.BDData.realName = this.sessionData.username; //sessionStorage.getItem('username')
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = this.sessionData.uID;
@@ -1481,10 +1481,8 @@ export default {
                 sessionStorage.getItem("session_data")
               ).customPermission;
               if (
-                (this.sessionData.uType == "MD" &&
-                  this.sessionData.mediaManageLevel == 1) ||
-                (this.sessionData.uType == "BD" &&
-                  this.sessionData.saleManageLevel == 2)
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
               ) {
                 head.push("归属公司");
               }
@@ -1557,10 +1555,8 @@ export default {
             sessionStorage.getItem("session_data")
           ).customPermission;
           if (
-            (this.sessionData.uType == "MD" &&
-              this.sessionData.mediaManageLevel == 1) ||
-            (this.sessionData.uType == "BD" &&
-              this.sessionData.saleManageLevel == 2)
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
           ) {
             obj.asNames = item.asNames;
           }
@@ -1698,10 +1694,8 @@ export default {
               sessionStorage.getItem("session_data")
             ).customPermission;
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               head.push("归属公司");
             }
@@ -1772,10 +1766,8 @@ export default {
               adsNum: item.adsNum,
             };
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               obj.asNames = item.asNames;
             }

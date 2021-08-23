@@ -326,7 +326,7 @@ export default {
       roleArr: [
         {
           label: "超级管理员",
-          value: "SM",
+          value: "ADN_SM",
         },
         {
           label: "媒介",
@@ -338,7 +338,7 @@ export default {
         },
         {
           label: "运营",
-          value: "OP",
+          value: "ADN_OP",
         },
         {
           label: "工程人员",
@@ -519,7 +519,7 @@ export default {
       this.sessionData = sessFun.getSess();
       let { ascType, asrID, uType, saleManageLevel } = this.sessionData;
       this.type = ascType;
-      if (uType === "SM" || uType === "SA") {
+      if (uType === "ADN_SM" || uType === "ADN_SA") {
         if (saleManageLevel) {
           this.saleKind.push({
             value: 1,
@@ -592,13 +592,13 @@ export default {
       this.haveEPPerssion = false;
       if (
         val == "EP" &&
-        this.sessionData.uType == "SM" &&
+        this.sessionData.uType == "ADN_SM" &&
         this.sessionData.asrID == 11
       ) {
         // 是否有新增工程类别和媒体权限的权限
         this.haveEPPerssion = true;
       }
-      if (this.accountForm.role == "BD") {
+      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.accountForm.role)) {
         this.getRoleCity();
       }
     },
@@ -649,7 +649,7 @@ export default {
             uid: sessionData.uID,
             token: sessionData.token,
             asrID: this.accountForm.company,
-            uType: "BD",
+            uType: "ADN_BD,ADN_BD_COUNTRY,ADN_BD_KA",
             sname: queryString,
           };
           api
@@ -816,7 +816,7 @@ export default {
     //重置表单
     resetForm() {
       if (this.isEdit) {
-        if (this.sessionData.uType == "SA") {
+        if (this.sessionData.uType == "ADN_SA") {
           this.$router.push("./admin");
         } else {
           this.$router.push("./accountList");

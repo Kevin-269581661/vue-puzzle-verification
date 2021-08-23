@@ -77,7 +77,7 @@ export default {
                             <span>联系人：</span>
                             <em>{{detail.cuName}}</em>
                         </li>
-                        <li v-if="role != 'EP'">
+                        <li v-if="role != 'ADN_EP'">
                             <span>现金结算：</span>
                             <em>¥{{detail.pdTotal}}</em>
                         </li>
@@ -93,7 +93,7 @@ export default {
                             <span>投放城市：</span>
                             <em>{{filter2(detail.rIDs)}}</em>
                         </li>
-                        <li v-if="role != 'EP'">
+                        <li v-if="role != 'ADN_EP'">
                             <span>资源置换：</span>
                             <em>¥{{detail.pdSendFee}}</em>
                         </li>
@@ -105,7 +105,7 @@ export default {
                             <span>客户要求：</span>
                             <em>{{detail.customerDemand||'无'}}</em>
                         </li>
-                        <li v-if="role != 'EP'">
+                        <li v-if="role != 'ADN_EP'">
                             <span>其他费用：</span>
                             <em>¥{{detail.pdOtherFee}}</em>
                         </li>
@@ -119,7 +119,7 @@ export default {
                             {{stateToText(detail.apState).text}}
                         </dd>
                     </dl>
-                    <dl v-if="role != 'EP'">
+                    <dl v-if="role != 'ADN_EP'">
                         <dt>
                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">

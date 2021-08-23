@@ -1585,13 +1585,13 @@ export default {
       let sess = this.sessionData;
       this.customPermission = sess.customPermission;
       if (
-        (sess.uType == "BD" && sess.saleManageLevel == 1) ||
-        (sess.uType == "MD" && sess.mediaManageLevel == 1)
+        (sess.uType == "ADN_BD_COUNTRY") ||
+        (sess.uType == "ADN_MD_COUNTRY")
       ) {
         this.isShowHalfYear = true;
       }
       console.log("sessionData", this.sessionData);
-      if (this.sessionData.uType === "BD") {
+      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         this.BDData.realName = sess.realName; // username
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = sess.uID;
@@ -1814,10 +1814,8 @@ export default {
                 sessionStorage.getItem("session_data")
               ).customPermission;
               if (
-                (this.sessionData.uType == "MD" &&
-                  this.sessionData.mediaManageLevel == 1) ||
-                (this.sessionData.uType == "BD" &&
-                  this.sessionData.saleManageLevel == 2)
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
               ) {
                 head.push("归属公司");
               }
@@ -1890,10 +1888,8 @@ export default {
             sessionStorage.getItem("session_data")
           ).customPermission;
           if (
-            (this.sessionData.uType == "MD" &&
-              this.sessionData.mediaManageLevel == 1) ||
-            (this.sessionData.uType == "BD" &&
-              this.sessionData.saleManageLevel == 2)
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
           ) {
             obj.asNames = item.asNames;
           }
@@ -2032,10 +2028,8 @@ export default {
               sessionStorage.getItem("session_data")
             ).customPermission;
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               head.push("归属公司");
             }
@@ -2106,10 +2100,8 @@ export default {
               adsNum: item.adsNum,
             };
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               obj.asNames = item.asNames;
             }

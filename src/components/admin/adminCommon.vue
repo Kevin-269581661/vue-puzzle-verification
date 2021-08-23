@@ -121,7 +121,7 @@
             getUserName() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== 'SA') {
+                    if (this.sessionData.uType !== 'ADN_SA') {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

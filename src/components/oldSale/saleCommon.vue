@@ -119,7 +119,7 @@
             getUserName() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== 'BD') {
+                    if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

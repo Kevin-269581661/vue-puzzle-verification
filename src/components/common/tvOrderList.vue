@@ -30,7 +30,7 @@
                         </span>
                         <span>
                             <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
-                            <el-button plain type="default" @click="newPlan()" v-if='(role == "BD" || role == "MD")'>新建</el-button>
+                            <el-button plain type="default" @click="newPlan()" v-if='(["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(role) || ["ADN_MD_COUNTRY", "ADN_MD"].includes(role))'>新建</el-button>
                         </span>
                     </div>
                 </el-row>
@@ -91,7 +91,7 @@
                                 <span>{{stateToText(scope.row.apState)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" min-width="7.0%" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" min-width="7.0%" v-if="!(role=='ADN_OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" split-button trigger="click" placement="bottom-start">操作
                                     <el-dropdown-menu slot="dropdown">
@@ -329,8 +329,6 @@ export default {
         },
         // 跳转到详情页面
         ToDetail(apid) {
-            console.log(apid);
-            console.log(this.role);
             sessionStorage.setItem("tvOrder_apid", apid);
             this.$router.push("./tvOrderDetail");
 

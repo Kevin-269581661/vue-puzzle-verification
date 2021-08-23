@@ -454,7 +454,7 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                                        <span style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
@@ -1032,7 +1032,7 @@
                 <li v-for="item in beOccupiedAdsData">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <span v-if="sessionData.uType === 'MD'"><span
+                        <span v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"><span
                             style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else>******</span>
                     </p>
@@ -1768,11 +1768,11 @@
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
                 this.customPermission = sess.customPermission;
-                if ((sess.uType == 'BD' && sess.saleManageLevel == 1) || (sess.uType == 'MD' && sess.mediaManageLevel == 1)) {
+                if ((sess.uType == 'ADN_BD_COUNTRY') || (sess.uType == 'ADN_MD_COUNTRY')) {
                     this.isShowHalfYear = true;
                 }
                 console.log('sessionData', this.sessionData)
-                if (this.sessionData.uType === 'BD') {
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     this.BDData.realName = sess.realName // username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = sess.uID
@@ -1972,7 +1972,7 @@
                             let returnobj = this.formatData(res.data);
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车流量', '车位数', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                                 head.push('归属公司')
                             }
                             switch (customPermission.patrolPermission) {
@@ -2034,7 +2034,7 @@
                             adsNum: item.adsNum || 0,
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                        if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                             obj.asNames = item.asNames
                         }
                         // 巡点定制
@@ -2140,7 +2140,7 @@
                             let date = returnobj.date;
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                                 head.push('归属公司')
                             }
                             /* if(customPermission && customPermission.patrolPermission) {
@@ -2204,7 +2204,7 @@
                                 remark: item.allremark || '',
                                 adsNum: item.adsNum,
                             };
-                            if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                                 obj.asNames = item.asNames
                             }
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
@@ -2713,12 +2713,9 @@
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
-                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
-                /* if(this.customPermission.patrolPermission) {
-                    allHead.push('巡点问题', '通行情况');
-                } */
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2761,7 +2758,7 @@
                         adsNum: 1,
                         timeRange: '',
                     };
-                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
                     }
                     // 巡点权限(1：亲粤邻 2：北京)
@@ -5632,7 +5629,7 @@
                     saleManageLevel: this.BDData.saleManageLevel,
                     detail: JSON.stringify(arr),
                 }
-                if (this.sessionData.uType === 'BD') {
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     delete params.suid;
                 }
                 console.log('params', params)
@@ -5819,7 +5816,7 @@
                     this.throwCity = returnData.planData.throwCity
                     this.shopingList = returnData.planData.adsList
                     this.companyBrand = returnData.planData.companyBrand
-                    if (this.sessionData.uType === 'MD') {
+                    if (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
                         this.getCityList()
                         // getIndustryBycID需要先获取Get_cName
                         await this.Get_cName()

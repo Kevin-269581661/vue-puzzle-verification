@@ -16,7 +16,7 @@
                             <el-option label="方案名称" value="1"></el-option>
                             <el-option label="客户名称" value="2"></el-option>
                             <el-option label="品牌名称" value="3"></el-option>
-                            <el-option v-if="role == 'MD'" label="所属销售" value="4"></el-option>
+                            <el-option v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" label="所属销售" value="4"></el-option>
                         </el-select>
                     </el-input>
                     <div style="margin-left: -30px">
@@ -82,11 +82,11 @@
                                 <span v-else>&yen;{{scope.row.apTotal?priceFormat(scope.row.apTotal/100):0}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')&&role!='BD'"
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="!(role=='AD')&&!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
                                          show-overflow-tooltip
                                         >
                         </el-table-column>
-                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="role=='BD'"
+                        <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
                                          show-overflow-tooltip
                                          :filters="filterRealName"
                                          :filter-method="filterRealNameFun"
@@ -154,7 +154,7 @@
                                              :color="stateToText(scope.row.apState).color"></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" width="100px" v-if="!(role=='OP' || role=='AD')">
+                        <el-table-column label="操作" width="100px" v-if="!(role=='ADN_OP' || role=='AD')">
                             <template slot-scope="scope">
                                 <el-dropdown size="small" trigger="click" placement="bottom-start">
                                     <span class="el-dropdown-link">
@@ -178,7 +178,7 @@
                                                           >解除预锁
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)"
-                                                          v-if="scope.row.apControlLevel === 2 && sessionData.uType === 'BD'">
+                                                          v-if="scope.row.apControlLevel === 2 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)">
                                             拆单
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -654,7 +654,8 @@
             getSessionData() {
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
-                if (sess.ascType == 0 || (sess.uType == 'MD' && sess.mediaManageLevel == 1) || (sess.uType == 'BD') && sess.saleManageLevel == 1) {
+                // ascType 0:平台商 1:媒体主
+                if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY') || (sess.uType == 'ADN_BD_COUNTRY')) {
                     this.isAll = true;
                 } else {
                     this.isAll = false;
@@ -688,24 +689,23 @@
             getRole() {
                 let role = this.sessionData.uType;
                 this.role = role;
-                this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && this.sessionData.uType=='BD')
-                console.log(role);
-                if (role == "MD") {
+                this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
+                if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
                     this.isDisable = false;
                     if (this.sessionData.mediaManageLevel == 0) {
                         this.isNation = false
                     }
                 }
-                if (role == 'BD') {
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)) {
                     this.isSale = true
                 }
-                if (role != "BD" && role != "MD") {
+                if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
                     this.showNewBtn = false;
                 }
-                if (role == "BD" || role == "SM") {
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
                     this.isDisable = true;
                 }
-                if (role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
+                if (role == "ADN_BD" || role == "ADN_BD_COUNTRY") {
                     this.isNation = false
                 }
                 if(this.sessionData.rela == "直营"){
@@ -754,7 +754,7 @@
             routeSelect() {
                 if(this.sessionData.customPermission.proposalPermission == 1) {
                     // 直营
-                    if(this.sessionData.uType=='BD') {
+                    if(["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
                         this.$router.push("./createPlan")
                     } else {
                         this.$router.push("./createPlanOld")
@@ -864,7 +864,7 @@
             // 显示缓存方案的信息
             showCookeAdPlan(adPlan) {
                 // this.planForm.realNamesName
-                let ownerSales = (this.sessionData.uType === 'MD' && adPlan.planData.baseInfo.realNamesName) ?
+                let ownerSales = (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) && adPlan.planData.baseInfo.realNamesName) ?
                     adPlan.planData.baseInfo.realNamesName : adPlan.planData.baseInfo.ownerSales
                 this.planInfo = {
                     planName: adPlan.planData.baseInfo.planName,
@@ -932,7 +932,7 @@
                 let dataArr = row.cityArea;
                 let sess = this.sessionData;
                 let isRelease = false;
-                if (sess.uType == 'MD' && (sess.mediaManageLevel == 1)) {
+                if (sess.uType == 'ADN_MD_COUNTRY') {
                     isRelease = true;
                 } else {
                     let num = 0;
@@ -1101,7 +1101,7 @@
             },
             // 意向方案配点（直营媒介配点）
             addPoint(row) {
-                if(this.sessionData.uType == 'MD' && this.sessionData.customPermission.proposalPermission == 1) {
+                if(["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1) {
                     this.ToEdit(row);
                 } else {
                     this.$message.warning('暂无权限！');
@@ -1162,7 +1162,7 @@
                 // 2)	地方媒介只能预锁方案中投放至该公司的部分
                 let sess = this.sessionData;
                 let resultArr = [];
-                if (sess.uType == 'MD' && (sess.mediaManageLevel == 1)) {
+                if (sess.uType == 'ADN_MD_COUNTRY') {
                     resultArr = arr;
                 } else {
                     for (let data of arr) {
@@ -1670,7 +1670,7 @@
                 formData.append('endDate', this.exportInfo.date[1]);
                 formData.append('mVehicle', this.exportInfo.mVehicle);
                 formData.append('type', this.exportInfo.type);
-                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 0)||(this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 0)) {
+                if((this.sessionData.uType == 'ADN_MD')||(this.sessionData.uType == 'ADN_BD')) {
                     formData.append('asrId', this.sessionData.asrID);
                 }
                 // 上传文件

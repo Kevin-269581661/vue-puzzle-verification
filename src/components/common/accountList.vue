@@ -226,10 +226,10 @@
                 this.sessionData = sessFun.getSess();
                 let role = this.sessionData.uType;
                 console.log(role);
-                if (role != "SA" && role != "SM") {
+                if (role != "ADN_SA" && role != "ADN_SM") {
                     this.showNewBtn = false;
                 }
-                if (role === "SA") {
+                if (role === "ADN_SA") {
                     this.isShowResetBtn = true
                 } else {
                     this.isShowResetBtn = false
@@ -307,7 +307,7 @@
                     joinTime: item.joinTime || '',
                     uState: item.uState || '',
                     position: item.position || '',
-                    phone:item.phone || '',
+                    phone: item.phone || '',
                     division: item.division || '',
                     puID: item.puID || '',
                     rID: item.rID || '',

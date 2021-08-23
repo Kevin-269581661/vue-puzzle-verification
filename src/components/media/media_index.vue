@@ -819,10 +819,7 @@ export default {
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();
-      this.isAllMedia =
-        this.sessionData.uType == "MD" && this.sessionData.mediaManageLevel == 1
-          ? true
-          : false;
+      this.isAllMedia = this.sessionData.uType == "ADN_MD_COUNTRY" ? true : false;
     },
     // 媒介贡献弹窗
     getContributeBox() {

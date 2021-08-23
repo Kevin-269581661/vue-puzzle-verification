@@ -129,10 +129,8 @@ export default {
       let formData = new FormData();
       formData.append("uqKey", this.routeQuery.uqKey);
       if (
-        (this.sessionData.uType == "MD" &&
-          this.sessionData.mediaManageLevel == 0) ||
-        (this.sessionData.uType == "BD" &&
-          this.sessionData.saleManageLevel == 0)
+        (this.sessionData.uType == "ADN_MD") ||
+        (this.sessionData.uType == "ADN_BD")
       ) {
         formData.append("asrId", this.sessionData.asrID);
       }

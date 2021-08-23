@@ -521,7 +521,7 @@
             if (nowPath.indexOf('/operate/') !== -1) {
                 this.haveEdit = false
             }
-            if (this.sessionData.uType === 'MD') {
+            if (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
                 this.haveEdit = true
             } else {
                 this.haveEdit = false

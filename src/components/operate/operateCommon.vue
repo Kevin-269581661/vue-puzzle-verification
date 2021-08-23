@@ -137,7 +137,7 @@
                 this.sessionData = sessFun.getSess();
                 console.log("this.sessionData", this.sessionData);
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== "OP") {
+                    if (this.sessionData.uType !== "ADN_OP") {
                         this.$message({
                             type: "warning",
                             message: "权限异常,请重新登录"

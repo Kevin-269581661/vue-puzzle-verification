@@ -691,9 +691,7 @@
             // 判断角色是否有新建按钮(销售有)
             getRole() {
                 this.sessionData = sessFun.getSess();
-                let role = this.sessionData.uType;
                 this.customPermission = this.sessionData.customPermission;
-                console.log(role);
             },
             // 搜索数据格式化
             searchFormat() {

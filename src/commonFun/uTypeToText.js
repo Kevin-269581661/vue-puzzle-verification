@@ -2,14 +2,19 @@
 let uTypeToText = {};
 uTypeToText.toText = function (uType) {
 	return {
-		'SA': '系统管理员',
-		'SM': '超级管理员',
-		'OP': '运营',
-		'MD': '媒介',
-		'BD': '销售',
-		'AD': '广告主',
-		'EP': '工程人员',
-		'DEV': '开发'
+		'ADN_SA': '系统管理员',
+		'ADN_SM': '超级管理员', 
+		'ADN_OP': '运营', 
+		'ADN_MD': '媒介',
+		'ADN_MD_COUNTRY': '全国媒介',
+		'ADN_BD': '销售',
+		'ADN_BD_COUNTRY': '全国销售',
+		'ADN_BD_KA': 'KA销售',
+		'AD': '广告主', 
+		'ADN_EP': '工程人员', 
+		'ADN_DEV': '开发人员',
+		'ADN_DEV_ASSET': '资产人员',
+		'ADN_DEV_LEADER': '开发总监',
 	}[uType]
 }
 

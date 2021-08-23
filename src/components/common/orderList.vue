@@ -26,12 +26,12 @@
                 <el-option label="订单名称" value="1"></el-option>
                 <el-option label="客户名称" value="2"></el-option>
                 <el-option
-                  v-if="role !== 'EP'"
+                  v-if="role !== 'ADN_EP'"
                   label="合同编号"
                   value="3"
                 ></el-option>
                 <el-option
-                  v-if="role == 'MD'"
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
                   label="所属销售"
                   value="4"
                 ></el-option>
@@ -182,7 +182,7 @@
             <el-table-column
               prop="apQC"
               label="合同编号"
-              v-if="role !== 'EP'"
+              v-if="role !== 'ADN_EP'"
               width="180px"
             >
             </el-table-column>
@@ -192,7 +192,7 @@
               label="订单总价"
               width="120px"
               align="right"
-              v-if="role !== 'EP'"
+              v-if="role !== 'ADN_EP'"
             >
               <template slot-scope="scope">
                 <span
@@ -259,7 +259,7 @@
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
               :filter-multiple="true"
-              v-if="role === 'BD'"
+              v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
             >
             </el-table-column>
             <el-table-column
@@ -267,7 +267,7 @@
               label="所有人"
               min-width="6.1%"
               show-overflow-tooltip
-              v-if="role === 'EP'"
+              v-if="role === 'ADN_EP'"
             >
             </el-table-column>
             <el-table-column
@@ -275,7 +275,7 @@
               label="上刊进度"
               width="100px"
               show-overflow-tooltip
-              v-if="role === 'EP'"
+              v-if="role === 'ADN_EP'"
             >
             </el-table-column>
             <el-table-column
@@ -283,7 +283,7 @@
               label="下刊进度"
               width="100px"
               show-overflow-tooltip
-              v-if="role === 'EP'"
+              v-if="role === 'ADN_EP'"
             >
             </el-table-column>
             <el-table-column
@@ -318,7 +318,7 @@
               label="操作"
               width="80px"
               v-if="
-                role !== 'OP' && role !== 'AD' && role !== 'BD' && role !== 'EP'
+                !['ADN_OP', 'AD', 'ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
               "
             >
               <template slot-scope="scope">
@@ -336,7 +336,7 @@
                         !(
                           scope.row.apState == 0 ||
                           scope.row.apState == 5 ||
-                          role != 'SM'
+                          role != 'ADN_SM'
                         )
                       "
                       @click.native.prevent="finishOrder(scope.row)"
@@ -348,7 +348,7 @@
                       :disabled="
                         scope.row.apState == 0 ||
                         scope.row.apState == 5 ||
-                        role != 'MD'
+                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
                       "
                       @click.native.prevent="changePoint(scope.row)"
                       class="update"
@@ -485,7 +485,7 @@ export default {
       // 权限城市过滤数组
       filterCityData: [],
       // 角色
-      role: "BD",
+      role: "ADN_BD",
       isAll: false,
       //加载中
       loading: true,
@@ -533,7 +533,7 @@ export default {
     if (this.isAll) {
       this.getCompany();
     }
-    if (this.sessionData.uType == "BD") {
+    if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
       this.getSubSaleList();
     }
     // 获得初始数据
@@ -655,8 +655,8 @@ export default {
       let sess = this.sessionData;
       if (
         sess.ascType == 0 ||
-        (sess.uType == "MD" && sess.mediaManageLevel == 1) ||
-        (sess.uType == "BD" && sess.saleManageLevel == 1)
+        (sess.uType == "ADN_MD_COUNTRY") ||
+        (sess.uType == "ADN_BD_COUNTRY")
       ) {
         this.isAll = true;
       } else {
@@ -809,8 +809,6 @@ export default {
     },
     // 跳转到详情页面
     ToDetail(row) {
-      console.log(row);
-      console.log(this.role);
       if (this.role == "AD") {
         sessionStorage.setItem("ADorder_apid", row.apID);
         sessionStorage.setItem("ADorder_apSrc", row.apSrc);

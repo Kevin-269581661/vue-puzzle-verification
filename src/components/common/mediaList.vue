@@ -485,7 +485,6 @@
                     pageSize: 10,
                     totalSize: 0,
                 },
-                role: '',
                 showNewBtn: false,   // 新建按钮
                 haveDetail: true,
                 //搜索框和下拉列表
@@ -577,9 +576,8 @@
         mounted: function () {
             // 判断角色确定是否有操作这一列
             this.sessionData = sessFun.getSess();
-            this.role = this.sessionData.uType
-            this.sessionData.uType === 'MD' ? this.showNewBtn = true : this.showNewBtn = false
-            this.sessionData.uType === 'SA' ? this.showImportBtn = true : this.showImportBtn = false
+            ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) ? this.showNewBtn = true : this.showNewBtn = false
+            this.sessionData.uType === 'ADN_SA' ? this.showImportBtn = true : this.showImportBtn = false
             this.getData();
             let endTime = timeFormat.returnDayCount(0,'/');
             let startTime = timeFormat.returnDayCount(-180,'/');

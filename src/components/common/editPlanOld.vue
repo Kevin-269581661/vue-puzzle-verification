@@ -315,7 +315,7 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                               方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                           </span>
                                                                 </p>
@@ -349,7 +349,7 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                               方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                           </span>
                                                                 </p>
@@ -878,7 +878,7 @@
                 <li v-for="(item, index) in beOccupiedAdsData" :key="index">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
+                        <span v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else style="font-weight: bold">******</span>
                     </p>
                     <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
@@ -2036,7 +2036,7 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
-                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
                 switch (this.customPermission.patrolPermission) {
@@ -2086,7 +2086,7 @@
                         adsNum: 1,
                         timeRange: '',
                     };
-                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
                     }
                     // 巡点权限
@@ -2164,7 +2164,7 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 this.customPermission = this.sessionData.customPermission;
-                if (this.sessionData.uType === 'BD') {
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID
@@ -5343,8 +5343,9 @@
                         this.BDData.uid = this.FAInfo.suID || ''
                         this.BDData.asrIDs = this.FAInfo.asrIDs || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if ((this.sessionData.uType === 'BD' && (this.sessionData.saleManageLevel == '1' || this.sessionData.saleManageLevel == '2'))
-                            ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
+                        if ((this.sessionData.uType === 'ADN_BD_COUNTRY')
+                            ||(this.sessionData.uType === 'ADN_BD_KA')
+                            ||(this.sessionData.uType === 'ADN_MD_COUNTRY')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
                             // this.setCityAndArea(this.FAInfo.cityList)

@@ -126,7 +126,7 @@
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 console.log('this.sessionData', this.sessionData)
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== 'SM') {
+                    if (this.sessionData.uType !== 'ADN_SM') {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'
@@ -170,7 +170,7 @@
             // 是否显示公司管理
             getIsShowCom(){
                 // let sess = JSON.parse(sessionStorage.getItem('session_data'));
-                if(this.sessionData.uType == 'SM' && this.sessionData.ascType == 0){
+                if(this.sessionData.uType == 'ADN_SM' && this.sessionData.ascType == 0){
                     this.showCompany = true;
                 }
             },

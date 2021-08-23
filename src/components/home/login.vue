@@ -264,10 +264,10 @@ export default {
             this.getIndustry();
             userMsg.username = name
             sessionStorage.setItem("session_data", JSON.stringify(userMsg));
-            if (userMsg.uType === 'SM') {
+            if (userMsg.uType === 'ADN_SM') {
               addRoutes('SM')
               this.$router.push('/superOperate')
-            } else if (userMsg.uType === 'MD') {
+            } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(userMsg.uType)) {
               if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营媒介
                 addRoutes('MD', true)
@@ -276,7 +276,7 @@ export default {
                 addRoutes('MD')
               }
               this.$router.push('/media')
-            } else if (userMsg.uType === 'BD') {
+            } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(userMsg.uType)) {
               sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
               if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营销售
@@ -289,16 +289,16 @@ export default {
             } else if (userMsg.uType === 'AD') {
               addRoutes('AD')
               this.$router.push('/adOwner')
-            } else if (userMsg.uType === 'OP') {
+            } else if (userMsg.uType === 'ADN_OP') {
               addRoutes('OP')
               this.$router.push('/operate')
-            } else if (userMsg.uType === 'SA') {
+            } else if (userMsg.uType === 'ADN_SA') {
               addRoutes('SA')
               this.$router.push('/admin')
-            } else if (userMsg.uType === 'DEV') {
+            } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(userMsg.uType)) {
               addRoutes('DEV')
               this.$router.push('/f_develop')
-            } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
+            } else if (userMsg.uType === 'ADN_EP' && userMsg.backstagePermission == 1) {
               addRoutes('EP')
               this.$router.push('/f_engineer/orderList')
             } else {
@@ -437,10 +437,10 @@ export default {
           // isLogin.username = name
           sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
           this.codeLoading.close();
-          if (isLogin.uType === "SM") {
+          if (isLogin.uType === "ADN_SM") {
             addRoutes("SM");
             this.$router.push("/superOperate");
-          } else if (isLogin.uType === "MD") {
+          } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(isLogin.uType)) {
             if (isLogin.customPermission.proposalPermission == 1) {
               // 判断直营媒介
               addRoutes('MD', true)
@@ -458,19 +458,19 @@ export default {
               addRoutes('BD')
             }
             this.$router.push('/sale')
-          } else if (isLogin.uType === 'OP') {
+          } else if (isLogin.uType === 'ADN_OP') {
             addRoutes('OP')
             this.$router.push('/operate')
           } else if (isLogin.uType === 'AD') {
             addRoutes('AD')
             this.$router.push('/adOwner')
-          } else if (isLogin.uType === 'SA') {
+          } else if (isLogin.uType === 'ADN_SA') {
             addRoutes('SA')
             this.$router.push('/admin')
-          } else if (isLogin.uType === 'DEV') {
+          } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(isLogin.uType)) {
             addRoutes('DEV')
             this.$router.push('/f_develop')
-          } else if (isLogin.uType === 'EP') {
+          } else if (isLogin.uType === 'ADN_EP') {
             addRoutes('EP')
             // 是否开通后台权限由小程序端判断
             this.$router.push("/f_engineer/orderList");

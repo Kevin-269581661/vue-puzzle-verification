@@ -51,11 +51,11 @@
           <el-form label-position="top" label-width="82px">
             <el-form-item label="配点要求">
               <el-checkbox-group v-model="formDataObj.pointDemand">
-                <el-checkbox v-if="sessionData.uType == 'MD'" label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
+                <el-checkbox v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)" label="isSpaceTimeLongFirst" name="type">优先选择空置久的点位</el-checkbox>
                 <el-checkbox label="isSingleMediaChoose" name="type">1个门选择1个点位</el-checkbox>
                 <el-checkbox label="isSingleConnectChoose" name="type">联排门仅选1面</el-checkbox>
               </el-checkbox-group>
-              <div v-if="sessionData.uType == 'MD'">
+              <div v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)">
                 <el-checkbox
                   v-model="formDataObj.aFaceRateChecked"
                   name="type"
@@ -80,7 +80,7 @@
         <div class="board board3">
           <div class="board-title">点位排斥</div>
           <el-form label-position="left" label-width="70px">
-            <el-form-item v-if="sessionData.uType == 'MD'" label="通行情况：">
+            <el-form-item v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)" label="通行情况：">
               <el-select
                 multiple
                 collapse-tags
@@ -225,7 +225,7 @@
               (A面:<span class="tip-active">{{ tipObj.afaceCount }}</span>
               &nbsp;B面:<span class="tip-active">{{ tipObj.bfaceCount }}</span
               >)
-              <template v-if="sessionData.uType == 'MD'">
+              <template v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)">
                 <div class="divide-border"></div>
                 上刊率50%以上的点位:<span class="tip-active">{{
                   (tipObj.underHalfSpaceRate*100).toFixed(2)
@@ -290,7 +290,7 @@
         </template>
       </el-table-column>
       <template slot="dialogFooter">
-        <template v-if="sessionData.uType == 'MD'">
+        <template v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)">
           <el-button @click="closeAsignPointTable"
             >关 闭</el-button
           >
@@ -309,7 +309,7 @@
             确定并添加到购物车
           </el-button>
         </template>
-        <template v-else-if="sessionData.uType == 'BD'">
+        <template v-else-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)">
           <el-button
             class="merge-btn"
             plain
@@ -373,7 +373,7 @@
     >
       <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
       <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
-      <el-tooltip v-if="sessionData.uType == 'BD'" placement="top" trigger="hover" effect="dark">
+      <el-tooltip v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" placement="top" trigger="hover" effect="dark">
         <div slot="content">个别未配点小区请联系媒介协助配点</div>
         <el-radio disabled v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
       </el-tooltip>
@@ -616,7 +616,7 @@ export default {
   },
   mounted() {
     this.getExcludeSelect()
-    if(this.sessionData.uType == 'MD') {
+    if(['ADN_MD_COUNTRY', 'ADN_MD'].includes(this.sessionData.uType)) {
       this.asignPointTableColumn.push({
         label: "近3月上刊率",
         prop: "publishRate",
@@ -663,7 +663,7 @@ export default {
     },
     // 重新配点
     rematchPoint() {
-      this.$confirm(this.sessionData.uType=='BD'?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
+      this.$confirm(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
         "是否重新配点？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
@@ -748,9 +748,9 @@ export default {
     // 配点
     matchRes() {
       let params = {}
-      if(this.formDataObj.aFaceRateChecked && this.sessionData.uType == 'MD') {
+      if(this.formDataObj.aFaceRateChecked && ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
         params.aFaceRate = this.formDataObj.aFaceRate||0
-      } else if(this.sessionData.uType == 'BD') {
+      } else if(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         params.aFaceRate = this.formDataObj.aFaceRate||50
       }
       this.formDataObj.pointDemand.forEach(item => {
@@ -773,7 +773,7 @@ export default {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
             // 获取销售已配点次数
-            this.sessionData.uType=='BD' && this.getMatchCnt()
+            ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.getMatchCnt()
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }

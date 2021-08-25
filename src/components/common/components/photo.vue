@@ -78,7 +78,7 @@
         methods: {
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if(this.sessionData.asrID === '999'){
+                if(this.sessionData.ascType == 0){
                     this.isShowCollect = false
                 }else{
                     this.isShowCollect = true

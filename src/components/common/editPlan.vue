@@ -2059,7 +2059,7 @@
                 this.sessionData = sessFun.getSess();
                 this.customPermission = this.sessionData.customPermission;
                 if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
-                    this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
+                    this.BDData.realName = this.sessionData.username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID
                     this.saleManageLevel = this.sessionData.saleManageLevel
@@ -3178,35 +3178,6 @@
                 console.log('城市详情cityDetailList',cityDetailList)
                 return cityDetailList
             },
-            // 根据城市和公司id返回pdid
-            /* getpdidByCityAndMType(mType, city, asrID) {
-                console.log('this.pdidList', this.pdidList, mType, city, asrID)
-                for (let key of this.pdidList) {
-                    if (mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID) {
-                        return key.pdID
-                    } else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID) {
-                        return key.pdID
-                    }
-                }
-                return false
-            }, */
-            // 生成协同链接
-            /* CreateShareADSFun() {
-                let urlPath = location.href
-                console.log(urlPath)
-                let aiInfo = {apname: this.planName, cname: this.cName, cband: this.cBand}
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apid: this.editApid,
-                    aiinfo: JSON.stringify(aiInfo)
-                }
-                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
-                    console.log('生成协同选点aiCode', res)
-                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.editApid + '&aicode=' + res.data.aiCode
-                    this.active = 3
-                })
-            }, */
             // 继续创建
             continueCreate() {
                 // 媒介创建方案或者是加盟销售创建方案

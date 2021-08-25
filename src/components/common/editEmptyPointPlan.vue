@@ -1305,7 +1305,7 @@ export default {
       this.sessionData = sessFun.getSess();
       this.customPermission = this.sessionData.customPermission;
       if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
-        this.BDData.realName = this.sessionData.username; //sessionStorage.getItem('username')
+        this.BDData.realName = this.sessionData.username;
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = this.sessionData.uID;
         this.saleManageLevel = this.sessionData.saleManageLevel;

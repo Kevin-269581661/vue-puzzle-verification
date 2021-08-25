@@ -1230,7 +1230,7 @@
                         if (res.data.SysCode == 200200) {
                             let tempList = []
                             for (let key of res.data.data) {
-                                if (key.asrID != '999') {
+                                if (key.ascType > 0) {
                                     tempList.push({
                                         value: key.asrID,
                                         label: key.asName

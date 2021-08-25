@@ -506,7 +506,7 @@ export default {
     this.getSession();
     this.getCompany();
     this.getInitEditInfo();
-    if (this.sessionData.asrID < 8 || this.sessionData.asrID == 1013) {
+    if (this.sessionData.rela == "直营" || this.sessionData.asrID == 1013) {
       this.roleArr.push({
         label: "开发",
         value: "DEV",
@@ -526,7 +526,7 @@ export default {
             label: "全国销售",
           });
         }
-        if (asrID == "999") {
+        if (ascType == 0) {
           this.saleKind.push({
             value: 2,
             label: "KA销售",
@@ -619,7 +619,7 @@ export default {
         this.showBackstagePermission = true;
       }
 
-      if (!(this.sessionData.asrID < 8 || this.sessionData.asrID == 1013)) {
+      if (!(this.sessionData.rela == "直营" || this.sessionData.asrID == 1013)) {
         let devIndex = this.roleArr.findIndex((item)=>item.value=="DEV");
         if (val == 1013 && devIndex==-1) {
           this.roleArr.push({

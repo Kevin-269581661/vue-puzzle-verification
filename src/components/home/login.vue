@@ -277,7 +277,6 @@ export default {
               }
               this.$router.push('/media')
             } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(userMsg.uType)) {
-              sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
               if(userMsg.customPermission.proposalPermission == 1) {
                 // 判断直营销售
                 addRoutes('BD', true)

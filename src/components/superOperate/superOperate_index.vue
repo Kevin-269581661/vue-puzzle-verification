@@ -96,7 +96,7 @@
                         <div v-loading="!resStock.dataList" class="bar-group" v-if="dateTypeFilter === 4">
                             <waveBar v-for="(item, index) in resStock.dataList" :key="'yearWavebar'+index" :barData="item" @emitFun="catDetail" :filter="4" class="wave-bar-item" :refName="'yearWavebar'+index" :boxWidthUnitNum="index?12-new Date().getMonth()-1:new Date().getMonth()+1"></waveBar>
                         </div>
-                        <div v-if="sessionData.asrID != '999' && Array.isArray(resStock.dataList) && resStock.dataList.length > 0" class="bottom-box">
+                        <div v-if="sessionData.ascType > 0 && Array.isArray(resStock.dataList) && resStock.dataList.length > 0" class="bottom-box">
                             贵司未来三周还有  <span class="avtive"> {{resStock.unsoldLabRate}}% </span>  的资源尚未售出，多于全国 <span class="avtive"> {{resStock.rankRate}}% </span> 的公司，再努把力！
                         </div>
                     </template>
@@ -190,7 +190,7 @@
                     <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
                         <el-col :span="10">
                             <nest-pie-chart container="nestPie" :sourceData="nestPieData" @activeData="activeData"></nest-pie-chart>
-                            <div v-if="sessionData.asrID != '999'" class="bottom-box" style="width: calc(41.66% - 48px);">
+                            <div v-if="sessionData.asrID .ascType > 0" class="bottom-box" style="width: calc(41.66% - 48px);">
                                 贵公司<span class="avtive"> {{extendData[0]}} </span>位沉默客户待挖掘，多于全国<span class="avtive"> {{extendData[1]+'%'}} </span>的公司，请加把劲！
                             </div>
                         </el-col>
@@ -1140,17 +1140,13 @@
             // 获取浏览器session数据及权限设置
             getsessionData() {
                 this.sessionData = sessFun.getSess();
-                if (this.sessionData.asrID === '999') {
+                if (this.sessionData.ascType == 0) {
                     this.isPlatform = true
                 } else {
                     this.isPlatform = false
                 }
-                let companyList = ['999','1','2','3','4','5','6','7']
-                for (let key of companyList) {
-                    if (key == this.sessionData.asrID) {
-                        this.isRetailCompany = true
-                        break
-                    }
+                if (this.sessionData.rela == "直营" || this.sessionData.ascType == 0) {
+                    this.isRetailCompany = true
                 }
                 // 本季度荣誉
                 if(this.isRetailCompany) {
@@ -1232,11 +1228,8 @@
             // 根据所属公司权限调用接口
             getDataByAsrID(){
                 if (this.isRetailCompany) {
-                    // 直营公司收入排名(超级运营排行弹窗) GetPdIncomeCount
-                    // let nowDate = timeFormat.toDate(new Date(), '/');
-                    // if(indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)){
-                        this.getPdIncomeCountByID()
-                    // }
+                    // 直营公司收入排名(超级运营排行弹窗)
+                    this.getPdIncomeCountByID()
                     // 获取月订单数及订单金额总数
                     let endTime = timeFormat.returnMonthCount(0, '-')
                     // 判断当前日期是否为每月的1号
@@ -1443,7 +1436,7 @@
                         token: this.sessionData.token,
                         startDate: startDate + '-01',
                         endDate: (this.turnoverCompare && endDate) ? (endDate + '-01') : '',
-                        asrIds: portraitInfo.map(item=>item.asrId).join(',') || '1,2,3,4,5,6,7'
+                        asrIds: portraitInfo.map(item=>item.asrId).join(',')
                     };
                 if(this.amountForm.periodType == 'compareWeek') {
                     params.startDate = timeFormat.toDate(new Date(Date.parse(this.amountForm.compareWeek.compareSourceDate) + 3600*24*7*1000)),
@@ -1522,7 +1515,6 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    // asrIDs: this.returnAsrID(this.sessionData.asrID),
                     onStart: starTimeSub,
                     onEnd: this.returnDate(endTime),
                 }
@@ -2025,14 +2017,6 @@
                     })
                     clearTimeout(time2)
                 },1750)
-            },
-            // 根据权限公司返回 asrIDs
-            returnAsrID(asrID){
-                if (asrID == '999') {
-                    return '1,2,3,4,5,6,7'
-                } else {
-                    return asrID
-                }
             },
             // 判断是否为当前月份并返回 年-月-日
             returnDate(time){

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-08-04 14:39:50
+ * @LastEditTime: 2021-08-25 11:11:12
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -91,10 +91,10 @@
         >
           <label class="detail-item-label">{{ `${formItem.label}：` }}</label>
           <el-tooltip
-            v-if="formItem.tip"
-            :content="formItem.value"
+            v-if="formItem.value!==''"
+            :content="formItem.value+''"
             placement="top"
-            effect="light"
+            effect="dark"
           >
             <div class="detail-item-content">{{ formItem.value }}</div>
           </el-tooltip>
@@ -624,8 +624,7 @@ export default {
             if (tempObj.dcState == -1) {
               tempBaseInfoArr.push({
                 label: "不通过原因",
-                value: tempObj.failReason,
-                tip: true,
+                value: tempObj.failReason
               });
             }
             let selectDevFee = [],
@@ -659,7 +658,7 @@ export default {
                 },
                 {
                   label: "场地费备注",
-                  value: tempObj.venueRemark || "--",
+                  value: tempObj.venueRemark || "--"
                 }
               ];
             }

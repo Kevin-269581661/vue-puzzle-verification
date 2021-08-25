@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 16:44:13
  * @LastEditors: penglei
- * @LastEditTime: 2021-08-04 14:41:49
+ * @LastEditTime: 2021-08-25 11:07:02
  * @FilePath: /frontend/src/components/develop/components/contractReviewDialog.vue
 -->
 <template>
@@ -26,7 +26,15 @@
             class="detail-item"
           >
             <label class="detail-item-label">{{ `${formItem.label}：` }}</label>
-            <div class="detail-item-content">{{ formItem.value }}</div>
+            <el-tooltip
+              v-if="formItem.value!==''"
+              :content="formItem.value+''"
+              placement="top"
+              effect="dark"
+            >
+              <div class="detail-item-content">{{ formItem.value }}</div>
+            </el-tooltip>
+            <div v-else class="detail-item-content">{{ formItem.value }}</div>
           </el-col>
         </el-row>
       </div>

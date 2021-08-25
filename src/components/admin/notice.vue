@@ -337,14 +337,14 @@
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,
                             toid: row.uID,
-                            ustate: row.uState ? 0 : 1
+                            ustate: row.uState == 1 ? -1 : 1
                         };
                         api.postApi(this.apiVar.UCAPI + "/CtrlUser", info)
                             .then(res => {
                                 console.log(res.data);
                                 if (res.data.SysCode == 200200) {
                                     this.$message.success(res.data.MSG);
-                                    row.uState = row.uState ? 0 : 1;
+                                    row.uState = row.uState ==1 ? -1 : 1;
                                 } else {
                                     this.$message.warning(res.data.MSG);
                                 }

@@ -245,7 +245,7 @@
                 if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     url = url + '&flag=' + true;
                     this.confirmVisible = true;
-                    this.mapParams.asrIDs = this.sessionData.saleManageLevel > 0 ? [] : [this.sessionData.asrID]
+                    this.mapParams.asrIDs = this.sessionData.uType == 'ADN_BD_KA' ? [] : [this.sessionData.asrID]
                     localStorage.removeItem('qinlinMapCode');
                     localStorage.setItem('mapParams', JSON.stringify(this.mapParams));
                 } else if (this.sessionData.uType === 'ADN_SM') {

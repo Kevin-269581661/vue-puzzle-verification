@@ -106,7 +106,7 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush || '--'}}</span>
                                                 </el-form-item>
-                                                <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
+                                                <el-form-item v-if="sessionData.uType == 'ADN_MD_COUNTRY' || sessionData.uType == 'ADN_BD_KA'" label="归属公司：">
                                                     <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
                                             </el-form>
@@ -347,7 +347,7 @@
                                             </el-form-item>
                                         </el-form>
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司:">
+                                            <el-form-item v-if="sessionData.uType == 'ADN_MD_COUNTRY' || sessionData.uType == 'ADN_BD_KA'" label="归属公司:">
                                                 <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
                                             <template v-if="customPermission.patrolPermission">

@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-29 21:39:57
  * @LastEditors: penglei
- * @LastEditTime: 2021-08-04 14:39:50
+ * @LastEditTime: 2021-08-27 10:39:27
  * @FilePath: /frontend/src/components/develop/components/contractDetailCommon.vue
 -->
 <template>
@@ -290,7 +290,11 @@ export default {
         6: { label: "强制终止", color: "#CDD4DA" },
       },
       // 角色
-      roleArr: ["0", "1", "2"],
+      roleArr: {
+        "ADN_DEV": 0,
+        "ADN_DEV_ASSET": 1,
+        "ADN_DEV_LEADER": 2
+      },
       operationAuthorityArr: {
         删除: [
           "000",
@@ -585,7 +589,7 @@ export default {
     getContractOperation() {
       let tempNo = `${
           this.roleArr[
-            JSON.parse(sessionStorage.getItem("session_data")).devManageLevel
+            JSON.parse(sessionStorage.getItem("session_data")).uType
           ]
         }${this.contractObj.dcType}${this.contractObj.dcState}`,
         tempArr = [];

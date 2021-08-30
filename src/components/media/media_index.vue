@@ -1385,7 +1385,7 @@ export default {
     if (indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)) {
       this.isShowNum = true;
     }
-    if (this.sessionData.mediaManageLevel == 1) {
+    if (this.sessionData.uType == 'ADN_MD_COUNTRY') {
       this.linkArrNew.pop();
     }
     this.appCenter = appCenter;

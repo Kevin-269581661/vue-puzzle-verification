@@ -149,7 +149,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <template v-if="type == 0 && accountForm.role == 'SM'">
+            <template v-if="sessionData.ascType == 0 && accountForm.role == 'SM'">
               <el-form-item label="可开通全国销售：">
                 <el-switch
                   v-model="accountForm.saleManageLevel"
@@ -174,8 +174,6 @@
                   placeholder="请选择角色"
                   size="small"
                 >
-                  <!--                                    <el-option :value="1" label="全国销售" v-if="sessionData.saleManageLevel"></el-option>-->
-                  <!--                                    <el-option :value="0" label="地方销售"></el-option>-->
                   <el-option
                     v-for="key in saleKind"
                     :key="key.value"
@@ -490,8 +488,6 @@ export default {
       },
       // 登录信息
       sessionData: "",
-      // 登录者的公司属性(0平台商，1媒体主)
-      type: "",
       haveEPPerssion: false,
       // 销售类型
       saleKind: [
@@ -517,15 +513,8 @@ export default {
     // 登录信息及角色数据
     getSession() {
       this.sessionData = sessFun.getSess();
-      let { ascType, asrID, uType, saleManageLevel } = this.sessionData;
-      this.type = ascType;
+      let { ascType, uType } = this.sessionData;
       if (uType === "ADN_SM" || uType === "ADN_SA") {
-        if (saleManageLevel) {
-          this.saleKind.push({
-            value: 1,
-            label: "全国销售",
-          });
-        }
         if (ascType == 0) {
           this.saleKind.push({
             value: 2,
@@ -533,7 +522,6 @@ export default {
           });
         }
       }
-      console.log(this.saleKind);
     },
     // 公司数据
     getCompany() {

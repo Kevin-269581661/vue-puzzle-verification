@@ -627,7 +627,7 @@ export default {
             }else if(data.data.length == 1){
               //如果只有一个账户则直接进入首页
               let  loginParams = {
-                userName:data.data[0].id,
+                id:data.data[0].id,
                 ...params
               }
               return api.postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
@@ -659,7 +659,7 @@ export default {
     selectUser(info){
       console.log(info,'选择用户登录');
       let  loginParams = {
-        userName:info.userName,
+        id:info.id,
         phone:this.phoneNum,
         code:this.verificationCode
       }
@@ -704,7 +704,6 @@ export default {
         }
         this.$router.push("/media");
       } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(data.uType)) {
-        //TODO:手机号登录的username问题？
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营销售
           addRoutes('BD', true)

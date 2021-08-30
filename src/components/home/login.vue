@@ -3,7 +3,7 @@
     <div class="loginBox">
       <div class="logo">
         <img src="../../assets/images/login_logo.png" alt="" />
-        <p>您可信任的社区服务商</p>
+        <p>您可信任的智慧社区服务商</p>
       </div>
       <div class="login">
         <div class="loginType">
@@ -177,15 +177,16 @@
         <div 
           class="user_info_card"
           v-for="item in userList" 
-          :key="item.userId"
+          :key="item.id"
           @click="selectUser(item)"
         >
            <div class="head_portrait">
-             <img src="../../assets/images/username_icon.png" alt="">
+             <img v-if="item.userPortrait" :src="item.userPortrait" alt="">
+             <img v-else src="../../assets/images/user_default_portrait.png" alt="">
            </div>
            <div class="info"> 
-             <div class="name">{{item.userName + '(' + item.userId + ')'}}</div>
-             <div class="job" >{{item.userType + ' | ' + item.userCompany}}</div>
+             <div class="name">{{item.realName + '(' + item.userName + ')'}}</div>
+             <div class="job" >{{item.roleName + ' | ' + item.companyName}}</div>
            </div>
         </div>
     </el-dialog>
@@ -236,22 +237,7 @@ export default {
       //选择账号弹框
       selectUserDialogVisible:false,
       //账号列表
-      userList:[
-        {
-          userName:'许小树',
-          userId:'123456',
-          userType:'媒介',
-          userCompany:'广州市媒介xxxx公司',
-          url:''
-        },
-        {
-          userName:'许大树',
-          userId:'654321',
-          userType:'销售',
-          userCompany:'广州市销售xxxx公司',
-          url:''
-        }
-      ]
+      userList:[]
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -360,8 +346,7 @@ export default {
           if (!userMsg.SysCode) {
             //判断是否绑定手机号
             // 如果没有绑定弹出绑定提示窗口
-            // if (!userMsg.isBand) {
-            if (!1) {
+            if (!userMsg.bindPhone) {
               this.$nextTick(()=>{
                 this.loading.close();
                 this.bandPhoneDialogVisible = true
@@ -373,7 +358,7 @@ export default {
               userMsg.username = name
               sessionStorage.setItem("session_data", JSON.stringify(userMsg));
               //判断权限
-              this.authentication(userMsg,'accountNumber')
+              this.authentication(userMsg,'userName')
             }
           } else {
               if (userMsg.SysCode == "400403") {
@@ -555,7 +540,7 @@ export default {
     // 绑定手机号
     bandPhoneNum(){
       //打开提示绑定手机模态框
-      const href  = 'http://www.baidu.com'
+      const href  = `https://test-qadp.qinlindmp.com/login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
       window.open(href, '_blank')
       setTimeout(() => {
         this.bandPhoneNumSetp = 2
@@ -564,14 +549,16 @@ export default {
     //  判断是否绑定手机号
     isBandHandler(){
       console.log('判断是否绑定手机号');
-      //如果绑定了进入qfad首页
-      //如果没有绑定
-      // this.bandPhoneNumSetp = 1
+      this.bandPhoneDialogVisible = false
+      this.bandPhoneNumSetp = 1
+      this.doLogin()
     },
     //暂不绑定
     noBand(){
       this.bandPhoneDialogVisible = false
-      this.bandPhoneNumSetp = 1 
+      setTimeout(() => {
+        this.bandPhoneNumSetp = 1 
+      }, 300);
     },
     // 非微信登录 清除状态
     notWxLogin(){
@@ -587,16 +574,31 @@ export default {
       if (this.verifyPhoneNum(this.phoneNum)) return
       // 防止多次点击
       if (this.isGetVerificationCode) return
-      this.isGetVerificationCode = true
       console.log("发送验证码");
-      this.waitTimer = setInterval(() => {
-        this.waitTime -= 1;
-        if (this.waitTime <= 0) {
-          clearInterval(this.waitTimer)
-          this.isGetVerificationCode = false
-          this.waitTime=60
+      let params={ phone: this.phoneNum ,type:3}
+      api
+      .getApi(this.apiVar.UCAPI + "/sendVerificationCode", params)
+      .then(({data}) => {
+        console.log('sendVerificationCode: ', data);
+        if (data.SysCode == 200200) {
+          this.isGetVerificationCode = true
+          this.$message.success('验证码已发送')
+          this.waitTimer = setInterval(() => {
+            this.waitTime -= 1;
+            if (this.waitTime <= 0) {
+              clearInterval(this.waitTimer)
+              this.isGetVerificationCode = false
+              this.waitTime=60
+            }
+          }, 1000);
+        }else{
+          this.$message.error(data.MSG)
         }
-      }, 1000);
+      }).catch(error=>{
+        this.$message.error('发送验证码失败')
+      })
+
+     
     },
     //校验手机号
     verifyPhoneNum(phoneNum){
@@ -610,23 +612,82 @@ export default {
       if (this.verifyPhoneNum(this.phoneNum)) return
       console.log('手机登录');
       //校验是否输入验证码
-
-      //成功后
-      //如果有多个账户选择登录用户再进入首页
-      this.selectUserDialogVisible = true
-      //如果只有一个账户则直接进入首页
+      let params ={
+        phone:this.phoneNum,
+        code:this.verificationCode
+      }
+       api
+       .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", params)
+       .then(({data})=>{
+          if (data.SysCode == 200200){
+            //如果有多个账户选择登录用户再进入首页
+            if (data.data.length > 1) {
+              this.userList = data.data
+              this.selectUserDialogVisible = true
+            }else if(data.data.length == 1){
+              //如果只有一个账户则直接进入首页
+              let  loginParams = {
+                userName:data.data[0].id,
+                ...params
+              }
+              return api.postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
+            }else {
+              this.$message.warning('手机号未绑定用户')
+            }
+          }else{
+            this.$message.error(data.MSG)
+          }
+       })
+       .then((res)=>{
+         if (!res) return //避免有多个账户时和报错也进行这一步
+         let {data} = res 
+         if (data.SysCode == 200200 && data.data) {
+           let userInfo = data.data
+           this.getIndustry();
+           sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+           this.authentication(userInfo,'phoneNum')
+         }else{
+           this.$message.error(data.MSG)
+         }  
+       })
+       .catch(error=>{
+         this.$message.error('登录失败')
+       })
 
     },
     //选择登录用户
     selectUser(info){
       console.log(info,'选择用户登录');
-      this.selectUserDialogVisible = false
+      let  loginParams = {
+        userName:info.userName,
+        phone:this.phoneNum,
+        code:this.verificationCode
+      }
+       api
+       .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
+       .then(({data})=>{
+        if (data.SysCode == 200200 && data.data) {
+          let userInfo = data.data
+          this.getIndustry();
+          sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+          this.authentication(userInfo,'phoneNum')
+        }else{
+          this.$message.error(data.MSG)
+        }  
+        this.selectUserDialogVisible = false
+       })
+       .catch(error=>{
+          this.$message.error('登录失败')
+       })
     },
     
     /**
      * @description: 权限判断 保留以前账号登录及扫码登录的逻辑并且兼容手机登录
      * @param {*} data 登录接口返回的数据
-     * @param {*} loginType 登录方式 'accountNumber'.账号密码 'phoneNum'.手机登录 'wx'微信扫码
+     * @param {*} loginType 登录方式 
+     * 'userName' 账号密码 
+     * 'phoneNum' 手机登录 
+     * 'wx'       微信扫码
      * @return {*}
      */    
     authentication(data,loginType){
@@ -644,9 +705,6 @@ export default {
         this.$router.push("/media");
       } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(data.uType)) {
         //TODO:手机号登录的username问题？
-        if (loginType == 'accountNumber') {
-          sessionStorage.setItem("username", this.username);   // 用户为销售时，存起username以便创建方案的时候使用
-        }
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营销售
           addRoutes('BD', true)
@@ -667,11 +725,14 @@ export default {
       } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(data.uType)) {
         addRoutes('DEV')
         this.$router.push('/f_develop')
-      } else if (loginType == 'wx' && data.uType === 'ADN_EP'  ) {
+      } else if (loginType == 'wx' && data.uType === 'ADN_EP') {
         addRoutes('EP')
         // 是否开通后台权限由小程序端判断
         this.$router.push("/f_engineer/orderList");
-      }else if (['accountNumber','phoneNum'].includes(loginType)&& data.uType === 'ADN_EP' && data.backstagePermission == 1 ) {
+      }else if (
+        ['userName','phoneNum'].includes(loginType) && 
+        data.uType === 'ADN_EP' && 
+        data.backstagePermission == 1 ) {
         addRoutes('EP')
         this.$router.push("/f_engineer/orderList");
       } else {
@@ -684,9 +745,9 @@ export default {
           this.initWebsocket();
         }
       }
-    }
+    },
   },
-  beforeDestroy(data) {
+  beforeDestroy() {
     if (this.loading) {
       this.loading.close();
     }
@@ -950,9 +1011,8 @@ input::placeholder {
 }
 
 .footer {
-  position: absolute;
-  bottom: 42px;
-  left: 0;
+  position: sticky;
+  top:  calc(100vh - 48px);
   width: 100%;
   color: rgba(0, 0, 0, .45);
   font-size: 12px;
@@ -1028,6 +1088,8 @@ input::placeholder {
       height: 40px;
       margin-right: 8px;
       border-radius: 50%;
+      flex-shrink:0;
+      
       img {
         width: 100%;
         height: 100%;
@@ -1045,11 +1107,15 @@ input::placeholder {
       }
       .job {
         height: 18px;
+        width: 220px;
         color: #999;
         font-family: PingFangSC-Regular, PingFang SC;
         font-size: 12px;
         font-weight: 400;
         line-height: 18px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
       }
     }
   }

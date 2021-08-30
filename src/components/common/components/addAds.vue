@@ -666,7 +666,7 @@
                     console.log(res);
                 });
             },
-            // 获取权限下的城市列表 saleManageLevel
+            // 获取权限下的城市列表
             getCityList(){
                 let cityArea = JSON.parse(sessionStorage.getItem('order_citylist'))
                 console.log('获取权限下的城市列表cityArea',cityArea)

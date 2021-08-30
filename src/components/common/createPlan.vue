@@ -149,9 +149,8 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <!-- saleManageLevel 1全国 2KA -->
               <el-form-item
-                v-if="BDData.saleManageLevel > 0"
+                v-if="BDData.uType == 'ADN_BD_KA'"
                 label="归属公司："
                 prop="pointOfAsrIDs"
                 ref="planPointOfAsrIDs"
@@ -869,7 +868,7 @@
       <div class="finishBtn" v-if="active == 2">
         <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
         <el-button @click="downLoadFanan()" type="default" class="urlBtn">导出方案</el-button>
-        <el-button v-if="this.sessionData.saleManageLevel!=2" type="primary" @click="ToDetail">配点</el-button>
+        <el-button v-if="this.sessionData.uType='ADN_BD'" type="primary" @click="ToDetail">配点</el-button>
         <el-button v-else type="primary" @click="ToDetail2"> 查看方案 </el-button>
       </div>
     </div>
@@ -990,8 +989,6 @@ import timeFormat from "../../commonFun/timeFormat";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 import sheetExcel from "../../commonFun/sheetExcel.js";
-// 方案缓存
-import cacheAdPlan from "../../commonFun/cacheAdPlan";
 // 方案导入结果
 import importResult from "./components/importResult.vue";
 //导入表格
@@ -1272,7 +1269,7 @@ export default {
       sessionData: "", // 登录用户的数据
       FAData: { apID: "" }, // 创建方后台返回的数据
       timeout: null,
-      BDData: { uid: "0", realName: "", saleManageLevel: 0 },
+      BDData: { uid: "0", realName: "", uType: "" },
       HSearch: "", // 获取传值显示‘清除’、‘确定’按钮
       houseNum: ["", ""], // 表头搜索住户数量
       buildNum: ["", ""], // 表头搜索楼栋数量
@@ -1356,7 +1353,6 @@ export default {
       isCityPrice: false, // 判断城市最大价格是否大于2000w
       connectAdDialogVisible: false, // 连排门模态框
       mediaLevelNum: { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 },
-      saleManageLevel: 0, // 销售权限 0地方销售 1全国销售
       asrIDList: [], // 已选点位里存在的公司及城市
       indexData: "", // 首页来源的数据-前置地图选点
       unfinishedData: "", // 未完成方案信息
@@ -1595,8 +1591,8 @@ export default {
         this.BDData.realName = sess.realName; // username
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = sess.uID;
-        this.BDData.saleManageLevel = sess.saleManageLevel;
-        this.saleManageLevel = sess.saleManageLevel;
+        this.BDData.uType = sess.uType;
+
         this.isBD = true;
         if(this.$route.fullPath.indexOf("unfinishedPlan") == -1) {
           this.getCityList(); // 获取权限下的城市列表
@@ -1639,20 +1635,7 @@ export default {
     setDataByIndex() {
       this.indexData = JSON.parse(sessionStorage.getItem("indexData"));
       this.ActiveMapType = this.indexData.activeMapType;
-      // this.mapADList = this.indexData.mapADList
       this.dialogTableVisible = true;
-      if (this.saleManageLevel == 1) {
-        this.selectedOptions = [
-          this.indexData.rid.toString().substring(0, 4) + "00",
-          this.indexData.rid,
-        ];
-        this.throwCity.push({
-          value: this.indexData.rid,
-          label: this.indexData.city,
-        });
-        this.dynamicTags.push(this.indexData.city);
-      } else {
-      }
       this.planForm.throwCity.push(this.indexData.rid);
     },
     // 获取权限下的城市列表
@@ -2567,7 +2550,7 @@ export default {
         for (let key of this.salerList) {
           if (key.value == val) {
             this.planForm.realNamesName = key.label;
-            this.BDData.saleManageLevel = key.saleManageLevel;
+            this.BDData.uType = key.uType;
             break;
           }
         }
@@ -2597,7 +2580,7 @@ export default {
                 arr.push({
                   label: key.realName + "(" + key.sName + ")",
                   value: key.uID,
-                  saleManageLevel: key.saleManageLevel,
+                  uType: key.uType,
                 });
               }
               this.salerList = arr;
@@ -3829,7 +3812,6 @@ export default {
       if (returnData) {
         this.GetBrandByCid(returnData.cID);
         this.BDData.uid = returnData.suID;
-        // this.BDData.saleManageLevel = returnData.saleManageLevel || 0;
         this.throwCity = [];
         this.planForm.throwCity = [];
         returnData.cityList.forEach((item) => {

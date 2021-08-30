@@ -37,7 +37,7 @@
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
                 <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && sessionData.saleManageLevel != 2" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && sessionData.uType != 'ADN_BD_KA'" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
                 <el-button v-if="customPermission.proposalPermission && ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" plain @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"
@@ -145,8 +145,8 @@
                         </el-form-item>
                         <el-form-item
                           v-if="
-                            sessionData.mediaManageLevel == 1 ||
-                            sessionData.saleManageLevel == 2
+                            sessionData.uType == 'ADN_MD_COUNTRY' ||
+                            sessionData.uType == 'ADN_BD_KA'
                           "
                           label="归属公司："
                         >

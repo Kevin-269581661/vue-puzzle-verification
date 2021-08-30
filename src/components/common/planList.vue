@@ -692,7 +692,7 @@
                 this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
                 if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
                     this.isDisable = false;
-                    if (this.sessionData.mediaManageLevel == 0) {
+                    if (this.sessionData.uType == 'ADN_MD') {
                         this.isNation = false
                     }
                 }

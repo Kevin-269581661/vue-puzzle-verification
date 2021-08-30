@@ -1394,7 +1394,6 @@
                 showErrorData:{success:0,error:0,errorList:[]},
                 mediaLevelNum:{ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0},
                 // asrIDList: [],                 // 已选点位里存在的公司及城市
-                saleManageLevel: 0,            // 销售权限 0地方销售 1全国销售
                 /*方案排斥*/
                 activeSelect: '1',                 //
                 rejectAdPlan: [],                  // 排斥方案选项
@@ -2062,7 +2061,6 @@
                     this.BDData.realName = this.sessionData.username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID
-                    this.saleManageLevel = this.sessionData.saleManageLevel
                     this.isBD = true
                 } else {
                     this.isBD = false
@@ -4753,7 +4751,6 @@
             // 根据方案详情的rIDs，例如: "广州市,深圳市",构建城市区域
             setCityAndArea(cityData) {
                 let cityArr = cityData
-                // console.log('cityArr',cityArr)
                 let cityList = []
                 for (let j = 0; j < cityArr.length; j++) {
                     console.log('用户cityArr', cityArr[j])
@@ -4777,7 +4774,7 @@
                 this.area = areaList
                 this.cityOptions = areaArr.province()
             },
-            // 获取权限下的城市列表 saleManageLevel
+            // 获取权限下的城市列表
             getCityList(){
                 let cityArea = JSON.parse(sessionStorage.getItem('cityArea'))
                 console.log('获取权限下的城市列表cityArea',cityArea)

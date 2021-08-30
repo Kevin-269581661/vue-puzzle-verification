@@ -151,7 +151,7 @@
                         });
                         this.$router.push("/login");
                     }
-                    if(this.sessionData.mediaManageLevel == 1){
+                    if(this.sessionData.uType == 'ADN_MD_COUNTRY'){
                         this.isNation = true
                     }
                 } else {

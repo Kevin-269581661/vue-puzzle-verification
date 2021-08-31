@@ -691,48 +691,49 @@ export default {
      * @return {*}
      */    
     authentication(data,loginType){
-      if (data.uType === "ADN_SM") {
-        addRoutes("SM");
+      let { uType } = data
+      if (uType === "ADN_SM") {
+        addRoutes("ADN_SM");
         this.$router.push("/superOperate");
-      } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(data.uType)) {
+      } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(uType)) {
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营媒介
-          addRoutes('MD', true)
+          addRoutes(uType, true)
         } else {
           // 判断加盟媒介(旧权限)
-          addRoutes('MD')
+          addRoutes(uType)
         }
         this.$router.push("/media");
-      } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(data.uType)) {
+      } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(uType)) {
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营销售
-          addRoutes('BD', true)
+          addRoutes(uType, true)
         } else {
           // 判断加盟销售(旧权限)
-          addRoutes('BD')
+          addRoutes(uType)
         }
         this.$router.push('/sale')
-      } else if (data.uType === 'ADN_OP') {
-        addRoutes('OP')
+      } else if (uType === 'ADN_OP') {
+        addRoutes('ADN_OP')
         this.$router.push('/operate')
-      } else if (data.uType === 'AD') {
+      } else if (uType === 'AD') {
         addRoutes('AD')
         this.$router.push('/adOwner')
-      } else if (data.uType === 'ADN_SA') {
-        addRoutes('SA')
+      } else if (uType === 'ADN_SA') {
+        addRoutes('ADN_SA')
         this.$router.push('/admin')
-      } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(data.uType)) {
-        addRoutes('DEV')
+      } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(uType)) {
+        addRoutes(uType)
         this.$router.push('/f_develop')
-      } else if (loginType == 'wx' && data.uType === 'ADN_EP') {
-        addRoutes('EP')
+      } else if (loginType == 'wx' && uType === 'ADN_EP') {
+        addRoutes('ADN_EP')
         // 是否开通后台权限由小程序端判断
         this.$router.push("/f_engineer/orderList");
       }else if (
         ['userName','phoneNum'].includes(loginType) && 
-        data.uType === 'ADN_EP' && 
+        uType === 'ADN_EP' && 
         data.backstagePermission == 1 ) {
-        addRoutes('EP')
+        addRoutes('ADN_EP')
         this.$router.push("/f_engineer/orderList");
       } else {
         Message({

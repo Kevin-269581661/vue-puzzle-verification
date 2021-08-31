@@ -155,7 +155,7 @@ let roleRoutes = []
 function addRoutes(role, proposal, retain) {
     !retain && resetRouter()
     switch (role) {
-        case 'SM':
+        case 'ADN_SM':
             roleRoutes = [
                 //超级运营
                 {
@@ -196,7 +196,7 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'SA':
+        case 'ADN_SA':
             roleRoutes = [
                 //admin
                 {
@@ -216,7 +216,7 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'OP':
+        case 'ADN_OP':
             roleRoutes = [
                 //普通运营
                 {
@@ -242,7 +242,8 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'MD':
+        case 'ADN_MD_COUNTRY':
+        case 'ADN_MD':
             //媒介
             let tempMD = null
             if(proposal) {
@@ -300,7 +301,9 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
-        case 'BD':
+        case 'ADN_BD_COUNTRY':
+        case 'ADN_BD_KA':
+        case 'ADN_BD':
             let tempBD = null
             if(proposal) {
                 // 直营销售
@@ -386,7 +389,7 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'EP':
+        case 'ADN_EP':
             roleRoutes = [
                 //工程
                 {
@@ -403,7 +406,9 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'DEV':
+        case 'ADN_DEV':
+        case 'ADN_DEV_ASSET':
+        case 'ADN_DEV_LEADER':
             roleRoutes = [
                 //楼盘开发
                 {

@@ -258,7 +258,7 @@
                 info = {
                     ...info,
                     ...(keyword && {ascName: keyword}),
-                    ...(state>=0 && {astate: state}),
+                    ...(state && {astate: state}),
                     ...(type>=0 && {asType: type}),
                     ...(orderby && {orderby}),
                     ...(desc!=='' && desc>=0 &&{desc})
@@ -430,7 +430,7 @@
                             console.log(res.data);
                             if (res.data.SysCode == 100200) {
                                 Message.success("操作成功");
-                                row.state = row.state==1 ? 0 : 1;
+                                row.state = row.state==1 ? -1 : 1;
                             } else {
                                 Message.warning(res.data.MSG);
                             }

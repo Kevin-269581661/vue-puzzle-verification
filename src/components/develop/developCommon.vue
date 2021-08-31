@@ -28,7 +28,7 @@
                     {{userName}}
                 </template>
                 <el-menu-item index="/f_develop/myInfo">个人中心</el-menu-item>
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login">退出登录</el-menu-item>
             </el-submenu>
         </el-menu>
 

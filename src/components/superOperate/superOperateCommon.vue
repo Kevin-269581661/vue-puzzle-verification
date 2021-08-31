@@ -53,7 +53,7 @@
                 <span class="my-balance">余额：¥{{balance}}</span>
                 <el-menu-item index="/superOperate/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
-                <el-menu-item index="/login" class="index-menu-item">退出登陆</el-menu-item>
+                <el-menu-item index="/login" class="index-menu-item">退出登录</el-menu-item>
             </el-submenu>
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 10px;">
                 <questionTip></questionTip>

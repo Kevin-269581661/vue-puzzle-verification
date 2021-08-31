@@ -84,7 +84,7 @@
                 </el-select>
               </el-form-item>
             </template>
-            <template v-if="accountForm.role == 'EP'">
+            <template v-if="accountForm.role == 'ADN_EP'">
               <!-- 工程人员后台权限 -->
               <el-form-item label="后台权限：">
                 <el-switch
@@ -149,7 +149,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <template v-if="sessionData.ascType == 0 && accountForm.role == 'SM'">
+            <template v-if="sessionData.ascType == 0 && accountForm.role == 'ADN_SM'">
               <el-form-item label="可开通全国销售：">
                 <el-switch
                   v-model="accountForm.saleManageLevel"
@@ -223,7 +223,7 @@
               </el-form-item>
             </template>
             <template
-              v-if="sessionData.mediaManageLevel && accountForm.role == 'MD'"
+              v-if="sessionData.uType == 'ADN_MD_COUNTRY' && accountForm.role == 'MD'"
             >
               <el-form-item label="媒介类别：" prop="roleLevel">
                 <el-select
@@ -340,7 +340,7 @@ export default {
         },
         {
           label: "工程人员",
-          value: "EP",
+          value: "ADN_EP",
         },
       ],
       // 公司列表
@@ -510,6 +510,75 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description: level转换成角色uType
+     * @param {*} utype
+     * @return {*}
+     */    
+    translateToUtype(role) {
+      switch (role) {
+        case "BD":
+          return {
+            0: "ADN_BD",
+            1: "ADN_BD_COUNTRY",
+            2: "ADN_BD_KA"
+          }[this.accountForm.saleManageLevel||0];
+        case "MD":
+          return {
+            0: "ADN_MD",
+            1: "ADN_MD_COUNTRY"
+          }[this.accountForm.mediaManageLevel||0];
+        case "DEV":
+          return {
+            0: "ADN_DEV",
+            1: "ADN_DEV_ASSET",
+            2: "ADN_DEV_LEADER"
+          }[this.accountForm.devManageLevel||0];
+        default:
+          return role;
+      }
+    },
+    /**
+     * @description: uType转换成角色和level
+     * @param {*} uType
+     * @return {*}
+     */    
+    translateToLevel(uType) {
+      return {
+        "ADN_BD": {
+          role: "BD",
+          saleManageLevel: 0
+        },
+        "ADN_BD_COUNTRY": {
+          role: "BD",
+          saleManageLevel: 1
+        },
+        "ADN_BD_KA": {
+          role: "BD",
+          saleManageLevel: 2
+        },
+        "ADN_MD": {
+          role: "MD",
+          mediaManageLevel: 0
+        },
+        "ADN_MD_COUNTRY": {
+          role: "MD",
+          mediaManageLevel: 1
+        },
+        "ADN_DEV": {
+          role: "DEV",
+          devManageLevelevel: 0
+        },
+        "ADN_DEV_ASSET": {
+          role: "DEV",
+          devManageLevelevel: 1
+        },
+        "ADN_DEV_LEADER": {
+          role: "DEV",
+          devManageLevelevel: 2
+        }
+      }[uType] || uType;
+    },
     // 登录信息及角色数据
     getSession() {
       this.sessionData = sessFun.getSess();
@@ -579,14 +648,15 @@ export default {
     roleSelect(val) {
       this.haveEPPerssion = false;
       if (
-        val == "EP" &&
+        val == "ADN_EP" &&
         this.sessionData.uType == "ADN_SM" &&
         this.sessionData.asrID == 11
       ) {
         // 是否有新增工程类别和媒体权限的权限
         this.haveEPPerssion = true;
       }
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.accountForm.role)) {
+      console.log("this.accountForm.role", this.accountForm.role)
+      if (this.accountForm.role == "BD") {
         this.getRoleCity();
       }
     },
@@ -699,11 +769,11 @@ export default {
         token: sess.token,
         realname: actFrom.realName,
         sname: actFrom.account,
-        utype: actFrom.role,
+        utype: this.translateToUtype(actFrom.role),
         division: actFrom.division,
         position: actFrom.position,
         engineerLevel: actFrom.engineerLevel,
-        devManageLevel: actFrom.devManageLevel,
+        // devManageLevel: actFrom.devManageLevel,
         mediaPermission:
           actFrom.mediaPermission.length > 1
             ? -1
@@ -715,15 +785,11 @@ export default {
         puid: "",
         asrID: actFrom.company,
         authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-        saleManageLevel: actFrom.saleManageLevel ? actFrom.saleManageLevel : 0,
-        mediaManageLevel: actFrom.mediaManageLevel
-          ? actFrom.mediaManageLevel
-          : 0,
       };
       if (actFrom.puID) {
         account.puid = actFrom.puID;
       }
-      if (actFrom.role == "EP") {
+      if (actFrom.role == "ADN_EP") {
         account.backstagePermission = actFrom.backstagePermission || 0;
       }
       if (this.isEdit) {
@@ -837,12 +903,13 @@ export default {
                   uID: result.uID,
                   account: result.sName,
                   realName: result.realName,
-                  role: result.uType,
+                  ...this.translateToLevel(result.uType),
+                  // role: result.uType,
                   boss: result.puName ? result.puName : "",
                   position: result.position ? result.position : "",
                   engineerLevel: result.engineerLevel,
-                  devManageLevel:
-                    result.devManageLevel >= 0 ? result.devManageLevel : "",
+                  // devManageLevel:
+                  //   result.devManageLevel >= 0 ? result.devManageLevel : "",
                   mediaPermission:
                     result.mediaPermission == -1
                       ? [0, 1]
@@ -854,18 +921,17 @@ export default {
                   roleCity: result.authorCity
                     ? result.authorCity.split(",")
                     : [],
-                  saleManageLevel: result.saleManageLevel
-                    ? result.saleManageLevel
-                    : 0,
-                  mediaManageLevel: result.mediaManageLevel
-                    ? result.mediaManageLevel
-                    : 0,
+                  // saleManageLevel: result.saleManageLevel
+                  //   ? result.saleManageLevel
+                  //   : 0,
+                  // mediaManageLevel: result.mediaManageLevel
+                  //   ? result.mediaManageLevel
+                  //   : 0,
                   backstagePermission: result.backstagePermission
                     ? result.backstagePermission
                     : 0,
                 };
                 this.companyChange(editInfo.company);
-                console.log("editInfo-----", editInfo);
                 this.accountForm = editInfo;
                 this.roleSelect(editInfo.role);
               } else {
@@ -886,6 +952,7 @@ export default {
     },
     // 获取权限城市
     getRoleCity() {
+      console.log("getRoleCity")
       this.roleCityArr = [];
       let info = {
         data: { city: "" },

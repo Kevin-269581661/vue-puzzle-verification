@@ -190,7 +190,7 @@
                     <el-row :gutter="24" class="index-row" style="align-items: flex-start; padding: 33px 24px; margin: 0; ">
                         <el-col :span="10">
                             <nest-pie-chart container="nestPie" :sourceData="nestPieData" @activeData="activeData"></nest-pie-chart>
-                            <div v-if="sessionData.asrID .ascType > 0" class="bottom-box" style="width: calc(41.66% - 48px);">
+                            <div v-if="sessionData.ascType > 0" class="bottom-box" style="width: calc(41.66% - 48px);">
                                 贵公司<span class="avtive"> {{extendData[0]}} </span>位沉默客户待挖掘，多于全国<span class="avtive"> {{extendData[1]+'%'}} </span>的公司，请加把劲！
                             </div>
                         </el-col>

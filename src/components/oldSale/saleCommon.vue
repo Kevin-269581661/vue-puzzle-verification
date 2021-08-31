@@ -43,7 +43,7 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <span class="my-balance">余额：¥{{balance}}</span>
+                <span class="my-balance">余额：{{balance | moneyFormat("¥", 0)}}</span>
                 <el-menu-item index="/sale/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login" class="index-menu-item">退出登录</el-menu-item>
@@ -112,9 +112,12 @@
         mounted(){
             // 是否显示社区画像
             this.getIsShowQinlin()
-            this.balance = getBalance()
+            this.getBalance()
         },
         methods:{
+            async getBalance() {
+                this.balance = await getBalance()
+            },
             // 获取用户名称和角色
             getUserName() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))

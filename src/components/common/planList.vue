@@ -554,7 +554,7 @@
             getCustomConfig() {
                 api.getApi('/advertisement/GetCustomConfig', {type: 6}).then(res => {
                     if (res.data.SysCode == 200200) {
-                        this.isShowExportBtn == Array.isArray(res.data.data) && !!(res.data.data.length);
+                        this.isShowExportBtn = Array.isArray(res.data.data) && !!(res.data.data.length);
                     }
                 }).catch(err => {
                     console.log("导出周边资源--", err);

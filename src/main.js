@@ -30,6 +30,7 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 // 全局变量
 import { apiVar } from './utils/config.js'
 Vue.prototype.apiVar = apiVar;
+Vue.prototype.env = process.env.EVN_CONFIG;
 Vue.filter('uTypeToText', function (userInfo) {
 	if(userInfo) {
 		return { 

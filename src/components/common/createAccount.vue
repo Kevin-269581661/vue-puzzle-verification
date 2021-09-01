@@ -283,7 +283,14 @@
 <script>
 import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api";
-
+// 不同环境测试公司id
+let testAsrIDConfig = {
+  dev: 173,
+  test: 173,
+  gray: -1,
+  prod: -1,
+  gray: -1,
+}
 export default {
   name: "createClient",
   components: {},
@@ -502,7 +509,7 @@ export default {
     this.getSession();
     this.getCompany();
     this.getInitEditInfo();
-    if (this.sessionData.rela == "直营" || this.sessionData.asrID == 1013) {
+    if (this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env]) {
       this.roleArr.push({
         label: "开发",
         value: "DEV",
@@ -650,7 +657,7 @@ export default {
       if (
         val == "ADN_EP" &&
         this.sessionData.uType == "ADN_SM" &&
-        this.sessionData.asrID == 11
+        this.sessionData.customPermission.miniAppPermission == 1
       ) {
         // 是否有新增工程类别和媒体权限的权限
         this.haveEPPerssion = true;
@@ -677,14 +684,14 @@ export default {
         this.showBackstagePermission = true;
       }
 
-      if (!(this.sessionData.rela == "直营" || this.sessionData.asrID == 1013)) {
+      if (!(this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env])) {
         let devIndex = this.roleArr.findIndex((item)=>item.value=="DEV");
-        if (val == 1013 && devIndex==-1) {
+        if (val == testAsrIDConfig[this.env] && devIndex==-1) {
           this.roleArr.push({
             label: "开发",
             value: "DEV",
           });
-        } else if(val != 1013 && devIndex!=-1) {
+        } else if(val != testAsrIDConfig[this.env] && devIndex!=-1) {
           this.roleArr.splice(devIndex, 1);
           // this.accountForm.role = "";
         }

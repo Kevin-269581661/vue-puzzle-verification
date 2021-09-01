@@ -550,10 +550,23 @@
             }
             this.searchFun();
             if (this.isSale) {
-                this.getSubSaleList()
+                this.getSubSaleList();
             };
         },
+        mounted() {
+            this.getCustomConfig();
+        },
         methods: {
+            // 导出周边资源
+            getCustomConfig() {
+                api.getApi('/advertisement/GetCustomConfig', {type: 6}).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        this.isShowExportBtn = Array.isArray(res.data.data) && !!(res.data.data.length);
+                    }
+                }).catch(err => {
+                    console.log("导出周边资源--", err);
+                });
+            },
             // 切换页码
             changePage(page) {
                 this.currPage = page;
@@ -714,11 +727,6 @@
                 }
                 if (role == "BD" && (this.sessionData.saleManageLevel === 0 || this.sessionData.saleManageLevel === 1)) {
                     this.isNation = false
-                }
-                if(this.sessionData.rela == "直营"){
-                    this.isShowExportBtn = true
-                }else{
-                    this.isShowExportBtn = false
                 }
             },
             // 状态转换成文本

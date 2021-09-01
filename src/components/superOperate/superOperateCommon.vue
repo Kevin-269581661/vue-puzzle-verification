@@ -99,7 +99,7 @@
         },
         data(){
             return{
-                balance: '0.00',
+                balance: 0,
                 newDate: new Date().getFullYear(),
                 userName: "",
                 openWxBox: false,

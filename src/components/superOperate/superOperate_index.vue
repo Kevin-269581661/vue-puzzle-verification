@@ -1310,15 +1310,38 @@
                         dataArr.sort((a, b)=>{
                             return b.total - a.total;
                         })
-                        let tempArr = [
-                            {city:'北京',asrID: '1',url: require('../../assets/images/index/beijing.png')},
-                            {city:'上海',asrID: '2',url: require('../../assets/images/index/shanghai.png')},
-                            {city:'广州',asrID: '3',url: require('../../assets/images/index/guangzhou.png')},
-                            {city:'深圳',asrID: '4',url: require('../../assets/images/index/shenzhen.png')},
-                            {city:'成都',asrID: '5',url: require('../../assets/images/index/chengdu.png')},
-                            {city:'重庆',asrID: '6',url: require('../../assets/images/index/chongqing.png')},
-                            {city:'天津',asrID: '7',url: require('../../assets/images/index/tianjing.png')}
-                        ]
+                        dataArr.forEach(companyItem=>{
+                            switch(companyItem.asName) {
+                                case "北京亲邻众联科技有限公司":
+                                    companyItem.city = '北京';
+                                    companyItem.url = require('../../assets/images/index/beijing.png');
+                                    break;
+                                case "上海多邻网络科技有限公司":
+                                    companyItem.city = '上海';
+                                    companyItem.url = require('../../assets/images/index/shanghai.png');
+                                    break;
+                                case "广州市亲粤邻网络科技有限公司":
+                                    companyItem.city = '广州';
+                                    companyItem.url = require('../../assets/images/index/guangzhou.png');
+                                    break;
+                                case "深圳亲邻交互科技有限公司":
+                                    companyItem.city = '深圳';
+                                    companyItem.url = require('../../assets/images/index/shenzhen.png');
+                                    break;
+                                case "成都亲邻科技有限公司":
+                                    companyItem.city = '成都';
+                                    companyItem.url = require('../../assets/images/index/chengdu.png');
+                                    break;
+                                case "重庆市亲邻科技有限公司":
+                                    companyItem.city = '重庆';
+                                    companyItem.url = require('../../assets/images/index/chongqing.png');
+                                    break;
+                                case "天津亲邻众联科技有限公司":
+                                    companyItem.city = '天津';
+                                    companyItem.url = require('../../assets/images/index/tianjing.png');
+                                    break;
+                            }
+                        })
                         let indexArr = [1, 0, 2];
                         for (let i = 0; i < dataArr.length; i++) {
                             if (this.sessionData.asrID == dataArr[i].asrId) {
@@ -1333,9 +1356,9 @@
                         }
                         indexArr.forEach((item, index)=>{
                             let temp = this.showCityRankingImg[index]
-                            temp.city = tempArr[dataArr[item].asrId-1].city
+                            temp.city = dataArr[item].city
                             temp.ranking = item*1+1
-                            temp.url = tempArr[item].url
+                            temp.url = dataArr[item].url
                         })
                         if(indexIsDateFirst.getIsFirst(this.sessionData.uID, timeFormat.toDate(new Date(), '/'))){
                             this.animateFun()

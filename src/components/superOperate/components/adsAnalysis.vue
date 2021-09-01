@@ -420,7 +420,9 @@
                     disabledDate:(time) =>{
                         return  time.getTime() < Date.parse(this.pointDate[0])
                     }
-                }
+                },
+                // 直营公司
+                directCompany: ""
             }
         },
         props:{
@@ -479,8 +481,30 @@
         },
         mounted(){
             this.setTime()
+            this.getDirectAscr()
         },
         methods:{
+            // 获取直营公司
+            getDirectAscr() {
+                api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token,
+                }).then(res => {
+                    if (!res.data.SysCode) {
+                        let result = [];
+                        if(Array.isArray(res.data)) {
+                            result = res.data.map(item=>item.asrID).join(",");
+                        }
+                        this.directCompany = result;
+                    } else if(res.data.SysCode == 100403) {
+                        console.error('获取投放城市', res.data.MSG)
+                    } else {
+                        sessFun.messageFun('warning', res.data.MSG);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                });
+            },
             // 设置初始时间
             setTime() {
                 let starTime = timeFormat.returnMonthCount(5,'-')
@@ -969,7 +993,7 @@
             // 根据权限公司返回 asrIDs
             returnAsrID(){
                 if (this.selectCity == '0'){
-                    return '1,2,3,4,5,6,7'
+                    return this.directCompany
                 }else{
                     return this.selectCity
                 }

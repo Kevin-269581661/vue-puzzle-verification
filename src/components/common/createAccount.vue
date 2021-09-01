@@ -574,15 +574,15 @@ export default {
         },
         "ADN_DEV": {
           role: "DEV",
-          devManageLevelevel: 0
+          devManageLevel: 0
         },
         "ADN_DEV_ASSET": {
           role: "DEV",
-          devManageLevelevel: 1
+          devManageLevel: 1
         },
         "ADN_DEV_LEADER": {
           role: "DEV",
-          devManageLevelevel: 2
+          devManageLevel: 2
         }
       }[uType] || uType;
     },

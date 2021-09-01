@@ -237,7 +237,9 @@ export default {
       //选择账号弹框
       selectUserDialogVisible:false,
       //账号列表
-      userList:[]
+      userList:[],
+      //防止多次发生验证码
+      getCodeLock:false
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -573,7 +575,8 @@ export default {
       //判断是否输入手机号
       if (this.verifyPhoneNum(this.phoneNum)) return
       // 防止多次点击
-      if (this.isGetVerificationCode) return
+      if (this.getCodeLock) return
+      this.getCodeLock = true
       console.log("发送验证码");
       let params={ phone: this.phoneNum ,type:3}
       api
@@ -594,8 +597,10 @@ export default {
         }else{
           this.$message.error(data.MSG)
         }
+        this.getCodeLock = false
       }).catch(error=>{
         this.$message.error('发送验证码失败')
+        this.getCodeLock = false
       })
 
      

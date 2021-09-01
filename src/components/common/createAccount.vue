@@ -584,7 +584,7 @@ export default {
           role: "DEV",
           devManageLevel: 2
         }
-      }[uType] || uType;
+      }[uType] || {role: uType};
     },
     // 登录信息及角色数据
     getSession() {
@@ -662,7 +662,6 @@ export default {
         // 是否有新增工程类别和媒体权限的权限
         this.haveEPPerssion = true;
       }
-      console.log("this.accountForm.role", this.accountForm.role)
       if (this.accountForm.role == "BD") {
         this.getRoleCity();
       }

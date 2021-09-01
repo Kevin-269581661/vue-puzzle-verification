@@ -149,6 +149,7 @@
       :modal="false"
       top="30vh"
       :show-close="false"
+      custom-class="band_phone_dialog"
       >
       <span v-if="bandPhoneNumSetp == 1">亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span>
       <span v-if="bandPhoneNumSetp == 2">请问您是否成功绑定了手机号码？</span>
@@ -1124,5 +1125,37 @@ input::placeholder {
       }
     }
   }
+}
+//提示绑定手机号码弹窗
+ /deep/  .band_phone_dialog{
+   width: 372px;
+   background: #FFFFFF;
+   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+   border-radius: 4px;
+   .el-dialog__header{
+     padding: 12px 24px 8px;
+     .el-dialog__title{
+       height: 24px;
+       font-size: 16px;
+       font-family: PingFangSC-Medium, PingFang SC;
+       font-weight: 500;
+       color: rgba(0, 0, 0, 0.85);
+       line-height: 24px;
+     }
+   }
+   .el-dialog__body{
+     padding: 0 24px;
+     span{
+       height: 44px;
+       font-size: 14px;
+       font-family: PingFangSC-Regular, PingFang SC;
+       font-weight: 400;
+       color: rgba(0, 0, 0, 0.65);
+       line-height: 22px;
+     }
+   }
+   .el-dialog__footer{
+     padding: 16px 24px 24px;
+   }
 }
 </style>

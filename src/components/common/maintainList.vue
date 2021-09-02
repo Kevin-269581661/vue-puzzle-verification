@@ -63,9 +63,9 @@
 
                     <el-col :span="6">
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch"
-                                   v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt034_ck01'}">搜索
+                                   >搜索
                         </el-button>
-                        <el-button @click="reset()" v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt035_ck02'}">重置</el-button>
+                        <el-button @click="reset()" >重置</el-button>
                         <el-button @click="downLoad()">一键导出</el-button>
                     </el-col>
                 </el-row>
@@ -237,11 +237,11 @@
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item @click.native.prevent="showPhoto(scope.row)"
                                                           v-if="scope.row.mtType=='巡点'"
-                                                          v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt037_ck04'}">照片
+                                                          >照片
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
                                                           v-if="scope.row.mtType!='拆除'"
-                                                          v-qadn-mta-h5="{id: 'a003_b000_c000_d000_bt036_ck04'}">处理
+                                                          >处理
                                         </el-dropdown-item>
                                         <el-dropdown-item @click.native.prevent="showHistory(scope.row)">历史记录
                                         </el-dropdown-item>
@@ -475,7 +475,6 @@
             this.getCity();
             this.getComUser();
             this.searchFun();
-            // MtaH5.clickStat('a003_b000_c000_d000_bt000_sw01')
         },
         methods: {
             //选择区域

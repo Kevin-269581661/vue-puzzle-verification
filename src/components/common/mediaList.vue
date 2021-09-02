@@ -51,11 +51,11 @@
                     </li>
                     <li class="handel_ul_li handel_ul_li_btn">
                         <el-button type="primary" icon="el-icon-search" @click="searchFun" :disabled="searchBtnAbled"
-                                   v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt011_ck01'}">搜索</el-button>
+                                   >搜索</el-button>
                         <el-button plain @click="clearSearch"
-                                   v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt012_ck02'}">重置</el-button>
+                                   >重置</el-button>
                         <el-button plain @click="newMedia" v-if="showNewBtn"
-                                   v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt013_ck03'}">新建</el-button>
+                                   >新建</el-button>
                         <el-button plain @click="importMedia" v-if="showImportBtn">导入媒体</el-button>
                         <el-button v-if="showImportBtn" plain @click="showPushMap">推送地图</el-button>
                     </li>
@@ -190,21 +190,21 @@
                                         <el-dropdown-item command="0"
                                             @click.native.prevent="changeState('0',scope.$index, scope.row)"
                                             :disabled="scope.row.mState == 0 || scope.row.mState == 4"
-                                            v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt015_ck04'}">禁用</el-dropdown-item>
+                                            >禁用</el-dropdown-item>
                                         <el-dropdown-item command="1"
                                             @click.native.prevent="changeState('1',scope.$index, scope.row)"
                                             :disabled="scope.row.mState == 4"
-                                            v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt014_ck04'}">
+                                            >
                                             正常
                                         </el-dropdown-item>
                                         <el-dropdown-item command="2"
                                             @click.native.prevent="changeState('2',scope.$index, scope.row)"
                                             :disabled="scope.row.mState == 2 || scope.row.mState == 4"
-                                            v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt017_ck04'}">待安装</el-dropdown-item>
+                                            >待安装</el-dropdown-item>
                                         <el-dropdown-item command="3"
                                             @click.native.prevent="changeState('3',scope.$index, scope.row)"
                                             :disabled="scope.row.mState == 3 || scope.row.mState == 4"
-                                            v-qadn-mta-h5="{id: 'a002_b000_c000_d000_bt016_ck04'}">待维修</el-dropdown-item>
+                                            >待维修</el-dropdown-item>
                                         <el-dropdown-item command="5"
                                                           @click.native.prevent="changeState('5',scope.$index, scope.row)"
                                                           :disabled="scope.row.mState == 5">删除</el-dropdown-item>

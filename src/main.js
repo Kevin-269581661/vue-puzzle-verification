@@ -4,6 +4,7 @@ import Vue from 'vue'
 import {router} from './router'
 import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
+import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
 Vue.config.productionTip = false;
 Vue.config.performance = true;
@@ -66,35 +67,15 @@ import 'font-awesome/css/font-awesome.css'
 // 引入地图聚合js
 import './components/common/map/MarkerClusterer.js'
 
-
 router.beforeEach((to, from, next) => {
-	// 加上mta
-	console.log(process.env, 'process.env---');
-	let env = process.env.EVN_CONFIG;
-	var _mtac = {"senseQuery":1};
-	(function() {
-		var mta = document.createElement("script");
-		mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.4";
-		mta.setAttribute("name", "MTAH5");
-		if(env == 'test'){
-			mta.setAttribute("sid", "500692127");
-			mta.setAttribute("cid", "500692130");
-		}else if(env == 'gray'){
-			mta.setAttribute("sid", "500692128");
-			mta.setAttribute("cid", "500692131");
-		}else if(env == 'prod'){
-			mta.setAttribute("sid", "500692129");
-			mta.setAttribute("cid", "500692132");
-		}
-		var s = document.getElementsByTagName("script")[0];
-		s.parentNode.insertBefore(mta, s);
-	})();
-    // 路由发生变化修改页面title
-    if (to.meta.title) {
-        document.title = to.meta.title
-    } else {
-        document.title = 'QADN'
-    }
+	console.log('process.env---', process.env);
+	emitRouteEvent(to, from);
+	// 路由发生变化修改页面title
+	if (to.meta.title) {
+			document.title = to.meta.title
+	} else {
+			document.title = 'QADN'
+	}
 	next();
 });
 

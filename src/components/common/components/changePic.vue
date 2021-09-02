@@ -77,7 +77,7 @@
                 </div>
                 <div class="process">
                     <el-button type="primary" @click="editReport(true)"
-                               v-qadn-mta-h5="{id: 'a006_b011_c013_d000_bt161_ck04'}">编辑报告
+                               >编辑报告
                     </el-button>
                     <span class="process_box">
                         <el-progress :percentage="publishNumInfo.changePic.percent" :text-inside="true"
@@ -191,7 +191,7 @@
                         <el-upload class="upload_plus"
                                    :key="index+'-'+pageInfo.currPage+'-1'"
                                    @click.native="saveId(item)"
-                                   v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt129_ck05' : type == 2 ? 'a006_b011_c010_d000_bt135_ck05' : 'a006_b011_c013_d000_bt156_ck05'}"
+                                   
                                    :class="{disabled:uploadDisabled(item.photoList)}"
                                    :action="doUpload"
                                    :http-request="uploadImg"
@@ -222,19 +222,19 @@
 
         <div class="up-report-bottom" v-if="!firstTime">
             <el-button plain @click="downloadImg()" :loading="downLoading"
-                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt130_ck05' : type == 2 ? 'a006_b011_c010_d000_bt136_ck05' : 'a006_b011_c013_d000_bt157_ck05'}">
+                       >
                 导出图片
             </el-button>
             <el-button type="primary" @click="submitUpload()"
-                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt131_ck05' : type == 2 ? 'a006_b011_c010_d000_bt137_ck05' : 'a006_b011_c013_d000_bt158_ck05'}">
+                       >
                 保存
             </el-button>
             <el-button plain @click="showH5()"
-                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt132_ck03' : type == 2 ? 'a006_b011_c010_d000_bt138_ck03' : 'a006_b011_c013_d000_bt159_ck03'}">
+                       >
                 查看H5
             </el-button>
             <el-button plain @click="updateReport()" :loading="updateLoading"
-                       v-qadn-mta-h5="{id: type == 1 ? 'a006_b011_c009_d000_bt133_ck03' : type == 2 ? 'a006_b011_c010_d000_bt139_ck03' : 'a006_b011_c013_d000_bt160_ck03'}">
+                       >
                 更新报告
             </el-button>
         </div>
@@ -1232,8 +1232,6 @@
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
-                this.type == 1 ? MtaH5.clickStat('a006_b011_c009_d000_bt128_ck01')
-                    : this.type == 2 ? MtaH5.clickStat('a006_b011_c010_d000_bt134_ck01') : MtaH5.clickStat('a006_b011_c013_d000_bt155_ck01')
             },
             // 搜索换画列表条件
             searchPointFormat() {

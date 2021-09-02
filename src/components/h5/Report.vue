@@ -6,10 +6,10 @@
                     <div class="title">
                         <h1>{{report.apName}}{{stateToText(Info.name)}}报告
                             <span class="button_box">
-                                <el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>
-                                 <!--<el-button plain @click="getPTTx()" size="small" :loading="pptLoading" v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt140_ck05'}">导出PPTx</el-button>-->
+                                <el-button plain @click="showPptxDialog()" size="small" :loading="pptxLoading" >导出PPTx</el-button>
+                                 <!--<el-button plain @click="getPTTx()" size="small" :loading="pptLoading" >导出PPTx</el-button>-->
                                 <el-button plain @click="getPDF()" size="small" :loading="pdfLoading"
-                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d000_bt142_ck05'}">导出PDF</el-button>
+                                           >导出PDF</el-button>
                             </span>
                         </h1>
                         <h3>{{report.bTitle}} &nbsp;&nbsp;{{formatTime(report.apcTime)}}</h3>
@@ -38,7 +38,7 @@
                                 <el-input size="small" v-model="keyword" placeholder="请输入要搜索的内容" class="searchInput"
                                           @change="initData"></el-input>
                                 <el-button type="primary" icon="el-icon-search" class="searchBtn" @click="search()"
-                                           v-qadn-mta-h5="{id: 'a006_b011_c011_d006_bt146_ck01'}">搜索
+                                           >搜索
                                 </el-button>
                             </div>
                             <div class="table_wrap">
@@ -92,7 +92,7 @@
                                     <el-table-column label="操作" min-width="6.1%">
                                         <template slot-scope="scope">
                                             <el-button type="text" @click="showImg(scope.row)"
-                                                       v-qadn-mta-h5="{id: 'a006_b011_c011_d006_bt147_ck04'}">查看监播
+                                                       >查看监播
                                             </el-button>
                                         </template>
                                     </el-table-column>
@@ -155,7 +155,7 @@
                                                 <div class="mask-btn" v-if="showPreImg == upIndex ">
                                                     <i class="el-icon-search"
                                                        @click="handlePictureCardPreview(item.url)"
-                                                       v-qadn-mta-h5="{id: 'a006_b011_c011_d007_bt148_ck04'}"></i>
+                                                       ></i>
                                                 </div>
                                             </el-carousel-item>
                                         </el-carousel>
@@ -432,7 +432,6 @@
             this.getReportInfo();
             this.getPeriod();
             this.getTemplateOptions();
-            // MtaH5.clickStat('a006_b011_c011_d000_bt000_sw01')
         },
         mounted(){
             // 缓存不存在时为null
@@ -474,14 +473,6 @@
             },
             // tab点击
             handleClick() {
-                if (this.planPanel == "first") {
-                    MtaH5.clickStat('a006_b011_c011_d000_bt143_ck09')
-                } else if (this.planPanel == "second") {
-                    MtaH5.clickStat('a006_b011_c011_d000_bt144_ck09')
-                } else if (this.planPanel == "third") {
-                    this.getDataFromType();
-                    MtaH5.clickStat('a006_b011_c011_d000_bt145_ck09')
-                }
             },
             showPptxDialog(){
                 this.pptxdialogVisible = true

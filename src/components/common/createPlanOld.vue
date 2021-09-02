@@ -127,7 +127,7 @@
                                     <el-select v-model="activeAdPlan" placeholder="请选择排斥方案" class="reject_select"
                                                @change="selectRejectPlan" filterable :clearable="true" size="small">
                                         <el-option v-for="item in rejectAdPlan" :key="item.value" :label="item.label"
-                                                   v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt053_ck01'}"
+                                                   
                                                    :value="item.value"></el-option>
                                     </el-select>
                                 </div>
@@ -163,7 +163,7 @@
                                     <el-button type="primary" style="background: #1890FF" icon="el-icon-search"
                                         class="searchBtn" @click="searchFun"
                                         :disabled="searchBtnAbled"
-                                        v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt049_ck01'}">搜索
+                                        >搜索
                                     </el-button>
                                 </div>
                                 <div class="shopcar" @click="dialogVisible()">
@@ -176,11 +176,11 @@
                                 <el-col>
 <!--                                    <el-button type="primary" class="map" icon="el-icon-location-outline"-->
 <!--                                               @click="judgeMapSelect"-->
-<!--                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图-->
+<!--                                               >地图-->
 <!--                                    </el-button>-->
                                     <el-button type="primary" class="map" icon="el-icon-location-outline"
                                                @click="setMapParams"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt050_ck03'}">地图
+                                               >地图
                                     </el-button>
                                     <el-dropdown>
                                         <el-button type="success" class="importXle">
@@ -188,20 +188,20 @@
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item @click.native.prevent="importFanan('res')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt051_ck04'}">
+                                                              >
                                                 导入小区
                                             </el-dropdown-item>
                                             <el-dropdown-item @click.native.prevent="importFanan('ads')"
-                                                              v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt052_ck04'}">
+                                                              >
                                                 导入点位
                                             </el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                     <el-button type="primary" @click="importFanan('copy')"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt054_ck04'}">复制方案
+                                               >复制方案
                                     </el-button>
                                     <el-button plain @click="dialogOneKeyPoint = true"
-                                               v-qadn-mta-h5="{id: 'a004_b008_c000_d000_bt055_ck04'}">一键选点
+                                               >一键选点
                                     </el-button>
                                 </el-col>
                             </el-row>
@@ -738,7 +738,7 @@
                                             <span class="button_point">
                                                 <el-button plain @click="getMapADList" size="small" class="mapBtn"
                                                     :disabled="mapBtn"
-                                                    v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt061_ck05'}">获取地图选点</el-button>
+                                                    >获取地图选点</el-button>
                                             </span>
                                             <el-dropdown size="small" type="primary">
                                                 <el-button type="primary" style="padding: 0 8px;">
@@ -896,7 +896,7 @@
                                             <template slot-scope="scope">
                                                 <span style="cursor: pointer;color: #1890ff"
                                                         @click="deleteRow(scope.row)"
-                                                        v-qadn-mta-h5="{id: activeName == 1 ? 'a004_b008_c001_d001_bt058_ck04' : 'a004_b008_c001_d002_bt073_ck04'}">
+                                                        >
                                                     <i class="el-icon-delete"
                                                         style="color: #108DE7;font-size: 20px;margin-left: 6px"></i>
                                                 </span>
@@ -927,7 +927,7 @@
 
                                 <div class="shop-cart-footer">
                                     <el-button @click="next" type="primary"
-                                                v-qadn-mta-h5="{id: 'a004_b008_c001_d001_bt072_ck03'}">下一步
+                                                >下一步
                                     </el-button>
                                 </div>
                             </div>
@@ -986,22 +986,22 @@
         </div>
         <div class="content_bottom_btn">
             <el-button plain @click="prev" v-if="active == 1 || active == 2" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt088_ck03'}">上一步
+                       >上一步
             </el-button>
             <el-button plain @click="clearData" v-if="active === 0" type="default"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt047_ck03'}">取消
+                       >取消
             </el-button>
             <!-- 空点导出 -->
             <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
-                       v-qadn-mta-h5="{id: 'a004_b007_c000_d000_bt048_ck04'}">导空点
+                       >导空点
             </el-button>
 
             <el-button @click="next" v-if="active == 0 || active == 1" type="primary"
-                       v-qadn-mta-h5="{id: active == 0 ? 'a004_b007_c000_d000_bt046_ck03' : 'a004_b008_c000_d000_bt057_ck03'}">
+                       >
                 下一步
             </el-button>
             <el-button @click="next" v-if="active == 2" type="primary"
-                       v-qadn-mta-h5="{id: 'a004_b009_c000_d000_bt089_ck03'}">创建方案
+                       >创建方案
             </el-button>
 
             <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
@@ -4950,31 +4950,24 @@
                     switch (val) {
                         case 1:
                             this.clearADLock();
-                            this.MtaStatFun('a004_b008_c001_d001_bt063_ck04', 'a004_b008_c001_d002_bt078_ck04');
                             break;
                         case 3:
                             this.removeCommentIndustryAds('res');
-                            this.MtaStatFun('a004_b008_c001_d001_bt065_ck04', 'a004_b008_c001_d002_bt080_ck04');
                             break;
                         case 4:
                             this.removeCommentIndustryAds('media');
-                            this.MtaStatFun('a004_b008_c001_d001_bt066_ck04', 'a004_b008_c001_d002_bt081_ck04');
                             break;
                         case 5:
                             this.containNuminRes(1);
-                            this.MtaStatFun('a004_b008_c001_d001_bt067_ck04', 'a004_b008_c001_d002_bt082_ck04');
                             break;
                         case 6:
                             this.containNuminRes(2);
-                            this.MtaStatFun('a004_b008_c001_d001_bt068_ck04', 'a004_b008_c001_d002_bt083_ck04');
                             break;
                         case 7:
                             this.removeAllType('A');
-                            this.MtaStatFun('a004_b008_c001_d001_bt069_ck04', 'a004_b008_c001_d002_bt084_ck04');
                             break;
                         case 8:
                             this.removeAllType('B');
-                            this.MtaStatFun('a004_b008_c001_d001_bt070_ck04', 'a004_b008_c001_d002_bt085_ck04');
                             break;
                     }
                 } else {
@@ -5324,10 +5317,7 @@
                         class: 'clearShopping',
                         on: {
                             click: () => {
-                                // console.log('**************123')
                                 this.clearShop()
-                                // （广告门，道闸）
-                                this.MtaStatFun('a004_b008_c001_d001_bt059_ck04', 'a004_b008_c001_d002_bt074_ck04')
                             }
                         }
                     }, [
@@ -5875,14 +5865,6 @@
                 let m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'; //date.getMinutes() + ':';
                 let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();        //date.getSeconds();
                 return Y + M + D + h + m + s;
-            },
-            // 事件埋点(无法使用模板指令时)--广告门，道闸
-            MtaStatFun(mtaStatIdAdDoor, mtaStatIdRoadGate) {
-                if (this.activeName == 1) {
-                    MtaH5.clickStat(mtaStatIdAdDoor)
-                } else if (this.activeName == 2) {
-                    MtaH5.clickStat(mtaStatIdRoadGate)
-                }
             },
         },
         // 页面销毁

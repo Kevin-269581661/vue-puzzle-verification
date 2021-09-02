@@ -6,7 +6,7 @@
 // main.js 导入时触发
 (function () {
     try {
-        sessionStorage.setItem("matomoUrl", {
+        matomoFun({
             dev: "https://test-matomo.qinlindmp.com/",
             test: "https://test-matomo.qinlindmp.com/",
             gray: "https://matomo.qinlinad.com/",

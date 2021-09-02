@@ -9,8 +9,8 @@
         sessionStorage.setItem("matomoUrl", {
             dev: "https://test-matomo.qinlindmp.com/",
             test: "https://test-matomo.qinlindmp.com/",
-            gray: "https://test-matomo.qinlindmp.com/",
-            prod: "https://test-matomo.qinlindmp.com/",
+            gray: "https://matomo.qinlinad.com/",
+            prod: "https://matomo.qinlinad.com/",
         }[process.env.EVN_CONFIG]);
     } catch (error) {
         console.warn("获取web服务环境：", error);

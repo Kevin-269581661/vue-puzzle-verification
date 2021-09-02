@@ -1042,7 +1042,7 @@
                         {required: true, message: '资源名称不能为空!', trigger: ['blur','change']},
                         {validator: validateSpace, trigger: ['blur','change']},
                         {validator: validateSpecialString, trigger: ['blur','change']},
-                        {validator: this.isHaveCommenName,trigger: 'blur'},
+                        {validator: this.isHaveCommenName, trigger: 'blur'},
                         {max: 40, message: '最多只能输入40个字节', trigger: 'change'}
                     ],
                     city: [

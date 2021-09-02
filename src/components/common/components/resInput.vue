@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-08-06 10:30:24
+ * @LastEditTime: 2021-09-02 17:10:33
  * @FilePath: /frontend/src/components/common/components/resInput.vue
 -->
 <template>
@@ -1005,14 +1005,16 @@ export default {
       if (resData.latLng.includes(",")) {
         resData.latLng = resData.latLng.replace(/\,/g, ";");
       }
+      let city = resData.provinceId && resData.cityId
+            ? [resData.provinceId, resData.cityId]
+            : [];
+      city.length == 2 && this.handleChange(city);
       this.recForm = {
         rt: resData.resType + "",
         resName: resData.resName,
         resaddr: resData.resAddress || "", // 资源地址
-        city:
-          resData.provinceId && resData.cityId
-            ? [resData.provinceId, resData.cityId]
-            : [],
+        city,
+        region: resData.rID + "",
         resID: resData.resID || "", // 小区ID
         business: resData.tradingArea || "", // 商圈
         floorType: resData.cType, // 楼盘类型             // 出入数
@@ -1057,8 +1059,6 @@ export default {
           return [{ name: "资源图片", url: item }];
         });
       }
-      this.recForm.city.length == 2 && this.handleChange(this.recForm.city);
-      this.recForm.region = resData.rID + "";
     },
     // 获取资源、媒体信息
     getDataFun(resID = "") {
@@ -1180,12 +1180,11 @@ export default {
         let resInfo = item.info;
         for (let key of this.regionOpt) {
           if (key.label.includes(resInfo.district)) {
-            this.recForm.region = key.value;
+            this.setResInfo(resInfo);
             this.resAddres.area = key.label;
             break;
           }
         }
-        this.setResInfo(resInfo);
       } else {
         this.$message.warning("该小区已被合同占用！");
       }

@@ -638,7 +638,7 @@ export default {
               }
               return api.postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
             }else {
-              this.$message.warning('手机号未绑定用户')
+              this.$message.warning('该手机号尚未绑定账号')
             }
           }else{
             this.$message.error(data.MSG)

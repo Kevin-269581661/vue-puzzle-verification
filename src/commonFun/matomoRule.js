@@ -3,7 +3,19 @@
  * path 页面路径
  * text 标签值
  */
-
+// main.js 导入时触发
+(function () {
+    try {
+        sessionStorage.setItem("matomoUrl", {
+            dev: "https://test-matomo.qinlindmp.com/",
+            test: "https://test-matomo.qinlindmp.com/",
+            gray: "https://test-matomo.qinlindmp.com/",
+            prod: "https://test-matomo.qinlindmp.com/",
+        }[process.env.EVN_CONFIG]);
+    } catch (error) {
+        console.warn("获取web服务环境：", error);
+    }
+})();
 // 上报点击事件
 function eventClickFun(e) {
     try {

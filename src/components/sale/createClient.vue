@@ -941,10 +941,10 @@ export default {
             // rid         int【选填】         地区ID
             // utype       String【选填】      用户类型：SM、OP、BD、MD、AD
             // uwho        String【选填】      所属公司ID，新增客户这里必填
-            // puid        int                 所属所属销售uID，当utype是AD时必填
+            // puid        int                所属销售uID，当utype是AD时必填
             let form = this.clientForm;
             let clientInfo = {
-                uid: puid,
+                uID: puid,
                 token: this.sessionData.token,
                 realname: form.realname,
                 sname: form.sname,

@@ -461,7 +461,8 @@ export default {
                 let info = {
                     uid: session.uID,
                     token: session.token,
-                    sname: sname
+                    sname: sname,
+                    uType: "AD"
                 };
                 this.loading = true;
                 api.postApi(this.apiVar.UCAPI+"/CheckUserName", info).then(res => {

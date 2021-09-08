@@ -95,13 +95,14 @@ export default {
                 .then(res => {
                     console.log(res.data);
                     if (res.data.SysCode ==200200) {
-                        this.ADlist = res.data.data;
-                        for (let data of this.ADlist) {
+                        let tempADlist = res.data.data;
+                        for (let data of tempADlist) {
                             data.showInput = false;
                             data.changeBtn = false;
                             data.typeUpdate = "";
                             data.detailUpdate = "";
                         }
+                        this.ADlist = tempADlist;
                     } else{
                         Message.warning(res.data.MSG);
                     }

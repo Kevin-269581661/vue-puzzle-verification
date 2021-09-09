@@ -871,7 +871,6 @@
                 let info = {
                     ids: this.ids,
                     asrId: this.currCompany.asrId,
-                    // responseType: 'arraybuffer',
                 }
                 api.getApi_file(this.apiVar.portrait + 'label/export', info).then(res => {
                     let blob = new Blob([res.data], {type: 'application/ms-download;charset=utf-8'});

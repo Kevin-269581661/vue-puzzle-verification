@@ -737,8 +737,6 @@ import timeFormat from "../../commonFun/timeFormat";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 import sheetExcel from "../../commonFun/sheetExcel.js";
-// 方案缓存
-import cacheAdPlan from "../../commonFun/cacheAdPlan";
 // 方案导入结果
 import importResult from "./components/importResult.vue";
 //导入表格
@@ -1005,7 +1003,7 @@ export default {
       sessionData: "", // 登录用户的数据
       FAData: { apID: "" }, // 创建方后台返回的数据
       timeout: null,
-      BDData: { uid: "0", realName: "", saleManageLevel: 0 },
+      BDData: { uid: "0", realName: "", uType: "" },
       HSearch: "", // 获取传值显示‘清除’、‘确定’按钮
       houseNum: ["", ""], // 表头搜索住户数量
       buildNum: ["", ""], // 表头搜索楼栋数量
@@ -1082,7 +1080,6 @@ export default {
       searchBtnAbled: false, // 搜索按钮禁止
       isCityPrice: false, // 判断城市最大价格是否大于2000w
       connectAdDialogVisible: false, // 连排门模态框
-      saleManageLevel: 0, // 销售权限 0地方销售 1全国销售
       asrIDList: [], // 已选点位里存在的公司及城市
       indexData: "", // 首页来源的数据-前置地图选点
       unfinishedData: "", // 未完成方案信息
@@ -1304,11 +1301,10 @@ export default {
     getsessionData() {
       this.sessionData = sessFun.getSess();
       this.customPermission = this.sessionData.customPermission;
-      if (this.sessionData.uType === "BD") {
-        this.BDData.realName = this.sessionData.username; //sessionStorage.getItem('username')
+      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+        this.BDData.realName = this.sessionData.username;
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = this.sessionData.uID;
-        this.saleManageLevel = this.sessionData.saleManageLevel;
         this.isBD = true;
       } else {
         this.isBD = false;
@@ -1342,18 +1338,6 @@ export default {
       this.ActiveMapType = this.indexData.activeMapType;
       // this.mapADList = this.indexData.mapADList
       this.dialogTableVisible = true;
-      if (this.saleManageLevel == 1) {
-        this.selectedOptions = [
-          this.indexData.rid.toString().substring(0, 4) + "00",
-          this.indexData.rid,
-        ];
-        this.throwCity.push({
-          value: this.indexData.rid,
-          label: this.indexData.city,
-        });
-        this.dynamicTags.push(this.indexData.city);
-      } else {
-      }
       this.planForm.throwCity.push(this.indexData.rid);
     },
     // 根据方案详情的rIDs，例如: "广州市,深圳市",构建城市区域
@@ -1481,10 +1465,8 @@ export default {
                 sessionStorage.getItem("session_data")
               ).customPermission;
               if (
-                (this.sessionData.uType == "MD" &&
-                  this.sessionData.mediaManageLevel == 1) ||
-                (this.sessionData.uType == "BD" &&
-                  this.sessionData.saleManageLevel == 2)
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
               ) {
                 head.push("归属公司");
               }
@@ -1557,10 +1539,8 @@ export default {
             sessionStorage.getItem("session_data")
           ).customPermission;
           if (
-            (this.sessionData.uType == "MD" &&
-              this.sessionData.mediaManageLevel == 1) ||
-            (this.sessionData.uType == "BD" &&
-              this.sessionData.saleManageLevel == 2)
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
           ) {
             obj.asNames = item.asNames;
           }
@@ -1698,10 +1678,8 @@ export default {
               sessionStorage.getItem("session_data")
             ).customPermission;
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               head.push("归属公司");
             }
@@ -1772,10 +1750,8 @@ export default {
               adsNum: item.adsNum,
             };
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               obj.asNames = item.asNames;
             }

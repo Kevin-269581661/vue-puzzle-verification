@@ -3,18 +3,23 @@
     <div class="loginBox">
       <div class="logo">
         <img src="../../assets/images/login_logo.png" alt="" />
-        <p>您可信任的社区服务商</p>
+        <p>您可信任的智慧社区服务商</p>
       </div>
       <div class="login">
-        <ul class="loginType">
-          <li v-bind:class="{ active: isActive }" @click="loginType">
-            密码登录
-          </li>
-          <li v-bind:class="{ active: !isActive }" @click="loginType">
-            扫码登录
-          </li>
-        </ul>
-        <div class="loginInput" v-if="isActive">
+        <div class="loginType">
+          <ul class="">
+            <li v-bind:class="{ active: isActive == 1}" @click="loginType(1)">
+              密码登录
+            </li>
+            <li v-bind:class="{ active: isActive == 2 }" @click="loginType(2)">
+              手机登录
+            </li>
+            <li v-bind:class="{ active: isActive == 3}" @click="loginType(3)">
+              扫码登录
+            </li>
+          </ul>
+        </div>
+        <div class="loginInput" v-if="isActive == 1 ">
           <div
             v-if="verified == 'trying'"
             class="login-verify"
@@ -33,19 +38,20 @@
           </div>
           <template v-else>
             <div class="username">
-              <input type="text" placeholder="账户" v-model="username" />
-              <img src="../../assets/images/usericon.png" alt="" />
+              <input type="text" name="username" placeholder="账户" v-model="username" />
+              <img src="../../assets/images/username_icon.png" alt="" />
             </div>
             <div class="password">
               <input
                 type="password"
+                name="password"
                 placeholder="密码"
                 autocomplete="off"
                 v-model="password"
                 @keydown.13="show($event)"
                 @keydown.229="() => {}"
               />
-              <img src="../../assets/images/passicon.png" alt="" />
+              <img src="../../assets/images/password_icon.png" alt="" />
             </div>
           </template>
 
@@ -56,7 +62,33 @@
             <button id="login" @click="slideVerify()">登&nbsp;录</button>
           </div>
         </div>
-        <div class="weixinLogin" v-if="!isActive">
+        <div class="phone_login" v-if="isActive == 2">
+          <template>
+            <div class="phone_num">
+              <input name="phoneNum" placeholder="手机号"  autocomplete="off" v-model.trim()="phoneNum" />
+              <img src="../../assets/images/phone_num_icon.png" alt="" />
+            </div>
+            <div class="verification_code">
+              <input
+                placeholder="验证码"
+                name="verificationCode"
+                autocomplete="off"
+                v-model.trim="verificationCode"
+              />
+              <img src="../../assets/images/verification_code_icon.png" alt="" />
+              <div v-show="!isGetVerificationCode" class="get_code" @click="getVerificationCode">获取验证码</div>
+              <div v-show="isGetVerificationCode" class="wait_code">{{waitTime}}秒后可重发</div>
+            </div>
+          </template>
+
+          <!-- <div class="remeberUser">
+            <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
+          </div> -->
+          <div class="phone_login_btn">
+            <el-button :disabled="!verificationCode" type="primary" id="login" @click="phoneLogin">登&nbsp;录</el-button>
+          </div>
+        </div>
+        <div class="weixinLogin" v-if="isActive == 3">
           <div class="weixinCode" v-show="step === 1">
             <div
               class="ws_waiting"
@@ -109,18 +141,56 @@
         <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a>
       </p>
     </div>
-    <!-- <div v-if="verified == 'trying'" class="login-verify" @click.prevent="verified='fail'">
-      <slide-verify
-        :l="42"
-        :r="10"
-        :w="368"
-        :h="155"
-        slider-text="向右滑动"
-        @success="onSuccess"
-        @fail="onFail"
-        @refresh="onRefresh"
-      ></slide-verify>
-    </div> -->
+    <!-- 绑定手机号码弹框 -->
+    <el-dialog
+      title="绑定手机号码"
+      :visible.sync="bandPhoneDialogVisible"
+      width="372px"
+      :modal="false"
+      top="30vh"
+      :show-close="false"
+      custom-class="band_phone_dialog"
+      >
+      <span v-if="bandPhoneNumSetp == 1">亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span>
+      <span v-if="bandPhoneNumSetp == 2">请问您是否成功绑定了手机号码？</span>
+      <span slot="footer" class="dialog-footer">
+        <div v-if="bandPhoneNumSetp == 1">
+          <el-button type="primary" @click="bandPhoneNum">立即绑定</el-button>
+        </div>
+        <div v-if="bandPhoneNumSetp == 2">
+          <el-button @click="noBand">暂不绑定</el-button>
+          <el-button type="primary" @click="isBandHandler">已绑定</el-button>
+        </div>
+      </span>
+    </el-dialog>
+    <!-- 选择账户弹框 -->
+    <el-dialog
+      title="请选择登录账号"
+      :visible.sync="selectUserDialogVisible"
+      width="328px"
+      center
+      top="30vh"
+      :modal="false"
+      custom-class="users_info"
+      :close-on-click-modal="false"
+      :show-close="false"
+      >
+        <div 
+          class="user_info_card"
+          v-for="item in userList" 
+          :key="item.id"
+          @click="selectUser(item)"
+        >
+           <div class="head_portrait">
+             <img v-if="item.userPortrait" :src="item.userPortrait" alt="">
+             <img v-else src="../../assets/images/user_default_portrait.png" alt="">
+           </div>
+           <div class="info"> 
+             <div class="name">{{item.realName + '(' + item.userName + ')'}}</div>
+             <div class="job" >{{item.roleName + ' | ' + item.companyName}}</div>
+           </div>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +199,7 @@ import { Checkbox, MessageBox, Message } from "element-ui";
 import utils from "../../commonFun/utils.js";
 import api from "../../api/api";
 import { addRoutes } from "../../router";
+import { emitCustomEvent } from '../../commonFun/matomoRule'
 export default {
   name: "login",
   components: {
@@ -138,7 +209,7 @@ export default {
     return {
       verified: "beforeTry",
       loading: false,
-      isActive: true,
+      isActive: 1,
       remeAccount: false,
       username: "", //lxj
       password: "", //qinlin888
@@ -147,13 +218,30 @@ export default {
       websock: "", // websocket连接
       codeImg: "", // 二维码图片地址
       imgLoading: true, // 二维码loading
-      isWs: false,
+      // isWs: false,
       step: 1, // 扫码登录的步骤
       codeLoading: "", // 扫码登录时的loading
       condeLoginData: "", // 扫码登录返回的登录信息
       timer: "", // 轮询验证二维码是否加载完成
       isLogin: false,
-
+      bandPhoneDialogVisible:false ,//绑定手机号提示框
+      bandPhoneNumSetp:1 ,//绑定手机步骤 
+      //手机号码
+      phoneNum:"",
+      //手机验证码
+      verificationCode:"",
+      //是否发送验证码
+      isGetVerificationCode:false,
+      //获取验证码倒计时
+      waitTime:60,
+      //验证码倒计时定时器标记
+      waitTimer:null,
+      //选择账号弹框
+      selectUserDialogVisible:false,
+      //账号列表
+      userList:[],
+      //防止多次发生验证码
+      getCodeLock:false
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -257,55 +345,24 @@ export default {
       }
       api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
         let userMsg = res.data;
-        console.log('登录返回的数据', res.data)
+        // console.log('登录返回的数据', res.data)
         if (userMsg) {
           if (!userMsg.SysCode) {
-            // 储存行业信息
-            this.getIndustry();
-            userMsg.username = name
-            sessionStorage.setItem("session_data", JSON.stringify(userMsg));
-            if (userMsg.uType === 'SM') {
-              addRoutes('SM')
-              this.$router.push('/superOperate')
-            } else if (userMsg.uType === 'MD') {
-              if(userMsg.customPermission.proposalPermission == 1) {
-                // 判断直营媒介
-                addRoutes('MD', true)
-              } else {
-                // 判断加盟媒介(旧权限)
-                addRoutes('MD')
-              }
-              this.$router.push('/media')
-            } else if (userMsg.uType === 'BD') {
-              sessionStorage.setItem("username", name);   // 用户为销售时，存起username以便创建方案的时候使用
-              if(userMsg.customPermission.proposalPermission == 1) {
-                // 判断直营销售
-                addRoutes('BD', true)
-              } else {
-                // 判断加盟销售(旧权限)
-                addRoutes('BD')
-              }
-              this.$router.push('/sale')
-            } else if (userMsg.uType === 'AD') {
-              addRoutes('AD')
-              this.$router.push('/adOwner')
-            } else if (userMsg.uType === 'OP') {
-              addRoutes('OP')
-              this.$router.push('/operate')
-            } else if (userMsg.uType === 'SA') {
-              addRoutes('SA')
-              this.$router.push('/admin')
-            } else if (userMsg.uType === 'DEV') {
-              addRoutes('DEV')
-              this.$router.push('/f_develop')
-            } else if (userMsg.uType === 'EP' && userMsg.backstagePermission == 1) {
-              addRoutes('EP')
-              this.$router.push('/f_engineer/orderList')
-            } else {
-              Message({
-                message: '账号角色权限异常',
-                type: 'warning'
+            //判断是否绑定手机号
+            // 如果没有绑定弹出绑定提示窗口
+            if (!userMsg.bindPhone) {
+              this.$nextTick(()=>{
+                this.loading.close();
+                this.bandPhoneDialogVisible = true
               })
+            }else{
+              //绑定了继续执行下面的流程
+              // 储存行业信息
+              this.getIndustry();
+              userMsg.username = name
+              sessionStorage.setItem("session_data", JSON.stringify(userMsg));
+              //判断权限
+              this.authentication(userMsg, 'userName');
             }
           } else {
               if (userMsg.SysCode == "400403") {
@@ -339,20 +396,22 @@ export default {
       }
     },
     // 判断是否使用扫码登录
-    loginType() {
-      this.isActive = !this.isActive;
-      console.log("isActive", this.isActive, "this.isWs", this.isWs);
-      if (this.isActive === false && this.isWs === false) {
-        console.log("扫码登录");
-        this.isWs = true;
+    /**
+     * @description: 
+     * @param {*} type 1密码登录 2手机登录 3扫码登录
+     * @return {*}
+     */    
+    loginType(type) {
+      //根据点击的登录方式显示active
+      this.isActive = type
+      if(this.isActive === 1){
+        this.notWxLogin()
+      }else if(this.isActive === 2){
+        this.notWxLogin()
+      }else if (this.isActive === 3) {
         this.isLogin = false;
         this.initWebsocket();
-      } else {
-        this.isWs = false;
-        this.isLogin = true;
-        this.websock.close();
-        clearInterval(this.timer);
-      }
+      } 
     },
     // 扫码登录，初始化websocket
     initWebsocket() {
@@ -437,51 +496,8 @@ export default {
           // isLogin.username = name
           sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
           this.codeLoading.close();
-          if (isLogin.uType === "SM") {
-            addRoutes("SM");
-            this.$router.push("/superOperate");
-          } else if (isLogin.uType === "MD") {
-            if (isLogin.customPermission.proposalPermission == 1) {
-              // 判断直营媒介
-              addRoutes('MD', true)
-            } else {
-              // 判断加盟媒介(旧权限)
-              addRoutes('MD')
-            }
-            this.$router.push("/media");
-          } else if (isLogin.uType === "BD") {
-            if (isLogin.customPermission.proposalPermission == 1) {
-              // 判断直营销售
-              addRoutes('BD', true)
-            } else {
-              // 判断加盟销售(旧权限)
-              addRoutes('BD')
-            }
-            this.$router.push('/sale')
-          } else if (isLogin.uType === 'OP') {
-            addRoutes('OP')
-            this.$router.push('/operate')
-          } else if (isLogin.uType === 'AD') {
-            addRoutes('AD')
-            this.$router.push('/adOwner')
-          } else if (isLogin.uType === 'SA') {
-            addRoutes('SA')
-            this.$router.push('/admin')
-          } else if (isLogin.uType === 'DEV') {
-            addRoutes('DEV')
-            this.$router.push('/f_develop')
-          } else if (isLogin.uType === 'EP') {
-            addRoutes('EP')
-            // 是否开通后台权限由小程序端判断
-            this.$router.push("/f_engineer/orderList");
-          } else {
-            Message({
-              message: "账号角色权限异常",
-              type: "warning",
-            });
-            this.isLogin = false;
-            this.initWebsocket();
-          }
+          //判断权限
+          this.authentication(isLogin, 'wx');
         } else {
           Message({
             message: "扫码登录异常！",
@@ -525,6 +541,225 @@ export default {
         ? ""
         : context;
     },
+    // 绑定手机号
+    bandPhoneNum(){
+      //打开提示绑定手机模态框
+      let userCenterUrl = {
+        dev: "https://test-qadp.qinlindmp.com/",
+        test: "https://test-qadp.qinlindmp.com/",
+        gray: "https://user-admin.qinlindmp.com/",
+        prod: "https://user-admin.qinlindmp.com/",
+      }[this.env];
+      const href  = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
+      window.open(href, '_blank')
+      setTimeout(() => {
+        this.bandPhoneNumSetp = 2
+      }, 500);
+    },
+    //  判断是否绑定手机号
+    isBandHandler(){
+      console.log('判断是否绑定手机号');
+      this.bandPhoneDialogVisible = false
+      this.bandPhoneNumSetp = 1
+      this.doLogin()
+    },
+    //暂不绑定
+    noBand(){
+      this.bandPhoneDialogVisible = false
+      setTimeout(() => {
+        this.bandPhoneNumSetp = 1 
+      }, 300);
+    },
+    // 非微信登录 清除状态
+    notWxLogin(){
+      this.isLogin = true;
+      if (this.websock) {
+        this.websock.close();
+        clearInterval(this.timer);
+      }
+    },
+    // 获取验证码
+    getVerificationCode(){
+      //判断是否输入手机号
+      if (this.verifyPhoneNum(this.phoneNum)) return
+      // 防止多次点击
+      if (this.getCodeLock) return
+      this.getCodeLock = true
+      console.log("发送验证码");
+      let params={ phone: this.phoneNum ,type:3}
+      api
+      .getApi(this.apiVar.UCAPI + "/sendVerificationCode", params)
+      .then(({data}) => {
+        console.log('sendVerificationCode: ', data);
+        if (data.SysCode == 200200) {
+          this.isGetVerificationCode = true
+          this.$message.success('验证码已发送')
+          this.waitTimer = setInterval(() => {
+            this.waitTime -= 1;
+            if (this.waitTime <= 0) {
+              clearInterval(this.waitTimer)
+              this.isGetVerificationCode = false
+              this.waitTime=60
+            }
+          }, 1000);
+        }else{
+          this.$message.error(data.MSG)
+        }
+        this.getCodeLock = false
+      }).catch(error=>{
+        this.$message.error('发送验证码失败')
+        this.getCodeLock = false
+      })
+
+     
+    },
+    //校验手机号
+    verifyPhoneNum(phoneNum){
+      let reg = /^(?:(?:\+|00)86)?1\d{10}$/
+      if (!reg.test(phoneNum)) {
+       return this.$message.warning('请输入正确的手机号')
+      }
+    },
+    //手机登录
+    phoneLogin(){
+      if (this.verifyPhoneNum(this.phoneNum)) return
+      console.log('手机登录');
+      //校验是否输入验证码
+      let params ={
+        phone:this.phoneNum,
+        code:this.verificationCode
+      }
+       api
+       .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", params)
+       .then(({data})=>{
+          if (data.SysCode == 200200){
+            //如果有多个账户选择登录用户再进入首页
+            if (data.data.length > 1) {
+              this.userList = data.data
+              this.selectUserDialogVisible = true
+            }else if(data.data.length == 1){
+              //如果只有一个账户则直接进入首页
+              let  loginParams = {
+                id:data.data[0].id,
+                ...params
+              }
+              return api.postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
+            }else {
+              this.$message.warning('该手机号尚未绑定账号')
+            }
+          }else{
+            this.$message.error(data.MSG)
+          }
+       })
+       .then((res)=>{
+         if (!res) return //避免有多个账户时和报错也进行这一步
+         let {data} = res 
+         if (data.SysCode == 200200 && data.data) {
+           let userInfo = data.data
+           this.getIndustry();
+           sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+           this.authentication(userInfo, 'phoneNum');
+         }else{
+           this.$message.error(data.MSG)
+         }  
+       })
+       .catch(error=>{
+         this.$message.error('登录失败')
+       })
+
+    },
+    //选择登录用户
+    selectUser(info){
+      console.log(info,'选择用户登录');
+      let  loginParams = {
+        id:info.id,
+        phone:this.phoneNum,
+        code:this.verificationCode
+      }
+       api
+       .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
+       .then(({data})=>{
+        if (data.SysCode == 200200 && data.data) {
+          let userInfo = data.data;
+          this.getIndustry();
+          sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+          this.authentication(userInfo, 'phoneNum');
+        }else{
+          this.$message.error(data.MSG)
+        }  
+        this.selectUserDialogVisible = false
+       })
+       .catch(error=>{
+          this.$message.error('登录失败')
+       })
+    },
+    
+    /**
+     * @description: 权限判断 保留以前账号登录及扫码登录的逻辑并且兼容手机登录
+     * @param {*} data 登录接口返回的数据
+     * @param {*} loginType 登录方式 
+     * 'userName' 账号密码 
+     * 'phoneNum' 手机登录 
+     * 'wx'       微信扫码
+     * @return {*}
+     */    
+    authentication(data, loginType){
+      let { uType, asName = "", username = "" } = data;
+      if (uType === "ADN_SM") {
+        addRoutes("ADN_SM");
+        this.$router.push("/superOperate");
+      } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(uType)) {
+        if (data.customPermission.proposalPermission == 1) {
+          // 判断直营媒介
+          addRoutes(uType, true)
+        } else {
+          // 判断加盟媒介(旧权限)
+          addRoutes(uType)
+        }
+        this.$router.push("/media");
+      } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(uType)) {
+        if (data.customPermission.proposalPermission == 1) {
+          // 判断直营销售
+          addRoutes(uType, true)
+        } else {
+          // 判断加盟销售(旧权限)
+          addRoutes(uType)
+        }
+        this.$router.push('/sale')
+      } else if (uType === 'ADN_OP') {
+        addRoutes('ADN_OP')
+        this.$router.push('/operate')
+      } else if (uType === 'AD') {
+        addRoutes('AD')
+        this.$router.push('/adOwner')
+      } else if (uType === 'ADN_SA') {
+        addRoutes('ADN_SA')
+        this.$router.push('/admin')
+      } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(uType)) {
+        addRoutes(uType)
+        this.$router.push('/f_develop')
+      } else if (loginType == 'wx' && uType === 'ADN_EP') {
+        addRoutes('ADN_EP')
+        // 是否开通后台权限由小程序端判断
+        this.$router.push("/f_engineer/orderList");
+      }else if (
+        ['userName','phoneNum'].includes(loginType) && 
+        uType === 'ADN_EP' && 
+        data.backstagePermission == 1 ) {
+        addRoutes('ADN_EP')
+        this.$router.push("/f_engineer/orderList");
+      } else {
+        Message({
+          message: "账号角色权限异常",
+          type: "warning",
+        });
+        if (loginType == 'wx') {
+          this.isLogin = false;
+          this.initWebsocket();
+        }
+      }
+      emitCustomEvent({uType, asName, username}, loginType);
+    },
   },
   beforeDestroy() {
     if (this.loading) {
@@ -540,8 +775,8 @@ export default {
 }
 
 .ws_waiting {
-  height: 280px;
   width: 300px;
+  height: 280px;
   margin: 0 auto;
 }
 
@@ -552,45 +787,49 @@ export default {
   }
 }
 
-/deep/ .el-form-item__content {
+ /deep/ .el-form-item__content {
   margin-left: 0 !important;
 }
 .backgroundImg {
   position: fixed;
   top: 0;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   z-index: -1;
 }
 
 .backgroundImg > img {
   width: 100%;
   height: 100%;
-  animation: kenburns 10s infinite;
+          animation: kenburns 10s infinite;
+
   -webkit-animation: kenburns 10s infinite;
-  -o-animation: kenburns 10s infinite;
-  -moz-animation: kenburns 10s infinite;
+     -moz-animation: kenburns 10s infinite;
+       -o-animation: kenburns 10s infinite;
 }
 
 @keyframes kenburns {
   0% {
-    transform: scale(1.1);
+            transform: scale(1.1);
+
     -webkit-transform: scale(1.1);
-    -o-transform: scale(1.1);
-    -moz-transform: scale(1.1);
+       -moz-transform: scale(1.1);
+         -o-transform: scale(1.1);
   }
   50% {
-    transform: scale(1);
+            transform: scale(1);
+
     -webkit-transform: scale(1);
-    -o-transform: scale(1);
-    -moz-transform: scale(1);
+       -moz-transform: scale(1);
+         -o-transform: scale(1);
   }
   100% {
-    transform: scale(1.1);
+            transform: scale(1.1);
+
     -webkit-transform: scale(1.1);
-    -o-transform: scale(1.1);
-    -moz-transform: scale(1.1);
+       -moz-transform: scale(1.1);
+         -o-transform: scale(1.1);
   }
 }
 
@@ -601,9 +840,9 @@ export default {
 }
 
 .logo {
-  text-align: center;
   margin-top: 125px;
   margin-bottom: 34px;
+  text-align: center;
 }
 
 .logo img {
@@ -612,119 +851,167 @@ export default {
 }
 
 .logo p {
+  color: rgba(0, 0, 0, .45);
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
 }
 
 .login {
   position: relative;
   width: 100%;
+  .loginType {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 24px;
+    font-size: 16px;
+    ul {
+      display: flex;
+      justify-content: space-between;
+      width: 364px;
+      li {
+        height: 40px;
+        padding: 0 18px;
+        line-height: 40px;
+        text-align: center;
+        cursor: pointer;
+      }
+    }
+  }
 }
-
-.login .loginType {
-  width: 100%;
-  text-align: center;
-  font-size: 16px;
-}
-
-.loginType li {
-  display: inline-block;
-  width: 100px;
-  height: 40px;
-  text-align: center;
-  margin-bottom: 24px;
-  cursor: pointer;
-  margin-right: 40px;
-  margin-left: 40px;
-}
-
 /*选中*/
 .active {
-  border-bottom: 2px solid #1890ff;
   color: #1890ff;
+  border-bottom: 2px solid #1890ff;
 }
 
 .username input,
-.password input {
-  border: 1px solid #d9d9d9 !important;
-  border-radius: 4px;
+.password input,
+.phone_num input,
+.verification_code input {
+  position: relative;
+  box-sizing: border-box;
   width: 368px;
   height: 38px;
-  outline: none;
-  position: relative;
-  padding-left: 30px;
+  padding-left: 36px;
   font-size: 16px;
-  box-sizing: border-box;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 4px;
+  outline: none;
+  &::-webkit-input-placeholder {
+    height: 24px;
+    color: rgba(0, 0, 0, .25);
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+  }
 }
 
 .username,
 .password,
 .remeberUser,
-.loginBtn {
+.loginBtn,
+.phone_login_btn,
+.phone_num,
+.verification_code {
+  position: relative;
   width: 368px;
   margin: 0 auto;
   text-align: center;
-  position: relative;
 }
-
+.verification_code,
 .password {
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin: 24px auto;
 }
 
-.loginInput {
+.verification_code {
+  .get_code,
+  .wait_code {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    height: 38px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 38px;
+    transform: translateY(-50%);
+    user-select: none;
+  }
+  .get_code {
+    color: #1890ff;
+    cursor: pointer;
+  }
+  .wait_code {
+    color: rgba(0, 0, 0, .25);
+  }
+}
+
+.loginInput,
+.phone_login {
   img {
     position: absolute;
-    left: 10px;
-    top: 13px;
-    width: 12px;
+    top: 50%;
+    left: 12px;
+    width: 16px;
+    transform: translateY(-50%);
   }
 }
 
 input::placeholder {
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, .25);
 }
 
 .remeberUser {
+  margin-bottom: 24px;
   font-size: 14px;
   text-align: left;
-  margin-bottom: 24px;
 }
 
-/deep/ .el-checkbox {
+ /deep/ .el-checkbox {
   color: #666;
 }
 
-/deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
+ /deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
   color: #1890ff;
 }
 
 .loginBtn button {
   width: 100%;
   height: 40px;
-  color: #ffffff;
+  color: #fff;
   font-size: 16px;
-  border: none;
   background-color: #1890ff;
+  border: none;
+  border-radius: 4px;
   outline: none;
   cursor: pointer;
+}
+.phone_login_btn button {
+  width: 100%;
+  height: 40px;
+  color: #fff;
+  font-size: 16px;
+  border: none;
   border-radius: 4px;
+  outline: none;
+  cursor: pointer;
 }
 
 .tip {
-  margin: 25px auto;
   width: 100%;
+  margin: 25px auto;
 }
 
 .tip p {
-  text-align: center;
+  color: #999;
   font-size: 12px;
-  color: #999999;
+  text-align: center;
 }
 
 .tip p a {
-  font-size: 12px;
   color: #1890ff;
+  font-size: 12px;
 }
 
 /*扫码登录*/
@@ -738,17 +1025,16 @@ input::placeholder {
 }
 
 .footer {
+  position: sticky;
+  top:  calc(100vh - 48px);
   width: 100%;
-  text-align: center;
-  position: absolute;
-  bottom: 42px;
-  left: 0;
+  color: rgba(0, 0, 0, .45);
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  text-align: center;
 }
 
 .footer a {
-  color: rgba(0, 0, 0, 0.45);
+  color: rgba(0, 0, 0, .45);
   text-decoration: underline;
 }
 .login-verify {
@@ -758,25 +1044,126 @@ input::placeholder {
   right: 0;
   bottom: 0; */
   position: relative;
-  display: inline-block;
-  transform: translateX(-50%);
   left: 50%;
   z-index: 9;
+  display: inline-block;
   margin-bottom: 16px;
+  transform: translateX(-50%);
   /* background: rgba(0, 0, 0, 0.65); */
   .slide-close {
     position: absolute;
     top: 4px;
     right: 34px;
+    color: rgba(255, 255, 255, .5);
     font-size: 26px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
   }
-  /deep/ .slide-verify {
+   /deep/ .slide-verify {
     canvas {
       border-radius: 4px;
     }
   }
+}
+// 选择账户弹框
+ /deep/ .users_info {
+  .el-dialog__title {
+    color: rgba(0, 0, 0, .85);
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .el-dialog__header {
+    padding: 16px;
+  }
+  .el-dialog__body {
+    padding-top: 0;
+  }
+  .user_info_card {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 280px;
+    height: 64px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, .05);
+    border-radius: 4px;
+    cursor: pointer;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:hover {
+      background: rgba(0, 0, 0, .1);;
+    }
+    .head_portrait {
+      overflow: hidden;
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+      border-radius: 50%;
+      flex-shrink:0;
+      
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .info {
+      .name {
+        height: 20px;
+        margin-bottom: 2px;
+        color: #000;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+      .job {
+        height: 18px;
+        width: 220px;
+        color: #999;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 18px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+    }
+  }
+}
+//提示绑定手机号码弹窗
+ /deep/  .band_phone_dialog{
+   width: 372px;
+   background: #FFFFFF;
+   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+   border-radius: 4px;
+   .el-dialog__header{
+     padding: 12px 24px 8px;
+     .el-dialog__title{
+       height: 24px;
+       font-size: 16px;
+       font-family: PingFangSC-Medium, PingFang SC;
+       font-weight: 500;
+       color: rgba(0, 0, 0, 0.85);
+       line-height: 24px;
+     }
+   }
+   .el-dialog__body{
+     padding: 0 24px;
+     span{
+       height: 44px;
+       font-size: 14px;
+       font-family: PingFangSC-Regular, PingFang SC;
+       font-weight: 400;
+       color: rgba(0, 0, 0, 0.65);
+       line-height: 22px;
+     }
+   }
+   .el-dialog__footer{
+     padding: 16px 24px 24px;
+   }
 }
 </style>

@@ -109,7 +109,7 @@
             // 获取session数据;根据登录用户的权限设置权限
             getBasicData(){
                 console.log('用户信息',this.sessionData)
-                if (this.sessionData.asrID == '999') {
+                if (this.sessionData.ascType == 0) {
                     this.getDirectSales()
                 } else {
                     let cityArr = [

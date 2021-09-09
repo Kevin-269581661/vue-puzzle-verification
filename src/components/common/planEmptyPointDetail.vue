@@ -28,7 +28,7 @@
             <div class="handleBtn">
               <!--<el-button plain>导出</el-button>-->
               <el-tooltip
-                v-if="role == 'MD' && planDetail.lockStatus == 1"
+                v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && planDetail.lockStatus == 1"
                 effect="dark"
                 content="从今天起重新预锁七天"
                 placement="top"
@@ -36,14 +36,13 @@
                 <el-button @click="reLock">预 锁</el-button>
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
-                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD'" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && role=='BD' && sessionData.saleManageLevel != 2" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
-                <el-button v-if="customPermission.proposalPermission && role == 'MD'" plain @click="editPlan">配点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)" plain @click="createShareCode">协同选点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && sessionData.uType != 'ADN_BD_KA'" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
+                <el-button v-if="customPermission.proposalPermission && ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" plain @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"
                   @click="edit()"
-                  v-if="customPermission.proposalPermission && (role == 'MD' || role == 'BD')"
-                  
+                  v-if="customPermission.proposalPermission && (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) || ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role))"
                   >编辑</el-button
                 >
               </template>
@@ -146,8 +145,8 @@
                         </el-form-item>
                         <el-form-item
                           v-if="
-                            sessionData.mediaManageLevel == 1 ||
-                            sessionData.saleManageLevel == 2
+                            sessionData.uType == 'ADN_MD_COUNTRY' ||
+                            sessionData.uType == 'ADN_BD_KA'
                           "
                           label="归属公司："
                         >

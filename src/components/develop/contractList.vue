@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-17 20:11:38
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-30 10:49:51
+ * @LastEditTime: 2021-08-27 10:44:02
  * @FilePath: /frontend/src/components/develop/contractList.vue
 -->
 <template>
@@ -44,8 +44,8 @@
                     <!-- “业务员”只有开发总监与资产人员可筛选 -->
                     <template
                       v-if="
-                        sessionData.devManageLevel == 1 ||
-                        sessionData.devManageLevel == 2
+                        sessionData.uType == 'ADN_DEV_ASSET' ||
+                        sessionData.uType == 'ADN_DEV_LEADER'
                       "
                     >
                       <el-option
@@ -118,7 +118,7 @@
               <el-button type="primary" @click="searchFormat">搜索</el-button>
               <el-button plain @click="contractSearchForm">重置</el-button>
               <el-button
-                v-if="sessionData.devManageLevel == 0"
+                v-if="sessionData.uType == 'ADN_DEV'"
                 plain
                 size="small"
                 @click="routeCreateContract"
@@ -501,7 +501,11 @@ export default {
   data() {
     return {
       // 角色：0-开发人员 1-资产人员 2-开发总监
-      roleArr: ["0", "1", "2"],
+      roleArr: {
+        "ADN_DEV": 0,
+        "ADN_DEV_ASSET": 1,
+        "ADN_DEV_LEADER": 2
+      },
       // 合同类型：0-首签  1-续约 2-加门 3-补充
       contractTypeArr: {
         0: "首签合同",
@@ -835,7 +839,7 @@ export default {
     },
     // 获取当前列表操作权限
     getContractOperation(row) {
-      let tempNo = `${this.roleArr[this.sessionData.devManageLevel]}${
+      let tempNo = `${this.roleArr[this.sessionData.uType]}${
           row.dcType
         }${row.dcState}`,
         tempArr = [];

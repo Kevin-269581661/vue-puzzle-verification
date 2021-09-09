@@ -325,6 +325,9 @@
                     city: [
                         {required: true, message: '请选择城市', trigger: 'change'},
                     ],
+                    resName: [
+                        {required: true, message: '请选择小区', trigger: 'blur'},
+                    ],
                     // resName:[
                     //     {validator: validateresName, trigger: 'blur' },
                     // ]
@@ -402,7 +405,7 @@
             },
             getSessionData() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
-                if (this.sessionData.mediaManageLevel == 1) {
+                if (this.sessionData.uType == 'ADN_MD_COUNTRY') {
                     this.showCreateBtn = false
                 }
             },

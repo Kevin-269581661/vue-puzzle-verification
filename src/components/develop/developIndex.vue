@@ -155,7 +155,7 @@
       <el-row class="index-row">
         <index-custom-card :height="'unset'">
           <template slot="head">{{
-            sessionData.devManageLevel == 2 ? "待处理事项" : "合同动态"
+            sessionData.uType=="ADN_DEV_LEADER" ? "待处理事项" : "合同动态"
           }}</template>
           <template slot="content">
             <div style="padding: 24px">
@@ -215,7 +215,7 @@
                 <el-table-column prop="price" label="操作" width="160">
                   <template slot-scope="scope">
                     <span
-                      v-if="sessionData.devManageLevel == 2"
+                      v-if="sessionData.uType=='ADN_DEV_LEADER'"
                       class="table-row__btn"
                       @click="showContractReview(scope.row)"
                       >处理</span
@@ -235,7 +235,7 @@
       </el-row>
       <el-row
         v-if="
-          sessionData.devManageLevel == 1 || sessionData.devManageLevel == 2
+          sessionData.uType == 'ADN_DEV_ASSET' || sessionData.uType=='ADN_DEV_LEADER'
         "
         class="index-row"
       >
@@ -448,13 +448,13 @@ export default {
   },
   mounted() {
     this.getSession();
-    if (this.sessionData.devManageLevel == 1) {
+    if (this.sessionData.uType == 'ADN_DEV_ASSET') {
       this.linkArrNew.push({
         imgurl: require("../../assets/images/contractConfig.png"),
         title: "合同设置",
         link: "./f_develop/contractCfg",
       });
-    } else if (this.sessionData.devManageLevel == 0) {
+    } else if (this.sessionData.uType == 'ADN_DEV') {
       this.linkArrNew.push({
         imgurl: require("../../assets/images/contract.png"),
         title: "新建合同",
@@ -643,7 +643,7 @@ export default {
     // 合同动态列表
     getContractNews() {
       let apiUri = "/report/devContract/getContractNews";
-      if (this.sessionData.devManageLevel == 2) {
+      if (this.sessionData.uType=='ADN_DEV_LEADER') {
         apiUri = "/report/devContract/getVerifyDataList";
       }
       api

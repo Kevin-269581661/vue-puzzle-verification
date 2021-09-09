@@ -43,10 +43,10 @@
                     <img class="user_avator" :src="avator" alt="">
                     {{userName}}
                 </template>
-                <span class="my-balance">余额：¥{{balance}}</span>
+                <span class="my-balance">余额：{{balance | moneyFormat("¥", 0)}}</span>
                 <el-menu-item index="/sale/myInfo" class="index-menu-item">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
-                <el-menu-item index="/login" class="index-menu-item">退出登陆</el-menu-item>
+                <el-menu-item index="/login" class="index-menu-item">退出登录</el-menu-item>
             </el-submenu>
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
@@ -94,7 +94,7 @@
         },
         data(){
             return{
-                balance: '0.00',
+                balance: 0,
                 newDate: new Date().getFullYear(),
                 userName: "",
                 openWxBox: false,
@@ -112,14 +112,17 @@
         mounted(){
             // 是否显示社区画像
             this.getIsShowQinlin()
-            this.balance = getBalance()
+            this.getBalance()
         },
         methods:{
+            async getBalance() {
+                this.balance = await getBalance()
+            },
             // 获取用户名称和角色
             getUserName() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== 'BD') {
+                    if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

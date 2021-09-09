@@ -263,7 +263,7 @@
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
-                if (this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == 1) {
+                if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
                     this.$router.push('/*')
                 }
             },

@@ -609,7 +609,7 @@
             }
         },
         mounted(){
-            if (this.sessionData.asrID !== '999') {
+            if (this.sessionData.ascType > 0) {
                 this.isAllCity = false
             } else {
                 this.isAllCity = true

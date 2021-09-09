@@ -819,10 +819,7 @@ export default {
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();
-      this.isAllMedia =
-        this.sessionData.uType == "MD" && this.sessionData.mediaManageLevel == 1
-          ? true
-          : false;
+      this.isAllMedia = this.sessionData.uType == "ADN_MD_COUNTRY" ? true : false;
     },
     // 媒介贡献弹窗
     getContributeBox() {
@@ -1388,7 +1385,7 @@ export default {
     if (indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)) {
       this.isShowNum = true;
     }
-    if (this.sessionData.mediaManageLevel == 1) {
+    if (this.sessionData.uType == 'ADN_MD_COUNTRY') {
       this.linkArrNew.pop();
     }
     this.appCenter = appCenter;

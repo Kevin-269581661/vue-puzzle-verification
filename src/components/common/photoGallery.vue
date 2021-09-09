@@ -279,12 +279,12 @@
         methods: {
             getSessionData() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if (this.sessionData.asrID === '999' && this.sessionData.uType === 'SM') {
+                if (this.sessionData.ascType == 0 && this.sessionData.uType === 'ADN_SM') {
                     this.isShowAllTab = false
                 } else {
                     this.isShowAllTab = true
                 }
-                if (this.sessionData.uType === 'MD' || this.sessionData.uType === 'BD') {
+                if (["ADN_MD_COUNTRY", "ADN_MD", "ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
                     this.isShowOrderPhoto = true
                 } else {
                     this.isShowOrderPhoto = false

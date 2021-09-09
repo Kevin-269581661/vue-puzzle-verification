@@ -15,7 +15,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/f_develop">首页</el-menu-item>
-            <el-submenu v-if="sessionData.devManageLevel==1" index="2" :show-timeout="80">
+            <el-submenu v-if="sessionData.uType=='ADN_DEV_ASSET'" index="2" :show-timeout="80">
                 <template slot="title">合同管理</template>
                 <el-menu-item index="/f_develop/contractList">合同列表</el-menu-item>
                 <el-menu-item index="/f_develop/contractCfg">合同设置</el-menu-item>
@@ -28,7 +28,7 @@
                     {{userName}}
                 </template>
                 <el-menu-item index="/f_develop/myInfo">个人中心</el-menu-item>
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login">退出登录</el-menu-item>
             </el-submenu>
         </el-menu>
 
@@ -87,7 +87,7 @@
             getUserName() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType != 'DEV') {
+                    if (!['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(this.sessionData.uType)) {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

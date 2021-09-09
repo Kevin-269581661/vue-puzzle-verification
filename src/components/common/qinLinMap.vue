@@ -1969,7 +1969,7 @@ export default {
       // QFAD || QADN
       if (
         (this.systemSource === 1 && this.sessionData.userType === 1) ||
-        (this.systemSource === 0 && this.sessionData.uType === "SM")
+        (this.systemSource === 0 && this.sessionData.uType === "ADN_SM")
       ) {
         delete params.suID;
       }
@@ -2826,7 +2826,7 @@ export default {
       // QFAD || QADN
       if (
         (this.systemSource === 1 && this.sessionData.userType === 1) ||
-        (this.systemSource === 0 && this.sessionData.uType === "SM")
+        (this.systemSource === 0 && this.sessionData.uType === "ADN_SM")
       ) {
         delete params.suID;
       }
@@ -4130,10 +4130,8 @@ export default {
               "spareAdsCount",
             ];
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_COUNTRY")
             ) {
               tHeader.push("归属公司");
               filterVal.push("asNames");

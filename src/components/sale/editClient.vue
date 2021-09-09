@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 <div class="content_bottom_btn">
-                    <el-button type="primary" @click="submitData" >保存</el-button>
+                    <el-button type="primary" @click="submitData">保存</el-button>
                     <el-button plain @click="goBack" >取消</el-button>
                 </div>
             </div>

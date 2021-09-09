@@ -28,7 +28,7 @@
                 </template>
                 <el-menu-item index="/adOwner/myInfo">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login">退出登录</el-menu-item>
             </el-submenu>
         </el-menu>
         <div class="message-box">
@@ -151,7 +151,7 @@
                         });
                         this.$router.push("/login");
                     }
-                    if(this.sessionData.mediaManageLevel == 1){
+                    if(this.sessionData.uType == 'ADN_MD_COUNTRY'){
                         this.isNation = true
                     }
                 } else {

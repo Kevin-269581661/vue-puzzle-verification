@@ -103,7 +103,6 @@ export default {
     // 获取session数据
     getSessionData() {
       this.sessionData = sessFun.getSess();
-      this.role = this.sessionData.uType;
     },
     cancelDown() {
       this.messageFun("info", "取消此操作");
@@ -222,10 +221,8 @@ export default {
                 "媒体数量(面)",
               ];
               if (
-                (this.sessionData.uType == "MD" &&
-                  this.sessionData.mediaManageLevel == 1) ||
-                (this.sessionData.uType == "BD" &&
-                  this.sessionData.saleManageLevel == 2)
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
               ) {
                 head.push("归属公司");
               }
@@ -298,10 +295,8 @@ export default {
             adsNum: item.adsNum || 0,
           };
           if (
-            (this.sessionData.uType == "MD" &&
-              this.sessionData.mediaManageLevel == 1) ||
-            (this.sessionData.uType == "BD" &&
-              this.sessionData.saleManageLevel == 2)
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
           ) {
             obj.asNames = item.asNames;
           }
@@ -432,10 +427,8 @@ export default {
                 sessionStorage.getItem("session_data")
               ).customPermission;
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               head.push("归属公司");
             }
@@ -507,10 +500,8 @@ export default {
               adsNum: item.adsNum,
             };
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               obj.asNames = item.asNames;
             }
@@ -619,10 +610,8 @@ export default {
                   "空闲日期",
                 ];
                 if (
-                  (this.sessionData.uType == "MD" &&
-                    this.sessionData.mediaManageLevel == 1) ||
-                  (this.sessionData.uType == "BD" &&
-                    this.sessionData.saleManageLevel == 2)
+                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                  (this.sessionData.uType == "ADN_BD_KA")
                 ) {
                   head.push("归属公司");
                 }
@@ -702,10 +691,8 @@ export default {
               date: date,
             };
             if (
-              (this.sessionData.uType == "MD" &&
-                this.sessionData.mediaManageLevel == 1) ||
-              (this.sessionData.uType == "BD" &&
-                this.sessionData.saleManageLevel == 2)
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               obj.asName = item.asName;
             }
@@ -755,7 +742,7 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn() {
-      return !(this.sessionData.uType == "BD" && this.sessionData.customPermission.proposalPermission == 1);
+      return !(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
     },
   },
 };

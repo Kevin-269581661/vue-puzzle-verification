@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-25 16:57:03
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-16 00:32:18
+ * @LastEditTime: 2021-08-27 10:21:46
  * @FilePath: /frontend/src/components/develop/components/payLog.vue
 -->
 <template>
@@ -43,7 +43,7 @@
                 </el-tooltip>
                 <el-dropdown
                   v-if="
-                    sessionData.devManageLevel == 2 && logItem.payState == 0
+                    sessionData.uType=='ADN_DEV_LEADER' && logItem.payState == 0
                   "
                   :hide-on-click="false"
                   trigger="click"
@@ -86,7 +86,7 @@
                 </el-dropdown>
                 <span
                   v-if="
-                    sessionData.devManageLevel == 0 && logItem.payState == -1
+                    sessionData.uType == 'ADN_DEV' && logItem.payState == -1
                   "
                   class="el-dropdown-link"
                   @click="reApplyPayFun(logItem)"
@@ -95,7 +95,7 @@
                 </span>
                 <span
                   v-if="
-                    sessionData.devManageLevel == 1 && logItem.payState == 1
+                    sessionData.uType == 'ADN_DEV_ASSET' && logItem.payState == 1
                   "
                   class="el-dropdown-link"
                   @click="finishPayFun(logItem)"
@@ -104,7 +104,7 @@
                 </span>
                 <el-popconfirm
                   v-if="
-                    sessionData.devManageLevel == 1 && logItem.payState == 2
+                    sessionData.uType == 'ADN_DEV_ASSET' && logItem.payState == 2
                   "
                   popper-class="handle-btn-pop"
                   class="no-pop-wrap"

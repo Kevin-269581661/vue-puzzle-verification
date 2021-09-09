@@ -152,7 +152,7 @@ export default {
 			}
 			console.log('ctList-----------', ctList);
 			let uType = JSON.parse(sessionStorage.getItem('session_data')).uType;
-			if((uType == 'SM') && (!ctList.length)){
+			if((uType == 'ADN_SM') && (!ctList.length)){
 				Message.info('请选择消费偏好');
 				return;
 			}

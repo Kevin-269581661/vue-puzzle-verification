@@ -25,7 +25,7 @@
                     </el-select>
                     <el-select v-model="searchInfo.state" placeholder="请选择状态" size="small" class="marginR">
                         <el-option label="正常" value="1"></el-option>
-                        <el-option label="禁用" value="0"></el-option>
+                        <el-option label="禁用" value="-1"></el-option>
                     </el-select>
                     <el-button type="primary" icon="el-icon-search" @click="search()" :loading="isSearch" class="marginR">搜索</el-button>
                     <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
@@ -66,7 +66,7 @@
                             <template slot-scope="scope">
                                 <div>
                                     <span v-if="scope.row.uState ==1" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">禁用</span>
-                                    <span v-if="scope.row.uState ==0" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
+                                    <span v-if="scope.row.uState ==-1" style="color: #108EE9;cursor: pointer;" @click="isForbidden(scope.row)">开通</span>
                                     <span v-if="isShowResetBtn" style="color: #108EE9;cursor: pointer;margin-left: 8px" @click="reSetPassword(scope.row)">重置</span>
                                 </div>
                             </template>
@@ -226,10 +226,10 @@
                 this.sessionData = sessFun.getSess();
                 let role = this.sessionData.uType;
                 console.log(role);
-                if (role != "SA" && role != "SM") {
+                if (role != "ADN_SA" && role != "ADN_SM") {
                     this.showNewBtn = false;
                 }
-                if (role === "SA") {
+                if (role === "ADN_SA") {
                     this.isShowResetBtn = true
                 } else {
                     this.isShowResetBtn = false
@@ -307,7 +307,7 @@
                     joinTime: item.joinTime || '',
                     uState: item.uState || '',
                     position: item.position || '',
-                    phone:item.phone || '',
+                    phone: item.phone || '',
                     division: item.division || '',
                     puID: item.puID || '',
                     rID: item.rID || '',
@@ -339,7 +339,7 @@
             stateToText(status) {
                 let statusText = [
                     {text: "正常", status: 1, color: 'rgba(82,196,26,1)'},
-                    {text: "禁用", status: 0, color: 'rgba(245,34,45,1)'}
+                    {text: "禁用", status: -1, color: 'rgba(245,34,45,1)'}
                 ];
                 for (let data of statusText) {
                     if (data.status == status) {
@@ -404,14 +404,14 @@
                             uid: this.sessionData.uID,
                             token: this.sessionData.token,
                             toid: row.uID,
-                            ustate: row.uState ? 0 : 1
+                            ustate: row.uState == 1 ? -1 : 1
                         };
                         api.postApi(this.apiVar.UCAPI + "/CtrlUser", info)
                             .then(res => {
                                 console.log(res.data);
                                 if (res.data.SysCode == 200200) {
                                     Message.success(res.data.MSG);
-                                    row.uState = row.uState ? 0 : 1;
+                                    row.uState = row.uState  == 1 ? -1 : 1;
                                 } else {
                                     Message.warning(res.data.MSG);
                                 }

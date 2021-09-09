@@ -312,7 +312,7 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                               方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                           </span>
                                                                 </p>
@@ -346,7 +346,7 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{sessionData.uType === 'MD' ? item.beOccupieApName : '******'}}</span>
+                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                               方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                           </span>
                                                                 </p>
@@ -874,7 +874,7 @@
                 <li v-for="item in beOccupiedAdsData">
                     <p>
                         <span style="color: #333">占点方案：</span>
-                        <span v-if="sessionData.uType === 'MD'"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
+                        <span v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"><span style="font-weight: bold">{{item.beOccupieApName}}</span> 方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）</span>
                         <span v-else style="font-weight: bold">******</span>
                     </p>
                     <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
@@ -1394,7 +1394,6 @@
                 showErrorData:{success:0,error:0,errorList:[]},
                 mediaLevelNum:{ALevel: 0, BLevel: 0, CLevel: 0,ANum:0,BNum:0},
                 // asrIDList: [],                 // 已选点位里存在的公司及城市
-                saleManageLevel: 0,            // 销售权限 0地方销售 1全国销售
                 /*方案排斥*/
                 activeSelect: '1',                 //
                 rejectAdPlan: [],                  // 排斥方案选项
@@ -1943,7 +1942,7 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
-                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
                 switch (this.customPermission.patrolPermission) {
@@ -1993,7 +1992,7 @@
                         adsNum: 1,
                         timeRange: '',
                     };
-                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
                     }
                     // 巡点权限
@@ -2058,11 +2057,10 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 this.customPermission = this.sessionData.customPermission;
-                if (this.sessionData.uType === 'BD') {
-                    this.BDData.realName = this.sessionData.username //sessionStorage.getItem('username')
+                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                    this.BDData.realName = this.sessionData.username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID
-                    this.saleManageLevel = this.sessionData.saleManageLevel
                     this.isBD = true
                 } else {
                     this.isBD = false
@@ -3178,35 +3176,6 @@
                 console.log('城市详情cityDetailList',cityDetailList)
                 return cityDetailList
             },
-            // 根据城市和公司id返回pdid
-            /* getpdidByCityAndMType(mType, city, asrID) {
-                console.log('this.pdidList', this.pdidList, mType, city, asrID)
-                for (let key of this.pdidList) {
-                    if (mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID) {
-                        return key.pdID
-                    } else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID) {
-                        return key.pdID
-                    }
-                }
-                return false
-            }, */
-            // 生成协同链接
-            /* CreateShareADSFun() {
-                let urlPath = location.href
-                console.log(urlPath)
-                let aiInfo = {apname: this.planName, cname: this.cName, cband: this.cBand}
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apid: this.editApid,
-                    aiinfo: JSON.stringify(aiInfo)
-                }
-                api.postApi(this.apiVar.Advertisement+'/CreateShareCode', params).then(res => {
-                    console.log('生成协同选点aiCode', res)
-                    this.shareADUrl = this.apiVar.qadnUrl + '/shareADList?apid=' + this.editApid + '&aicode=' + res.data.aiCode
-                    this.active = 3
-                })
-            }, */
             // 继续创建
             continueCreate() {
                 // 媒介创建方案或者是加盟销售创建方案
@@ -4726,8 +4695,9 @@
                         this.BDData.uid = this.FAInfo.suID || ''
                         this.BDData.asrIDs = this.FAInfo.asrIDs || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if ((this.sessionData.uType === 'BD' && (this.sessionData.saleManageLevel == '1' || this.sessionData.saleManageLevel == '2'))
-                            ||(this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1')) {
+                        if ((this.sessionData.uType === 'ADN_BD_KA')
+                            ||(this.sessionData.uType === 'ADN_BD_COUNTRY')
+                            ||(this.sessionData.uType === 'ADN_MD_COUNTRY')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
                             this.getCityList()
@@ -4781,7 +4751,6 @@
             // 根据方案详情的rIDs，例如: "广州市,深圳市",构建城市区域
             setCityAndArea(cityData) {
                 let cityArr = cityData
-                // console.log('cityArr',cityArr)
                 let cityList = []
                 for (let j = 0; j < cityArr.length; j++) {
                     console.log('用户cityArr', cityArr[j])
@@ -4805,7 +4774,7 @@
                 this.area = areaList
                 this.cityOptions = areaArr.province()
             },
-            // 获取权限下的城市列表 saleManageLevel
+            // 获取权限下的城市列表
             getCityList(){
                 let cityArea = JSON.parse(sessionStorage.getItem('cityArea'))
                 console.log('获取权限下的城市列表cityArea',cityArea)

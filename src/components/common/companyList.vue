@@ -155,7 +155,7 @@
                     },
                     {
                         label: '禁用',
-                        value: 0,
+                        value: -1,
                         color: 'rgba(245,34,45,1)'
                     }
                 ],
@@ -258,7 +258,7 @@
                 info = {
                     ...info,
                     ...(keyword && {ascName: keyword}),
-                    ...(state>=0 && {astate: state}),
+                    ...(state && {astate: state}),
                     ...(type>=0 && {asType: type}),
                     ...(orderby && {orderby}),
                     ...(desc!=='' && desc>=0 &&{desc})
@@ -270,7 +270,7 @@
                 let obj = {
                     asrID: item.asrID || '',
                     name: item.asName || '',
-                    state: item.ascState>=0 ? item.ascState : '',
+                    state: item.ascState ? item.ascState : '',
                     type: item.ascType>=0 ? item.ascType : '',
                     createTime: item.createTime || '',
                 };
@@ -422,7 +422,7 @@
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
                         asrID: row.asrID,
-                        ascState: row.state==1 ? 0: 1
+                        ascState: row.state==1 ? -1: 1
                     };
                     console.log('info----', row.state, info);
                     api.postApi(this.apiVar.UCAPI + "/UpdateAscState", info)
@@ -430,7 +430,7 @@
                             console.log(res.data);
                             if (res.data.SysCode == 100200) {
                                 Message.success("操作成功");
-                                row.state = row.state==1 ? 0 : 1;
+                                row.state = row.state==1 ? -1 : 1;
                             } else {
                                 Message.warning(res.data.MSG);
                             }

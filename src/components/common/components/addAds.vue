@@ -640,7 +640,7 @@
                         this.FAInfo = info;
                         this.sUID = this.FAInfo.suID
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
-                        if (this.sessionData.uType === 'MD' && this.sessionData.mediaManageLevel == '1') {
+                        if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
                             this.getCityList()
@@ -666,7 +666,7 @@
                     console.log(res);
                 });
             },
-            // 获取权限下的城市列表 saleManageLevel
+            // 获取权限下的城市列表
             getCityList(){
                 let cityArea = JSON.parse(sessionStorage.getItem('order_citylist'))
                 console.log('获取权限下的城市列表cityArea',cityArea)

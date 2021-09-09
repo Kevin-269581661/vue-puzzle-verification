@@ -16,7 +16,7 @@
                         <h4>
                             <img src="../../assets/images/planlogo.png" alt="">{{orderDetail.apName}}
                             <p>{{orderDetail.apQC}}
-                                <i class="el-icon-edit" v-if="(role=='MD')" @click="changeCID = true"
+                                <i class="el-icon-edit" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" @click="changeCID = true"
                                    :class="{changeCID:!usableBtn}"
                                    ></i>
                             </p>
@@ -32,9 +32,9 @@
                             </span>
                         </el-dialog>
                         <div class="handleBtn">
-                            <el-button type="plain" @click="changePain()" v-if="role=='MD'">换 画
+                            <el-button type="plain" @click="changePain()" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)">换 画
                             </el-button>
-                            <el-select v-if="role=='MD' && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
+                            <el-select v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && planPanel=='first' && orderDetail.apState != 5 && orderDetail.apState != 0"
                                 size="small" value="换 点" placeholder="换 点" class="change-point-select">
                                 <el-option label="更改排期" value="1"
                                     
@@ -70,7 +70,7 @@
                                     </el-button>
                                     <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" >添加点位</el-button>-->
                                     <el-button style="float: right;position: relative;top: 2px;margin-left: 3px" plain
-                                               type="default" v-if="(role!='EP')"
+                                               type="default" v-if="(role!='ADN_EP')"
                                                @click="getPointRecord">更改记录
                                     </el-button>
                                     <el-button plain type="default" icon="el-icon-download"
@@ -106,7 +106,7 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush || '--'}}</span>
                                                 </el-form-item>
-                                                <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
+                                                <el-form-item v-if="sessionData.uType == 'ADN_MD_COUNTRY' || sessionData.uType == 'ADN_BD_KA'" label="归属公司：">
                                                     <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
                                             </el-form>
@@ -203,7 +203,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane v-if="role != 'EP' && orderDetail.planMode != 1" label="报价单" name="second">
+                    <el-tab-pane v-if="role != 'ADN_EP' && orderDetail.planMode != 1" label="报价单" name="second">
                         <div>
                             <ap-quotation ref="apQuotation" @detailInfo="setInfo" :quotationData="quotation"
                                           :copydata="copyAsidArr" :isorder="true" :shopingList="[]"
@@ -214,12 +214,12 @@
                         <material :material="materialInfo" :daomater="daoInfo" :loading="maLoading" :isOrder="true"
                                   v-if="planPanel=='third'"></material>
                     </el-tab-pane>
-                    <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='OP'">
+                    <el-tab-pane label="上刊报告" name="forth" :disabled="usableBtn||role =='ADN_OP'">
                         <div class="changepic_box" v-if="planPanel=='forth'">
                             <change-pic :type="1" :order-detail="orderDetail" :scheduleList="scheduleList" :adMaterialRemarkList="adMaterialRemarkList"></change-pic>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='OP'">
+                    <el-tab-pane label="下刊报告" name="fifth" :disabled="usableBtn||role =='ADN_OP'">
                         <div class="changepic_box" v-if="planPanel=='fifth'">
                             <change-pic :type="2" :order-detail="orderDetail" :scheduleList="scheduleList" :adMaterialRemarkList="adMaterialRemarkList"></change-pic>
                         </div>
@@ -347,7 +347,7 @@
                                             </el-form-item>
                                         </el-form>
                                         <el-form label-position="left" inline class="demo-table-expand">
-                                            <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司:">
+                                            <el-form-item v-if="sessionData.uType == 'ADN_MD_COUNTRY' || sessionData.uType == 'ADN_BD_KA'" label="归属公司:">
                                                 <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                             </el-form-item>
                                             <template v-if="customPermission.patrolPermission">
@@ -891,7 +891,11 @@
             // 选点排期
             this.getMaterInfo();
 
-            if (this.role == 'MD' || this.role == 'BD') {
+            if (
+                ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)
+                ||
+                ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
+            ) {
                 // 获取换画列表
                 this.getPainlist();
             }
@@ -1170,7 +1174,7 @@
                     const {export_json_to_excel} = require('../../vendorExcel/Export2Excel');
                     const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸', '可视画面', '广告限制', '媒体备注', '详细地址', '地图中心点'];
                     const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress', 'mapCenter'];
-                    if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         tHeader.push('归属公司');
                         filterVal.push('asName')
                     }

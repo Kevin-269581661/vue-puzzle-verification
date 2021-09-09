@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-11 17:32:36
  * @LastEditors: penglei
- * @LastEditTime: 2021-08-11 17:38:42
+ * @LastEditTime: 2021-09-03 12:05:39
  * @FilePath: /frontend/src/components/develop/components/contractInput.vue
 -->
 <template>
@@ -677,6 +677,33 @@ export default {
         this.$set(this.contractForm, "mediaNewCnt", 0);
       }
     },
+    /**
+     * @description: 续签合同不保留原赠送信息和费用信息
+     */    
+    resetOtherInfo() {
+      if (!this.edit && (this.handleType == 1)) {
+        Object.assign(this.contractForm, {
+          freeCarGateCnt: "",
+          freeGuardrailDoorCnt: "", 
+          freeGuardrailCnt: "",
+          freeTRGateCnt: "",
+          freeWingGateCnt: "",
+          freeAccessControlCnt: "",
+          freeICCardCnt: "",
+          freeIDCardCnt: "",
+
+          isDevFee: "",
+          devPayType: "",
+          devFee: "",
+          devDate: "",
+
+          isVenueFee: "",
+          venuePayType: "",
+          venueFee: "",
+          venueDate: "",
+        })
+      }
+    },
     // 开发费重置
     isDevFeeChange() {
       this.contractForm.devPayType = "";
@@ -799,6 +826,8 @@ export default {
               }
             }
             this.resetMediaNewCnt();
+            // 续签合同重置赠送和费用信息
+            this.resetOtherInfo();
             if (this.startDate) {
               // 合同续签时合同开始日期
               this.contractForm.startDate = this.startDate;

@@ -24,7 +24,7 @@
                                 <el-input v-model.trim="scope.row.detailUpdate" placeholder="请输入描述" class=" longText" v-if="scope.row.showInput"></el-input>
                             </template>
                         </el-table-column>
-                        <el-table-column v-if="role=='SA'" label="操作" min-width="7.1%">
+                        <el-table-column v-if="role=='ADN_SA'" label="操作" min-width="7.1%">
                             <template slot-scope="scope">
                                 <div v-if="!scope.row.changeBtn">
                                     <el-button type="text" size="small" class="editAD" @click.native.prevent="editAD(scope.row, scope.$index)">编辑</el-button>
@@ -37,7 +37,7 @@
                             </template>
                         </el-table-column>
                     </el-table>
-                    <div v-if="role=='SA'">
+                    <div v-if="role=='ADN_SA'">
                         <div class="addAdlimit" @click="adlimitAddFun()">+ 新增广告类型</div>
                     </div>
                 </div>
@@ -95,13 +95,14 @@ export default {
                 .then(res => {
                     console.log(res.data);
                     if (res.data.SysCode ==200200) {
-                        this.ADlist = res.data.data;
-                        for (let data of this.ADlist) {
+                        let tempADlist = res.data.data;
+                        for (let data of tempADlist) {
                             data.showInput = false;
                             data.changeBtn = false;
                             data.typeUpdate = "";
                             data.detailUpdate = "";
                         }
+                        this.ADlist = tempADlist;
                     } else{
                         Message.warning(res.data.MSG);
                     }

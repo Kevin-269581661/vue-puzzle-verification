@@ -2,7 +2,7 @@
   <div class="list-wrap">
     <el-radio-group v-model="checked" @change="radioChange">
       <el-badge
-        v-if="sessionData.uType == 'DEV'"
+        v-if="['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(sessionData.uType)"
         :value="messageUnread"
         :max="99"
       >
@@ -21,7 +21,7 @@
       :height="height"
       @change="carouselChange"
     >
-      <el-carousel-item v-if="sessionData.uType == 'DEV'" class="flex-v">
+      <el-carousel-item v-if="['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(sessionData.uType)" class="flex-v">
         <ul
           class="app-list message-list"
           v-infinite-scroll="getMessageList"

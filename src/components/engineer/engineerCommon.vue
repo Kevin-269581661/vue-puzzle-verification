@@ -23,7 +23,7 @@
                 </template>
                 <el-menu-item index="/f_engineer/myInfo">个人中心</el-menu-item>
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login">退出登录</el-menu-item>
             </el-submenu>
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 10px;">
                 <questionTip></questionTip>
@@ -118,7 +118,7 @@
                 this.sessionData = sessFun.getSess();
                 console.log("this.sessionData", this.sessionData);
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== "EP") {
+                    if (this.sessionData.uType !== "ADN_EP") {
                         this.$message({
                             type: "warning",
                             message: "权限异常,请重新登录"

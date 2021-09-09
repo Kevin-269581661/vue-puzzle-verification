@@ -44,6 +44,14 @@ function eventClickFun(e) {
         console.warn("点击事件埋点：", error);
     }
 }
+// 自定义事件
+function emitCustomEvent(jsonData, eventDesc="自定义事件") {
+    try {
+        _paq.push(["trackEvent", "custom", JSON.stringify(jsonData), eventDesc]);
+    } catch (error) {
+        console.warn("自定义事件埋点：", error);
+    }
+}
 // 上报路由事件
 function emitRouteEvent(to, from) {
     try {
@@ -76,19 +84,4 @@ function getEventText(target, num) {
 window.onload = function () {
     document.documentElement.addEventListener('click', eventClickFun, true);
 }
-export function emitRouteEvent(to, from) {
-    try {
-        let {
-            asName = "", uType = "", username = ""
-        } = JSON.parse(sessionStorage.getItem("session_data")) || {};
-        _paq.push(["trackEvent", "route", JSON.stringify({
-            asName,
-            uType,
-            username,
-            from: from.path || "",
-            to: to.path || ""
-        }), "页面跳转"]);
-    } catch (error) {
-        console.warn("页面跳转埋点：", error);
-    }
-}
+export {emitRouteEvent, emitCustomEvent}

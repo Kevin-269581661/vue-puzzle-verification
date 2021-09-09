@@ -84,7 +84,7 @@
                 </el-select>
               </el-form-item>
             </template>
-            <template v-if="accountForm.role == 'EP'">
+            <template v-if="accountForm.role == 'ADN_EP'">
               <!-- 工程人员后台权限 -->
               <el-form-item label="后台权限：">
                 <el-switch
@@ -149,7 +149,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <template v-if="type == 0 && accountForm.role == 'SM'">
+            <template v-if="sessionData.ascType == 0 && accountForm.role == 'ADN_SM'">
               <el-form-item label="可开通全国销售：">
                 <el-switch
                   v-model="accountForm.saleManageLevel"
@@ -174,8 +174,6 @@
                   placeholder="请选择角色"
                   size="small"
                 >
-                  <!--                                    <el-option :value="1" label="全国销售" v-if="sessionData.saleManageLevel"></el-option>-->
-                  <!--                                    <el-option :value="0" label="地方销售"></el-option>-->
                   <el-option
                     v-for="key in saleKind"
                     :key="key.value"
@@ -225,7 +223,7 @@
               </el-form-item>
             </template>
             <template
-              v-if="sessionData.mediaManageLevel && accountForm.role == 'MD'"
+              v-if="sessionData.uType == 'ADN_MD_COUNTRY' && accountForm.role == 'MD'"
             >
               <el-form-item label="媒介类别：" prop="roleLevel">
                 <el-select
@@ -285,7 +283,14 @@
 <script>
 import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api";
-
+// 不同环境测试公司id
+let testAsrIDConfig = {
+  dev: 426,
+  test: 426,
+  gray: 426,
+  prod: 426,
+  gray: 426,
+}
 export default {
   name: "createClient",
   components: {},
@@ -326,7 +331,7 @@ export default {
       roleArr: [
         {
           label: "超级管理员",
-          value: "SM",
+          value: "ADN_SM",
         },
         {
           label: "媒介",
@@ -338,11 +343,11 @@ export default {
         },
         {
           label: "运营",
-          value: "OP",
+          value: "ADN_OP",
         },
         {
           label: "工程人员",
-          value: "EP",
+          value: "ADN_EP",
         },
       ],
       // 公司列表
@@ -490,8 +495,6 @@ export default {
       },
       // 登录信息
       sessionData: "",
-      // 登录者的公司属性(0平台商，1媒体主)
-      type: "",
       haveEPPerssion: false,
       // 销售类型
       saleKind: [
@@ -506,7 +509,7 @@ export default {
     this.getSession();
     this.getCompany();
     this.getInitEditInfo();
-    if (this.sessionData.asrID < 8 || this.sessionData.asrID == 1013) {
+    if (this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env]) {
       this.roleArr.push({
         label: "开发",
         value: "DEV",
@@ -514,26 +517,87 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description: level转换成角色uType
+     * @param {*} utype
+     * @return {*}
+     */    
+    translateToUtype(role) {
+      switch (role) {
+        case "BD":
+          return {
+            0: "ADN_BD",
+            1: "ADN_BD_COUNTRY",
+            2: "ADN_BD_KA"
+          }[this.accountForm.saleManageLevel||0];
+        case "MD":
+          return {
+            0: "ADN_MD",
+            1: "ADN_MD_COUNTRY"
+          }[this.accountForm.mediaManageLevel||0];
+        case "DEV":
+          return {
+            0: "ADN_DEV",
+            1: "ADN_DEV_ASSET",
+            2: "ADN_DEV_LEADER"
+          }[this.accountForm.devManageLevel||0];
+        default:
+          return role;
+      }
+    },
+    /**
+     * @description: uType转换成角色和level
+     * @param {*} uType
+     * @return {*}
+     */    
+    translateToLevel(uType) {
+      return {
+        "ADN_BD": {
+          role: "BD",
+          saleManageLevel: 0
+        },
+        "ADN_BD_COUNTRY": {
+          role: "BD",
+          saleManageLevel: 1
+        },
+        "ADN_BD_KA": {
+          role: "BD",
+          saleManageLevel: 2
+        },
+        "ADN_MD": {
+          role: "MD",
+          mediaManageLevel: 0
+        },
+        "ADN_MD_COUNTRY": {
+          role: "MD",
+          mediaManageLevel: 1
+        },
+        "ADN_DEV": {
+          role: "DEV",
+          devManageLevel: 0
+        },
+        "ADN_DEV_ASSET": {
+          role: "DEV",
+          devManageLevel: 1
+        },
+        "ADN_DEV_LEADER": {
+          role: "DEV",
+          devManageLevel: 2
+        }
+      }[uType] || {role: uType};
+    },
     // 登录信息及角色数据
     getSession() {
       this.sessionData = sessFun.getSess();
-      let { ascType, asrID, uType, saleManageLevel } = this.sessionData;
-      this.type = ascType;
-      if (uType === "SM" || uType === "SA") {
-        if (saleManageLevel) {
-          this.saleKind.push({
-            value: 1,
-            label: "全国销售",
-          });
-        }
-        if (asrID == "999") {
+      let { ascType, uType } = this.sessionData;
+      if (uType === "ADN_SM" || uType === "ADN_SA") {
+        if (ascType == 0) {
           this.saleKind.push({
             value: 2,
             label: "KA销售",
           });
         }
       }
-      console.log(this.saleKind);
     },
     // 公司数据
     getCompany() {
@@ -591,9 +655,9 @@ export default {
     roleSelect(val) {
       this.haveEPPerssion = false;
       if (
-        val == "EP" &&
-        this.sessionData.uType == "SM" &&
-        this.sessionData.asrID == 11
+        val == "ADN_EP" &&
+        this.sessionData.uType == "ADN_SM" &&
+        this.sessionData.customPermission.miniAppPermission == 1
       ) {
         // 是否有新增工程类别和媒体权限的权限
         this.haveEPPerssion = true;
@@ -619,14 +683,14 @@ export default {
         this.showBackstagePermission = true;
       }
 
-      if (!(this.sessionData.asrID < 8 || this.sessionData.asrID == 1013)) {
+      if (!(this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env])) {
         let devIndex = this.roleArr.findIndex((item)=>item.value=="DEV");
-        if (val == 1013 && devIndex==-1) {
+        if (val == testAsrIDConfig[this.env] && devIndex==-1) {
           this.roleArr.push({
             label: "开发",
             value: "DEV",
           });
-        } else if(val != 1013 && devIndex!=-1) {
+        } else if(val != testAsrIDConfig[this.env] && devIndex!=-1) {
           this.roleArr.splice(devIndex, 1);
           // this.accountForm.role = "";
         }
@@ -649,7 +713,7 @@ export default {
             uid: sessionData.uID,
             token: sessionData.token,
             asrID: this.accountForm.company,
-            uType: "BD",
+            uType: "ADN_BD,ADN_BD_COUNTRY,ADN_BD_KA",
             sname: queryString,
           };
           api
@@ -707,15 +771,15 @@ export default {
       let actFrom = this.accountForm;
       let sess = this.sessionData;
       let account = {
-        uid: sess.uID,
+        uID: sess.uID,
         token: sess.token,
         realname: actFrom.realName,
         sname: actFrom.account,
-        utype: actFrom.role,
+        utype: this.translateToUtype(actFrom.role),
         division: actFrom.division,
         position: actFrom.position,
         engineerLevel: actFrom.engineerLevel,
-        devManageLevel: actFrom.devManageLevel,
+        // devManageLevel: actFrom.devManageLevel,
         mediaPermission:
           actFrom.mediaPermission.length > 1
             ? -1
@@ -727,15 +791,11 @@ export default {
         puid: "",
         asrID: actFrom.company,
         authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-        saleManageLevel: actFrom.saleManageLevel ? actFrom.saleManageLevel : 0,
-        mediaManageLevel: actFrom.mediaManageLevel
-          ? actFrom.mediaManageLevel
-          : 0,
       };
       if (actFrom.puID) {
         account.puid = actFrom.puID;
       }
-      if (actFrom.role == "EP") {
+      if (actFrom.role == "ADN_EP") {
         account.backstagePermission = actFrom.backstagePermission || 0;
       }
       if (this.isEdit) {
@@ -816,7 +876,7 @@ export default {
     //重置表单
     resetForm() {
       if (this.isEdit) {
-        if (this.sessionData.uType == "SA") {
+        if (this.sessionData.uType == "ADN_SA") {
           this.$router.push("./admin");
         } else {
           this.$router.push("./accountList");
@@ -849,12 +909,13 @@ export default {
                   uID: result.uID,
                   account: result.sName,
                   realName: result.realName,
-                  role: result.uType,
+                  ...this.translateToLevel(result.uType),
+                  // role: result.uType,
                   boss: result.puName ? result.puName : "",
                   position: result.position ? result.position : "",
                   engineerLevel: result.engineerLevel,
-                  devManageLevel:
-                    result.devManageLevel >= 0 ? result.devManageLevel : "",
+                  // devManageLevel:
+                  //   result.devManageLevel >= 0 ? result.devManageLevel : "",
                   mediaPermission:
                     result.mediaPermission == -1
                       ? [0, 1]
@@ -866,18 +927,17 @@ export default {
                   roleCity: result.authorCity
                     ? result.authorCity.split(",")
                     : [],
-                  saleManageLevel: result.saleManageLevel
-                    ? result.saleManageLevel
-                    : 0,
-                  mediaManageLevel: result.mediaManageLevel
-                    ? result.mediaManageLevel
-                    : 0,
+                  // saleManageLevel: result.saleManageLevel
+                  //   ? result.saleManageLevel
+                  //   : 0,
+                  // mediaManageLevel: result.mediaManageLevel
+                  //   ? result.mediaManageLevel
+                  //   : 0,
                   backstagePermission: result.backstagePermission
                     ? result.backstagePermission
                     : 0,
                 };
                 this.companyChange(editInfo.company);
-                console.log("editInfo-----", editInfo);
                 this.accountForm = editInfo;
                 this.roleSelect(editInfo.role);
               } else {
@@ -898,6 +958,7 @@ export default {
     },
     // 获取权限城市
     getRoleCity() {
+      console.log("getRoleCity")
       this.roleCityArr = [];
       let info = {
         data: { city: "" },

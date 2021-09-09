@@ -1,22 +1,18 @@
+import api from "../api/api"
+
 function getBalance() {
-  let balance = '1,000'
-  try {
-    switch (JSON.parse(sessionStorage.getItem('session_data')).asrID) {
-      case '3':
-        balance = '3,599.6';
-        break;
-      case '4':
-        balance = '0.00';
-        break;
-      case '12':
-        balance = '0.00';
-        break;
-      default:
-        balance = '1,000';
-    }
-  } catch (error) {
-    console.error('获取余额', error)
-  }
-  return balance
+    let sessionData = JSON.parse(sessionStorage.getItem('session_data') || null);
+    return new Promise((resolve) => {
+        api.getApi('/report/homepage/getAsrBalance', {
+            uid: sessionData.uID,
+            token: sessionData.token
+        }).then(res => {
+            if (res.data.SysCode === 200200) {
+              resolve(res.data.data.balance*1 || 0);
+            } else {
+              resolve(0);
+            }
+        })
+    })
 }
 export default getBalance

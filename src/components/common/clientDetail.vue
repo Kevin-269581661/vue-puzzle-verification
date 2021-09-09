@@ -77,7 +77,7 @@
         </div>
 
         <div class="content_bottom_btn">
-            <el-button type="primary" @click="editClient" v-if="role=='BD'" >编辑</el-button>
+            <el-button type="primary" @click="editClient" v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)" >编辑</el-button>
             <el-button plain @click="goBack" >返回</el-button>
         </div>
     </div>
@@ -131,7 +131,6 @@ export default {
         getRole() {
             this.sessionData = sessFun.getSess();
             this.role = this.sessionData.uType;
-            console.log(this.role);
         },
         // 返回
         goBack() {

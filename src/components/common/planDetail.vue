@@ -17,7 +17,7 @@
                             <img src="../../assets/images/orderlogo.png" alt="">{{planDetail.apName}}
                         </h4>
                         <div class="handleBtn">
-                            <el-tooltip v-if="role=='MD' && planDetail.lockStatus==1" effect="dark" content="从今天起重新预锁七天" placement="top">
+                            <el-tooltip v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && planDetail.lockStatus==1" effect="dark" content="从今天起重新预锁七天" placement="top">
                                 <el-button @click="reLock">预 锁</el-button>
                             </el-tooltip>
                             <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
@@ -25,14 +25,14 @@
                                 <!-- planMode：0普通 1意向 -->
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="createShareCode">协同选点</el-button>
                                 <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1" type="default" @click="setPlanPrice">设置金额</el-button>
-                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && role=='BD' && sessionData.saleManageLevel != 2" type="default" :disabled="matchCnt>=10" @click="matchRes">{{`配点(${10-matchCnt})`}}</el-button>
+                                <el-button v-if="customPermission.proposalPermission == 1 && planDetail.planMode==1 && (role=='ADN_BD' || role=='ADN_BD_COUNTRY')" type="default" :disabled="matchCnt>=10" @click="matchRes">{{`配点(${10-matchCnt})`}}</el-button>
                                 <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                                 <el-button type="primary" @click="edit()" 
-                                    v-if="(role=='BD' && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
+                                    v-if="(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && customPermission.proposalPermission == 0 && planDetail.planMode!=1) 
                                     || 
-                                    (role=='BD' && customPermission.proposalPermission == 1 && planDetail.planMode==1) 
+                                    (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && customPermission.proposalPermission == 1 && planDetail.planMode==1) 
                                     || 
-                                    (role=='MD')"
+                                    (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role))"
                                     >编辑</el-button>
                             </template>
                         </div>
@@ -69,7 +69,7 @@
                                                 <el-form-item label="广告限制：">
                                                     <span>{{ props.row.notPush }}</span>
                                                 </el-form-item>
-                                                <el-form-item v-if="sessionData.mediaManageLevel == 1 || sessionData.saleManageLevel == 2" label="归属公司：">
+                                                <el-form-item v-if="sessionData.uType == 'ADN_MD_COUNTRY' || sessionData.uType == 'ADN_BD_KA'" label="归属公司：">
                                                     <span class="ellipsis-td">{{ props.row.asName||'' }}</span>
                                                 </el-form-item>
                                             </el-form>
@@ -384,7 +384,7 @@ export default {
                 const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
                 const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '门体类型', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸', '可视画面', '广告限制', '媒体备注', '详细地址','地图中心点'];
                 const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'mType', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress','mapCenter'];
-                if((this.sessionData.uType == 'MD' && this.sessionData.mediaManageLevel == 1) || (this.sessionData.uType == 'BD' && this.sessionData.saleManageLevel == 2)) {
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     tHeader.push('归属公司')
                     filterVal.push('asName');
                 }
@@ -849,7 +849,7 @@ export default {
                     if(!res.data.IsLock){
                         // 意向方案
                         if(this.planDetail.planMode == 1) {
-                            if(this.role=='BD') {
+                            if(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)) {
                                 // 编辑意向小区
                                 (await this.clearDrafts(apid)) && this.$router.push("./editEmptyPointPlan");
                             } else {

@@ -1,17 +1,17 @@
 <template>
     <div class="ad_mediaDetail_wrap clearfix">
         <div class="ad_mediaDetail_nav ">
-            <p v-if="session_data.uType=='SM'" class="clearfix"><a href="#">系统管理</a><em> / </em><a href="#">账号列表</a></p>
+            <p v-if="session_data.uType=='ADN_SM'" class="clearfix"><a href="#">系统管理</a><em> / </em><a href="#">账号列表</a></p>
             <p v-else class="clearfix"><a href="#" style="color: #999">刊例价</a></p>
 
         </div>
         <div class="mediaList_wrap">
             <div class="mediaList_head">
                 <h2 style="display:inline-block;margin-right:20px;">刊例价列表</h2>
-                <el-button size="small" type="primary" @click="addOne()" v-if="session_data.uType=='SM'" >新增刊例价</el-button>
+                <el-button size="small" type="primary" @click="addOne()" v-if="session_data.uType=='ADN_SM'" >新增刊例价</el-button>
             </div>
             <div class="mediaList_container">
-                <el-row class="search_row" v-if="session_data.uType=='SM'">
+                <el-row class="search_row" v-if="session_data.uType=='ADN_SM'">
                     <el-col>
                         <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                             <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -60,7 +60,7 @@
                                 <span>¥{{priceFormat(scope.row.barrierPrice)}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" v-if="session_data.uType=='SM'" >
+                        <el-table-column label="操作" v-if="session_data.uType=='ADN_SM'" >
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click.native.prevent="edit(scope.row, scope.$index)">编辑
                                 </el-button>
@@ -76,7 +76,7 @@
                         </div>
                     </el-table>
 
-                    <div class="ad_pagination" v-if="session_data.uType=='SM'">
+                    <div class="ad_pagination" v-if="session_data.uType=='ADN_SM'">
                         <el-pagination
                             background
                             v-if="paginationShow"

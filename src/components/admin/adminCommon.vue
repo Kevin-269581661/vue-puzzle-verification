@@ -35,7 +35,7 @@
                     {{userName}}
                 </template>
                 <el-menu-item index="/admin/myInfo">个人中心</el-menu-item>
-                <el-menu-item index="/login">退出登陆</el-menu-item>
+                <el-menu-item index="/login">退出登录</el-menu-item>
             </el-submenu>
         </el-menu>
 
@@ -121,7 +121,7 @@
             getUserName() {
                 this.sessionData = sessFun.getSess();
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (this.sessionData.uType !== 'SA') {
+                    if (this.sessionData.uType !== 'ADN_SA') {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

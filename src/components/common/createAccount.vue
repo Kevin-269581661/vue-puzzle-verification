@@ -771,7 +771,7 @@ export default {
       let actFrom = this.accountForm;
       let sess = this.sessionData;
       let account = {
-        uID: sess.uID,
+        uid: sess.uID,
         token: sess.token,
         realname: actFrom.realName,
         sname: actFrom.account,

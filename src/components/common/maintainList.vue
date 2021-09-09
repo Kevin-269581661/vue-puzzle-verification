@@ -407,19 +407,7 @@
                 // 工程人员
                 engineerArr: [],
                 // 表格数据
-                currentPlan: [{
-                    mState: '已处理',
-                    mtType: '巡点',
-                    resName: '资源',
-                    cityName: '城市',
-                    area: '区域',
-                    mediaName: '媒体名称',
-                    assetTag: '资产编号',
-                    issueRecord: '问题记录',
-                    trafficState: '通行情况',
-                    electrifyState: '通电情况',
-                    feedback:'处理记录'
-                }],
+                currentPlan: [],
                 //所在区域
                 areaArr: [],
                 //处理对话框

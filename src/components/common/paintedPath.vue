@@ -325,6 +325,9 @@
                     city: [
                         {required: true, message: '请选择城市', trigger: 'change'},
                     ],
+                    resName: [
+                        {required: true, message: '请选择小区', trigger: 'blur'},
+                    ],
                     // resName:[
                     //     {validator: validateresName, trigger: 'blur' },
                     // ]

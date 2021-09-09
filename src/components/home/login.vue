@@ -73,7 +73,7 @@
                 placeholder="验证码"
                 name="verificationCode"
                 autocomplete="off"
-                v-model.trim()="verificationCode"
+                v-model.trim="verificationCode"
               />
               <img src="../../assets/images/verification_code_icon.png" alt="" />
               <div v-show="!isGetVerificationCode" class="get_code" @click="getVerificationCode">获取验证码</div>
@@ -199,6 +199,7 @@ import { Checkbox, MessageBox, Message } from "element-ui";
 import utils from "../../commonFun/utils.js";
 import api from "../../api/api";
 import { addRoutes } from "../../router";
+import { emitCustomEvent } from '../../commonFun/matomoRule'
 export default {
   name: "login",
   components: {
@@ -361,7 +362,7 @@ export default {
               userMsg.username = name
               sessionStorage.setItem("session_data", JSON.stringify(userMsg));
               //判断权限
-              this.authentication(userMsg,'userName')
+              this.authentication(userMsg, 'userName');
             }
           } else {
               if (userMsg.SysCode == "400403") {
@@ -496,7 +497,7 @@ export default {
           sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
           this.codeLoading.close();
           //判断权限
-          this.authentication(isLogin,'wx')
+          this.authentication(isLogin, 'wx');
         } else {
           Message({
             message: "扫码登录异常！",
@@ -543,7 +544,13 @@ export default {
     // 绑定手机号
     bandPhoneNum(){
       //打开提示绑定手机模态框
-      const href  = `https://test-qadp.qinlindmp.com/login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
+      let userCenterUrl = {
+        dev: "https://test-qadp.qinlindmp.com/",
+        test: "https://test-qadp.qinlindmp.com/",
+        gray: "https://user-admin.qinlindmp.com/",
+        prod: "https://user-admin.qinlindmp.com/",
+      }[this.env];
+      const href  = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
       window.open(href, '_blank')
       setTimeout(() => {
         this.bandPhoneNumSetp = 2
@@ -651,7 +658,7 @@ export default {
            let userInfo = data.data
            this.getIndustry();
            sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-           this.authentication(userInfo,'phoneNum')
+           this.authentication(userInfo, 'phoneNum');
          }else{
            this.$message.error(data.MSG)
          }  
@@ -673,10 +680,10 @@ export default {
        .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
        .then(({data})=>{
         if (data.SysCode == 200200 && data.data) {
-          let userInfo = data.data
+          let userInfo = data.data;
           this.getIndustry();
           sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-          this.authentication(userInfo,'phoneNum')
+          this.authentication(userInfo, 'phoneNum');
         }else{
           this.$message.error(data.MSG)
         }  
@@ -696,8 +703,8 @@ export default {
      * 'wx'       微信扫码
      * @return {*}
      */    
-    authentication(data,loginType){
-      let { uType } = data
+    authentication(data, loginType){
+      let { uType, asName = "", username = "" } = data;
       if (uType === "ADN_SM") {
         addRoutes("ADN_SM");
         this.$router.push("/superOperate");
@@ -751,6 +758,7 @@ export default {
           this.initWebsocket();
         }
       }
+      emitCustomEvent({uType, asName, username}, loginType);
     },
   },
   beforeDestroy() {

@@ -285,11 +285,11 @@ import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api";
 // 不同环境测试公司id
 let testAsrIDConfig = {
-  dev: 173,
-  test: 173,
-  gray: -1,
-  prod: -1,
-  gray: -1,
+  dev: 426,
+  test: 426,
+  gray: 426,
+  prod: 426,
+  gray: 426,
 }
 export default {
   name: "createClient",

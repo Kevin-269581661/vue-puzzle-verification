@@ -672,14 +672,14 @@
                 console.log('获取权限下的城市列表cityArea',cityArea)
                 let cityList = []
                 for(let cKey of cityArea){
-                    if (cKey.asrID == this.sessionData.asrID) {
-                        for(let key of cKey.cityList){
-                            cityList.push({
-                                label: key.city,
-                                value: key.rID,
-                            })
-                        }
+                    // if (cKey.asrID == this.sessionData.asrID) {
+                    for(let key of cKey.cityList){
+                        cityList.push({
+                            label: key.city,
+                            value: key.rID,
+                        })
                     }
+                    // }
                 }
                 this.setCityAndArea(cityList)
             },
@@ -710,8 +710,10 @@
             },
             // 根据方案详情的rIDs，例如: "广州市,深圳市",构建城市区域
             setCityAndArea(cityData) {
+                console.log('cityData',cityData)
                 let cityArr = cityData
-                // console.log('cityArr',cityArr)
+            
+                console.log('cityArr',cityArr)
                 let cityList = []
                 for (let j = 0; j < cityArr.length; j++) {
                     console.log('用户cityArr', cityArr[j])
@@ -720,6 +722,7 @@
                         rid: cityArr[j].value
                     })
                 }
+                console.log("cityList",cityList)
                 cityList = this.filterCity(cityList)
                 console.log('cityList',cityList)
                 this.city = cityList

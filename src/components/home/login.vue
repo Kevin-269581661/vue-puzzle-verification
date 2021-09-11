@@ -551,7 +551,7 @@ export default {
         prod: "https://user-admin.qinlindmp.com/",
       }[this.env];
       const href  = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
-      window.open(href, '_blank')
+      window.open(href, "_self")
       setTimeout(() => {
         this.bandPhoneNumSetp = 2
       }, 500);

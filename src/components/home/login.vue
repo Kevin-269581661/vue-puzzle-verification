@@ -28,8 +28,9 @@
               :l="42"
               :r="10"
               :w="368"
-              :h="155"
+              :h="200"
               slider-text="向右滑动"
+              :imgs="slideImgArr"
               @success="onSuccess"
               @fail="onFail"
               @refresh="onRefresh"
@@ -235,7 +236,7 @@ export default {
       //账号列表
       userList:[],
       //防止多次发生验证码
-      getCodeLock:false
+      getCodeLock:false,
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -243,6 +244,18 @@ export default {
             POINT: 13,
             canvas: '',
             context:'',*/
+      slideImgArr: [
+        "/static/images/loginSlideBg/01.jpg",
+        "/static/images/loginSlideBg/02.jpg",
+        "/static/images/loginSlideBg/03.jpg",
+        "/static/images/loginSlideBg/04.jpg",
+        "/static/images/loginSlideBg/05.jpg",
+        "/static/images/loginSlideBg/06.jpg",
+        "/static/images/loginSlideBg/07.jpg",
+        "/static/images/loginSlideBg/08.jpg",
+        "/static/images/loginSlideBg/09.jpg",
+        "/static/images/loginSlideBg/10.jpg"
+      ]
     };
   },
   mounted: function () {
@@ -1014,11 +1027,6 @@ input::placeholder {
   text-decoration: underline;
 }
 .login-verify {
-  /* position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0; */
   position: relative;
   left: 50%;
   z-index: 9;

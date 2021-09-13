@@ -28,8 +28,9 @@
               :l="42"
               :r="10"
               :w="368"
-              :h="155"
+              :h="200"
               slider-text="向右滑动"
+              :imgs="slideImgArr"
               @success="onSuccess"
               @fail="onFail"
               @refresh="onRefresh"
@@ -151,15 +152,10 @@
       :show-close="false"
       custom-class="band_phone_dialog"
       >
-      <span v-if="bandPhoneNumSetp == 1">亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span>
-      <span v-if="bandPhoneNumSetp == 2">请问您是否成功绑定了手机号码？</span>
+      <span>亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span>
       <span slot="footer" class="dialog-footer">
-        <div v-if="bandPhoneNumSetp == 1">
+        <div>
           <el-button type="primary" @click="bandPhoneNum">立即绑定</el-button>
-        </div>
-        <div v-if="bandPhoneNumSetp == 2">
-          <el-button @click="noBand">暂不绑定</el-button>
-          <el-button type="primary" @click="isBandHandler">已绑定</el-button>
         </div>
       </span>
     </el-dialog>
@@ -224,8 +220,7 @@ export default {
       condeLoginData: "", // 扫码登录返回的登录信息
       timer: "", // 轮询验证二维码是否加载完成
       isLogin: false,
-      bandPhoneDialogVisible:false ,//绑定手机号提示框
-      bandPhoneNumSetp:1 ,//绑定手机步骤 
+      bandPhoneDialogVisible: false ,//绑定手机号提示框
       //手机号码
       phoneNum:"",
       //手机验证码
@@ -241,7 +236,7 @@ export default {
       //账号列表
       userList:[],
       //防止多次发生验证码
-      getCodeLock:false
+      getCodeLock:false,
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -249,6 +244,18 @@ export default {
             POINT: 13,
             canvas: '',
             context:'',*/
+      slideImgArr: [
+        "/static/images/loginSlideBg/01.jpg",
+        "/static/images/loginSlideBg/02.jpg",
+        "/static/images/loginSlideBg/03.jpg",
+        "/static/images/loginSlideBg/04.jpg",
+        "/static/images/loginSlideBg/05.jpg",
+        "/static/images/loginSlideBg/06.jpg",
+        "/static/images/loginSlideBg/07.jpg",
+        "/static/images/loginSlideBg/08.jpg",
+        "/static/images/loginSlideBg/09.jpg",
+        "/static/images/loginSlideBg/10.jpg"
+      ]
     };
   },
   mounted: function () {
@@ -550,25 +557,7 @@ export default {
         gray: "https://user-admin.qinlindmp.com/",
         prod: "https://user-admin.qinlindmp.com/",
       }[this.env];
-      const href  = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`
-      window.open(href, '_blank')
-      setTimeout(() => {
-        this.bandPhoneNumSetp = 2
-      }, 500);
-    },
-    //  判断是否绑定手机号
-    isBandHandler(){
-      console.log('判断是否绑定手机号');
-      this.bandPhoneDialogVisible = false
-      this.bandPhoneNumSetp = 1
-      this.doLogin()
-    },
-    //暂不绑定
-    noBand(){
-      this.bandPhoneDialogVisible = false
-      setTimeout(() => {
-        this.bandPhoneNumSetp = 1 
-      }, 300);
+      window.location.href = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`;
     },
     // 非微信登录 清除状态
     notWxLogin(){
@@ -1038,11 +1027,6 @@ input::placeholder {
   text-decoration: underline;
 }
 .login-verify {
-  /* position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0; */
   position: relative;
   left: 50%;
   z-index: 9;

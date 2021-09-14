@@ -225,11 +225,7 @@
             getRole() {
                 this.sessionData = sessFun.getSess();
                 let role = this.sessionData.uType;
-                console.log(role);
-                if (role != "ADN_SA" && role != "ADN_SM") {
-                    this.showNewBtn = false;
-                }
-                if (role === "ADN_SA") {
+                if (role === "ADN_SA" || "ADN_SM") {
                     this.isShowResetBtn = true
                 } else {
                     this.isShowResetBtn = false

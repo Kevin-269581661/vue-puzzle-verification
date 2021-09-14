@@ -8,11 +8,11 @@
       <div class="login">
         <div class="loginType">
           <ul class="">
-            <li v-bind:class="{ active: isActive == 1}" @click="loginType(1)">
-              密码登录
-            </li>
             <li v-bind:class="{ active: isActive == 2 }" @click="loginType(2)">
               手机登录
+            </li>
+            <li v-bind:class="{ active: isActive == 1}" @click="loginType(1)">
+              密码登录
             </li>
             <li v-bind:class="{ active: isActive == 3}" @click="loginType(3)">
               扫码登录
@@ -205,7 +205,7 @@ export default {
     return {
       verified: "beforeTry",
       loading: false,
-      isActive: 1,
+      isActive: 2,
       remeAccount: false,
       username: "", //lxj
       password: "", //qinlin888

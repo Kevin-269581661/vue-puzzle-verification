@@ -162,14 +162,16 @@
                 isSearch: true,
                 isReset: true,
                 roleList: [
-                    {text: '系统管理员', value: 'SA'},
-                    {text: '超级管理员', value: 'SM'},
-                    {text: '运营', value: 'OP'},
-                    {text: '媒介', value: 'MD'},
-                    {text: '销售', value: 'BD'},
-                    {text: '开发', value: 'DEV'},
+                    {text: '系统管理员', value: 'ADN_SA'},
+                    {text: '超级管理员', value: 'ADN_SM'},
+                    {text: '运营', value: 'ADN_OP'},
+                    {text: '媒介', value: 'ADN_MD'},
+                    {text: '销售', value: 'ADN_BD'},
+                    {text: '开发人员', value: 'ADN_DEV'},
+                    {text: '资产人员', value: 'ADN_DEV_ASSET'},
+                    {text: '开发总监', value: 'ADN_DEV_LEADER'},
                     // {text: '广告主', value: 'AD'},
-                    {text: '工程人员', value: 'EP'}
+                    {text: '工程人员', value: 'ADN_EP'}
                 ],
                 // 重置密码按钮
                 isShowResetBtn: false

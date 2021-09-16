@@ -1418,6 +1418,9 @@ export default {
 </style>
 <style scoped lang="scss">
 @import "../../assets/component.scss";
+/deep/ .custom-card-content .el-table__body-wrapper,.el-table__empty-block {
+  min-height: 160px !important;
+}
 /deep/ .custom-confirm-dialog {
   border-radius: 4px;
   .el-dialog__header {

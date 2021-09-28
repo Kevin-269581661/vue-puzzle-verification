@@ -24,9 +24,7 @@ export default {
   },
   computed: {
     renderFlag() {
-      return (
-        Array.isArray(this.sourceData) && this.sourceData.length && this.Chart && this.DataView
-      );
+      return !!(Array.isArray(this.sourceData) && this.sourceData.length && this.Chart && this.DataView);
     },
   },
   watch: {

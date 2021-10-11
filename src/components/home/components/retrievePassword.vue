@@ -59,14 +59,14 @@
           autocomplete="off"
           placeholder="验证码"
         >
-        <el-button
-          type="text"
-          size="small"
-          slot="suffix"
-          :disabled="sendFlag != '重新发送'"
-          @click="sendVerificationCode"
-          >{{ sendFlag }}</el-button
-        >
+          <el-button
+            type="text"
+            size="small"
+            slot="suffix"
+            :disabled="sendFlag != '重新发送'"
+            @click="sendVerificationCode"
+            >{{ sendFlag }}</el-button
+          >
         </el-input>
       </el-form-item>
       <el-form-item
@@ -143,16 +143,6 @@ export default {
       required: true,
     },
   },
-  watch: {
-    isVisible(val) {
-      !val &&
-        this.$refs.retrieveForm &&
-        this.$refs.retrieveForm.resetFields() &&
-        (this.accountInfo = null) &&
-        (this.btnLoading = false) &&
-        (this.step = 1);
-    },
-  },
   data() {
     return {
       btnLoading: false,
@@ -178,11 +168,18 @@ export default {
     };
   },
   methods: {
+    initComponent() {
+      this.$refs.retrieveForm && this.$refs.retrieveForm.resetFields();
+      this.accountInfo = null;
+      this.btnLoading = false;
+      this.step = 1;
+    },
     beforeCloseFun(done) {
       this.cancelRetrieve();
     },
     cancelRetrieve() {
       this.$emit("update:isVisible", false);
+      this.initComponent();
     },
     // 校验账号规则
     validateAccount() {
@@ -316,7 +313,6 @@ export default {
     // 发送手机验证码
     sendVerificationCode() {
       this.sendFlag = "发送中...";
-      return
       this.errorMsg = null;
       api
         .postApi("/UCAPI/sendVerificationCode", {

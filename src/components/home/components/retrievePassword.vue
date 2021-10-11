@@ -58,15 +58,16 @@
           v-model.trim="retrieveForm.verifyCode"
           autocomplete="off"
           placeholder="验证码"
-        ></el-input>
+        >
         <el-button
-          class="input-inner__right"
           type="text"
           size="small"
+          slot="suffix"
           :disabled="sendFlag != '重新发送'"
           @click="sendVerificationCode"
           >{{ sendFlag }}</el-button
         >
+        </el-input>
       </el-form-item>
       <el-form-item
         v-else-if="step == 4"
@@ -76,24 +77,11 @@
       >
         <el-input
           size="small"
-          :type="pwdVisible?'':'password'"
+          show-password
           v-model.trim="retrieveForm.newPassword"
           autocomplete="off"
           placeholder="新的密码"
-        >
-          <img
-            v-show="pwdVisible"
-            slot="suffix"
-            class="input-img"
-            @click="pwdVisible = !pwdVisible"
-            src="../../../assets/images/eyeOpen.png" />
-          <img
-            v-show="!pwdVisible"
-            slot="suffix"
-            class="input-img"
-            @click="pwdVisible = !pwdVisible"
-            src="../../../assets/images/eyeClose.png"
-        /></el-input>
+        ></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer">
@@ -170,7 +158,6 @@ export default {
       btnLoading: false,
       accountInfo: null,
       step: 1,
-      pwdVisible: false,
       retrieveForm: {
         account: "",
         verifyCode: "",
@@ -329,6 +316,7 @@ export default {
     // 发送手机验证码
     sendVerificationCode() {
       this.sendFlag = "发送中...";
+      return
       this.errorMsg = null;
       api
         .postApi("/UCAPI/sendVerificationCode", {
@@ -354,19 +342,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.input-inner__right {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  min-width: unset;
-  padding: 0 12px;
-}
-.input-img {
-  width: 16px;
-  vertical-align: middle;
-  cursor: pointer;
-}
 .retrieve-dialog {
   /deep/ .el-dialog__header {
     padding: 16px 24px 6px;

@@ -38,6 +38,7 @@
           size="small"
           v-model.trim="retrieveForm.account"
           autocomplete="off"
+          placeholder="账号"
         ></el-input>
       </el-form-item>
       <div v-else-if="step == 2">
@@ -53,8 +54,10 @@
         )}发送验证码`"
       >
         <el-input
+          size="small"
           v-model.trim="retrieveForm.verifyCode"
           autocomplete="off"
+          placeholder="验证码"
         ></el-input>
         <el-button
           class="input-inner__right"
@@ -72,11 +75,25 @@
         label="8~30位且必须包含数字、大小写字母"
       >
         <el-input
+          size="small"
+          :type="pwdVisible?'':'password'"
           v-model.trim="retrieveForm.newPassword"
           autocomplete="off"
-          show-password
-        ></el-input>
-        <!-- <img class="input-inner__right input-img" @click="pwdVisible = !pwdVisible" :src="pwdVisible?'../../../assets/images/eyeOpen.png':'../../../assets/images/eyeClose.png'" /> -->
+          placeholder="新的密码"
+        >
+          <img
+            v-show="pwdVisible"
+            slot="suffix"
+            class="input-img"
+            @click="pwdVisible = !pwdVisible"
+            src="../../../assets/images/eyeOpen.png" />
+          <img
+            v-show="!pwdVisible"
+            slot="suffix"
+            class="input-img"
+            @click="pwdVisible = !pwdVisible"
+            src="../../../assets/images/eyeClose.png"
+        /></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer">
@@ -347,6 +364,7 @@ export default {
 }
 .input-img {
   width: 16px;
+  vertical-align: middle;
   cursor: pointer;
 }
 .retrieve-dialog {

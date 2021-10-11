@@ -170,6 +170,11 @@ export default {
   methods: {
     initComponent() {
       this.$refs.retrieveForm && this.$refs.retrieveForm.resetFields();
+      Object.assign(this.retrieveForm, {
+        account: "",
+        verifyCode: "",
+        newPassword: "",
+      });
       this.accountInfo = null;
       this.btnLoading = false;
       this.step = 1;
@@ -332,7 +337,6 @@ export default {
           this.sendFlag = "重新发送";
         });
     },
-    //
   },
 };
 </script>
@@ -356,6 +360,7 @@ export default {
         margin-bottom: 26px;
       }
       .el-form-item__label {
+        padding-bottom: 12px;
         line-height: 24px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-size: 14px;
@@ -365,7 +370,7 @@ export default {
     }
   }
   /deep/ .el-dialog__footer {
-    padding: 10px 24px 24px;
+    padding: 6px 24px 24px;
     word-spacing: -1em;
     .el-button + .el-button {
       margin-left: 16px;

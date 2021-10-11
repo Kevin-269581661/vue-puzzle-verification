@@ -11,10 +11,10 @@
             <li v-bind:class="{ active: isActive == 2 }" @click="loginType(2)">
               手机登录
             </li>
-            <li v-bind:class="{ active: isActive == 1}" @click="loginType(1)">
+            <li v-bind:class="{ active: isActive == 1 }" @click="loginType(1)">
               密码登录
             </li>
-            <li v-bind:class="{ active: isActive == 3}" @click="loginType(3)">
+            <li v-bind:class="{ active: isActive == 3 }" @click="loginType(3)">
               扫码登录
             </li>
           </ul>
@@ -56,9 +56,7 @@
             </div>
           </template>
 
-          <!-- <div class="remeberUser">
-            <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
-          </div> -->
+          <div class="forget-password" @click="showRetrieveDialog = true">忘记密码</div>
           <div class="loginBtn">
             <button id="login" @click="slideVerify()">登&nbsp;录</button>
           </div>
@@ -66,7 +64,7 @@
         <div class="phone_login" v-if="isActive == 2">
           <template>
             <div class="phone_num">
-              <input name="phoneNum" placeholder="手机号"  autocomplete="off" v-model.trim()="phoneNum" />
+              <input name="phoneNum" placeholder="手机号"  autocomplete="off" v-model.trim="phoneNum" />
               <img src="../../assets/images/phone_num_icon.png" alt="" />
             </div>
             <div class="verification_code">
@@ -81,10 +79,6 @@
               <div v-show="isGetVerificationCode" class="wait_code">{{waitTime}}秒后可重发</div>
             </div>
           </template>
-
-          <!-- <div class="remeberUser">
-            <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
-          </div> -->
           <div class="phone_login_btn">
             <el-button :disabled="!verificationCode" type="primary" id="login" @click="phoneLogin">登&nbsp;录</el-button>
           </div>
@@ -187,6 +181,8 @@
            </div>
         </div>
     </el-dialog>
+    <!-- 找回密码弹框 -->
+    <RetrievePassword :isVisible.sync="showRetrieveDialog"></RetrievePassword>
   </div>
 </template>
 
@@ -195,18 +191,20 @@ import { Checkbox, MessageBox, Message } from "element-ui";
 import utils from "../../commonFun/utils.js";
 import api from "../../api/api";
 import { addRoutes } from "../../router";
-import { emitCustomEvent } from '../../commonFun/matomoRule'
+import { emitCustomEvent } from '../../commonFun/matomoRule';
+import RetrievePassword from "./components/retrievePassword.vue";
 export default {
   name: "login",
   components: {
     elCheckbox: Checkbox,
+    RetrievePassword
   },
   data() {
     return {
       verified: "beforeTry",
       loading: false,
       isActive: 2,
-      remeAccount: false,
+      showRetrieveDialog: false,
       username: "", //lxj
       password: "", //qinlin888
       realName: "",
@@ -261,12 +259,6 @@ export default {
   mounted: function () {
     // 移除社区画像信息
     sessionStorage.removeItem("portraitInfo");
-    //页面加载调用获取cookie值
-    /* this.username = utils.getCookie('username');
-    this.password = utils.getCookie('password');
-    if (this.username !== '' && this.password !== '') {
-      this.remeAccount = true;
-    } */
     if (this.GetRequest("code")) {
       this.doLogin();
     }
@@ -340,14 +332,6 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)",
         });
-        //判断复选框是否勾选，勾选则调用配置cookie方法
-        /* if (this.remeAccount === true) {
-          utils.setCookie('username', name, 7);
-          utils.setCookie('password', pass, 7);
-        } else {
-          utils.clearCookie('username')
-          utils.clearCookie('password')
-        } */
         loginParams = { username: name, pwd: pass };
       }
       api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
@@ -405,7 +389,7 @@ export default {
     // 判断是否使用扫码登录
     /**
      * @description: 
-     * @param {*} type 1密码登录 2手机登录 3扫码登录
+     * @param type 1密码登录 2手机登录 3扫码登录
      * @return {*}
      */    
     loginType(type) {
@@ -898,7 +882,7 @@ export default {
 
 .username,
 .password,
-.remeberUser,
+.forget-password,
 .loginBtn,
 .phone_login_btn,
 .phone_num,
@@ -951,10 +935,12 @@ input::placeholder {
   color: rgba(0, 0, 0, .25);
 }
 
-.remeberUser {
+.forget-password {
   margin-bottom: 24px;
   font-size: 14px;
   text-align: left;
+  color:#1890FF;
+  cursor: pointer;
 }
 
  /deep/ .el-checkbox {

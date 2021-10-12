@@ -11,19 +11,16 @@
             <li v-bind:class="{ active: isActive == 2 }" @click="loginType(2)">
               手机登录
             </li>
-            <li v-bind:class="{ active: isActive == 1}" @click="loginType(1)">
+            <li v-bind:class="{ active: isActive == 1 }" @click="loginType(1)">
               密码登录
             </li>
-            <li v-bind:class="{ active: isActive == 3}" @click="loginType(3)">
+            <li v-bind:class="{ active: isActive == 3 }" @click="loginType(3)">
               扫码登录
             </li>
           </ul>
         </div>
-        <div class="loginInput" v-if="isActive == 1 ">
-          <div
-            v-if="verified == 'trying'"
-            class="login-verify"
-          >
+        <div class="loginInput" v-if="isActive == 1">
+          <div v-if="verified == 'trying'" class="login-verify">
             <slide-verify
               :l="42"
               :r="10"
@@ -35,30 +32,49 @@
               @fail="onFail"
               @refresh="onRefresh"
             ></slide-verify>
-            <i class="el-icon-close slide-close" @click.stop="verified = 'fail'"></i>
+            <i
+              class="el-icon-close slide-close"
+              @click.stop="verified = 'fail'"
+            ></i>
           </div>
           <template v-else>
             <div class="username">
-              <input type="text" name="username" placeholder="账户" v-model="username" />
-              <img src="../../assets/images/username_icon.png" alt="" />
+              <el-input
+                type="text"
+                name="username"
+                placeholder="账户"
+                v-model="username"
+              >
+                <img
+                  slot="prefix"
+                  src="../../assets/images/username_icon.png"
+                  alt=""
+                />
+              </el-input>
             </div>
             <div class="password">
-              <input
+              <el-input
+                show-password
                 type="password"
                 name="password"
                 placeholder="密码"
                 autocomplete="off"
                 v-model="password"
-                @keydown.13="show($event)"
-                @keydown.229="() => {}"
-              />
-              <img src="../../assets/images/password_icon.png" alt="" />
+                @keydown.native.13="show($event)"
+                @keydown.native.229="() => {}"
+              >
+                <img
+                  slot="prefix"
+                  src="../../assets/images/password_icon.png"
+                  alt=""
+                />
+              </el-input>
             </div>
           </template>
 
-          <!-- <div class="remeberUser">
-            <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
-          </div> -->
+          <div class="forget-password" @click="showRetrieveDialog = true">
+            忘记密码
+          </div>
           <div class="loginBtn">
             <button id="login" @click="slideVerify()">登&nbsp;录</button>
           </div>
@@ -66,27 +82,52 @@
         <div class="phone_login" v-if="isActive == 2">
           <template>
             <div class="phone_num">
-              <input name="phoneNum" placeholder="手机号"  autocomplete="off" v-model.trim()="phoneNum" />
-              <img src="../../assets/images/phone_num_icon.png" alt="" />
+              <el-input
+                name="phoneNum"
+                placeholder="手机号"
+                autocomplete="off"
+                v-model.trim="phoneNum"
+              >
+                <img
+                  slot="prefix"
+                  src="../../assets/images/phone_num_icon.png"
+                  alt=""
+                />
+              </el-input>
             </div>
             <div class="verification_code">
-              <input
+              <el-input
                 placeholder="验证码"
                 name="verificationCode"
                 autocomplete="off"
                 v-model.trim="verificationCode"
-              />
-              <img src="../../assets/images/verification_code_icon.png" alt="" />
-              <div v-show="!isGetVerificationCode" class="get_code" @click="getVerificationCode">获取验证码</div>
-              <div v-show="isGetVerificationCode" class="wait_code">{{waitTime}}秒后可重发</div>
+              >
+                <img
+                  slot="prefix"
+                  src="../../assets/images/verification_code_icon.png"
+                  alt=""
+                />
+              </el-input>
+              <div
+                v-show="!isGetVerificationCode"
+                class="get_code"
+                @click="getVerificationCode"
+              >
+                获取验证码
+              </div>
+              <div v-show="isGetVerificationCode" class="wait_code">
+                {{ waitTime }}秒后可重发
+              </div>
             </div>
           </template>
-
-          <!-- <div class="remeberUser">
-            <el-checkbox v-model="remeAccount">记住账号</el-checkbox>
-          </div> -->
           <div class="phone_login_btn">
-            <el-button :disabled="!verificationCode" type="primary" id="login" @click="phoneLogin">登&nbsp;录</el-button>
+            <el-button
+              :disabled="!verificationCode"
+              type="primary"
+              id="login"
+              @click="phoneLogin"
+              >登&nbsp;录</el-button
+            >
           </div>
         </div>
         <div class="weixinLogin" v-if="isActive == 3">
@@ -151,8 +192,10 @@
       top="30vh"
       :show-close="false"
       custom-class="band_phone_dialog"
+    >
+      <span
+        >亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span
       >
-      <span>亲爱的用户，QADN新增手机号登录功能，绑定手机号码后即可使用手机号登录系统。</span>
       <span slot="footer" class="dialog-footer">
         <div>
           <el-button type="primary" @click="bandPhoneNum">立即绑定</el-button>
@@ -170,23 +213,31 @@
       custom-class="users_info"
       :close-on-click-modal="false"
       :show-close="false"
+    >
+      <div
+        class="user_info_card"
+        v-for="item in userList"
+        :key="item.id"
+        @click="selectUser(item)"
       >
-        <div 
-          class="user_info_card"
-          v-for="item in userList" 
-          :key="item.id"
-          @click="selectUser(item)"
-        >
-           <div class="head_portrait">
-             <img v-if="item.userPortrait" :src="item.userPortrait" alt="">
-             <img v-else src="../../assets/images/user_default_portrait.png" alt="">
-           </div>
-           <div class="info"> 
-             <div class="name">{{item.realName + '(' + item.userName + ')'}}</div>
-             <div class="job" >{{item.roleName + ' | ' + item.companyName}}</div>
-           </div>
+        <div class="head_portrait">
+          <img v-if="item.userPortrait" :src="item.userPortrait" alt="" />
+          <img
+            v-else
+            src="../../assets/images/user_default_portrait.png"
+            alt=""
+          />
         </div>
+        <div class="info">
+          <div class="name">
+            {{ item.realName + "(" + item.userName + ")" }}
+          </div>
+          <div class="job">{{ item.roleName + " | " + item.companyName }}</div>
+        </div>
+      </div>
     </el-dialog>
+    <!-- 找回密码弹框 -->
+    <RetrievePassword :isVisible.sync="showRetrieveDialog"></RetrievePassword>
   </div>
 </template>
 
@@ -195,18 +246,20 @@ import { Checkbox, MessageBox, Message } from "element-ui";
 import utils from "../../commonFun/utils.js";
 import api from "../../api/api";
 import { addRoutes } from "../../router";
-import { emitCustomEvent } from '../../commonFun/matomoRule'
+import { emitCustomEvent } from "../../commonFun/matomoRule";
+import RetrievePassword from "./components/retrievePassword.vue";
 export default {
   name: "login",
   components: {
     elCheckbox: Checkbox,
+    RetrievePassword,
   },
   data() {
     return {
       verified: "beforeTry",
       loading: false,
       isActive: 2,
-      remeAccount: false,
+      showRetrieveDialog: false,
       username: "", //lxj
       password: "", //qinlin888
       realName: "",
@@ -220,23 +273,23 @@ export default {
       condeLoginData: "", // 扫码登录返回的登录信息
       timer: "", // 轮询验证二维码是否加载完成
       isLogin: false,
-      bandPhoneDialogVisible: false ,//绑定手机号提示框
+      bandPhoneDialogVisible: false, //绑定手机号提示框
       //手机号码
-      phoneNum:"",
+      phoneNum: "",
       //手机验证码
-      verificationCode:"",
+      verificationCode: "",
       //是否发送验证码
-      isGetVerificationCode:false,
+      isGetVerificationCode: false,
       //获取验证码倒计时
-      waitTime:60,
+      waitTime: 60,
       //验证码倒计时定时器标记
-      waitTimer:null,
+      waitTimer: null,
       //选择账号弹框
-      selectUserDialogVisible:false,
+      selectUserDialogVisible: false,
       //账号列表
-      userList:[],
+      userList: [],
       //防止多次发生验证码
-      getCodeLock:false,
+      getCodeLock: false,
       //背景动画参数
       /*   circleArr : [],
             WIDTH: '',
@@ -254,19 +307,13 @@ export default {
         "/static/images/loginSlideBg/07.jpg",
         "/static/images/loginSlideBg/08.jpg",
         "/static/images/loginSlideBg/09.jpg",
-        "/static/images/loginSlideBg/10.jpg"
-      ]
+        "/static/images/loginSlideBg/10.jpg",
+      ],
     };
   },
   mounted: function () {
     // 移除社区画像信息
     sessionStorage.removeItem("portraitInfo");
-    //页面加载调用获取cookie值
-    /* this.username = utils.getCookie('username');
-    this.password = utils.getCookie('password');
-    if (this.username !== '' && this.password !== '') {
-      this.remeAccount = true;
-    } */
     if (this.GetRequest("code")) {
       this.doLogin();
     }
@@ -340,38 +387,32 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)",
         });
-        //判断复选框是否勾选，勾选则调用配置cookie方法
-        /* if (this.remeAccount === true) {
-          utils.setCookie('username', name, 7);
-          utils.setCookie('password', pass, 7);
-        } else {
-          utils.clearCookie('username')
-          utils.clearCookie('password')
-        } */
         loginParams = { username: name, pwd: pass };
       }
-      api.postApi(this.apiVar.UCAPI + '/Login', loginParams).then(res => {
-        let userMsg = res.data;
-        // console.log('登录返回的数据', res.data)
-        if (userMsg) {
-          if (!userMsg.SysCode) {
-            //判断是否绑定手机号
-            // 如果没有绑定弹出绑定提示窗口
-            if (!userMsg.bindPhone) {
-              this.$nextTick(()=>{
-                this.loading.close();
-                this.bandPhoneDialogVisible = true
-              })
-            }else{
-              //绑定了继续执行下面的流程
-              // 储存行业信息
-              this.getIndustry();
-              userMsg.username = name
-              sessionStorage.setItem("session_data", JSON.stringify(userMsg));
-              //判断权限
-              this.authentication(userMsg, 'userName');
-            }
-          } else {
+      api
+        .postApi(this.apiVar.UCAPI + "/Login", loginParams)
+        .then((res) => {
+          let userMsg = res.data;
+          // console.log('登录返回的数据', res.data)
+          if (userMsg) {
+            if (!userMsg.SysCode) {
+              //判断是否绑定手机号
+              // 如果没有绑定弹出绑定提示窗口
+              if (!userMsg.bindPhone) {
+                this.$nextTick(() => {
+                  this.loading.close();
+                  this.bandPhoneDialogVisible = true;
+                });
+              } else {
+                //绑定了继续执行下面的流程
+                // 储存行业信息
+                this.getIndustry();
+                userMsg.username = name;
+                sessionStorage.setItem("session_data", JSON.stringify(userMsg));
+                //判断权限
+                this.authentication(userMsg, "userName");
+              }
+            } else {
               if (userMsg.SysCode == "400403") {
                 Message({
                   message: "账号角色权限不足",
@@ -404,21 +445,21 @@ export default {
     },
     // 判断是否使用扫码登录
     /**
-     * @description: 
-     * @param {*} type 1密码登录 2手机登录 3扫码登录
+     * @description:
+     * @param type 1密码登录 2手机登录 3扫码登录
      * @return {*}
-     */    
+     */
     loginType(type) {
       //根据点击的登录方式显示active
-      this.isActive = type
-      if(this.isActive === 1){
-        this.notWxLogin()
-      }else if(this.isActive === 2){
-        this.notWxLogin()
-      }else if (this.isActive === 3) {
+      this.isActive = type;
+      if (this.isActive === 1) {
+        this.notWxLogin();
+      } else if (this.isActive === 2) {
+        this.notWxLogin();
+      } else if (this.isActive === 3) {
         this.isLogin = false;
         this.initWebsocket();
-      } 
+      }
     },
     // 扫码登录，初始化websocket
     initWebsocket() {
@@ -504,7 +545,7 @@ export default {
           sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
           this.codeLoading.close();
           //判断权限
-          this.authentication(isLogin, 'wx');
+          this.authentication(isLogin, "wx");
         } else {
           Message({
             message: "扫码登录异常！",
@@ -549,7 +590,7 @@ export default {
         : context;
     },
     // 绑定手机号
-    bandPhoneNum(){
+    bandPhoneNum() {
       //打开提示绑定手机模态框
       let userCenterUrl = {
         dev: "https://test-qadp.qinlindmp.com/",
@@ -560,7 +601,7 @@ export default {
       window.location.href = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`;
     },
     // 非微信登录 清除状态
-    notWxLogin(){
+    notWxLogin() {
       this.isLogin = true;
       if (this.websock) {
         this.websock.close();
@@ -568,131 +609,132 @@ export default {
       }
     },
     // 获取验证码
-    getVerificationCode(){
+    getVerificationCode() {
       //判断是否输入手机号
-      if (this.verifyPhoneNum(this.phoneNum)) return
+      if (this.verifyPhoneNum(this.phoneNum)) return;
       // 防止多次点击
-      if (this.getCodeLock) return
-      this.getCodeLock = true
+      if (this.getCodeLock) return;
+      this.getCodeLock = true;
       console.log("发送验证码");
-      let params={ phone: this.phoneNum ,type:3}
+      let params = { phone: this.phoneNum, type: 3 };
       api
-      .getApi(this.apiVar.UCAPI + "/sendVerificationCode", params)
-      .then(({data}) => {
-        console.log('sendVerificationCode: ', data);
-        if (data.SysCode == 200200) {
-          this.isGetVerificationCode = true
-          this.$message.success('验证码已发送')
-          this.waitTimer = setInterval(() => {
-            this.waitTime -= 1;
-            if (this.waitTime <= 0) {
-              clearInterval(this.waitTimer)
-              this.isGetVerificationCode = false
-              this.waitTime=60
-            }
-          }, 1000);
-        }else{
-          this.$message.error(data.MSG)
-        }
-        this.getCodeLock = false
-      }).catch(error=>{
-        this.$message.error('发送验证码失败')
-        this.getCodeLock = false
-      })
-
-     
+        .getApi(this.apiVar.UCAPI + "/sendVerificationCode", params)
+        .then(({ data }) => {
+          console.log("sendVerificationCode: ", data);
+          if (data.SysCode == 200200) {
+            this.isGetVerificationCode = true;
+            this.$message.success("验证码已发送");
+            this.waitTimer = setInterval(() => {
+              this.waitTime -= 1;
+              if (this.waitTime <= 0) {
+                clearInterval(this.waitTimer);
+                this.isGetVerificationCode = false;
+                this.waitTime = 60;
+              }
+            }, 1000);
+          } else {
+            this.$message.error(data.MSG);
+          }
+          this.getCodeLock = false;
+        })
+        .catch((error) => {
+          this.$message.error("发送验证码失败");
+          this.getCodeLock = false;
+        });
     },
     //校验手机号
-    verifyPhoneNum(phoneNum){
-      let reg = /^(?:(?:\+|00)86)?1\d{10}$/
+    verifyPhoneNum(phoneNum) {
+      let reg = /^(?:(?:\+|00)86)?1\d{10}$/;
       if (!reg.test(phoneNum)) {
-       return this.$message.warning('请输入正确的手机号')
+        return this.$message.warning("请输入正确的手机号");
       }
     },
     //手机登录
-    phoneLogin(){
-      if (this.verifyPhoneNum(this.phoneNum)) return
-      console.log('手机登录');
+    phoneLogin() {
+      if (this.verifyPhoneNum(this.phoneNum)) return;
+      console.log("手机登录");
       //校验是否输入验证码
-      let params ={
-        phone:this.phoneNum,
-        code:this.verificationCode
-      }
-       api
-       .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", params)
-       .then(({data})=>{
-          if (data.SysCode == 200200){
+      let params = {
+        phone: this.phoneNum,
+        code: this.verificationCode,
+      };
+      api
+        .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", params)
+        .then(({ data }) => {
+          if (data.SysCode == 200200) {
             //如果有多个账户选择登录用户再进入首页
             if (data.data.length > 1) {
-              this.userList = data.data
-              this.selectUserDialogVisible = true
-            }else if(data.data.length == 1){
+              this.userList = data.data;
+              this.selectUserDialogVisible = true;
+            } else if (data.data.length == 1) {
               //如果只有一个账户则直接进入首页
-              let  loginParams = {
-                id:data.data[0].id,
-                ...params
-              }
-              return api.postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
-            }else {
-              this.$message.warning('该手机号尚未绑定账号')
+              let loginParams = {
+                id: data.data[0].id,
+                ...params,
+              };
+              return api.postApi(
+                this.apiVar.UCAPI + "/phoneCodeLogin",
+                loginParams
+              );
+            } else {
+              this.$message.warning("该手机号尚未绑定账号");
             }
-          }else{
-            this.$message.error(data.MSG)
+          } else {
+            this.$message.error(data.MSG);
           }
-       })
-       .then((res)=>{
-         if (!res) return //避免有多个账户时和报错也进行这一步
-         let {data} = res 
-         if (data.SysCode == 200200 && data.data) {
-           let userInfo = data.data
-           this.getIndustry();
-           sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-           this.authentication(userInfo, 'phoneNum');
-         }else{
-           this.$message.error(data.MSG)
-         }  
-       })
-       .catch(error=>{
-         this.$message.error('登录失败')
-       })
-
+        })
+        .then((res) => {
+          if (!res) return; //避免有多个账户时和报错也进行这一步
+          let { data } = res;
+          if (data.SysCode == 200200 && data.data) {
+            let userInfo = data.data;
+            this.getIndustry();
+            sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+            this.authentication(userInfo, "phoneNum");
+          } else {
+            this.$message.error(data.MSG);
+          }
+        })
+        .catch((error) => {
+          this.$message.error("登录失败");
+        });
     },
     //选择登录用户
-    selectUser(info){
-      console.log(info,'选择用户登录');
-      let  loginParams = {
-        id:info.id,
-        phone:this.phoneNum,
-        code:this.verificationCode
-      }
-       api
-       .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
-       .then(({data})=>{
-        if (data.SysCode == 200200 && data.data) {
-          let userInfo = data.data;
-          this.getIndustry();
-          sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-          this.authentication(userInfo, 'phoneNum');
-        }else{
-          this.$message.error(data.MSG)
-        }  
-        this.selectUserDialogVisible = false
-       })
-       .catch(error=>{
-          this.$message.error('登录失败')
-       })
+    selectUser(info) {
+      console.log(info, "选择用户登录");
+      let loginParams = {
+        id: info.id,
+        phone: this.phoneNum,
+        code: this.verificationCode,
+      };
+      api
+        .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
+        .then(({ data }) => {
+          if (data.SysCode == 200200 && data.data) {
+            let userInfo = data.data;
+            this.getIndustry();
+            sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+            this.authentication(userInfo, "phoneNum");
+          } else {
+            this.$message.error(data.MSG);
+          }
+          this.selectUserDialogVisible = false;
+        })
+        .catch((error) => {
+          this.$message.error("登录失败");
+        });
     },
-    
+
     /**
      * @description: 权限判断 保留以前账号登录及扫码登录的逻辑并且兼容手机登录
      * @param {*} data 登录接口返回的数据
-     * @param {*} loginType 登录方式 
-     * 'userName' 账号密码 
-     * 'phoneNum' 手机登录 
+     * @param {*} loginType 登录方式
+     * 'userName' 账号密码
+     * 'phoneNum' 手机登录
      * 'wx'       微信扫码
      * @return {*}
-     */    
-    authentication(data, loginType){
+     */
+    authentication(data, loginType) {
       let { uType, asName = "", username = "" } = data;
       if (uType === "ADN_SM") {
         addRoutes("ADN_SM");
@@ -700,54 +742,57 @@ export default {
       } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(uType)) {
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营媒介
-          addRoutes(uType, true)
+          addRoutes(uType, true);
         } else {
           // 判断加盟媒介(旧权限)
-          addRoutes(uType)
+          addRoutes(uType);
         }
         this.$router.push("/media");
       } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(uType)) {
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营销售
-          addRoutes(uType, true)
+          addRoutes(uType, true);
         } else {
           // 判断加盟销售(旧权限)
-          addRoutes(uType)
+          addRoutes(uType);
         }
-        this.$router.push('/sale')
-      } else if (uType === 'ADN_OP') {
-        addRoutes('ADN_OP')
-        this.$router.push('/operate')
-      } else if (uType === 'AD') {
-        addRoutes('AD')
-        this.$router.push('/adOwner')
-      } else if (uType === 'ADN_SA') {
-        addRoutes('ADN_SA')
-        this.$router.push('/admin')
-      } else if (['ADN_DEV', 'ADN_DEV_ASSET', 'ADN_DEV_LEADER'].includes(uType)) {
-        addRoutes(uType)
-        this.$router.push('/f_develop')
-      } else if (loginType == 'wx' && uType === 'ADN_EP') {
-        addRoutes('ADN_EP')
+        this.$router.push("/sale");
+      } else if (uType === "ADN_OP") {
+        addRoutes("ADN_OP");
+        this.$router.push("/operate");
+      } else if (uType === "AD") {
+        addRoutes("AD");
+        this.$router.push("/adOwner");
+      } else if (uType === "ADN_SA") {
+        addRoutes("ADN_SA");
+        this.$router.push("/admin");
+      } else if (
+        ["ADN_DEV", "ADN_DEV_ASSET", "ADN_DEV_LEADER"].includes(uType)
+      ) {
+        addRoutes(uType);
+        this.$router.push("/f_develop");
+      } else if (loginType == "wx" && uType === "ADN_EP") {
+        addRoutes("ADN_EP");
         // 是否开通后台权限由小程序端判断
         this.$router.push("/f_engineer/orderList");
-      }else if (
-        ['userName','phoneNum'].includes(loginType) && 
-        uType === 'ADN_EP' && 
-        data.backstagePermission == 1 ) {
-        addRoutes('ADN_EP')
+      } else if (
+        ["userName", "phoneNum"].includes(loginType) &&
+        uType === "ADN_EP" &&
+        data.backstagePermission == 1
+      ) {
+        addRoutes("ADN_EP");
         this.$router.push("/f_engineer/orderList");
       } else {
         Message({
           message: "账号角色权限异常",
           type: "warning",
         });
-        if (loginType == 'wx') {
+        if (loginType == "wx") {
           this.isLogin = false;
           this.initWebsocket();
         }
       }
-      emitCustomEvent({uType, asName, username}, loginType);
+      emitCustomEvent({ uType, asName, username }, loginType);
     },
   },
   beforeDestroy() {
@@ -776,7 +821,7 @@ export default {
   }
 }
 
- /deep/ .el-form-item__content {
+/deep/ .el-form-item__content {
   margin-left: 0 !important;
 }
 .backgroundImg {
@@ -791,34 +836,34 @@ export default {
 .backgroundImg > img {
   width: 100%;
   height: 100%;
-          animation: kenburns 10s infinite;
+  animation: kenburns 10s infinite;
 
   -webkit-animation: kenburns 10s infinite;
-     -moz-animation: kenburns 10s infinite;
-       -o-animation: kenburns 10s infinite;
+  -moz-animation: kenburns 10s infinite;
+  -o-animation: kenburns 10s infinite;
 }
 
 @keyframes kenburns {
   0% {
-            transform: scale(1.1);
+    transform: scale(1.1);
 
     -webkit-transform: scale(1.1);
-       -moz-transform: scale(1.1);
-         -o-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -o-transform: scale(1.1);
   }
   50% {
-            transform: scale(1);
+    transform: scale(1);
 
     -webkit-transform: scale(1);
-       -moz-transform: scale(1);
-         -o-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
   }
   100% {
-            transform: scale(1.1);
+    transform: scale(1.1);
 
     -webkit-transform: scale(1.1);
-       -moz-transform: scale(1.1);
-         -o-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -o-transform: scale(1.1);
   }
 }
 
@@ -840,7 +885,7 @@ export default {
 }
 
 .logo p {
-  color: rgba(0, 0, 0, .45);
+  color: rgba(0, 0, 0, 0.45);
   font-size: 14px;
 }
 
@@ -888,7 +933,7 @@ export default {
   outline: none;
   &::-webkit-input-placeholder {
     height: 24px;
-    color: rgba(0, 0, 0, .25);
+    color: rgba(0, 0, 0, 0.25);
     font-family: PingFangSC-Regular, PingFang SC;
     font-size: 14px;
     font-weight: 400;
@@ -898,7 +943,7 @@ export default {
 
 .username,
 .password,
-.remeberUser,
+.forget-password,
 .loginBtn,
 .phone_login_btn,
 .phone_num,
@@ -932,36 +977,42 @@ export default {
     cursor: pointer;
   }
   .wait_code {
-    color: rgba(0, 0, 0, .25);
+    color: rgba(0, 0, 0, 0.25);
   }
 }
 
 .loginInput,
 .phone_login {
+  /deep/ .el-input--prefix .el-input__inner {
+    padding-left: 36px;
+    padding-right: 36px;
+  }
   img {
     position: absolute;
     top: 50%;
-    left: 12px;
+    left: 8px;
     width: 16px;
     transform: translateY(-50%);
   }
 }
 
 input::placeholder {
-  color: rgba(0, 0, 0, .25);
+  color: rgba(0, 0, 0, 0.25);
 }
 
-.remeberUser {
+.forget-password {
   margin-bottom: 24px;
   font-size: 14px;
   text-align: left;
+  color: #1890ff;
+  cursor: pointer;
 }
 
- /deep/ .el-checkbox {
+/deep/ .el-checkbox {
   color: #666;
 }
 
- /deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
+/deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
   color: #1890ff;
 }
 
@@ -1015,15 +1066,15 @@ input::placeholder {
 
 .footer {
   position: sticky;
-  top:  calc(100vh - 48px);
+  top: calc(100vh - 48px);
   width: 100%;
-  color: rgba(0, 0, 0, .45);
+  color: rgba(0, 0, 0, 0.45);
   font-size: 12px;
   text-align: center;
 }
 
 .footer a {
-  color: rgba(0, 0, 0, .45);
+  color: rgba(0, 0, 0, 0.45);
   text-decoration: underline;
 }
 .login-verify {
@@ -1038,21 +1089,21 @@ input::placeholder {
     position: absolute;
     top: 4px;
     right: 34px;
-    color: rgba(255, 255, 255, .5);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 26px;
     font-weight: 600;
     cursor: pointer;
   }
-   /deep/ .slide-verify {
+  /deep/ .slide-verify {
     canvas {
       border-radius: 4px;
     }
   }
 }
 // 选择账户弹框
- /deep/ .users_info {
+/deep/ .users_info {
   .el-dialog__title {
-    color: rgba(0, 0, 0, .85);
+    color: rgba(0, 0, 0, 0.85);
     font-family: PingFangSC-Medium, PingFang SC;
     font-size: 16px;
     font-weight: 500;
@@ -1071,14 +1122,14 @@ input::placeholder {
     height: 64px;
     padding: 12px;
     margin-bottom: 12px;
-    background: rgba(0, 0, 0, .05);
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
     cursor: pointer;
     &:last-child {
       margin-bottom: 0;
     }
     &:hover {
-      background: rgba(0, 0, 0, .1);;
+      background: rgba(0, 0, 0, 0.1);
     }
     .head_portrait {
       overflow: hidden;
@@ -1086,8 +1137,8 @@ input::placeholder {
       height: 40px;
       margin-right: 8px;
       border-radius: 50%;
-      flex-shrink:0;
-      
+      flex-shrink: 0;
+
       img {
         width: 100%;
         height: 100%;
@@ -1111,43 +1162,43 @@ input::placeholder {
         font-size: 12px;
         font-weight: 400;
         line-height: 18px;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
 }
 //提示绑定手机号码弹窗
- /deep/  .band_phone_dialog{
-   width: 372px;
-   background: #FFFFFF;
-   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
-   border-radius: 4px;
-   .el-dialog__header{
-     padding: 12px 24px 8px;
-     .el-dialog__title{
-       height: 24px;
-       font-size: 16px;
-       font-family: PingFangSC-Medium, PingFang SC;
-       font-weight: 500;
-       color: rgba(0, 0, 0, 0.85);
-       line-height: 24px;
-     }
-   }
-   .el-dialog__body{
-     padding: 0 24px;
-     span{
-       height: 44px;
-       font-size: 14px;
-       font-family: PingFangSC-Regular, PingFang SC;
-       font-weight: 400;
-       color: rgba(0, 0, 0, 0.65);
-       line-height: 22px;
-     }
-   }
-   .el-dialog__footer{
-     padding: 16px 24px 24px;
-   }
+/deep/ .band_phone_dialog {
+  width: 372px;
+  background: #ffffff;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  .el-dialog__header {
+    padding: 12px 24px 8px;
+    .el-dialog__title {
+      height: 24px;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+    }
+  }
+  .el-dialog__body {
+    padding: 0 24px;
+    span {
+      height: 44px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+    }
+  }
+  .el-dialog__footer {
+    padding: 16px 24px 24px;
+  }
 }
 </style>

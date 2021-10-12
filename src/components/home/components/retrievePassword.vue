@@ -23,9 +23,10 @@
       v-else
       label-position="top"
       hide-required-asterisk
+      @submit.native.prevent
+      ref="retrieveForm"
       :validate-on-rule-change="false"
       :model="retrieveForm"
-      ref="retrieveForm"
       :rules="retrieveRules"
     >
       <el-form-item
@@ -371,7 +372,7 @@ export default {
   }
   /deep/ .el-dialog__footer {
     padding: 6px 24px 24px;
-    word-spacing: -1em;
+    letter-spacing: -1em;
     .el-button + .el-button {
       margin-left: 16px;
     }

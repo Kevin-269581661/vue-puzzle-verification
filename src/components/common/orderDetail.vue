@@ -42,6 +42,8 @@
                                 <el-option label="终止点位" value="2" @click.native="changeHandleType(2)"></el-option>
                                 <el-option label="新增点位" value="3" @click.native="changeHandleType(3)"></el-option>
                             </el-select>
+                            <el-button type="plain" @click="changePrice" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)">修改金额
+                            </el-button>
                         </div>
                     </div>
                     <div>
@@ -2094,32 +2096,38 @@
             //修改订单金额-取消
             cancelChangePrice() {
                 this.changePriceModal = false
-                this.changePriceData = {
-                    AdDoorAdPrice: 0,
-                    AdDoorMakePrice: 0,
-                    BreakAdPrice: 0,
-                    BreakMakePrice: 0,
-                    orderOldPrice: 0,
-                    orderCompanyList: [],
-                    priceCurrCompany: 0,
-                }
+                // this.changePriceData = {
+                //     AdDoorAdPrice: 0,
+                //     AdDoorMakePrice: 0,
+                //     BreakAdPrice: 0,
+                //     BreakMakePrice: 0,
+                //     orderOldPrice: 0,
+                //     orderCompanyList: [],
+                //     priceCurrCompany: 0,
+                // }
+                this.getOrderPriceDetail()
                 Message.info("已取消操作");
             },
             //修改金额-成功
             doneChangePrice() {
                 this.changePriceModal = false
-                this.changePriceData = {
-                    AdDoorAdPrice: 0,
-                    AdDoorMakePrice: 0,
-                    BreakAdPrice: 0,
-                    BreakMakePrice: 0,
-                    orderOldPrice: 0,
-                    orderCompanyList: [],
-                    priceCurrCompany: 0,
-                }
+                // this.changePriceData = {
+                //     AdDoorAdPrice: 0,
+                //     AdDoorMakePrice: 0,
+                //     BreakAdPrice: 0,
+                //     BreakMakePrice: 0,
+                //     orderOldPrice: 0,
+                //     orderCompanyList: [],
+                //     priceCurrCompany: 0,
+                // }
+                this.getOrderPriceDetail()
                 this.getInitData();
                 Message.success("修改订单金额成功!");
 
+            },
+
+            changePrice() {
+                this.changePriceModal = true
             }
         }
         ,
@@ -2422,6 +2430,7 @@
     .change-point-select {
         width: 74px;
         margin-left: 8px;
+        margin-right: 8px;
         :hover, :focus {
             color: #409EFF;
             border-color: #409EFF;

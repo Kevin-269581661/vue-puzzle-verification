@@ -666,7 +666,7 @@
                     paginationShow: true,
                     currPage: 1,
                     totalNum: 0,
-                    pageSize: 6,
+                    pageSize: 500,
                     loading: false,
                 },
                 // 图片列表
@@ -707,7 +707,7 @@
                 dialogPage: {
                     loading_maInfo: false,
                     currInfoPage: 1,
-                    pageSize: 10,
+                    pageSize: 500,
                     totalInfoPage: 1,
                     pointLoading: false,
                 },
@@ -1309,7 +1309,7 @@
                 this.dialogPage = {
                     ...this.dialogPage,
                     currInfoPage: 1,
-                    pageSize:10,
+                    pageSize:500,
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,

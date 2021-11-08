@@ -168,7 +168,7 @@
                       <span
                         @click="routePage(scope.row)"
                         style="color: #1890ff; cursor: pointer"
-                        >{{ scope.row.apName || "" }}</span
+                        >{{ scope.row.apName || '' }}</span
                       >
                     </template>
                   </el-table-column>
@@ -188,6 +188,15 @@
                             : '#FF7875'
                         "
                       ></mini-progress>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="apName" label="操作" width="100">
+                    <template slot-scope="scope">
+                      <span
+                        @click="resetPreLock(scope.row)"
+                        style="color: #1890ff; cursor: pointer"
+                        >重新预锁</span
+                      >
                     </template>
                   </el-table-column>
                 </el-table>
@@ -251,7 +260,7 @@
                     min-width="120"
                   >
                     <template slot-scope="scope">
-                      {{ scope.row.contractNo || "--" }}
+                      {{ scope.row.contractNo || '--' }}
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -261,7 +270,7 @@
                     show-overflow-tooltip
                   >
                     <template slot-scope="scope">
-                      {{ mediaStatusMap[scope.row.mState] || "--" }}
+                      {{ mediaStatusMap[scope.row.mState] || '--' }}
                     </template>
                   </el-table-column>
                   <el-table-column label="操作">
@@ -281,10 +290,10 @@
                             currentInstallInfo = {
                               assetTag: '',
                               operater: '',
-                              operateDate: '',
-                            };
-                            Object.assign(currentInstallInfo, scope.row);
-                            installVisible = true;
+                              operateDate: ''
+                            }
+                            Object.assign(currentInstallInfo, scope.row)
+                            installVisible = true
                           }
                         "
                       >
@@ -302,8 +311,8 @@
                         title="该媒体是否已完成拆除"
                         @confirm="
                           () => {
-                            Object.assign(currentInstallInfo, scope.row);
-                            uninstallVisible = true;
+                            Object.assign(currentInstallInfo, scope.row)
+                            uninstallVisible = true
                           }
                         "
                       >
@@ -606,7 +615,7 @@ export default {
     pointDistribution,
     publishRate
   },
-  data() {
+  data () {
     return {
       sessionData: {},
       hasMpvgl: false,
@@ -800,7 +809,7 @@ export default {
       },
     };
   },
-  beforeCreate() {
+  beforeCreate () {
     var glSript = document.createElement("script");
     glSript.type = "text/javascript";
     glSript.src =
@@ -817,12 +826,12 @@ export default {
     };
   },
   methods: {
-    getSession() {
+    getSession () {
       this.sessionData = sessFun.getSess();
       this.isAllMedia = this.sessionData.uType == "ADN_MD_COUNTRY" ? true : false;
     },
     // 媒介贡献弹窗
-    getContributeBox() {
+    getContributeBox () {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -846,7 +855,7 @@ export default {
         });
     },
     // 媒介贡献信息的总数
-    getContribute() {
+    getContribute () {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -907,7 +916,7 @@ export default {
           console.log(err);
         });
     },
-    getName(type, value) {
+    getName (type, value) {
       let arr = [];
       if (type == 1) {
         arr = ["录点新手", "录点能手", "录点之星", "录点超人"];
@@ -918,7 +927,7 @@ export default {
       }
       return arr[value];
     },
-    getRank(type, value) {
+    getRank (type, value) {
       let rank = 0;
       let oldArr = [];
       if (type == 1) {
@@ -941,7 +950,7 @@ export default {
       return rank;
     },
     // 应用中心跳转
-    goToPage(item) {
+    goToPage (item) {
       if (item) {
         this.uploadEvent(2, item.name);
         item.descTooltip = false;
@@ -951,7 +960,7 @@ export default {
         window.open("https://apps.qinlinad.com", "_blank");
       }
     },
-    getUuid() {
+    getUuid () {
       let s = [];
       let hexDigits = "0123456789abcdef";
       for (let i = 0; i < 36; i++) {
@@ -964,7 +973,7 @@ export default {
       return uuid;
     },
     // 用户中心事件上报 1展示2点击
-    uploadEvent(type, name) {
+    uploadEvent (type, name) {
       this.$nextTick(function () {
         //用户中心渲染完成
         // console.log('用户中心渲染完成')
@@ -1018,12 +1027,12 @@ export default {
       });
     },
     // 跳转到客户列表页面
-    routePage(row) {
+    routePage (row) {
       sessionStorage.setItem("plan_apid", row.apID);
       this.$router.push("./media/planDetail");
     },
     // 首页报表接口
-    allReportApi() {
+    allReportApi () {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -1048,7 +1057,7 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       // 媒介的发布订单和创建方案卡片 /report /homepage/getMDAdPlanReport
       api
         .getApi(this.apiVar.report + "/homepage/getMDAdPlanReport", params)
@@ -1070,7 +1079,7 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       // 媒介的社区总数卡片 /report /homepage/getMDResCntReport
       api
         .getApi(this.apiVar.report + "/homepage/getMDResCntReport", params)
@@ -1088,7 +1097,7 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       // 媒介的在刊点位和禁止点位卡片 /report /homepage/getMDPointReport
       api
         .getApi(this.apiVar.report + "/homepage/getMDPointReport", params)
@@ -1110,7 +1119,7 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       // 媒介的卡片的周报和日报数据 /report /homepage/getMDWeekReport
       api
         .getApi(this.apiVar.report + "/homepage/getMDWeekReport", params)
@@ -1188,23 +1197,23 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       /* 
-				媒介的媒体概况
-				"banLabCnt" 禁止的点位数
-				"banMediaCnt" 禁止的媒体数
-				"normalLabCnt" 正常的点位数
-				"normalMediaCnt" 正常的媒体数
-				"installLabCnt" 待安装的点位数
-				"installMediaCnt" 待安装的媒体数
-				"repairLabCnt" 待修理的点位数
-				"repairMediaCnt" 待修理的媒体数
-				"demolishLabCnt" 拆除的点位数
-				"demolishMediaCnt" 拆除的媒体数
-				"offPubMediaCnt" 不可投的媒体数
-				"offPubLabCnt" 不可投的点位数
-				"offPubRank" 排名百分比 
-			*/
+        媒介的媒体概况
+        "banLabCnt" 禁止的点位数
+        "banMediaCnt" 禁止的媒体数
+        "normalLabCnt" 正常的点位数
+        "normalMediaCnt" 正常的媒体数
+        "installLabCnt" 待安装的点位数
+        "installMediaCnt" 待安装的媒体数
+        "repairLabCnt" 待修理的点位数
+        "repairMediaCnt" 待修理的媒体数
+        "demolishLabCnt" 拆除的点位数
+        "demolishMediaCnt" 拆除的媒体数
+        "offPubMediaCnt" 不可投的媒体数
+        "offPubLabCnt" 不可投的点位数
+        "offPubRank" 排名百分比 
+      */
       api
         .getApi(this.apiVar.report + "/homepage/getMDMediaReport", params)
         .then((res) => {
@@ -1235,7 +1244,7 @@ export default {
         .catch((err) => {
           console.log("媒体概况", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
       // 媒介的预锁概况 /report /homepage/getMDUnlockPlanReport
       api
         .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
@@ -1249,10 +1258,10 @@ export default {
         .catch((err) => {
           console.log("err", err);
         })
-        .finally((_) => {});
+        .finally((_) => { });
     },
     // 获取待安装或待拆除媒体
-    getPendingMedia() {
+    getPendingMedia () {
       api
         .getApi("/report/devContract/getPendingMedia", {
           uid: this.sessionData.uID,
@@ -1273,7 +1282,7 @@ export default {
         });
     },
     // 确认安装或拆除
-    confirmMediaStatus(install) {
+    confirmMediaStatus (install) {
       let _this = this,
         params = null;
 
@@ -1344,7 +1353,7 @@ export default {
       });
     },
     // 媒体状态同步至合同状态
-    syncDcState(state, currentInstallInfo) {
+    syncDcState (state, currentInstallInfo) {
       api
         .postApi_json("/addsp/devContract/synDcState", {
           dcID: this.currentInstallInfo.dcID,
@@ -1366,18 +1375,38 @@ export default {
           }
         });
     },
+
+    // 重新预锁
+    resetPreLock () {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token
+      };
+      api
+        .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.preLockArr = res.data.data || [];
+          } else {
+            this.$message.warning(res.data.MSG || "");
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        })
+    }
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter (to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用
     不！能！获取组件实例 `this`
-		因为当守卫执行前，组件实例还没被创建
-		从登录页面过来后才可以弹出 */
+    因为当守卫执行前，组件实例还没被创建
+    从登录页面过来后才可以弹出 */
     if (from.path == "/login") {
       visible = true;
     }
     next();
   },
-  mounted() {
+  mounted () {
     this.getSession();
     this.getContributeBox();
     this.getContribute();
@@ -1417,8 +1446,9 @@ export default {
 }
 </style>
 <style scoped lang="scss">
-@import "../../assets/component.scss";
-/deep/ .custom-card-content .el-table__body-wrapper,.el-table__empty-block {
+@import '../../assets/component.scss';
+/deep/ .custom-card-content .el-table__body-wrapper,
+.el-table__empty-block {
   min-height: 160px !important;
 }
 /deep/ .custom-confirm-dialog {
@@ -1627,7 +1657,7 @@ export default {
   height: 420px;
   width: 340px;
   background-repeat: no-repeat;
-  background-image: url("../../assets/images/index/modal-bg.png");
+  background-image: url('../../assets/images/index/modal-bg.png');
 }
 .rank_box {
   z-index: 1000;

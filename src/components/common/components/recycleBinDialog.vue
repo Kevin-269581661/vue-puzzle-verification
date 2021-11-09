@@ -14,13 +14,13 @@
       </el-table-column>
       <el-table-column property="apdTime" label="删除时间">
         <template slot-scope="scope">
-          <span>{{ formatTime(scope.row.apdTime) }}</span>
+          <span>{{ formatTime(scope.row.apdTime, true) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="95">
         <template slot-scope="scope">
           <el-popconfirm
-            title="确定恢复该方案？"
+            title="确定还原该方案？"
             @confirm="restoreAdPlan(scope.row)"
           >
             <span slot="reference" class="opt">恢复</span>
@@ -100,7 +100,6 @@ export default {
       }
       api.postApi(this.apiVar.Advertisement + "/GetDeletedAdPlan", info).then(res => {
         this.loading = false
-        console.log(res, 'ressssss')
         if (res.status === 200) {
           this.tableData = res.data.list
           this.total = res.data.total
@@ -110,7 +109,7 @@ export default {
       })
     },
 
-    // 恢复方案
+    // 还原方案
     restoreAdPlan (row) {
       console.log(row, 'rowrowrow')
       let info = {
@@ -122,21 +121,24 @@ export default {
         if (res.status === 200) {
           this.searchParams.start = 1
           this.getData()
-          sessFun.messageFun('success', res.statusText || '方案已恢复')
+          sessFun.messageFun('success', res.statusText || '方案已还原')
         } else {
-          sessFun.messageFun('warning', res.statusText || '方案恢复失败')
+          sessFun.messageFun('warning', res.statusText || '方案还原失败')
         }
       })
     },
 
     getSessionData () {
       this.sessionData = sessFun.getSess()
-      console.log(sessFun.getSess(), 'sessFunsessFun')
     },
 
     // 时间格式化
-    formatTime (val) {
-      return dateFormat.toDate(val, '/');
+    formatTime (val, isNeedMinute = false) {
+      if (!isNeedMinute) {
+        return dateFormat.toDate(val, '/');
+      } else {
+        return dateFormat.toDateTime(new Date(val), '/');
+      }
     }
   }
 }

@@ -1394,24 +1394,22 @@ export default {
       }).then(() => {
         api.postApi(this.apiVar.Advertisement + "/ResetFangLock", params).then(res => {
           if (!res.data.SysCode) {
+            this.$message.warning(res.data.MSG || "");
             console.log('res.data', res.data)
           } else {
             api
               .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
               .then((res) => {
                 if (res.data.SysCode === 200200) {
-                  Message.success('重新预锁成功！');
+                  this.$message.success('预锁成功');
                   this.preLockArr = res.data.data || [];
                 } else {
                   this.$message.warning(res.data.MSG || "");
                 }
               })
-              .catch((err) => {
-                console.log("err", err);
-              })
           }
         });
-      }).catch(() => { })
+      })
 
     }
   },

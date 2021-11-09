@@ -253,7 +253,7 @@
                                 <p class="mask_icon">
                                     <span v-if="isShowCollect">
                                         <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
-                                        <i v-else="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
+                                        <i v-else-if="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
                                     </span>
                                     <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
                                 </p>
@@ -314,7 +314,7 @@
                             </div>
                         </div>
                         <div class="infoBox">
-                            <i>{{img.pRemarks.username.substr(-1)}}</i>
+                            <i>{{(img.pRemarks.username || '').substr(-1)}}</i>
                             <span>{{img.pRemarks.brand}}</span>
                             <em>{{formatTime(img.pUTime)}}</em>
                         </div>

@@ -154,7 +154,7 @@
                     let info = {
                         apID: this.changePriceData.apID,
                         orderMoneyInfos: [],
-                        mark: this.changePriceData.handleTime,
+                        mark: this.changePriceData.handleTime || new Date().getTime(),
                         opType: this.changePriceData.opType
                     }
                     for (let i = 0;i< this.changePriceData.orderCompanyList.length;i++) {

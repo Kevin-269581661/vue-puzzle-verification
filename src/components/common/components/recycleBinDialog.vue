@@ -6,12 +6,25 @@
     :before-close="handleClose"
   >
     <el-table :data="tableData" v-loading="loading" border class="m-table">
-      <el-table-column property="name" label="方案名称"></el-table-column>
-      <el-table-column property="createTime" label="创建日期"></el-table-column>
-      <el-table-column property="deleteTime" label="删除时间"></el-table-column>
+      <el-table-column property="apName" label="方案名称"></el-table-column>
+      <el-table-column property="apcTime" label="创建日期">
+        <template slot-scope="scope">
+          <span>{{ formatTime(scope.row.apcTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column property="apdTime" label="删除时间">
+        <template slot-scope="scope">
+          <span>{{ formatTime(scope.row.apdTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="95">
         <template slot-scope="scope">
-          <span class="opt">重新编辑</span>
+          <el-popconfirm
+            title="确定恢复该方案？"
+            @confirm="restoreAdPlan(scope.row)"
+          >
+            <span slot="reference" class="opt">恢复</span>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -21,7 +34,7 @@
         class="fr"
         :total="total"
         :page-size="searchParams.pageSize"
-        :current-page.sync="searchParams.currentPage"
+        :current-page.sync="searchParams.start"
         layout="total, prev, pager, next"
         :background="true"
         @current-change="handleCurrentPageChange"
@@ -36,6 +49,11 @@
 </template>
 
 <script>
+import api from "../../../api/api.js";
+import sessFun from "../../../commonFun/sessFun.js";
+// 时间格式化
+import dateFormat from "../../../commonFun/timeFormat.js";
+
 export default {
   name: "recycleBinDialog",
 
@@ -43,20 +61,24 @@ export default {
 
   data () {
     return {
-      tableData: [
-        {
-          name: '招商银行广州分行10.16-12.17',
-          createTime: '2021/10/08',
-          deleteTime: '2021/10/10 08:26'
-        }
-      ],
+      tableData: [],
       loading: false,
       total: 0,
       searchParams: {
         pageSize: 10,
-        currentPage: 1
-      }
+        start: 1
+      },
+
+      sessionData: {}
     }
+  },
+
+  created () {
+    this.getSessionData()
+  },
+
+  mounted () {
+    this.getData()
   },
 
   methods: {
@@ -65,7 +87,56 @@ export default {
     },
 
     handleCurrentPageChange () {
+      this.getData()
+    },
 
+    getData () {
+      this.loading = true
+      let info = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        start: this.searchParams.start,
+        pagesize: this.searchParams.pageSize
+      }
+      api.postApi(this.apiVar.Advertisement + "/GetDeletedAdPlan", info).then(res => {
+        this.loading = false
+        console.log(res, 'ressssss')
+        if (res.status === 200) {
+          this.tableData = res.data.list
+          this.total = res.data.total
+        } else {
+          sessFun.messageFun('warning', res.statusText || '获取数据失败')
+        }
+      })
+    },
+
+    // 恢复方案
+    restoreAdPlan (row) {
+      console.log(row, 'rowrowrow')
+      let info = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apid: row.apID
+      }
+      api.postApi(this.apiVar.Advertisement + "/RestoreDeletedAdPlan", info).then(res => {
+        if (res.status === 200) {
+          this.searchParams.start = 1
+          this.getData()
+          sessFun.messageFun('success', res.statusText || '方案已恢复')
+        } else {
+          sessFun.messageFun('warning', res.statusText || '方案恢复失败')
+        }
+      })
+    },
+
+    getSessionData () {
+      this.sessionData = sessFun.getSess()
+      console.log(sessFun.getSess(), 'sessFunsessFun')
+    },
+
+    // 时间格式化
+    formatTime (val) {
+      return dateFormat.toDate(val, '/');
     }
   }
 }

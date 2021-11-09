@@ -101,7 +101,7 @@
           >
             <el-table-column
               label="资源名称"
-              min-width="10.2%"
+              width="205"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
@@ -113,11 +113,12 @@
                 </span>
               </template>
             </el-table-column>
+
             <el-table-column
               column-key="rtName"
               prop="rtName"
               label="资源类型"
-              min-width="8%"
+              width="127"
               :filters="[
                 { text: '社区', value: '1' },
                 { text: '写字楼', value: '2' }
@@ -125,67 +126,81 @@
               :filter-multiple="false"
             >
             </el-table-column>
+
             <el-table-column
-              prop="city"
-              label="城市"
-              min-width="7%"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.city || '--' }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="rName"
-              label="区域"
-              min-width="7%"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.rName || '--' }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="tradingArea"
-              label="商圈"
-              min-width="8%"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.tradingArea || '--' }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="mVehicle"
-              label="媒体类型"
-              min-width="7.4%"
+              label="投放面"
+              width="127"
               :show-overflow-tooltip="true"
             >
             </el-table-column>
-            <el-table-column
-              prop="mTitle"
-              label="媒体名称"
-              min-width="8.2%"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mTitle || '--' }}</span>
-              </template>
-            </el-table-column>
+
             <el-table-column
               prop="assetTag"
               label="资产编号"
-              min-width="12%"
+              width="205"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
                 {{ scope.row.assetTag || '--' }}
               </template>
             </el-table-column>
+
+            <el-table-column
+              prop="city"
+              label="城市"
+              width="113"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.city || '--' }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="rName"
+              label="区域"
+              width="113"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.rName || '--' }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="tradingArea"
+              label="商圈"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.tradingArea || '--' }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="mVehicle"
+              label="媒体类型"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="mTitle"
+              label="媒体名称"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.mTitle || '--' }}</span>
+              </template>
+            </el-table-column>
+
             <el-table-column
               prop="pNum"
               label="可投面数"
-              min-width="6.1%"
+              width="113"
               class="tar"
             >
             </el-table-column>
@@ -194,7 +209,7 @@
               column-key="mState"
               prop="mState"
               label="媒体状态"
-              min-width="6%"
+              width="112"
               :filters="[
                 { text: '禁用', value: '0' },
                 { text: '正常', value: '1' },
@@ -237,7 +252,7 @@
               column-key="mState"
               prop="mState"
               label="售卖状态"
-              min-width="6%"
+              width="112"
               :filters="[
                 { text: '可售卖', value: '0' },
                 { text: '不可售卖', value: '1' }
@@ -247,8 +262,8 @@
             >
               <template slot-scope="scope">
                 <point-state
-                  :state-text="getSellState(scope.row.mState).text"
-                  :color="getSellState(scope.row.mState).color"
+                  :state-text="stateToText(scope.row.mState, 'sell').text"
+                  :color="stateToText(scope.row.mState, 'sell').color"
                 ></point-state>
               </template>
             </el-table-column>
@@ -270,7 +285,7 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
+                    <!-- <el-dropdown-item
                       command="0"
                       @click.native.prevent="
                         changeState('0', scope.$index, scope.row)
@@ -302,30 +317,14 @@
                       "
                       :disabled="scope.row.mState == 3 || scope.row.mState == 4"
                       >待维修</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      command="5"
-                      @click.native.prevent="
-                        changeState('5', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 5"
-                      >删除</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      command="4"
-                      @click.native.prevent="
-                        changeState('4', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 4"
-                      >拆除</el-dropdown-item
-                    >
+                    > -->
 
                     <el-dropdown-item
                       command="6"
                       @click.native.prevent="
                         changeState('6', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.mState == 4"
+                      :disabled="scope.row.mState !== 4"
                       >可售卖</el-dropdown-item
                     >
                     <el-dropdown-item
@@ -336,6 +335,23 @@
                       :disabled="scope.row.mState == 4"
                       >不可售卖</el-dropdown-item
                     >
+
+                    <el-dropdown-item
+                      command="5"
+                      @click.native.prevent="
+                        changeState('5', scope.$index, scope.row)
+                      "
+                      :disabled="scope.row.mState == 5"
+                      >删除</el-dropdown-item
+                    >
+                    <!-- <el-dropdown-item
+                      command="4"
+                      @click.native.prevent="
+                        changeState('4', scope.$index, scope.row)
+                      "
+                      :disabled="scope.row.mState == 4"
+                      >拆除</el-dropdown-item
+                    > -->
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
@@ -360,6 +376,7 @@
           </el-pagination>
         </div>
       </div>
+
       <!--媒体禁用、启用-->
       <el-dialog
         :title="isDisabled ? '禁用媒体' : '启用媒体'"
@@ -399,6 +416,7 @@
           >
         </span>
       </el-dialog>
+
       <!--媒体拆除-->
       <el-dialog
         :visible.sync="dismantleVisible"
@@ -436,6 +454,7 @@
           >
         </div>
       </el-dialog>
+
       <!--媒体待维修-->
       <el-dialog
         :visible.sync="repairVisible"
@@ -790,7 +809,7 @@ export default {
       // 不可售卖弹窗
       isUnvailableSell: false,
       // 可售卖弹窗
-      isVailableSell: true
+      isVailableSell: false
     }
   },
   mounted: function () {
@@ -805,8 +824,8 @@ export default {
   },
   methods: {
     // 状态转换
-    stateToText (state) {
-      let arr = [
+    stateToText (state, type = 'media') {
+      let mediaArr = [
         {
           text: '正常',
           value: 1,
@@ -830,29 +849,15 @@ export default {
         {
           text: '已拆除',
           value: 4,
-          color: 'rgba(24,144,255,1)',
+          color: 'rgba(199, 203, 206, 1)',
         }
       ];
 
-      if (state === 4) {
-        return arr[1];
-      } else {
-        return arr[0];
-      }
-      // for (let data of arr) {
-      //   if (data.value == state) {
-      //     return data;
-      //   }
-      // }
-    },
-
-    // 售卖状态
-    getSellState (state) {
-      let arr = [
+      let sellArr = [
         {
           text: '可售卖',
           value: 1,
-          color: 'rgba(82, 196, 26, 1)',
+          color: 'rgba(82,196,26,1)',
         },
         {
           text: '不可售卖',
@@ -860,25 +865,34 @@ export default {
           color: 'rgba(199, 203, 206, 1)',
         }
       ];
-      if (state === 4) {
-        return arr[1];
-      } else {
-        return arr[0];
-      }
+
+      let arr;
+      type === 'media' ? arr = mediaArr : arr = sellArr;
+
+      return state === 4 ? arr[1] : arr[0];
+
+      // for (let data of arr) {
+      //   if (data.value == state) {
+      //     return data;
+      //   }
+      // }
     },
 
     //新建跳转
     newMedia () {
       this.$router.push('./mediaInput');
     },
+
     // 维护管理
     maintain () {
       this.$router.push('./maintainList');
     },
+
     // 推送地图
     showPushMap () {
       this.pushMapDialogVisible = true
     },
+
     // 确认推送
     submitPushMap () {
       this.pushMapDialogVisible = true
@@ -905,9 +919,11 @@ export default {
         sessFun.messageFun('warning', '请选择日期')
       }
     },
+
     hideTag () {
       this.isShowTag = false;
     },
+
     filterChange (filters) {
       console.log('filters', filters)
       for (let key in filters) {
@@ -928,12 +944,14 @@ export default {
       this.pageData.pageNum = 1
       this.getData()
     },
+
     // 分页
     changePage (val) {
       console.log('当前页', val)
       this.pageData.pageNum = val
       this.getData()
     },
+
     // 每页的条数
     changeSize (val) {
       console.log('每页的条数', val)
@@ -941,6 +959,7 @@ export default {
       this.pageData.pageSize = val
       this.getData()
     },
+
     // 获取媒体列表
     getData () {
       this.loading = true
@@ -997,10 +1016,12 @@ export default {
       })
       this.setCityAreaByUWho()
     },
+
     // 设置可搜索的区域
     setCityAreaByUWho () {
       this.cityOptions = areaPackageNew.province()
     },
+
     // 根据市级城市rid，获取它的下属区、县
     handleChange (value) {
       console.log('handleChange', value)
@@ -1025,6 +1046,7 @@ export default {
         this.cityArea.cName = ''
       }
     },
+
     //获取区域
     getRegion (val) {
       console.log('获取区域val', val, this.regionOpt)
@@ -1039,6 +1061,7 @@ export default {
       }
       console.log('选择的区域为', this.cityArea)
     },
+
     // 勾选禁用/启用媒体状态
     stateChange (temp) {
       console.log('temp', temp, this.mediaState)
@@ -1078,6 +1101,7 @@ export default {
         default: sessFun.messageFun('waring', '勾选异常！'); break;
       }
     },
+
     // 正常->禁用 / 禁用->正常
     submitMediaState () {
       if (this.mediaState.allState || this.mediaState.AState || this.mediaState.BState) {
@@ -1091,6 +1115,7 @@ export default {
         sessFun.messageFun('waring', '请选择媒体面!')
       }
     },
+
     // 下拉选择状态
     changeState (selectState, index, rows) {
       console.log('选择的状态', selectState)
@@ -1153,6 +1178,7 @@ export default {
         this.setRowMediaStatus(stateName, selectState)
       }
     },
+
     // 判断单面禁用状态
     judgeAsState (row) {
       if (row.asState.A == '0') {
@@ -1171,6 +1197,7 @@ export default {
         this.mediaState.BDisable = false
       }
     },
+
     // 判断当前删除的媒体所在小区是否只有一个媒体
     judgeResHaveMediaNum () {
       let judgeLoading = this.$loading({
@@ -1205,6 +1232,7 @@ export default {
         judgeLoading.close()
       })
     },
+
     // 删除媒体
     deleteMedia (flag) {
       let text = '媒体被删除后将不可恢复!'
@@ -1253,6 +1281,7 @@ export default {
         })
       })
     },
+
     // 二次确认按钮
     setRowMediaStatus (stateName, selectState, letter) {
       console.log('stateName', stateName, 'selectState', selectState)
@@ -1275,6 +1304,7 @@ export default {
         sessFun.messageFun('info', '已取消操作')
       })
     },
+
     // 设置媒体状态接口，state:下拉时选择的状态;letter:是否是单面禁用或正常
     setStatusApi (state, letter) {
       // console.log('state',state,'letter',letter)
@@ -1332,6 +1362,7 @@ export default {
         submitLoading.close()
       })
     },
+
     // 拆除媒体
     dismantleMedia () {
       if (!this.dismantleInfo) {
@@ -1362,6 +1393,7 @@ export default {
         }
       })
     },
+
     // 待维修
     repairMedia () {
       if (!this.waitRepair.time) {
@@ -1397,6 +1429,7 @@ export default {
         }
       })
     },
+
     return_mState (mState) {
       if (mState == '1') {
         return '正常'
@@ -1412,26 +1445,13 @@ export default {
         return ''
       }
     },
-    return_mStateNum (mState) {
-      if (mState == '正常') {
-        return '1';
-      } else if (mState == '禁用') {
-        return '0';
-      } else if (mState == '待安装') {
-        return '2';
-      } else if (mState == '待维修') {
-        return '3';
-      } else if (mState == '已拆除') {
-        return '4';
-      } else {
-        return '';
-      }
-    },
+
     // 跳转到媒体详情界面
     mediaDetail (data) {
       this.$router.push('./mediaDetail');
       sessionStorage.setItem("resID", data.resID);
     },
+
     // 当搜索框为空的时候进行重置显示
     initData (val) {
       console.log('搜索框变化的值', val)
@@ -1440,6 +1460,7 @@ export default {
         this.getData({ "pageNo": this.pageNo, "pageSize": 50 })
       }
     },
+
     // 搜索按钮
     searchFun () {
       this.searchBtnAbled = true
@@ -1455,6 +1476,7 @@ export default {
 
       }
     },
+
     // 重置搜索
     clearSearch () {
       this.keyword = ''
@@ -1466,6 +1488,7 @@ export default {
       this.cityArea = { cName: '', rName: '' }
       this.getData()
     },
+
     // 导入媒体
     importMedia () {
       if (!this.companyList.length) {
@@ -1494,6 +1517,7 @@ export default {
       }
       this.ImportDialogVisible = true
     },
+
     // 自定义上传
     uploadFile (params) {
       this.fileData = []
@@ -1501,16 +1525,19 @@ export default {
       let fileObj = params.file
       this.fileData.push(fileObj)
     },
+
     // 文件删除
     fileRemove (file, fileList) {
       console.log(file, fileList);
       this.fileData = fileList
     },
+
     // 导入模版下载
     dowmLoadFun (event) {
       // 阻止冒泡事件
       event.stopPropagation();
     },
+
     // 确认上传
     submitUpload () {
       console.log('this.importAsrID', this.importAsrID, this.fileData)
@@ -1562,6 +1589,7 @@ export default {
         this.$message.warning('请上传文件！')
       }
     },
+
     // 导入失败的媒体
     setErrorMediaTable (errorList) {
       let resultarr = []
@@ -1579,6 +1607,7 @@ export default {
       this.excelDataUpload = resultarr
       this.showUploadFail = true
     },
+
     // 导出有问题的点
     downLoadExcel () {
       let resultarr = [];
@@ -1603,6 +1632,7 @@ export default {
         export_json_to_excel(tHeader, data, '问题媒体表');
       })
     },
+
     formatJson (filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
     },
@@ -1883,6 +1913,17 @@ a {
 /deep/ .Import_dialog .el-upload-dragger img {
   width: 28px;
   height: 30px;
+}
+
+// 滚动条的宽度
+/deep/ .el-table__body-wrapper::-webkit-scrollbar {
+  width: 6px; // 横向滚动条
+  height: 12px; // 纵向滚动条 必写
+}
+// 滚动条的滑块
+/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 3px;
 }
 </style>
 

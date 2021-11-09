@@ -232,7 +232,6 @@
               :filter-multiple="true"
             >
             </el-table-column>
-
             <el-table-column
               label="投放城市(点位面数,排期)"
               prop="cityArea"
@@ -445,13 +444,12 @@
                       拆单
                     </el-dropdown-item>
                     <el-dropdown-item
-                      @click.native.prevent="deleteAdPlan(scope.row)"
                       :disabled="
                         isDisable ||
                         (scope.row.apState !== 1 && scope.row.apState !== -1)
                       "
                     >
-                      <el-popconfirm title="确定删除该方案？">
+                      <el-popconfirm title="确定删除该方案？" @confirm="deleteAdPlan(scope.row)">
                         <span slot="reference">删除</span>
                       </el-popconfirm>
                     </el-dropdown-item>
@@ -1243,10 +1241,7 @@ export default {
       }
       this.unfinishedDialogVisible = true
     },
-    // 删除
-    deleteOne (row) {
-      console.log(row);
-    },
+
     // 随机生成合同编号编码格式： 合同编码固定[QC],日期[20180328],省份[44],城市[01],等几份合同[001](随机数)
     getContractNo (rid) {
       let date = new Date();
@@ -2067,8 +2062,21 @@ export default {
     },
 
     // 删除方案
-    deleteAdPlan () {
-
+    deleteAdPlan (row) {
+      console.log(this.apiVar, 'this.apiVar')
+      console.log(row)
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        apid: row.apID
+      }
+      api.postApi(this.apiVar.Advertisement + '/DeleteAdPlan', params).then(res => {
+        console.log('删除', res)
+        if (res.data.SysCode == 300200) {
+          this.messageFun('success', res.data.MSG);
+          this.reset();
+        }
+      })
     },
 
     // 回收站

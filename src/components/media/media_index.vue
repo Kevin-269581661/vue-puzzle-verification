@@ -190,7 +190,7 @@
                       ></mini-progress>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="apName" label="操作" width="100">
+                  <el-table-column prop="apName" label="操作" width="100" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)">
                     <template slot-scope="scope">
                       <span
                         @click="resetPreLock(scope.row)"
@@ -807,6 +807,8 @@ export default {
         operater: "",
         operateDate: "",
       },
+
+      role: ''
     };
   },
   beforeCreate () {
@@ -829,6 +831,8 @@ export default {
     getSession () {
       this.sessionData = sessFun.getSess();
       this.isAllMedia = this.sessionData.uType == "ADN_MD_COUNTRY" ? true : false;
+      this.role = this.sessionData.uType 
+      console.log(this.sessionData, 'this.sessionDatathis.sessionDatathis.sessionData')
     },
     // 媒介贡献弹窗
     getContributeBox () {
@@ -1380,20 +1384,35 @@ export default {
     resetPreLock () {
       let params = {
         uid: this.sessionData.uID,
-        token: this.sessionData.token
+        token: this.sessionData.token,
+        apid: sessionStorage.getItem("plan_apid")
       };
-      api
-        .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            this.preLockArr = res.data.data || [];
+      this.$confirm('是否确定对该方案重新进行预锁？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.postApi(this.apiVar.Advertisement + "/ResetFangLock", params).then(res => {
+          if (!res.data.SysCode) {
+            console.log('res.data', res.data)
           } else {
-            this.$message.warning(res.data.MSG || "");
+            api
+              .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
+              .then((res) => {
+                if (res.data.SysCode === 200200) {
+                  Message.success('重新预锁成功！');
+                  this.preLockArr = res.data.data || [];
+                } else {
+                  this.$message.warning(res.data.MSG || "");
+                }
+              })
+              .catch((err) => {
+                console.log("err", err);
+              })
           }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
+        });
+      }).catch(() => { })
+
     }
   },
   beforeRouteEnter (to, from, next) {

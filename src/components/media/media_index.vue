@@ -89,6 +89,7 @@
                   src="../../assets/images/question_icon.png"
                 />
               </el-tooltip>
+
               <el-tooltip
                 v-else
                 effect="dark"
@@ -118,15 +119,17 @@
                   src="../../assets/images/question_icon.png"
                 />
               </el-tooltip>
+
               <el-radio-group
                 v-model="isPoint"
                 size="small"
                 class="achievement-radio-group"
               >
-                <el-radio-button :label="false">媒体</el-radio-button>
                 <el-radio-button :label="true">点位(面)</el-radio-button>
+                <el-radio-button :label="false">媒体</el-radio-button>
               </el-radio-group>
             </template>
+
             <template slot="content">
               <ring-chart
                 container="ringChart"
@@ -140,8 +143,10 @@
                 >的公司，请尽快处理下吧！
               </div>
             </template>
+
           </index-custom-card>
         </el-col>
+
         <el-col :span="12">
           <index-custom-card height="520px">
             <template slot="head">
@@ -190,7 +195,12 @@
                       ></mini-progress>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="apName" label="操作" width="100" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)">
+                  <el-table-column
+                    prop="apName"
+                    label="操作"
+                    width="100"
+                    v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  >
                     <template slot-scope="scope">
                       <span
                         @click="resetPreLock(scope.row)"
@@ -757,10 +767,10 @@ export default {
       },
       cardDataOther3: {
         name: "cardDataOther3",
-        title: "禁用点位",
-        tip: "数据每5分钟更新一次，公司禁用的总点位数",
+        title: "不可售卖点位",
+        tip: "数据每5分钟更新一次，公司不可售卖总点位数",
         value: 0,
-        valueAlias: "禁用点位数量",
+        valueAlias: "不可售卖点位数量",
         compare: 0,
         trendLabel: "同比上周",
         data: [],
@@ -773,7 +783,7 @@ export default {
         },
       },
       // 媒体概况 媒体和点位切换
-      isPoint: false,
+      isPoint: true,
       // 媒体概况饼图数据
       ringData: [
         [],
@@ -831,7 +841,7 @@ export default {
     getSession () {
       this.sessionData = sessFun.getSess();
       this.isAllMedia = this.sessionData.uType == "ADN_MD_COUNTRY" ? true : false;
-      this.role = this.sessionData.uType 
+      this.role = this.sessionData.uType
       console.log(this.sessionData, 'this.sessionDatathis.sessionDatathis.sessionData')
     },
     // 媒介贡献弹窗
@@ -1381,11 +1391,12 @@ export default {
     },
 
     // 重新预锁
-    resetPreLock () {
+    resetPreLock (row) {
+      console.log(row, 'rowrowrowrow')
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apid: sessionStorage.getItem("plan_apid")
+        apid: row.apID
       };
       this.$confirm('是否确定对该方案重新进行预锁？', {
         confirmButtonText: '确定',
@@ -1393,10 +1404,7 @@ export default {
         type: 'warning'
       }).then(() => {
         api.postApi(this.apiVar.Advertisement + "/ResetFangLock", params).then(res => {
-          if (!res.data.SysCode) {
-            this.$message.warning(res.data.MSG || "");
-            console.log('res.data', res.data)
-          } else {
+          if (res.data.SysCode === 300200) {
             api
               .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
               .then((res) => {
@@ -1407,6 +1415,9 @@ export default {
                   this.$message.warning(res.data.MSG || "");
                 }
               })
+          } else {
+            this.$message.warning(res.data.MSG || "");
+            console.log('res.data', res.data)
           }
         });
       })

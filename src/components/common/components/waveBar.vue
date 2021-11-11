@@ -21,7 +21,7 @@
             <span class="align-right">{{barData.overdueLabCnt | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.overdueRate}}%</span>
           </li>
-          <li class="pop-item">
+          <!-- <li class="pop-item">
             <em>禁用</em>
             <span class="align-right">{{barData.banLabCnt | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.banLabRate}}%</span>
@@ -30,6 +30,11 @@
             <em>维修</em>
             <span class="align-right">{{barData.repairLabCnt | moneyFormat('', 0)}}面周</span>
             <span class="tip-rate">{{barData.repairRate}}%</span>
+          </li> -->
+          <li class="pop-item">
+            <em>不可售卖</em>
+            <span class="align-right">{{barData.banLabCnt | moneyFormat('', 0)}}面周</span>
+            <span class="tip-rate">{{barData.banLabRate}}%</span>
           </li>
       </ul>
   </div>

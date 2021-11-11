@@ -46,14 +46,14 @@
                                 <li style="line-height: 20px;">
                                     未售出资源：指统计周期内可投放却未售卖出去的面*周数
                                 </li>
-                                <li style="line-height: 20px;">
+                                <!-- <li style="line-height: 20px;">
                                     维修资源：指统计周期内处于维修状态而未售卖的面*周数
                                 </li>
                                 <li style="line-height: 20px;">
                                     禁用资源：指统计周期内处于禁用状态而未售卖的面*周数
-                                </li>
+                                </li> -->
                                 <li style="line-height: 20px;">
-                                    损耗资源：根据当前待维修+禁用状态的媒体数去预估未来的耗损资源量
+                                    不可售卖资源：根据当前不可售卖的面数去预估未来的耗损资源量
                                 </li>
                             </ul>
                             <img class="quesition-icon" src="../../assets/images/question_icon.png" />

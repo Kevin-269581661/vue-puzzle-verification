@@ -125,6 +125,16 @@
                                 <span>{{scope.row.mediaName || '--' }}</span>
                             </template>
                         </el-table-column>
+
+                        <el-table-column
+                            label="媒体面"
+                            min-width="120"
+                            :show-overflow-tooltip="true">
+                            <!-- <template slot-scope="scope">
+                                <span>{{scope.row.mediaName || '--' }}</span>
+                            </template> -->
+                        </el-table-column>
+
                         <el-table-column
                             prop="assetTag"
                             label="资产编号"
@@ -169,7 +179,8 @@
                                 <span>{{scope.row.issueRecord||'--'}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column
+
+                        <!-- <el-table-column
                             prop="feedback"
                             label="处理记录"
                             min-width="170"
@@ -179,7 +190,8 @@
                             <template slot-scope="scope">
                                 <span>{{scope.row.feedback||'--'}}</span>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
+
                         <el-table-column
                             prop="createTime"
                             label="提交日期"
@@ -239,10 +251,10 @@
                                                           v-if="scope.row.mtType=='巡点'"
                                                           >照片
                                         </el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
+                                        <!-- <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
                                                           v-if="scope.row.mtType!='拆除'"
                                                           >处理
-                                        </el-dropdown-item>
+                                        </el-dropdown-item> -->
                                         <el-dropdown-item @click.native.prevent="showHistory(scope.row)">历史记录
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -395,14 +407,25 @@
                         label: '巡点',
                         value: 1,
                     },
+                    // {
+                    //     label: '待维修',
+                    //     value: 2
+                    // },
                     {
-                        label: '待维修',
-                        value: 2
+                        label: '不可售卖',
+                        value: 4
                     },
-                    {
+
+                     {
                         label: '拆除',
                         value: 3
+                    },
+
+                    {
+                        label: '维修',
+                        value: 5
                     }
+         
                 ],
                 // 工程人员
                 engineerArr: [],

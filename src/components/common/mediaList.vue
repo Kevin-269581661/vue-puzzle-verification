@@ -196,6 +196,7 @@
                 <span>{{ scope.row.mTitle || '--' }}</span>
               </template>
             </el-table-column>
+            
 
             <el-table-column
               prop="pNum"
@@ -285,7 +286,7 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <!-- <el-dropdown-item
+                    <el-dropdown-item
                       command="0"
                       @click.native.prevent="
                         changeState('0', scope.$index, scope.row)
@@ -317,7 +318,7 @@
                       "
                       :disabled="scope.row.mState == 3 || scope.row.mState == 4"
                       >待维修</el-dropdown-item
-                    > -->
+                    >
 
                     <el-dropdown-item
                       command="6"

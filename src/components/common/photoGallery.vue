@@ -31,7 +31,7 @@
               <el-col :span="6">
                 <span>资产编号：</span>
                 <el-input
-                  v-model="searchInfo.assetTag"
+                  v-model="searchInfo.assetNumber"
                   size="small"
                   placeholder="请输入资产编号"
                 ></el-input>
@@ -290,7 +290,7 @@ export default {
         citySelect: [],         // 地区搜索
         industryIdArr: [],      // 搜索行业
         publish: 'SK',          // 上下刊
-        assetTag: ''            // 资产编号
+        assetNumber: ''         // 资产编号
       },
       // 上下刊下拉
       publish: 'SK',
@@ -479,7 +479,7 @@ export default {
           imgType: this.searchInfo.publish, // type,
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
-          assetTag: this.searchInfo.assetTag,
+          assetNumber: this.searchInfo.assetNumber,
           asLab: this.searchInfo.LabSelect,
           prid: '',
           pageNum: this.galleryPageData.pageNum,
@@ -507,7 +507,7 @@ export default {
           type: this.searchInfo.publish === "SK" ? 0 : this.searchInfo.publish === "XK" ? 1 : 2,
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
-          assetTag: this.searchInfo.assetTag,
+          assetNumber: this.searchInfo.assetNumber,
           asLabel: this.searchInfo.LabSelect,
           pageNo: this.collectPageData.pageNum,
           pageSize: this.collectPageData.pageSize,
@@ -559,6 +559,7 @@ export default {
                 username: key.userName,
                 assettag: key.assetNumber || '--',
                 address: key.address || '--',
+                assetNumber: key.assetNumber
               },
             })
           }
@@ -616,6 +617,7 @@ export default {
                 username: key.userName,
                 assettag: key.assetNumber || '--',
                 address: key.address || '--',
+                assetNumber: key.assetNumber
               },
             })
           }

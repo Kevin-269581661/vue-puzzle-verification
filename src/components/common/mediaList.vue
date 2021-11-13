@@ -101,7 +101,7 @@
           >
             <el-table-column
               label="资源名称"
-              width="205"
+              min-width="210"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
@@ -118,7 +118,7 @@
               column-key="rtName"
               prop="rtName"
               label="资源类型"
-              width="127"
+              width="130"
               :filters="[
                 { text: '社区', value: '1' },
                 { text: '写字楼', value: '2' }
@@ -129,7 +129,8 @@
 
             <el-table-column
               label="投放面"
-              width="127"
+              width="130"
+              prop="asLab"
               :show-overflow-tooltip="true"
             >
             </el-table-column>
@@ -137,7 +138,7 @@
             <el-table-column
               prop="assetTag"
               label="资产编号"
-              width="205"
+              min-width="215"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
@@ -148,7 +149,7 @@
             <el-table-column
               prop="city"
               label="城市"
-              width="113"
+              width="120"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
@@ -196,75 +197,43 @@
                 <span>{{ scope.row.mTitle || '--' }}</span>
               </template>
             </el-table-column>
-            
 
             <el-table-column
-              prop="pNum"
-              label="可投面数"
-              width="113"
-              class="tar"
-            >
-            </el-table-column>
-
-            <el-table-column
-              column-key="mState"
-              prop="mState"
+              column-key="asState"
+              prop="asState"
               label="媒体状态"
               width="112"
               :filters="[
-                { text: '禁用', value: '0' },
-                { text: '正常', value: '1' },
-                { text: '待安装', value: '2' },
-                { text: '待维修', value: '3' }
+                { text: '正常', value: 1 },
+                { text: '已拆除', value: 4 }
               ]"
               :filter-multiple="false"
               fixed="right"
             >
               <template slot-scope="scope">
-                <span
-                  v-if="
-                    scope.row.mState == 1 &&
-                    scope.row.mVehicle === '广告门' &&
-                    scope.row.pNum > 1
-                  "
-                >
-                  <el-tooltip class="item" effect="dark" placement="left-start">
-                    <div slot="content">
-                      A面:{{
-                        scope.row.asState.A == '1' ? '正常' : '禁用'
-                      }}
-                      B面:{{ scope.row.asState.B == '1' ? '正常' : '禁用' }}
-                    </div>
-                    <point-state
-                      :state-text="stateToText(scope.row.mState).text"
-                      :color="stateToText(scope.row.mState).color"
-                    ></point-state>
-                  </el-tooltip>
-                </span>
                 <point-state
-                  v-else
-                  :state-text="stateToText(scope.row.mState).text"
-                  :color="stateToText(scope.row.mState).color"
+                  :state-text="stateToText(scope.row.asState).text"
+                  :color="stateToText(scope.row.asState).color"
                 ></point-state>
               </template>
             </el-table-column>
 
             <el-table-column
-              column-key="mState"
-              prop="mState"
+              column-key="asSaleState"
+              prop="asSaleState"
               label="售卖状态"
               width="112"
               :filters="[
-                { text: '可售卖', value: '0' },
-                { text: '不可售卖', value: '1' }
+                { text: '可售卖', value: 1 },
+                { text: '不可售卖', value: 2 }
               ]"
               :filter-multiple="false"
               fixed="right"
             >
               <template slot-scope="scope">
                 <point-state
-                  :state-text="stateToText(scope.row.mState, 'sell').text"
-                  :color="stateToText(scope.row.mState, 'sell').color"
+                  :state-text="stateToSellText(scope.row.asSaleState).text"
+                  :color="stateToSellText(scope.row.asSaleState).color"
                 ></point-state>
               </template>
             </el-table-column>
@@ -287,72 +256,34 @@
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
-                      command="0"
-                      @click.native.prevent="
-                        changeState('0', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 0 || scope.row.mState == 4"
-                      >禁用</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      command="1"
-                      @click.native.prevent="
-                        changeState('1', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 4"
-                    >
-                      正常
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      command="2"
-                      @click.native.prevent="
-                        changeState('2', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 2 || scope.row.mState == 4"
-                      >待安装</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      command="3"
-                      @click.native.prevent="
-                        changeState('3', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.mState == 3 || scope.row.mState == 4"
-                      >待维修</el-dropdown-item
-                    >
-
-                    <el-dropdown-item
-                      command="6"
                       @click.native.prevent="
                         changeState('6', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.mState !== 4"
+                      :disabled="scope.row.asSaleState === 1"
                       >可售卖</el-dropdown-item
                     >
                     <el-dropdown-item
-                      command="7"
                       @click.native.prevent="
                         changeState('7', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.mState == 4"
+                      :disabled="scope.row.asSaleState === 2"
                       >不可售卖</el-dropdown-item
                     >
 
                     <el-dropdown-item
-                      command="5"
                       @click.native.prevent="
                         changeState('5', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.mState == 5"
+                      :disabled="scope.row.asState == 5"
                       >删除</el-dropdown-item
                     >
-                    <!-- <el-dropdown-item
-                      command="4"
+                    <el-dropdown-item
                       @click.native.prevent="
                         changeState('4', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.mState == 4"
+                      :disabled="scope.row.asState == 4"
                       >拆除</el-dropdown-item
-                    > -->
+                    >
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
@@ -377,46 +308,6 @@
           </el-pagination>
         </div>
       </div>
-
-      <!--媒体禁用、启用-->
-      <el-dialog
-        :title="isDisabled ? '禁用媒体' : '启用媒体'"
-        :visible.sync="mStateDialogVisible"
-        :close-on-click-modal="false"
-        custom-class="mStatueDialog"
-      >
-        <div>
-          <el-checkbox
-            v-model="mediaState.allState"
-            @change="stateChange('all')"
-            >全部</el-checkbox
-          >
-          <el-checkbox
-            v-model="mediaState.AState"
-            :disabled="mediaState.ADisable"
-            @change="stateChange('A')"
-            >A面</el-checkbox
-          >
-          <el-checkbox
-            v-model="mediaState.BState"
-            :disabled="mediaState.BDisable"
-            @change="stateChange('B')"
-            >B面</el-checkbox
-          >
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="mStateDialogVisible = false"
-            >取 消</el-button
-          >
-          <el-button
-            size="mini"
-            type="primary"
-            style="margin-left: 35px"
-            @click="submitMediaState"
-            >确 定</el-button
-          >
-        </span>
-      </el-dialog>
 
       <!--媒体拆除-->
       <el-dialog
@@ -456,54 +347,6 @@
         </div>
       </el-dialog>
 
-      <!--媒体待维修-->
-      <el-dialog
-        :visible.sync="repairVisible"
-        :close-on-click-modal="false"
-        title="维修媒体"
-        width="448px"
-        custom-class="mStatueDialog"
-      >
-        <ul class="edit_media_ul">
-          <li>
-            <span>出现时间：</span>
-            <el-date-picker
-              v-model="waitRepair.time"
-              type="date"
-              value-format="yyyy/MM/dd"
-              format="yyyy/MM/dd"
-              placeholder="选择日期"
-              size="small"
-            >
-            </el-date-picker>
-          </li>
-          <li>
-            <span>问题记录：</span>
-            <el-input
-              type="textarea"
-              v-model.trim="waitRepair.msg"
-              placeholder="请填写问题记录，选填"
-            ></el-input>
-          </li>
-        </ul>
-        <p class="push_map_box_p" v-show="isShowTag">
-          <i class="el-icon-warning" style="color: #faad14"></i>
-          在【维护管理】页面，可查阅每个待维修的媒体记录
-          <i class="el-icon-close" @click="hideTag()"></i>
-        </p>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="repairVisible = false"
-            >取 消</el-button
-          >
-          <el-button
-            size="mini"
-            type="primary"
-            style="margin-left: 35px"
-            @click="repairMedia"
-            >确 定</el-button
-          >
-        </div>
-      </el-dialog>
       <!--媒体导入模态框-->
       <el-dialog
         title="媒体导入"
@@ -561,6 +404,7 @@
           <el-button type="primary" @click="submitUpload">导 入</el-button>
         </div>
       </el-dialog>
+
       <!--导入失败的媒体列表-->
       <el-dialog
         :visible.sync="showUploadFail"
@@ -606,6 +450,7 @@
           </el-table-column>
         </el-table>
       </el-dialog>
+
       <!--推送地图-->
       <el-dialog
         title="推送地图"
@@ -647,12 +492,18 @@
       <!-- 不可售卖弹窗  -->
       <unvailableSellDialog
         :visible.sync="isUnvailableSell"
+        :resourceName="resourceName"
+        :activeAsLab="activeAsLab"
+        :mID="mID"
         v-if="isUnvailableSell"
       />
 
       <!-- 可售卖弹窗  -->
       <vailableSellDialog
         :visible.sync="isVailableSell"
+        :resourceName="resourceName"
+        :activeAsLab="activeAsLab"
+        :mID="mID"
         v-if="isVailableSell"
       />
     </div>
@@ -682,7 +533,6 @@ import {
   Row,
   Button,
   Tooltip,
-  MessageBox,
   Message,
   Select,
   Option
@@ -735,7 +585,8 @@ export default {
         }
       ],
       resType: '',                    // 搜索的资源类型
-      mState: '',                     // 搜索的媒体状态
+      asState: '',                     // 搜索的媒体状态
+      asSaleState: '',                //  搜索的售卖状态
       planList: [],                   //  table的所有数据
       currentPlan: [],                // 显示在table中的数据
       cityOptions: [],                //城市数组
@@ -753,7 +604,7 @@ export default {
       searchBtnAbled: false,           // 搜索按钮禁止
       mStatusDialogVisible: false,    // 媒体状态修改模态框
       normalToDisabled: true,         //  是否为正常转禁用
-      doorState: { mState: false, adState: '' },  // 广告门单面禁用：媒体状态、点位状态
+      doorState: { asState: false, adState: '' },  // 广告门单面禁用：媒体状态、点位状态
       // 修改媒体状态时的行数据
       rowData: {
         asState: {
@@ -799,18 +650,19 @@ export default {
       dismantleVisible: false,
       // 拆除信息
       dismantleInfo: '',
-      // 待维修弹出框
-      repairVisible: false,
-      // 待维修信息
-      waitRepair: {
-        time: '',
-        msg: ''
-      },
 
       // 不可售卖弹窗
       isUnvailableSell: false,
       // 可售卖弹窗
-      isVailableSell: false
+      isVailableSell: false,
+      // 更改售卖状态时 媒体的所有广告位的状态
+      mediaAdsStateAction: [],
+      // 更改售卖状态时 资源名称
+      resourceName: '',
+      // 更改售卖状态时 选择的投放面
+      activeAsLab: '',
+      // 投放面id
+      mID: ''
     }
   },
   mounted: function () {
@@ -824,29 +676,14 @@ export default {
     this.canSelectDayTime = [startTime, endTime]
   },
   methods: {
-    // 状态转换
-    stateToText (state, type = 'media') {
+    // 媒体状态转换
+    stateToText (state) {
       let mediaArr = [
         {
           text: '正常',
           value: 1,
           color: 'rgba(82,196,26,1)',
         },
-        // {
-        //   text: '待安装',
-        //   value: 2,
-        //   color: 'rgba(196,203,211,1)',
-        // },
-        // {
-        //   text: '待维修',
-        //   value: 3,
-        //   color: 'rgba(250,173,20,1)',
-        // },
-        // {
-        //   text: '禁用',
-        //   value: 0,
-        //   color: 'rgba(245,34,45,1)',
-        // },
         {
           text: '已拆除',
           value: 4,
@@ -854,7 +691,12 @@ export default {
         }
       ];
 
-      let sellArr = [
+      return state === 4 ? mediaArr[1] : mediaArr[0];
+    },
+
+    // 售卖状态转换
+    stateToSellText (state) {
+      let mediaArr = [
         {
           text: '可售卖',
           value: 1,
@@ -862,21 +704,12 @@ export default {
         },
         {
           text: '不可售卖',
-          value: 4,
+          value: 2,
           color: 'rgba(199, 203, 206, 1)',
         }
       ];
 
-      let arr;
-      type === 'media' ? arr = mediaArr : arr = sellArr;
-
-      return state === 4 ? arr[1] : arr[0];
-
-      // for (let data of arr) {
-      //   if (data.value == state) {
-      //     return data;
-      //   }
-      // }
+      return state === 2 ? mediaArr[1] : mediaArr[0];
     },
 
     //新建跳转
@@ -934,11 +767,17 @@ export default {
           } else {
             this.resType = ''
           }
-        } else if (key === 'mState') {
+        } else if (key === 'asState') {
           if (filters[key].length) {
-            this.mState = filters[key][0]
+            this.asState = filters[key][0]
           } else {
-            this.mState = ''
+            this.asState = ''
+          }
+        } else if (key === 'asSaleState') {
+          if (filters[key].length) {
+            this.asSaleState = filters[key][0]
+          } else {
+            this.asSaleState = ''
           }
         }
       }
@@ -967,14 +806,15 @@ export default {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        service: "GetRMList",
+        service: "GetRMListV2",
         data: {
           pageNo: this.pageData.pageNum,
           pageSize: this.pageData.pageSize,
           cityName: this.cityArea.cName,
           regionName: this.cityArea.rName,
           resType: this.resType,
-          mState: this.mState,
+          asState: this.asState,
+          asSaleState: this.asSaleState
         }
       }
       if (this.selectInfo === '1') {
@@ -1063,60 +903,6 @@ export default {
       console.log('选择的区域为', this.cityArea)
     },
 
-    // 勾选禁用/启用媒体状态
-    stateChange (temp) {
-      console.log('temp', temp, this.mediaState)
-      switch (temp) {
-        case 'all':
-          // 全选
-          if (this.mediaState.allState) {
-            this.mediaState.AState = true
-            this.mediaState.BState = true
-          } else {
-            this.mediaState.ADisable ? '' : this.mediaState.AState = false
-            this.mediaState.BDisable ? '' : this.mediaState.BState = false
-          }
-          break;
-        case 'A':
-          // 选择A
-          if (this.mediaState.AState) {
-            // 如果B已勾选
-            if (this.mediaState.BState) {
-              this.mediaState.allState = true
-            }
-          } else {
-            this.mediaState.allState = false
-          }
-          break;
-        case 'B':
-          // 选择B
-          if (this.mediaState.BState) {
-            // 如果A已勾选
-            if (this.mediaState.AState) {
-              this.mediaState.allState = true
-            }
-          } else {
-            this.mediaState.allState = false
-          }
-          break;
-        default: sessFun.messageFun('waring', '勾选异常！'); break;
-      }
-    },
-
-    // 正常->禁用 / 禁用->正常
-    submitMediaState () {
-      if (this.mediaState.allState || this.mediaState.AState || this.mediaState.BState) {
-        let stateName = this.return_mState(this.selectState)
-        if (this.mediaState.allState) {
-          this.setRowMediaStatus(stateName, this.selectState, 'all')
-        } else {
-          this.setRowMediaStatus(stateName, this.selectState, 'one')
-        }
-      } else {
-        sessFun.messageFun('waring', '请选择媒体面!')
-      }
-    },
-
     // 下拉选择状态
     changeState (selectState, index, rows) {
       console.log('选择的状态', selectState)
@@ -1124,50 +910,18 @@ export default {
       this.rowIndex = index
       this.rowData = rows
       this.selectState = selectState
-      let stateName = this.return_mState(selectState)
       // 初始化
       for (let i in this.mediaState) {
         this.mediaState[i] = false
       }
-      if (rows.mState == selectState) {
-        if (rows.mVehicle === '广告门' && rows.pNum > 1 && rows.mState == 1 &&
-          (rows.asState.A == '0' || rows.asState.B == '0')) {
-          // 正常转正常
-          this.isDisabled = false
-          if (rows.asState.A == '0') {
-            this.mediaState.AState = false
-            this.mediaState.ADisable = false
-          } else {
-            this.mediaState.AState = true
-            this.mediaState.ADisable = true
-          }
-          // B面
-          if (rows.asState.B == '0') {
-            this.mediaState.BState = false
-            this.mediaState.BDisable = false
-          } else {
-            this.mediaState.BState = true
-            this.mediaState.BDisable = true
-          }
-          this.mStateDialogVisible = true
-        } else {
-          sessFun.messageFun('warning', '当前状态已是' + stateName)
-        }
-      } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '0' && rows.mState == '1') {
-        // 正常转禁用
-        this.isDisabled = true
-        this.mStateDialogVisible = true
-        // 判断是否为已禁用
-        this.judgeAsState(rows)
-      } else if (rows.mVehicle === '广告门' && rows.pNum > 1 && selectState == '1' && rows.mState == '0') {
-        // 禁用转正常
-        this.isDisabled = false
-        this.mStateDialogVisible = true
-      } else if (selectState === '3') {
-        // 待维修
-        this.isShowTag = true
-        this.repairVisible = true
-      } else if (selectState === '4') {
+
+      if (selectState === '6' || selectState === '7') {
+        this.resourceName = rows.resName;
+        this.activeAsLab = rows.asID
+        this.mID = rows.mID
+      }
+
+      if (selectState === '4') {
         // 拆除
         this.dismantleInfo = ''
         this.isShowTag = true
@@ -1175,27 +929,12 @@ export default {
       } else if (selectState === '5') {
         // 删除
         this.judgeResHaveMediaNum()
-      } else {
-        this.setRowMediaStatus(stateName, selectState)
-      }
-    },
-
-    // 判断单面禁用状态
-    judgeAsState (row) {
-      if (row.asState.A == '0') {
-        this.mediaState.AState = true
-        this.mediaState.ADisable = true
-      } else {
-        this.mediaState.AState = false
-        this.mediaState.ADisable = false
-      }
-      // B面
-      if (row.asState.B == '0') {
-        this.mediaState.BState = true
-        this.mediaState.BDisable = true
-      } else {
-        this.mediaState.BState = false
-        this.mediaState.BDisable = false
+      } else if (selectState === '6') {
+        console.log('可售卖')
+        this.isVailableSell = true;
+      } else if (selectState === '7') {
+        console.log('不可售卖')
+        this.isUnvailableSell = true
       }
     },
 
@@ -1283,87 +1022,6 @@ export default {
       })
     },
 
-    // 二次确认按钮
-    setRowMediaStatus (stateName, selectState, letter) {
-      console.log('stateName', stateName, 'selectState', selectState)
-      let info = ''
-      if (letter === 'one') {
-        let A_B = this.mediaState.AState ? 'A' : 'B'
-        info = '你确定更改媒体' + A_B + '面的状态为<b>' + stateName + '</b>吗?'
-      } else {
-        info = '你确定更改媒体状态为<b>' + stateName + '</b>吗?'
-      }
-      MessageBox.confirm(info, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        dangerouslyUseHTMLString: true,
-        type: 'warning'
-      }).then(() => {
-        console.log('-----------', selectState)
-        this.setStatusApi(selectState, letter)
-      }).catch(() => {
-        sessFun.messageFun('info', '已取消操作')
-      })
-    },
-
-    // 设置媒体状态接口，state:下拉时选择的状态;letter:是否是单面禁用或正常
-    setStatusApi (state, letter) {
-      // console.log('state',state,'letter',letter)
-      let uid = this.sessionData.uID
-      let mid = this.rowData.mID
-      let submitLoading = this.$loading({
-        lock: true,
-        text: '修改中...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
-      //确定
-      let params = {
-        "uid": uid,
-        "token": this.sessionData.token,
-        "service": "CtrlMedia",
-        "data": {
-          "uid": uid,
-          "mid": mid,
-          "mstate": state
-        }
-      }
-      if (letter === 'one') {
-        // 所选状态为正常、单面禁用->正常、单面正常->禁用，媒体状态都为正常（1）
-        params.data.mstate = state == '1' || this.isDisabled ? '1' : '0'
-        params.data.asLabs = this.mediaState.AState ? 'A' : 'B'
-        params.data.asState = this.isDisabled ? '0' : '1'
-      }
-      console.log('params', params, this.isDisabled)
-      api.postApi_new(this.apiVar.Media, params).then(res => {
-        console.log('修改状态：', res)
-        if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-          sessFun.messageFun('success', '成功更改状态')
-          if (letter === 'one') {
-            if (this.isDisabled) {
-              // 单面正常转禁用
-              this.rowData.asState[params.data.asLabs] = state
-            } else {
-              // 单面禁用转正常
-              this.rowData.asState[params.data.asLabs] = state
-              this.rowData.mState = state
-            }
-          } else {
-            this.rowData.asState.A = state
-            this.rowData.asState.B = state
-            this.rowData.mState = state
-          }
-          this.mStateDialogVisible = false
-          console.log('当前行', this.currentPlan[this.rowIndex])
-        } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
-          sessFun.messageFun('warning', res.data.MSG)
-        } else {
-          sessFun.messageFun('warning', res.data.MSG)
-        }
-        submitLoading.close()
-      })
-    },
-
     // 拆除媒体
     dismantleMedia () {
       if (!this.dismantleInfo) {
@@ -1386,65 +1044,13 @@ export default {
         if (res.data.SysCode === 200200) {
           this.dismantleVisible = false
           sessFun.messageFun('success', '拆除成功!')
-          this.rowData.mState = '4'
-          this.rowData.asState.A = '4'
-          this.rowData.asState.B = '4'
+          this.rowData.asState = '4'
+          // this.rowData.asState.A = '4'
+          // this.rowData.asState.B = '4'
         } else {
           sessFun.messageFun('warning', res.data.MSG)
         }
       })
-    },
-
-    // 待维修
-    repairMedia () {
-      if (!this.waitRepair.time) {
-        sessFun.messageFun('warning', '请选择时间!')
-        return
-      }
-      if (!this.waitRepair.msg) {
-        sessFun.messageFun('warning', '请填写维修备注!')
-        return
-      }
-      let params = {
-        "uid": this.sessionData.uID,
-        "token": this.sessionData.token,
-        "service": "AddMaintain",
-        "data": {
-          "mID": this.rowData.mID,
-          "remark": this.waitRepair.msg,
-          "maintainTime": this.waitRepair.time,
-          "resName": this.rowData.resName,
-          "rId": this.rowData.rID
-        }
-      }
-      console.log('待维修params', params)
-      api.postApi_new(this.apiVar.Media, params).then(res => {
-        if (res.data.SysCode === 200200) {
-          sessFun.messageFun('success', '成功更改状态')
-          this.rowData.mState = '3'
-          this.rowData.asState.A = '3'
-          this.rowData.asState.B = '3'
-          this.repairVisible = false
-        } else {
-          sessFun.messageFun('warning', res.data.MSG)
-        }
-      })
-    },
-
-    return_mState (mState) {
-      if (mState == '1') {
-        return '正常'
-      } else if (mState == '0') {
-        return '禁用'
-      } else if (mState == '2') {
-        return '待安装'
-      } else if (mState == '3') {
-        return '待维修'
-      } else if (mState == '4') {
-        return '已拆除'
-      } else {
-        return ''
-      }
     },
 
     // 跳转到媒体详情界面
@@ -1487,6 +1093,7 @@ export default {
       this.pageData.pageNum = 1
       this.pageData.pageSize = 10
       this.cityArea = { cName: '', rName: '' }
+      this.asSaleState = ''
       this.getData()
     },
 

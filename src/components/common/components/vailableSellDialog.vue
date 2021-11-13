@@ -6,12 +6,13 @@
     :before-close="handleClose"
   >
     <h2 class="u-title">
-      <i class="el-icon-question"></i> 是否将该媒体或投放面恢复为可售卖状态？
+      <img class="icon" src="../../../assets/images/question_icon.png" />
+      是否将该媒体或投放面恢复为可售卖状态？
     </h2>
 
     <div class="m-container">
       <div class="u-centent">
-        确定后，<b>保利威座</b> 媒体或某一投放面将恢复为可售卖状态
+        确定后，<b>{{ resourceName }}</b> 媒体或某一投放面将恢复为可售卖状态
       </div>
 
       <h3 class="u-title">原不可售卖原因：</h3>
@@ -21,10 +22,29 @@
       </ul>
 
       <h3 class="u-title">请选择恢复可售卖目标：</h3>
-      <el-radio-group v-model="targetRadio" class="u-targetRadio">
-        <el-radio :label="0">设备</el-radio>
-        <el-radio :label="1">A面</el-radio>
-        <el-radio :label="2">B面</el-radio>
+      <el-radio-group
+        v-model="targetRadio"
+        class="u-targetRadio"
+        @change="handleRadioChange"
+      >
+        <el-radio :label="1">设备</el-radio>
+        <el-radio
+          :label="item.asID"
+          v-for="item in mediaAdsStateAction"
+          :key="item.asID"
+          :disabled="item.asSaleState === 1"
+          >{{ item.asLab }}面
+          <el-tooltip
+            v-if="item.asSaleState === 1"
+            effect="dark"
+            content="此面当前为可售卖状态"
+            placement="top"
+          >
+            <img
+              class="quesition-icon"
+              src="../../../assets/images/question_icon.png"
+            /> </el-tooltip
+        ></el-radio>
       </el-radio-group>
 
       <h3 class="u-title">请输入处理说明：</h3>
@@ -43,29 +63,69 @@
 </template>
 
 <script>
+import sessFun from "../../../commonFun/sessFun.js";
+import api from '../../../api/api';
+
+
 export default {
   name: "vailableSellDialog",
 
-  props: ['visible'],
+  props: ['visible', 'resourceName', 'activeAsLab', 'mID'],
 
   data () {
     return {
       targetRadio: 0,
-      vailableResaon: ''
+      vailableResaon: '',
+      mediaAdsStateAction: []
     }
   },
 
-  methods: {
-    handleChange (e) {
-      console.log(typeof e)
-    },
+  mounted () {
+    this.sessionData = sessFun.getSess()
+    this.targetRadio = this.activeAsLab
+    this.getMediaAdsStateAction()
+  },
 
+  methods: {
     handleClose () {
       this.$emit('update:visible', false)
     },
 
     handleConfirm () {
-      this.handleClose()
+      this.$confirm('是否将小区名称-媒体名称-媒体面 媒体状态改为可售卖', '确定要设置该媒体可售卖吗?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        customClass: 'delete_media_confirm'
+      }).then(() => {
+        this.handleClose()
+      }).catch(() => {
+        sessFun.messageFun('info', '已取消')
+      })
+    },
+
+
+    handleRadioChange (e) {
+      console.log(e, 'eeeeeeeee')
+    },
+
+    // 获取媒体的所有广告位的状态
+    getMediaAdsStateAction () {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "GetMediaAdsState",
+        data: {
+          mID: this.mID
+        }
+      }
+      api.postApi_new(this.apiVar.Media, params).then(res => {
+        if (res.data.SysCode === 200200) {
+          this.mediaAdsStateAction = res.data.data;
+        } else {
+          sessFun.messageFun('warning', res.data.MSG);
+        }
+      })
     }
   }
 }
@@ -79,11 +139,14 @@ export default {
   font-family: PingFangSC-Semibold, PingFang SC;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.85);
-  i {
+  .icon {
     display: inline-block;
-    margin-right: 17px;
-    font-size: 21px;
-    color: #fa8c16;
+    margin-left: 17px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    vertical-align: middle;
+    filter: drop-shadow(-19px 0 0 #fa8c16);
   }
 }
 
@@ -116,6 +179,14 @@ export default {
   background: #ffffff;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.quesition-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  vertical-align: middle;
+  filter: brightness(0.75);
 }
 
 .u-targetRadio {

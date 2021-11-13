@@ -6,33 +6,59 @@
     :before-close="handleClose"
   >
     <h2 class="u-title">
-      <i class="el-icon-question"></i> 是否将该媒体或投放面设为不可售卖状态？
+      <img class="icon" src="../../../assets/images/question_icon.png" />
+      是否将该媒体或投放面设为不可售卖状态？
     </h2>
 
     <div class="m-container">
       <div class="u-centent">
-        确定后，<b>保利威座</b> 媒体或某一投放面将不可被方案、订单选中售卖
+        确定后，<b>{{ resourceName }}</b>
+        媒体或某一投放面将不可被方案、订单选中售卖
       </div>
 
       <h3 class="u-title">请选择不可售卖目标：</h3>
-      <el-radio-group v-model="targetRadio" class="u-targetRadio">
-        <el-radio :label="0">设备</el-radio>
-        <el-radio :label="1">A面</el-radio>
-        <el-radio :label="2">B面</el-radio>
+      <el-radio-group
+        v-model="targetRadio"
+        class="u-targetRadio"
+        @change="handleRadioChange"
+      >
+        <el-radio :label="1">设备</el-radio>
+        <el-radio
+          :label="item.asID"
+          v-for="item in mediaAdsStateAction"
+          :key="item.asID"
+          :disabled="item.asSaleState === 2"
+          >{{ item.asLab }}面
+          <el-tooltip
+            v-if="item.asSaleState === 2"
+            effect="dark"
+            content="此面当前为不可售卖状态"
+            placement="top"
+          >
+            <img
+              class="quesition-icon"
+              src="../../../assets/images/question_icon.png"
+            /> </el-tooltip
+        ></el-radio>
       </el-radio-group>
 
       <h3 class="u-title">请选择不可售卖原因：</h3>
-      <el-radio-group v-model="resaonRadio" @change="handleChange">
-        <el-radio-button :label="item.value" v-for="item in unvailableResaons" :key="item.value">{{item.label}}</el-radio-button>
-        <el-radio-button label="6">
-          <i class="el-icon-edit"></i> 其他</el-radio-button
+      <el-checkbox-group v-model="resaonList" @change="handleChange">
+        <el-checkbox-button
+          :label="item.reason"
+          v-for="item in unvailableResaons"
+          :key="item.id"
+          >{{ item.reason }}</el-checkbox-button
         >
-      </el-radio-group>
+        <el-checkbox-button label="other">
+          <i class="el-icon-edit"></i> 其他</el-checkbox-button
+        >
+      </el-checkbox-group>
       <el-input
         v-model="unvailableResaon"
         placeholder="请填写其他原因"
         class="u-unvailableResaon"
-        v-if="resaonRadio === '6'"
+        v-if="resaonList.includes('other')"
       ></el-input>
     </div>
 
@@ -44,44 +70,36 @@
 </template>
 
 <script>
+import sessFun from "../../../commonFun/sessFun.js";
+import api from '../../../api/api';
+
 export default {
   name: "unvailableSellDialog",
 
-  props: ['visible'],
+  props: ['visible', 'resourceName', 'activeAsLab', 'mID'],
 
   data () {
     return {
-      resaonRadio: '1',
+      resaonList: [],
       unvailableResaon: '',
-      targetRadio: 1,
-      unvailableResaons: [
-        {
-          label: '业委会原因',
-          value: 0
-        },
-        {
-          label: '小区改造',
-          value: 1
-        },
-        {
-          label: '疫情封门',
-          value: 2
-        },
-        {
-          label: '市政修路',
-          value: 3
-        },
-        {
-          label: '物业原因',
-          value: 4
-        }
-      ]
+      targetRadio: '',
+      unvailableResaons: [],
+      mediaAdsStateAction: [],
+
+      sessionData: ''
     }
+  },
+
+  mounted () {
+    this.sessionData = sessFun.getSess()
+    this.targetRadio = this.activeAsLab
+    this.getMediaAdsStateAction()
+    this.getAdsUnSaleableReason()
   },
 
   methods: {
     handleChange (e) {
-      console.log(typeof e)
+      console.log(e)
     },
 
     handleClose () {
@@ -89,7 +107,78 @@ export default {
     },
 
     handleConfirm () {
-      this.handleClose()
+      let { resaonList, unvailableResaon } = this
+      if (!resaonList.length) {
+        return sessFun.messageFun('warning', '请选择不可售卖原因')
+      }
+
+      if (resaonList.includes('other') && !unvailableResaon) {
+        return sessFun.messageFun('warning', '请填写其它原因')
+      }
+
+      if (resaonList.includes('other')) {
+        resaonList = resaonList.map(item => {
+          if (item === 'other') {
+            return unvailableResaon
+          } else {
+            return item
+          }
+        })
+      }
+
+      console.log(resaonList, 'resaonListresaonListresaonList')
+
+      this.$confirm('点击确定后该媒体将不可被方案、订单选中售卖', '确定要设置该媒体不可售卖吗?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        customClass: 'delete_media_confirm'
+      }).then(() => {
+        this.handleClose()
+      }).catch(() => {
+        sessFun.messageFun('info', '已取消')
+      })
+    },
+
+    handleRadioChange () {
+
+    },
+
+    // 获取媒体的所有广告位的状态
+    getMediaAdsStateAction () {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "GetMediaAdsState",
+        data: {
+          mID: this.mID
+        }
+      }
+      api.postApi_new(this.apiVar.Media, params).then(res => {
+        if (res.data.SysCode === 200200) {
+          this.mediaAdsStateAction = res.data.data;
+        } else {
+          sessFun.messageFun('warning', res.data.MSG);
+        }
+      })
+    },
+
+
+    // 获取预置的广告位不可售卖原因
+    getAdsUnSaleableReason () {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "GetAdsUnSaleableReasonConfig"
+      }
+      api.postApi_new(this.apiVar.Media, params).then(res => {
+        console.log(res, 'ressssssss')
+        if (res.data.SysCode === 200200) {
+          this.unvailableResaons = res.data.data;
+        } else {
+          sessFun.messageFun('warning', res.data.MSG);
+        }
+      })
     }
   }
 }
@@ -103,11 +192,14 @@ export default {
   font-family: PingFangSC-Semibold, PingFang SC;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.85);
-  i {
+  .icon {
     display: inline-block;
-    margin-right: 17px;
-    font-size: 21px;
-    color: #fa8c16;
+    margin-left: 17px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    vertical-align: middle;
+    filter: drop-shadow(-19px 0 0 #fa8c16);
   }
 }
 
@@ -142,6 +234,14 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
+.quesition-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  vertical-align: middle;
+  filter: brightness(0.75);
+}
+
 .u-targetRadio {
   margin-bottom: 24px;
   /deep/ .el-radio__label {
@@ -161,7 +261,7 @@ export default {
   padding: 24px;
 }
 
-/deep/ .el-radio-button {
+/deep/ .el-checkbox-button {
   height: 32px;
   min-width: 80px;
   background: #ffffff;
@@ -173,10 +273,11 @@ export default {
   &:last-of-type {
     margin-right: 0;
   }
-  &.is-active {
+  &.is-checked {
     border-color: #1890ff;
+    background: none !important;
   }
-  .el-radio-button__inner {
+  .el-checkbox-button__inner {
     border-radius: 0;
     border: 0 none !important;
     width: 100%;
@@ -187,10 +288,9 @@ export default {
     color: rgba(0, 0, 0, 0.65);
     line-height: 32px;
   }
-  .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  &.is-checked .el-checkbox-button__inner {
     background: none !important;
-    color: #1890ff;
-    border: 0 none !important;
+    color: #1890ff !important;
     box-shadow: none;
   }
 }

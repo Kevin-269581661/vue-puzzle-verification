@@ -179,8 +179,7 @@
     </div>
     <div class="footer">
       <p>
-        copyright &copy; 2017 Qinlin technology. All rights reserved.
-        <a href="http://www.beian.miit.gov.cn">粤ICP备15007183号</a>
+        深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a>
       </p>
     </div>
     <!-- 绑定手机号码弹框 -->

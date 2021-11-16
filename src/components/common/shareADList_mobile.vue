@@ -78,7 +78,7 @@
                             </li>
                         </ul>
                     </div>
-                    <p class="bottomText_p" v-show="bottomText">Copyright &copy;2018 亲邻科技线上产品</p>
+                    <p class="bottomText_p" v-show="bottomText">深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a></p>
                     <!--   <p class="bottomText_p" v-show="bottomText">
                            -&#45;&#45;&#45;&#45; 我也是有底线的人 -&#45;&#45;&#45;&#45;
                        </p>-->

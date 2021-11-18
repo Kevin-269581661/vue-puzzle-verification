@@ -17,15 +17,16 @@
 
       <h3 class="u-title">原不可售卖原因：</h3>
       <ul class="u-targetRadio">
-        <li>原不可售卖原因</li>
-        <li>小区更换物业公司了</li>
+        <li v-for="(item, index) in unSaleableReason" :key="index">
+          {{ index + 1 }}.{{ item }}
+        </li>
       </ul>
 
       <h3 class="u-title">请选择恢复可售卖目标：</h3>
       <el-radio-group
         v-model="targetRadio"
         class="u-targetRadio"
-        @change="handleRadioChange"
+        @change="handleAslbChange"
       >
         <el-radio :label="1">设备</el-radio>
         <el-radio
@@ -70,13 +71,14 @@ import api from '../../../api/api';
 export default {
   name: "vailableSellDialog",
 
-  props: ['visible', 'resourceName', 'activeAsLab', 'mID'],
+  props: ['visible', 'resourceName', 'activeAsLab', 'mID', 'unSaleableReason', 'mTitle'],
 
   data () {
     return {
       targetRadio: 0,
       vailableResaon: '',
-      mediaAdsStateAction: []
+      mediaAdsStateAction: [],
+      asLabName: ''
     }
   },
 
@@ -91,22 +93,64 @@ export default {
       this.$emit('update:visible', false)
     },
 
+    // 获取媒体面
+    getAslab (asID, mediaAdsStateAction) {
+      const asLabName = mediaAdsStateAction.filter(item => {
+        return item.asID === asID
+      })[0]
+      this.asLabName =  asLabName ? `${asLabName.asLab}面` : `设备`
+    },
+
     handleConfirm () {
-      this.$confirm('是否将小区名称-媒体名称-媒体面 媒体状态改为可售卖', '确定要设置该媒体可售卖吗?', {
+      const { asLabName, resourceName, mTitle } = this
+      const text = `是否将 ${resourceName}-${mTitle}-${asLabName} 媒体状态改为可售卖, 确定要设置该媒体可售卖吗?`
+      this.$confirm(text, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
         customClass: 'delete_media_confirm'
       }).then(() => {
-        this.handleClose()
+        this.setMediaAdsSaleState().then(() => {
+          this.$emit('handleConfirm')
+          this.handleClose()
+        })
       }).catch(() => {
         sessFun.messageFun('info', '已取消')
       })
     },
 
+    setMediaAdsSaleState () {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "CtrlMediaAdsSaleState",
+        data: {
+          mID: this.mID,
+          asIDS: [this.targetRadio],
+          asSaleState: 1, // 可售卖
+          saleableRemark: this.vailableResaon
+        }
+      }
 
-    handleRadioChange (e) {
-      console.log(e, 'eeeeeeeee')
+      // 如果对整个媒体设置进行设置，只传mID不用传asIDS
+      if (this.targetRadio === 1) {
+        delete params.data.asIDS
+      }
+
+      return new Promise((resolve, reject) => {
+        api.postApi_new(this.apiVar.Media, params).then(res => {
+          if (res.data.SysCode === 200200) {
+            resolve()
+          } else {
+            sessFun.messageFun('warning', res.data.MSG);
+          }
+        })
+      })
+
+    },
+
+    handleAslbChange (val) {
+      this.getAslab(val, this.mediaAdsStateAction)
     },
 
     // 获取媒体的所有广告位的状态
@@ -119,9 +163,10 @@ export default {
           mID: this.mID
         }
       }
-      api.postApi_new(this.apiVar.Media, params).then(res => {
+     api.postApi_new(this.apiVar.Media, params).then(res => {
         if (res.data.SysCode === 200200) {
           this.mediaAdsStateAction = res.data.data;
+          this.getAslab(this.activeAsLab, res.data.data)
         } else {
           sessFun.messageFun('warning', res.data.MSG);
         }

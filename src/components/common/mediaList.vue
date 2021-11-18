@@ -259,7 +259,7 @@
                       @click.native.prevent="
                         changeState('6', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.asSaleState === 1"
+                      :disabled="scope.row.asSaleState === 1 || scope.row.asState !== 1"
                       >可售卖</el-dropdown-item
                     >
                     <el-dropdown-item
@@ -495,6 +495,8 @@
         :resourceName="resourceName"
         :activeAsLab="activeAsLab"
         :mID="mID"
+        :mTitle="mTitle"
+        @handleConfirm="clearSearch"
         v-if="isUnvailableSell"
       />
 
@@ -504,6 +506,9 @@
         :resourceName="resourceName"
         :activeAsLab="activeAsLab"
         :mID="mID"
+        :mTitle="mTitle"
+        :unSaleableReason="unSaleableReason"
+        @handleConfirm="clearSearch"
         v-if="isVailableSell"
       />
     </div>
@@ -661,8 +666,12 @@ export default {
       resourceName: '',
       // 更改售卖状态时 选择的投放面
       activeAsLab: '',
-      // 投放面id
-      mID: ''
+      // 投放门id
+      mID: '',
+      // 不可售卖原因
+      unSaleableReason: [],
+      // 媒体名称
+      mTitle: ''
     }
   },
   mounted: function () {
@@ -919,6 +928,8 @@ export default {
         this.resourceName = rows.resName;
         this.activeAsLab = rows.asID
         this.mID = rows.mID
+        this.unSaleableReason = JSON.parse(rows.unSaleableReason || '[]')
+        this.mTitle = rows.mTitle
       }
 
       if (selectState === '4') {

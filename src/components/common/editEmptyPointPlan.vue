@@ -1898,25 +1898,25 @@ export default {
       let { data } = await this.getPreExcelData();
       let arr = this.excelData(data.data);
       let allHead = [
+        "资源名称",
         "省份",
         "城市",
         "区域",
-        "资源名称",
-        "商圈",
-        "地址",
+        "详情地址",
         "媒介载体",
+        "商圈",
         "楼栋数量",
         "住户数量",
         "楼盘价格",
         "楼盘类型",
-        "地图中心点",
-        "入住年份",
+        "入住时间",
+        "广告限制",
         "车位数",
         "车流量",
         "人流量",
-        "广告限制",
         "媒体数量（门）",
         "可投数量(面)",
+        "地图中心点",
         "计划投放数量(面)",
       ];
 
@@ -1930,25 +1930,25 @@ export default {
       //将得到的数据除去不需要的
       for (let item of arr) {
         let obj = {
+          resName: item.resName,
           provinceName: item.provinceName,
           cityName: item.cityName,
           districtName: item.districtName,
-          resName: item.resName,
-          tradingArea: item.tradingArea,
           resAddress: item.resAddress,
           mVehicle: item.mVehicle,
+          tradingArea: item.tradingArea,
           fNum: item.fNum,
           hNum: item.hNum,
           hPrice: item.hPrice,
           cType: item.cType,
-          map: item.mapCenterName || "",
           chDay: item.chDay,
+          notPush: item.notPush,
           parkSpaceNum: item.parkSpaceNum,
           carFlow: item.carFlow,
           peopleFlow: item.peopleFlow,
-          notPush: item.notPush,
           actualMediaCnt: item.actualMediaCnt,
           actualAdsCnt: item.actualAdsCnt || "",
+          map: item.mapCenterName || "",
           planAdsCnt: item.planAdsCnt,
         };
         arr2.push(obj);

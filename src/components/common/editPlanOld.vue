@@ -2034,7 +2034,30 @@
             downLoadFanan(){
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
+                let allHead = [
+                    '资源名称',
+                    '省份',
+                    '城市', 
+                    '区域',
+                    '详细地址',
+                    '媒介载体',
+                    '商圈',
+                    '楼栋数量', 
+                    '住户数量',	
+                    '楼盘价格',	
+                    '入住时间',	
+                    '广告限制',
+                    '车位数',
+                    '车流量',
+                    '人流量',
+                    '媒体数量（门）',
+                    '可投数量（面）',
+                    '地图中心点', 
+                    '投放排期',
+                    // '出入口', 
+                    // '楼盘（写字楼）类型',	
+                    // '可选面数',
+                ];
                 if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
@@ -2046,6 +2069,7 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+                // return
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                     sheetExcel.toDownload(allHead, arr, this.planForm.planName+'点位表', head);
@@ -2063,27 +2087,36 @@
                     let dateObj = {
                         sheetName: item.value,
                         showList: [],
-                        resIDArr: [],
+                        resIDArr: []
                     };
                     dateArr.push(dateObj);
                 }
+                console.log(dateArr, 'dateArr')
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        province: data.province || '--',
                         city: data.city,
-                        rName: data.origin,
-                        tradingArea: data.tradingArea,
                         resAddress: data.address,
-                        hPrice: data.buildPrice,
-                        chDay: data.liveYear,
-                        hNum: data.houseNum,
-                        dNum: data.dNum,
+                        mVehicle: data.mVehicle,
+                        tradingArea: data.tradingArea,
                         fNum: data.buildNum,
+                        hNum: data.houseNum,
+                        hPrice: data.buildPrice,
                         cType: data.buildType,
-                        map: data.mapCenter,
+                        chDay: data.liveYear,
+                        notPush: data.notPush || '--',
+                        parkSpaceNum: data.parkSpaceNum || '--',
+                        carFlow: data.carFlow || '--',
+                        peopleFlow: data.peopleFlow || '--',
+                        // rName: data.origin,
+                        // dNum: data.dNum,
+                        actualMediaCnt: 0,
                         adsNum: 1,
+                        map: data.mapCenter,
                         timeRange: '',
+                        mID: data.mID
                     };
                     if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
@@ -2111,6 +2144,12 @@
                                         break;
                                     }
                                 }
+                                for(let item of date.showList){
+                                    if((item.mID != data.mID) && (item.resID == data.resID)){
+                                        item.actualMediaCnt++;
+                                        break;
+                                    }
+                                }
                             }else{
                                 obj.timeRange = date.sheetName;
                                 date.resIDArr.push(data.resID);
@@ -2119,13 +2158,27 @@
                             break;
                         }
                     }
+
+
                 }
+                
+
+
                 for(let data of dateArr){
                     for(let obj of data.showList){
                         delete obj.resID;
+                        delete obj.mID
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
+
+                dateArr.forEach(item => {
+                    item.showList.forEach(i => {
+                        if(i.actualMediaCnt === 0) {
+                            i.actualMediaCnt = 1
+                        }
+                    })
+                })
                 console.log('datearrr-----', dateArr);
                 return dateArr;
             },
@@ -5280,6 +5333,11 @@
                                     mediaLevel: data.grade || '',
                                     asName: data.asName || '',        // 点位所属公司名称
                                     asrID: data.asrID,                // 所属公司id
+                                    parkSpaceNum: data.parkSpaceNum,
+                                    carFlow: data.carFlow,
+                                    peopleFlow: data.peopleFlow,
+                                    notPush: data.notPush,
+                                    province: data.province,
                                 }
                                 if (data.mVehicle === '道闸') {
                                     selectInfo.adPrice = data.asPrice / 100

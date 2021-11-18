@@ -1760,7 +1760,20 @@
             // 导出有问题的点
             downLoadExcel(){
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
+                let allHead = [
+                    '资源名称', 
+                    '省份',
+                    '城市', 
+                    '区域', 
+                    '详细地址',
+                    '媒介载体',	
+                    '媒体名称', 
+                    '资产编号', 
+                    '投放面', 
+                    '投放排期', 
+                    '钼媒点位ID', 
+                    '失败原因'
+                ];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -1779,12 +1792,14 @@
                 for(let data of arr){
                     let obj = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.origin,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mediaName,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.schedules,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -1795,14 +1810,17 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
+                        province: data.province,
                         city: info.prName,
                         origin: info.rName,
-                        mVehicle: info.mVehicle,
-                        mediaName: info.mTitle,
-                        asLab: info.asLab,
-                        assetTag: info.assetTag,
+                        resAddress: data.resAddress,
+                        // mVehicle: info.mVehicle,
+                        // mediaName: info.mTitle,
+                        // asLab: info.asLab,
+                        // assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
-                        pointId: data.pointId,
+                        // pointId: data.pointId,
+                        failReason: data.failReason,
                     };
                     resultarr[1].showList.push(obj);
                 }
@@ -1941,7 +1959,30 @@
             downLoadFanan(){
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
+                let allHead = [
+                    '资源名称',
+                    '省份', 
+                    '城市', 
+                    '区域',
+                    '详细地址',	
+                    '媒介载体',
+                    '商圈', 
+                    '楼栋数量', 
+                    '住户数量',	
+                    '楼盘价格',	
+                    '楼盘类型',	
+                    '入住时间',	
+                    '广告限制',
+                    '车位数',
+                    '车流量',
+                    '人流量',
+                    '媒体数量（门）',
+                    '可投数量（面）',
+                    '地图中心点', 
+                    '投放排期',
+                    // '出入口', 
+                    // '可选面数', 
+                ];
                 if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
@@ -1953,6 +1994,7 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+                
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                     sheetExcel.toDownload(allHead, arr, this.planForm.planName+'点位表', head);
@@ -1978,19 +2020,27 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         rName: data.origin,
-                        tradingArea: data.tradingArea,
                         resAddress: data.address,
-                        hPrice: data.buildPrice,
-                        chDay: data.liveYear,
-                        hNum: data.houseNum,
-                        dNum: data.dNum,
+                        mVehicle: data.mVehicle,
+                        tradingArea: data.tradingArea,
                         fNum: data.buildNum,
+                        hNum: data.houseNum,
+                        hPrice: data.buildPrice,
                         cType: data.buildType,
-                        map: data.mapCenter,
+                        chDay: data.liveYear,
+                        notPush: data.notPush,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        peopleFlow: data.peopleFlow,
+                        // dNum: data.dNum,
+                        actualMediaCnt: 0,
                         adsNum: 1,
+                        map: data.mapCenter,
                         timeRange: '',
+                        mID: data.mID
                     };
                     if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
@@ -2013,6 +2063,13 @@
                         if(data.schedules == date.sheetName){
                             if(date.resIDArr.includes(data.resID)){
                                 for(let item of date.showList){
+                                    if((item.resID === data.resID) && (item.mID !== data.mID)){
+                                        console.log(item.resName, 'resName')
+                                        item.actualMediaCnt++
+                                        break
+                                    }
+                                }
+                                for(let item of date.showList){
                                     if(item.resID == data.resID){
                                         item.adsNum++;
                                         break;
@@ -2027,12 +2084,23 @@
                         }
                     }
                 }
+
                 for(let data of dateArr){
                     for(let obj of data.showList){
                         delete obj.resID;
+                        delete obj.mID;
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
+
+                dateArr.forEach(item => {
+                    item.showList.forEach(i => {
+                        if(i.actualMediaCnt === 0) {
+                            i.actualMediaCnt = 1
+                        }
+                    })
+                })
+                console.log(dateArr, 'dateArrdateArr')
                 return dateArr;
             },
             // 分页
@@ -3984,6 +4052,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
+                        peopleFlow: data.peopleFlow,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        notPush: data.notPush,
+                        province: data.province,
                     };
                     if(key.centerInfos && key.centerInfos.length) {
                         for(let item of key.centerInfos) {
@@ -4638,6 +4711,11 @@
                                     mediaLevel: data.grade || '',
                                     asName: data.asName || '',        // 点位所属公司名称
                                     asrID: data.asrID,                // 所属公司id
+                                    peopleFlow: data.peopleFlow,
+                                    parkSpaceNum: data.parkSpaceNum,
+                                    carFlow: data.carFlow,
+                                    notPush: data.notPush,
+                                    province: data.province
                                 }
                                 if (data.mVehicle === '道闸') {
                                     selectInfo.adPrice = data.asPrice / 100

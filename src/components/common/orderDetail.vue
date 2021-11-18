@@ -1667,15 +1667,74 @@ export default {
           remark: data.remark,
           trafficState: data.trafficState,
           electrifyState: data.electrifyState,
-          mapCenter: data.mapCenterName || '--'
+          mapCenter: data.mapCenterName || '--',
+          parkSpaceNum: data.parkSpaceNum || "--",
+          carFlow: data.carFlow || "--",
+          peopleFlow: data.peopleFlow || "--",
+          province: data.prName || "--",
+          mType: data.mType || "--",
         };
         resultArr.push(obj);
       }
 
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        const tHeader = ['资源名称', '市', '区域', '媒介载体', '媒体名称', '资产编号', '投放面', '投放日期', '终止日期', '商圈', '楼盘类型/写字楼类型', '楼盘价格', '住户数量/办公室数量', '楼栋数量', '入住年份/建成年份', '广告尺寸', '可视画面', '广告限制', '媒体备注', '详细地址', '地图中心点'];
-        const filterVal = ['resName', 'city', 'rName', 'mVehicle', 'mTitle', 'assetTag', 'asLab', 'timeRange', 'finishTimeRange', 'tradingArea', 'cType', 'hPrice', 'hNum', 'fNum', 'chDay', 'adSize', 'adViewSize', 'notPush', 'mRemark', 'resAddress', 'mapCenter'];
+        const tHeader = [
+          '资源名称', 
+          '省份',
+          '城市', 
+          '区域', 
+          '详细地址', 
+          '媒介载体', 
+          '媒体名称', 
+          '资产编号', 
+          '投放面', 
+          '投放排期', 
+          '门体类型',
+          '商圈', 
+          '楼栋数量', 
+          '住户数量/办公室数量', 
+          '楼盘价格', 
+          '楼盘类型/写字楼类型', 
+          '入住年份/建成年份', 
+          '广告限制', 
+          '车位数',
+          '车流量',
+          '人流量',
+          '广告尺寸', 
+          '可视尺寸', 
+          '媒体备注', 
+          '地图中心点',
+          '终止日期', 
+        ];
+        const filterVal = [
+          'resName',
+          'province',
+          'city', 
+          'rName', 
+          'resAddress', 
+          'mVehicle', 
+          'mTitle', 
+          'assetTag', 
+          'asLab', 
+          'timeRange', 
+          'mType',
+          'tradingArea', 
+          'fNum', 
+          'hNum', 
+          'hPrice', 
+          'cType', 
+          'chDay', 
+          'notPush',
+          'parkSpaceNum',
+          'carFlow', 
+          'peopleFlow',
+          'adSize', 
+          'adViewSize', 
+          'mRemark', 
+          'mapCenter',
+          'finishTimeRange', 
+        ];
         if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
           tHeader.push('归属公司');
           filterVal.push('asName')

@@ -1203,6 +1203,7 @@ export default {
               Object.assign(this.cardDataOther3, {
                 data: tempcCardDataOther3,
               });
+              console.log(this.cardDataOther3, 'this.cardDataOther3this.cardDataOther3this.cardDataOther3')
             }
           } else {
             this.$message.warning(res.data.MSG || "");

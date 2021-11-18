@@ -201,24 +201,24 @@ export default {
             if (res.data.length) {
               let returnobj = this.formatData(res.data);
               let head = [
+                "资源名称",
                 "省份",
                 "城市",
                 "区域",
-                "资源名称",
-                "商圈",
-                "地址",
+                "详细地址",
                 "媒介载体",
+                "商圈",
                 "楼栋数量",
                 "住户数量",
                 "楼盘价格",
                 "楼盘类型",
                 "入住时间",
+                "广告限制",
                 "车位数",
                 "车流量",
                 "人流量",
-                "广告限制",
-                "点位备注",
                 "媒体数量(面)",
+                "点位备注",
               ];
               if (
                 (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -275,24 +275,24 @@ export default {
         let dataArr = data.adDoor.concat(data.barrier);
         for (let item of dataArr) {
           let obj = {
+           resName: item.resName || "--",
             province: item.prName || "--",
             city: item.crName || "--",
             rName: item.rName || "--",
-            resName: item.resName || "--",
-            tradingArea: item.tradingArea || "--",
             resAddress: item.resAddress || "--",
             mVehicle: item.mVehicle,
+            tradingArea: item.tradingArea || "--",
             fNum: item.fNum || "--",
             hNum: item.hNum || "--",
             hPrice: item.hPrice / 100,
             cType: item.cType || "--",
             chDay: item.chDay || "--",
+            notPush: item.allNotPush || "--",
             parkSpaceNum: item.parkSpaceNum || "--",
             carFlow: item.carFlow || "--",
             peopleFlow: item.peopleFlow || "--",
-            notPush: item.allNotPush || "--",
-            remark: item.allremark || "--",
             adsNum: item.adsNum || 0,
+            remark: item.allremark || "--",
           };
           if (
             (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -407,21 +407,24 @@ export default {
             console.log("returnobj----", returnobj);
             let date = returnobj.date,
               head = [
+                "资源名称",
                 "省份",
                 "城市",
                 "区域",
-                "资源名称",
-                "商圈",
-                "地址",
+                "详细地址",
                 "媒介载体",
+                "商圈",
                 "楼栋数量",
                 "住户数量",
                 "楼盘价格",
                 "楼盘类型",
                 "入住时间",
                 "广告限制",
-                "点位备注",
+                "车位数",
+                "车流量",
+                "人流量",
                 "媒体数量(面)",
+                "点位备注",
               ],
               customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
@@ -483,21 +486,24 @@ export default {
             let dateArr = [];
             let dataStr = [];
             let obj = {
+              resName: item.resName,
               province: item.prName,
               city: item.crName,
               rName: item.rName,
-              resName: item.resName,
-              tradingArea: item.tradingArea,
               resAddress: item.resAddress,
               mVehicle: item.mVehicle,
+              tradingArea: item.tradingArea,
               fNum: item.fNum,
               hNum: item.hNum,
               hPrice: item.hPrice / 100,
               cType: item.cType,
               chDay: item.chDay,
               notPush: item.allNotPush || "",
-              remark: item.allremark || "",
-              adsNum: item.adsNum,
+              parkSpaceNum: item.parkSpaceNum || "--",
+              carFlow: item.carFlow || "--",
+              peopleFlow: item.peopleFlow || "--",
+              adsNum: item.adsNum || 0,
+              remark: item.allremark || "--",
             };
             if (
               (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -522,7 +528,6 @@ export default {
               }
             }
             let showData = item.DateInfo.sort(this.sortDate);
-            // console.log('showData',showData)
             for (let date of showData) {
               dateArr.push(
                 timeFormat.toDate(date.starDate, "/") +
@@ -587,27 +592,26 @@ export default {
                   "省份",
                   "城市",
                   "区域",
-                  "商圈",
-                  "媒体名称",
-                  "媒介载体",
-                  "资产编号",
-                  "门体类型",
-                  "投放面",
-                  "媒体等级",
-                  "广告限制",
-                  "点位备注",
-                  "广告尺寸",
-                  "画面尺寸",
                   "详细地址",
-                  "楼盘类型",
-                  "楼盘价格",
+                  "媒介载体",
+                  "媒体名称",
+                  "资产编号",
+                  "投放面",
+                  "空闲日期",
+                  "门体类型",
+                  "商圈",
                   "楼栋数量",
-                  "入住时间",
-                  "小区户数",
-                  "人流量",
+                  "住户数量/办公室数量",
+                  "楼盘价格",
+                  "楼盘类型/写字楼类型",
+                  "入住年份/建成年份",
+                  "广告限制",
                   "车位数",
                   "车流量",
-                  "空闲日期",
+                  "人流量",
+                  "广告尺寸",
+                  "可视尺寸",
+                  "点位备注",
                 ];
                 if (
                   (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -668,27 +672,27 @@ export default {
               province: item.prName || "--",
               city: item.crName || "--",
               rName: item.rName || "--",
-              tradingArea: item.tradingArea || "--",
-              mTitle: item.mTitle || "--",
-              mVehicle: item.mVehicle,
-              assetTag: item.assetTag,
-              mType: item.mType,
-              asLab: item.asLab,
-              grade: item.grade || "--",
-              notPush: item.allNotPush || "--",
-              allremark: item.allremark || "--",
-              adSize: item.adSize || "--",
-              adViewSize: item.adViewSize || "--",
               resAddress: item.resAddress || "--",
-              cType: item.cType || "--",
-              hPrice: item.hPrice / 100,
+              mVehicle: item.mVehicle,
+              mTitle: item.mTitle || "--",
+              assetTag: item.assetTag,
+              asLab: item.asLab,
+              date: date,
+              mType: item.mType,
+              tradingArea: item.tradingArea || "--",
               fNum: item.fNum || "--",
-              chDay: item.chDay || "--",
               hNum: item.hNum || "--",
-              peopleFlow: item.peopleFlow || "--",
+              hPrice: item.hPrice / 100,
+              // grade: item.grade || "--",
+              cType: item.cType || "--",
+              chDay: item.chDay || "--",
+              notPush: item.allNotPush || "--",
               parkSpaceNum: item.parkSpaceNum || "--",
               carFlow: item.carFlow || "--",
-              date: date,
+              peopleFlow: item.peopleFlow || "--",
+              adSize: item.adSize || "--",
+              adViewSize: item.adViewSize || "--",
+              allremark: item.allremark || "--",
             };
             if (
               (this.sessionData.uType == "ADN_MD_COUNTRY") ||

@@ -24,7 +24,7 @@ export default {
     props:{
         list: {
             type: Array,
-            default: []
+            default: () => []
         }
     },
     data(){

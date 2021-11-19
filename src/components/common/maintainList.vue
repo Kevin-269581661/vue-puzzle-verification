@@ -189,9 +189,9 @@
               min-width="120"
               :show-overflow-tooltip="true"
             >
-              <!-- <template slot-scope="scope">
-                                <span>{{scope.row.mediaName || '--' }}</span>
-                            </template> -->
+              <template slot-scope="scope">
+                <span>{{ scope.row.asLab || '--' }}</span>
+              </template>
             </el-table-column>
 
             <el-table-column
@@ -239,7 +239,15 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.issueRecord || '--' }}</span>
+                <template v-if=" Array.isArray(scope.row.issueRecord)">
+                  <span v-for="(item, index) in scope.row.issueRecord" :key="index">
+                    <template v-if="scope.row.issueRecord.length > 1">{{index + 1}}.</template>
+                    {{item}},
+                  </span>
+                </template>
+                <template v-else>
+                  <span>{{scope.row.issueRecord}}</span>
+                </template>
               </template>
             </el-table-column>
 
@@ -322,7 +330,7 @@
                 </el-dropdown>
               </template>
             </el-table-column>
-            
+
             <div slot="empty">
               <no-search-result></no-search-result>
             </div>
@@ -684,58 +692,16 @@ export default {
     //历史记录
     showHistory (item) {
       console.log(item)
-      if (item.mtType === '不可售卖') {
-        this.isSellList = true
-      } else {
-        this.isSellList = false
-      }
 
       this.isShowHistory = true
-      let info = {
-        "data": {
-          mID: item.mID,
-          pageNum: 1,
-          pageSize: 80,
-        },
-        "service": "GetMediaMaintenanceHistoryListAction",
-        "token": this.sessionData.token,
-        "uid": this.sessionData.uID
-      };
-      api.postApi_new(this.apiVar.Media, info).then(res => {
-        console.log('历史记录', res.data);
-        if (res.data.SysCode == 200200) {
-          let obj = {
-            resName: item.resName,
-            mTitle: item.mTitle,
-            assetTag: item.assetTag,
-            list: []
-          };
-          for (let data of res.data.data.list) {
-            let a = {
-              time: data.createTime,
-              text: data.remark,
-              address: data.resAddress,
-              recordId: data.recordId,
-              mID: data.mID,
-            };
-            if (data.type == 1) {
-              a.type = '巡点'
-            } else if (data.type == 2) {
-              a.type = '待维修'
-            } else if (data.type == 3) {
-              a.type = '拆除'
-            }
+      if (item.mtType === '不可售卖') {
+        this.isSellList = true
+        this.getSellList(item)
+      } else {
+        this.isSellList = false
+        this.getHistoryList(item)
+      }
 
-            obj.list.push(a);
-          }
-          this.logList = obj;
-          console.log(this.logList);
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
     },
     // 处理
     toHandle (item) {
@@ -914,7 +880,8 @@ export default {
         remark: item.remark,
         mTitle: item.mTitle,
         recordId: item.recordId,
-        picUrl: item.picUrl
+        picUrl: item.picUrl,
+        asLab: item.asLab
       };
       if (item.type == 1) {
         obj.mtType = '巡点'
@@ -924,6 +891,7 @@ export default {
         obj.mtType = '拆除'
       } else if (item.type == 4) {
         obj.mtType = '不可售卖'
+        obj.issueRecord = JSON.parse(obj.issueRecord)
       }
       if (item.patrolPointPics && item.patrolPointPics.length) {
         let arr = [];
@@ -1001,6 +969,96 @@ export default {
       sessionStorage.setItem("customerId", data.uID);
       this.$router.push("./clientDetail");
     },
+
+    // 媒体点位的售卖状态记录
+    getSellList (item) {
+
+      let info = {
+        data: {
+          recordId: item.recordId,
+          pageNum: 1,
+          pageSize: 80,
+        },
+        service: "GetMediaMaintainOperationLogAction",
+        token: this.sessionData.token,
+        uid: this.sessionData.uID
+      };
+
+      api.postApi_new(this.apiVar.Media, info).then(res => {
+        if (res.data.SysCode == 200200) {
+          const list = res.data.data.list.map(item => {
+            return {
+              ...item,
+              remark: JSON.parse(item.remark || '[]'),
+              sellState: item.operationType === 1 ? '不可售卖' : '可售卖'
+            }
+          }) || []
+           let obj = {
+            resName: item.resName,
+            mTitle: item.mTitle,
+            assetTag: item.assetTag,
+            list
+          };
+          this.logList = obj 
+        } else {
+          Message.warning(res.data.MSG);
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+
+    },
+
+    // 获取历史记录
+    getHistoryList (item) {
+      let info = {
+        "data": {
+          mID: item.mID,
+          pageNum: 1,
+          pageSize: 80,
+        },
+        "service": "GetMediaMaintenanceHistoryListAction",
+        "token": this.sessionData.token,
+        "uid": this.sessionData.uID
+      };
+
+      api.postApi_new(this.apiVar.Media, info).then(res => {
+        console.log('历史记录', res.data);
+        if (res.data.SysCode == 200200) {
+          let obj = {
+            resName: item.resName,
+            mTitle: item.mTitle,
+            assetTag: item.assetTag,
+            list: []
+          };
+          for (let data of res.data.data.list) {
+            let a = {
+              time: data.createTime,
+              text: data.remark,
+              address: data.resAddress,
+              recordId: data.recordId,
+              mID: data.mID,
+            };
+            if (data.type == 1) {
+              a.type = '巡点'
+            } else if (data.type == 2) {
+              a.type = '待维修'
+            } else if (data.type == 3) {
+              a.type = '拆除'
+            }
+
+            obj.list.push(a);
+          }
+          this.logList = obj;
+          console.log(this.logList);
+        } else {
+          Message.warning(res.data.MSG);
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+
+    }
   }
 };
 </script>

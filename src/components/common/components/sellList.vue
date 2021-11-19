@@ -6,21 +6,21 @@
         <div class="line_head"></div>
         <div class="line_content">
           <p class="time">
-            {{ item.time }}
-            <span :class="[getcolor(item.type), 'tag']">{{ item.type }}</span>
+            {{ item.createTime }}
+            <span :class="[getcolor(item.operationType), 'tag']"></span>
           </p>
           <div class="u-item">
             <span style="width: 56px">处理人：</span>
-            <div class="u-ctn">xxx</div>
+            <div class="u-ctn">{{item.uName}}</div>
           </div>
           <div class="u-item">
             <span>操作：</span>
-            <div class="u-ctn">xxx</div>
+            <div class="u-ctn">{{item.sellState}}</div>
           </div>
           <div class="u-item">
             <span>说明：</span>
             <div class="u-ctn">
-              {{ item.text }}
+              <p v-for="(text, i) in item.remark" :key="i"><template v-if="item.remark.length > 1">{{i+1}}.</template>{{text}}</p>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@ export default {
   props: {
     list: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data () {
@@ -44,12 +44,10 @@ export default {
   },
   methods: {
     getcolor (type) {
-      if (type == '巡点') {
-        return 'blue';
-      } else if (type == '待维修') {
-        return 'yellow';
-      } else {
-        return 'red';
+      if (type === 1) {
+        return 'no-sell';
+      } else if (type === 2) {
+        return 'sell';
       }
     },
     toHandle (item) {
@@ -117,6 +115,8 @@ export default {
   border-radius: 2px;
 }
 .time {
+  display: flex;
+  align-items: center;
   font-size: 14px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.85);
@@ -142,20 +142,22 @@ export default {
 .timeline_item:last-child .line_tail {
   display: none;
 }
-.blue {
-  border: 1px solid #3c95ff;
-  color: #3c95ff;
-  background: #cbe0fd;
+
+.sell {
+  display: inline-block;
+  width: 40px;
+  height: 16px;
+  margin-left: 5px;
+  background: url('../../../assets/images/sell_state1.png') no-repeat
+    center/cover;
 }
-.yellow {
-  border: 1px solid #ff7f3c;
-  color: #ff7f3c;
-  background: #f2dbd6;
-}
-.red {
-  border: 1px solid #ff7070;
-  color: #ff7070;
-  background: #ffe2e2;
+.no-sell {
+  display: inline-block;
+  width: 50px;
+  height: 16px;
+  margin-left: 5px;
+  background: url('../../../assets/images/sell_state2.png') no-repeat
+    center/cover;
 }
 .handleBtn {
   color: #1890ff;

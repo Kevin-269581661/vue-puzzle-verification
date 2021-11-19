@@ -72,16 +72,10 @@
                     总点位数：统计所属公司累计所有录入的媒体点位数
                   </li>
                   <li style="line-height: 20px">
-                    正常：指状态为“正常”的媒体点位数量
+                    可售卖：指状态为“可售卖”的媒体点位数量
                   </li>
                   <li style="line-height: 20px">
-                    待维修：指状态为“待维修”的媒体点位数量
-                  </li>
-                  <li style="line-height: 20px">
-                    待安装：指状态为“待安装”的媒体点位数量
-                  </li>
-                  <li style="line-height: 20px">
-                    禁用：指状态为“禁用”的媒体点位数量
+                    不可售卖：指状态为“不可售卖”的媒体点位数量
                   </li>
                 </ul>
                 <img
@@ -102,16 +96,10 @@
                     总媒体数：统计所属公司累计所有录入的媒体数
                   </li>
                   <li style="line-height: 20px">
-                    正常：指状态为“正常”的媒体数量
+                    可售卖：指状态为“可售卖”的媒体数量
                   </li>
                   <li style="line-height: 20px">
-                    待维修：指状态为“待维修”的媒体数量
-                  </li>
-                  <li style="line-height: 20px">
-                    待安装：指状态为“待安装”的媒体数量
-                  </li>
-                  <li style="line-height: 20px">
-                    禁用：指状态为“禁用”的媒体数量
+                    不可售卖：指状态为“禁用”的媒体数量
                   </li>
                 </ul>
                 <img
@@ -1236,16 +1224,16 @@ export default {
             let temp = res.data.data;
             this.ringData = [
               [
-                { item: "正常", count: temp.normalMediaCnt || 0 },
-                { item: "待安装", count: temp.installMediaCnt || 0 },
-                { item: "待维修", count: temp.repairMediaCnt || 0 },
-                { item: "禁用", count: temp.banMediaCnt || 0 },
+                { item: "可售卖", count: temp.normalMediaCnt || 0 },
+                // { item: "待安装", count: temp.installMediaCnt || 0 },
+                // { item: "待维修", count: temp.repairMediaCnt || 0 },
+                { item: "不可售卖", count: temp.banMediaCnt || 0 },
               ],
               [
-                { item: "正常", count: temp.normalLabCnt || 0 },
-                { item: "待安装", count: temp.installLabCnt || 0 },
-                { item: "待维修", count: temp.repairLabCnt || 0 },
-                { item: "禁用", count: temp.banLabCnt || 0 },
+                { item: "可售卖", count: temp.normalLabCnt || 0 },
+                // { item: "待安装", count: temp.installLabCnt || 0 },
+                // { item: "待维修", count: temp.repairLabCnt || 0 },
+                { item: "不可售卖", count: temp.banLabCnt || 0 },
               ],
               [
                 [temp.offPubMediaCnt, temp.offPubRank + "%"],

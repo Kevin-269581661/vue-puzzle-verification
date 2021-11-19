@@ -449,7 +449,7 @@
                         (scope.row.apState !== 1 && scope.row.apState !== -1)
                       "
                     >
-                      <el-popconfirm title="确定删除该方案？" @confirm="deleteAdPlan(scope.row)">
+                      <el-popconfirm title="确定删除该方案？点击【确认】该方案将被移除至回收站。" @confirm="deleteAdPlan(scope.row)">
                         <span slot="reference">删除</span>
                       </el-popconfirm>
                     </el-dropdown-item>

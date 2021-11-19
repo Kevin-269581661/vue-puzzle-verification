@@ -115,7 +115,7 @@
                     <li class="data_li">上画点位：{{basicToDayData.publishPointCount || 0}}个</li>
                     <li class="data_li">录入小区：{{basicToDayData.newResourceCount}}个</li>
                     <li class="data_li">录入媒体：{{basicToDayData.newMediaCount}}个</li>
-                    <li class="data_li">禁用点位：{{basicToDayData.forbiddenPointCount || 0}}个</li>
+                    <li class="data_li">不可售卖点位：{{basicToDayData.forbiddenPointCount || 0}}个</li>
                 </ul>
                 <el-row :gutter="16">
                     <el-col :span="12">
@@ -1320,7 +1320,7 @@
                     legend: {
                         bottom: '3%',
                         left: 'center',
-                        data: ['禁用点位','已售点位','未售点位','周在刊率']
+                        data: ['不可售卖点位','已售点位','未售点位','周在刊率']
                     },
                     xAxis: {
                         type: 'category',
@@ -1431,7 +1431,7 @@
                             data: this.adSaleData.publishRate
                         },
                         {
-                            name:'禁用点位',
+                            name:'不可售卖点位',
                             type:'bar',
                             barWidth: '30%',
                             stack:'xxx',

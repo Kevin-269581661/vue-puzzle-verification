@@ -20,7 +20,7 @@
           />
           《QADN-导入点位》
           <a
-            :href="apiVar.qadnUrl + '/importTemplate/adsTemplate.xlsx'"
+            :href="apiVar.qadnUrl + '/importTemplate/adsTemplate_new.xlsx'"
             download="点位导入模板.xlsx"
             class="downloag_btn"
             @click="dowmLoadFun"

@@ -23,7 +23,7 @@
           《QADN-导入小区模板》
           <!-- TODO:更换小区模板EXCEL下载地址 -->
           <a
-            :href="apiVar.qadnUrl + '/importTemplate/communityTemplate.xlsx'"
+            :href="apiVar.qadnUrl + '/importTemplate/communityTemplate_new.xlsx'"
             download="意向小区导入模板.xlsx"
             class="downloag_btn"
             @click="dowmLoadFun"

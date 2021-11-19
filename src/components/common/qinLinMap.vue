@@ -1652,6 +1652,7 @@ export default {
               if (res.data.SysCode === 200200) {
                 // 地图外已选点位所在小区
                 let resListSelected = res.data.data || [];
+                console.log(res.data.data, 'res.data.datares.data.datares.data.datares.data.data')
                 // 异步情况下，资源列表可能存在数据
                 let resLisArr = this.selectResList.reduce(
                   (accumulator, currentValue) => {
@@ -1988,6 +1989,12 @@ export default {
         .then((res) => {
           this.resMap.clearOverlays();
           if (res.data.SysCode === 200200) {
+            console.log(res.data.data, 'res.data.data')
+            res.data.data.forEach(item => {
+              item.resList.forEach(i => {
+                i.provinceName = item.provinceName
+              })
+            })
             this.resAreaList = res.data.data;
             this.creatAreaMarker();
             this.judgeByselect();
@@ -4009,6 +4016,7 @@ export default {
     },
     // 导出exc
     exportExcel() {
+      console.log('this.selectResList', this.selectResList)
       if (this.selectResList.length) {
         let time = timeFormat.toDateTime(new Date(), "").split(" ");
         let timeString = time[0] + time[1].split(":").join("");
@@ -4050,7 +4058,7 @@ export default {
             allRemark: data.allRemark,
             allTrafficState: data.allTrafficState,
             allElectrifyState: data.allElectrifyState || "",
-            province: data.province || '',
+            provinceName: data.provinceName  || '',
             parkSpaceNum: data.parkSpaceNum || '',
             carFlow: data.carFlow,
             peopleFlow: data.peopleFlow
@@ -4094,7 +4102,7 @@ export default {
             ];
             filterVal = [
               "resName",
-              'province',
+              'provinceName',
               "city",
               "rName",
               "resAddress",
@@ -4139,7 +4147,7 @@ export default {
             ];
             filterVal = [
               "resName",
-              'province',
+              'provinceName',
               "city",
               "rName",
               "resAddress",

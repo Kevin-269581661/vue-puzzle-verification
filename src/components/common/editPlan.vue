@@ -933,12 +933,12 @@
                         :on-remove="fileRemove"
                         :multiple="false">
                         <template v-if="customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'">
-                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板_new.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板_new.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         </template>
                         <template v-else>
-                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate_new.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate_new.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         </template>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>

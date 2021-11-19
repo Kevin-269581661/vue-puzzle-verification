@@ -242,7 +242,7 @@
                 <template v-if=" Array.isArray(scope.row.issueRecord)">
                   <span v-for="(item, index) in scope.row.issueRecord" :key="index">
                     <template v-if="scope.row.issueRecord.length > 1">{{index + 1}}.</template>
-                    {{item}},
+                    {{item}}<template v-if="scope.row.issueRecord.length > 1 && index !== scope.row.issueRecord.length - 1">，</template>
                   </span>
                 </template>
                 <template v-else>

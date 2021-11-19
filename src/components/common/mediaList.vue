@@ -210,6 +210,7 @@
               :filter-multiple="false"
               fixed="right"
             >
+              <!-- { text: '待安装', value: '2' }, -->
               <template slot-scope="scope">
                 <point-state
                   :state-text="stateToText(scope.row.asState).text"
@@ -259,7 +260,9 @@
                       @click.native.prevent="
                         changeState('6', scope.$index, scope.row)
                       "
-                      :disabled="scope.row.asSaleState === 1 || scope.row.asState !== 1"
+                      :disabled="
+                        scope.row.asSaleState === 1 || scope.row.asState !== 1
+                      "
                       >可售卖</el-dropdown-item
                     >
                     <el-dropdown-item
@@ -284,6 +287,15 @@
                       :disabled="scope.row.asState == 4"
                       >拆除</el-dropdown-item
                     >
+
+                    <!-- <el-dropdown-item
+                      command="2"
+                      @click.native.prevent="
+                        changeState('2', scope.$index, scope.row)
+                      "
+                      :disabled="scope.row.mState == 2 || scope.row.mState == 4"
+                      >待安装</el-dropdown-item
+                    > -->
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
@@ -693,6 +705,11 @@ export default {
           value: 1,
           color: 'rgba(82,196,26,1)',
         },
+        // {
+        //   text: '待安装',
+        //   value: 2,
+        //   color: 'rgba(196,203,211,1)',
+        // },
         {
           text: '已拆除',
           value: 4,

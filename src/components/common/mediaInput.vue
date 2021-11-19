@@ -405,10 +405,10 @@
                                                                :disabled="item.mediaForm.mediaState == 4 && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
-                                                        <el-option label="禁用" :value="'0' + key"></el-option>
+                                                        <el-option label="不可售卖" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
-                                                        <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <!-- <el-option label="待维修" :value="'3' + key"></el-option> -->
                                                         <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>
@@ -595,10 +595,10 @@
                                                                :disabled="item.roadGateForm.mediaState == 4 && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
-                                                        <el-option label="禁用" :value="'0' + key"></el-option>
+                                                        <el-option label="不可售卖" :value="'0' + key"></el-option>
                                                         <el-option label="正常" :value="'1' + key"></el-option>
                                                         <el-option label="待安装" :value="'2' + key"></el-option>
-                                                        <el-option label="待维修" :value="'3' + key"></el-option>
+                                                        <!-- <el-option label="待维修" :value="'3' + key"></el-option> -->
                                                         <el-option label="已拆除" :value="'4' + key"></el-option>
                                                     </el-select>
                                                 </el-form-item>

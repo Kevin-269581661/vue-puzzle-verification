@@ -121,6 +121,7 @@ export default {
         if (res.status === 200) {
           this.searchParams.start = 1
           this.getData()
+          this.$emit('confirm')
           sessFun.messageFun('success', res.statusText || '方案已还原')
         } else {
           sessFun.messageFun('warning', res.statusText || '方案还原失败')

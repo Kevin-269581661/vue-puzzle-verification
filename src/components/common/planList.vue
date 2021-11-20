@@ -749,6 +749,7 @@
     <recycleBinDialog
       :visible.sync="isShowRecycleBin"
       v-if="isShowRecycleBin"
+      @confirm="reset"
     />
   </div>
 </template>

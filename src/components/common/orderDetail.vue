@@ -1644,6 +1644,7 @@ export default {
       for (let data of this.exportArr) {
         let obj = {
           resName: data.resName,
+          province: data.province,
           city: data.city,
           rName: data.rName,
           asName: data.asName,
@@ -1667,12 +1668,11 @@ export default {
           remark: data.remark,
           trafficState: data.trafficState,
           electrifyState: data.electrifyState,
-          mapCenter: data.mapCenterName || '--',
-          parkSpaceNum: data.parkSpaceNum || "--",
-          carFlow: data.carFlow || "--",
-          peopleFlow: data.peopleFlow || "--",
-          province: data.prName || "--",
-          mType: data.mType || "--",
+          mapCenter: data.mapCenterName || '',
+          parkSpaceNum: data.parkSpaceNum || "",
+          carFlow: data.carFlow || "",
+          peopleFlow: data.peopleFlow || "",
+          mType: data.mType || "",
         };
         resultArr.push(obj);
       }
@@ -2080,7 +2080,7 @@ export default {
     },
     // 选择一条
     handleSelect (selection, row) {
-      // console.log(selection, row, 'selection ---row ');
+      // console.log(selection, row, 'selection -row ');
       // 选中
       if (this.isHaveFun(selection, row)) {
         for (let data of selection) {

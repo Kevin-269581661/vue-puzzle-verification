@@ -73,15 +73,19 @@
       >
         <el-table-column prop="resName" label="资源名称" min-width="6%">
         </el-table-column>
+        <el-table-column prop="province" label="省份" min-width="6%">
+        </el-table-column>
         <el-table-column prop="city" label="城市" min-width="6%">
         </el-table-column>
-        <el-table-column prop="district" label="区县" min-width="6%">
+        <el-table-column prop="district" label="区域" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="mVehicle" label="媒介载体" min-width="6%">
         </el-table-column>
         <el-table-column prop="mTitle" label="媒体名称" min-width="6%">
         </el-table-column>
-        <el-table-column prop="asLab" label="投放面" min-width="3%">
-        </el-table-column>
         <el-table-column prop="assetTag" label="资产编号" min-width="6%">
+        </el-table-column>
+        <el-table-column prop="asLab" label="投放面" min-width="3%">
         </el-table-column>
         <el-table-column prop="date" label="排期" min-width="6%">
         </el-table-column>
@@ -305,21 +309,25 @@ export default {
         } = require("../../../vendorExcel/Export2Excel");
         const tHeader = [
           "资源名称",
+          '省份',
           "城市",
-          "区县",
+          "区域",
+          '媒介载体',
           "媒体名称",
-          "投放面",
           "资产编号",
-          "排期",
+          "投放面",
+          "投放排期",
           "失败原因"
         ];
         const filterVal = [
           "resName",
+          'province',
           "city",
           "district",
+          'mVehicle',
           "mTitle",
-          "asLab",
           "assetTag",
+          "asLab",
           "date",
           "failReason"
         ];

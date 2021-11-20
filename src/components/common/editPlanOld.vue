@@ -2092,12 +2092,14 @@
                     dateArr.push(dateObj);
                 }
                 console.log(dateArr, 'dateArr')
+                
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
-                        province: data.province || '--',
+                        province: data.province || '',
                         city: data.city,
+                        rName: data.origin,
                         resAddress: data.address,
                         mVehicle: data.mVehicle,
                         tradingArea: data.tradingArea,
@@ -2106,10 +2108,10 @@
                         hPrice: data.buildPrice,
                         cType: data.buildType,
                         chDay: data.liveYear,
-                        notPush: data.notPush || '--',
-                        parkSpaceNum: data.parkSpaceNum || '--',
-                        carFlow: data.carFlow || '--',
-                        peopleFlow: data.peopleFlow || '--',
+                        notPush: data.notPush || '',
+                        parkSpaceNum: data.parkSpaceNum || '',
+                        carFlow: data.carFlow || '',
+                        peopleFlow: data.peopleFlow || '',
                         // rName: data.origin,
                         // dNum: data.dNum,
                         actualMediaCnt: 0,

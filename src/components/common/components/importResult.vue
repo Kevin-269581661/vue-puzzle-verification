@@ -566,6 +566,7 @@ export default {
             for(let data of errorList){
                 let item = {
                     resName: data.resName,
+                    province: data.province,
                     city: data.city,
                     origin: data.district,
                     resAddress: data.resAddress,
@@ -579,7 +580,7 @@ export default {
         // 导出有问题的点
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
-            let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期', '失败原因'];
+            let allHead = ['资源名称', '省份', '城市', '区域', '详细地址', '投放排期', '失败原因'];
             sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位

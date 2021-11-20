@@ -614,11 +614,11 @@ export default {
           trafficState: data.trafficState || '',
           electrifyState: data.electrifyState || '',
           asName: data.asName,
-          mapCenter: data.mapCenterName || '--',
-          parkSpaceNum: data.parkSpaceNum || "--",
-          carFlow: data.carFlow || "--",
-          peopleFlow: data.peopleFlow || "--",
-          province: data.province || "--"
+          mapCenter: data.mapCenterName || '',
+          parkSpaceNum: data.parkSpaceNum || "",
+          carFlow: data.carFlow || "",
+          peopleFlow: data.peopleFlow || "",
+          province: data.province || ""
         };
         resultArr.push(obj);
       }

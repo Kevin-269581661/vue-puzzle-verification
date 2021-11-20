@@ -278,7 +278,7 @@
         </div>
         <div class="ad_index_footer clearfix">
             <p>
-                Copyright &copy;{{newDate}} 亲邻科技线上产品部
+                深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a>
             </p>
         </div>
     </div>

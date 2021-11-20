@@ -21,7 +21,8 @@
 }
 
 .ad_index_footer a {
-    color: #8A8A8A;
+    color: rgba(0,0,0,0.45);
+    text-decoration: underline;
 }
 
 .ad_index_footer img {

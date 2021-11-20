@@ -719,7 +719,7 @@
     </div>
     <!--版权所有-->
     <div class="censor-code">
-      <p>亲邻科技 - @2019 Baidu-GS(2018)5572号</p>
+      <p>深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a></p>
     </div>
     <!--标注info框-->
     <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">

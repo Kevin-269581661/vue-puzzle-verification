@@ -1499,7 +1499,7 @@
                 adsCount:0,//总可选点位
                 customPermission: {},  //巡点权限
                 // 购物车分页时页面条目数量
-                cartPageSize: 10,
+                cartPageSize: 500,
                 currentPage: 1,
                 totalNum: 0
             };

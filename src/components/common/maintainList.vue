@@ -989,9 +989,17 @@ export default {
       api.postApi_new(this.apiVar.Media, info).then(res => {
         if (res.data.SysCode == 200200) {
           const list = res.data.data.list.map(item => {
+            console.log(item.remark, 'rmark')
+            let rmark
+            let rmarkCtx = JSON.parse(JSON.stringify(item.remark))
+            if (rmarkCtx.indexOf('[') === -1) {
+              rmark = [rmarkCtx]
+            } else {
+              rmark = JSON.parse(item.remark)
+            }
             return {
               ...item,
-              remark: Array.isArray(JSON.parse(item.remark || '[]')) ? JSON.parse(item.remark || '[]') : [item.remark],
+              remark: Array.isArray(rmark) ? rmark : [rmark],
               sellState: item.operationType === 1 ? '不可售卖' : '可售卖'
             }
           }) || []
@@ -1001,7 +1009,6 @@ export default {
             assetTag: item.assetTag,
             list
           };
-          console.log(obj, 'objobj')
           this.logList = obj 
         } else {
           Message.warning(res.data.MSG);

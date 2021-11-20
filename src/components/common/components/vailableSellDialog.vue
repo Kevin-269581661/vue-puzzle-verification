@@ -128,7 +128,7 @@ export default {
           mID: this.mID,
           asIDS: [this.targetRadio],
           asSaleState: 1, // 可售卖
-          saleableRemark: this.vailableResaon
+          saleableRemark: [this.vailableResaon]
         }
       }
 

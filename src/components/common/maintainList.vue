@@ -695,9 +695,11 @@ export default {
 
       this.isShowHistory = true
       if (item.mtType === '不可售卖') {
+        console.log('111111')
         this.isSellList = true
         this.getSellList(item)
       } else {
+        console.log('222222')
         this.isSellList = false
         this.getHistoryList(item)
       }
@@ -989,7 +991,7 @@ export default {
           const list = res.data.data.list.map(item => {
             return {
               ...item,
-              remark: JSON.parse(item.remark || '[]'),
+              remark: Array.isArray(JSON.parse(item.remark || '[]')) ? JSON.parse(item.remark || '[]') : [item.remark],
               sellState: item.operationType === 1 ? '不可售卖' : '可售卖'
             }
           }) || []
@@ -999,6 +1001,7 @@ export default {
             assetTag: item.assetTag,
             list
           };
+          console.log(obj, 'objobj')
           this.logList = obj 
         } else {
           Message.warning(res.data.MSG);

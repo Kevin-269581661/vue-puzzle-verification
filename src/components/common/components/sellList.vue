@@ -37,11 +37,11 @@ export default {
       default: () => []
     }
   },
-  data () {
-    return {
 
-    }
+  mounted () {
+    console.log(this.list, 'lisisiisis')
   },
+
   methods: {
     getcolor (type) {
       if (type === 1) {

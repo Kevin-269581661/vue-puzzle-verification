@@ -405,11 +405,7 @@
                                                                :disabled="item.mediaForm.mediaState == 4 && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
-                                                        <el-option label="不可售卖" :value="'0' + key"></el-option>
-                                                        <el-option label="正常" :value="'1' + key"></el-option>
-                                                        <el-option label="待安装" :value="'2' + key"></el-option>
-                                                        <!-- <el-option label="待维修" :value="'3' + key"></el-option> -->
-                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
+                                                        <el-option v-for="state in mediaOptions[key]" :label="state.label" :value="state.value + key" :key="state.value"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -595,11 +591,7 @@
                                                                :disabled="item.roadGateForm.mediaState == 4 && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
-                                                        <el-option label="不可售卖" :value="'0' + key"></el-option>
-                                                        <el-option label="正常" :value="'1' + key"></el-option>
-                                                        <el-option label="待安装" :value="'2' + key"></el-option>
-                                                        <!-- <el-option label="待维修" :value="'3' + key"></el-option> -->
-                                                        <el-option label="已拆除" :value="'4' + key"></el-option>
+                                                        <el-option v-for="state in mediaOptions2[key]" :label="state.label" :value="state.value + key" :key="state.value"></el-option>
                                                     </el-select>
                                                 </el-form-item>
                                             </el-col>
@@ -797,6 +789,14 @@
     import areaPackageNew from '../../commonFun/areaPackage_new'
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from '../../commonFun/sessFun.js'
+
+
+    const MEDIA_OPTIONS = [
+        {label: '正常', value: '1'},
+        {label: '待安装', value: '2'},
+        {label: '待维修', value: '3'},
+        {label: '已拆除', value: '4'}
+    ]
     export default {
         name: "mediaInput",
         components: {
@@ -1330,7 +1330,18 @@
                 changeBeforMediaState: '',
                 customPermission: {},  //巡点权限
                 // queryTimeout: null,
-                fangJiaWangPrivateCity: []// 房价网权限城市
+                fangJiaWangPrivateCity: [],// 房价网权限城市
+
+                mediaOptions: [
+                   [
+                    {label: '正常', value: '1'}
+                   ]
+                ],
+                mediaOptions2: [
+                    [
+                        {label: '正常', value: '1'}
+                    ]
+                ]
             };
         },
         /* computed: {
@@ -1735,6 +1746,9 @@
                         }
                     },
                 ]
+
+                this.mediaOptions.push([{label: '正常', value: '1'}])
+
                 if (this.PathHaveEdit) {
                     mediaArr[0].mediaForm.mediaType = '广告门'
                 }
@@ -1788,6 +1802,9 @@
                     },
                 ]
                 roadGateMedia[0].text = this.titleArr[++this.roadGateTitleIndex]
+
+                this.mediaOptions2.push([{label: '正常', value: '1'}])
+                
                 if (this.roadGateTitleIndex < 50) {
                     this.roadGateMedia.push(roadGateMedia[0])
                 } else {
@@ -2266,6 +2283,7 @@
                                 mVehicle: key.mediaType,
                                 mRemark: key.mediaRemark,
                                 mState: (key.mstate).split('')[0],
+                                mSaleState: 1
                             })
                         } else {
                             continue
@@ -2294,6 +2312,7 @@
                                 mState: (key.mstate).split('')[0],
                                 picSize: key.visualW + "*" + key.visualH,
                                 lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
+                                mSaleState: 1
                             })
                         } else {
                             continue
@@ -2826,6 +2845,20 @@
                                 updataImg:[],
                                 assetIdBolean: mediaObj[i].mState == 2 ? true : false
                             }
+
+                            // 编辑时只保留正常与原来所选择的媒体状态
+                            const currentOption = MEDIA_OPTIONS.filter(item => {
+                                return item.value === mediaObj[i].mState.toString()
+                            })[0]
+                            let newMediaOptions = []
+                            if(currentOption.value === '1') {
+                                newMediaOptions[0] = currentOption
+                            } else {
+                                newMediaOptions[0] = currentOption
+                                newMediaOptions[1] = {label: '正常', value: '1'}
+                            }
+                            this.mediaOptions[i] = newMediaOptions
+
                             if(mediaObj[i].classified == 1){
                                 this.classified = true
                             }
@@ -2848,6 +2881,8 @@
                             } else {
                                 media.adLimit = []
                             }
+
+
                             console.log('media', media)
                             for (let key in media) {
                                 if (media[key] == undefined || media[key] == null) {
@@ -2917,7 +2952,20 @@
                         updataImg:[],
                         assetIdBolean: roadGateList[i].mState == 2 ? true : false
                     }
-                    //assetIdBolean = true
+
+                    // 编辑时只保留正常与原来所选择的媒体状态
+                    const currentOption = MEDIA_OPTIONS.filter(item => {
+                        return item.value === roadGateList[i].mState.toString()
+                    })[0]
+                    let newMediaOptions = []
+                    if(currentOption.value === '1') {
+                        newMediaOptions[0] = currentOption
+                    } else {
+                        newMediaOptions[0] = currentOption
+                        newMediaOptions[1] = {label: '正常', value: '1'}
+                    }
+                    this.mediaOptions2[i] = newMediaOptions
+                    
                     if(roadGateList[i].mImg){
                         // let imgArr = roadGateList[i].mImg.split(',')
                         let imgArr = []

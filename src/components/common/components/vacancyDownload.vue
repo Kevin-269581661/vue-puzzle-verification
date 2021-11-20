@@ -275,24 +275,24 @@ export default {
         let dataArr = data.adDoor.concat(data.barrier);
         for (let item of dataArr) {
           let obj = {
-           resName: item.resName || "--",
-            province: item.prName || "--",
-            city: item.crName || "--",
-            rName: item.rName || "--",
-            resAddress: item.resAddress || "--",
+           resName: item.resName || "",
+            province: item.prName || "",
+            city: item.crName || "",
+            rName: item.rName || "",
+            resAddress: item.resAddress || "",
             mVehicle: item.mVehicle,
-            tradingArea: item.tradingArea || "--",
-            fNum: item.fNum || "--",
-            hNum: item.hNum || "--",
+            tradingArea: item.tradingArea || "",
+            fNum: item.fNum || "",
+            hNum: item.hNum || "",
             hPrice: item.hPrice / 100,
-            cType: item.cType || "--",
-            chDay: item.chDay || "--",
-            notPush: item.allNotPush || "--",
-            parkSpaceNum: item.parkSpaceNum || "--",
-            carFlow: item.carFlow || "--",
-            peopleFlow: item.peopleFlow || "--",
+            cType: item.cType || "",
+            chDay: item.chDay || "",
+            notPush: item.allNotPush || "",
+            parkSpaceNum: item.parkSpaceNum || "",
+            carFlow: item.carFlow || "",
+            peopleFlow: item.peopleFlow || "",
             adsNum: item.adsNum || 0,
-            remark: item.allremark || "--",
+            remark: item.allremark || "",
           };
           if (
             (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -404,7 +404,7 @@ export default {
         if (resultValus.length) {
           let returnobj = this.hasPointData(resultValus);
           if (returnobj.arr.length > 0) {
-            console.log("returnobj----", returnobj);
+            console.log("returnobj", returnobj);
             let date = returnobj.date,
               head = [
                 "资源名称",
@@ -499,11 +499,11 @@ export default {
               cType: item.cType,
               chDay: item.chDay,
               notPush: item.allNotPush || "",
-              parkSpaceNum: item.parkSpaceNum || "--",
-              carFlow: item.carFlow || "--",
-              peopleFlow: item.peopleFlow || "--",
+              parkSpaceNum: item.parkSpaceNum || "",
+              carFlow: item.carFlow || "",
+              peopleFlow: item.peopleFlow || "",
               adsNum: item.adsNum || 0,
-              remark: item.allremark || "--",
+              remark: item.allremark || "",
             };
             if (
               (this.sessionData.uType == "ADN_MD_COUNTRY") ||
@@ -586,7 +586,7 @@ export default {
               }
               if (returnData.length) {
                 let returnobj = this.formatDataAds(resinfo.data, date);
-                console.log("returnobj-----", returnobj);
+                console.log("returnobj-", returnobj);
                 let head = [
                   "资源名称",
                   "省份",
@@ -659,7 +659,7 @@ export default {
       };
       let result = [];
       for (let data of arr) {
-        console.log("cityname----", data.cityName);
+        console.log("cityname", data.cityName);
         if (data.spareAds.length) {
           let resObj = {
             sheetName: data.cityName,
@@ -668,31 +668,31 @@ export default {
           resultObj.city.push(data.cityName);
           for (let item of data.spareAds) {
             let obj = {
-              resName: item.resName || "--",
-              province: item.prName || "--",
-              city: item.crName || "--",
-              rName: item.rName || "--",
-              resAddress: item.resAddress || "--",
+              resName: item.resName || "",
+              province: item.prName || "",
+              city: item.crName || "",
+              rName: item.rName || "",
+              resAddress: item.resAddress || "",
               mVehicle: item.mVehicle,
-              mTitle: item.mTitle || "--",
+              mTitle: item.mTitle || "",
               assetTag: item.assetTag,
               asLab: item.asLab,
               date: date,
               mType: item.mType,
-              tradingArea: item.tradingArea || "--",
-              fNum: item.fNum || "--",
-              hNum: item.hNum || "--",
+              tradingArea: item.tradingArea || "",
+              fNum: item.fNum || "",
+              hNum: item.hNum || "",
               hPrice: item.hPrice / 100,
-              // grade: item.grade || "--",
-              cType: item.cType || "--",
-              chDay: item.chDay || "--",
-              notPush: item.allNotPush || "--",
-              parkSpaceNum: item.parkSpaceNum || "--",
-              carFlow: item.carFlow || "--",
-              peopleFlow: item.peopleFlow || "--",
-              adSize: item.adSize || "--",
-              adViewSize: item.adViewSize || "--",
-              allremark: item.allremark || "--",
+              // grade: item.grade || "",
+              cType: item.cType || "",
+              chDay: item.chDay || "",
+              notPush: item.allNotPush || "",
+              parkSpaceNum: item.parkSpaceNum || "",
+              carFlow: item.carFlow || "",
+              peopleFlow: item.peopleFlow || "",
+              adSize: item.adSize || "",
+              adViewSize: item.adViewSize || "",
+              allremark: item.allremark || "",
             };
             if (
               (this.sessionData.uType == "ADN_MD_COUNTRY") ||

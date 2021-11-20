@@ -2507,12 +2507,14 @@
                 for (let data of obj.errorList) {
                     let item = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.district,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mTitle,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.date,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -2524,7 +2526,20 @@
             // 导出有问题的点
             downLoadExcel() {
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称', '市', '区', '媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
+                let allHead = [
+                    '资源名称',
+                    '省份',
+                    '城市',
+                    '区域',
+                    '详细地址',
+                    '媒介载体',
+                    '媒体名称',
+                    '资产编号',
+                    '投放面',
+                    '投放排期',
+                    '钼媒点位ID',
+                    '失败原因'
+                ];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -2542,12 +2557,14 @@
                 for (let data of arr) {
                     let obj = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.origin,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mediaName,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.schedules,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -2558,12 +2575,14 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
+                        province: data.province,
                         city: info.prName,
                         origin: info.rName,
+                        resAddress: data.resAddress,
                         mVehicle: info.mVehicle,
                         mediaName: info.mTitle,
-                        asLab: info.asLab,
                         assetTag: info.assetTag,
+                        asLab: info.asLab,
                         schedules: timeFormat.toDate(data.pbStar, '.') + '-' + timeFormat.toDate(data.pbEnd, '.'),
                         pointId: data.pointId,
                     };

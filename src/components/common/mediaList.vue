@@ -711,7 +711,7 @@ export default {
 
       return mediaArr.filter(item => {
         return item.value === state
-      })[0]
+      })[0] || {}
     },
 
     // 售卖状态转换
@@ -1070,6 +1070,7 @@ export default {
           this.dismantleVisible = false
           sessFun.messageFun('success', '拆除成功!')
           this.rowData.asState = '4'
+          this.clearSearch()
           // this.rowData.asState.A = '4'
           // this.rowData.asState.B = '4'
         } else {

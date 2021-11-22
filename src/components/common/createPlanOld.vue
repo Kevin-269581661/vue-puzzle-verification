@@ -1957,7 +1957,26 @@
                     if (!res.data.SysCode) {
                         if (res.data.length) {
                             let returnobj = this.formatData(res.data);
-                            let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车流量', '车位数', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                            let head = [
+                                '资源名称',
+                                '省份',
+                                '城市',
+                                '区域',
+                                '详细地址',
+                                '媒介载体',
+                                '商圈',
+                                '楼栋数量',
+                                '住户数量',
+                                '楼盘价格',
+                                '楼盘类型',
+                                '入住时间',
+                                '广告限制',
+                                '车位数',
+                                '车流量',
+                                '人流量',
+                                '媒体数量(面)',
+                                '点位备注',
+                            ];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                                 head.push('归属公司')
@@ -2001,24 +2020,24 @@
                     let dataArr = data.adDoor.concat(data.barrier);
                     for (let item of dataArr) {
                         let obj = {
-                            province: item.prName || '--',
-                            city: item.crName || '--',
-                            rName: item.rName || '--',
-                            resName: item.resName || '--',
-                            tradingArea: item.tradingArea || '--',
-                            resAddress: item.resAddress || '--',
+                            resName: item.resName || '',
+                            province: item.prName || '',
+                            city: item.crName || '',
+                            rName: item.rName || '',
+                            resAddress: item.resAddress || '',
                             mVehicle: item.mVehicle,
-                            fNum: item.fNum || '--',
-                            hNum: item.hNum || '--',
+                            tradingArea: item.tradingArea || '',
+                            fNum: item.fNum || '',
+                            hNum: item.hNum || '',
                             hPrice: item.hPrice / 100,
-                            cType: item.cType || '--',
-                            chDay: item.chDay || '--',
-                            carFlow: item.carFlow || '--',
-                            parkSpaceNum: item.parkSpaceNum || '--',
-                            peopleFlow: item.peopleFlow || '--',
-                            notPush: item.allNotPush || '--',
-                            remark: item.allremark || '--',
+                            cType: item.cType || '',
+                            chDay: item.chDay || '',
+                            notPush: item.allNotPush || '',
+                            parkSpaceNum: item.parkSpaceNum || '',
+                            carFlow: item.carFlow || '',
+                            peopleFlow: item.peopleFlow || '',
                             adsNum: item.adsNum || 0,
+                            remark: item.allremark || '',
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                         if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
@@ -2413,6 +2432,11 @@
                             adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
+                            province: info.province,
+                            notPush: info.notPush,
+                            parkSpaceNum: info.parkSpaceNum,
+                            peopleFlow: info.peopleFlow,
+                            carFlow: info.carFlow,
                         };
                         if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
                             importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
@@ -2575,10 +2599,10 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
-                        province: data.province,
+                        province: info.province,
                         city: info.prName,
                         origin: info.rName,
-                        resAddress: data.resAddress,
+                        resAddress: info.resAddress,
                         mVehicle: info.mVehicle,
                         mediaName: info.mTitle,
                         assetTag: info.assetTag,
@@ -2706,6 +2730,11 @@
                     asName: info.asName || '',         // 点位所属公司名称
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow,
                 };
                 // if(info.mVehicle === '道闸'){
                 //     importInfo.asID = info.asIDs.split(',')
@@ -2716,8 +2745,30 @@
             },
             // 第四步的导出方案
             downLoadFanan() {
+                console.log(this.shopingList, 'this.shopingList')
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
+                let allHead = [
+                   '资源名称',
+                    '省份', 
+                    '城市', 
+                    '区域',
+                    '详细地址',	
+                    '媒介载体',
+                    '商圈', 
+                    '楼栋数量', 
+                    '住户数量',	
+                    '楼盘价格',	
+                    '楼盘类型',	
+                    '入住时间',	
+                    '广告限制',
+                    '车位数',
+                    '车流量',
+                    '人流量',
+                    '媒体数量（门）',
+                    '可投数量（面）',
+                    '地图中心点', 
+                    '投放排期',
+                ];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                 if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
@@ -2750,19 +2801,27 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         rName: data.origin,
-                        tradingArea: data.tradingArea,
                         resAddress: data.address,
-                        hPrice: data.buildPrice,
-                        chDay: data.liveYear,
-                        hNum: data.houseNum,
-                        dNum: data.dNum,
+                        mVehicle: data.mVehicle,
+                        tradingArea: data.tradingArea,
                         fNum: data.buildNum,
+                        hNum: data.houseNum,
+                        hPrice: data.buildPrice,
                         cType: data.buildType,
-                        map: data.mapCenter,
+                        chDay: data.liveYear,
+                        notPush: data.notPush,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        peopleFlow: data.peopleFlow,
+                        // dNum: data.dNum,
+                        actualMediaCnt: 0,
                         adsNum: 1,
+                        map: data.mapCenter,
                         timeRange: '',
+                        mID: data.mID
                     };
                     if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
@@ -2784,6 +2843,13 @@
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {
+                                for(let item of date.showList){
+                                    if((item.resID === data.resID) && (item.mID !== data.mID)){
+                                        console.log(item.resName, 'resName')
+                                        item.actualMediaCnt++
+                                        break
+                                    }
+                                }
                                 for (let item of date.showList) {
                                     if (item.resID == data.resID) {
                                         item.adsNum++;
@@ -2802,10 +2868,18 @@
                 for (let data of dateArr) {
                     for (let obj of data.showList) {
                         delete obj.resID;
+                        delete obj.mID;
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
                 // console.log('datearrr-----', dateArr);
+                dateArr.forEach(item => {
+                    item.showList.forEach(i => {
+                        if(i.actualMediaCnt === 0) {
+                            i.actualMediaCnt = 1
+                        }
+                    })
+                })
                 return dateArr;
             },
             // 导出空位
@@ -3303,7 +3377,8 @@
                         asIDs: key.asIDs,
                         asLabs: key.asLabs,
                         resName: key.resName,
-                        city: this.city[this.activeIndex].rName,
+                        province: key.province,
+                        city: key.city,
                         rid: this.city[this.activeIndex].rid,
                         origin: key.rName,
                         buildType: key.cType,
@@ -3337,6 +3412,8 @@
                         asrID: key.asrID,                   // 所属公司id
                         checkBox: {A: false, B: false, ABC: false},
                         box: {A: false, B: false},
+                        notPush: key.notPush,
+
                     }
                     // 点位价格
                     if (key.mVehicle === '道闸') {
@@ -3539,6 +3616,11 @@
                                 lEnd: key.lEnd,
                                 lState: key.lState,          //点位状态 1被占，2强制停止  0 锁点
                                 mediaLevel: key.grade || '',
+                                province: key.province,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
                             arr.push(AD_data)
                         }
@@ -3720,7 +3802,7 @@
                                 asLabs: key.asLab,
                                 resName: key.resName,
                                 resID: key.resID,
-                                city: this.city[this.activeIndex].rName,
+                                city: key.city,
                                 origin: key.rName,
                                 buildType: key.cType,
                                 houseNum: key.hNum,
@@ -3752,6 +3834,11 @@
                                 adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
+                                province: key.province,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
                             if (selectInfo.asLabs === 'A') {
                                 selectInfo.checkBox.A = true
@@ -4438,6 +4525,11 @@
                             adPrice: data.mVehicle === '道闸' ? data.asPrice / 100 || 0 : data.asPrice / 700 || 0,
                             asName: data.asName || '',         // 点位所属公司名称
                             asrID: data.asrID,                 // 所属公司id
+                            province: data.province,
+                            notPush: data.notPush,
+                            parkSpaceNum: data.parkSpaceNum,
+                            peopleFlow: data.peopleFlow,
+                            carFlow: data.carFlow,
                         }
                         // 地图中心点名称
                         if (data.reference !== '-' && data.reference !== '' && data.reference !== undefined && data.reference !== null) {
@@ -4603,6 +4695,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
+                        province: key.province,
+                        notPush: key.notPush,
+                        parkSpaceNum: key.parkSpaceNum,
+                        peopleFlow: key.peopleFlow,
+                        carFlow: key.carFlow,
                     }
                     if (key.centerInfos && key.centerInfos.length) {
                         for (let item of key.centerInfos) {
@@ -5310,6 +5407,11 @@
                     mediaLevel: info.mediaLevel,         // 媒体等级
                     asrID: info.asrID,                   // 所属公司id
                     asName: info.asName,                 // 所属公司名称
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow
                 }
                 return selectInfo
             },

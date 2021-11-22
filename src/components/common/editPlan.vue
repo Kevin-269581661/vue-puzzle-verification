@@ -1810,10 +1810,10 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
-                        province: data.province,
+                        province: info.province,
                         city: info.prName,
                         origin: info.rName,
-                        resAddress: data.resAddress,
+                        resAddress: info.resAddress,
                         // mVehicle: info.mVehicle,
                         // mediaName: info.mTitle,
                         // asLab: info.asLab,
@@ -2259,7 +2259,8 @@
                         asIDs: key.asIDs,
                         asLabs: key.asLabs,
                         resName: key.resName,
-                        city: this.city[this.activeIndex].rName,
+                        province: key.province,
+                        city: key.city,
                         rid: this.city[this.activeIndex].rid,
                         origin: key.rName,
                         buildType: key.cType,
@@ -2292,7 +2293,8 @@
                         box: {A: false, B: false},
                         remark: key.remark,
                         trafficState: key.trafficState,
-                        electrifyState: key.electrifyState
+                        electrifyState: key.electrifyState,
+                        notPush: key.notPush,
                     }
                     if (key.mVehicle === '道闸') {
                         adObj.adPrice = key.asPrice / 100
@@ -3790,6 +3792,11 @@
                     remark: info.remark,
                     trafficState: info.trafficState || '',
                     electrifyState: info.electrifyState || '',
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow
                 }
                 return selectInfo
             },

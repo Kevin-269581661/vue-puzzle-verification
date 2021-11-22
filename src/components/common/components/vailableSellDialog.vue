@@ -103,7 +103,7 @@ export default {
 
     handleConfirm () {
       const { asLabName, resourceName, mTitle } = this
-      const text = `是否将 ${resourceName}-${mTitle}-${asLabName} 媒体状态改为可售卖, 确定要设置该媒体可售卖吗?`
+      const text = `是否将 ${resourceName}-${mTitle}-${asLabName} 媒体状态改为可售卖?`
       this.$confirm(text, {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

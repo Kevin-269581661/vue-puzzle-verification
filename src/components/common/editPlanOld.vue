@@ -1018,9 +1018,9 @@
                 >
                     <el-table-column label="资源名称" min-width="140" prop="resName" >
                     </el-table-column>
-                    <el-table-column prop="city" label="市" min-width="85" >
+                    <el-table-column prop="city" label="城市" min-width="85" >
                     </el-table-column>
-                    <el-table-column prop="origin" label="区" min-width="85" >
+                    <el-table-column prop="origin" label="区域" min-width="85" >
                     </el-table-column>
                     <el-table-column prop="mediaName" label="媒体名称" min-width="130" >
                     </el-table-column>

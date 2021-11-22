@@ -275,7 +275,7 @@ export default {
         let dataArr = data.adDoor.concat(data.barrier);
         for (let item of dataArr) {
           let obj = {
-           resName: item.resName || "",
+            resName: item.resName || "",
             province: item.prName || "",
             city: item.crName || "",
             rName: item.rName || "",
@@ -400,7 +400,7 @@ export default {
             resultValus.push(val);
           }
         }
-        // console.log(resultValus);
+        console.log(resultValus, 'resultValusresultValus');
         if (resultValus.length) {
           let returnobj = this.hasPointData(resultValus);
           if (returnobj.arr.length > 0) {
@@ -463,6 +463,7 @@ export default {
     },
     // 处理数据
     hasPointData(arr) {
+      console.log(arr, 'arrr')
       let returnObj = {
         arr: "",
         date: "",

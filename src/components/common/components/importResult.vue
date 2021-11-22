@@ -137,13 +137,15 @@
                 >
                 <el-table-column label="资源名称" min-width="140" prop="resName" >
                 </el-table-column>
-                <el-table-column prop="city" label="市" min-width="85" >
+                <el-table-column prop="province" label="省份" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="origin" label="区" min-width="85" >
+                <el-table-column prop="city" label="城市" min-width="85" >
+                </el-table-column>
+                <el-table-column prop="origin" label="区域" min-width="85" >
                 </el-table-column>
                 <el-table-column prop="resAddress" label="详细地址" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="schedules" label="排期" min-width="160">
+                <el-table-column prop="schedules" label="投放排期" min-width="160">
                     <template slot-scope="scope">
                         <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                             <span>{{scope.row.schedules}}</span>
@@ -182,6 +184,7 @@ export default {
             default: ()=>{}
         }
     },
+
     data(){
         return{
             // 登录信息
@@ -591,9 +594,11 @@ export default {
                     showList: [],
                 },
             ];
+            console.log(arr, 'arrr')
             for(let data of arr){
                 let obj = {
                     resName: data.resName,
+                    province: data.province,
                     city: data.city,
                     origin: data.origin,
                     resAddress: data.resAddress,

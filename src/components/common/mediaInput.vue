@@ -402,7 +402,6 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
-                                                               :disabled="item.mediaForm.mediaState == 4 && (key + 1) <= editMediaLength && PathHaveEdit"
                                                                @blur="adDoorBlur('mstate',key)"
                                                                @change="selectMstate(item.mediaForm)">
                                                         <el-option v-for="state in mediaOptions[key]" :label="state.label" :value="state.value + key" :key="state.value"></el-option>
@@ -588,7 +587,6 @@
                                             <el-col :span="6">
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.roadGateForm.mstate" placeholder="请选择媒体状态"
-                                                               :disabled="item.roadGateForm.mediaState == 4 && (key + 1) <= editRoadGateLength && PathHaveEdit"
                                                                @blur="roadGateBlur('mstate',key)"
                                                                @change="selectMstate(item.roadGateForm)">
                                                         <el-option v-for="state in mediaOptions2[key]" :label="state.label" :value="state.value + key" :key="state.value"></el-option>

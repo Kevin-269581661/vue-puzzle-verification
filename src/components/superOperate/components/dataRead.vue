@@ -513,21 +513,22 @@
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
                             width: 38,
+                            padding: 8,
                         },
                         b:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.35)",
-                            padding:10
+                            padding:15,
                         },
                         c:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
-                            padding: 8
+                            padding: 8,
                         },
                         d:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
-                            padding: 8
+                            padding: 8,
                         }
                     }
                 },
@@ -1586,7 +1587,7 @@
                                 a:{
                                     fontSize:14,
                                     color:"rgba(0,0,0,0.65)",
-                                    width: 80,
+                                    width: 110,
                                 },
                                 b:{
                                     fontSize:14,

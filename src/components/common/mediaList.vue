@@ -329,7 +329,7 @@
           <el-input
             type="textarea"
             v-model.trim="dismantleInfo"
-            placeholder="请填写拆除记录，选填"
+            placeholder="请填写拆除记录"
           ></el-input>
           <p class="push_map_box_p" v-show="isShowTag">
             <i class="el-icon-warning" style="color: #faad14"></i>

@@ -750,7 +750,7 @@
             </h3>
             <div>
                 <p style="line-height: 28px">被拆除的媒体将不可重新被启用</p>
-                <el-input type="textarea" v-model.trim="dismantleInfo" placeholder="请填写拆除记录，选填"></el-input>
+                <el-input type="textarea" v-model.trim="dismantleInfo" placeholder="请填写拆除记录"></el-input>
                 <p class="push_map_box_p" v-show="isShowTag">
                     <i class="el-icon-warning" style="color:#FAAD14"></i>
                     在【维护管理】页面，可查阅每个拆除的媒体记录

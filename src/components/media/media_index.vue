@@ -126,7 +126,7 @@
               <div class="bottom-box">
                 贵公司<span class="avtive">
                   {{ ringData[2][isPoint * 1][0] }} </span
-                >个媒体处于不可投状态，多于全国<span class="avtive">
+                >个 {{isPoint ? '点位(面)' : '媒体'}} 处于不可投状态，多于全国<span class="avtive">
                   {{ ringData[2][isPoint * 1][1] }} </span
                 >的公司，请尽快处理下吧！
               </div>

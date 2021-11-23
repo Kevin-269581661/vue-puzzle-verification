@@ -2066,7 +2066,7 @@ export default {
       console.log(row)
 
       if (row.apState == 1 && !row.canLock) {
-        return sessFun.messageFun('warning', '“删除失败，请先将方案解锁后再进行删除操作!')
+        return sessFun.messageFun('warning', '删除失败，请先将方案解锁后再进行删除操作!')
       }
       let params = {
         uid: this.sessionData.uID,

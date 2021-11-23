@@ -76,18 +76,18 @@
               >
                 <i v-show="item.isSelect" class="el-icon-minus"></i>
                 <i v-show="!item.isSelect" class="el-icon-plus"></i>
-                {{ item.isSelect ? "取消" : "添加" }}
+                {{ item.isSelect ? '取消' : '添加' }}
               </span>
             </p>
             <p
               class="li_address"
               @click="moveMapByOnclickName(item, 'resName')"
             >
-              {{ item.resAddress || "--" }}
+              {{ item.resAddress || '--' }}
             </p>
             <p>
               <span class="li_p_span">{{ item.districtName }}</span>
-              <span class="li_p_span">{{ item.hNum || "--" }}户</span>
+              <span class="li_p_span">{{ item.hNum || '--' }}户</span>
               <span class="li_p_span">&yen;{{ item.hPrice / 100 }}/m&sup2</span>
               <span class="li_p_span" style="margin-right: 0"
                 >{{ item.chDay }}年</span
@@ -110,7 +110,7 @@
             @click="selectAllFun"
             :loading="addAllLoading"
           >
-            {{ addAllLoading ? "添加中" : "添加全部" }}
+            {{ addAllLoading ? '添加中' : '添加全部' }}
           </el-button>
         </div>
       </div>
@@ -323,8 +323,8 @@
         >
           {{
             filterData.bPrice
-              ? "¥" + buildPrice[0] + "-¥" + buildPrice[1]
-              : "楼盘价格"
+              ? '¥' + buildPrice[0] + '-¥' + buildPrice[1]
+              : '楼盘价格'
           }}
           <i
             class="el-icon-arrow-down icon_arrow"
@@ -376,8 +376,8 @@
         >
           {{
             filterData.hNum
-              ? houseNum[0] + "户-" + houseNum[1] + "户"
-              : "住户数量"
+              ? houseNum[0] + '户-' + houseNum[1] + '户'
+              : '住户数量'
           }}
           <i
             class="el-icon-arrow-down icon_arrow"
@@ -425,7 +425,7 @@
           class="otherBtn top_btn"
           :class="filterData.lYear ? 'filter_btn' : ''"
         >
-          {{ filterData.lYear ? liveYear[0] + "-" + liveYear[1] : "入住年份" }}
+          {{ filterData.lYear ? liveYear[0] + '-' + liveYear[1] : '入住年份' }}
           <i
             class="el-icon-arrow-down icon_arrow"
             v-show="!popoverShow.lYear"
@@ -558,7 +558,7 @@
         @click="showMore = !showMore"
         class="top_filter_btn"
       >
-        {{ showMore ? "收起" : "更多" }}
+        {{ showMore ? '收起' : '更多' }}
         <i
           :class="showMore ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"
         ></i>
@@ -581,7 +581,7 @@
           @click="showSelectList = !showSelectList"
         >
           <i class="el-icon-d-arrow-left"></i>
-          {{ showSelectList ? "收起" : "展开" }}
+          {{ showSelectList ? '收起' : '展开' }}
         </span>
       </div>
       <ul class="active_ul" v-show="showSelectList">
@@ -719,62 +719,67 @@
     </div>
     <!--版权所有-->
     <div class="censor-code">
-      <p>深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a></p>
+      <p>
+        深圳市亲邻科技有限公司 版权所有
+        <a href="https://beian.miit.gov.cn/" target="_blank"
+          >粤ICP备15007183号</a
+        >
+      </p>
     </div>
     <!--标注info框-->
     <div class="res_info_window" ref="resInfoWindow" v-show="isShowInfo">
       <div class="res_info_header">
         <h3>{{ showResInfo.resName }}</h3>
-        <p>{{ showResInfo.resAddress || "--" }}</p>
+        <p>{{ showResInfo.resAddress || '--' }}</p>
       </div>
       <ul class="res_info_content">
         <li class="res_info_content_li">
           <span class="content_li_title">商圈:</span>
-          <span>{{ showResInfo.tradingArea || "--" }}</span>
+          <span>{{ showResInfo.tradingArea || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">楼栋数量:</span>
-          <span>{{ showResInfo.fNum || "--" }}</span>
+          <span>{{ showResInfo.fNum || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">住户数量:</span>
-          <span>{{ showResInfo.hNum || "--" }}</span>
+          <span>{{ showResInfo.hNum || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">楼盘价格:</span>
-          <span>¥{{ showResInfo.hPrice / 100 || "--" }}/㎡</span>
+          <span>¥{{ showResInfo.hPrice / 100 || '--' }}/㎡</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">楼盘类型:</span>
-          <span>{{ showResInfo.cType || "--" }}</span>
+          <span>{{ showResInfo.cType || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">入住时间:</span>
-          <span>{{ showResInfo.chDay || "--" }}年</span>
+          <span>{{ showResInfo.chDay || '--' }}年</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">人流量:</span>
-          <span>{{ showResInfo.peopleFlow || "--" }}/人次/天</span>
+          <span>{{ showResInfo.peopleFlow || '--' }}/人次/天</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">广告限制:</span>
-          <span>{{ showResInfo.adLimit || "--" }}</span>
+          <span>{{ showResInfo.adLimit || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">点位备注:</span>
-          <span>{{ showResInfo.mRemark || "--" }}</span>
+          <span>{{ showResInfo.mRemark || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">车流量:</span>
-          <span>{{ showResInfo.carFlowrate || "--" }}</span>
+          <span>{{ showResInfo.carFlowrate || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">车位数:</span>
-          <span>{{ showResInfo.parkSpaceNum || "--" }}</span>
+          <span>{{ showResInfo.parkSpaceNum || '--' }}</span>
         </li>
         <li class="res_info_content_li">
           <span class="content_li_title">出入口数:</span>
-          <span>{{ showResInfo.dNum || "--" }}</span>
+          <span>{{ showResInfo.dNum || '--' }}</span>
         </li>
       </ul>
       <div class="res_info_footer">
@@ -784,7 +789,7 @@
           @click="getMediaListByResID"
         />
         <el-button size="small" type="primary" @click="addResFun(showResInfo)">
-          {{ showResInfo.isSelect ? "取消待选" : "加入待选" }}
+          {{ showResInfo.isSelect ? '取消待选' : '加入待选' }}
         </el-button>
       </div>
     </div>
@@ -805,7 +810,7 @@
           @click="onlineCenterBtn(onlineDetail)"
         >
           <!---->
-          {{ onlineDetail.isSelect ? "取消待选" : "加入待选" }}
+          {{ onlineDetail.isSelect ? '取消待选' : '加入待选' }}
         </el-button>
       </div>
     </div>
@@ -854,7 +859,7 @@
           @click="searchAround"
           :loading="searchLoading"
         >
-          {{ searchLoading ? "搜索中" : "确 定" }}
+          {{ searchLoading ? '搜索中' : '确 定' }}
         </el-button>
       </div>
     </el-dialog>
@@ -897,8 +902,8 @@
             </div>
             <p class="li_p">{{ key.assetTag }}</p>
             <p class="li_p">
-              <span>{{ key.grade || "--" }}级</span>
-              <span>{{ key.mType || "--" }}</span>
+              <span>{{ key.grade || '--' }}级</span>
+              <span>{{ key.mType || '--' }}</span>
               <span>{{ key.adSize || key.picSize }}</span>
             </p>
           </li>
@@ -908,7 +913,7 @@
             v-for="key of mediaList"
           >
             <div class="li_header">
-              <h4>{{ key.deviceName || "" }}</h4>
+              <h4>{{ key.deviceName || '' }}</h4>
               <el-tag v-if="key.deviceStatus == 1" effect="dark" size="mini">
                 在线
               </el-tag>
@@ -917,11 +922,11 @@
               </el-tag>
               <!-- <i class="el-icon-picture-outline" @click="showMediaImg(key)"></i> -->
             </div>
-            <p class="li_p">{{ key.deviceId || "" }}</p>
+            <p class="li_p">{{ key.deviceId || '' }}</p>
             <p class="li_p">
               <!-- <span>{{key.grade || '--'}}级</span> -->
-              <span>{{ key.deviceModelText || "--" }}</span>
-              <span>{{ `${key.height || ""} * ${key.width || ""}` }}</span>
+              <span>{{ key.deviceModelText || '--' }}</span>
+              <span>{{ `${key.height || ''} * ${key.width || ''}` }}</span>
             </p>
           </li>
         </ul>
@@ -1021,7 +1026,7 @@
               <div class="extra-option" v-if="item.searchOptions.length > 0">
                 共{{ item.searchOptions.length }}个搜索结果
                 <el-button size="mini" @click="selectAllOption(item)">{{
-                  selectAllStatus ? "取消全选" : "全 选"
+                  selectAllStatus ? '取消全选' : '全 选'
                 }}</el-button>
               </div>
               <div
@@ -1063,7 +1068,7 @@
           @click="setMoreRadiation"
           :loading="isMoreRadiation"
         >
-          {{ isMoreRadiation ? "检索中." : "确 定" }}</el-button
+          {{ isMoreRadiation ? '检索中.' : '确 定' }}</el-button
         >
         <!---->
         <el-button plain size="small" @click="cancelMoreRaiation"
@@ -1134,7 +1139,7 @@
               min-width="220"
             >
               <template slot-scope="scope">
-                {{ scope.row.areaString || "--" }}
+                {{ scope.row.areaString || '--' }}
               </template>
             </el-table-column>
             <el-table-column
@@ -1144,7 +1149,7 @@
               min-width="148"
             >
               <template slot-scope="scope">
-                {{ scope.row.communityName || "--" }}
+                {{ scope.row.communityName || '--' }}
               </template>
             </el-table-column>
             <el-table-column
@@ -1181,7 +1186,7 @@
               column-key="deviceStatus"
               :filters="[
                 { text: '在线', value: 1 },
-                { text: '离线', value: 0 },
+                { text: '离线', value: 0 }
               ]"
               :filter-method="filterDeviceStatus"
             >
@@ -1205,7 +1210,7 @@
               min-width="140"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.mapCenter || "--" }}</span>
+                <span>{{ scope.row.mapCenter || '--' }}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -1287,7 +1292,7 @@ export default {
   name: "qinLinMap",
   components: {
     "remote-js": {
-      render(createElement) {
+      render (createElement) {
         return createElement("script", {
           attrs: { type: "text/javascript", src: this.src },
         });
@@ -1297,7 +1302,7 @@ export default {
       },
     },
   },
-  data() {
+  data () {
     let _this = this;
     return {
       systemSource: mapConfig.system,
@@ -1549,7 +1554,7 @@ export default {
       dialogCity: false,
     };
   },
-  created() {
+  created () {
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
@@ -1561,7 +1566,7 @@ export default {
       !this.$route.path.includes("shareRes") && this.selectedListToResList();
     }
   },
-  mounted() {
+  mounted () {
     // this.userInfo = JSON.parse(sessionStorage.getItem(mapConfig.userInfo))
     this.getSessionData();
     window.onload = this.initMap();
@@ -1628,7 +1633,7 @@ export default {
   },
   methods: {
     // 将点位数据转换成小区数据，并去重,放入资源列表
-    selectedListToResList() {
+    selectedListToResList () {
       let selectedListTemp = this.adListParams.selectedList;
       if (Array.isArray(selectedListTemp) && selectedListTemp.length > 0) {
         let resSet = new Set();
@@ -1676,7 +1681,7 @@ export default {
       }
     },
     // 获取缓存数据
-    getSessionData() {
+    getSessionData () {
       this.routeQuery = this.$route.query;
       // 判断是否是超管访问，超管无提交资源权限
       if (this.routeQuery.flag === "true") {
@@ -1686,7 +1691,7 @@ export default {
       }
     },
     // 获取当前用户权限城市
-    getAreaList() {
+    getAreaList () {
       let params = {
         uid: this.adListParams.suID,
       };
@@ -1724,7 +1729,7 @@ export default {
       });
     },
     // 获取广告限制列表
-    getADLimit() {
+    getADLimit () {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -1748,7 +1753,7 @@ export default {
       });
     },
     // QFAD 获取楼盘类型
-    getBuildList() {
+    getBuildList () {
       let params = {
         cityId: this.adListParams.rid,
       };
@@ -1768,7 +1773,7 @@ export default {
         });
     },
     // 获取商圈
-    getTradingArea() {
+    getTradingArea () {
       let params = {
         cityId: this.adListParams.rid,
       };
@@ -1788,7 +1793,7 @@ export default {
         });
     },
     // 获取媒体类型(门类型)list
-    getDoorType() {
+    getDoorType () {
       api.getApi(mapConfig.apiVar.mapApi + "/mediaType", {}).then((res) => {
         if (res.data.SysCode === 200200) {
           this.doorTypeList = res.data.data.map((item) => {
@@ -1803,7 +1808,7 @@ export default {
       });
     },
     // 获取终端类型(QFAD)
-    getMachineType() {
+    getMachineType () {
       api.getApi("/QFAD/modelInfoList", {}).then((res) => {
         if (res.data.SysCode === 200200) {
           this.machineTypeList = res.data.data.map((item) => {
@@ -1818,7 +1823,7 @@ export default {
       });
     },
     // 初始化地图
-    initMap() {
+    initMap () {
       console.log("初始化地图----");
       // 创建Map实例
       this.resMap = new BMap.Map("qinlinMap", { enableMapClick: false });
@@ -1881,7 +1886,7 @@ export default {
       });
     },
     // 城市边界
-    displayBoundary() {
+    displayBoundary () {
       if (this.systemSource === 1) {
         let json;
         for (let key of areaPackage.findArea(this.adListParams.rid)) {
@@ -1897,7 +1902,7 @@ export default {
       }
     },
     // 边界覆盖物
-    getBoundary(json) {
+    getBoundary (json) {
       let _Boundary = new BMap.Boundary();
       _Boundary.get(json.name, (rs) => {
         // 获取行政区域
@@ -1915,7 +1920,7 @@ export default {
       });
     },
     // 获取小区数据
-    getResList() {
+    getResList () {
       this.mapLoading = true;
       let params = {
         startTime: this.adListParams.ls,
@@ -2015,7 +2020,7 @@ export default {
         });
     },
     // 根据购物车已有的resID判断勾选
-    judgeByselect() {
+    judgeByselect () {
       for (let key of this.selectResList) {
         for (let rKey of this.resInfo) {
           if (key.resID === rKey.resID) {
@@ -2032,7 +2037,7 @@ export default {
       // console.log('selectResList',this.selectResList)
     },
     // 创建区域标注
-    creatAreaMarker() {
+    creatAreaMarker () {
       this.resInfo = [];
       let markerList = [];
       let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19, 25), {
@@ -2087,7 +2092,7 @@ export default {
       this.areaLables = lableList;
       this.resMarkers = markerList;
     },
-    creatMarker(resKey, myIcon) {
+    creatMarker (resKey, myIcon) {
       this.$set(resKey, "isSelect", false);
       let point = new BMap.Point(Number(resKey.lng), Number(resKey.lat));
       let marker = new BMap.Marker(point, { icon: myIcon }); // 创建标注
@@ -2108,7 +2113,7 @@ export default {
       return marker;
     },
     // 根据区域显示标注
-    showResMarker(target) {
+    showResMarker (target) {
       for (let key of this.resMarkers) {
         if (target.rid === key.rid) {
           key.show();
@@ -2116,13 +2121,13 @@ export default {
       }
     },
     // 移除区域label
-    removeAreaLabels() {
+    removeAreaLabels () {
       for (let labelKey of this.areaLables) {
         this.resMap.removeOverlay(labelKey);
       }
     },
     // 区域标注重新打上地图、隐藏具体点位标注
-    showAreaLabels() {
+    showAreaLabels () {
       if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
         for (let labelKey of this.areaLables) {
           this.resMap.addOverlay(labelKey);
@@ -2134,7 +2139,7 @@ export default {
       }
     },
     // 设置标注到label
-    setMarkerLabel(labelName, temp) {
+    setMarkerLabel (labelName, temp) {
       let label = new BMap.Label(labelName, {
         // offset:new BMap.Size(4,-18)
         offset: temp === "online" ? new BMap.Size(28, 2) : new BMap.Size(22, 2),
@@ -2150,7 +2155,7 @@ export default {
       return label;
     },
     // 显示详情
-    showInfo(info, point) {
+    showInfo (info, point) {
       this.showResInfo = info;
       let content = this.$refs.resInfoWindow;
       let opts = {
@@ -2165,11 +2170,11 @@ export default {
       this.isShowInfo = true;
     },
     // 详情里选定按钮
-    addResFun(item) {
+    addResFun (item) {
       this.checkBoxFun(this.showResInfo);
     },
     // 获取指定资源到媒体列表
-    getMediaListByResID() {
+    getMediaListByResID () {
       // console.log('获取指定资源到媒体列表-----')
       let params = {
         resID: this.showResInfo.resID,
@@ -2217,13 +2222,13 @@ export default {
         });
     },
     // 媒体图片
-    showMediaImg(item) {
+    showMediaImg (item) {
       // console.log('媒体图片item----',item)
       this.activeMediaPhotos = item.photoList || [];
       this.medieImgDialogVisible = true;
     },
     // 中转显示
-    transfersShowOverlay() {
+    transfersShowOverlay () {
       // 跟进地图等级进行显示
       if (this.resMap.getZoom() >= 15 || !this.isClustererOpen) {
         this.removeAreaLabels();
@@ -2236,7 +2241,7 @@ export default {
      * 鼠标绘制
      * */
     // 初始化鼠标绘制
-    initMouseDrawing() {
+    initMouseDrawing () {
       if (!this.drawingManager) {
         // 鼠标绘制控件
         let styleOptions = {
@@ -2327,7 +2332,7 @@ export default {
       }
     },
     // 移除左侧搜索状态及结果
-    removeLeftFilterInfo() {
+    removeLeftFilterInfo () {
       if (this.onlineMarkers.length) {
         for (let key of this.onlineMarkers) {
           this.resMap.removeOverlay(key);
@@ -2338,7 +2343,7 @@ export default {
       }
     },
     // 打开绘制类型
-    drawingMouse(temp) {
+    drawingMouse (temp) {
       if (this.isOnlineSearch) {
         sessFun.messageFun(
           "warning",
@@ -2385,14 +2390,14 @@ export default {
       }
     },
     // 初始化鼠标绘制选中状态
-    initMouseActive(temp) {
+    initMouseActive (temp) {
       for (let i in this.mouseType) {
         this.mouseType[i] = false;
       }
       temp ? (this.mouseType[temp] = true) : "";
     },
     // 画线时打点
-    drawingLine(point) {
+    drawingLine (point) {
       console.log("画线时打点----");
       let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19, 25), {
         anchor: new BMap.Size(8, 8),
@@ -2426,7 +2431,7 @@ export default {
       this.resMap.addOverlay(marker);
     },
     // 画线时监听鼠标移动并实时计算距离
-    mapMouseMove(ev) {
+    mapMouseMove (ev) {
       if (this.isMouseLine && this.mouseLineStep) {
         // console.log('鼠标移动----e',ev.point)
         this.resMap.removeOverlay(this.mapLabel);
@@ -2435,7 +2440,7 @@ export default {
             this.LinePoints[this.mouseLineStep - 1],
             ev.point
           ) /
-            1000 +
+          1000 +
           this.twoPointsLength;
         //添加文字标签
         let opts = {
@@ -2456,7 +2461,7 @@ export default {
       }
     },
     // 由圆面积转变成显示半径
-    showCircleRadius(e) {
+    showCircleRadius (e) {
       // console.log(e.calculate);
       // console.log(e.label);
       this.circleLabel = e.label;
@@ -2475,7 +2480,7 @@ export default {
       this.circleLabel.setContent(radius + "米");
     },
     // 显示多边形内的点位
-    showResInPolygon(temp, overlay) {
+    showResInPolygon (temp, overlay) {
       let showLoading = this.$loading({
         lock: true,
         text: "框选中...",
@@ -2531,7 +2536,7 @@ export default {
       }, 20);
     },
     // 清除手动测距覆盖物
-    deleteManualRanging() {
+    deleteManualRanging () {
       this.lineMarkers.forEach((item) => {
         this.resMap.removeOverlay(item);
       });
@@ -2543,7 +2548,7 @@ export default {
       }
     },
     // 清除上一次的绘制
-    deleteDrawingOverlay() {
+    deleteDrawingOverlay () {
       console.log("--清除上一次的绘制--", this.resMarkers);
       this.resMap.removeOverlay(this.mouseoverlay);
       this.resMap.removeOverlay(this.circleLabel);
@@ -2552,7 +2557,7 @@ export default {
       this.transfersShowOverlay();
     },
     // 聚合开关
-    changeClustererOpen() {
+    changeClustererOpen () {
       this.disabledSwitch = true;
       this.transfersShowOverlay();
       let timer = setTimeout(() => {
@@ -2561,7 +2566,7 @@ export default {
       }, 800);
     },
     // 名称开关
-    changeLableShow() {
+    changeLableShow () {
       this.disabledSwitch = true;
       let markers = this.resMarkers,
         display = this.isLabelShow ? "inline" : "none";
@@ -2580,7 +2585,7 @@ export default {
       }, 800);
     },
     // 地图缩放
-    setMapZoom(temp) {
+    setMapZoom (temp) {
       if (temp === "add") {
         this.resMap.zoomIn();
       } else if (temp === "minus") {
@@ -2635,7 +2640,7 @@ export default {
       console.log("当前地图缩放等级---", mapZoom, this.scale);
     },
     // 判断点是否在视野内
-    pointInBounds() {
+    pointInBounds () {
       console.log("判断点是否在视野内------", this.resMap.getZoom());
       if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
         let bound = this.resMap.getBounds(); // 地图可视区域
@@ -2650,7 +2655,7 @@ export default {
       }
     },
     // 自动测距
-    selfMotionDistance() {
+    selfMotionDistance () {
       this.mousePopover = false;
       let isMapCenter = false;
       let markers = this.resMarkers;
@@ -2701,7 +2706,7 @@ export default {
       }
     },
     // 多点辐射
-    remoteMethod(query) {
+    remoteMethod (query) {
       if (query !== "") {
         let isHave = this.moreRadiationInfo.some((item, index) => {
           if (item.query === query && index !== this.moreRadiationIndex) {
@@ -2777,7 +2782,7 @@ export default {
       }
     },
     // 添加一行
-    addMoreRow() {
+    addMoreRow () {
       this.moreRadiationInfo.push({
         searchOptions: [],
         searchValue: "",
@@ -2785,11 +2790,11 @@ export default {
       });
     },
     // 删除一行
-    delRowSelect(index) {
+    delRowSelect (index) {
       this.moreRadiationInfo.splice(index, 1);
     },
     // 构建需要提交的辐射点
-    setCenterInfos(val) {
+    setCenterInfos (val) {
       let arr = [];
       let index = 1;
       for (let key of this.moreRadiationInfo) {
@@ -2811,14 +2816,14 @@ export default {
       return arr;
     },
     // 取消多点辐射
-    cancelMoreRaiation() {
+    cancelMoreRaiation () {
       this.isMoreCenterPointVisible = false;
       if (!this.isMultiPoint) {
         this.mouseType.morePoint = false;
       }
     },
     // 多点辐射
-    setMoreRadiation() {
+    setMoreRadiation () {
       this.isMoreRadiation = true;
       this.removeLeftFilterInfo();
       let params = {
@@ -2899,7 +2904,7 @@ export default {
       });
     },
     // 辐射圈检索结果全选
-    selectAllOption(radiationInfo) {
+    selectAllOption (radiationInfo) {
       if (this.selectAllStatus) {
         radiationInfo.searchValue = [];
         this.selectAllStatus = false;
@@ -2913,7 +2918,7 @@ export default {
       }
     },
     // 辐射点打点、画圆
-    setMultiPointMarker(centerInfoList) {
+    setMultiPointMarker (centerInfoList) {
       let colors = [
         "rgba(255, 190, 0, 1)",
         "rgba(24, 144, 255, 1)",
@@ -2976,14 +2981,14 @@ export default {
      *  左侧搜索
      **/
     // enter键
-    searchDown(ev) {
+    searchDown (ev) {
       let e = ev || window.ev;
       if (e.keyCode === 13) {
         this.searchFun();
       }
     },
     // 清空搜索
-    clearInputSearch() {
+    clearInputSearch () {
       // console.log('清空搜索',this.activeSearchKind)
       if (this.activeSearchKind == "1") {
         this.searchResList = [];
@@ -2995,7 +3000,7 @@ export default {
       }
     },
     // 搜索
-    searchFun() {
+    searchFun () {
       // console.log('在线搜索----',this.activeSearchKind)
       if (!this.selectName) {
         sessFun.messageFun("warning", "请输入关键字！");
@@ -3028,7 +3033,7 @@ export default {
       }
     },
     // 在线搜索
-    onlineSearchFun() {
+    onlineSearchFun () {
       this.searchOnlineLoading = true;
       console.log("在线搜索----", this.selectName);
       let resultArray = [];
@@ -3088,7 +3093,7 @@ export default {
       }
     },
     // 在线结果打点
-    onlineResultsMarker() {
+    onlineResultsMarker () {
       this.onlineMarkers = [];
       let i = 0;
       for (let key of this.searchOnlineList) {
@@ -3120,7 +3125,7 @@ export default {
       this.searchOnlineLoading = false;
     },
     // 显示在线搜索结果详情 resInfoWindow
-    showOnlineDetail(item) {
+    showOnlineDetail (item) {
       this.onlineDetail = item;
       let content = this.$refs.onlineInfoWindow;
       // 信息窗口
@@ -3135,12 +3140,12 @@ export default {
       this.isShowOnlineInfo = true;
     },
     // 详情里的选定、取消
-    onlineCenterBtn(item) {
+    onlineCenterBtn (item) {
       item.isSelect = !item.isSelect;
       this.onlineCheckBox(item);
     },
     //覆盖分析
-    getCoverAnalysis() {
+    getCoverAnalysis () {
       this.coverAnalysisVisible = true;
       this.coverAnalysisData = [{ companyName: "亲邻", count: "" }];
       // console.log('交集2并集1',this.aroundSearchInfo.searchRadio);
@@ -3181,7 +3186,7 @@ export default {
         });
     },
     // 亲邻社区全选
-    selectAllFun() {
+    selectAllFun () {
       this.addAllLoading = true;
       let timer = setTimeout(() => {
         for (let key of this.searchResList) {
@@ -3207,7 +3212,7 @@ export default {
       }, 10);
     },
     // 判断marker是否隐藏
-    judgeMarkerShow(lng, lat) {
+    judgeMarkerShow (lng, lat) {
       for (let key of this.resMarkers) {
         if (key.point.lng == lng && key.point.lat == lat) {
           key.show();
@@ -3216,7 +3221,7 @@ export default {
       }
     },
     // 在线全选
-    onlineSelectAll() {
+    onlineSelectAll () {
       this.isActiveASOL = true;
       let timer = setTimeout(() => {
         this.isActiveASOL = false;
@@ -3240,7 +3245,7 @@ export default {
       }
     },
     // 取消在线选择
-    canceAllOnline() {
+    canceAllOnline () {
       this.isOnlineSearch = false;
       for (let key of this.onlineMarkers) {
         this.resMap.removeOverlay(key);
@@ -3248,7 +3253,7 @@ export default {
       this.searchOnlineList = [];
     },
     // 点击检索结果名称移动地图中心
-    moveMapByOnclickName(item, temp) {
+    moveMapByOnclickName (item, temp) {
       // console.log('item',item)
       if (temp === "resName") {
         for (let key of this.resMarkers) {
@@ -3274,7 +3279,7 @@ export default {
       }
     },
     // 勾选/取消
-    checkBoxFun(item) {
+    checkBoxFun (item) {
       console.log("亲邻item", item);
       if (item.isSelect) {
         // 取消选定
@@ -3293,7 +3298,7 @@ export default {
       }
     },
     // 添加到选中列表
-    pushSelectList(item) {
+    pushSelectList (item) {
       let isHave = this.selectResList.some((key) => {
         if (key.resID == item.resID) {
           return true;
@@ -3305,7 +3310,7 @@ export default {
       }
     },
     // 修改label背景色 setMoreRadiation multiPointMarkerList
-    changeLabel(item, active) {
+    changeLabel (item, active) {
       let bg = "rgba(255,255,255,1)";
       let col = "rgba(0,0,0,0.85)";
       let markers = this.resMarkers;
@@ -3331,7 +3336,7 @@ export default {
       }
     },
     // 画圆标识选中状态
-    createCircle(id, point) {
+    createCircle (id, point) {
       let opts = {
         position: point, // 指定文本标注所在的地理位置
         offset: new BMap.Size(-12, -9), //设置文本偏移量
@@ -3349,7 +3354,7 @@ export default {
       this.resMap.addOverlay(label);
     },
     // 删除覆盖物
-    deleteCircle(id) {
+    deleteCircle (id) {
       let allOverlay = this.resMap.getOverlays();
       for (let i = 0; i < allOverlay.length; i++) {
         if (allOverlay[i].content == id) {
@@ -3359,7 +3364,7 @@ export default {
       }
     },
     // 在线勾选/取消
-    onlineCheckBox(item) {
+    onlineCheckBox (item) {
       for (let key of this.onlineMarkers) {
         if (
           key.point.lat === item.point.lat &&
@@ -3386,7 +3391,7 @@ export default {
       }
     },
     // 在线搜索确定
-    onlineConfirm() {
+    onlineConfirm () {
       this.selectOnlineList = this.searchOnlineList.filter((item) => {
         if (item.isSelect) {
           return item;
@@ -3400,13 +3405,13 @@ export default {
       }
     },
     // 修改半径
-    changeInput() {
+    changeInput () {
       this.aroundSearchInfo.searchRadius = Number(
         this.aroundSearchInfo.searchRadius
       );
     },
     // 隐藏没有勾选的在线结果标注
-    hideOnlineMarker() {
+    hideOnlineMarker () {
       for (let key of this.onlineMarkers) {
         if (!key.isSelect) {
           key.hide();
@@ -3414,7 +3419,7 @@ export default {
       }
     },
     //
-    initSearchOnline() {
+    initSearchOnline () {
       // 移除
       let allOverlay = this.resMap.getOverlays();
       for (let akey of allOverlay) {
@@ -3430,7 +3435,7 @@ export default {
       this.selfMotionPolylines = [];
     },
     // 周边搜索
-    searchAround() {
+    searchAround () {
       // console.log('---------周边搜索------开始---------')
       this.searchLoading = true;
       this.initSearchOnline();
@@ -3469,7 +3474,7 @@ export default {
       }, 10);
     },
     // 并集显示圆半径内的小区
-    showResInCircle(data, radius) {
+    showResInCircle (data, radius) {
       console.log(data, radius);
       let point = data.point;
       for (let rkey of this.resMarkers) {
@@ -3516,7 +3521,7 @@ export default {
       }
     },
     // 交集显示圆半径内的小区 this.onlineMarkers
-    ShowIntersectionInCircle(data, radius) {
+    ShowIntersectionInCircle (data, radius) {
       let point = data.point;
       for (let rkey of this.resMarkers) {
         let distance = this.resMap.getDistance(point, rkey.point);
@@ -3540,7 +3545,7 @@ export default {
       }
     },
     // 计算交集
-    computeIntersection() {
+    computeIntersection () {
       for (let rkey of this.resMarkers) {
         if (rkey.inCircleNum >= 2) {
           rkey.show();
@@ -3573,11 +3578,11 @@ export default {
       }
     },
     // 重新设置在线搜索
-    setOnlineSearch() {
+    setOnlineSearch () {
       this.searchDialogVisible = true;
     },
     // 取消在线搜索
-    clearSearch() {
+    clearSearch () {
       if (this.isMouseSearch) {
         // 取消鼠标画圆
         this.isMouseSearch = false;
@@ -3613,7 +3618,7 @@ export default {
       }
     },
     // 在线搜索取消-恢复框选前
-    initOnlineSearchBefor() {
+    initOnlineSearchBefor () {
       this.isOnlineSearch = false;
       this.searchResList = [];
       // 清除圆覆盖物
@@ -3640,7 +3645,7 @@ export default {
       });
     },
     // 恢复打点原始状态
-    initResMarkers() {
+    initResMarkers () {
       for (let key of this.resMarkers) {
         key.show();
         // 移除标识marker在圆内到标识
@@ -3663,7 +3668,7 @@ export default {
      *  顶部过滤条件
      * */
     // 中转判断
-    transfersFun() {
+    transfersFun () {
       this.initOtherFilter();
       if (this.isShare) {
         this.getShareResList();
@@ -3671,7 +3676,7 @@ export default {
         this.getResList();
       }
     },
-    selectNum(item, temp) {
+    selectNum (item, temp) {
       // console.log('item,temp',item,temp)
       let datas = item.split("-");
       if (temp === "price") {
@@ -3690,7 +3695,7 @@ export default {
       this.transfersFun();
     },
     // QFAD选择城市
-    changeCity(val) {
+    changeCity (val) {
       // console.log('QFAD选择城市', val, this.$refs['cascader'].getCheckedNodes())
       if (Array.isArray(val) && val.length == 2) {
         // val[0]: 省，val[1]: 市
@@ -3730,7 +3735,7 @@ export default {
       }
     },
     // 对话框中选择城市
-    confirmCity() {
+    confirmCity () {
       if (this.citySelect.length == 2) {
         // 移动地图
         if (this.adListParams.city) {
@@ -3755,7 +3760,7 @@ export default {
       }
     },
     // 区域
-    filterArea(val) {
+    filterArea (val) {
       if (this.systemSource === 0) {
         this.transfersFun();
       } else if (this.systemSource === 1) {
@@ -3763,19 +3768,19 @@ export default {
       }
     },
     // 区县（终端类型）下拉关闭时重新获取点位
-    reSearch(flag) {
+    reSearch (flag) {
       !flag && this.transfersFun();
     },
     // 楼盘类型
-    filterBuildType() {
+    filterBuildType () {
       this.transfersFun();
     },
     // 广告限制
-    filterADLimit(limit) {
+    filterADLimit (limit) {
       this.transfersFun();
     },
     // 住户数量过滤
-    filterHouseNum() {
+    filterHouseNum () {
       if (this.houseNum[0] == "" || this.houseNum[1] == "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
@@ -3788,7 +3793,7 @@ export default {
       }
     },
     // 楼盘价格过滤
-    filterBuildPrice() {
+    filterBuildPrice () {
       if (this.buildPrice[0] == "" || this.buildPrice[1] == "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
@@ -3801,7 +3806,7 @@ export default {
       }
     },
     // 年份过滤
-    filterLiveYear() {
+    filterLiveYear () {
       if (this.liveYear[0] == "" || this.liveYear[1] == "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
@@ -3811,25 +3816,25 @@ export default {
       }
     },
     // 所在商圈
-    filterTradingArea() {
+    filterTradingArea () {
       if (this.selectTradingArea) {
         this.transfersFun();
       }
     },
     // 媒体类型（消防门、钣金门等）
-    filterDoorType() {
+    filterDoorType () {
       if (this.selectDoorType) {
         this.transfersFun();
       }
     },
     // 媒介载体
-    filterMediaType() {
+    filterMediaType () {
       if (this.selectMediaType) {
         this.transfersFun();
       }
     },
     // 媒体等级
-    filterMediaLevel() {
+    filterMediaLevel () {
       if (this.selectMediaLevel) {
         this.transfersFun();
       }
@@ -3839,13 +3844,13 @@ export default {
     //         this.transfersFun()
     // },
     // 排除同行
-    filterExcludeType() {
+    filterExcludeType () {
       if (this.selectExcludeType) {
         this.transfersFun();
       }
     },
     // 清空
-    emptyFun(letter) {
+    emptyFun (letter) {
       if (letter === "house") {
         this.houseNum = ["", ""];
         this.filterData.hNum = false;
@@ -3859,7 +3864,7 @@ export default {
       this.transfersFun();
     },
     // 清空条件
-    clearFilter() {
+    clearFilter () {
       this.bType = "";
       this.houseNum = ["", ""];
       this.buildNum = ["", ""];
@@ -3881,7 +3886,7 @@ export default {
       this.transfersFun();
     },
     // 头部筛选的时候需初始化左侧搜索、鼠标绘制、多点辐射
-    initOtherFilter() {
+    initOtherFilter () {
       // 恢复鼠标绘制默认状态
       for (let i in this.mouseType) {
         this.mouseType[i] = false;
@@ -3899,7 +3904,7 @@ export default {
      *  左下选中框
      **/
     // 删除选中社区
-    deleteRes(item) {
+    deleteRes (item) {
       // this.deleteCircle(item.resID)
       this.changeLabel(item, 0);
       item.isSelect = false;
@@ -3917,7 +3922,7 @@ export default {
       });
     },
     // 删除全部
-    deleteAll() {
+    deleteAll () {
       for (let key of this.selectResList) {
         key.isSelect = false;
         // this.deleteCircle(key.resID)
@@ -3932,7 +3937,7 @@ export default {
       this.selectResList = [];
     },
     // 选定提交小区资源ID,后台会进行缓存
-    pushMapRes() {
+    pushMapRes () {
       // console.log('selectResList',this.selectResList)
       if (!this.selectResList.length) {
         sessFun.messageFun("warning", "请选择小区");
@@ -3950,7 +3955,7 @@ export default {
         suID: this.adListParams.suID,
         asrIDs: this.adListParams.asrIDs.join(","),
         resIDList: arr,
-        mVehicle:this.adListParams.mVehicle
+        mVehicle: this.adListParams.mVehicle
       };
       if (this.selectExcludeType) {
         switch (this.selectExcludeType) {
@@ -4002,7 +4007,7 @@ export default {
         });
     },
     // 关闭窗口
-    closeWin() {
+    closeWin () {
       try {
         this.mapDialogVisible = false;
         window.opener = window;
@@ -4015,7 +4020,7 @@ export default {
       }
     },
     // 导出exc
-    exportExcel() {
+    exportExcel () {
       console.log('this.selectResList', this.selectResList)
       if (this.selectResList.length) {
         let time = timeFormat.toDateTime(new Date(), "").split(" ");
@@ -4058,7 +4063,7 @@ export default {
             allRemark: data.allRemark,
             allTrafficState: data.allTrafficState,
             allElectrifyState: data.allElectrifyState || "",
-            provinceName: data.provinceName  || '',
+            provinceName: data.provinceName || '',
             parkSpaceNum: data.parkSpaceNum || '',
             carFlow: data.carFlow,
             peopleFlow: data.peopleFlow
@@ -4167,13 +4172,7 @@ export default {
               "mapCenter",
               'mRemark',
             ];
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_COUNTRY")
-            ) {
-              tHeader.push("归属公司");
-              filterVal.push("asNames");
-            }
+
             switch (this.sessionData.customPermission.patrolPermission) {
               case 1:
                 tHeader.push("巡点问题", "通行情况");
@@ -4188,6 +4187,15 @@ export default {
                 );
                 break;
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_COUNTRY")
+            ) {
+              tHeader.push("归属公司");
+              filterVal.push("asNames");
+            }
+
           }
           const list = resultArr;
           const data = this.formatJson(filterVal, list);
@@ -4198,11 +4206,11 @@ export default {
         sessFun.messageFun("warning", "请选择社区");
       }
     },
-    formatJson(filterVal, jsonData) {
+    formatJson (filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     // 获取分享资源
-    getShareResList() {
+    getShareResList () {
       let params = {
         shareCode: this.routeQuery.code,
         districtId: this.selectArea.join(","), // 区域
@@ -4248,7 +4256,7 @@ export default {
         });
     },
     // 分享时设置广告限制、商圈、门体类型
-    setLimitsDoorTypeAndTradingArea(data) {
+    setLimitsDoorTypeAndTradingArea (data) {
       this.ADLimit = data.adLimits.map((item) => {
         return {
           value: item,
@@ -4269,7 +4277,7 @@ export default {
       });
     },
     // 分享
-    resShare() {
+    resShare () {
       if (!this.selectResList.length) {
         sessFun.messageFun("warning", "请选择小区");
         return;
@@ -4302,7 +4310,7 @@ export default {
         });
     },
     // 复制分享链接
-    copyUrl() {
+    copyUrl () {
       let oInput = document.createElement("input");
       oInput.value = this.shareUrl;
       document.body.appendChild(oInput);
@@ -4313,7 +4321,7 @@ export default {
       this.copyDialogVisible = false;
     },
     // 已选点位弹框列表（等同于qadn购物车）
-    getMapADList() {
+    getMapADList () {
       // 亲邻地图
       this.getMapLoading = this.$loading({
         lock: true,
@@ -4341,9 +4349,8 @@ export default {
                   item.centerInfos.length > 0
                 ) {
                   item.mapCenter = item.centerInfos.reduce((res, current) => {
-                    return `${res}${current.centerName || ""}-${
-                      current.centerAddress || ""
-                    }-${current.distance || ""}米;`;
+                    return `${res}${current.centerName || ""}-${current.centerAddress || ""
+                      }-${current.distance || ""}米;`;
                   }, "");
                 }
                 return true;
@@ -4380,7 +4387,7 @@ export default {
         });
     },
     // 快速选点下拉
-    containNuminRes(num) {
+    containNuminRes (num) {
       if (num == 3) {
         let len = this.shopShowList.length;
         if (len > 0) {
@@ -4389,7 +4396,7 @@ export default {
             if (
               (item.industryIdList || []).includes(
                 this.adListParams.adSystemId[
-                  this.adListParams.adSystemId.length - 1
+                this.adListParams.adSystemId.length - 1
                 ]
               )
             ) {
@@ -4425,7 +4432,7 @@ export default {
       }
     },
     // 分组数据
-    funToArr(arr, condition) {
+    funToArr (arr, condition) {
       let resultArr = arr.reduce((groups, item) => {
         let groupFound = groups.find(
           (arrItem) => item[condition] === arrItem[condition]
@@ -4450,7 +4457,7 @@ export default {
       return resultArr;
     },
     // 随机保留num个数点位
-    resRandomNum(arr, num) {
+    resRandomNum (arr, num) {
       let result = [];
       for (let data of arr) {
         if (num > 1) {
@@ -4472,7 +4479,7 @@ export default {
       return result;
     },
     // 递归获取不同的随机数
-    randomFun(arr, num, max) {
+    randomFun (arr, num, max) {
       if (arr.length < num) {
         let randomNum = parseInt(Math.random() * max, 10);
         if (!arr.includes(randomNum)) {
@@ -4484,7 +4491,7 @@ export default {
       }
     },
     // 已选点位行点击
-    shopRowClick(selection) {
+    shopRowClick (selection) {
       this.selectedAll = selection;
     },
     // 关闭已选点位弹框
@@ -4492,17 +4499,17 @@ export default {
     //     this.dialogTableVisible = false;
     // },
     // 筛选终端型号
-    filterDeviceVersion(value, row, column) {
+    filterDeviceVersion (value, row, column) {
       const property = column["property"];
       return row[property].trim() == value.trim();
     },
     // 筛选点位状态
-    filterDeviceStatus(value, row, column) {
+    filterDeviceStatus (value, row, column) {
       const property = column["property"];
       return row[property] === value;
     },
     // 确认添加
-    confirm() {
+    confirm () {
       this.dialogTableVisible = false;
       if (Array.isArray(this.selectedAll) && this.selectedAll.length > 0) {
         localStorage.removeItem("selectedList");
@@ -5285,7 +5292,7 @@ export default {
 }
 
 .mouse_control_li:after {
-  content: "";
+  content: '';
   color: #d9d9d9;
   position: relative;
   left: 8px;
@@ -5293,7 +5300,7 @@ export default {
 }
 
 .mouse_control_li:last-child:after {
-  content: "";
+  content: '';
   border-right: none;
 }
 
@@ -5656,7 +5663,7 @@ export default {
   transform: translateY(-50%);
   width: 8px;
   height: 8px;
-  content: "";
+  content: '';
   border-radius: 4px;
   background: #52c41a;
 }
@@ -5667,7 +5674,7 @@ export default {
   transform: translateY(-50%);
   width: 8px;
   height: 8px;
-  content: "";
+  content: '';
   border-radius: 4px;
   background: #f56c6c;
 }

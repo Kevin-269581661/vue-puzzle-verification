@@ -1737,10 +1737,7 @@ export default {
           'mapCenter',
           'finishTimeRange', 
         ];
-        if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-          tHeader.push('归属公司');
-          filterVal.push('asName')
-        }
+
         switch (this.customPermission.patrolPermission) {
           case 1:
             tHeader.push('巡点问题', '通行情况');
@@ -1751,6 +1748,12 @@ export default {
             filterVal.push('remark', 'trafficState', 'electrifyState')
             break;
         }
+
+        if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+          tHeader.push('归属公司');
+          filterVal.push('asName')
+        }
+        
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, name);

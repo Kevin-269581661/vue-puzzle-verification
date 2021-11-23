@@ -1978,9 +1978,7 @@
                                 '点位备注',
                             ];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                head.push('归属公司')
-                            }
+        
                             switch (customPermission.patrolPermission) {
                                 case 1:
                                     head.push('巡点问题', '通行情况');
@@ -1989,6 +1987,11 @@
                                     head.push('巡点问题', '通行情况', '通电情况');
                                     break;
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                head.push('归属公司')
+                            }
+
                             let allHead = head.concat([info.startTime + '-' + info.endTime]);
                             let filename = returnobj.city.join('-') + '-' + info.startTime + '~' + info.endTime + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2040,9 +2043,7 @@
                             remark: item.allremark || '',
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                            obj.asNames = item.asNames
-                        }
+       
                         // 巡点定制
                         if(customPermission) {
                             switch (customPermission.patrolPermission) {
@@ -2057,6 +2058,11 @@
                                     break;
                             }
                         }
+
+                        if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                            obj.asNames = item.asNames
+                        }
+
                         obj[this.emptyRange[0] + '-' + this.emptyRange[1]] = item.DateInfo.adsNum || 0
                         resObj.showList.push(obj);
                     }
@@ -2146,9 +2152,7 @@
                             let date = returnobj.date;
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                head.push('归属公司')
-                            }
+
                             /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
                             } */
@@ -2160,6 +2164,11 @@
                                     head.push('巡点问题', '通行情况', '通电情况');
                                     break;
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                head.push('归属公司')
+                            }
+
                             let allHead = head.concat(date);
                             let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2210,9 +2219,7 @@
                                 remark: item.allremark || '',
                                 adsNum: item.adsNum,
                             };
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                obj.asNames = item.asNames
-                            }
+
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission) {
                                 switch (customPermission.patrolPermission) {
@@ -2227,6 +2234,11 @@
                                         break;
                                 }
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                obj.asNames = item.asNames
+                            }
+
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
                                 dateArr.push(timeFormat.toDate(date.starDate, '/') + '-' + timeFormat.toDate(date.endDate, '/'));
@@ -2770,9 +2782,7 @@
                     '投放排期',
                 ];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
-                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                    allHead.push('归属公司')
-                }
+
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2781,6 +2791,11 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                    allHead.push('归属公司')
+                }
+
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
             // 处理数据
@@ -2823,9 +2838,7 @@
                         timeRange: '',
                         mID: data.mID
                     };
-                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                        obj.asName = data.asName
-                    }
+
                     // 巡点权限(1：亲粤邻 2：北京)
                     if(this.customPermission) {
                         switch (this.customPermission.patrolPermission) {
@@ -2840,6 +2853,11 @@
                                 break;
                         }
                     }
+
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                        obj.asName = data.asName
+                    }
+                    
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {

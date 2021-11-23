@@ -1464,12 +1464,8 @@ export default {
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
-              if (
-                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                (this.sessionData.uType == "ADN_BD_KA")
-              ) {
-                head.push("归属公司");
-              }
+
+
               switch (customPermission.patrolPermission) {
                 case 1:
                   head.push("巡点问题", "通行情况");
@@ -1478,6 +1474,14 @@ export default {
                   head.push("巡点问题", "通行情况", "通电情况");
                   break;
               }
+
+              if (
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
+              ) {
+                head.push("归属公司");
+              }
+
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -1538,12 +1542,7 @@ export default {
           let customPermission = JSON.parse(
             sessionStorage.getItem("session_data")
           ).customPermission;
-          if (
-            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-            (this.sessionData.uType == "ADN_BD_KA")
-          ) {
-            obj.asNames = item.asNames;
-          }
+
           // 巡点定制
           if (customPermission) {
             switch (customPermission.patrolPermission) {
@@ -1558,6 +1557,14 @@ export default {
                 break;
             }
           }
+
+          if (
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
+          ) {
+            obj.asNames = item.asNames;
+          }
+
           obj[this.emptyRange[0] + "-" + this.emptyRange[1]] =
             item.DateInfo.adsNum || 0;
           resObj.showList.push(obj);
@@ -1677,12 +1684,7 @@ export default {
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              head.push("归属公司");
-            }
+
             switch (customPermission.patrolPermission) {
               case 1:
                 head.push("巡点问题", "通行情况");
@@ -1691,6 +1693,15 @@ export default {
                 head.push("巡点问题", "通行情况", "通电情况");
                 break;
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              head.push("归属公司");
+            }
+
+
             let allHead = head.concat(date);
             let filename =
               returnobj.filename +
@@ -1749,15 +1760,11 @@ export default {
               remark: item.allremark || "",
               adsNum: item.adsNum,
             };
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asNames = item.asNames;
-            }
+
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
+
             if (customPermission) {
               switch (customPermission.patrolPermission) {
                 case 1:
@@ -1771,6 +1778,14 @@ export default {
                   break;
               }
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              obj.asNames = item.asNames;
+            }
+
             let showData = item.DateInfo.sort(this.sortDate);
             for (let date of showData) {
               dateArr.push(

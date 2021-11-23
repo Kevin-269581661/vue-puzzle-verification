@@ -79,7 +79,7 @@ import sessFun from "../../../commonFun/sessFun.js";
 import { Message } from "element-ui";
 
 export default {
-  data() {
+  data () {
     return {
       // 登录信息
       sessionData: {},
@@ -93,22 +93,22 @@ export default {
       // 城市列表
       cityList: [],
       pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now()-1000*3600*24;
+        disabledDate (time) {
+          return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
     };
   },
   methods: {
     // 获取session数据
-    getSessionData() {
+    getSessionData () {
       this.sessionData = sessFun.getSess();
     },
-    cancelDown() {
+    cancelDown () {
       this.messageFun("info", "取消此操作");
       this.$emit("cancelClick", false);
     },
-    confirmDown() {
+    confirmDown () {
       console.log("downLoadInfo----", this.downLoadInfo);
       let { loadType, city, daterange, dateType } = this.downLoadInfo;
       if (!city.length) {
@@ -149,7 +149,7 @@ export default {
       }
     },
     // 获取城市
-    getCity() {
+    getCity () {
       let info = {
         token: this.sessionData.token,
         uid: this.sessionData.uID,
@@ -175,7 +175,7 @@ export default {
         });
     },
     // 自定义日期按照小区
-    dateRangeEmpty() {
+    dateRangeEmpty () {
       this.postDownLoadNum(0);
       let { city, daterange } = this.downLoadInfo;
       let loadingPoint = this.$loading({
@@ -220,12 +220,6 @@ export default {
                 "媒体数量(面)",
                 "点位备注",
               ];
-              if (
-                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                (this.sessionData.uType == "ADN_BD_KA")
-              ) {
-                head.push("归属公司");
-              }
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
@@ -237,6 +231,14 @@ export default {
                   head.push("巡点问题", "通行情况", "通电情况");
                   break;
               }
+
+              if (
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
+              ) {
+                head.push("归属公司");
+              }
+
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -260,7 +262,7 @@ export default {
         });
     },
     // 导出空点格式化数据
-    formatData(arr) {
+    formatData (arr) {
       let returnObj = {
         city: [],
         arr: "",
@@ -294,15 +296,11 @@ export default {
             adsNum: item.adsNum || 0,
             remark: item.allremark || "",
           };
-          if (
-            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-            (this.sessionData.uType == "ADN_BD_KA")
-          ) {
-            obj.asNames = item.asNames;
-          }
+
           let customPermission = JSON.parse(
             sessionStorage.getItem("session_data")
           ).customPermission;
+
           // (定制巡点)
           if (customPermission) {
             switch (customPermission.patrolPermission) {
@@ -317,10 +315,18 @@ export default {
                 break;
             }
           }
+
+          if (
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
+          ) {
+            obj.asNames = item.asNames;
+          }
+
           obj[
             this.downLoadInfo.daterange[0] +
-              "-" +
-              this.downLoadInfo.daterange[1]
+            "-" +
+            this.downLoadInfo.daterange[1]
           ] = item.DateInfo.adsNum || 0;
           resObj.showList.push(obj);
         }
@@ -330,7 +336,7 @@ export default {
       return returnObj;
     },
     // 获取城市中文名称
-    getCityName(rid) {
+    getCityName (rid) {
       let str = "";
       for (let data of this.cityList) {
         if (data.value == rid) {
@@ -341,7 +347,7 @@ export default {
       return str;
     },
     // 导出空点导出次数接口
-    postDownLoadNum(type) {
+    postDownLoadNum (type) {
       let data = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -354,7 +360,7 @@ export default {
         });
     },
     // 半年日期按照小区导出数据
-    exportExcelData() {
+    exportExcelData () {
       this.postDownLoadNum(0);
       let loadingPoint = this.$loading({
         lock: true,
@@ -429,12 +435,7 @@ export default {
               customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              head.push("归属公司");
-            }
+
             switch (customPermission.patrolPermission) {
               case 1:
                 head.push("巡点问题", "通行情况");
@@ -443,6 +444,14 @@ export default {
                 head.push("巡点问题", "通行情况", "通电情况");
                 break;
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              head.push("归属公司");
+            }
+
             let allHead = head.concat(date);
             let filename =
               returnobj.filename +
@@ -462,7 +471,7 @@ export default {
       });
     },
     // 处理数据
-    hasPointData(arr) {
+    hasPointData (arr) {
       console.log(arr, 'arrr')
       let returnObj = {
         arr: "",
@@ -506,15 +515,10 @@ export default {
               adsNum: item.adsNum || 0,
               remark: item.allremark || "",
             };
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asNames = item.asNames;
-            }
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
+
             if (customPermission) {
               switch (customPermission.patrolPermission) {
                 case 1:
@@ -528,12 +532,20 @@ export default {
                   break;
               }
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              obj.asNames = item.asNames;
+            }
+
             let showData = item.DateInfo.sort(this.sortDate);
             for (let date of showData) {
               dateArr.push(
                 timeFormat.toDate(date.starDate, "/") +
-                  "-" +
-                  timeFormat.toDate(date.endDate, "/")
+                "-" +
+                timeFormat.toDate(date.endDate, "/")
               );
               dataStr.push(date.adsNum);
             }
@@ -555,7 +567,7 @@ export default {
       return returnObj;
     },
     // 键转换为值
-    concatObj(dateArr, dataStr) {
+    concatObj (dateArr, dataStr) {
       let obj = {};
       for (let dateI = 0, dateLen = dateArr.length; dateI < dateLen; dateI++) {
         obj[dateArr[dateI]] = dataStr[dateI];
@@ -563,7 +575,7 @@ export default {
       return obj;
     },
     // 自定义日期按照点位来导
-    getDaterangeAds(info) {
+    getDaterangeAds (info) {
       this.postDownLoadNum(1);
       let loadingPoint = this.$loading({
         lock: true,
@@ -614,12 +626,7 @@ export default {
                   "可视尺寸",
                   "点位备注",
                 ];
-                if (
-                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                  (this.sessionData.uType == "ADN_BD_KA")
-                ) {
-                  head.push("归属公司");
-                }
+
                 let customPermission = JSON.parse(
                   sessionStorage.getItem("session_data")
                 ).customPermission;
@@ -634,6 +641,14 @@ export default {
                     head.push("巡点问题", "通行情况", "通电情况");
                     break;
                 }
+
+                if (
+                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                  (this.sessionData.uType == "ADN_BD_KA")
+                ) {
+                  head.push("归属公司");
+                }
+
                 let filename = returnobj.city.join("-") + "-" + date + "空位表";
                 sheetExcel.toDownload(head, returnobj.arr, filename);
               } else {
@@ -653,7 +668,7 @@ export default {
         });
     },
     // 结构格式化
-    formatDataAds(arr, date) {
+    formatDataAds (arr, date) {
       let resultObj = {
         city: [],
         arr: "",
@@ -695,15 +710,11 @@ export default {
               adViewSize: item.adViewSize || "",
               allremark: item.allremark || "",
             };
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asName = item.asName;
-            }
+
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
+
             if (customPermission) {
               switch (customPermission.patrolPermission) {
                 case 1:
@@ -717,6 +728,14 @@ export default {
                   break;
               }
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              obj.asName = item.asName;
+            }
+            
             resObj.showList.push(obj);
           }
           result.push(resObj);
@@ -726,13 +745,13 @@ export default {
       return resultObj;
     },
     // 时间大小排序
-    sortDate(a, b) {
+    sortDate (a, b) {
       let aDate = timeFormat.toDate(a.starDate, "");
       let bDate = timeFormat.toDate(b.starDate, "");
       return aDate - bDate;
     },
     // 操作提示统一方法
-    messageFun(mesType, mes) {
+    messageFun (mesType, mes) {
       this.$message({
         message: mes,
         type: mesType,
@@ -740,13 +759,13 @@ export default {
       });
     },
   },
-  mounted() {
+  mounted () {
     this.getSessionData();
     this.getCity();
   },
   computed: {
     //显示导点位
-    showNdwBtn() {
+    showNdwBtn () {
       return !(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
     },
   },

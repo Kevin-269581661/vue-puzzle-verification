@@ -2088,9 +2088,7 @@
                     // '楼盘（写字楼）类型',	
                     // '可选面数',
                 ];
-                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                    allHead.push('归属公司')
-                }
+
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2099,6 +2097,11 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                    allHead.push('归属公司')
+                }
+
                 // return
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
@@ -2150,9 +2153,7 @@
                         timeRange: '',
                         mID: data.mID
                     };
-                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                        obj.asName = data.asName
-                    }
+
                     // 巡点权限
                     if(this.customPermission) {
                         switch (this.customPermission.patrolPermission) {
@@ -2167,6 +2168,11 @@
                                 break;
                         }
                     }
+
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                        obj.asName = data.asName
+                    }
+
                     for(let date of dateArr){
                         if(data.schedules == date.sheetName){
                             if(date.resIDArr.includes(data.resID)){

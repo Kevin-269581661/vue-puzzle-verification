@@ -28,7 +28,7 @@
                 ></el-input>
               </el-col>
 
-              <el-col :span="6">
+              <el-col :span="6" v-if="activeName == 'first'">
                 <span>资产编号：</span>
                 <el-input
                   v-model="searchInfo.assetNumber"
@@ -53,9 +53,8 @@
                 >
                 </el-cascader>
               </el-col>
-            </el-row>
-            <el-row :gutter="32">
-              <el-col :span="6">
+
+              <el-col :span="6" v-if="activeName == 'second'">
                 <span>行业类型：</span>
                 <el-cascader
                   :options="bussiness"
@@ -69,6 +68,24 @@
                 >
                 </el-cascader>
               </el-col>
+            </el-row>
+            <el-row :gutter="32">
+              
+              <el-col :span="6" v-if="activeName == 'first'">
+                <span>行业类型：</span>
+                <el-cascader
+                  :options="bussiness"
+                  size="small"
+                  class="plan-select"
+                  v-model="searchInfo.industryIdArr"
+                  :clearable="true"
+                  change-on-select
+                  @change="handleChange"
+                  filterable
+                >
+                </el-cascader>
+              </el-col>
+
               <el-col :span="6">
                 <span
                   style="display: inline-block; width: 70px; text-align: right"

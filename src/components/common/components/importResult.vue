@@ -36,21 +36,28 @@
                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                     <ul v-else>
                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
+                                            <template v-if="item.lState == null">
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                 </p>
-                                            </div>
-                                            <div v-else>
+                                                <div style="margin-bottom: 5px">
+                                                    <span style="color: #333">状态原因：</span>
+                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                    </span>
+                                                </div>
+                                            </template>
+                                            <template v-else>
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">占点方案：</span>
                                                     <span>
-                                                        <span  style="font-weight: bold">{{['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                     </span>
                                                 </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
+                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                </p>
+                                            </template>
                                         </li>
                                     </ul>
                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
@@ -68,21 +75,28 @@
                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                     <ul v-else>
                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
+                                            <template v-if="item.lState == null">
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                 </p>
-                                            </div>
-                                            <div v-else>
+                                                <div style="margin-bottom: 5px">
+                                                    <span style="color: #333">状态原因：</span>
+                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                    </span>
+                                                </div>
+                                            </template>
+                                            <template v-else>
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">占点方案：</span>
                                                     <span>
-                                                        <span  style="font-weight: bold">{{['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                     </span>
                                                 </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
+                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                </p>
+                                            </template>
                                         </li>
                                     </ul>
                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
@@ -315,19 +329,27 @@ export default {
                 if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {
-                        if(akey.asState){
-                            arr.push({
-                                asState: akey.asState
-                            });
-                        }else{
-                            let star = timeFormat.toDate(akey.lStar, '/');
-                            let end = timeFormat.toDate(akey.lEnd, '/');
-                            arr.push({
-                                beOccupieApName: akey.apName,
-                                schedules: star + '-' + end,
-                                lState: akey.lState,
-                            });
-                        }
+                        let star = timeFormat.toDate(akey.lStar, '/')
+                        let end = timeFormat.toDate(akey.lEnd, '/')
+                        arr.push({
+                            asState: akey.asState,
+                            schedules: star + '-' + end,
+                            lState: akey.lState,
+                            unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                        })
+                        // if(akey.asState){
+                        //     arr.push({
+                        //         asState: akey.asState
+                        //     });
+                        // }else{
+                        //     let star = timeFormat.toDate(akey.lStar, '/');
+                        //     let end = timeFormat.toDate(akey.lEnd, '/');
+                        //     arr.push({
+                        //         beOccupieApName: akey.apName,
+                        //         schedules: star + '-' + end,
+                        //         lState: akey.lState,
+                        //     });
+                        // }
                     }
                     adObj.adlInfo = arr;
                 } else {

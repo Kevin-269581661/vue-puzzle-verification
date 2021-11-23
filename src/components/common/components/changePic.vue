@@ -949,6 +949,7 @@
                     info = this.searchFormat('XK');
                     // info = this.getImgCount('XK');
                 }
+                info.pageSize = 10
                 this.getImgInfo(info);
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;

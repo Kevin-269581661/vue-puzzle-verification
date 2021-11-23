@@ -1674,7 +1674,7 @@
                 // 定制权限
                 customPermission: {},
                 // 购物车分页时页面条目数量
-                cartPageSize: 10,
+                cartPageSize: 500,
                 currentPage: 1,
                 totalNum: 0
             };

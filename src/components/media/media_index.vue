@@ -1387,30 +1387,24 @@ export default {
         token: this.sessionData.token,
         apid: row.apID
       };
-      this.$confirm('是否确定对该方案重新进行预锁？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        api.postApi(this.apiVar.Advertisement + "/ResetFangLock", params).then(res => {
-          if (res.data.SysCode === 300200) {
-            api
-              .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
-              .then((res) => {
-                if (res.data.SysCode === 200200) {
-                  this.$message.success('预锁成功');
-                  this.preLockArr = res.data.data || [];
-                } else {
-                  this.$message.warning(res.data.MSG || "");
-                }
-              })
-          } else {
-            this.$message.warning(res.data.MSG || "");
-            console.log('res.data', res.data)
-          }
-        });
-      })
 
+      api.postApi(this.apiVar.Advertisement + "/ResetFangLock", params).then(res => {
+        if (res.data.SysCode === 300200) {
+          api
+            .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
+            .then((res) => {
+              if (res.data.SysCode === 200200) {
+                this.$message.success('预锁成功');
+                this.preLockArr = res.data.data || [];
+              } else {
+                this.$message.warning(res.data.MSG || "");
+              }
+            })
+        } else {
+          this.$message.warning(res.data.MSG || "");
+          console.log('res.data', res.data)
+        }
+      });
     }
   },
   beforeRouteEnter (to, from, next) {

@@ -447,13 +447,9 @@
                       :disabled="
                         scope.row.apState !== 1 && scope.row.apState !== -1
                       "
+                      @click.native.prevent="deleteAdPlan(scope.row)"
                     >
-                      <el-popconfirm
-                        title="确定删除该方案？点击【确认】该方案将被移除至回收站。"
-                        @confirm="deleteAdPlan(scope.row)"
-                      >
-                        <span slot="reference">删除</span>
-                      </el-popconfirm>
+                    删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -2077,13 +2073,20 @@ export default {
         token: this.sessionData.token,
         apid: row.apID
       }
-      api.postApi(this.apiVar.Advertisement + '/DeleteAdPlan', params).then(res => {
-        console.log('删除', res)
-        if (res.data.SysCode == 300200) {
-          this.messageFun('success', res.data.MSG);
-          this.reset();
-        }
+      this.$confirm('确定删除该方案？点击【确认】该方案将被移除至回收站。', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.postApi(this.apiVar.Advertisement + '/DeleteAdPlan', params).then(res => {
+          console.log('删除', res)
+          if (res.data.SysCode == 300200) {
+            this.messageFun('success', res.data.MSG);
+            this.reset();
+          }
+        })
       })
+
     },
 
     // 回收站

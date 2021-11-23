@@ -445,8 +445,7 @@
                     </el-dropdown-item>
                     <el-dropdown-item
                       :disabled="
-                        isDisable ||
-                        (scope.row.apState !== 1 && scope.row.apState !== -1)
+                        scope.row.apState !== 1 && scope.row.apState !== -1
                       "
                     >
                       <el-popconfirm

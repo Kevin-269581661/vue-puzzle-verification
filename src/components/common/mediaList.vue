@@ -98,6 +98,7 @@
             style="width: 100%"
             @filter-change="filterChange"
             :default-sort="{ prop: 'resName', order: 'descending' }"
+            ref="tableEl"
           >
             <el-table-column
               label="资源名称"
@@ -1120,6 +1121,8 @@ export default {
       this.pageData.pageSize = 10
       this.cityArea = { cName: '', rName: '' }
       this.asSaleState = ''
+      this.asState = ''
+      this.$refs.tableEl.clearFilter()
       this.getData()
     },
 

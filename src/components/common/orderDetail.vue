@@ -1134,8 +1134,10 @@
             @cancel="cancelChangePrice"
             @done="doneChangePrice"
             :changePriceData="changePriceData"
+            v-if="changePriceModal"
           ></changeOrderPrice>
         </el-dialog>
+
         <changeProposalOrderPrice
           v-else
           :apID="orderDetail.apID"

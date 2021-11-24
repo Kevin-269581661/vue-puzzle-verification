@@ -28,12 +28,13 @@
         class="u-targetRadio"
         @change="handleAslbChange"
       >
-        <el-radio :label="1">设备</el-radio>
+        <el-radio :label="1" class="u-radio">设备</el-radio>
         <el-radio
           :label="item.asID"
           v-for="item in mediaAdsStateAction"
           :key="item.asID"
           :disabled="item.asSaleState === 1"
+          class="u-radio"
           >{{ item.asLab }}面
           <el-tooltip
             v-if="item.asSaleState === 1"
@@ -232,6 +233,10 @@ export default {
   border-radius: 50%;
   vertical-align: middle;
   filter: brightness(0.75);
+}
+
+.u-radio {
+  margin-bottom: 5px;
 }
 
 .u-targetRadio {

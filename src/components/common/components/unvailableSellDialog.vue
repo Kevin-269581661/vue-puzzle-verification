@@ -18,12 +18,13 @@
 
       <h3 class="u-title">请选择不可售卖目标：</h3>
       <el-radio-group v-model="targetRadio" class="u-targetRadio"  @change="handleAslbChange">
-        <el-radio :label="1">设备</el-radio>
+        <el-radio :label="1" class="u-radio">设备</el-radio>
         <el-radio
           :label="item.asID"
           v-for="item in mediaAdsStateAction"
           :key="item.asID"
           :disabled="item.asSaleState === 2"
+          class="u-radio"
           >{{ item.asLab }}面
           <el-tooltip
             v-if="item.asSaleState === 2"
@@ -331,6 +332,10 @@ export default {
     color: #1890ff !important;
     box-shadow: none;
   }
+}
+
+.u-radio {
+  margin-bottom: 5px;
 }
 
 /deep/ .el-dialog__footer {

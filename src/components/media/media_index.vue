@@ -756,7 +756,7 @@ export default {
       cardDataOther3: {
         name: "cardDataOther3",
         title: "不可售卖点位",
-        tip: "数据每5分钟更新一次，公司不可售卖总点位数",
+        tip: "数据截止至昨日，公司不可售卖总点位数",
         value: 0,
         valueAlias: "不可售卖点位数量",
         compare: 0,

@@ -13,33 +13,38 @@
       </div>
       <div class="mediaList_container">
         <div class="flex_box search_row">
-          <el-input
-            placeholder="请输入内容"
-            v-model="searchInfo.keyword"
-            size="small"
-            class="marginR"
-          >
-            <el-select
-              v-model="searchInfo.select"
-              slot="prepend"
-              placeholder="请选择"
+          <div class="search-item">
+            <span>关键词：</span>
+            <el-input
+              placeholder="请输入内容"
+              v-model="searchInfo.keyword"
+              size="small"
+              class="u-select"
             >
-              <el-option label="方案名称" value="1"></el-option>
-              <el-option label="客户名称" value="2"></el-option>
-              <el-option label="品牌名称" value="3"></el-option>
-              <el-option
-                v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                label="所属销售"
-                value="4"
-              ></el-option>
-            </el-select>
-          </el-input>
-          <div style="margin-left: -30px">
+              <el-select
+                v-model="searchInfo.select"
+                slot="prepend"
+                placeholder="请选择"
+              >
+                <el-option label="方案名称" value="1"></el-option>
+                <el-option label="客户名称" value="2"></el-option>
+                <el-option label="品牌名称" value="3"></el-option>
+                <el-option
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  label="所属销售"
+                  value="4"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </div>
+
+          <div class="search-item">
+            <span>日期：</span>
             <el-select
               size="small"
               v-model="searchInfo.dateType"
               placeholder="请选择"
-              class="date-type-select"
+              class="u-date"
             >
               <el-option label="上刊日期" value="0"></el-option>
               <el-option label="下刊日期" value="1"></el-option>
@@ -48,7 +53,7 @@
             </el-select>
             <el-date-picker
               size="small"
-              class="marginR"
+              class="u-date-picker"
               v-model="searchInfo.rangeDate"
               type="daterange"
               range-separator="-"
@@ -59,57 +64,73 @@
             >
             </el-date-picker>
           </div>
-          <el-select
-            v-model="searchInfo.status"
-            placeholder="请选择状态"
-            size="small"
-            class="marginR"
-          >
-            <el-option
-              v-for="item of stateList"
-              :key="item.value"
-              :label="item.text"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-select
-            v-model="searchInfo.company"
-            placeholder="请选择所属公司"
-            filterable
-            size="small"
-            v-if="isAll"
-            class="marginR"
-          >
-            <el-option
-              v-for="item of companyData"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-select
-            v-model="searchInfo.cityWord"
-            placeholder="请选择投放城市"
-            filterable
-            size="small"
-            class="marginR"
-          >
-            <el-option
-              v-for="item of filterCityData"
-              :key="item.rID"
-              :label="item.text"
-              :value="item.text"
-            ></el-option>
-          </el-select>
-          <el-select
-            v-model="searchInfo.Lock"
-            placeholder="是否预锁"
-            size="small"
-            class="marginR"
-          >
-            <el-option label="已预锁" value="2"></el-option>
-            <el-option label="未预锁" value="1"></el-option>
-          </el-select>
+
+          <div class="search-item">
+            <span>选择状态：</span>
+            <el-select
+              v-model="searchInfo.status"
+              placeholder="请选择状态"
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of stateList"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+
+          <div class="search-item">
+            <span>选择城市：</span>
+            <el-select
+              v-model="searchInfo.cityWord"
+              placeholder="请选择投放城市"
+              filterable
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of filterCityData"
+                :key="item.rID"
+                :label="item.text"
+                :value="item.text"
+              ></el-option>
+            </el-select>
+          </div>
+
+          <div class="search-item" v-if="isAll">
+            <span style="width: 105px">选择公司：</span>
+            <el-select
+              v-model="searchInfo.company"
+              placeholder="请选择所属公司"
+              filterable
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of companyData"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+
+          <div class="search-item">
+            <span>是否预锁：</span>
+            <el-select
+              v-model="searchInfo.Lock"
+              placeholder="是否预锁"
+              size="small"
+              class="u-select2"
+            >
+              <el-option label="已预锁" value="2"></el-option>
+              <el-option label="未预锁" value="1"></el-option>
+            </el-select>
+          </div>
+
           <div class="btn_wrapper">
             <el-button
               type="primary"
@@ -129,12 +150,16 @@
             >
 
             <template v-if="showNewBtn || !isNation">
-              <el-button plain v-if="showNewBtn" @click="addOne()"
+              <el-button
+                plain
+                v-if="showNewBtn"
+                @click="addOne()"
+                class="marginR"
                 >新建</el-button
               >
             </template>
 
-            <el-dropdown placement="bottom-start">
+            <el-dropdown placement="bottom-start"  class="u-dropdown-more">
               <el-button class="marginR u-more">
                 更多<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
@@ -174,7 +199,7 @@
               <template slot-scope="scope">
                 <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
                 <span
-                  style="color: #108ee9; cursor: pointer"
+                  style="color: rgba(24, 144, 255, 1); cursor: pointer"
                   @click="ToDetail(scope.row)"
                   >{{ scope.row.apName }}</span
                 >
@@ -262,8 +287,8 @@
                       placement="top"
                     >
                       <div>
-                        <span v-if="item.isshow">{{ item.asName }}</span>
-                        <p>
+                        <!-- <span v-if="item.isshow">{{ item.asName }}</span> -->
+                        <span>
                           {{
                             item.city +
                             '(' +
@@ -274,7 +299,7 @@
                             formatTime(item.pdEnd) +
                             ')'
                           }}
-                        </p>
+                        </span>
                       </div>
                     </el-tooltip>
                     <el-tooltip
@@ -449,7 +474,7 @@
                       "
                       @click.native.prevent="deleteAdPlan(scope.row)"
                     >
-                    删除
+                      删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -2174,10 +2199,11 @@ a {
 .flex_box {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .marginR {
-  margin-right: 6px;
+  margin-right: 8px;
   margin-bottom: 16px;
 }
 
@@ -2228,6 +2254,10 @@ a {
 
 .el-button + .el-button {
   margin-left: 0;
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
 }
 
 .table_wrap .city_p span {
@@ -2279,6 +2309,10 @@ a {
   padding: 2px 10px;
   height: auto;
   line-height: 28px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
 }
 
 /*未完成方案*/
@@ -2474,5 +2508,82 @@ a {
   background: none !important;
   color: #606266;
 }
-</style>
 
+.search-item {
+  margin-right: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  span {
+    display: inline-block;
+    width: 105px;
+    text-align: right;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.85);
+    box-sizing: border-box;
+  }
+
+  .u-select {
+    width: 302px;
+    /deep/ .el-input__inner {
+      width: 203px;
+    }
+    /deep/ .el-select {
+      width: 98px;
+      padding: 0;
+      box-sizing: border-box;
+      .el-input__inner {
+        width: 100%;
+      }
+    }
+  }
+
+  .u-date {
+    width: 98px;
+    padding: 0;
+    box-sizing: border-box;
+    /deep/ .el-input {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+    }
+    /deep/ .el-input__inner {
+      width: 100%;
+      padding: 0 10px;
+      border-right: 0 none !important;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .u-date-picker {
+    width: 203px;
+    box-sizing: border-box;
+    padding: 5px 15px 5px 17px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .u-select2 {
+    width: 302px;
+    /deep/ .el-input__inner {
+      width: 100%;
+    }
+  }
+}
+
+.btn_wrapper {
+  margin-left: 38px;
+}
+
+/deep/ .el-table th {
+  background: #fafafa;
+}
+
+.u-dropdown-more {
+  height: 32px;
+}
+</style>

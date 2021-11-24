@@ -495,7 +495,7 @@
       </el-dialog>
 
       <!-- 不可售卖弹窗  -->
-      <unvailableSellDialog
+      <unvailable-sellDialog
         :visible.sync="isUnvailableSell"
         :resourceName="resourceName"
         :activeAsLab="activeAsLab"
@@ -503,10 +503,10 @@
         :mTitle="mTitle"
         @handleConfirm="clearSearch"
         v-if="isUnvailableSell"
-      />
+      ></unvailable-sellDialog> 
 
       <!-- 可售卖弹窗  -->
-      <vailableSellDialog
+      <vailable-sellDialog
         :visible.sync="isVailableSell"
         :resourceName="resourceName"
         :activeAsLab="activeAsLab"
@@ -515,7 +515,7 @@
         :unSaleableReason="unSaleableReason"
         @handleConfirm="clearSearch"
         v-if="isVailableSell"
-      />
+      ></vailable-sellDialog>
     </div>
   </div>
 </template>

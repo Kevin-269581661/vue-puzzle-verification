@@ -198,7 +198,7 @@ export default {
         content: "●",
         style: {
           fontSize: 16,
-          fill: "#FF7875",
+          fill: "#6ECB53",
           textBaseline: "middle",
           lineHeight: 40,
         },

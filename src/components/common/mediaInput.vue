@@ -403,7 +403,7 @@
                                                 <el-form-item label="媒体状态" prop="mstate">
                                                     <el-select v-model="item.mediaForm.mstate" placeholder="请选择媒体状态"
                                                                @blur="adDoorBlur('mstate',key)"
-                                                               @change="selectMstate(item.mediaForm)">
+                                                               @change="selectMstate(item.mediaForm, key)">
                                                         <el-option v-for="state in mediaOptions[key]" :label="state.label" :value="state.value + key" :key="state.value"></el-option>
                                                     </el-select>
                                                 </el-form-item>
@@ -2056,7 +2056,7 @@
                 }
             },
             // 选择媒体状态为待安装时修改资源编号的验证为非必填
-            selectMstate(val) {
+            selectMstate(val, index) {
                 console.log('选择了', val,this.arrMediaStatue,this.editRoadGateStatue)
                 let valArr = val.mstate.split('')
                 console.log('valArr', valArr)
@@ -2070,7 +2070,7 @@
                             this.changeBeforMediaState = val.mstate
                         } else {
                             this.arrMedia[i].mediaForm.assetIdBolean = false
-                            this.editMState(val.mid, valArr[0])
+                            this.editMState(val.mid, valArr[0], 'media', index)
                         }
                     } else if (val.mediaType === '道闸' && i <= this.editRoadGateLength - 1) {
                         if (valArr[0] === '4') {
@@ -2078,7 +2078,7 @@
                             this.dismantleVisible = true
                         } else {
                             this.roadGateMedia[i].roadGateForm.assetIdBolean = false
-                            this.editMState(val.mid, valArr[0], i)
+                            this.editMState(val.mid, valArr[0], 'roadGate', index)
                         }
                     } else {
                         this.newMediaChangeMstatus(val.mediaType, valArr, i)
@@ -2807,7 +2807,6 @@
                         this.recForm = tempObj
                         console.log('recForm', this.recForm)
                         //设置媒体信息
-                        console.log('mediaObj', mediaObj)
                         this.editMediaLength = mediaObj.length
                         for (let i = 0; i < mediaObj.length; i++) {
                             if (i < mediaObj.length - 1) {                     // 创建媒体面板，默认已有一个
@@ -2856,6 +2855,7 @@
                                 newMediaOptions[1] = {label: '正常', value: '1'}
                             }
                             this.mediaOptions[i] = newMediaOptions
+                            console.log(this.mediaOptions[i], 'this.mediaOptions[i]this.mediaOptions[i]')
 
                             if(mediaObj[i].classified == 1){
                                 this.classified = true
@@ -2912,6 +2912,7 @@
             // 编辑状态填充道闸媒体
             fillRoadGateData(){
                 let roadGateList =  JSON.parse(sessionStorage.getItem('roadGateList'))
+                console.log(roadGateList, 'roadGateListroadGateListroadGateList')
                 console.log('roadGateList', roadGateList)
                 this.editRoadGateLength = roadGateList.length
                 for (let i = 0; i < roadGateList.length; i++) {
@@ -3263,7 +3264,7 @@
                 }
             },
             // 修改媒体状态
-            editMState(mid, mstate) {
+            editMState(mid, mstate, type, index) {
                 let params = {
                     "uid": this.sessionData.uID,
                     "token": this.sessionData.token,
@@ -3277,6 +3278,22 @@
                 api.postApi_new(this.apiVar.Media, params).then(res => {
                     console.log('修改媒体状态', res)
                     if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
+
+                        // 如果编辑时原来状态为已拆除，则把已拆除的媒体状态去掉
+                        // 广告门
+                        if(type === 'media') {
+                            let mediaObj = JSON.parse(sessionStorage.getItem('mediaList'))
+                            mediaObj[index].mState = 1
+                            sessionStorage.setItem('mediaList', JSON.stringify(mediaObj))
+                        } else {
+                            // 道闸
+                            let roadGateList =  JSON.parse(sessionStorage.getItem('roadGateList'))
+                            roadGateList[index].mState = 1
+                            sessionStorage.setItem('mediaList', JSON.stringify(roadGateList))
+                        }
+                        this.editFun()
+
+                        // this.editFun()
                         sessFun.messageFun('success','修改成功')
                     } else if (res.data.SysCode === 200302 || res.data.MSG === '广告位已被占用') {
                         sessFun.messageFun('warning',res.data.MSG)

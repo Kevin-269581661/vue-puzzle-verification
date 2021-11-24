@@ -2108,6 +2108,8 @@ export default {
           if (res.data.SysCode == 300200) {
             this.messageFun('success', res.data.MSG);
             this.reset();
+          } else {
+            this.messageFun('warning', res.data.MSG);
           }
         })
       })

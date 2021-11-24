@@ -414,7 +414,7 @@
       <div class="loglist_box">
         <div class="title">
           <p>{{ logList.resName }}</p>
-          <p>{{ logList.mTitle }}（{{ logList.assetTag }}）</p>
+          <p>{{ logList.mTitle }}（{{ logList.assetTag }}）<template v-if="logList.asLab">· {{logList.asLab}}面</template></p>
         </div>
 
         <log-list
@@ -1007,6 +1007,7 @@ export default {
             resName: item.resName,
             mTitle: item.mTitle,
             assetTag: item.assetTag,
+            asLab: item.asLab,
             list
           };
           this.logList = obj 
@@ -1021,6 +1022,7 @@ export default {
 
     // 获取历史记录
     getHistoryList (item) {
+      console.log(item, 'itememem')
       let info = {
         "data": {
           mID: item.mID,
@@ -1039,6 +1041,7 @@ export default {
             resName: item.resName,
             mTitle: item.mTitle,
             assetTag: item.assetTag,
+            asLab: item.asLab,
             list: []
           };
           for (let data of res.data.data.list) {
@@ -1182,7 +1185,7 @@ export default {
 }
 
 /deep/ .logList-wrap .el-dialog__body {
-  padding: 6px 20px 30px;
+  padding: 16px 24px 30px;
 }
 
 /deep/ .logList-wrap .el-dialog__title {
@@ -1270,4 +1273,11 @@ export default {
   background: #c1c1c1;
   border-radius: 4px;
 }
+
+/deep/ .el-dialog__body {
+  padding-bottom: 6px !important;
+}
+/deep/ .el-dialog__footer {
+  padding: 10px 24px 24px;
+} 
 </style>

@@ -11,16 +11,19 @@
           </p>
           <div class="u-item">
             <span style="width: 56px">处理人：</span>
-            <div class="u-ctn">{{item.uName}}</div>
+            <div class="u-ctn">{{ item.uName }}</div>
           </div>
           <div class="u-item">
             <span>操作：</span>
-            <div class="u-ctn">{{item.sellState}}</div>
+            <div class="u-ctn">{{ item.sellState }}</div>
           </div>
           <div class="u-item">
             <span>说明：</span>
             <div class="u-ctn">
-              <p v-for="(text, i) in item.remark" :key="i"><template v-if="item.remark.length > 1">{{i+1}}.</template>{{text}}</p>
+              <p v-for="(text, i) in item.remark" :key="i">
+                <template v-if="item.remark.length > 1">{{ i + 1 }}.</template
+                >{{ text }}
+              </p>
             </div>
           </div>
         </div>
@@ -58,6 +61,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
 /* 处理弹出框日志组件 */
 .timeline {
   list-style: none;
@@ -118,10 +122,12 @@ export default {
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(0, 0, 0, 0.85);
   margin: 0;
   position: relative;
+  line-height: 22px;
+  margin-bottom: 2px;
 }
 
 .content {
@@ -174,6 +180,7 @@ export default {
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
   line-height: 22px;
+  margin-bottom: 2px;
   span {
     display: inline-block;
   }

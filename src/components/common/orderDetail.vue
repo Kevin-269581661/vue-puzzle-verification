@@ -622,7 +622,7 @@
                 @select-all="handleSelectAll"
                 element-loading-text="玩命加载中.."
                 element-loading-spinner="el-icon-loading"
-								height="650"
+                height="650"
               >
                 <el-table-column
                   v-if="handleType !== 3"
@@ -1682,60 +1682,60 @@ export default {
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
         const tHeader = [
-          '资源名称', 
+          '资源名称',
           '省份',
-          '城市', 
-          '区域', 
-          '详细地址', 
-          '媒介载体', 
-          '媒体名称', 
-          '资产编号', 
-          '投放面', 
-          '投放排期', 
+          '城市',
+          '区域',
+          '详细地址',
+          '媒介载体',
+          '媒体名称',
+          '资产编号',
+          '投放面',
+          '投放排期',
           '门体类型',
-          '商圈', 
-          '楼栋数量', 
-          '住户数量/办公室数量', 
-          '楼盘价格', 
-          '楼盘类型/写字楼类型', 
-          '入住年份/建成年份', 
-          '广告限制', 
+          '商圈',
+          '楼栋数量',
+          '住户数量/办公室数量',
+          '楼盘价格',
+          '楼盘类型/写字楼类型',
+          '入住年份/建成年份',
+          '广告限制',
           '车位数',
           '车流量',
           '人流量',
-          '广告尺寸', 
-          '可视尺寸', 
-          '媒体备注', 
+          '广告尺寸',
+          '可视尺寸',
+          '媒体备注',
           '地图中心点',
-          '终止日期', 
+          '终止日期',
         ];
         const filterVal = [
           'resName',
           'province',
-          'city', 
-          'rName', 
-          'resAddress', 
-          'mVehicle', 
-          'mTitle', 
-          'assetTag', 
-          'asLab', 
-          'timeRange', 
+          'city',
+          'rName',
+          'resAddress',
+          'mVehicle',
+          'mTitle',
+          'assetTag',
+          'asLab',
+          'timeRange',
           'mType',
-          'tradingArea', 
-          'fNum', 
-          'hNum', 
-          'hPrice', 
-          'cType', 
-          'chDay', 
+          'tradingArea',
+          'fNum',
+          'hNum',
+          'hPrice',
+          'cType',
+          'chDay',
           'notPush',
           'parkSpaceNum',
-          'carFlow', 
+          'carFlow',
           'peopleFlow',
-          'adSize', 
-          'adViewSize', 
-          'mRemark', 
+          'adSize',
+          'adViewSize',
+          'mRemark',
           'mapCenter',
-          'finishTimeRange', 
+          'finishTimeRange',
         ];
 
         switch (this.customPermission.patrolPermission) {
@@ -1753,7 +1753,7 @@ export default {
           tHeader.push('归属公司');
           filterVal.push('asName')
         }
-        
+
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, name);
@@ -2693,7 +2693,7 @@ export default {
     changePrice () {
       this.changePriceModal = true
       this.handleTime = new Date().getTime()
-			this.changePriceData.handleTime = new Date().getTime()
+      this.changePriceData.handleTime = new Date().getTime()
     }
   }
   ,
@@ -3357,5 +3357,31 @@ export default {
 /deep/ .el-upload--text .el-upload-dragger img {
   width: 28px;
   height: 30px;
+}
+</style>
+
+<style lang="scss">
+.price-dialog {
+  .el-dialog__header {
+    border-bottom: 1px solid #e9e9e9;
+    padding: 15px 24px;
+  }
+  .el-dialog__title {
+    font-size: 16px;
+    font-family: PingFangSC-Semibold, PingFang SC;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  .el-dialog__body {
+    padding: 24px 0 11px 0;
+  }
+  .price-dialog-footer {
+    padding: 15px 25px 0;
+    border-top: 1px solid #E9E9E9;
+    margin-bottom: 0!important;
+  }
+  .city-tab, .change-price-table-wrap{
+    padding: 0 25px;
+  }
 }
 </style>

@@ -14,7 +14,7 @@
             <el-input
               placeholder="请输入内容"
               v-model="keyword"
-              class="input-with-select"
+              class="input-with-select u-key"
               size="small"
               @change="initData"
             >
@@ -43,7 +43,7 @@
               placeholder="请选择城市"
               filterable
               size="small"
-              style="width: 100%"
+              style="width: 236px"
               clearable
               @change="handleChange"
             >
@@ -55,7 +55,7 @@
               v-model="selectRName"
               placeholder="请选择区域"
               :clearable="true"
-              style="width: 100%"
+              style="width: 236px"
               size="small"
               @change="getRegion"
             >
@@ -116,16 +116,22 @@
             </el-table-column>
 
             <el-table-column
-              column-key="rtName"
-              prop="rtName"
-              label="资源类型"
-              width="130"
-              :filters="[
-                { text: '社区', value: '1' },
-                { text: '写字楼', value: '2' }
-              ]"
-              :filter-multiple="false"
+              prop="mVehicle"
+              label="媒体类型"
+              width="127"
+              :show-overflow-tooltip="true"
             >
+            </el-table-column>
+
+            <el-table-column
+              prop="mTitle"
+              label="媒体名称"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.mTitle || '--' }}</span>
+              </template>
             </el-table-column>
 
             <el-table-column
@@ -145,6 +151,19 @@
               <template slot-scope="scope">
                 {{ scope.row.assetTag || '--' }}
               </template>
+            </el-table-column>
+
+            <el-table-column
+              column-key="rtName"
+              prop="rtName"
+              label="资源类型"
+              width="130"
+              :filters="[
+                { text: '社区', value: '1' },
+                { text: '写字楼', value: '2' }
+              ]"
+              :filter-multiple="false"
+            >
             </el-table-column>
 
             <el-table-column
@@ -181,25 +200,6 @@
             </el-table-column>
 
             <el-table-column
-              prop="mVehicle"
-              label="媒体类型"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="mTitle"
-              label="媒体名称"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mTitle || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
               column-key="asState"
               prop="asState"
               label="媒体状态"
@@ -207,7 +207,7 @@
               :filters="[
                 { text: '正常', value: 1 },
                 { text: '待安装', value: '2' },
-                { text: '已拆除', value: 4 },
+                { text: '已拆除', value: 4 }
               ]"
               :filter-multiple="false"
               fixed="right"
@@ -503,7 +503,7 @@
         :mTitle="mTitle"
         @handleConfirm="clearSearch"
         v-if="isUnvailableSell"
-      ></unvailable-sellDialog> 
+      ></unvailable-sellDialog>
 
       <!-- 可售卖弹窗  -->
       <vailable-sellDialog
@@ -1319,8 +1319,8 @@ a {
   display: flex;
   align-items: center;
   flex-flow: row nowrap;
-  width: 25%;
-  margin-right: 46px;
+  width: 306px;
+  margin-right: 32px;
   .li-label {
     font-size: 14px;
     white-space: nowrap;
@@ -1330,14 +1330,18 @@ a {
 
 .handel_ul_li_btn {
   .el-button + .el-button {
-    margin-left: 16px;
+    margin-left: 8px;
   }
 }
 /*下拉搜索框*/
 /deep/ .el-input-group__prepend {
-  width: 64px;
+  width: 98px;
   position: relative;
   background-color: #fff;
+  box-sizing: border-box;
+  .el-input__inner {
+    padding: 0 12px !important;
+  }
 }
 
 /deep/ .el-input-group--prepend .el-select {
@@ -1535,6 +1539,16 @@ a {
   position: absolute;
   top: 9px;
   right: 8px;
+}
+
+.u-key {
+  /deep/ & > .el-input__inner {
+    width: 137px;
+  }
+}
+
+/deep/ .el-table th {
+  background: #fafafa;
 }
 
 /deep/ .Import_dialog .el-upload-list__item {

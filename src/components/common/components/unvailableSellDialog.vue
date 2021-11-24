@@ -3,6 +3,7 @@
     :visible="true"
     :show-close="false"
     width="392px"
+    custom-class="dialog"
     :before-close="handleClose"
   >
     <h2 class="u-title">
@@ -12,12 +13,16 @@
 
     <div class="m-container">
       <div class="u-centent">
-        确定后，<b>{{ resourceName }}</b>
+        确定后，<b>{{ resourceName }}-{{ mTitle }}</b>
         媒体或某一投放面将不可被方案、订单选中售卖
       </div>
 
       <h3 class="u-title">请选择不可售卖目标：</h3>
-      <el-radio-group v-model="targetRadio" class="u-targetRadio"  @change="handleAslbChange">
+      <el-radio-group
+        v-model="targetRadio"
+        class="u-targetRadio"
+        @change="handleAslbChange"
+      >
         <el-radio :label="1" class="u-radio">设备</el-radio>
         <el-radio
           :label="item.asID"
@@ -25,6 +30,7 @@
           :key="item.asID"
           :disabled="item.asSaleState === 2"
           class="u-radio"
+          :style="{width: item.asSaleState === 2 ? '91px': '69'}"
           >{{ item.asLab }}面
           <el-tooltip
             v-if="item.asSaleState === 2"
@@ -224,6 +230,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.u-unvailableResaon {
+  /deep/ .el-input__inner {
+    height: 32px;
+  }
+}
 .u-title {
   display: flex;
   align-items: center;
@@ -334,11 +345,35 @@ export default {
   }
 }
 
-.u-radio {
+.u-targetRadio {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/deep/ .el-radio__label {
+  display: flex;
+  align-items: center;
+  img {
+    display: inline-block;
+    margin-left: 6px;
+  }
+}
+
+/deep/ .el-radio {
+  width: 69px;
+  display: flex;
+  align-items: center;
   margin-bottom: 5px;
+  margin-right: 0;
 }
 
 /deep/ .el-dialog__footer {
-  padding-top: 0;
+  padding: 0 24px 24px;
+}
+</style>
+
+<style lang="scss">
+.dialog {
+  border-radius: 4px !important;
 }
 </style>

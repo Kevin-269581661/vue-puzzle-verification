@@ -2,6 +2,7 @@
   <el-dialog
     :visible="true"
     :show-close="false"
+    custom-class="dialog"
     width="392px"
     :before-close="handleClose"
   >
@@ -12,13 +13,14 @@
 
     <div class="m-container">
       <div class="u-centent">
-        确定后，<b>{{ resourceName }}</b> 媒体或某一投放面将恢复为可售卖状态
+        确定后，<b>{{ resourceName }}-{{ mTitle }}</b>
+        媒体或某一投放面将恢复为可售卖状态
       </div>
 
       <h3 class="u-title">原不可售卖原因：</h3>
       <ul class="u-targetRadio">
         <li v-for="(item, index) in unSaleableReason" :key="index">
-          {{ index + 1 }}.{{ item }}
+          <template v-if="unSaleableReason.length > 1">{{ index + 1 }}.</template>{{ item }}
         </li>
       </ul>
 
@@ -35,6 +37,7 @@
           :key="item.asID"
           :disabled="item.asSaleState === 1"
           class="u-radio"
+          :style="{width: item.asSaleState === 1 ? '91px': '69'}"
           >{{ item.asLab }}面
           <el-tooltip
             v-if="item.asSaleState === 1"
@@ -99,7 +102,7 @@ export default {
       const asLabName = mediaAdsStateAction.filter(item => {
         return item.asID === asID
       })[0]
-      this.asLabName =  asLabName ? `${asLabName.asLab}面` : `设备`
+      this.asLabName = asLabName ? `${asLabName.asLab}面` : `设备`
     },
 
     handleConfirm () {
@@ -164,7 +167,7 @@ export default {
           mID: this.mID
         }
       }
-     api.postApi_new(this.apiVar.Media, params).then(res => {
+      api.postApi_new(this.apiVar.Media, params).then(res => {
         if (res.data.SysCode === 200200) {
           this.mediaAdsStateAction = res.data.data;
           this.getAslab(this.activeAsLab, res.data.data)
@@ -178,6 +181,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.u-unvailableResaon {
+  /deep/ .el-input__inner {
+    height: 32px;
+  }
+}
 .u-title {
   display: flex;
   align-items: center;
@@ -302,7 +310,35 @@ export default {
   }
 }
 
+.u-targetRadio {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/deep/ .el-radio__label {
+  display: flex;
+  align-items: center;
+  img {
+    display: inline-block;
+    margin-left: 6px;
+  }
+}
+
+/deep/ .el-radio {
+  width: 69px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  margin-right: 0;
+}
+
 /deep/ .el-dialog__footer {
-  padding-top: 0;
+  padding: 0 24px 24px;
+}
+</style>
+
+<style lang="scss">
+.dialog {
+  border-radius: 4px !important;
 }
 </style>

@@ -4,6 +4,7 @@
     :visible="true"
     width="688"
     :before-close="handleClose"
+    top="12vh"
   >
     <el-table :data="tableData" v-loading="loading" border class="m-table">
       <el-table-column property="apName" label="方案名称"></el-table-column>
@@ -152,6 +153,7 @@ export default {
     width: 100% !important;
     th {
       background: #fafafa;
+      height: 46px;
       & > .cell {
         font-size: 14px;
         font-family: PingFangSC-Medium, PingFang SC;
@@ -202,6 +204,22 @@ export default {
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+/deep/ .el-table tr td {
+  height: 46px;
+  padding: 0;
+}
+
+/deep/ .el-dialog__header {
+  border-bottom: 1px solid #e9e9e9;
+  padding: 15px 24px;
+  .el-dialog__title {
+    font-size: 16px;
+    font-family: PingFangSC-Semibold, PingFang SC;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
   }
 }
 </style>

@@ -102,7 +102,7 @@
                  </div>
                <div>
                     <el-button @click="cancelChangePrice">取 消</el-button>
-                    <el-button type="primary" @click="confirmChangePrice">确 定</el-button>
+                    <el-button type="primary" @click="confirmChangePrice">保 存</el-button>
                </div>
             </span>
     </div>
@@ -250,7 +250,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
     .price-dialog .city-tab {
         display: flex;
@@ -318,6 +318,9 @@
     }
 
     .price-dialog .table ul li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 180px;
         border-right: 1px solid rgba(0, 0, 0, 0.15);
         line-height: 54px;
@@ -326,13 +329,13 @@
 
     .price-dialog .table ul li:last-child {
         border-right: none;
+        text-align: right;
     }
 
     .price-dialog .num-input-wrap {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
     }
 
     .price-dialog .num-input-wrap span {
@@ -345,12 +348,14 @@
         text-align: center;
         line-height: 34px;
         position: relative;
-        top: 3px;
+        top: 1px;
+        box-sizing: border-box;
     }
 
     .price-dialog /deep/ .el-input-number, .price-dialog .num-input-wrap /deep/ .el-input, .price-dialog .num-input-wrap /deep/ .el-input__inner {
         width: 115px;
         height: 34px;
+        line-height: 34px;
         text-align: left;
     }
 
@@ -360,6 +365,7 @@
         border-bottom-left-radius: 0;
         position: relative;
         top: 0px;
+        text-align: right;
     }
 
     .price-dialog-footer {
@@ -382,6 +388,7 @@
 
     .price-dialog-footer .price-tip span {
         color: #1890ff;
+        font-weight: 600;
     }
 
 </style>

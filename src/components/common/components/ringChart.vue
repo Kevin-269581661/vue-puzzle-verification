@@ -82,7 +82,7 @@ export default {
         .interval()
         .adjust("stack")
         .position("percent")
-        .color("item", ["#1890FF", "#6ECB53", "#FAAD14", "#FF7875"])
+        .color("item", ["#1890FF", '#FAAD14'])
         .style({
           fillOpacity: 1,
         })
@@ -143,7 +143,7 @@ export default {
           fill: "#1890FF",
           textAlign: "center",
         },
-        offsetX: -90,
+        offsetX: -70,
         offsetY: 0,
       });
       this.chartInstance.annotation().text({
@@ -153,7 +153,7 @@ export default {
           fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -80,
+        offsetX: -60,
       });
       // this.chartInstance.annotation().text({
       //   position: ["50%", "55%"],
@@ -198,11 +198,11 @@ export default {
         content: "●",
         style: {
           fontSize: 16,
-          fill: "#6ECB53",
+          fill: "#FAAD14",
           textBaseline: "middle",
           lineHeight: 40,
         },
-        offsetX: 26,
+        offsetX: 16,
         offsetY: 0,
       });
       this.chartInstance.annotation().text({
@@ -214,7 +214,7 @@ export default {
           textBaseline: "middle",
           lineHeight: 40,
         },
-        offsetX: 40,
+        offsetX: 30,
       });
       this.chartInstance.render();
     },

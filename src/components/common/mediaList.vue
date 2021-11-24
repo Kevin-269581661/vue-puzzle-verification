@@ -1122,6 +1122,7 @@ export default {
       this.cityArea = { cName: '', rName: '' }
       this.asSaleState = ''
       this.asState = ''
+      this.resType = ''
       this.$refs.tableEl.clearFilter()
       this.getData()
     },

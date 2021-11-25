@@ -145,7 +145,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="10" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
               <div class="btn_wrapper">
                 <el-button
                   type="primary"
@@ -2532,6 +2532,7 @@ a {
 .u-more {
   background: none !important;
   color: #606266;
+  margin-right: 0;
 }
 
 // .flex_box {
@@ -2610,7 +2611,7 @@ a {
 }
 
 .btn_wrapper {
-  margin-left: 38px;
+  // margin-left: 38px;
 }
 
 /deep/ .el-table th {

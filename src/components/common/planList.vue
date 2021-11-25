@@ -639,7 +639,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="publishPlanDialog = false">取 消</el-button>
-        <el-button type="primary" @click="commitRelease">确 定</el-button>
+        <el-button type="primary" @click="commitRelease" class="u-new-btn">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -2589,10 +2589,14 @@ a {
   height: 32px;
 }
 
+.u-new-btn {
+  color: #fff;
+}
+
 </style>
 
 <style lang="scss">
   .newDrop {
-    padding:0;
+    padding:0!important;
   }
 </style>

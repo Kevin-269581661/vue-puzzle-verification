@@ -107,6 +107,8 @@ export default {
         } else {
           sessFun.messageFun('warning', res.statusText || '获取数据失败')
         }
+      }).catch(() => {
+        sessFun.messageFun('warning', res.statusText || '获取数据失败')
       })
     },
 
@@ -123,10 +125,12 @@ export default {
           this.searchParams.start = 1
           this.getData()
           this.$emit('confirm')
-          sessFun.messageFun('success', res.statusText || '方案已还原')
+          sessFun.messageFun('success', '方案已恢复')
         } else {
-          sessFun.messageFun('warning', res.statusText || '方案还原失败')
+          sessFun.messageFun('warning', res.statusText || '方案恢复失败')
         }
+      }).catch(() => {
+          sessFun.messageFun('warning', res.statusText || '方案恢复失败')
       })
     },
 

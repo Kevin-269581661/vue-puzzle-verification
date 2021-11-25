@@ -233,13 +233,6 @@
                             <dl style="border: none">
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
-                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect"
-                                        :class="mState !== '' ? 'otherSelectActive' :'' "
-                                        size="small"
-                                        @change="mStateChange">
-                                        <el-option label="正常" value="1"></el-option>
-                                        <el-option label="待安装" value="2"></el-option>
-                                    </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
                                         :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple
                                         collapse-tags
@@ -1487,7 +1480,7 @@
                 //搜索框
                 searchInput: '',
                 planSelect: '',
-                mState: '',                // 媒体状态
+                // mState: '',                // 媒体状态
                 activeGrade: '',           // 媒体等级
                 pickerOptions: {
                     disabledDate(time) {
@@ -3221,7 +3214,6 @@
                 }
                 this.limitList = []             // 初始化广告限制
                 this.filterCondition = []       // 过滤条件tag
-                this.mState = ''                // 媒体状态
                 this.buildValue = ''            // 楼盘类型
                 for (let i in this.filterData) {
                     this.filterData[i] = false
@@ -3969,7 +3961,6 @@
             filterTagCloseFun(tab, index) {
                 console.log('tab', tab, 'index', index)
                 if (tab.condition === 'mstate') {           // 媒体状态
-                    this.mState = ''
                     this.getAdsParamsData.mState = ''
                 } else if (tab.condition === 'grade') {           // 媒体等级
                     this.activeGrade = ''
@@ -4043,7 +4034,6 @@
             // 修改搜索中的媒体状态 filterCondition
             mStateChange(state) {
                 if (this.selectValue !== '被占查询') {
-                    console.log('切换媒体状态', state, this.mState)
                     let stateName = ''
                     if (state === '1') {
                         stateName = '正常'

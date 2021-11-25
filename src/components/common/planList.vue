@@ -12,178 +12,199 @@
         <h2>方案列表</h2>
       </div>
       <div class="mediaList_container">
-        <div class="flex_box search_row">
-          <div class="search-item">
-            <span>关键词：</span>
-            <el-input
-              placeholder="请输入内容"
-              v-model="searchInfo.keyword"
-              size="small"
-              class="u-select"
-            >
-              <el-select
-                v-model="searchInfo.select"
-                slot="prepend"
-                placeholder="请选择"
-              >
-                <el-option label="方案名称" value="1"></el-option>
-                <el-option label="客户名称" value="2"></el-option>
-                <el-option label="品牌名称" value="3"></el-option>
-                <el-option
-                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                  label="所属销售"
-                  value="4"
-                ></el-option>
-              </el-select>
-            </el-input>
-          </div>
+        <!-- flex_box search_row -->
+        <div class="">
+          <el-row class="search_row" :gutter="24">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item">
+                <span>关键词：</span>
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="searchInfo.keyword"
+                  size="small"
+                  class="u-select"
+                >
+                  <el-select
+                    v-model="searchInfo.select"
+                    slot="prepend"
+                    placeholder="请选择"
+                  >
+                    <el-option label="方案名称" value="1"></el-option>
+                    <el-option label="客户名称" value="2"></el-option>
+                    <el-option label="品牌名称" value="3"></el-option>
+                    <el-option
+                      v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                      label="所属销售"
+                      value="4"
+                    ></el-option>
+                  </el-select>
+                </el-input>
+              </div>
+            </el-col>
 
-          <div class="search-item">
-            <span>日期：</span>
-            <el-select
-              size="small"
-              v-model="searchInfo.dateType"
-              placeholder="请选择"
-              class="u-date"
-            >
-              <el-option label="上刊日期" value="0"></el-option>
-              <el-option label="下刊日期" value="1"></el-option>
-              <el-option label="创建日期" value="2"></el-option>
-              <!--<el-option label="换画日期" value="2"></el-option>-->
-            </el-select>
-            <el-date-picker
-              size="small"
-              class="u-date-picker"
-              v-model="searchInfo.rangeDate"
-              type="daterange"
-              range-separator="-"
-              format="yyyy-MM-dd"
-              value-format="yyyy-MM-dd"
-              start-placeholder="选择日期"
-              end-placeholder="选择日期"
-            >
-            </el-date-picker>
-          </div>
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item">
+                <span>日期：</span>
+                <el-select
+                  size="small"
+                  v-model="searchInfo.dateType"
+                  placeholder="请选择"
+                  class="u-date"
+                >
+                  <el-option label="上刊日期" value="0"></el-option>
+                  <el-option label="下刊日期" value="1"></el-option>
+                  <el-option label="创建日期" value="2"></el-option>
+                  <!--<el-option label="换画日期" value="2"></el-option>-->
+                </el-select>
+                <el-date-picker
+                  size="small"
+                  class="u-date-picker"
+                  v-model="searchInfo.rangeDate"
+                  type="daterange"
+                  range-separator="-"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+                  start-placeholder="选择日期"
+                  end-placeholder="选择日期"
+                >
+                </el-date-picker>
+              </div>
+            </el-col>
 
-          <div class="search-item">
-            <span>选择状态：</span>
-            <el-select
-              v-model="searchInfo.status"
-              placeholder="请选择状态"
-              size="small"
-              class="u-select2"
-            >
-              <el-option
-                v-for="item of stateList"
-                :key="item.value"
-                :label="item.text"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item">
+                <span>选择状态：</span>
+                <el-select
+                  v-model="searchInfo.status"
+                  placeholder="请选择状态"
+                  size="small"
+                  class="u-select2"
+                >
+                  <el-option
+                    v-for="item of stateList"
+                    :key="item.value"
+                    :label="item.text"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>
+            </el-col>
 
-          <div class="search-item">
-            <span>选择城市：</span>
-            <el-select
-              v-model="searchInfo.cityWord"
-              placeholder="请选择投放城市"
-              filterable
-              size="small"
-              class="u-select2"
-            >
-              <el-option
-                v-for="item of filterCityData"
-                :key="item.rID"
-                :label="item.text"
-                :value="item.text"
-              ></el-option>
-            </el-select>
-          </div>
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item">
+                <span>选择城市：</span>
+                <el-select
+                  v-model="searchInfo.cityWord"
+                  placeholder="请选择投放城市"
+                  filterable
+                  size="small"
+                  class="u-select2"
+                >
+                  <el-option
+                    v-for="item of filterCityData"
+                    :key="item.rID"
+                    :label="item.text"
+                    :value="item.text"
+                  ></el-option>
+                </el-select>
+              </div>
+            </el-col>
 
-          <div class="search-item" v-if="isAll">
-            <span style="width: 105px">选择公司：</span>
-            <el-select
-              v-model="searchInfo.company"
-              placeholder="请选择所属公司"
-              filterable
-              size="small"
-              class="u-select2"
-            >
-              <el-option
-                v-for="item of companyData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item" v-if="isAll">
+                <span>选择公司：</span>
+                <el-select
+                  v-model="searchInfo.company"
+                  placeholder="请选择所属公司"
+                  filterable
+                  size="small"
+                  class="u-select2"
+                >
+                  <el-option
+                    v-for="item of companyData"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </div>
+            </el-col>
 
-          <div class="search-item">
-            <span>是否预锁：</span>
-            <el-select
-              v-model="searchInfo.Lock"
-              placeholder="是否预锁"
-              size="small"
-              class="u-select2"
-            >
-              <el-option label="已预锁" value="2"></el-option>
-              <el-option label="未预锁" value="1"></el-option>
-            </el-select>
-          </div>
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+              <div class="search-item">
+                <span>是否预锁：</span>
+                <el-select
+                  v-model="searchInfo.Lock"
+                  placeholder="是否预锁"
+                  size="small"
+                  class="u-select2"
+                >
+                  <el-option label="已预锁" value="2"></el-option>
+                  <el-option label="未预锁" value="1"></el-option>
+                </el-select>
+              </div>
+            </el-col>
 
-          <div class="btn_wrapper">
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              @click="search()"
-              :disabled="!isSearch"
-              class="marginR"
-              >搜索
-            </el-button>
+            <el-col :xs="24" :sm="24" :md="12" :lg="10" :xl="6">
+              <div class="btn_wrapper">
+                <el-button
+                  type="primary"
+                  icon="el-icon-search"
+                  @click="search()"
+                  :disabled="!isSearch"
+                  class="marginR"
+                  >搜索
+                </el-button>
 
-            <el-button
-              plain
-              @click="reset()"
-              :disabled="!isReset"
-              class="marginR"
-              >重置</el-button
-            >
+                <el-button
+                  plain
+                  @click="reset()"
+                  :disabled="!isReset"
+                  class="marginR"
+                  >重置</el-button
+                >
 
-            <template v-if="showNewBtn || !isNation">
-              <el-button
-                plain
-                v-if="showNewBtn"
-                @click="addOne()"
-                class="marginR"
-                >新建</el-button
-              >
-            </template>
-
-            <el-dropdown placement="bottom-start"  class="u-dropdown-more">
-              <el-button class="marginR u-more">
-                更多<i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown" class="newDrop">
                 <template v-if="showNewBtn || !isNation">
-                  <el-dropdown-item
+                  <el-button
                     plain
                     v-if="showNewBtn"
-                    @click.native.prevent="isOpenDownload = true"
-                    >空位导出</el-dropdown-item
-                  >
-                  <el-dropdown-item
-                    plain
-                    @click.native.prevent="exportRes"
-                    v-if="isShowExportBtn"
-                    >门店导点</el-dropdown-item
+                    @click="addOne()"
+                    class="marginR"
+                    >新建</el-button
                   >
                 </template>
-                <el-dropdown-item plain @click.native.prevent="openRecycleBin"
-                  >回收站</el-dropdown-item
-                >
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
+
+                <el-dropdown placement="bottom-start" class="u-dropdown-more">
+                  <el-button class="marginR u-more">
+                    更多<i class="el-icon-arrow-down el-icon--right"></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown" class="newDrop">
+                    <template v-if="showNewBtn || !isNation">
+                      <el-dropdown-item
+                        plain
+                        v-if="showNewBtn"
+                        @click.native.prevent="isOpenDownload = true"
+                        >空位导出</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        plain
+                        @click.native.prevent="exportRes"
+                        v-if="isShowExportBtn"
+                        >门店导点</el-dropdown-item
+                      >
+                    </template>
+                    <el-dropdown-item
+                      plain
+                      @click.native.prevent="openRecycleBin"
+                      >回收站</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </el-col>
+          </el-row>
+
+          <!-- <el-row class="search_row" :gutter="24"> </el-row> -->
         </div>
         <div class="table_wrap">
           <el-table
@@ -575,7 +596,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="cancelEdit">放 弃</el-button>
-        <el-button type="primary" @click="continueEdit">继续编辑</el-button>
+        <el-button type="primary" class="u-btn" @click="continueEdit">继续编辑</el-button>
       </span>
     </el-dialog>
 
@@ -639,7 +660,9 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="publishPlanDialog = false">取 消</el-button>
-        <el-button type="primary" @click="commitRelease" class="u-new-btn">确 定</el-button>
+        <el-button type="primary" @click="commitRelease" class="u-new-btn"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
 
@@ -2098,7 +2121,7 @@ export default {
         token: this.sessionData.token,
         apid: row.apID
       }
-      this.$confirm('确定删除该方案？点击【确认】该方案将被移除至回收站。', {
+      this.$confirm('点击【确认】该方案将被移除至回收站', '确定删除该方案？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -2259,7 +2282,7 @@ a {
   font-size: 14px;
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.65);
+  // color: rgba(0, 0, 0, 0.65);
 }
 
 .table_wrap .city_p span {
@@ -2511,24 +2534,33 @@ a {
   color: #606266;
 }
 
+// .flex_box {
+//   justify-content: space-between;
+// }
+// .flex_box::after {
+//   content: '';
+// }
 .search-item {
-  margin-right: 20px;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
+  &:nth-child(4) {
+    margin-right: 0;
+  }
   span {
     display: inline-block;
-    width: 105px;
+    width: 70px;
     text-align: right;
     font-size: 14px;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.85);
     box-sizing: border-box;
+    white-space: nowrap;
   }
 
   .u-select {
-    width: 302px;
+    min-width: 302px;
     /deep/ .el-input__inner {
       width: 203px;
     }
@@ -2562,7 +2594,7 @@ a {
   }
 
   .u-date-picker {
-    width: 203px;
+    min-width: 203px;
     box-sizing: border-box;
     padding: 5px 15px 5px 17px;
     border-top-left-radius: 0;
@@ -2593,10 +2625,13 @@ a {
   color: #fff;
 }
 
+.u-btn {
+  color: #fff;
+}
 </style>
 
 <style lang="scss">
-  .newDrop {
-    padding:0!important;
-  }
+.newDrop {
+  padding: 0 !important;
+}
 </style>

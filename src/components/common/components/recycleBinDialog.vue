@@ -23,6 +23,7 @@
           <el-popconfirm
             title="确定还原该方案？"
             @confirm="restoreAdPlan(scope.row)"
+            popper-class="newBtn"
           >
             <span slot="reference" class="opt">恢复</span>
           </el-popconfirm>
@@ -130,7 +131,7 @@ export default {
           sessFun.messageFun('warning', res.statusText || '方案恢复失败')
         }
       }).catch(() => {
-          sessFun.messageFun('warning', res.statusText || '方案恢复失败')
+        sessFun.messageFun('warning', res.statusText || '方案恢复失败')
       })
     },
 
@@ -224,6 +225,36 @@ export default {
     font-family: PingFangSC-Semibold, PingFang SC;
     font-weight: 600;
     color: rgba(0, 0, 0, 0.85);
+  }
+}
+</style>
+
+<style lang="scss">
+.newBtn {
+  .el-popconfirm__main {
+    padding: 8px 0;
+  }
+  .el-button {
+    width: 56px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 12px;
+    box-sizing: border-box;
+    min-width: unset;
+    position: relative;
+    span {
+      display: block;
+      width: 100%;
+      height: 28px;
+      line-height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 </style>

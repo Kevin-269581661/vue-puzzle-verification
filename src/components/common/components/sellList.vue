@@ -151,16 +151,16 @@ export default {
 
 .sell {
   display: inline-block;
-  width: 40px;
-  height: 16px;
+  width: 42px;
+  height: 18px;
   margin-left: 5px;
   background: url('../../../assets/images/sell_state1.png') no-repeat
     center/cover;
 }
 .no-sell {
   display: inline-block;
-  width: 50px;
-  height: 16px;
+  width: 52px;
+  height: 18px;
   margin-left: 5px;
   background: url('../../../assets/images/sell_state2.png') no-repeat
     center/cover;

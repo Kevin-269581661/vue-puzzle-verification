@@ -2686,14 +2686,14 @@ export default {
       // }
       this.getOrderPriceDetail()
       this.getInitData();
-      Message.success("修改订单金额成功!");
+      sessFun.messageFun('success', '修改订单金额成功')
 
     },
 
     changePrice () {
       this.changePriceModal = true
       this.handleTime = new Date().getTime()
-      this.changePriceData.handleTime = new Date().getTime()
+      this.changePriceData.handleTime = this.handleTime
     }
   }
   ,
@@ -3378,7 +3378,7 @@ export default {
   .price-dialog-footer {
     padding: 15px 25px 0;
     border-top: 1px solid #E9E9E9;
-    margin-bottom: 0!important;
+    margin-bottom: 0;
   }
   .city-tab, .change-price-table-wrap{
     padding: 0 25px;

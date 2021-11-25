@@ -514,10 +514,10 @@ export default {
           value: 3
         },
 
-        {
-          label: '维修',
-          value: 5
-        }
+        // {
+        //   label: '维修',
+        //   value: 5
+        // }
 
       ],
       // 工程人员

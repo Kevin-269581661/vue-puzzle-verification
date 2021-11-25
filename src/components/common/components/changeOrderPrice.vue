@@ -18,7 +18,7 @@
                     <li><span>小计</span></li>
                 </ul>
                 <ul>
-                    <li><span>广告门</span></li>
+                    <li class="u-item"><span>广告门</span></li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
@@ -54,7 +54,7 @@
                     </li>
                 </ul>
                 <ul>
-                    <li><span>道闸</span></li>
+                    <li class="u-item"><span>道闸</span></li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
@@ -336,26 +336,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 32px;
     }
 
     .price-dialog .num-input-wrap span {
         width: 34px;
-        height: 34px;
+        height: 32px;
         background: rgba(246, 246, 246, 1);
         border-radius: 4px 0px 0px 4px;
         border: 1px solid rgba(217, 217, 217, 1);
         padding: 0 !important;
         text-align: center;
-        line-height: 34px;
-        position: relative;
-        top: 2px;
+        line-height: 32px;
+        // position: relative;
+        // top: 2px;
         box-sizing: border-box;
     }
 
     .price-dialog /deep/ .el-input-number, .price-dialog .num-input-wrap /deep/ .el-input, .price-dialog .num-input-wrap /deep/ .el-input__inner {
         width: 115px;
-        height: 34px;
-        line-height: 34px;
+        height: 32px;
+        line-height: 32px;
         text-align: left;
     }
 
@@ -364,8 +365,9 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         position: relative;
-        top: 0px;
+        // top: -1px;
         text-align: right;
+        display: block;
     }
 
     .price-dialog-footer {
@@ -394,6 +396,12 @@
     .u-count {
         span {
            width: 100%;
+        }
+    }
+
+    .u-item {
+        span {
+            width: 100%;
         }
     }
 

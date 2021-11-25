@@ -348,7 +348,7 @@
         text-align: center;
         line-height: 34px;
         position: relative;
-        top: 1px;
+        top: 2px;
         box-sizing: border-box;
     }
 

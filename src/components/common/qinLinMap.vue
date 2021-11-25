@@ -4190,7 +4190,7 @@ export default {
 
             if (
               (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_COUNTRY")
+              (this.sessionData.uType == "ADN_BD_KA")
             ) {
               tHeader.push("归属公司");
               filterVal.push("asNames");

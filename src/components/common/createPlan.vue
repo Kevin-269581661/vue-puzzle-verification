@@ -1882,7 +1882,7 @@ export default {
           ) {
             obj.asNames = item.asNames;
           }
-          
+
           obj[this.emptyRange[0] + "-" + this.emptyRange[1]] =
             item.DateInfo.adsNum || 0;
           resObj.showList.push(obj);
@@ -2380,6 +2380,17 @@ export default {
         "计划投放数量(面)"
       ];
 
+      let customPermission = JSON.parse(
+        sessionStorage.getItem("session_data")
+      )
+
+      if (
+        (customPermission.uType == "ADN_MD_COUNTRY") ||
+        (customPermission.uType == "ADN_BD_KA")
+      ) {
+        allHead.push("归属公司");
+      }
+
       sheetExcel.toDownload(
         allHead,
         arr,
@@ -2390,6 +2401,9 @@ export default {
     // 处理数据
     excelData (arr) {
       console.log("arrr------excelData", arr);
+      let customPermission = JSON.parse(
+        sessionStorage.getItem("session_data")
+      )
       let dateArr = [];
       let arr2 = [];
       //将得到的数据除去不需要的
@@ -2416,6 +2430,14 @@ export default {
           actualAdsCnt: item.actualAdsCnt || '',
           planAdsCnt: item.planAdsCnt
         };
+
+        if (
+          (customPermission.uType == "ADN_MD_COUNTRY") ||
+          (customPermission.uType == "ADN_BD_KA")
+        ) {
+          obj.asName = item.asName;
+        }
+
         arr2.push(obj);
       }
       let obj = {

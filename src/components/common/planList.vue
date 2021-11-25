@@ -1394,7 +1394,7 @@ export default {
       }
       api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
         .then(res => {
-          console.log(res);
+          console.log(res, 'reeeeeeeeeeeeee');
           if (res.data.SysCode == 300200) {
             // 查看是否被锁
             api.postApi(this.apiVar.Advertisement + "/CheckLock", info).then(res => {

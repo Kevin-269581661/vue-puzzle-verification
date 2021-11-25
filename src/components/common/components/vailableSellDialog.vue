@@ -30,7 +30,7 @@
         class="u-targetRadio"
         @change="handleAslbChange"
       >
-        <el-radio :label="1" class="u-radio">设备</el-radio>
+        <el-radio :label="1" class="u-radio" v-if="mediaAdsStateAction.length > 1">设备</el-radio>
         <el-radio
           :label="item.asID"
           v-for="item in mediaAdsStateAction"

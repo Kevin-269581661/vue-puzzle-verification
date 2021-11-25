@@ -294,7 +294,7 @@ export default {
             carFlow: item.carFlow || "",
             peopleFlow: item.peopleFlow || "",
             adsNum: item.adsNum || 0,
-            remark: item.allremark || "",
+            remark: item.allRemark1 || "",
           };
 
           let customPermission = JSON.parse(
@@ -513,7 +513,7 @@ export default {
               carFlow: item.carFlow || "",
               peopleFlow: item.peopleFlow || "",
               adsNum: item.adsNum || 0,
-              remark: item.allremark || "",
+              remark: item.allRemark1 || "",
             };
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")

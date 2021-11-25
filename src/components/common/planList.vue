@@ -163,7 +163,7 @@
               <el-button class="marginR u-more">
                 更多<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
-              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-menu slot="dropdown" class="newDrop">
                 <template v-if="showNewBtn || !isNation">
                   <el-dropdown-item
                     plain
@@ -2588,4 +2588,11 @@ a {
 .u-dropdown-more {
   height: 32px;
 }
+
+</style>
+
+<style lang="scss">
+  .newDrop {
+    padding:0;
+  }
 </style>

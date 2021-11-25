@@ -49,7 +49,7 @@
                             </el-input-number>
                         </div>
                     </li>
-                    <li>
+                    <li class="u-count">
                         <span>&yen;{{priceFormat(changePriceData.AdDoorAdPrice+changePriceData.AdDoorMakePrice)||0}}</span>
                     </li>
                 </ul>
@@ -85,7 +85,7 @@
                             </el-input-number>
                         </div>
                     </li>
-                    <li>
+                    <li class="u-count">
                         <span>&yen;{{priceFormat(changePriceData.BreakAdPrice+changePriceData.BreakMakePrice)||0}}</span>
                     </li>
                 </ul>
@@ -389,6 +389,12 @@
     .price-dialog-footer .price-tip span {
         color: #1890ff;
         font-weight: 600;
+    }
+
+    .u-count {
+        span {
+           width: 100%;
+        }
     }
 
 </style>

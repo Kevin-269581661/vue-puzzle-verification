@@ -104,12 +104,6 @@
                             <dl style="border: none">
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
-                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
-                                        size="small"
-                                        @change="mStateChange">
-                                        <el-option label="正常" value="1"></el-option>
-                                        <el-option label="待安装" value="2"></el-option>
-                                    </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
                                         size="small"
                                         :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
@@ -303,21 +297,28 @@
                                                     <span v-if="scope.row.adlInfo === ''">暂无被占信息</span>
                                                     <ul v-else>
                                                         <li v-for="(item, adlInfoIndex) in scope.row.adlInfo" :key="adlInfoIndex">
-                                                            <div v-if="item.asState">
+                                                            <template v-if="item.lState == null">
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
-                                                            </div>
-                                                            <div v-else>
+                                                                <div style="margin-bottom: 5px">
+                                                                    <span style="color: #333">状态原因：</span>
+                                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                                    </span>
+                                                                </div>
+                                                            </template>
+                                                            <template v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
-                                                              方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
-                                                          </span>
+                                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                                    </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                                            </div>
+                                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                </p>
+                                                            </template>
                                                         </li>
                                                     </ul>
                                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
@@ -336,22 +337,29 @@
                                                     trigger="hover">
                                                     <span v-if="scope.row.adlInfo === ''">暂无被占信息</span>
                                                     <ul v-else>
-                                                        <li v-for="item in scope.row.adlInfo">
-                                                            <div v-if="item.asState">
+                                                        <li v-for="(item, index) in scope.row.adlInfo" :key="index">
+                                                            <template v-if="item.lState == null">
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
-                                                            </div>
-                                                            <div v-else>
+                                                                <div style="margin-bottom: 5px">
+                                                                    <span style="color: #333">状态原因：</span>
+                                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                                    </span>
+                                                                </div>
+                                                            </template>
+                                                            <template v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                              <span  style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
-                                                              方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
-                                                          </span>
+                                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                                        方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
+                                                                    </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                                            </div>
+                                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                </p>
+                                                            </template>
                                                         </li>
                                                     </ul>
                                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
@@ -933,12 +941,12 @@
                         :on-remove="fileRemove"
                         :multiple="false">
                         <template v-if="customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'">
-                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板_new.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板_new.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         </template>
                         <template v-else>
-                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='1'" :href ='this.apiVar.qadnUrl + "/importTemplate/resTemplate_new.xlsx"' download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
+                            <a v-if="importType=='2'" :href ='this.apiVar.qadnUrl + "/importTemplate/adsTemplate_new.xlsx"' download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         </template>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>
@@ -1247,7 +1255,7 @@
                 //搜索框
                 searchInput: '',
                 planSelect: '',
-                mState: '',                //媒体状态
+                // mState: '',                //媒体状态
                 activeGrade: '',           // 媒体等级
                 active: 1,                  //步骤
                 pickerOptions: {
@@ -1408,7 +1416,7 @@
                 adsCount:0,//总可选点位
                 customPermission: {},  //巡点权限
                 // 购物车分页时页面条目数量
-                cartPageSize: 10,
+                cartPageSize: 500,
                 currentPage: 1,
                 totalNum: 0,
                 planResSet: new Set()
@@ -1760,7 +1768,20 @@
             // 导出有问题的点
             downLoadExcel(){
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称',	'市', '区', '媒介载体',	'媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
+                let allHead = [
+                    '资源名称', 
+                    '省份',
+                    '城市', 
+                    '区域', 
+                    '详细地址',
+                    '媒介载体',	
+                    '媒体名称', 
+                    '资产编号', 
+                    '投放面', 
+                    '投放排期', 
+                    '钼媒点位ID', 
+                    '失败原因'
+                ];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName+'问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -1779,12 +1800,14 @@
                 for(let data of arr){
                     let obj = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.origin,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mediaName,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.schedules,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -1795,14 +1818,17 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
+                        province: info.province,
                         city: info.prName,
                         origin: info.rName,
-                        mVehicle: info.mVehicle,
-                        mediaName: info.mTitle,
-                        asLab: info.asLab,
-                        assetTag: info.assetTag,
+                        resAddress: info.resAddress,
+                        // mVehicle: info.mVehicle,
+                        // mediaName: info.mTitle,
+                        // asLab: info.asLab,
+                        // assetTag: info.assetTag,
                         schedules: timeFormat.toDate(data.pbStar, '.')+'-'+timeFormat.toDate(data.pbEnd, '.'),
-                        pointId: data.pointId,
+                        // pointId: data.pointId,
+                        failReason: data.failReason,
                     };
                     resultarr[1].showList.push(obj);
                 }
@@ -1941,10 +1967,31 @@
             downLoadFanan(){
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区',	'商圈', '资源地址',	'楼盘价格',	'入住年份',	'住户数量',	'出入口', '楼栋数量', '楼盘（写字楼）类型',	'地图中心点', '可选面数' ,'投放排期'];
-                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                    allHead.push('归属公司')
-                }
+                let allHead = [
+                    '资源名称',
+                    '省份', 
+                    '城市', 
+                    '区域',
+                    '详细地址',	
+                    '媒介载体',
+                    '商圈', 
+                    '楼栋数量', 
+                    '住户数量',	
+                    '楼盘价格',	
+                    '楼盘类型',	
+                    '入住时间',	
+                    '广告限制',
+                    '车位数',
+                    '车流量',
+                    '人流量',
+                    '媒体数量（门）',
+                    '可投数量（面）',
+                    '地图中心点', 
+                    '投放排期',
+                    // '出入口', 
+                    // '可选面数', 
+                ];
+
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -1953,6 +2000,11 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                    allHead.push('归属公司')
+                }
+                
                 if(this.shareADUrl){
                     let head = ['在线协同选点链接(可地图查看社区)  '+this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
                     sheetExcel.toDownload(allHead, arr, this.planForm.planName+'点位表', head);
@@ -1978,23 +2030,29 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         rName: data.origin,
-                        tradingArea: data.tradingArea,
                         resAddress: data.address,
-                        hPrice: data.buildPrice,
-                        chDay: data.liveYear,
-                        hNum: data.houseNum,
-                        dNum: data.dNum,
+                        mVehicle: data.mVehicle,
+                        tradingArea: data.tradingArea,
                         fNum: data.buildNum,
+                        hNum: data.houseNum,
+                        hPrice: data.buildPrice,
                         cType: data.buildType,
-                        map: data.mapCenter,
+                        chDay: data.liveYear,
+                        notPush: data.notPush,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        peopleFlow: data.peopleFlow,
+                        // dNum: data.dNum,
+                        actualMediaCnt: 0,
                         adsNum: 1,
+                        map: data.mapCenter,
                         timeRange: '',
+                        mID: data.mID
                     };
-                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                        obj.asName = data.asName
-                    }
+
                     // 巡点权限
                     if(this.customPermission) {
                         switch (this.customPermission.patrolPermission) {
@@ -2009,9 +2067,21 @@
                                 break;
                         }
                     }
+
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                        obj.asName = data.asName
+                    }
+                    
                     for(let date of dateArr){
                         if(data.schedules == date.sheetName){
                             if(date.resIDArr.includes(data.resID)){
+                                for(let item of date.showList){
+                                    if((item.resID === data.resID) && (item.mID !== data.mID)){
+                                        console.log(item.resName, 'resName')
+                                        item.actualMediaCnt++
+                                        break
+                                    }
+                                }
                                 for(let item of date.showList){
                                     if(item.resID == data.resID){
                                         item.adsNum++;
@@ -2027,12 +2097,23 @@
                         }
                     }
                 }
+
                 for(let data of dateArr){
                     for(let obj of data.showList){
                         delete obj.resID;
+                        delete obj.mID;
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
+
+                dateArr.forEach(item => {
+                    item.showList.forEach(i => {
+                        if(i.actualMediaCnt === 0) {
+                            i.actualMediaCnt = 1
+                        }
+                    })
+                })
+                console.log(dateArr, 'dateArrdateArr')
                 return dateArr;
             },
             // 分页
@@ -2191,7 +2272,8 @@
                         asIDs: key.asIDs,
                         asLabs: key.asLabs,
                         resName: key.resName,
-                        city: this.city[this.activeIndex].rName,
+                        province: key.province,
+                        city: key.city,
                         rid: this.city[this.activeIndex].rid,
                         origin: key.rName,
                         buildType: key.cType,
@@ -2224,7 +2306,8 @@
                         box: {A: false, B: false},
                         remark: key.remark,
                         trafficState: key.trafficState,
-                        electrifyState: key.electrifyState
+                        electrifyState: key.electrifyState,
+                        notPush: key.notPush,
                     }
                     if (key.mVehicle === '道闸') {
                         adObj.adPrice = key.asPrice / 100
@@ -2258,19 +2341,27 @@
                     if (key.adlInfo !== null && key.adlInfo !== undefined && key.adlInfo.length > 0) {
                         let arr = []
                         for (let akey of key.adlInfo) {
-                            if(akey.asState){
-                                arr.push({
-                                    asState: akey.asState
-                                })
-                            }else{
-                                let star = timeFormat.toDate(akey.lStar, '/')
-                                let end = timeFormat.toDate(akey.lEnd, '/')
-                                arr.push({
-                                    beOccupieApName: akey.apName,
-                                    schedules: star + '-' + end,
-                                    lState: akey.lState,
-                                })
-                            }
+                            let star = timeFormat.toDate(akey.lStar, '/')
+                            let end = timeFormat.toDate(akey.lEnd, '/')
+                            arr.push({
+                                asState: akey.asState,
+                                schedules: star + '-' + end,
+                                lState: akey.lState,
+                                unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                            })
+                            // if(akey.asState){
+                            //     arr.push({
+                            //         asState: akey.asState
+                            //     })
+                            // }else{
+                            //     let star = timeFormat.toDate(akey.lStar, '/')
+                            //     let end = timeFormat.toDate(akey.lEnd, '/')
+                            //     arr.push({
+                            //         beOccupieApName: akey.apName,
+                            //         schedules: star + '-' + end,
+                            //         lState: akey.lState,
+                            //     })
+                            // }
                         }
                         adObj.adlInfo = arr
                     } else {
@@ -2513,7 +2604,6 @@
             filterTagCloseFun(tab,index){
                 console.log('tab',tab,'index',index)
                 if (tab.condition === 'mstate') {              // 媒体状态
-                    this.mState = ''
                     this.getAdsParamsData.mState = ''
                 } else if(tab.condition === 'grade') {           // 媒体等级
                     this.activeGrade = ''
@@ -2586,7 +2676,6 @@
             // 修改搜索中的媒体状态 filterCondition
             mStateChange(state) {
                 if(this.selectValue !== '被占查询'){
-                    console.log('切换媒体状态',state,this.mState)
                     let stateName = ''
                     if(state === '1'){
                         stateName = '正常'
@@ -3722,6 +3811,11 @@
                     remark: info.remark,
                     trafficState: info.trafficState || '',
                     electrifyState: info.electrifyState || '',
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow
                 }
                 return selectInfo
             },
@@ -3984,6 +4078,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
+                        peopleFlow: data.peopleFlow,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        notPush: data.notPush,
+                        province: data.province,
                     };
                     if(key.centerInfos && key.centerInfos.length) {
                         for(let item of key.centerInfos) {
@@ -4638,6 +4737,11 @@
                                     mediaLevel: data.grade || '',
                                     asName: data.asName || '',        // 点位所属公司名称
                                     asrID: data.asrID,                // 所属公司id
+                                    peopleFlow: data.peopleFlow,
+                                    parkSpaceNum: data.parkSpaceNum,
+                                    carFlow: data.carFlow,
+                                    notPush: data.notPush,
+                                    province: data.province
                                 }
                                 if (data.mVehicle === '道闸') {
                                     selectInfo.adPrice = data.asPrice / 100

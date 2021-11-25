@@ -41,11 +41,7 @@
                 <dl style="border: none">
                     <dt>其它条件：</dt>
                     <dd class="other-dd">
-                        <el-select v-model="mState" placeholder="媒体状态" class="otherSelect" :class="mState !== '' ? 'otherSelectActive' :'' "
-                                   @change="mStateChange">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="待安装" value="2"></el-option>
-                        </el-select>
+
                         <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
                                    :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple collapse-tags
                                    @change="activeADLimit"> <!--visible-change-->
@@ -498,7 +494,7 @@
                 firstLevelData: [],             // 一级搜索保存的数据
                 //添加点位列表
                 planList: [],
-                mState:'',
+                // mState:'',
                 beforADList_mState: [],       // 保存切换媒体的所有数据--ADList
                 IsAdd: false,      //是否已添加点位
                 totalPlanList: [],   // step2全部城市的选点列表
@@ -969,7 +965,6 @@
             filterTagCloseFun(tab,index){
                 console.log('tab',tab,'index',index)
                 if (tab.condition === 'mstate') {           // 媒体状态
-                    this.mState = ''
                     this.getAdsParamsData.mState = ''
                 } else if (tab.condition === 'ADLimit'){        // 广告限制
                     this.limitList = []
@@ -1040,7 +1035,6 @@
             // 修改搜索中的媒体状态 filterCondition
             mStateChange(state) {
                 if(this.selectValue !== '被占查询'){
-                    console.log('切换媒体状态',state,this.mState)
                     let stateName = ''
                     if(state === '1'){
                         stateName = '正常'

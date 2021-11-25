@@ -62,6 +62,8 @@
                 </el-form-item>
             </el-form>
         </template>
+
+
         <!-- 换画报告 -->
         <template v-else>
             <div class="list_pic" v-if="painList.length">
@@ -214,7 +216,7 @@
         <!-- 分页 -->
         <div class="pager">
             <el-pagination v-if="pageInfo.paginationShow&&!firstTime" background :current-page.sync="pageInfo.currPage"
-                           :page-sizes="[6, 12]" :page-size="pageInfo.pageSize"
+                           :page-sizes="[6, 12]" :page-size="pageInfo.pageSize2"
                            layout="sizes, prev, pager, next, jumper" :total="pageInfo.totalNum"
                            @size-change="sizeChange" @current-change='changePage'>
             </el-pagination>
@@ -666,8 +668,9 @@
                     paginationShow: true,
                     currPage: 1,
                     totalNum: 0,
-                    pageSize: 6,
+                    pageSize: 500,
                     loading: false,
+                    pageSize2: 6 
                 },
                 // 图片列表
                 imageArr: [],
@@ -707,7 +710,7 @@
                 dialogPage: {
                     loading_maInfo: false,
                     currInfoPage: 1,
-                    pageSize: 10,
+                    pageSize: 500,
                     totalInfoPage: 1,
                     pointLoading: false,
                 },
@@ -801,7 +804,7 @@
             sizeChange(pageVal) {
                 this.pageInfo.loading = true;
                 this.pageInfo.currPage = 1;
-                this.pageInfo.pageSize = pageVal;
+                this.pageInfo.pageSize2 = pageVal;
                 this.getImgArr();
             },
             // 点击页数
@@ -944,11 +947,10 @@
                 let info = {};
                 if (this.type == 1) {
                     info = this.searchFormat('SK');
-                    // info = this.getImgCount('SK');
                 } else if (this.type == 2) {
                     info = this.searchFormat('XK');
-                    // info = this.getImgCount('XK');
                 }
+                // info.pageSize = 6
                 this.getImgInfo(info);
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
@@ -970,7 +972,7 @@
             // 搜索数据格式化
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
-                let {currPage, pageSize} = this.pageInfo;
+                let {currPage, pageSize2} = this.pageInfo;
                 let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
@@ -978,7 +980,7 @@
                     apId: sessionStorage.getItem('order_apid'),
                     pType: type,
                     pageNum: currPage,
-                    pageSize: pageSize,
+                    pageSize: pageSize2,
                     mVehicle: mediaType,
                     time: dateRange.includes('全部')?'':dateRange,
                     materialRemark: materialRemark.includes('全部')?'':materialRemark,
@@ -1309,7 +1311,7 @@
                 this.dialogPage = {
                     ...this.dialogPage,
                     currInfoPage: 1,
-                    pageSize:10,
+                    pageSize:500,
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,

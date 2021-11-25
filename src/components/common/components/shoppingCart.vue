@@ -275,7 +275,7 @@ export default {
     return {
       // 购物车分页时页面条目数量
       currentPage: 1,
-      cartPageSize: 10,
+      cartPageSize: 500,
       totalNum: 0,
       //所有的数据，如果是一次全部返回的话
       shopDelRowClick: false

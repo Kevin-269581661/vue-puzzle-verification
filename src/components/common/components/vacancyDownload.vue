@@ -79,7 +79,7 @@ import sessFun from "../../../commonFun/sessFun.js";
 import { Message } from "element-ui";
 
 export default {
-  data() {
+  data () {
     return {
       // 登录信息
       sessionData: {},
@@ -93,22 +93,22 @@ export default {
       // 城市列表
       cityList: [],
       pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() <= Date.now()-1000*3600*24;
+        disabledDate (time) {
+          return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
     };
   },
   methods: {
     // 获取session数据
-    getSessionData() {
+    getSessionData () {
       this.sessionData = sessFun.getSess();
     },
-    cancelDown() {
+    cancelDown () {
       this.messageFun("info", "取消此操作");
       this.$emit("cancelClick", false);
     },
-    confirmDown() {
+    confirmDown () {
       console.log("downLoadInfo----", this.downLoadInfo);
       let { loadType, city, daterange, dateType } = this.downLoadInfo;
       if (!city.length) {
@@ -149,7 +149,7 @@ export default {
       }
     },
     // 获取城市
-    getCity() {
+    getCity () {
       let info = {
         token: this.sessionData.token,
         uid: this.sessionData.uID,
@@ -175,7 +175,7 @@ export default {
         });
     },
     // 自定义日期按照小区
-    dateRangeEmpty() {
+    dateRangeEmpty () {
       this.postDownLoadNum(0);
       let { city, daterange } = this.downLoadInfo;
       let loadingPoint = this.$loading({
@@ -201,31 +201,25 @@ export default {
             if (res.data.length) {
               let returnobj = this.formatData(res.data);
               let head = [
+                "资源名称",
                 "省份",
                 "城市",
                 "区域",
-                "资源名称",
-                "商圈",
-                "地址",
+                "详细地址",
                 "媒介载体",
+                "商圈",
                 "楼栋数量",
                 "住户数量",
                 "楼盘价格",
                 "楼盘类型",
                 "入住时间",
+                "广告限制",
                 "车位数",
                 "车流量",
                 "人流量",
-                "广告限制",
-                "点位备注",
                 "媒体数量(面)",
+                "点位备注",
               ];
-              if (
-                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                (this.sessionData.uType == "ADN_BD_KA")
-              ) {
-                head.push("归属公司");
-              }
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
@@ -237,6 +231,14 @@ export default {
                   head.push("巡点问题", "通行情况", "通电情况");
                   break;
               }
+
+              if (
+                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                (this.sessionData.uType == "ADN_BD_KA")
+              ) {
+                head.push("归属公司");
+              }
+
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -260,7 +262,7 @@ export default {
         });
     },
     // 导出空点格式化数据
-    formatData(arr) {
+    formatData (arr) {
       let returnObj = {
         city: [],
         arr: "",
@@ -275,34 +277,30 @@ export default {
         let dataArr = data.adDoor.concat(data.barrier);
         for (let item of dataArr) {
           let obj = {
-            province: item.prName || "--",
-            city: item.crName || "--",
-            rName: item.rName || "--",
-            resName: item.resName || "--",
-            tradingArea: item.tradingArea || "--",
-            resAddress: item.resAddress || "--",
+            resName: item.resName || "",
+            province: item.prName || "",
+            city: item.crName || "",
+            rName: item.rName || "",
+            resAddress: item.resAddress || "",
             mVehicle: item.mVehicle,
-            fNum: item.fNum || "--",
-            hNum: item.hNum || "--",
+            tradingArea: item.tradingArea || "",
+            fNum: item.fNum || "",
+            hNum: item.hNum || "",
             hPrice: item.hPrice / 100,
-            cType: item.cType || "--",
-            chDay: item.chDay || "--",
-            parkSpaceNum: item.parkSpaceNum || "--",
-            carFlow: item.carFlow || "--",
-            peopleFlow: item.peopleFlow || "--",
-            notPush: item.allNotPush || "--",
-            remark: item.allremark || "--",
+            cType: item.cType || "",
+            chDay: item.chDay || "",
+            notPush: item.allNotPush || "",
+            parkSpaceNum: item.parkSpaceNum || "",
+            carFlow: item.carFlow || "",
+            peopleFlow: item.peopleFlow || "",
             adsNum: item.adsNum || 0,
+            remark: item.allRemark1 || "",
           };
-          if (
-            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-            (this.sessionData.uType == "ADN_BD_KA")
-          ) {
-            obj.asNames = item.asNames;
-          }
+
           let customPermission = JSON.parse(
             sessionStorage.getItem("session_data")
           ).customPermission;
+
           // (定制巡点)
           if (customPermission) {
             switch (customPermission.patrolPermission) {
@@ -317,10 +315,18 @@ export default {
                 break;
             }
           }
+
+          if (
+            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+            (this.sessionData.uType == "ADN_BD_KA")
+          ) {
+            obj.asNames = item.asNames;
+          }
+
           obj[
             this.downLoadInfo.daterange[0] +
-              "-" +
-              this.downLoadInfo.daterange[1]
+            "-" +
+            this.downLoadInfo.daterange[1]
           ] = item.DateInfo.adsNum || 0;
           resObj.showList.push(obj);
         }
@@ -330,7 +336,7 @@ export default {
       return returnObj;
     },
     // 获取城市中文名称
-    getCityName(rid) {
+    getCityName (rid) {
       let str = "";
       for (let data of this.cityList) {
         if (data.value == rid) {
@@ -341,7 +347,7 @@ export default {
       return str;
     },
     // 导出空点导出次数接口
-    postDownLoadNum(type) {
+    postDownLoadNum (type) {
       let data = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -354,7 +360,7 @@ export default {
         });
     },
     // 半年日期按照小区导出数据
-    exportExcelData() {
+    exportExcelData () {
       this.postDownLoadNum(0);
       let loadingPoint = this.$loading({
         lock: true,
@@ -400,38 +406,36 @@ export default {
             resultValus.push(val);
           }
         }
-        // console.log(resultValus);
+        console.log(resultValus, 'resultValusresultValus');
         if (resultValus.length) {
           let returnobj = this.hasPointData(resultValus);
           if (returnobj.arr.length > 0) {
-            console.log("returnobj----", returnobj);
+            console.log("returnobj", returnobj);
             let date = returnobj.date,
               head = [
+                "资源名称",
                 "省份",
                 "城市",
                 "区域",
-                "资源名称",
-                "商圈",
-                "地址",
+                "详细地址",
                 "媒介载体",
+                "商圈",
                 "楼栋数量",
                 "住户数量",
                 "楼盘价格",
                 "楼盘类型",
                 "入住时间",
                 "广告限制",
-                "点位备注",
+                "车位数",
+                "车流量",
+                "人流量",
                 "媒体数量(面)",
+                "点位备注",
               ],
               customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
               ).customPermission;
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              head.push("归属公司");
-            }
+
             switch (customPermission.patrolPermission) {
               case 1:
                 head.push("巡点问题", "通行情况");
@@ -440,6 +444,14 @@ export default {
                 head.push("巡点问题", "通行情况", "通电情况");
                 break;
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              head.push("归属公司");
+            }
+
             let allHead = head.concat(date);
             let filename =
               returnobj.filename +
@@ -459,7 +471,8 @@ export default {
       });
     },
     // 处理数据
-    hasPointData(arr) {
+    hasPointData (arr) {
+      console.log(arr, 'arrr')
       let returnObj = {
         arr: "",
         date: "",
@@ -483,31 +496,29 @@ export default {
             let dateArr = [];
             let dataStr = [];
             let obj = {
+              resName: item.resName,
               province: item.prName,
               city: item.crName,
               rName: item.rName,
-              resName: item.resName,
-              tradingArea: item.tradingArea,
               resAddress: item.resAddress,
               mVehicle: item.mVehicle,
+              tradingArea: item.tradingArea,
               fNum: item.fNum,
               hNum: item.hNum,
               hPrice: item.hPrice / 100,
               cType: item.cType,
               chDay: item.chDay,
               notPush: item.allNotPush || "",
-              remark: item.allremark || "",
-              adsNum: item.adsNum,
+              parkSpaceNum: item.parkSpaceNum || "",
+              carFlow: item.carFlow || "",
+              peopleFlow: item.peopleFlow || "",
+              adsNum: item.adsNum || 0,
+              remark: item.allRemark1 || "",
             };
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asNames = item.asNames;
-            }
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
+
             if (customPermission) {
               switch (customPermission.patrolPermission) {
                 case 1:
@@ -521,13 +532,20 @@ export default {
                   break;
               }
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              obj.asNames = item.asNames;
+            }
+
             let showData = item.DateInfo.sort(this.sortDate);
-            // console.log('showData',showData)
             for (let date of showData) {
               dateArr.push(
                 timeFormat.toDate(date.starDate, "/") +
-                  "-" +
-                  timeFormat.toDate(date.endDate, "/")
+                "-" +
+                timeFormat.toDate(date.endDate, "/")
               );
               dataStr.push(date.adsNum);
             }
@@ -549,7 +567,7 @@ export default {
       return returnObj;
     },
     // 键转换为值
-    concatObj(dateArr, dataStr) {
+    concatObj (dateArr, dataStr) {
       let obj = {};
       for (let dateI = 0, dateLen = dateArr.length; dateI < dateLen; dateI++) {
         obj[dateArr[dateI]] = dataStr[dateI];
@@ -557,7 +575,7 @@ export default {
       return obj;
     },
     // 自定义日期按照点位来导
-    getDaterangeAds(info) {
+    getDaterangeAds (info) {
       this.postDownLoadNum(1);
       let loadingPoint = this.$loading({
         lock: true,
@@ -581,40 +599,34 @@ export default {
               }
               if (returnData.length) {
                 let returnobj = this.formatDataAds(resinfo.data, date);
-                console.log("returnobj-----", returnobj);
+                console.log("returnobj-", returnobj);
                 let head = [
                   "资源名称",
                   "省份",
                   "城市",
                   "区域",
-                  "商圈",
-                  "媒体名称",
-                  "媒介载体",
-                  "资产编号",
-                  "门体类型",
-                  "投放面",
-                  "媒体等级",
-                  "广告限制",
-                  "点位备注",
-                  "广告尺寸",
-                  "画面尺寸",
                   "详细地址",
-                  "楼盘类型",
-                  "楼盘价格",
+                  "媒介载体",
+                  "媒体名称",
+                  "资产编号",
+                  "投放面",
+                  "空闲日期",
+                  "门体类型",
+                  "商圈",
                   "楼栋数量",
-                  "入住时间",
-                  "小区户数",
-                  "人流量",
+                  "住户数量/办公室数量",
+                  "楼盘价格",
+                  "楼盘类型/写字楼类型",
+                  "入住年份/建成年份",
+                  "广告限制",
                   "车位数",
                   "车流量",
-                  "空闲日期",
+                  "人流量",
+                  "广告尺寸",
+                  "可视尺寸",
+                  "点位备注",
                 ];
-                if (
-                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                  (this.sessionData.uType == "ADN_BD_KA")
-                ) {
-                  head.push("归属公司");
-                }
+
                 let customPermission = JSON.parse(
                   sessionStorage.getItem("session_data")
                 ).customPermission;
@@ -629,6 +641,14 @@ export default {
                     head.push("巡点问题", "通行情况", "通电情况");
                     break;
                 }
+
+                if (
+                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+                  (this.sessionData.uType == "ADN_BD_KA")
+                ) {
+                  head.push("归属公司");
+                }
+
                 let filename = returnobj.city.join("-") + "-" + date + "空位表";
                 sheetExcel.toDownload(head, returnobj.arr, filename);
               } else {
@@ -648,14 +668,14 @@ export default {
         });
     },
     // 结构格式化
-    formatDataAds(arr, date) {
+    formatDataAds (arr, date) {
       let resultObj = {
         city: [],
         arr: "",
       };
       let result = [];
       for (let data of arr) {
-        console.log("cityname----", data.cityName);
+        console.log("cityname", data.cityName);
         if (data.spareAds.length) {
           let resObj = {
             sheetName: data.cityName,
@@ -664,41 +684,37 @@ export default {
           resultObj.city.push(data.cityName);
           for (let item of data.spareAds) {
             let obj = {
-              resName: item.resName || "--",
-              province: item.prName || "--",
-              city: item.crName || "--",
-              rName: item.rName || "--",
-              tradingArea: item.tradingArea || "--",
-              mTitle: item.mTitle || "--",
+              resName: item.resName || "",
+              province: item.prName || "",
+              city: item.crName || "",
+              rName: item.rName || "",
+              resAddress: item.resAddress || "",
               mVehicle: item.mVehicle,
+              mTitle: item.mTitle || "",
               assetTag: item.assetTag,
-              mType: item.mType,
               asLab: item.asLab,
-              grade: item.grade || "--",
-              notPush: item.allNotPush || "--",
-              allremark: item.allremark || "--",
-              adSize: item.adSize || "--",
-              adViewSize: item.adViewSize || "--",
-              resAddress: item.resAddress || "--",
-              cType: item.cType || "--",
-              hPrice: item.hPrice / 100,
-              fNum: item.fNum || "--",
-              chDay: item.chDay || "--",
-              hNum: item.hNum || "--",
-              peopleFlow: item.peopleFlow || "--",
-              parkSpaceNum: item.parkSpaceNum || "--",
-              carFlow: item.carFlow || "--",
               date: date,
+              mType: item.mType,
+              tradingArea: item.tradingArea || "",
+              fNum: item.fNum || "",
+              hNum: item.hNum || "",
+              hPrice: item.hPrice / 100,
+              // grade: item.grade || "",
+              cType: item.cType || "",
+              chDay: item.chDay || "",
+              notPush: item.allNotPush || "",
+              parkSpaceNum: item.parkSpaceNum || "",
+              carFlow: item.carFlow || "",
+              peopleFlow: item.peopleFlow || "",
+              adSize: item.adSize || "",
+              adViewSize: item.adViewSize || "",
+              allremark: item.allremark || "",
             };
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asName = item.asName;
-            }
+
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
             ).customPermission;
+
             if (customPermission) {
               switch (customPermission.patrolPermission) {
                 case 1:
@@ -712,6 +728,14 @@ export default {
                   break;
               }
             }
+
+            if (
+              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
+              (this.sessionData.uType == "ADN_BD_KA")
+            ) {
+              obj.asName = item.asName;
+            }
+            
             resObj.showList.push(obj);
           }
           result.push(resObj);
@@ -721,13 +745,13 @@ export default {
       return resultObj;
     },
     // 时间大小排序
-    sortDate(a, b) {
+    sortDate (a, b) {
       let aDate = timeFormat.toDate(a.starDate, "");
       let bDate = timeFormat.toDate(b.starDate, "");
       return aDate - bDate;
     },
     // 操作提示统一方法
-    messageFun(mesType, mes) {
+    messageFun (mesType, mes) {
       this.$message({
         message: mes,
         type: mesType,
@@ -735,13 +759,13 @@ export default {
       });
     },
   },
-  mounted() {
+  mounted () {
     this.getSessionData();
     this.getCity();
   },
   computed: {
     //显示导点位
-    showNdwBtn() {
+    showNdwBtn () {
       return !(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
     },
   },

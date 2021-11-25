@@ -23,7 +23,7 @@
           《QADN-导入小区模板》
           <!-- TODO:更换小区模板EXCEL下载地址 -->
           <a
-            :href="apiVar.qadnUrl + '/importTemplate/communityTemplate.xlsx'"
+            :href="apiVar.qadnUrl + '/importTemplate/communityTemplate_new.xlsx'"
             download="意向小区导入模板.xlsx"
             class="downloag_btn"
             @click="dowmLoadFun"
@@ -376,11 +376,22 @@ export default {
         const {
           export_json_to_excel,
         } = require("../../../vendorExcel/Export2Excel");
-        const tHeader = ["资源", "城市", "区域", "排期", "失败原因", "最早可连续投放开始日期"];
+        const tHeader = [
+          "资源名称", 
+          '省份',
+          "城市", 
+          "区域", 
+          '详细地址',
+          "投放排期", 
+          "失败原因", 
+          "最早可连续投放开始日期"
+        ];
         const filterVal = [
           "resName",
+          'province',
           "city",
           "district",
+          'resAddress',
           "date",
           "failReason",
           "earliestOnPubDate"

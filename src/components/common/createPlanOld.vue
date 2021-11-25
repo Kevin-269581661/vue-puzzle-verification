@@ -233,13 +233,6 @@
                             <dl style="border: none">
                                 <dt>其它条件：</dt>
                                 <dd class="other-dd">
-                                    <el-select v-model="mState" placeholder="媒体状态" class="otherSelect"
-                                        :class="mState !== '' ? 'otherSelectActive' :'' "
-                                        size="small"
-                                        @change="mStateChange">
-                                        <el-option label="正常" value="1"></el-option>
-                                        <el-option label="待安装" value="2"></el-option>
-                                    </el-select>
                                     <el-select v-model="limitList" placeholder="广告限制" class="otherSelect adLimitSelect"
                                         :class="limitList.length !== 0 ? 'otherSelectActive' :'' " multiple
                                         collapse-tags
@@ -443,13 +436,18 @@
                                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                                     <ul v-else>
                                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                                            <div v-if="item.asState">
+                                                            <template v-if="item.lState == null">
                                                                 <p style="margin-bottom: 5px">
-                                                                    <span
-                                                                        style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
-                                                            </div>
-                                                            <div v-else>
+                                                                <div style="margin-bottom: 5px">
+                                                                    <span style="color: #333">状态原因：</span>
+                                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                                    </span>
+                                                                </div>
+                                                            </template>
+                                                            <template v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
@@ -457,9 +455,9 @@
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
                                                                 </p>
-                                                            </div>
+                                                            </template>
                                                         </li>
                                                     </ul>
                                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.A"
@@ -480,13 +478,18 @@
                                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                                     <ul v-else>
                                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                                            <div v-if="item.asState">
+                                                            <template v-if="item.lState == null">
                                                                 <p style="margin-bottom: 5px">
-                                                                    <span
-                                                                        style="color: #333">该点位：{{item.asState}}中</span>
+                                                                    <span style="color: #333">该点位：{{item.asState}}中</span>
                                                                 </p>
-                                                            </div>
-                                                            <div v-else>
+                                                                <div style="margin-bottom: 5px">
+                                                                    <span style="color: #333">状态原因：</span>
+                                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                                    </span>
+                                                                </div>
+                                                            </template>
+                                                            <template v-else>
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
@@ -494,9 +497,9 @@
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
-                                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
                                                                 </p>
-                                                            </div>
+                                                            </template>
                                                         </li>
                                                     </ul>
                                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.B"
@@ -1165,14 +1168,14 @@
                         :http-request="uploadFile"
                         :on-remove="fileRemove"
                         :multiple="false">
-                        <a v-if="importType=='1' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板.xlsx"'
+                        <a v-if="importType=='1' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻小区导入定制模板_new.xlsx"'
                            download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <a v-else-if="importType=='1'" :href='this.apiVar.qadnUrl + "/importTemplate/resTemplate.xlsx"'
+                        <a v-else-if="importType=='1'" :href='this.apiVar.qadnUrl + "/importTemplate/resTemplate_new.xlsx"'
                            download="小区导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
 
-                        <a v-if="importType=='2' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板.xlsx"'
+                        <a v-if="importType=='2' && customPermission.pptPermission && customPermission.pptPermission.gzqylPermission == '1'" :href='this.apiVar.qadnUrl + "/importTemplate/广州亲粤邻点位导入定制模板_new.xlsx"'
                            download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
-                        <a v-else-if="importType=='2'" :href='this.apiVar.qadnUrl + "/importTemplate/adsTemplate.xlsx"'
+                        <a v-else-if="importType=='2'" :href='this.apiVar.qadnUrl + "/importTemplate/adsTemplate_new.xlsx"'
                            download="点位导入模板.xlsx" @click="dowmLoadFun" class="el-icon-download aButton">下载模板</a>
                         <el-button plain icon="el-icon-upload2" size="small" class="fileButton">上传文件</el-button>
                     </el-upload>
@@ -1477,7 +1480,7 @@
                 //搜索框
                 searchInput: '',
                 planSelect: '',
-                mState: '',                // 媒体状态
+                // mState: '',                // 媒体状态
                 activeGrade: '',           // 媒体等级
                 pickerOptions: {
                     disabledDate(time) {
@@ -1674,7 +1677,7 @@
                 // 定制权限
                 customPermission: {},
                 // 购物车分页时页面条目数量
-                cartPageSize: 10,
+                cartPageSize: 500,
                 currentPage: 1,
                 totalNum: 0
             };
@@ -1957,11 +1960,28 @@
                     if (!res.data.SysCode) {
                         if (res.data.length) {
                             let returnobj = this.formatData(res.data);
-                            let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '车流量', '车位数', '人流量', '广告限制', '点位备注', '媒体数量(面)'];
+                            let head = [
+                                '资源名称',
+                                '省份',
+                                '城市',
+                                '区域',
+                                '详细地址',
+                                '媒介载体',
+                                '商圈',
+                                '楼栋数量',
+                                '住户数量',
+                                '楼盘价格',
+                                '楼盘类型',
+                                '入住时间',
+                                '广告限制',
+                                '车位数',
+                                '车流量',
+                                '人流量',
+                                '媒体数量(面)',
+                                '点位备注',
+                            ];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                head.push('归属公司')
-                            }
+        
                             switch (customPermission.patrolPermission) {
                                 case 1:
                                     head.push('巡点问题', '通行情况');
@@ -1970,6 +1990,11 @@
                                     head.push('巡点问题', '通行情况', '通电情况');
                                     break;
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                head.push('归属公司')
+                            }
+
                             let allHead = head.concat([info.startTime + '-' + info.endTime]);
                             let filename = returnobj.city.join('-') + '-' + info.startTime + '~' + info.endTime + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2001,29 +2026,27 @@
                     let dataArr = data.adDoor.concat(data.barrier);
                     for (let item of dataArr) {
                         let obj = {
-                            province: item.prName || '--',
-                            city: item.crName || '--',
-                            rName: item.rName || '--',
-                            resName: item.resName || '--',
-                            tradingArea: item.tradingArea || '--',
-                            resAddress: item.resAddress || '--',
+                            resName: item.resName || '',
+                            province: item.prName || '',
+                            city: item.crName || '',
+                            rName: item.rName || '',
+                            resAddress: item.resAddress || '',
                             mVehicle: item.mVehicle,
-                            fNum: item.fNum || '--',
-                            hNum: item.hNum || '--',
+                            tradingArea: item.tradingArea || '',
+                            fNum: item.fNum || '',
+                            hNum: item.hNum || '',
                             hPrice: item.hPrice / 100,
-                            cType: item.cType || '--',
-                            chDay: item.chDay || '--',
-                            carFlow: item.carFlow || '--',
-                            parkSpaceNum: item.parkSpaceNum || '--',
-                            peopleFlow: item.peopleFlow || '--',
-                            notPush: item.allNotPush || '--',
-                            remark: item.allremark || '--',
+                            cType: item.cType || '',
+                            chDay: item.chDay || '',
+                            notPush: item.allNotPush || '',
+                            parkSpaceNum: item.parkSpaceNum || '',
+                            carFlow: item.carFlow || '',
+                            peopleFlow: item.peopleFlow || '',
                             adsNum: item.adsNum || 0,
+                            remark: item.allremark || '',
                         };
                         let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                        if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                            obj.asNames = item.asNames
-                        }
+       
                         // 巡点定制
                         if(customPermission) {
                             switch (customPermission.patrolPermission) {
@@ -2038,6 +2061,11 @@
                                     break;
                             }
                         }
+
+                        if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                            obj.asNames = item.asNames
+                        }
+
                         obj[this.emptyRange[0] + '-' + this.emptyRange[1]] = item.DateInfo.adsNum || 0
                         resObj.showList.push(obj);
                     }
@@ -2127,9 +2155,7 @@
                             let date = returnobj.date;
                             let head = ['省份', '城市', '区域', '资源名称', '商圈', '地址', '媒介载体', '楼栋数量', '住户数量', '楼盘价格', '楼盘类型', '入住时间', '广告限制', '点位备注', '媒体数量(面)'];
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                head.push('归属公司')
-                            }
+
                             /* if(customPermission && customPermission.patrolPermission) {
                                 head.push('巡点问题', '通行情况');
                             } */
@@ -2141,6 +2167,11 @@
                                     head.push('巡点问题', '通行情况', '通电情况');
                                     break;
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                head.push('归属公司')
+                            }
+
                             let allHead = head.concat(date);
                             let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2191,9 +2222,7 @@
                                 remark: item.allremark || '',
                                 adsNum: item.adsNum,
                             };
-                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                                obj.asNames = item.asNames
-                            }
+
                             let customPermission = JSON.parse(sessionStorage.getItem("session_data")).customPermission;
                             if(customPermission) {
                                 switch (customPermission.patrolPermission) {
@@ -2208,6 +2237,11 @@
                                         break;
                                 }
                             }
+
+                            if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                                obj.asNames = item.asNames
+                            }
+
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
                                 dateArr.push(timeFormat.toDate(date.starDate, '/') + '-' + timeFormat.toDate(date.endDate, '/'));
@@ -2413,6 +2447,11 @@
                             adPrice: info.mVehicle === '道闸' ? info.asPrice / 100 || 0 : info.asPrice / 700 || 0,
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
+                            province: info.province,
+                            notPush: info.notPush,
+                            parkSpaceNum: info.parkSpaceNum,
+                            peopleFlow: info.peopleFlow,
+                            carFlow: info.carFlow,
                         };
                         if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
                             importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
@@ -2507,12 +2546,14 @@
                 for (let data of obj.errorList) {
                     let item = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.district,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mTitle,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.date,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -2524,7 +2565,20 @@
             // 导出有问题的点
             downLoadExcel() {
                 let arr = this.questionPoint(this.excelDataUpload, this.importInfoData.successList);
-                let allHead = ['资源名称', '市', '区', '媒介载体', '媒体名称', '投放面', '资产编号', '投放排期', '钼媒点位ID', '失败原因'];
+                let allHead = [
+                    '资源名称',
+                    '省份',
+                    '城市',
+                    '区域',
+                    '详细地址',
+                    '媒介载体',
+                    '媒体名称',
+                    '资产编号',
+                    '投放面',
+                    '投放排期',
+                    '钼媒点位ID',
+                    '失败原因'
+                ];
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '问题点位表');
             },
             // 导入excel后台返回的问题点位
@@ -2542,12 +2596,14 @@
                 for (let data of arr) {
                     let obj = {
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         origin: data.origin,
+                        resAddress: data.resAddress,
                         mVehicle: data.mVehicle,
                         mediaName: data.mediaName,
-                        asLab: data.asLab,
                         assetTag: data.assetTag,
+                        asLab: data.asLab,
                         schedules: data.schedules,
                         pointId: data.pointId,
                         failReason: data.failReason
@@ -2558,12 +2614,14 @@
                     let info = data.adSInfo;
                     let obj = {
                         resName: info.resName,
+                        province: info.province,
                         city: info.prName,
                         origin: info.rName,
+                        resAddress: info.resAddress,
                         mVehicle: info.mVehicle,
                         mediaName: info.mTitle,
-                        asLab: info.asLab,
                         assetTag: info.assetTag,
+                        asLab: info.asLab,
                         schedules: timeFormat.toDate(data.pbStar, '.') + '-' + timeFormat.toDate(data.pbEnd, '.'),
                         pointId: data.pointId,
                     };
@@ -2687,6 +2745,11 @@
                     asName: info.asName || '',         // 点位所属公司名称
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow,
                 };
                 // if(info.mVehicle === '道闸'){
                 //     importInfo.asID = info.asIDs.split(',')
@@ -2697,12 +2760,32 @@
             },
             // 第四步的导出方案
             downLoadFanan() {
+                console.log(this.shopingList, 'this.shopingList')
                 let arr = this.excelData(this.shopingList)
-                let allHead = ['资源名称', '市', '区', '商圈', '资源地址', '楼盘价格', '入住年份', '住户数量', '出入口', '楼栋数量', '楼盘（写字楼）类型', '地图中心点', '可选面数', '投放排期'];
+                let allHead = [
+                   '资源名称',
+                    '省份', 
+                    '城市', 
+                    '区域',
+                    '详细地址',	
+                    '媒介载体',
+                    '商圈', 
+                    '楼栋数量', 
+                    '住户数量',	
+                    '楼盘价格',	
+                    '楼盘类型',	
+                    '入住时间',	
+                    '广告限制',
+                    '车位数',
+                    '车流量',
+                    '人流量',
+                    '媒体数量（门）',
+                    '可投数量（面）',
+                    '地图中心点', 
+                    '投放排期',
+                ];
                 let head = ['在线协同选点链接(可地图查看社区)  ' + this.shareADUrl, '', '', '', '', '', '', '', '', '', '', '', ''];
-                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                    allHead.push('归属公司')
-                }
+
                 switch (this.customPermission.patrolPermission) {
                     case 1:
                         allHead.push('巡点问题', '通行情况');
@@ -2711,6 +2794,11 @@
                         allHead.push('巡点问题', '通行情况', '通电情况');
                         break;
                 }
+
+                if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                    allHead.push('归属公司')
+                }
+
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
             // 处理数据
@@ -2731,23 +2819,29 @@
                     let obj = {
                         resID: data.resID,
                         resName: data.resName,
+                        province: data.province,
                         city: data.city,
                         rName: data.origin,
-                        tradingArea: data.tradingArea,
                         resAddress: data.address,
-                        hPrice: data.buildPrice,
-                        chDay: data.liveYear,
-                        hNum: data.houseNum,
-                        dNum: data.dNum,
+                        mVehicle: data.mVehicle,
+                        tradingArea: data.tradingArea,
                         fNum: data.buildNum,
+                        hNum: data.houseNum,
+                        hPrice: data.buildPrice,
                         cType: data.buildType,
-                        map: data.mapCenter,
+                        chDay: data.liveYear,
+                        notPush: data.notPush,
+                        parkSpaceNum: data.parkSpaceNum,
+                        carFlow: data.carFlow,
+                        peopleFlow: data.peopleFlow,
+                        // dNum: data.dNum,
+                        actualMediaCnt: 0,
                         adsNum: 1,
+                        map: data.mapCenter,
                         timeRange: '',
+                        mID: data.mID
                     };
-                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-                        obj.asName = data.asName
-                    }
+
                     // 巡点权限(1：亲粤邻 2：北京)
                     if(this.customPermission) {
                         switch (this.customPermission.patrolPermission) {
@@ -2762,9 +2856,21 @@
                                 break;
                         }
                     }
+
+                    if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+                        obj.asName = data.asName
+                    }
+                    
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {
+                                for(let item of date.showList){
+                                    if((item.resID === data.resID) && (item.mID !== data.mID)){
+                                        console.log(item.resName, 'resName')
+                                        item.actualMediaCnt++
+                                        break
+                                    }
+                                }
                                 for (let item of date.showList) {
                                     if (item.resID == data.resID) {
                                         item.adsNum++;
@@ -2783,10 +2889,18 @@
                 for (let data of dateArr) {
                     for (let obj of data.showList) {
                         delete obj.resID;
+                        delete obj.mID;
                     }
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
                 // console.log('datearrr-----', dateArr);
+                dateArr.forEach(item => {
+                    item.showList.forEach(i => {
+                        if(i.actualMediaCnt === 0) {
+                            i.actualMediaCnt = 1
+                        }
+                    })
+                })
                 return dateArr;
             },
             // 导出空位
@@ -3100,7 +3214,6 @@
                 }
                 this.limitList = []             // 初始化广告限制
                 this.filterCondition = []       // 过滤条件tag
-                this.mState = ''                // 媒体状态
                 this.buildValue = ''            // 楼盘类型
                 for (let i in this.filterData) {
                     this.filterData[i] = false
@@ -3284,7 +3397,8 @@
                         asIDs: key.asIDs,
                         asLabs: key.asLabs,
                         resName: key.resName,
-                        city: this.city[this.activeIndex].rName,
+                        province: key.province,
+                        city: key.city,
                         rid: this.city[this.activeIndex].rid,
                         origin: key.rName,
                         buildType: key.cType,
@@ -3318,6 +3432,8 @@
                         asrID: key.asrID,                   // 所属公司id
                         checkBox: {A: false, B: false, ABC: false},
                         box: {A: false, B: false},
+                        notPush: key.notPush,
+
                     }
                     // 点位价格
                     if (key.mVehicle === '道闸') {
@@ -3346,19 +3462,29 @@
                     if (!!key.adlInfo && key.adlInfo.length > 0) {
                         let arr = []
                         for (let akey of key.adlInfo) {
-                            if (akey.asState) {
-                                arr.push({
-                                    asState: akey.asState
-                                })
-                            } else {
-                                let star = timeFormat.toDate(akey.lStar, '/')
-                                let end = timeFormat.toDate(akey.lEnd, '/')
-                                arr.push({
-                                    beOccupieApName: akey.apName,
-                                    schedules: star + '-' + end,
-                                    lState: akey.lState,
-                                })
-                            }
+                            let star = timeFormat.toDate(akey.lStar, '/')
+                            let end = timeFormat.toDate(akey.lEnd, '/')
+                            arr.push({
+                                asState: akey.asState,
+                                schedules: star + '-' + end,
+                                lState: akey.lState,
+                                unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                            })
+                            // if (akey.asState) {
+                            //     arr.push({
+                            //         asState: akey.asState,
+                            //         schedules: star + '-' + end,
+                            //         lState: akey.lState,
+                            //         unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                            //     })
+                            // } else {
+                            //     arr.push({
+                            //         beOccupieApName: akey.apName,
+                            //         schedules: star + '-' + end,
+                            //         lState: akey.lState,
+                            //         unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                            //     })
+                            // }
                         }
                         adObj.adlInfo = arr
                     } else {
@@ -3520,6 +3646,11 @@
                                 lEnd: key.lEnd,
                                 lState: key.lState,          //点位状态 1被占，2强制停止  0 锁点
                                 mediaLevel: key.grade || '',
+                                province: key.province,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
                             arr.push(AD_data)
                         }
@@ -3701,7 +3832,7 @@
                                 asLabs: key.asLab,
                                 resName: key.resName,
                                 resID: key.resID,
-                                city: this.city[this.activeIndex].rName,
+                                city: key.city,
                                 origin: key.rName,
                                 buildType: key.cType,
                                 houseNum: key.hNum,
@@ -3733,6 +3864,11 @@
                                 adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
+                                province: key.province,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
                             if (selectInfo.asLabs === 'A') {
                                 selectInfo.checkBox.A = true
@@ -3825,7 +3961,6 @@
             filterTagCloseFun(tab, index) {
                 console.log('tab', tab, 'index', index)
                 if (tab.condition === 'mstate') {           // 媒体状态
-                    this.mState = ''
                     this.getAdsParamsData.mState = ''
                 } else if (tab.condition === 'grade') {           // 媒体等级
                     this.activeGrade = ''
@@ -3899,7 +4034,6 @@
             // 修改搜索中的媒体状态 filterCondition
             mStateChange(state) {
                 if (this.selectValue !== '被占查询') {
-                    console.log('切换媒体状态', state, this.mState)
                     let stateName = ''
                     if (state === '1') {
                         stateName = '正常'
@@ -4419,6 +4553,11 @@
                             adPrice: data.mVehicle === '道闸' ? data.asPrice / 100 || 0 : data.asPrice / 700 || 0,
                             asName: data.asName || '',         // 点位所属公司名称
                             asrID: data.asrID,                 // 所属公司id
+                            province: data.province,
+                            notPush: data.notPush,
+                            parkSpaceNum: data.parkSpaceNum,
+                            peopleFlow: data.peopleFlow,
+                            carFlow: data.carFlow,
                         }
                         // 地图中心点名称
                         if (data.reference !== '-' && data.reference !== '' && data.reference !== undefined && data.reference !== null) {
@@ -4584,6 +4723,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
+                        province: key.province,
+                        notPush: key.notPush,
+                        parkSpaceNum: key.parkSpaceNum,
+                        peopleFlow: key.peopleFlow,
+                        carFlow: key.carFlow,
                     }
                     if (key.centerInfos && key.centerInfos.length) {
                         for (let item of key.centerInfos) {
@@ -5291,6 +5435,11 @@
                     mediaLevel: info.mediaLevel,         // 媒体等级
                     asrID: info.asrID,                   // 所属公司id
                     asName: info.asName,                 // 所属公司名称
+                    province: info.province,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow
                 }
                 return selectInfo
             },

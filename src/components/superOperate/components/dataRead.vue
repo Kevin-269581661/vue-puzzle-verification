@@ -115,7 +115,7 @@
                     <li class="data_li">上画点位：{{basicToDayData.publishPointCount || 0}}个</li>
                     <li class="data_li">录入小区：{{basicToDayData.newResourceCount}}个</li>
                     <li class="data_li">录入媒体：{{basicToDayData.newMediaCount}}个</li>
-                    <li class="data_li">禁用点位：{{basicToDayData.forbiddenPointCount || 0}}个</li>
+                    <li class="data_li">不可售卖点位：{{basicToDayData.forbiddenPointCount || 0}}个</li>
                 </ul>
                 <el-row :gutter="16">
                     <el-col :span="12">
@@ -190,7 +190,7 @@
                         </p>
                     </li>
                     <li class="ad_sale_li">
-                        <h3 class="ad_sale_li_title">当前禁用媒体数量(面)</h3>
+                        <h3 class="ad_sale_li_title">当前不可售卖媒体数量(面)</h3>
                         <p class="ad_sale_li_num">{{adSaleHeaderData.forbiddenMediaCount || 0}}</p>
                         <p class="ad_sale_li_text"> 较上个月
                             <i class="el-icon-back" v-show="adSaleHeaderData.compareMedia !== 0 && adSaleHeaderData.compareMedia !== '--'"
@@ -439,11 +439,11 @@
                 // 广告销售 - 饼状图
                 adSalePieLoading: true,     // 加载状态
                 mediaSaleData:{
-                    title: ['空刊数(面)','在刊媒体(面)','禁用媒体(面)'],
+                    title: ['空刊数(面)','在刊媒体(面)','不可售卖媒体(面)'],
                     data:[
                         {value:0, name:'空刊数(面)'},
                         {value:0, name:'在刊媒体(面)'},
-                        {value:0, name:'禁用媒体(面)'},
+                        {value:0, name:'不可售卖媒体(面)'},
                     ]
                 },
                 // 下拉选中
@@ -465,11 +465,11 @@
                 adInventoriedLoading: true,
                 adInventoriedPieEcharts: '',
                 beenWeekOfSurfaceData: {
-                    title:['已售','过期','禁用'],
+                    title:['已售','过期','不可售卖'],
                     data:[
                         {value:2350, name:'已售'},
                         {value:2170, name:'过期'},
-                        {value:334, name:'禁用'},
+                        {value:334, name:'不可售卖'},
                     ]
                 },
                 adInventoriedDate:{ starDate: '',endDate: '',weekNum: 0},
@@ -513,21 +513,22 @@
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
                             width: 38,
+                            padding: 8,
                         },
                         b:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.35)",
-                            padding:10
+                            padding:15,
                         },
                         c:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
-                            padding: 8
+                            padding: 8,
                         },
                         d:{
                             fontSize:14,
                             color:"rgba(0,0,0,0.65)",
-                            padding: 8
+                            padding: 8,
                         }
                     }
                 },
@@ -1268,7 +1269,7 @@
                     } else if (key == 'soldAdsCount') {
                         pieArr[1] = {value: obj[key] || 0, name: '在刊媒体(面)'}
                     } else if (key == 'forbiddenAdsCount') {
-                        pieArr[2] = {value: obj[key] || 0, name: '禁用媒体(面)'}
+                        pieArr[2] = {value: obj[key] || 0, name: '不可售卖媒体(面)'}
                     }
                 }
                 console.log('pieArr',pieArr)
@@ -1320,7 +1321,7 @@
                     legend: {
                         bottom: '3%',
                         left: 'center',
-                        data: ['禁用点位','已售点位','未售点位','周在刊率']
+                        data: ['不可售卖点位','已售点位','未售点位','周在刊率']
                     },
                     xAxis: {
                         type: 'category',
@@ -1431,7 +1432,7 @@
                             data: this.adSaleData.publishRate
                         },
                         {
-                            name:'禁用点位',
+                            name:'不可售卖点位',
                             type:'bar',
                             barWidth: '30%',
                             stack:'xxx',
@@ -1586,7 +1587,7 @@
                                 a:{
                                     fontSize:14,
                                     color:"rgba(0,0,0,0.65)",
-                                    width: 80,
+                                    width: 110,
                                 },
                                 b:{
                                     fontSize:14,
@@ -1659,7 +1660,7 @@
                             } else if (key === 'unsoldAds') {
                                 arr[1] = {value: dataObj[key], name: '过期'}
                             } else if (key === 'forbiddenAds') {
-                                arr[2] = {value: dataObj[key] || 0, name: '禁用'}
+                                arr[2] = {value: dataObj[key] || 0, name: '不可售卖'}
                             }
                         }
                         this.beenWeekOfSurfaceData.data = JSON.parse(JSON.stringify(arr))

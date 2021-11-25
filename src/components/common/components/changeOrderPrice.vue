@@ -18,50 +18,74 @@
                     <li><span>小计</span></li>
                 </ul>
                 <ul>
-                    <li><span>广告门</span></li>
+                    <li class="u-item"><span>广告门</span></li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
-                            <el-input-number @change="changePrice" placehlder="请输入修改金额"
-                                             v-model="changePriceData.AdDoorAdPrice" controls-position="right"
-                                             :controls="false" :min="0"
-                                             :max="999999999"></el-input-number>
+                            <el-input-number 
+                                @change="changePrice"
+                                @blur="handlePriceBlur($event, 'AdDoorAdPrice')"
+                                placehlder="请输入修改金额"
+                                v-model="changePriceData.AdDoorAdPrice" 
+                                controls-position="right"
+                                :controls="false" :min="0"
+                                :max="999999999"
+                                >
+                            </el-input-number>
                         </div>
                     </li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
-                            <el-input-number @change="changePrice" placehlder="请输入修改金额"
-                                             v-model="changePriceData.AdDoorMakePrice"
-                                             controls-position="right" :controls="false"
-                                             :min="0" :max="999999999"></el-input-number>
+                            <el-input-number 
+                                @change="changePrice" 
+                                @blur="handlePriceBlur($event, 'AdDoorMakePrice')"
+                                placehlder="请输入修改金额"
+                                v-model="changePriceData.AdDoorMakePrice"
+                                controls-position="right" 
+                                :controls="false"
+                                :min="0" 
+                                :max="999999999">
+                            </el-input-number>
                         </div>
                     </li>
-                    <li>
+                    <li class="u-count">
                         <span>&yen;{{priceFormat(changePriceData.AdDoorAdPrice+changePriceData.AdDoorMakePrice)||0}}</span>
                     </li>
                 </ul>
                 <ul>
-                    <li><span>道闸</span></li>
+                    <li class="u-item"><span>道闸</span></li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
-                            <el-input-number @change="changePrice" placehlder="请输入修改金额"
-                                             v-model="changePriceData.BreakAdPrice" controls-position="right"
-                                             :controls="false" :min="0"
-                                             :max="999999999"></el-input-number>
+                            <el-input-number 
+                                @change="changePrice" 
+                                @blur="handlePriceBlur($event, 'BreakAdPrice')"
+                                placehlder="请输入修改金额"
+                                v-model="changePriceData.BreakAdPrice" 
+                                controls-position="right"
+                                :controls="false" 
+                                :min="0"
+                                :max="999999999">
+                            </el-input-number>
                         </div>
                     </li>
                     <li>
                         <div class="num-input-wrap">
                             <span>&yen;</span>
-                            <el-input-number @change="changePrice" placehlder="请输入修改金额"
-                                             v-model="changePriceData.BreakMakePrice" controls-position="right"
-                                             :controls="false" :min="0"
-                                             :max="999999999"></el-input-number>
+                            <el-input-number 
+                                @change="changePrice" 
+                                @blur="handlePriceBlur($event, 'BreakMakePrice')"
+                                placehlder="请输入修改金额"
+                                v-model="changePriceData.BreakMakePrice" 
+                                controls-position="right"
+                                :controls="false" 
+                                :min="0"
+                                :max="999999999">
+                            </el-input-number>
                         </div>
                     </li>
-                    <li>
+                    <li class="u-count">
                         <span>&yen;{{priceFormat(changePriceData.BreakAdPrice+changePriceData.BreakMakePrice)||0}}</span>
                     </li>
                 </ul>
@@ -78,7 +102,7 @@
                  </div>
                <div>
                     <el-button @click="cancelChangePrice">取 消</el-button>
-                    <el-button type="primary" @click="confirmChangePrice">确 定</el-button>
+                    <el-button type="primary" @click="confirmChangePrice">保 存</el-button>
                </div>
             </span>
     </div>
@@ -158,26 +182,33 @@
                         opType: this.changePriceData.opType
                     }
                     for (let i = 0;i< this.changePriceData.orderCompanyList.length;i++) {
+                        if(
+                            this.changePriceData.orderCompanyList[i].AdDoorAdPrice >= 999999999 || 
+                            this.changePriceData.orderCompanyList[i].AdDoorMakePrice >= 999999999 ||
+                            this.changePriceData.orderCompanyList[i].BreakAdPrice >= 999999999 ||
+                            this.changePriceData.orderCompanyList[i].BreakMakePrice >= 999999999
+                        ) {
+                            return Message.warning('金额超过上限，请重新调整')
+                        }
                         let  arr = [
                             {
                                 "rID": this.changePriceData.orderCompanyList[i].rID,
                                 "asrID": this.changePriceData.orderCompanyList[i].asrID,
                                 "pdType": 0,
-                                "pdAdFee":this.changePriceData.orderCompanyList[i].AdDoorAdPrice * 100,
-                                "pdAdMake": this.changePriceData.orderCompanyList[i].AdDoorMakePrice * 100,
+                                "pdAdFee":this.changePriceData.orderCompanyList[i].AdDoorAdPrice * 100 || 0,
+                                "pdAdMake": this.changePriceData.orderCompanyList[i].AdDoorMakePrice * 100 || 0,
                             },
                             {
                                 "rID": this.changePriceData.orderCompanyList[i].rID,
                                 "asrID": this.changePriceData.orderCompanyList[i].asrID,
                                 "pdType": 1,
-                                "pdAdFee": this.changePriceData.orderCompanyList[i].BreakAdPrice * 100,
-                                "pdAdMake": this.changePriceData.orderCompanyList[i].BreakMakePrice * 100,
+                                "pdAdFee": this.changePriceData.orderCompanyList[i].BreakAdPrice * 100 || 0,
+                                "pdAdMake": this.changePriceData.orderCompanyList[i].BreakMakePrice * 100 || 0,
                             }
                         ]
                         info.orderMoneyInfos = info.orderMoneyInfos.concat(arr)
                     }
                     api.postApi_json(this.apiVar.Advertisement + '/ChangeOrderMoney', JSON.stringify(info)).then(res => {
-                        console.log(res.data)
                         if (res.data.SysCode == 200200) {
                             this.$emit("done");
                         } else {
@@ -196,10 +227,10 @@
             changePrice() {
                 console.log(this.changePriceData, this.changePriceData.priceCurrCompany);
                 let index = this.changePriceData.priceCurrCompany
-                this.changePriceData.orderCompanyList[index].AdDoorAdPrice = this.changePriceData.AdDoorAdPrice
-                this.changePriceData.orderCompanyList[index].AdDoorMakePrice = this.changePriceData.AdDoorMakePrice
-                this.changePriceData.orderCompanyList[index].BreakAdPrice = this.changePriceData.BreakAdPrice
-                this.changePriceData.orderCompanyList[index].BreakMakePrice = this.changePriceData.BreakMakePrice
+                this.changePriceData.orderCompanyList[index].AdDoorAdPrice = this.changePriceData.AdDoorAdPrice || 0
+                this.changePriceData.orderCompanyList[index].AdDoorMakePrice = this.changePriceData.AdDoorMakePrice || 0
+                this.changePriceData.orderCompanyList[index].BreakAdPrice = this.changePriceData.BreakAdPrice || 0
+                this.changePriceData.orderCompanyList[index].BreakMakePrice = this.changePriceData.BreakMakePrice || 0
                 let result = 0
                 for (let data of this.changePriceData.orderCompanyList) {
                     result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
@@ -208,11 +239,18 @@
                 // this.newPrice = this.priceFormat(this.changePriceData.AdDoorAdPrice + this.changePriceData.AdDoorMakePrice + this.changePriceData.BreakAdPrice + this.changePriceData.BreakMakePrice)
             },
 
+            handlePriceBlur (e, type) {
+                let value = e.target.value
+                if(!value) {
+                    this.changePriceData[type] = 0
+                }
+            }
+
         }
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
     .price-dialog .city-tab {
         display: flex;
@@ -280,6 +318,9 @@
     }
 
     .price-dialog .table ul li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 180px;
         border-right: 1px solid rgba(0, 0, 0, 0.15);
         line-height: 54px;
@@ -288,31 +329,34 @@
 
     .price-dialog .table ul li:last-child {
         border-right: none;
+        text-align: right;
     }
 
     .price-dialog .num-input-wrap {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
+        height: 32px;
     }
 
     .price-dialog .num-input-wrap span {
         width: 34px;
-        height: 34px;
+        height: 32px;
         background: rgba(246, 246, 246, 1);
         border-radius: 4px 0px 0px 4px;
         border: 1px solid rgba(217, 217, 217, 1);
         padding: 0 !important;
         text-align: center;
-        line-height: 34px;
-        position: relative;
-        top: 3px;
+        line-height: 32px;
+        // position: relative;
+        // top: 2px;
+        box-sizing: border-box;
     }
 
     .price-dialog /deep/ .el-input-number, .price-dialog .num-input-wrap /deep/ .el-input, .price-dialog .num-input-wrap /deep/ .el-input__inner {
         width: 115px;
-        height: 34px;
+        height: 32px;
+        line-height: 32px;
         text-align: left;
     }
 
@@ -321,7 +365,9 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         position: relative;
-        top: 0px;
+        // top: -1px;
+        text-align: right;
+        display: block;
     }
 
     .price-dialog-footer {
@@ -344,6 +390,19 @@
 
     .price-dialog-footer .price-tip span {
         color: #1890ff;
+        font-weight: 600;
+    }
+
+    .u-count {
+        span {
+           width: 100%;
+        }
+    }
+
+    .u-item {
+        span {
+            width: 100%;
+        }
     }
 
 </style>

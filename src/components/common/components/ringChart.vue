@@ -82,7 +82,7 @@ export default {
         .interval()
         .adjust("stack")
         .position("percent")
-        .color("item", ["#1890FF", "#6ECB53", "#FAAD14", "#FF7875"])
+        .color("item", ["#1890FF", '#FAAD14'])
         .style({
           fillOpacity: 1,
         })
@@ -143,78 +143,78 @@ export default {
           fill: "#1890FF",
           textAlign: "center",
         },
-        offsetX: -115,
+        offsetX: -70,
         offsetY: 0,
       });
       this.chartInstance.annotation().text({
         position: ["50%", "55%"],
-        content: "正常",
+        content: "可售卖",
         style: {
           fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
         },
-        offsetX: -105,
+        offsetX: -60,
       });
-      this.chartInstance.annotation().text({
-        position: ["50%", "55%"],
-        content: "●",
-        style: {
-          fontSize: 16,
-          fill: "#6ECB53",
-        },
-        offsetX: -65,
-        offsetY: 0,
-      });
-      this.chartInstance.annotation().text({
-        position: ["50%", "55%"],
-        content: "待安装",
-        style: {
-          fontSize: 14,
-          fill: "rgba(0, 0, 0, 0.65)",
-        },
-        offsetX: -50,
-      });
+      // this.chartInstance.annotation().text({
+      //   position: ["50%", "55%"],
+      //   content: "●",
+      //   style: {
+      //     fontSize: 16,
+      //     fill: "#6ECB53",
+      //   },
+      //   offsetX: -65,
+      //   offsetY: 0,
+      // });
+      // this.chartInstance.annotation().text({
+      //   position: ["50%", "55%"],
+      //   content: "待安装",
+      //   style: {
+      //     fontSize: 14,
+      //     fill: "rgba(0, 0, 0, 0.65)",
+      //   },
+      //   offsetX: -50,
+      // });
+      // this.chartInstance.annotation().text({
+      //   position: ["50%", "55%"],
+      //   content: "●",
+      //   style: {
+      //     fontSize: 16,
+      //     fill: "#FAAD14",
+      //   },
+      //   offsetX: 5,
+      //   offsetY: 0,
+      // });
+      // this.chartInstance.annotation().text({
+      //   position: ["50%", "55%"],
+      //   content: "待维修",
+      //   style: {
+      //     fontSize: 14,
+      //     fill: "rgba(0, 0, 0, 0.65)",
+      //   },
+      //   offsetX: 20,
+      // });
       this.chartInstance.annotation().text({
         position: ["50%", "55%"],
         content: "●",
         style: {
           fontSize: 16,
           fill: "#FAAD14",
-        },
-        offsetX: 5,
-        offsetY: 0,
-      });
-      this.chartInstance.annotation().text({
-        position: ["50%", "55%"],
-        content: "待维修",
-        style: {
-          fontSize: 14,
-          fill: "rgba(0, 0, 0, 0.65)",
-        },
-        offsetX: 20,
-      });
-      this.chartInstance.annotation().text({
-        position: ["50%", "55%"],
-        content: "●",
-        style: {
-          fontSize: 16,
-          fill: "#FF7875",
           textBaseline: "middle",
           lineHeight: 40,
         },
-        offsetX: 75,
+        offsetX: 16,
         offsetY: 0,
       });
       this.chartInstance.annotation().text({
         position: ["50%", "55%"],
-        content: "禁用",
+        content: "不可售卖",
         style: {
           fontSize: 14,
           fill: "rgba(0, 0, 0, 0.65)",
           textBaseline: "middle",
           lineHeight: 40,
         },
-        offsetX: 90,
+        offsetX: 30,
       });
       this.chartInstance.render();
     },

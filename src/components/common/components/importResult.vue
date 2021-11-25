@@ -36,21 +36,28 @@
                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                     <ul v-else>
                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
+                                            <template v-if="item.lState == null">
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                 </p>
-                                            </div>
-                                            <div v-else>
+                                                <div style="margin-bottom: 5px">
+                                                    <span style="color: #333">状态原因：</span>
+                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                    </span>
+                                                </div>
+                                            </template>
+                                            <template v-else>
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">占点方案：</span>
                                                     <span>
-                                                        <span  style="font-weight: bold">{{['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                     </span>
                                                 </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
+                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                </p>
+                                            </template>
                                         </li>
                                     </ul>
                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.A" label="A面"
@@ -68,21 +75,28 @@
                                     <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
                                     <ul v-else>
                                         <li v-for="(item,index) in scope.row.adlInfo" :key="index">
-                                            <div v-if="item.asState">
+                                            <template v-if="item.lState == null">
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">该点位：{{item.asState}}中</span>
                                                 </p>
-                                            </div>
-                                            <div v-else>
+                                                <div style="margin-bottom: 5px">
+                                                    <span style="color: #333">状态原因：</span>
+                                                    <span style="color: #333" v-for="(u, i) in item.unSaleableReason" :key="i">
+                                                        <template v-if="item.unSaleableReason.length > 1">{{i + 1}}.</template> {{u}}
+                                                    </span>
+                                                </div>
+                                            </template>
+                                            <template v-else>
                                                 <p style="margin-bottom: 5px">
                                                     <span style="color: #333">占点方案：</span>
                                                     <span>
-                                                        <span  style="font-weight: bold">{{['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                     </span>
                                                 </p>
-                                                <p><span style="color: #333">占点排期：</span>{{item.schedules}}</p>
-                                            </div>
+                                                <p style="margin-bottom: 5px"><span style="color: #333">占点排期：</span>{{item.schedules}}
+                                                </p>
+                                            </template>
                                         </li>
                                     </ul>
                                     <el-checkbox slot="reference" v-model="scope.row.checkBox.B" label="B面"
@@ -137,13 +151,15 @@
                 >
                 <el-table-column label="资源名称" min-width="140" prop="resName" >
                 </el-table-column>
-                <el-table-column prop="city" label="市" min-width="85" >
+                <el-table-column prop="province" label="省份" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="origin" label="区" min-width="85" >
+                <el-table-column prop="city" label="城市" min-width="85" >
+                </el-table-column>
+                <el-table-column prop="origin" label="区域" min-width="85" >
                 </el-table-column>
                 <el-table-column prop="resAddress" label="详细地址" min-width="85" >
                 </el-table-column>
-                <el-table-column prop="schedules" label="排期" min-width="160">
+                <el-table-column prop="schedules" label="投放排期" min-width="160">
                     <template slot-scope="scope">
                         <el-tooltip class="item" effect="dark" :content="scope.row.schedules" placement="bottom">
                             <span>{{scope.row.schedules}}</span>
@@ -182,6 +198,7 @@ export default {
             default: ()=>{}
         }
     },
+
     data(){
         return{
             // 登录信息
@@ -312,19 +329,27 @@ export default {
                 if (!!key.adlInfo && key.adlInfo.length > 0) {
                     let arr = [];
                     for (let akey of key.adlInfo) {
-                        if(akey.asState){
-                            arr.push({
-                                asState: akey.asState
-                            });
-                        }else{
-                            let star = timeFormat.toDate(akey.lStar, '/');
-                            let end = timeFormat.toDate(akey.lEnd, '/');
-                            arr.push({
-                                beOccupieApName: akey.apName,
-                                schedules: star + '-' + end,
-                                lState: akey.lState,
-                            });
-                        }
+                        let star = timeFormat.toDate(akey.lStar, '/')
+                        let end = timeFormat.toDate(akey.lEnd, '/')
+                        arr.push({
+                            asState: akey.asState,
+                            schedules: star + '-' + end,
+                            lState: akey.lState,
+                            unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                        })
+                        // if(akey.asState){
+                        //     arr.push({
+                        //         asState: akey.asState
+                        //     });
+                        // }else{
+                        //     let star = timeFormat.toDate(akey.lStar, '/');
+                        //     let end = timeFormat.toDate(akey.lEnd, '/');
+                        //     arr.push({
+                        //         beOccupieApName: akey.apName,
+                        //         schedules: star + '-' + end,
+                        //         lState: akey.lState,
+                        //     });
+                        // }
                     }
                     adObj.adlInfo = arr;
                 } else {
@@ -566,6 +591,7 @@ export default {
             for(let data of errorList){
                 let item = {
                     resName: data.resName,
+                    province: data.province,
                     city: data.city,
                     origin: data.district,
                     resAddress: data.resAddress,
@@ -579,7 +605,7 @@ export default {
         // 导出有问题的点
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
-            let allHead = ['资源名称',	'市', '区',	'详细地址', '投放排期', '失败原因'];
+            let allHead = ['资源名称', '省份', '城市', '区域', '详细地址', '投放排期', '失败原因'];
             sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位
@@ -590,9 +616,11 @@ export default {
                     showList: [],
                 },
             ];
+            console.log(arr, 'arrr')
             for(let data of arr){
                 let obj = {
                     resName: data.resName,
+                    province: data.province,
                     city: data.city,
                     origin: data.origin,
                     resAddress: data.resAddress,

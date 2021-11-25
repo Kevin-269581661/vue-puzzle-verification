@@ -120,7 +120,7 @@
                                     this.cancelDialog()
                                     this.$emit("planMoneyUpdated")
                                     this.$message({
-                                        type: 'warning',
+                                        type: 'success',
                                         message: '金额设置成功！'
                                     });
                                 } else {

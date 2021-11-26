@@ -236,8 +236,8 @@ export default {
   }
   .el-button {
     width: 56px;
-    height: 28px;
-    line-height: 28px;
+    height: 26px;
+    line-height: 26px;
     font-size: 12px;
     box-sizing: border-box;
     min-width: unset;
@@ -245,8 +245,7 @@ export default {
     span {
       display: block;
       width: 100%;
-      height: 28px;
-      line-height: 28px;
+      height: 26px;
       display: flex;
       justify-content: center;
       align-items: center;

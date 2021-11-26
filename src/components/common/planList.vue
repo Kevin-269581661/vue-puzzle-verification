@@ -15,7 +15,7 @@
         <!-- flex_box search_row -->
         <div class="">
           <el-row class="search_row" :gutter="24">
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item">
                 <span>关键词：</span>
                 <el-input
@@ -42,7 +42,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item">
                 <span>日期：</span>
                 <el-select
@@ -71,7 +71,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item">
                 <span>选择状态：</span>
                 <el-select
@@ -90,7 +90,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item">
                 <span>选择城市：</span>
                 <el-select
@@ -110,7 +110,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item" v-if="isAll">
                 <span>选择公司：</span>
                 <el-select
@@ -130,7 +130,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="search-item">
                 <span>是否预锁：</span>
                 <el-select
@@ -145,7 +145,7 @@
               </div>
             </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6">
+            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
               <div class="btn_wrapper">
                 <el-button
                   type="primary"
@@ -2628,6 +2628,17 @@ a {
 
 .u-btn {
   color: #fff;
+}
+
+@media only screen and (min-width: 1200px) {
+  .btn_wrapper {
+    .marginR {
+      margin-right: 4px;
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
+  }
 }
 </style>
 

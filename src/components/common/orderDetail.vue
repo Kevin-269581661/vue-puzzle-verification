@@ -1679,6 +1679,8 @@ export default {
         resultArr.push(obj);
       }
 
+      console.log(resultArr, 'resultArr')
+
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
         const tHeader = [

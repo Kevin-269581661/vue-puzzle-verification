@@ -501,7 +501,7 @@
         :activeAsLab="activeAsLab"
         :mID="mID"
         :mTitle="mTitle"
-        @handleConfirm="clearSearch"
+        @handleConfirm="getData()"
         v-if="isUnvailableSell"
       ></unvailable-sellDialog>
 
@@ -513,7 +513,7 @@
         :mID="mID"
         :mTitle="mTitle"
         :unSaleableReason="unSaleableReason"
-        @handleConfirm="clearSearch"
+        @handleConfirm="getData"
         v-if="isVailableSell"
       ></vailable-sellDialog>
     </div>

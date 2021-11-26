@@ -315,7 +315,9 @@
                                                                 <p style="margin-bottom: 5px">
                                                                     <span style="color: #333">占点方案：</span>
                                                                     <span>
-                                                                        <span style="font-weight: bold">{{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}</span>
+                                                                        <span style="font-weight: bold">
+                                                                            {{["ADN_MD_COUNTRY", "ADN_MD"].includes(sessionData.uType) ? item.beOccupieApName : '******'}}
+                                                                        </span>
                                                                         方案（{{item.lState == 0 ? '预锁': (item.lState == 1 ? '被占' : '强制停止')}}）
                                                                     </span>
                                                                 </p>
@@ -2461,6 +2463,7 @@
                                 schedules: star + '-' + end,
                                 lState: akey.lState,
                                 unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                                beOccupieApName: akey.apName,
                             })
 
                             // if(akey.asState){

@@ -2348,6 +2348,7 @@
                                 schedules: star + '-' + end,
                                 lState: akey.lState,
                                 unSaleableReason: JSON.parse(akey.unSaleableReason || '[]'),
+                                beOccupieApName: akey.apName,
                             })
                             // if(akey.asState){
                             //     arr.push({

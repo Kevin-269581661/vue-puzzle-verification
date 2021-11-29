@@ -4079,11 +4079,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
-                        peopleFlow: data.peopleFlow,
-                        parkSpaceNum: data.parkSpaceNum,
-                        carFlow: data.carFlow,
-                        notPush: data.notPush,
-                        province: data.province,
+                        peopleFlow: key.peopleFlow,
+                        parkSpaceNum: key.parkSpaceNum,
+                        carFlow: key.carFlow,
+                        notPush: key.notPush,
+                        province: key.province,
                     };
                     if(key.centerInfos && key.centerInfos.length) {
                         for(let item of key.centerInfos) {

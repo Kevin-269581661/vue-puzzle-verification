@@ -149,38 +149,17 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <template v-if="sessionData.ascType == 0 && accountForm.role == 'ADN_SM'">
-              <el-form-item label="可开通全国销售：">
-                <el-switch
-                  v-model="accountForm.saleManageLevel"
-                  :active-value="1"
-                  :inactive-value="0"
-                  active-color="#13ce66"
-                ></el-switch>
-              </el-form-item>
-              <el-form-item label="可开通全国媒介：">
-                <el-switch
-                  v-model="accountForm.mediaManageLevel"
-                  :active-value="1"
-                  :inactive-value="0"
-                  active-color="#13ce66"
-                ></el-switch>
-              </el-form-item>
-            </template>
-            <template v-if="accountForm.role == 'BD'">
+            <template
+              v-if="sessionData.uType == 'ADN_SA' && accountForm.role == 'BD'"
+            >
               <el-form-item label="销售类别：" prop="roleLevel">
                 <el-select
                   v-model="accountForm.saleManageLevel"
                   placeholder="请选择角色"
                   size="small"
                 >
-                  <el-option
-                    v-for="key in saleKind"
-                    :key="key.value"
-                    :value="key.value"
-                    :label="key.label"
-                  >
-                  </el-option>
+                  <el-option :value="2" label="KA销售"></el-option>
+                  <el-option :value="0" label="地方销售"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item
@@ -223,7 +202,7 @@
               </el-form-item>
             </template>
             <template
-              v-if="sessionData.uType == 'ADN_MD_COUNTRY' && accountForm.role == 'MD'"
+              v-if="sessionData.uType == 'ADN_SA' && accountForm.role == 'MD'"
             >
               <el-form-item label="媒介类别：" prop="roleLevel">
                 <el-select
@@ -290,7 +269,7 @@ let testAsrIDConfig = {
   gray: 426,
   prod: 426,
   gray: 426,
-}
+};
 export default {
   name: "createClient",
   components: {},
@@ -496,20 +475,16 @@ export default {
       // 登录信息
       sessionData: "",
       haveEPPerssion: false,
-      // 销售类型
-      saleKind: [
-        {
-          value: 0,
-          label: "地方销售",
-        },
-      ],
     };
   },
   mounted() {
     this.getSession();
     this.getCompany();
     this.getInitEditInfo();
-    if (this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env]) {
+    if (
+      this.sessionData.rela == "直营" ||
+      this.sessionData.asrID == testAsrIDConfig[this.env]
+    ) {
       this.roleArr.push({
         label: "开发",
         value: "DEV",
@@ -521,26 +496,25 @@ export default {
      * @description: level转换成角色uType
      * @param {*} utype
      * @return {*}
-     */    
+     */
     translateToUtype(role) {
       switch (role) {
         case "BD":
           return {
             0: "ADN_BD",
-            1: "ADN_BD_COUNTRY",
-            2: "ADN_BD_KA"
-          }[this.accountForm.saleManageLevel||0];
+            2: "ADN_BD_KA",
+          }[this.accountForm.saleManageLevel || 0];
         case "MD":
           return {
             0: "ADN_MD",
-            1: "ADN_MD_COUNTRY"
-          }[this.accountForm.mediaManageLevel||0];
+            1: "ADN_MD_COUNTRY",
+          }[this.accountForm.mediaManageLevel || 0];
         case "DEV":
           return {
             0: "ADN_DEV",
             1: "ADN_DEV_ASSET",
-            2: "ADN_DEV_LEADER"
-          }[this.accountForm.devManageLevel||0];
+            2: "ADN_DEV_LEADER",
+          }[this.accountForm.devManageLevel || 0];
         default:
           return role;
       }
@@ -549,55 +523,44 @@ export default {
      * @description: uType转换成角色和level
      * @param {*} uType
      * @return {*}
-     */    
+     */
     translateToLevel(uType) {
-      return {
-        "ADN_BD": {
-          role: "BD",
-          saleManageLevel: 0
-        },
-        "ADN_BD_COUNTRY": {
-          role: "BD",
-          saleManageLevel: 1
-        },
-        "ADN_BD_KA": {
-          role: "BD",
-          saleManageLevel: 2
-        },
-        "ADN_MD": {
-          role: "MD",
-          mediaManageLevel: 0
-        },
-        "ADN_MD_COUNTRY": {
-          role: "MD",
-          mediaManageLevel: 1
-        },
-        "ADN_DEV": {
-          role: "DEV",
-          devManageLevel: 0
-        },
-        "ADN_DEV_ASSET": {
-          role: "DEV",
-          devManageLevel: 1
-        },
-        "ADN_DEV_LEADER": {
-          role: "DEV",
-          devManageLevel: 2
-        }
-      }[uType] || {role: uType};
+      return (
+        {
+          ADN_BD: {
+            role: "BD",
+            saleManageLevel: 0,
+          },
+          ADN_BD_KA: {
+            role: "BD",
+            saleManageLevel: 2,
+          },
+          ADN_MD: {
+            role: "MD",
+            mediaManageLevel: 0,
+          },
+          ADN_MD_COUNTRY: {
+            role: "MD",
+            mediaManageLevel: 1,
+          },
+          ADN_DEV: {
+            role: "DEV",
+            devManageLevel: 0,
+          },
+          ADN_DEV_ASSET: {
+            role: "DEV",
+            devManageLevel: 1,
+          },
+          ADN_DEV_LEADER: {
+            role: "DEV",
+            devManageLevel: 2,
+          },
+        }[uType] || { role: uType }
+      );
     },
     // 登录信息及角色数据
     getSession() {
       this.sessionData = sessFun.getSess();
-      let { ascType, uType } = this.sessionData;
-      if (uType === "ADN_SM" || uType === "ADN_SA") {
-        if (ascType == 0) {
-          this.saleKind.push({
-            value: 2,
-            label: "KA销售",
-          });
-        }
-      }
     },
     // 公司数据
     getCompany() {
@@ -683,19 +646,23 @@ export default {
         this.showBackstagePermission = true;
       }
 
-      if (!(this.sessionData.rela == "直营" || this.sessionData.asrID == testAsrIDConfig[this.env])) {
-        let devIndex = this.roleArr.findIndex((item)=>item.value=="DEV");
-        if (val == testAsrIDConfig[this.env] && devIndex==-1) {
+      if (
+        !(
+          this.sessionData.rela == "直营" ||
+          this.sessionData.asrID == testAsrIDConfig[this.env]
+        )
+      ) {
+        let devIndex = this.roleArr.findIndex((item) => item.value == "DEV");
+        if (val == testAsrIDConfig[this.env] && devIndex == -1) {
           this.roleArr.push({
             label: "开发",
             value: "DEV",
           });
-        } else if(val != testAsrIDConfig[this.env] && devIndex!=-1) {
+        } else if (val != testAsrIDConfig[this.env] && devIndex != -1) {
           this.roleArr.splice(devIndex, 1);
           // this.accountForm.role = "";
         }
       }
-
     },
     // 输入账号获取上级信息(远程搜索)
     querySearchAsync(queryString, callback) {
@@ -958,7 +925,7 @@ export default {
     },
     // 获取权限城市
     getRoleCity() {
-      console.log("getRoleCity")
+      console.log("getRoleCity");
       this.roleCityArr = [];
       let info = {
         data: { city: "" },

@@ -3,33 +3,48 @@
         <div class="analysis_header">
             <div class="tips">
                 <span>数据统计截止至{{toTime}}</span>
-                <el-select v-model="selectCity" placeholder="请选择" size="mini" @change="changeCity"
-                           :disabled="isCitys">
-                    <el-option
-                        v-for="item in headerCityList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
+                <div v-if="isAllCity">
+                    <!-- <el-select v-model="companyType" placeholder="请选择" size="mini">
+                        <el-option
+                            v-for="item in companyList"
+                            :key="item.companySourceCode"
+                            :label="item.companySource"
+                            :value="item.companySourceCode">
+                        </el-option>
+                    </el-select> -->
+                    <el-cascader
+                        v-model="companyType"
+                        :options="companyList" @change="changeCompanyType"></el-cascader>
+                </div>
+                <div v-else>
+                    <el-select v-model="selectCity" placeholder="请选择" size="mini" @change="changeCity"
+                            :disabled="isCitys">
+                        <el-option
+                            v-for="item in headerCityList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
             </div>
-            <el-tabs v-model="activeName">
+            <el-tabs v-model="activeName"  @tab-click="tabClick">
                 <el-tab-pane label="数据概览" name="first"><!--v-if="isQinLinCity"-->
                     <data-read :sessionData="sessionData" :directNameList="directNameList" :headerCityList="headerCityList"
-                               :selectCity="selectCity" :activeName="activeName"></data-read>
+                               :selectCity="newSelectCity" :activeName="activeName"></data-read>
                 </el-tab-pane>
                 <el-tab-pane label="周报/月报" name="second" v-if="!isAllCity">
-                    <weekAndMouth-report :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></weekAndMouth-report>
+                    <weekAndMouth-report :sessionData="sessionData" :selectCity="newSelectCity" :activeName="activeName"></weekAndMouth-report>
                 </el-tab-pane>
                 <el-tab-pane label="指标查询" name="third">
-                    <index-query :sessionData="sessionData" :citys="headerCityList" :selectCity="selectCity" :activeName="activeName"></index-query>
+                    <index-query :sessionData="sessionData" :citys="headerCityList" :selectCity="newSelectCity" :activeName="activeName"></index-query>
                 </el-tab-pane>
                 <el-tab-pane label="城市对比" name="fouth" v-if="isAllCity">
-                    <citys-contrast :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"
+                    <citys-contrast :sessionData="sessionData" :selectCity="newSelectCity" :activeName="activeName"
                                     :citys="headerCityList" :directNameList="directNameList"></citys-contrast>
                 </el-tab-pane>
                 <el-tab-pane label="点位分析" name="fifth">
-                    <ads-analysis :sessionData="sessionData" :selectCity="selectCity" :activeName="activeName"></ads-analysis>
+                    <ads-analysis :sessionData="sessionData" :selectCity="newSelectCity" :activeName="activeName"></ads-analysis>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -51,6 +66,8 @@
         name: "dataAnalysis",
         data(){
             return{
+                companyType:[],  //亲邻:QINLIN,皓邻:HAOLIN
+                companyList:[],
                 sessionData: {},
                 // 是否为平台商超管
                 isAllCity: true,
@@ -80,6 +97,8 @@
                 directNameList: [],
                 // 当前选择的城市
                 selectCity: '',
+                //获取当前选择的城市值，传递给子组件
+                newSelectCity:'',
                 //
                 tabContentLoading: true,
             }
@@ -90,6 +109,25 @@
             indexQuery,
             citysContrast,
             adsAnalysis,
+        },
+        watch:{
+            //获取当前选择的城市值，传递给子组件
+            selectCity(val){
+                let cityStr=''
+                if(val==0){
+                    //全国
+                    this.headerCityList.forEach((item)=>{
+                        if(item.value!=0){
+                            cityStr+=item.value+','
+                        }
+                    })
+                    cityStr=cityStr.substring(0, cityStr.length -1)
+                }else{
+                    //非全国
+                    cityStr=val
+                }
+                this.newSelectCity=cityStr
+            }
         },
         created() {
             this.sessionData = sessFun.getSess()
@@ -106,11 +144,105 @@
             this.getBasicData()
         },
         methods:{
+            //tab切换
+            tabClick(){
+                if(this.activeName=='fouth'){
+                    this.companyType=[this.companyList[0].value,this.companyList[0].children[0].value]
+                    this.headerCityList=this.companyList[0].children
+                    let childerenArr=this.companyList[0].children.concat();
+                    childerenArr.shift()
+                    let cityStr=''
+                    childerenArr.forEach((item)=>{
+                        cityStr+=item.value+','
+                    })
+                    cityStr=cityStr.substring(0, cityStr.length -1)
+                    this.newSelectCity=cityStr
+                    console.log('this.newSelectCity',this.newSelectCity)
+                }
+            },
+            //获取皓邻，亲邻公司列表
+            getDataAnalysisCompanies(){
+                let params = {
+                    uid: this.sessionData.uID,
+                    token: this.sessionData.token
+                }
+                api.getApi(this.apiVar.report + '/api/v2/dataAnalysisCompanies',params).then(res=>{
+                    if(res.data.SysCode===200200){
+                        this.$nextTick(()=>{
+                            let data=res.data.data
+                            let result=[]
+                            data.forEach((element)=>{
+                                let newChildrenArr=[]
+                                element.companies.forEach((item)=>{
+                                    newChildrenArr.push({
+                                        label:item.asName,
+                                        value:item.asrId.toString()
+                                    })
+                                })
+                                newChildrenArr.unshift({
+                                    label:'全国',
+                                    value:element.companySourceCode
+                                })
+                                result.push({
+                                    label:element.companySource,
+                                    value:element.companySourceCode,
+                                    children:newChildrenArr
+                                })
+                            })
+                            this.companyList=result
+                            if(this.companyList&&this.companyList.length>0){
+                                this.companyType=[this.companyList[0].value,this.companyList[0].children[0].value]
+                                this.changeCompanyType()
+                            }
+                        })
+                    }
+                })
+            },
+            // //公司类型切换
+            changeCompanyType(){
+                let companyType=this.companyType
+                let companyList=this.companyList
+                if(companyType[0]==companyType[1]){
+                    //全国
+                    let companyStr=''
+                    companyList.forEach((element)=>{
+                        if(element.value==companyType[0]){
+                            let newChildren=element.children.concat();
+                            newChildren.shift();
+                            newChildren.forEach((item)=>{
+                                companyStr+=item.value+','
+                            })
+                        }
+                    })
+                    this.newSelectCity=companyStr.substring(0, companyStr.length -1)
+                }else{
+                    //非全国
+                    this.newSelectCity=companyType[1].toString()
+                    console.log(this.newSelectCity)
+                }
+                console.log('companyType[0]',companyType[0])
+                let directNameList=[]
+                let headerCityList=[]
+                companyList.forEach((element)=>{
+                    if(element.value==companyType[0]){
+                        let newChildren=element.children.concat();
+                        newChildren.forEach((item)=>{
+                            headerCityList.push(item)
+                            if(item.value!==companyType[0]){
+                                directNameList.push(item.label)
+                            }
+                        })
+                    }
+                })
+                this.directNameList=directNameList
+                this.headerCityList=headerCityList
+            },
             // 获取session数据;根据登录用户的权限设置权限
             getBasicData(){
                 console.log('用户信息',this.sessionData)
                 if (this.sessionData.ascType == 0) {
-                    this.getDirectSales()
+                    // this.getDirectSales()
+                    this.getDataAnalysisCompanies()
                 } else {
                     let cityArr = [
                         {
@@ -121,7 +253,6 @@
                     this.headerCityList = JSON.parse(JSON.stringify(cityArr))
                     this.selectCity = cityArr[0].value
                     this.isAllCity = false
-                    console.log('this.headerCityList', this.headerCityList)
                 }
             },
             // 登录账户为平台商则去获取直营公司列表
@@ -148,7 +279,6 @@
                         this.selectCity = arr[0].value
                         this.directNameList = directName
                         this.isAllCity = true
-                        console.log('headerCityList',this.headerCityList)
                     } else {
                         this.messageFun('warning', res.data.MSG)
                     }
@@ -163,7 +293,6 @@
             },
             // 根据asrrID返回城市名
             returnAsName(asrIDs) {
-                // console.log('this.citys',this.citys,'asrIDs',asrIDs)
                 for (let key of this.citys) {
                     if (key.value == asrIDs) {
                         return key.label
@@ -207,13 +336,17 @@
     .tips {
         position: absolute;
         right: 8px;
-        top: 12px;
+        top: 7px;
         z-index: 9;
+        /* background: blue; */
+        display: flex;
+        align-items: center;
     }
     .tips span {
         font-size: 14px;
         color:rgba(0,0,0,0.45);
         margin-left: 18px;
+        margin-right: 18px;
     }
     .tips /deep/ .el-select.el-select--mini{
         width: 114px;

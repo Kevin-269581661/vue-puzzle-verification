@@ -2141,6 +2141,7 @@
                 }
                 console.log(dateArr, 'dateArr')
 
+                let equipmentTypeData=[]
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
@@ -2188,7 +2189,6 @@
                         obj.asName = data.asName
                     }
                     obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
-                    // return false
                     for(let date of dateArr){
                         if(data.schedules == date.sheetName){
                             if(date.resIDArr.includes(data.resID)){
@@ -2204,14 +2204,6 @@
                                         break;
                                     }
                                 }
-                                if(sheetExcel.isAddEquipmentTypeAsXlsx){
-                                    for(let item of date.showList){
-                                        let equipmentTypeArr=item.equipmentType.split(',')
-                                        if(!equipmentTypeArr.includes(data.equipmentType)){
-                                            item.equipmentType+=','+data.equipmentType
-                                        }
-                                    }
-                                }
                             }else{
                                 obj.timeRange = date.sheetName;
                                 date.resIDArr.push(data.resID);
@@ -2220,11 +2212,47 @@
                             break;
                         }
                     }
-
-
                 }
                 
-
+                if(sheetExcel.isAddEquipmentTypeAsXlsx){
+                    for(let arrItem of arr){
+                        let _resID=arrItem.resID
+                        let _resName=arrItem.resName
+                        let _equipmentType=arrItem.equipmentType
+                        let equipmentTypeDataItem=equipmentTypeData.find((item)=>{
+                            return item.resId==_resID
+                        })
+                        if(equipmentTypeDataItem){
+                            //已存在该资源id
+                            let newEquipmentType=equipmentTypeDataItem.equipmentType
+                            if(!newEquipmentType.includes(_equipmentType)&&_equipmentType){
+                                equipmentTypeDataItem.equipmentType.push(_equipmentType)
+                            }
+                        }else{
+                            //不存在该资源id
+                            let newEquipmentType=[]
+                            if(_equipmentType){ 
+                                newEquipmentType.push(_equipmentType)
+                            }
+                            equipmentTypeData.push({
+                                resId:_resID,
+                                resName:_resName,
+                                equipmentType:newEquipmentType
+                            })
+                        }
+                    }
+                    
+                    console.log('equipmentTypeData：',equipmentTypeData)
+                    for(let dateArrItem of dateArr){
+                        for(let showListItem of dateArrItem.showList){
+                            for(let equipmentTypeDataItem of equipmentTypeData){
+                                if(showListItem.resName==equipmentTypeDataItem.resName){
+                                    showListItem.equipmentType=equipmentTypeDataItem.equipmentType.join(',')
+                                }
+                            }
+                        }
+                    }
+                }
 
                 for(let data of dateArr){
                     for(let obj of data.showList){

@@ -428,7 +428,6 @@
         },
         watch: {
             sessionData(newVal, oldVal) {
-                console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
             directNameList(newVal, oldVal){
@@ -436,8 +435,7 @@
                 this.initCitySelect()
             },
             selectCity(newVal, oldVal) {
-                
-
+                this.initCitySelect()
                 let selectCityArr=newVal.split(',')
                 if(selectCityArr.length>1){
                     //全国
@@ -578,6 +576,9 @@
                 console.log('地图getCityDataShow', this.cityCompareTable)
                 // this.cityCompareTable = this.cityCompareTable.sort(this.compareSort('countRes'))
                 this.chinaMapDataMax = this.cityCompareTable[0].countRes
+                this.chinaMapData.forEach((item)=>{
+                    item.value=0
+                })
                 for (let cityKey of this.cityCompareTable) {
                     this.setChinaMapData(cityKey)
                 }

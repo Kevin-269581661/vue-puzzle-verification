@@ -736,6 +736,7 @@
                 >
                 </el-table-column>
                 <el-table-column
+                  v-if="isAddEquipmentTypeAsTable"
                   prop="equipmentType"
                   label="设备型号"
                   min-width="10.3%"

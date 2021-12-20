@@ -176,6 +176,13 @@
                   >
                   </el-table-column>
                   <el-table-column
+                    v-if="isAddEquipmentTypeAsTable"
+                    prop="equipmentType"
+                    label="设备型号"
+                    min-width="10.3%"
+                  >
+                  </el-table-column>
+                  <el-table-column
                     prop="mTitle"
                     label="媒体名称"
                     min-width="10.3%"
@@ -459,6 +466,9 @@ import {
   MessageBox
 } from "element-ui";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
+
+import sheetExcel from '../../commonFun/sheetExcel';
+
 export default {
   name: "planDetail",
   components: {
@@ -568,6 +578,10 @@ export default {
     this.getADLimit()       // 获取广告限制列表
   },
   computed: {
+    //页面是否需要添加设备型号字段
+    isAddEquipmentTypeAsTable(){
+      return sheetExcel.isAddEquipmentTypeAsTable()
+    },
     currentPagination () {
       this.totalNum = this.setpointArr.length;
       return this.setpointArr.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
@@ -620,11 +634,12 @@ export default {
           peopleFlow: data.peopleFlow || "",
           province: data.province || ""
         };
+        obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
         resultArr.push(obj);
       }
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        const tHeader = [
+        let tHeader = [
           '资源名称',
           '省份',
           '城市',
@@ -652,7 +667,7 @@ export default {
           '地图中心点',
           '终止日期'
         ];
-        const filterVal = [
+        let filterVal = [
           'resName',
           'province',
           'city',
@@ -697,6 +712,9 @@ export default {
           filterVal.push('asName');
         }
         
+        tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
+        filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
+
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, name);

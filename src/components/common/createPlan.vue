@@ -1800,6 +1800,8 @@ export default {
                 head.push("归属公司");
               }
 
+              head=sheetExcel.addEquipmentTypeHead(head)
+
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -1883,6 +1885,8 @@ export default {
             obj.asNames = item.asNames;
           }
 
+          obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
+          
           obj[this.emptyRange[0] + "-" + this.emptyRange[1]] =
             item.DateInfo.adsNum || 0;
           resObj.showList.push(obj);
@@ -2020,6 +2024,8 @@ export default {
               head.push("归属公司");
             }
 
+            head=sheetExcel.addEquipmentTypeHead(head)
+
             let allHead = head.concat(date);
             let filename =
               returnobj.filename +
@@ -2102,7 +2108,7 @@ export default {
             ) {
               obj.asNames = item.asNames;
             }
-
+            obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
             let showData = item.DateInfo.sort(this.sortDate);
             for (let date of showData) {
               dateArr.push(

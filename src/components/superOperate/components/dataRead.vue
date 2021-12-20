@@ -568,11 +568,17 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
-                if (this.selectCity === '0') {
+                let selectCityArr=this.selectCity.split(',')
+                if(selectCityArr.length>1){
                     this.isAllCity = true
-                } else {
-                    this.isAllCity = false
+                }else{
+                    this.isAllCity=false
                 }
+                // if (this.selectCity === '0') {
+                //     this.isAllCity = true
+                // } else {
+                //     this.isAllCity = false
+                // }
                 if (this.activeName === 'first') {
                     this.getDataRead();
                 } else {

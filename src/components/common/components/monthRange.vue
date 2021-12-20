@@ -8,6 +8,7 @@
       v-model="defaultDate[0]"
       type="month"
       value-format="yyyy-MM"
+      format="yyyy-MM"
       placeholder="开始月份"
       @change="setValue1">
     </el-date-picker>
@@ -20,6 +21,7 @@
       v-model="defaultDate[1]"
       type="month"
       value-format="yyyy-MM"
+      format="yyyy-MM"
       placeholder="结束月份"
       @change="setValue2">
     </el-date-picker>
@@ -67,7 +69,31 @@ export default {
       if(Date.parse(temp1)>Date.parse(temp2)) {
         this.$message.warning('开始月份不能大于结束月份哟~')
       } else {
-        // console.log('dateRange---', this.defaultDate)
+        // console.log('dateRange---params', this.params)
+        // console.log('dateRange---defaultDate', this.defaultDate)
+        this.defaultDate.forEach((item,index)=>{
+          if(typeof item!=='string'){
+            let year=item.getFullYear()
+            let month
+            month = item.getMonth() + 1;
+            if (month < 10) {
+              month = "0" + month;
+            }
+            this.defaultDate[index]=year+'-'+month
+          }
+          console.log('item：',item)
+        })
+        this.defaultDate.forEach((item,index)=>{ 
+          let dateArr=item.split('-')
+          if(index==1){
+            //起始时间
+            this.defaultDate[index]=dateArr[0]+'-'+dateArr[1]+'-01'
+          }else{
+            //截止时间
+            this.defaultDate[index]=dateArr[0]+'-'+dateArr[1]+'-'+new Date(dateArr[0], dateArr[1], 0).getDate();
+          }
+        })
+        // console.log('newDefaultDate',this.defaultDate)
         this.$emit('changRange', this.params, this.defaultDate)
       }
     },

@@ -239,6 +239,8 @@ export default {
                 head.push("归属公司");
               }
 
+              head=sheetExcel.addEquipmentTypeHead(head)
+
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -261,6 +263,7 @@ export default {
           loadingPoint.close();
         });
     },
+
     // 导出空点格式化数据
     formatData (arr) {
       let returnObj = {
@@ -322,7 +325,7 @@ export default {
           ) {
             obj.asNames = item.asNames;
           }
-
+          obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
           obj[
             this.downLoadInfo.daterange[0] +
             "-" +
@@ -451,6 +454,8 @@ export default {
             ) {
               head.push("归属公司");
             }
+            
+            head=sheetExcel.addEquipmentTypeHead(head)
 
             let allHead = head.concat(date);
             let filename =
@@ -539,7 +544,7 @@ export default {
             ) {
               obj.asNames = item.asNames;
             }
-
+            obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
             let showData = item.DateInfo.sort(this.sortDate);
             for (let date of showData) {
               dateArr.push(
@@ -649,6 +654,8 @@ export default {
                   head.push("归属公司");
                 }
 
+                head=sheetExcel.addEquipmentTypeHead(head)
+
                 let filename = returnobj.city.join("-") + "-" + date + "空位表";
                 sheetExcel.toDownload(head, returnobj.arr, filename);
               } else {
@@ -735,7 +742,7 @@ export default {
             ) {
               obj.asName = item.asName;
             }
-            
+            obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
             resObj.showList.push(obj);
           }
           result.push(resObj);

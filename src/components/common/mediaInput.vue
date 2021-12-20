@@ -428,7 +428,7 @@
                                         </el-row>
                                         <el-row :gutter="76" class="from_row">
                                             <el-col :span="6">
-                                                <el-form-item label=" 媒体类型" prop="doorType">
+                                                <el-form-item label="媒体类型" prop="doorType">
                                                     <el-input v-model="item.mediaForm.doorType" placeholder="例:消防门"></el-input>
                                                 </el-form-item>
                                             </el-col>
@@ -529,6 +529,13 @@
                                                             <i class="el-icon-plus" ></i>
                                                         </el-upload>
                                                     </div>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="6" v-if="isAddEquipmentTypeAsTable">
+                                                <el-form-item label="设备型号" prop="equipmentType">
+                                                    <el-select v-model="item.mediaForm.equipmentType" placeholder="请选择设备型号">
+                                                        <el-option v-for="state in equipmentTypeArr" :label="state" :value="state" :key="state"></el-option>
+                                                    </el-select>
                                                 </el-form-item>
                                             </el-col>
                                         </el-row>
@@ -788,6 +795,7 @@
     import areaToTextNew from '../../commonFun/areaToText_new'
     import sessFun from '../../commonFun/sessFun.js'
 
+    import sheetExcel from "../../commonFun/sheetExcel.js";
 
     const MEDIA_OPTIONS = [
         {label: '正常', value: '1'},
@@ -905,6 +913,7 @@
                 }
             }
             return {
+                equipmentTypeArr: [],  //设备型号
                 isUpload: true,
                 assetIdBolean: false,
                 activeMedia: 'first',
@@ -943,7 +952,7 @@
                             adLimit: [],            //请选择广告限制 notpush
                             assetIdBolean: false,   // 媒体状态为待安装时：资产编号非必填
                             mImg: '',
-                            updataImg:[],
+                            updataImg:[]
                         },
                     },
                 ],
@@ -1183,7 +1192,7 @@
                     visualH: [
                         {required: true, type: 'string', message: '不能为空且只能输入数字!', trigger: ['blur','change']},
                         {validator: validatePrice, trigger: ['blur','change']},
-                    ],
+                    ]
                 },
                 //道闸表单验证
                 roadGateRules:{
@@ -1361,6 +1370,18 @@
         }, */
         created() {
             this.getFangJiaWangCity()
+            
+            if(sheetExcel.isAddEquipmentTypeAsTable()){
+                //需要添加设备型号字段
+                let newMediaForm=JSON.parse(JSON.stringify(this.arrMedia[0].mediaForm))
+                newMediaForm.equipmentType=''
+                this.$set(this.arrMedia[0],newMediaForm)
+
+                this.mediaRules.equipmentType=[
+                    {required: true, type: 'string', message: '请选择设备型号!', trigger: ['blur','change']}
+                ]
+                this.getEquipmentType()
+            }
         },
         mounted: function () {
             this.customPermission = this.sessionData.customPermission;
@@ -1368,8 +1389,31 @@
             this.ShowRegion()
             this.editFun()       // 编辑方法
             this.getADLimit()   // 获取广告限制列表
+            
+        },
+        computed:{
+            //页面是否需要添加设备型号字段
+            isAddEquipmentTypeAsTable(){
+                return sheetExcel.isAddEquipmentTypeAsTable()
+            }
         },
         methods: {
+            //获取设备类型（GetEquipmentType）
+            getEquipmentType(){
+                let params = {
+                    "uid": this.sessionData.uID,
+                    "token": this.sessionData.token,
+                    "service": "GetEquipmentType",
+                    "data": {}
+                }
+                api.postApi_new(this.apiVar.Media, params).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        this.equipmentTypeArr=res.data.data.types
+                    } else {
+                        Message.warning(res.data.MSG);
+                    }
+                })
+            },
             getFangJiaWangCity() {
                 let params = {
                     "uid": this.sessionData.uID,
@@ -1744,6 +1788,10 @@
                         }
                     },
                 ]
+
+                if(sheetExcel.isAddEquipmentTypeAsTable()){
+                    mediaArr[0].mediaForm.equipmentType=''
+                }
 
                 this.mediaOptions.push([{label: '正常', value: '1'}])
 
@@ -2263,10 +2311,11 @@
                 let arr = []
                 if(this.m_boolean.flag){
                     let mediaFrom = this.arrMedia
+                    console.log('mediaFrom',mediaFrom)
                     for (let i = adIndex; i < mediaFrom.length; i++) {
                         let key = mediaFrom[i].mediaForm
                         if(key.mediaName && key.mediaType && key.adSizeW && key.adSizeH) {
-                            arr.push({
+                            let obj={
                                 resID: resID,
                                 uID: this.recForm.uid,
                                 mTitle: key.mediaName,
@@ -2282,7 +2331,13 @@
                                 mRemark: key.mediaRemark,
                                 mState: (key.mstate).split('')[0],
                                 mSaleState: 1
-                            })
+                            }
+                            
+                            if(sheetExcel.isAddEquipmentTypeAsTable()){
+                                //需要添加设备型号字段
+                                obj.equipmentType=key.equipmentType
+                            }
+                            arr.push(obj)
                         } else {
                             continue
                         }
@@ -2842,6 +2897,11 @@
                                 updataImg:[],
                                 assetIdBolean: mediaObj[i].mState == 2 ? true : false
                             }
+                            
+                            if(sheetExcel.isAddEquipmentTypeAsTable()){
+                                //需要添加设备型号字段
+                                media.equipmentType=mediaObj[i].equipmentType
+                            }
 
                             // 编辑时只保留正常与原来所选择的媒体状态
                             const currentOption = MEDIA_OPTIONS.filter(item => {
@@ -3157,6 +3217,10 @@
                             mrk: tempObj.mediaRemark || '',
                             mImg: tempObj.mImg || '',
                             grade: tempObj.adDoorLevel || ''
+                        }
+                        if(sheetExcel.isAddEquipmentTypeAsTable()){
+                            //需要添加设备型号字段
+                            temp_media.equipmentType=tempObj.equipmentType
                         }
                         console.log('更新媒体temp_media', temp_media)
                         if (tempObj.mstate === '正常') {

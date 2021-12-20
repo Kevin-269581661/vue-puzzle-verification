@@ -114,7 +114,13 @@
                 </span>
               </template>
             </el-table-column>
-
+            <el-table-column 
+              prop="equipmentType" 
+              v-if="isAddEquipmentTypeAsTable" 
+              label="设备型号" 
+              width="127"
+            >
+            </el-table-column>
             <el-table-column
               prop="mVehicle"
               label="媒体类型"
@@ -531,6 +537,9 @@ import timeFormat from '../../commonFun/timeFormat';
 import unvailableSellDialog from './components/unvailableSellDialog.vue';
 import vailableSellDialog from './components/vailableSellDialog.vue';
 
+
+import sheetExcel from "../../commonFun/sheetExcel.js";
+
 import {
   Form,
   FormItem,
@@ -688,6 +697,12 @@ export default {
     let endTime = timeFormat.returnDayCount(0, '/');
     let startTime = timeFormat.returnDayCount(-180, '/');
     this.canSelectDayTime = [startTime, endTime]
+  },
+  computed:{
+    //页面是否需要添加设备型号字段
+    isAddEquipmentTypeAsTable(){
+      return sheetExcel.isAddEquipmentTypeAsTable()
+    }
   },
   methods: {
     // 媒体状态转换

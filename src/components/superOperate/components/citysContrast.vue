@@ -299,7 +299,7 @@
             return {
                 isGetData: false,
                 // 城市对比选择的城市只能为0
-                selectCity: '0',
+                // selectCity: '0',
                 cityList: [],
                 nowMonth: '',               // 当前月份日期
                 totalDataYear: '',          // 当前年份
@@ -409,6 +409,10 @@
                 type: Object,
                 required: true,
             },
+            selectCity: {
+                type: String,
+                required: true,
+            },
             activeName:{
                 type:String,
                 required: true
@@ -424,12 +428,20 @@
         },
         watch: {
             sessionData(newVal, oldVal) {
-                console.log('newVal', newVal, 'oldVal', oldVal)
                 this.sessionData = newVal
             },
             directNameList(newVal, oldVal){
                 this.directNameList = newVal
                 this.initCitySelect()
+            },
+            selectCity(newVal, oldVal) {
+                this.initCitySelect()
+                let selectCityArr=newVal.split(',')
+                if(selectCityArr.length>1){
+                    //全国
+                    console.log('请求数据了')
+                    this.getCityContrastData()
+                }
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
@@ -493,13 +505,21 @@
                 let arr = []
                 let asrIDList = []
                 for(let key of this.citys){
-                    if(key.value !== '0'){
+                    if(key.value !== 'QINLIN'&&key.value !== 'HAOLIN'){
                         arr.push({
                             value: key.value,
                             label: key.label,
                         })
                         asrIDList.push(key.value)
                     }
+
+                    // if(key.value !== '0'){
+                    //     arr.push({
+                    //         value: key.value,
+                    //         label: key.label,
+                    //     })
+                    //     asrIDList.push(key.value)
+                    // }
                 }
                 this.cityList = arr
                 this.selectCityLine = asrIDList
@@ -511,6 +531,7 @@
                 this.selectCompareCityData = this.directNameList.concat()
                 this.beforeCityKey = this.directNameList.concat()
                 console.log('directNameList',this.directNameList)
+                
             },
             /*  城市数据展示  */
             getAllCityInfo(){
@@ -520,6 +541,7 @@
                     token: this.sessionData.token,
                     startDate: this.toDay.substring(0,4) + '/01/01',
                     endDate: this.toDay,
+                    asrIds: this.returnAsrID()
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getCityInfo', params).then(res=>{
                     console.log('城市数据展示表格res',res)
@@ -554,6 +576,9 @@
                 console.log('地图getCityDataShow', this.cityCompareTable)
                 // this.cityCompareTable = this.cityCompareTable.sort(this.compareSort('countRes'))
                 this.chinaMapDataMax = this.cityCompareTable[0].countRes
+                this.chinaMapData.forEach((item)=>{
+                    item.value=0
+                })
                 for (let cityKey of this.cityCompareTable) {
                     this.setChinaMapData(cityKey)
                 }
@@ -827,7 +852,7 @@
                             }
                         }
                         this.cityBattleLineSeries.push(tempObj)
-                        if (this.cityBattleLineStep >= 7) {
+                        if (this.cityBattleLineStep >= this.selectCityLine.length) {
                             this.cityBattleLineTime = timeArr
                             this.cityLineDataShow = JSON.parse(JSON.stringify(this.cityBattleLineSeries))
                             console.log('---城市数据对比社区', this.cityBattleLineSeries, this.cityLineDataShow)
@@ -962,7 +987,7 @@
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
-                    asrIDs: this.returnAsrID(),
+                    asrIds: this.returnAsrID(),
                     startDate:this.cityRateCompareDate[0].split('-').join('/'),
                     endDate:this.cityRateCompareDate[1].split('-').join('/'),
                 }
@@ -1241,7 +1266,7 @@
                         console.log('tempObj',tempObj)
                         this.cityBattlePieStep++
                         this.CityBattleData.push(tempObj)
-                        if (this.cityBattlePieStep >= 7) {
+                        if (this.cityBattlePieStep >= this.selectCityLine.length) {
                             console.log(this.cityBattlePieStep,'++++++++城市关键数据对比  - 接口',this.CityBattleData)
                             this.setCityBattle()
                         }

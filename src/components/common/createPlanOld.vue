@@ -2815,6 +2815,9 @@
                     };
                     dateArr.push(dateObj);
                 }
+
+                let mIDArr = []
+
                 for (let data of arr) {
                     let obj = {
                         resID: data.resID,
@@ -2835,12 +2838,30 @@
                         carFlow: data.carFlow,
                         peopleFlow: data.peopleFlow,
                         // dNum: data.dNum,
-                        actualMediaCnt: 0,
+                        actualMediaCnt: 1,
                         adsNum: 1,
                         map: data.mapCenter,
                         timeRange: '',
                         mID: data.mID
                     };
+
+                    let mIDitem = mIDArr.find(item => {
+                        return item.resID == data.resID
+                    })
+                    
+                    // 如果该资源存在
+                    if (mIDitem) {
+                        if (!mIDitem.mID.includes(data.mID)) {
+                            // 不存在mID
+                            mIDitem.mID.push(data.mID)
+                        }
+                    } else {
+                        // 如果该资源不存在
+                        mIDArr.push({
+                            resID: data.resID,
+                            mID: [data.mID]
+                        })
+                    }
 
                     // 巡点权限(1：亲粤邻 2：北京)
                     if(this.customPermission) {
@@ -2864,13 +2885,6 @@
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {
-                                for(let item of date.showList){
-                                    if((item.resID === data.resID) && (item.mID !== data.mID)){
-                                        console.log(item.resName, 'resName')
-                                        item.actualMediaCnt++
-                                        break
-                                    }
-                                }
                                 for (let item of date.showList) {
                                     if (item.resID == data.resID) {
                                         item.adsNum++;
@@ -2886,6 +2900,18 @@
                         }
                     }
                 }
+
+                // 获取媒体数量
+                for(let dateArrItem of dateArr){
+                    for(let showListItem of dateArrItem.showList) {
+                        for(let mIDitem of mIDArr) {
+                            if(showListItem.resID==mIDitem.resID) {
+                                showListItem.actualMediaCnt = mIDitem.mID.length
+                            }
+                        }
+                    }
+                }
+
                 for (let data of dateArr) {
                     for (let obj of data.showList) {
                         delete obj.resID;
@@ -2894,13 +2920,6 @@
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
                 // console.log('datearrr-----', dateArr);
-                dateArr.forEach(item => {
-                    item.showList.forEach(i => {
-                        if(i.actualMediaCnt === 0) {
-                            i.actualMediaCnt = 1
-                        }
-                    })
-                })
                 return dateArr;
             },
             // 导出空位

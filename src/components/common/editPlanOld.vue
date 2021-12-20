@@ -2134,8 +2134,9 @@
                     };
                     dateArr.push(dateObj);
                 }
-                console.log(dateArr, 'dateArr')
-                
+
+                let mIDArr = []
+
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
@@ -2157,12 +2158,30 @@
                         peopleFlow: data.peopleFlow || '',
                         // rName: data.origin,
                         // dNum: data.dNum,
-                        actualMediaCnt: 0,
+                        actualMediaCnt: 1,
                         adsNum: 1,
                         map: data.mapCenter,
                         timeRange: '',
                         mID: data.mID
                     };
+
+                    let mIDitem = mIDArr.find(item => {
+                        return item.resID == data.resID
+                    })
+                    
+                    // 如果该资源存在
+                    if (mIDitem) {
+                        if (!mIDitem.mID.includes(data.mID)) {
+                            // 不存在mID
+                            mIDitem.mID.push(data.mID)
+                        }
+                    } else {
+                        // 如果该资源不存在
+                        mIDArr.push({
+                            resID: data.resID,
+                            mID: [data.mID]
+                        })
+                    }
 
                     // 巡点权限
                     if(this.customPermission) {
@@ -2192,12 +2211,6 @@
                                         break;
                                     }
                                 }
-                                for(let item of date.showList){
-                                    if((item.mID != data.mID) && (item.resID == data.resID)){
-                                        item.actualMediaCnt++;
-                                        break;
-                                    }
-                                }
                             }else{
                                 obj.timeRange = date.sheetName;
                                 date.resIDArr.push(data.resID);
@@ -2209,8 +2222,17 @@
 
 
                 }
-                
 
+                // 获取媒体数量
+                for(let dateArrItem of dateArr){
+                    for(let showListItem of dateArrItem.showList) {
+                        for(let mIDitem of mIDArr) {
+                            if(showListItem.resID==mIDitem.resID) {
+                                showListItem.actualMediaCnt = mIDitem.mID.length
+                            }
+                        }
+                    }
+                }
 
                 for(let data of dateArr){
                     for(let obj of data.showList){
@@ -2220,13 +2242,13 @@
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
 
-                dateArr.forEach(item => {
-                    item.showList.forEach(i => {
-                        if(i.actualMediaCnt === 0) {
-                            i.actualMediaCnt = 1
-                        }
-                    })
-                })
+                // dateArr.forEach(item => {
+                //     item.showList.forEach(i => {
+                //         if(i.actualMediaCnt === 0) {
+                //             i.actualMediaCnt = 1
+                //         }
+                //     })
+                // })
                 console.log('datearrr-----', dateArr);
                 return dateArr;
             },

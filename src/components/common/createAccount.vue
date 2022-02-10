@@ -183,6 +183,8 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
+            </template>
+            <template v-if="accountForm.role == 'BD'">
               <el-form-item label="上级：" prop="boss" v-if="!isEdit">
                 <el-autocomplete
                   v-model="accountForm.boss"

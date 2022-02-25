@@ -267,8 +267,7 @@ let testAsrIDConfig = {
   dev: 426,
   test: 426,
   gray: 426,
-  prod: 426,
-  gray: 426,
+  prod: 426
 };
 export default {
   name: "createClient",

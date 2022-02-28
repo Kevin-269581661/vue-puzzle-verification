@@ -784,7 +784,7 @@ export default {
             gray: 'https://crm.qinlinkeji.com',
             prod: 'https://crm.qinlinkeji.com',
           };
-          window.open(`${testAsrIDConfig[this.env]}/login?uid=${data.uID}&token=${data.token}`, "_blank")
+          window.open(`${testAsrIDConfig[this.env]}/login?uid=${data.uID}&token=${data.token}`, "_self")
         }).catch(() => {
           this.$message({
             type: 'info',

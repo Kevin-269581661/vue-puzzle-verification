@@ -183,6 +183,8 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
+            </template>
+            <template v-if="accountForm.role == 'BD'">
               <el-form-item label="上级：" prop="boss" v-if="!isEdit">
                 <el-autocomplete
                   v-model="accountForm.boss"
@@ -267,8 +269,7 @@ let testAsrIDConfig = {
   dev: 426,
   test: 426,
   gray: 426,
-  prod: 426,
-  gray: 426,
+  prod: 426
 };
 export default {
   name: "createClient",

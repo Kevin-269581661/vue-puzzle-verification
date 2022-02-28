@@ -179,7 +179,10 @@
     </div>
     <div class="footer">
       <p>
-        深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a>
+        深圳市亲邻科技有限公司 版权所有
+        <a href="https://beian.miit.gov.cn/" target="_blank"
+          >粤ICP备15007183号</a
+        >
       </p>
     </div>
     <!-- 绑定手机号码弹框 -->
@@ -392,10 +395,9 @@ export default {
         .postApi(this.apiVar.UCAPI + "/Login", loginParams)
         .then((res) => {
           let userMsg = res.data;
-          // console.log('登录返回的数据', res.data)
           if (userMsg) {
             if (!userMsg.SysCode) {
-              //判断是否绑定手机号
+              // 判断是否绑定手机号
               // 如果没有绑定弹出绑定提示窗口
               if (!userMsg.bindPhone) {
                 this.$nextTick(() => {
@@ -403,7 +405,7 @@ export default {
                   this.bandPhoneDialogVisible = true;
                 });
               } else {
-                //绑定了继续执行下面的流程
+                // 绑定了继续执行下面的流程
                 // 储存行业信息
                 this.getIndustry();
                 userMsg.username = name;
@@ -432,6 +434,9 @@ export default {
             });
             this.loading.close();
           }
+        })
+        .finally(() => {
+          this.loading.close();
         })
         .catch((err) => {
           console.log(err);
@@ -768,8 +773,24 @@ export default {
       } else if (
         ["ADN_DEV", "ADN_DEV_ASSET", "ADN_DEV_LEADER"].includes(uType)
       ) {
-        addRoutes(uType);
-        this.$router.push("/f_develop");
+        this.$confirm('开发功能全新升级上线，点击【进入】将为您跳转至新版页面', '提示', {
+          confirmButtonText: '进入',
+          cancelButtonText: '取消'
+        }).then(() => {
+          // 不同环境跳转链接
+          let digitizationDomainConfig = {
+            dev: 'http://localhost:3000',
+            test: 'https://test-crm.qinlinad.com',
+            gray: 'https://crm.qinlinkeji.com',
+            prod: 'https://crm.qinlinkeji.com',
+          };
+          window.open(`${digitizationDomainConfig[this.env]}/login?uid=${data.uID}&token=${data.token}`, "_self")
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });
+        });
       } else if (loginType == "wx" && uType === "ADN_EP") {
         addRoutes("ADN_EP");
         // 是否开通后台权限由小程序端判断

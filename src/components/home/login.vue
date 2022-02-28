@@ -778,13 +778,13 @@ export default {
           cancelButtonText: '取消'
         }).then(() => {
           // 不同环境跳转链接
-          let testAsrIDConfig = {
+          let digitizationDomainConfig = {
             dev: 'http://localhost:3000',
             test: 'https://test-crm.qinlinad.com',
             gray: 'https://crm.qinlinkeji.com',
             prod: 'https://crm.qinlinkeji.com',
           };
-          window.open(`${testAsrIDConfig[this.env]}/login?uid=${data.uID}&token=${data.token}`, "_self")
+          window.open(`${digitizationDomainConfig[this.env]}/login?uid=${data.uID}&token=${data.token}`, "_self")
         }).catch(() => {
           this.$message({
             type: 'info',

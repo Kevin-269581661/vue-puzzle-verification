@@ -206,6 +206,17 @@
             </el-table-column>
 
             <el-table-column
+              prop="createTime"
+              label="创建日期"
+              width="130"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.createTime || '--' }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
               column-key="asState"
               prop="asState"
               label="媒体状态"
@@ -874,7 +885,6 @@ export default {
               mediaList.push(key)
             }
             this.currentPlan = mediaList
-            console.log('currentPlan', this.currentPlan)
             //正在加载
             this.loading = false;
           } else {

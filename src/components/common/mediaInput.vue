@@ -919,17 +919,12 @@
                 activeMedia: 'first',
                 dialogImageUrl: '',     //缩略图
                 dialogVisible: false,
-                titleArr: ['媒体一', '媒体二', '媒体三', '媒体四', '媒体五', '媒体六', '媒体七', '媒体八', '媒体九', '媒体十',
-                    '媒体十一', '媒体十二', '媒体十三', '媒体十四', '媒体十五', '媒体十六', '媒体十七', '媒体十八', '媒体十九', '媒体二十',
-                    '媒体二十一', '媒体二十二', '媒体二十三', '媒体二十四', '媒体二十五', '媒体二十六', '媒体二十七', '媒体二十八', '媒体二十九', '媒体三十',
-                    '媒体三十一', '媒体三十二', '媒体三十三', '媒体三十四', '媒体三十五', '媒体三十六', '媒体三十七', '媒体三十八', '媒体三十九', '媒体四十',
-                    '媒体四十一', '媒体四十二', '媒体四十三', '媒体四十四', '媒体四十五', '媒体四十六', '媒体四十七', '媒体四十八', '媒体四十九', '媒体五十'],
-                ADTitleIndex: 0,        // 广告门title下标
-                roadGateTitleIndex: 0,  // 道闸title下标
+                ADTitleIndex: 1,        // 广告门title下标
+                roadGateTitleIndex: 1,  // 道闸title下标
                 arrMediaStatue: [],     // 编辑媒体时记录状态
                 arrMedia: [
                     {
-                        text: '媒体一',
+                        text: '媒体1',
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -964,7 +959,7 @@
                 editRoadGateStatue: [],
                 roadGateMedia:[
                     {
-                        text: '媒体一',
+                        text: '媒体1',
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -1274,7 +1269,7 @@
                 },
                 roadGateImg: [              // 道闸图片
                     {
-                        text: '媒体一',
+                        text: '媒体1',
                         mediaImg: {
                             uid: JSON.parse(sessionStorage.getItem('session_data')).uID,
                             pid: '',                // 图片id
@@ -1761,7 +1756,7 @@
             mediaAddFun() {
                 let mediaArr = [
                     {
-                        text: '媒体二',
+                        text: '媒体2',
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -1798,12 +1793,8 @@
                 if (this.PathHaveEdit) {
                     mediaArr[0].mediaForm.mediaType = '广告门'
                 }
-                mediaArr[0].text = this.titleArr[++this.ADTitleIndex]
-                if (this.ADTitleIndex < 50) {
-                    this.arrMedia.push(mediaArr[0])
-                } else {
-                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
-                }
+                mediaArr[0].text = '媒体' + (++this.ADTitleIndex)
+                this.arrMedia.push(mediaArr[0])
             },
             //删除广告门媒体面板
             mediaDelBtnFun(index) {
@@ -1813,7 +1804,7 @@
                 // 修改面板title标签
                 if (index < this.arrMedia.length) {
                     for (let i = 0; i < this.arrMedia.length; i++) {
-                        this.arrMedia[i].text = this.titleArr[i]
+                        this.arrMedia[i].text = '媒体' + (i + 1)
                     }
                 }
                 this.ADTitleIndex--
@@ -1822,7 +1813,7 @@
             roadGateAddFun(){
                 let roadGateMedia = [
                     {
-                        text: '媒体二',
+                        text: '媒体2',
                         isAssetIdError: false,      // 资源编号重名信息
                         assetIdCommentData: {       // 资源编号重名信息
                             resName:'',
@@ -1847,15 +1838,9 @@
                         },
                     },
                 ]
-                roadGateMedia[0].text = this.titleArr[++this.roadGateTitleIndex]
-
+                roadGateMedia[0].text = '媒体' + (++this.roadGateTitleIndex)
                 this.mediaOptions2.push([{label: '正常', value: '1'}])
-                
-                if (this.roadGateTitleIndex < 50) {
-                    this.roadGateMedia.push(roadGateMedia[0])
-                } else {
-                    sessFun.messageFun('warning','最多同时支持五十个媒体面板的操作!')
-                }
+                this.roadGateMedia.push(roadGateMedia[0])
             },
             //删除道闸媒体面板
             roadGateDelBtnFun(index){
@@ -1863,7 +1848,7 @@
                 console.log('长度为', this.roadGateMedia.length, 'index:', index)
                 if (index < this.roadGateMedia.length) {   // 修改面板title标签
                     for (let i = 0; i < this.roadGateMedia.length; i++) {
-                        this.roadGateMedia[i].text = this.titleArr[i]
+                        this.roadGateMedia[i].text = '媒体' + (i + 1)
                     }
                 }
                 this.roadGateTitleIndex--

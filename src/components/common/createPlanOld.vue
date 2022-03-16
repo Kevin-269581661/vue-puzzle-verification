@@ -1995,8 +1995,6 @@
                                 head.push('归属公司')
                             }
 
-                            head=sheetExcel.addEquipmentTypeHead(head)
-
                             let allHead = head.concat([info.startTime + '-' + info.endTime]);
                             let filename = returnobj.city.join('-') + '-' + info.startTime + '~' + info.endTime + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2067,8 +2065,6 @@
                         if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                             obj.asNames = item.asNames
                         }
-
-                        obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
 
                         obj[this.emptyRange[0] + '-' + this.emptyRange[1]] = item.DateInfo.adsNum || 0
                         resObj.showList.push(obj);
@@ -2176,8 +2172,6 @@
                                 head.push('归属公司')
                             }
 
-                            head=sheetExcel.addEquipmentTypeHead(head)
-
                             let allHead = head.concat(date);
                             let filename = returnobj.filename + '-' + date[0].substring(0, 10) + '~' + date[date.length - 1].substring(11) + '空位表';
                             sheetExcel.toDownload(allHead, returnobj.arr, filename);
@@ -2247,7 +2241,7 @@
                             if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                                 obj.asNames = item.asNames
                             }
-                            obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
+
                             let showData = item.DateInfo.sort(this.sortDate);
                             for (let date of showData) {
                                 dateArr.push(timeFormat.toDate(date.starDate, '/') + '-' + timeFormat.toDate(date.endDate, '/'));
@@ -2564,7 +2558,6 @@
                         pointId: data.pointId,
                         failReason: data.failReason
                     };
-                    item=sheetExcel.addEquipmentTypeVal(item,data.equipmentType)
                     resultarr.push(item);
                 }
                 return resultarr;
@@ -2586,11 +2579,11 @@
                     '钼媒点位ID',
                     '失败原因'
                 ];
-                allHead=sheetExcel.addEquipmentTypeHead(allHead)
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '问题点位表');
             },
             // 导入excel后台返回的问题点位
             questionPoint(arr, successArr) {
+                console.log('导出excel');
                 let resultarr = [
                     {
                         sheetName: '问题点位',
@@ -2616,7 +2609,6 @@
                         pointId: data.pointId,
                         failReason: data.failReason
                     };
-                    obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
                     resultarr[0].showList.push(obj);
                 }
                 for (let data of successArr) {
@@ -2635,7 +2627,6 @@
                         pointId: info.pointId,
                         failReason: null
                     };
-                    obj=sheetExcel.addEquipmentTypeVal(obj,info.equipmentType)
                     resultarr[1].showList.push(obj);
                 }
                 return resultarr;
@@ -2757,10 +2748,10 @@
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                     province: info.province,
-                    notPush: info.notPush,
-                    parkSpaceNum: info.parkSpaceNum,
-                    peopleFlow: info.peopleFlow,
-                    carFlow: info.carFlow,
+                    notPush: info.notPush,
+                    parkSpaceNum: info.parkSpaceNum,
+                    peopleFlow: info.peopleFlow,
+                    carFlow: info.carFlow,
                 };
                 // if(info.mVehicle === '道闸'){
                 //     importInfo.asID = info.asIDs.split(',')
@@ -2809,7 +2800,7 @@
                 if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                     allHead.push('归属公司')
                 }
-                allHead=sheetExcel.addEquipmentTypeHead(allHead)
+
                 sheetExcel.toDownload(allHead, arr, this.planForm.planName + '点位表', head);
             },
             // 处理数据
@@ -2826,7 +2817,6 @@
                     };
                     dateArr.push(dateObj);
                 }
-                let equipmentTypeData=[]
 
                 let mIDArr = []
 
@@ -2893,7 +2883,7 @@
                     if((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
                         obj.asName = data.asName
                     }
-                    obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
+
                     for (let date of dateArr) {
                         if (data.schedules == date.sheetName) {
                             if (date.resIDArr.includes(data.resID)) {
@@ -2922,45 +2912,7 @@
                         }
                     }
                 }
-                if(sheetExcel.isAddEquipmentTypeAsXlsx){
-                    for(let arrItem of arr){
-                        let _resID=arrItem.resID
-                        let _resName=arrItem.resName
-                        let _equipmentType=arrItem.equipmentType
-                        let equipmentTypeDataItem=equipmentTypeData.find((item)=>{
-                            return item.resId==_resID
-                        })
-                        if(equipmentTypeDataItem){
-                            //已存在该资源id
-                            let newEquipmentType=equipmentTypeDataItem.equipmentType
-                            if(!newEquipmentType.includes(_equipmentType)&&_equipmentType){
-                                equipmentTypeDataItem.equipmentType.push(_equipmentType)
-                            }
-                        }else{
-                            //不存在该资源id
-                            let newEquipmentType=[]
-                            if(_equipmentType){ 
-                                newEquipmentType.push(_equipmentType)
-                            }
-                            equipmentTypeData.push({
-                                resId:_resID,
-                                resName:_resName,
-                                equipmentType:newEquipmentType
-                            })
-                        }
-                    }
-                    
-                    console.log('equipmentTypeData：',equipmentTypeData)
-                    for(let dateArrItem of dateArr){
-                        for(let showListItem of dateArrItem.showList){
-                            for(let equipmentTypeDataItem of equipmentTypeData){
-                                if(showListItem.resName==equipmentTypeDataItem.resName){
-                                    showListItem.equipmentType=equipmentTypeDataItem.equipmentType.join(',')
-                                }
-                            }
-                        }
-                    }
-                }
+                
 
                 for (let data of dateArr) {
                     for (let obj of data.showList) {
@@ -2970,13 +2922,7 @@
                     data.sheetName = data.sheetName.replace(/[/]/g, '.');
                 }
 
-                dateArr.forEach(item => {
-                    item.showList.forEach(i => {
-                        if(i.actualMediaCnt === 0) {
-                            i.actualMediaCnt = 1
-                        }
-                    })
-                })
+                
                 // console.log('datearrr-----', dateArr);
                 return dateArr;
             },
@@ -3512,7 +3458,6 @@
                         notPush: key.notPush,
 
                     }
-                    adObj=sheetExcel.addEquipmentTypeVal(adObj,key.equipmentType)
                     // 点位价格
                     if (key.mVehicle === '道闸') {
                         adObj.adPrice = key.asPrice / 100
@@ -3726,12 +3671,11 @@
                                 lState: key.lState,          //点位状态 1被占，2强制停止  0 锁点
                                 mediaLevel: key.grade || '',
                                 province: key.province,
-                                notPush: key.notPush,
-                                parkSpaceNum: key.parkSpaceNum,
-                                peopleFlow: key.peopleFlow,
-                                carFlow: key.carFlow,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
-                            AD_data=sheetExcel.addEquipmentTypeVal(AD_data,key.equipmentType)
                             arr.push(AD_data)
                         }
                         this.planList = arr
@@ -3945,10 +3889,10 @@
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
                                 province: key.province,
-                                notPush: key.notPush,
-                                parkSpaceNum: key.parkSpaceNum,
-                                peopleFlow: key.peopleFlow,
-                                carFlow: key.carFlow,
+                                notPush: key.notPush,
+                                parkSpaceNum: key.parkSpaceNum,
+                                peopleFlow: key.peopleFlow,
+                                carFlow: key.carFlow,
                             }
                             if (selectInfo.asLabs === 'A') {
                                 selectInfo.checkBox.A = true
@@ -4634,10 +4578,10 @@
                             asName: data.asName || '',         // 点位所属公司名称
                             asrID: data.asrID,                 // 所属公司id
                             province: data.province,
-                            notPush: data.notPush,
-                            parkSpaceNum: data.parkSpaceNum,
-                            peopleFlow: data.peopleFlow,
-                            carFlow: data.carFlow,
+                            notPush: data.notPush,
+                            parkSpaceNum: data.parkSpaceNum,
+                            peopleFlow: data.peopleFlow,
+                            carFlow: data.carFlow,
                         }
                         // 地图中心点名称
                         if (data.reference !== '-' && data.reference !== '' && data.reference !== undefined && data.reference !== null) {
@@ -4803,11 +4747,11 @@
                         adPrice: key.mVehicle === '道闸' ? key.asPrice / 100 || 0 : key.asPrice / 700 || 0,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
-                        province: key.province,
-                        notPush: key.notPush,
-                        parkSpaceNum: key.parkSpaceNum,
-                        peopleFlow: key.peopleFlow,
-                        carFlow: key.carFlow,
+                        province: key.province,
+                        notPush: key.notPush,
+                        parkSpaceNum: key.parkSpaceNum,
+                        peopleFlow: key.peopleFlow,
+                        carFlow: key.carFlow,
                     }
                     if (key.centerInfos && key.centerInfos.length) {
                         for (let item of key.centerInfos) {
@@ -5521,7 +5465,6 @@
                     peopleFlow: info.peopleFlow,
                     carFlow: info.carFlow
                 }
-                selectInfo=sheetExcel.addEquipmentTypeVal(selectInfo,info.equipmentType)
                 return selectInfo
             },
             // 自定义购物车表头-清空

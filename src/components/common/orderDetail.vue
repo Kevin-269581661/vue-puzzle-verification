@@ -264,13 +264,6 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    v-if="isAddEquipmentTypeAsTable"
-                    prop="equipmentType"
-                    label="设备型号"
-                    min-width="10.3%"
-                  >
-                  </el-table-column>
-                  <el-table-column
                     prop="mTitle"
                     label="媒体名称"
                     min-width="10.3%"
@@ -735,13 +728,6 @@
                   min-width="10.3%"
                 >
                 </el-table-column>
-                <el-table-column
-                  v-if="isAddEquipmentTypeAsTable"
-                  prop="equipmentType"
-                  label="设备型号"
-                  min-width="10.3%"
-                >
-                </el-table-column>
                 <el-table-column prop="asLab" label="投放面" min-width="5.8%">
                 </el-table-column>
                 <el-table-column
@@ -1038,13 +1024,6 @@
                     >
                     </el-table-column>
                     <el-table-column
-                      v-if="isAddEquipmentTypeAsTable"
-                      prop="equipmentType"
-                      label="设备型号"
-                      min-width="6%"
-                    >
-                    </el-table-column>
-                    <el-table-column
                       prop="mTitle"
                       label="媒体名称"
                       min-width="6%"
@@ -1202,8 +1181,6 @@ import changeOrderPrice from "./components/changeOrderPrice.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 
-
-import sheetExcel from '../../commonFun/sheetExcel';
 
 export default {
   name: "orderDetail",
@@ -1431,10 +1408,6 @@ export default {
     this.getOrderPriceDetail()
   },
   computed: {
-    //页面是否需要添加设备型号字段
-    isAddEquipmentTypeAsTable(){
-        return sheetExcel.isAddEquipmentTypeAsTable()
-    },
     currentPagination () {
       this.recommendationTotalNum = this.recommendationList.length;
       return this.recommendationList.slice((this.recommendationCurrentPage - 1) * this.recommendationPageSize, this.recommendationCurrentPage * this.recommendationPageSize);
@@ -1705,7 +1678,6 @@ export default {
           peopleFlow: data.peopleFlow || "",
           mType: data.mType || "",
         };
-        obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
 
         resultArr.push(obj);
       }
@@ -1786,9 +1758,6 @@ export default {
           tHeader.push('归属公司');
           filterVal.push('asName')
         }
-
-        tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
-        filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
 
         const list = resultArr;
         const data = this.formatJson(filterVal, list);

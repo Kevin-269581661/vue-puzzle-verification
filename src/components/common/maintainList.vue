@@ -185,18 +185,6 @@
             </el-table-column>
 
             <el-table-column
-              v-if="isAddEquipmentTypeAsTable"
-              prop="equipmentType"
-              label="设备型号"
-              min-width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.equipmentType || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
               label="媒体面"
               min-width="120"
               :show-overflow-tooltip="true"
@@ -468,8 +456,6 @@ import logList from './components/logList.vue'
 import sellList from './components//sellList.vue'
 import timeFormat from '../../commonFun/timeFormat.js';
 
-import sheetExcel from "../../commonFun/sheetExcel.js";
-
 export default {
   name: "customList",
   components: {
@@ -590,12 +576,7 @@ export default {
       isSellList: false
     };
   },
-  computed:{
-    //页面是否需要添加设备型号字段
-    isAddEquipmentTypeAsTable(){
-      return sheetExcel.isAddEquipmentTypeAsTable()
-    }
-  },
+
   mounted: function () {
     this.getRole();
     this.getCity();
@@ -927,7 +908,6 @@ export default {
         }
         obj.urls = arr;
       }
-      obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
       return obj;
     },
     // 时间格式化

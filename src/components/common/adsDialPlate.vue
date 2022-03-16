@@ -109,14 +109,6 @@
                             fixed>
                         </el-table-column>
                         <el-table-column
-                            v-if="isAddEquipmentTypeAsTable&&activeTabName=='adDoor'"
-                            class-name="el-table-column-asLab"
-                            prop="equipmentType"
-                            label="设备型号"
-                            min-width="90"
-                            fixed>
-                        </el-table-column>
-                        <el-table-column
                             v-for="(item,index) in tableHeader"
                             :prop="item.dayOfMonth"
                             :key="index"
@@ -191,8 +183,6 @@
     // 时间格式化
     import timeFormat from '../../commonFun/timeFormat'
     import areaArr from '../../commonFun/areaPackage_new'
-
-    import sheetExcel from '../../commonFun/sheetExcel';
 
     export default {
         name: "adsDialPlate",
@@ -270,12 +260,6 @@
             this.getCity()
             // 设置表格左侧定位的高度
             this.setFixedTableHieght()
-        },
-        computed: {
-            //页面是否需要添加设备型号字段
-            isAddEquipmentTypeAsTable(){
-                return sheetExcel.isAddEquipmentTypeAsTable()
-            }
         },
         methods:{
             getSessionData(){
@@ -425,10 +409,6 @@
                             districtName: key.districtName || '--',
                             asLab: key.asLab,
                             occupyingPlanList: key.occupyingPlanList
-                        }
-                        if(sheetExcel.isAddEquipmentTypeAsTable()){
-                            //页面需要添加设备型号字段
-                            obj.equipmentType=key.equipmentType
                         }
                         for (let oKey of key.occupyInfos) {
                             obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));

@@ -233,13 +233,6 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column
-                                        prop="equipmentType"
-                                        v-if="isAddEquipmentTypeAsTable" 
-                                        label="设备型号"
-                                        min-width="8.6%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
                                         prop="mType"
                                         label="门体类型"
                                         min-width="7%"
@@ -436,8 +429,6 @@
     import sessFun from '../../commonFun/sessFun.js'
     import {Button, Table, TableColumn, Row, Col, Message} from 'element-ui';
 
-    import sheetExcel from "../../commonFun/sheetExcel.js";
-
     export default {
         name: "mediaDetail",
         components: {
@@ -523,12 +514,6 @@
                     {label:'Z',value:'Z'},
                 ],
                 selectMedia: [],
-            }
-        },
-        computed:{
-            //页面是否需要添加设备型号字段
-            isAddEquipmentTypeAsTable(){
-            return sheetExcel.isAddEquipmentTypeAsTable()
             }
         },
         mounted() {

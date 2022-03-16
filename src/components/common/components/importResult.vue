@@ -599,7 +599,6 @@ export default {
                     schedules: data.date,
                     failReason: data.failReason,
                 };
-                item=sheetExcel.addEquipmentTypeVal(item,data.equipmentType)
                 resultarr.push(item);
             }
             return resultarr;
@@ -608,7 +607,6 @@ export default {
         downLoadExcel(){
             let arr = this.questionPoint(this.errorList);
             let allHead = ['资源名称', '省份', '城市', '区域', '详细地址', '投放排期', '失败原因'];
-            allHead=sheetExcel.addEquipmentTypeHead(allHead)
             sheetExcel.toDownload(allHead, arr, '导入失败小区表'+timeFormat.toDate(new Date(), '-'));
         },
         // 导入excel后台返回的问题点位
@@ -630,7 +628,6 @@ export default {
                     schedules: data.schedules,
                     failReason: data.failReason ||'',
                 };
-                obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
                 resultarr[0].showList.push(obj);
             }
             return resultarr;

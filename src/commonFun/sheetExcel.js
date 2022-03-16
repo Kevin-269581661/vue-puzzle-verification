@@ -101,56 +101,5 @@ sheetExcel.toDownload = function(head, arr, title='', otherHead=[]){
     XLSX.writeFile(wb, filename + ".xlsx");
 }
 
-//判断如果是系统中6个皓邻公司或全国权限账号（KA销售及全国媒介），excel表头添加设备型号字段
-sheetExcel.addEquipmentTypeHead=function(headArr){
-    let newHeadArr=headArr.slice(0)
-    if(sheetExcel.isAddEquipmentTypeAsXlsx()){
-        newHeadArr.push("设备型号")
-    }
-    return newHeadArr
-}
-//判断如果是系统中6个皓邻公司或全国权限账号（KA销售及全国媒介），excel内容添加设备型号字段equipmentType
-sheetExcel.addEquipmentTypeVal=function(valObj,equipmentTypeVal){
-    let newValObj=JSON.parse(JSON.stringify(valObj))
-    if(sheetExcel.isAddEquipmentTypeAsXlsx()){
-        newValObj.equipmentType=equipmentTypeVal
-    }
-    return newValObj
-}
-
-//判断如果是系统中6个皓邻公司或全国权限账号（KA销售及全国媒介）
-sheetExcel.addEquipmentFilterVal=function(filterValArr){
-    let newFilterValArr=filterValArr.slice(0)
-    if(sheetExcel.isAddEquipmentTypeAsXlsx()){
-        newFilterValArr.push('equipmentType')
-    }
-    return newFilterValArr
-}
-
-//导出表格是否需要添加设备型号
-sheetExcel.isAddEquipmentTypeAsXlsx=function(){
-    //判断是否是6个皓邻公司或全国权限账号（KA销售及全国媒介）
-    let session_data=JSON.parse(sessionStorage.getItem("session_data"))
-    let customPermission=session_data.customPermission
-    let equipmentTypePermission=customPermission.equipmentTypePermission
-    if(equipmentTypePermission==1||["ADN_MD_COUNTRY", "ADN_BD_KA"].includes(session_data.uType)){
-        return true
-    }else{
-        return false
-    }
-}
-
-//页面table是否需要添加设备号
-sheetExcel.isAddEquipmentTypeAsTable=function(){
-    //判断是否是6个皓邻公司
-    let session_data=JSON.parse(sessionStorage.getItem("session_data"))
-    let customPermission=session_data.customPermission
-    let equipmentTypePermission=customPermission.equipmentTypePermission
-    if(equipmentTypePermission==1){
-        return true
-    }else{
-        return false
-    }
-}
 
 export default sheetExcel;

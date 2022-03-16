@@ -1282,8 +1282,6 @@ import api from "../../api/api";
 import BMapLib from "BMapLib";
 // import mapStyle from "./map/mapStyle"
 
-import sheetExcel from '../../commonFun/sheetExcel';
-
 const mapConfig = {
   // 1:QFAD  0:QADN
   system: 0,
@@ -4073,8 +4071,6 @@ export default {
           };
           if (this.systemSource === 0) {
             obj.city = this.routeQuery.city;
-
-            obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
           } else if (this.systemSource === 1) {
             obj.city = data.cityName;
           }
@@ -4200,8 +4196,7 @@ export default {
               tHeader.push("归属公司");
               filterVal.push("asNames");
             }
-            tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
-            filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
+            
           }
           const list = resultArr;
           const data = this.formatJson(filterVal, list);

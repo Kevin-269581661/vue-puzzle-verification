@@ -104,7 +104,6 @@
                         <ul>
                             <li class="mbox_li">城市 <span></span><b>{{mediaInfo.city}}</b></li> <!--span为虚线-->
                             <li class="mbox_li">区域 <span></span><b>{{mediaInfo.origin}}</b></li>
-                            <!--<li class="mbox_li">媒体类型 <span></span><b>{{mediaInfo.mVehicle}}</b></li>-->
                             <li class="mbox_li">楼盘类型<span></span><b>{{mediaInfo.buildingType}}</b></li>
                             <li class="mbox_li">楼盘价格<span></span><b>¥{{mediaInfo.buildPrice}}/m²</b></li>
                             <li class="mbox_li">商圈<span></span><b>{{mediaInfo.tradingArea}}</b></li>

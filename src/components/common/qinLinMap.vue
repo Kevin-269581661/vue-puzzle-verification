@@ -504,10 +504,10 @@
         <el-option label="排除同行小区" value="1"></el-option>
         <el-option label="排除同行点位" value="2"></el-option>
       </el-select>
-      <!--媒体类型-->
+      <!--设备类型-->
       <el-select
         v-if="systemSource === 0"
-        placeholder="媒体类型"
+        placeholder="设备类型"
         size="small"
         v-model="selectDoorType"
         v-show="showMore"
@@ -1454,9 +1454,9 @@ export default {
       tradingAreaList: [],
       // 选择到商圈
       selectTradingArea: "",
-      // 媒体类型
+      // 设备类型
       doorTypeList: [],
-      // 选择到媒体类型
+      // 选择到设备类型
       selectDoorType: "",
       // 媒介载体
       selectMediaType: "",
@@ -1608,7 +1608,7 @@ export default {
         this.getResList();
         // 获取商圈list
         this.getTradingArea();
-        // 获取媒体类型(门类型)
+        // 获取设备类型(门类型)
         this.getDoorType();
         // 获取广告限制列表
         this.getADLimit();
@@ -1793,7 +1793,7 @@ export default {
           }
         });
     },
-    // 获取媒体类型(门类型)list
+    // 获取设备类型(门类型)list
     getDoorType () {
       api.getApi(mapConfig.apiVar.mapApi + "/mediaType", {}).then((res) => {
         if (res.data.SysCode === 200200) {
@@ -1804,7 +1804,7 @@ export default {
             };
           });
         } else {
-          sessFun.messageFun("warning", "媒体类型获取异常！");
+          sessFun.messageFun("warning", "设备类型获取异常！");
         }
       });
     },
@@ -3822,7 +3822,7 @@ export default {
         this.transfersFun();
       }
     },
-    // 媒体类型（消防门、钣金门等）
+    // 设备类型（消防门、钣金门等）
     filterDoorType () {
       if (this.selectDoorType) {
         this.transfersFun();

@@ -212,8 +212,8 @@
                     :value="item.value">
                 </el-option>
             </el-select>
-            <!--媒体类型-->
-            <el-select placeholder="媒体类型" size="small" v-model="selectDoorType" v-show="showMore"
+            <!--设备类型-->
+            <el-select placeholder="设备类型" size="small" v-model="selectDoorType" v-show="showMore"
                        @change="filterDoorType">
                 <el-option
                     v-for="item in doorTypeList"
@@ -578,9 +578,9 @@
                 tradingAreaList:[],
                 // 选择到商圈
                 selectTradingArea: '',
-                // 媒体类型
+                // 设备类型
                 doorTypeList: [],
-                // 选择到媒体类型
+                // 选择到设备类型
                 selectDoorType: '',
                 // 媒介载体
                 selectMediaType: '',
@@ -1638,7 +1638,7 @@
                     this.filterResFun()
                 }
             },
-            // 媒体类型（消防门、钣金门等）
+            // 设备类型（消防门、钣金门等）
             filterDoorType() {
                 if(this.selectDoorType) {
                     this.filterResFun()

@@ -767,7 +767,7 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn () {
-      return !(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
+      return !(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
     },
   },
 };

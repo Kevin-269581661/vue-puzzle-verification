@@ -2156,7 +2156,7 @@
             getsessionData() {
                 this.sessionData = sessFun.getSess();
                 this.customPermission = this.sessionData.customPermission;
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     this.BDData.realName = this.sessionData.username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID
@@ -4819,7 +4819,6 @@
                         this.BDData.asrIDs = this.FAInfo.asrIDs || ''
                         this.FAInfo.cityList = this.delCommentCity(this.FAInfo.rIDs.split(','))
                         if ((this.sessionData.uType === 'ADN_BD_KA')
-                            ||(this.sessionData.uType === 'ADN_BD_COUNTRY')
                             ||(this.sessionData.uType === 'ADN_MD_COUNTRY')) {
                             this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {

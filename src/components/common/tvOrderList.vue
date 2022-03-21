@@ -30,7 +30,7 @@
                         </span>
                         <span>
                             <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
-                            <el-button plain type="default" @click="newPlan()" v-if='(["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(role) || ["ADN_MD_COUNTRY", "ADN_MD"].includes(role))'>新建</el-button>
+                            <el-button plain type="default" @click="newPlan()" v-if='(["ADN_BD_KA", "ADN_BD"].includes(role) || ["ADN_MD_COUNTRY", "ADN_MD"].includes(role))'>新建</el-button>
                         </span>
                     </div>
                 </el-row>

@@ -37,7 +37,7 @@
                         </el-option>
                     </el-select>
                 </li>
-                <li v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType) && sessionData.customPermission.proposalPermission == 1">
+                <li v-if="['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType) && sessionData.customPermission.proposalPermission == 1">
                     <span>投放面数：</span>
                     <el-input-number class="custom-num" v-model="planAdsCnt" :controls="false" :min="1" :max="1000"></el-input-number>
                 </li>
@@ -194,14 +194,14 @@
                     le: this.dateInput[1],
                 }
                 let tempwindow = window.open()
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     params.suID = this.sessionData.uID
                 }
                 api.getApi(this.apiVar.Map + '/GetMapInfo', params).then(res=>{
                     console.log(this.apiVar.wuYouMap,'GetMapInfo地图mapid返回的信息', res)
                     if (!res.data.SysCode) {
                         let mapid = res.data.MapID
-                        if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                        if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                             tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + true
                             this.confirmVisible = true
                         } else if (this.sessionData.uType === 'ADN_SM') {
@@ -230,7 +230,7 @@
                     le: this.dateInput[1],
                     suID: this.sessionData.uID,
                 };
-                if(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1) {
+                if(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1) {
                     if(this.planAdsCnt>=1) {
                         this.mapParams.planAdsCnt = this.planAdsCnt
                     } else {
@@ -242,7 +242,7 @@
                 }
                 let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}`;
                 // 角色
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     url = url + '&flag=' + true;
                     this.confirmVisible = true;
                     this.mapParams.asrIDs = this.sessionData.uType == 'ADN_BD_KA' ? [] : [this.sessionData.asrID]

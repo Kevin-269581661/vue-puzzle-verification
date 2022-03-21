@@ -387,7 +387,7 @@ export default {
       } else {
         this.isShowAllTab = true
       }
-      if (["ADN_MD_COUNTRY", "ADN_MD", "ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+      if (["ADN_MD_COUNTRY", "ADN_MD", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         this.isShowOrderPhoto = true
       } else {
         this.isShowOrderPhoto = false

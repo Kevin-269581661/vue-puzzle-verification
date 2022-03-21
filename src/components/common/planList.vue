@@ -262,7 +262,7 @@
               min-width="6.1%"
               v-if="
                 !(role == 'AD') &&
-                !['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)
+                !['ADN_BD_KA', 'ADN_BD'].includes(role)
               "
               show-overflow-tooltip
             >
@@ -271,7 +271,7 @@
               prop="realName"
               label="所有人"
               min-width="6.1%"
-              v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
+              v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
               show-overflow-tooltip
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
@@ -482,7 +482,7 @@
                       @click.native.prevent="splitAdPlan(scope.row)"
                       v-if="
                         scope.row.apControlLevel === 2 &&
-                        ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(
+                        ['ADN_BD_KA', 'ADN_BD'].includes(
                           sessionData.uType
                         )
                       "
@@ -1074,7 +1074,7 @@ export default {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       // ascType 0:平台商 1:媒体主
-      if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY') || (sess.uType == 'ADN_BD_COUNTRY')) {
+      if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY')) {
         this.isAll = true;
       } else {
         this.isAll = false;
@@ -1108,23 +1108,23 @@ export default {
     getRole () {
       let role = this.sessionData.uType;
       this.role = role;
-      this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
+      this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
       if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
         this.isDisable = false;
         if (this.sessionData.uType == 'ADN_MD') {
           this.isNation = false
         }
       }
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)) {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(role)) {
         this.isSale = true
       }
-      if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
+      if (!['ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
         this.showNewBtn = false;
       }
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
         this.isDisable = true;
       }
-      if (role == "ADN_BD" || role == "ADN_BD_COUNTRY") {
+      if (role == "ADN_BD") {
         this.isNation = false
       }
     },
@@ -1168,7 +1168,7 @@ export default {
     routeSelect () {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
-        if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+        if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
           this.$router.push("./createPlan")
         } else {
           this.$router.push("./createPlanOld")

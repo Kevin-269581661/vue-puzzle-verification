@@ -259,7 +259,7 @@
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
               :filter-multiple="true"
-              v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
+              v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
             >
             </el-table-column>
             <el-table-column
@@ -318,7 +318,7 @@
               label="操作"
               width="80px"
               v-if="
-                !['ADN_OP', 'AD', 'ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
+                !['ADN_OP', 'AD', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
               "
             >
               <template slot-scope="scope">
@@ -533,7 +533,7 @@ export default {
     if (this.isAll) {
       this.getCompany();
     }
-    if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+    if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
       this.getSubSaleList();
     }
     // 获得初始数据
@@ -655,8 +655,7 @@ export default {
       let sess = this.sessionData;
       if (
         sess.ascType == 0 ||
-        (sess.uType == "ADN_MD_COUNTRY") ||
-        (sess.uType == "ADN_BD_COUNTRY")
+        (sess.uType == "ADN_MD_COUNTRY")
       ) {
         this.isAll = true;
       } else {

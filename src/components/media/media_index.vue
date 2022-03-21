@@ -243,7 +243,7 @@
                   </el-table-column>
                   <el-table-column
                     prop="mType"
-                    label="媒体类型"
+                    label="设备类型"
                     min-width="200"
                     show-overflow-tooltip
                   >

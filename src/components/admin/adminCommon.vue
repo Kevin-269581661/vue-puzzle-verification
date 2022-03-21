@@ -28,6 +28,7 @@
                 <template slot="title">系统管理</template>
                 <el-menu-item index="/admin/ADlimitList">广告限制</el-menu-item>
                 <el-menu-item index="/admin/notice">公告通知</el-menu-item>
+                <el-menu-item index="/admin/mediaType">媒体类型</el-menu-item>
             </el-submenu>
             <el-submenu index="6" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">

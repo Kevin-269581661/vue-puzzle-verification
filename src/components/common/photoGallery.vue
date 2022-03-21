@@ -91,7 +91,7 @@
                   style="display: inline-block; width: 70px; text-align: right"
                   >投放面：</span
                 >
-                <el-select
+                <!-- <el-select
                   v-model="searchInfo.LabSelect"
                   :clearable="true"
                   placeholder="选择投放面"
@@ -100,7 +100,7 @@
                 >
                   <el-option label="A面" value="A"></el-option>
                   <el-option label="B面" value="B"></el-option>
-                </el-select>
+                </el-select> -->
               </el-col>
               <el-col :span="6">
                 <span>投放日期：</span>
@@ -302,7 +302,7 @@ export default {
       searchInfo: {
         resName: '',            // 资源名称
         apName: '',             // 方案名称
-        labSelect: '',          // A/B面
+        // labSelect: '',          // A/B面
         date: '',               // 搜索日期
         citySelect: [],         // 地区搜索
         industryIdArr: [],      // 搜索行业
@@ -321,7 +321,7 @@ export default {
       },
       //  案例库搜索条件
       gallerySelectInfo: {
-        LabSelect: '',
+        // LabSelect: '',
         date: '',
         citySelect: [],
         industryIdArr: [],
@@ -341,7 +341,7 @@ export default {
       },
       // 收藏夹搜索图片
       collectSelectInfo: {
-        LabSelect: '',
+        // LabSelect: '',
         date: '',
         citySelect: [],
         industryIdArr: [],
@@ -497,7 +497,7 @@ export default {
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
           assetNumber: this.searchInfo.assetNumber,
-          asLab: this.searchInfo.LabSelect,
+          // asLab: this.searchInfo.LabSelect,
           prid: '',
           pageNum: this.galleryPageData.pageNum,
           pageSize: this.galleryPageData.pageSize,
@@ -525,7 +525,7 @@ export default {
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
           assetNumber: this.searchInfo.assetNumber,
-          asLabel: this.searchInfo.LabSelect,
+          // asLabel: this.searchInfo.LabSelect,
           pageNo: this.collectPageData.pageNum,
           pageSize: this.collectPageData.pageSize,
         };
@@ -759,7 +759,7 @@ export default {
       if (
         !this.select &&
         // !this.keyword &&
-        !this.LabSelect &&
+        // !this.LabSelect &&
         !this.date &&
         !this.citySelect.length &&
         !this.industryIdArr.length

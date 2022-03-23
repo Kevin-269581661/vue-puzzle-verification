@@ -209,7 +209,7 @@
         methods:{
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
-                if(['ADN_MD_COUNTRY', 'ADN_MD'].includes(this.sessionData.uType) || ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
+                if(['ADN_MD_COUNTRY', 'ADN_MD'].includes(this.sessionData.uType) || ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
                     this.isShowBtn = true
                 }else{
                     this.isShowBtn = false

@@ -1769,11 +1769,10 @@
                 this.sessionData = sessFun.getSess();
                 let sess = this.sessionData;
                 this.customPermission = sess.customPermission;
-                if ((sess.uType == 'ADN_BD_COUNTRY') || (sess.uType == 'ADN_MD_COUNTRY')) {
+                if (sess.uType == 'ADN_MD_COUNTRY') {
                     this.isShowHalfYear = true;
                 }
-                console.log('sessionData', this.sessionData)
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     this.BDData.realName = sess.realName // username
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = sess.uID
@@ -5788,7 +5787,7 @@
                     suid: this.BDData.uid,
                     detail: JSON.stringify(arr),
                 }
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     delete params.suid;
                 }
                 console.log('params', params)

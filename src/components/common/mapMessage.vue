@@ -32,7 +32,7 @@
       methods:{
         getSessionData(){
           this.sessionData = sessFun.getSess();
-          if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+          if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
             this.$router.push('/sale/mapMessage')
           }else if(["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)){
             this.$router.push('/media/mapMessage')

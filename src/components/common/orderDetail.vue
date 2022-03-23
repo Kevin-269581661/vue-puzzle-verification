@@ -1398,7 +1398,7 @@ export default {
     this.getMaterInfo();
 
     if (
-      ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)
+      ['ADN_BD_KA', 'ADN_BD'].includes(this.role)
       ||
       ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
     ) {

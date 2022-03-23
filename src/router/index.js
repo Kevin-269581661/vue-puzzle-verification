@@ -303,7 +303,6 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
-        case 'ADN_BD_COUNTRY':
         case 'ADN_BD_KA':
         case 'ADN_BD':
             let tempBD = null

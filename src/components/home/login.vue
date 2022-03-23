@@ -752,7 +752,7 @@ export default {
           addRoutes(uType);
         }
         this.$router.push("/media");
-      } else if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(uType)) {
+      } else if (["ADN_BD_KA", "ADN_BD"].includes(uType)) {
         if (data.customPermission.proposalPermission == 1) {
           // 判断直营销售
           addRoutes(uType, true);

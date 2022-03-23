@@ -61,8 +61,7 @@
                 <el-button
                   v-if="
                     customPermission.proposalPermission == 1 &&
-                    planDetail.planMode == 1 &&
-                    (role == 'ADN_BD' || role == 'ADN_BD_COUNTRY')
+                    planDetail.planMode == 1 && role == 'ADN_BD'
                   "
                   type="default"
                   :disabled="matchCnt >= 10"
@@ -74,10 +73,10 @@
                   type="primary"
                   @click="edit()"
                   v-if="
-                    (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                    (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                       customPermission.proposalPermission == 0 &&
                       planDetail.planMode != 1) ||
-                    (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                    (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                       customPermission.proposalPermission == 1 &&
                       planDetail.planMode == 1) ||
                     ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
@@ -1150,7 +1149,7 @@ export default {
           if (!res.data.IsLock) {
             // 意向方案
             if (this.planDetail.planMode == 1) {
-              if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)) {
+              if (['ADN_BD_KA', 'ADN_BD'].includes(this.role)) {
                 // 编辑意向小区
                 (await this.clearDrafts(apid)) && this.$router.push("./editEmptyPointPlan");
               } else {

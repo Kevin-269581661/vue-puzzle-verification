@@ -635,7 +635,7 @@
                 this.sessionData = sessFun.getSess();
                 this.judgeIsEdit()
                 console.log('sessionData', this.sessionData)
-                if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+                if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
                     this.BDData.realName = this.sessionData.realName // username
                     this.basicForm.ownerSales = this.BDData.realName
                     this.BDData.uid = this.sessionData.uID

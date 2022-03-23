@@ -1682,7 +1682,6 @@ export default {
     next () {
       if (this.active === 0) {
         console.log("planForm--", this.planForm);
-        // console.log('this.dynamicTags--', this.dynamicTags)
         this.submitForm("planForm");
 
       } else if (this.active === 1) {
@@ -3760,7 +3759,6 @@ export default {
           if (res.data.dataerrorResNames) {
             this.ADloading.close();
             sessFun.messageFun("warning", "存在失败小区：" + res.data.dataerrorResNames || '');
-            // sessFun.messageFun("warning", "存在失败小区");
             return;
           }
           this.active++;

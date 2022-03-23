@@ -1497,7 +1497,6 @@ export default {
     ToEdit (row) {
       sessionStorage.setItem("plan_apid", row.apID);
       sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-      console.log('roweedit', row)
       if (row.planMode == 1) {
         // 意向方案
         this.$router.push("./editPlan");
@@ -1899,8 +1898,6 @@ export default {
       obj.unLock = item.details.some(function (item, index) {
         return item.RemainDay;
       })
-      // console.log(obj.canLock); //false表示不能再预锁
-      // console.log(obj.unLock); //true 表示可解锁
       for (let data of item.details) {
         data.apState = item.apState //新增字段,判断是否是意向方案,点位面数显示为--
         if (asrIDarr.includes(data.asrID)) {

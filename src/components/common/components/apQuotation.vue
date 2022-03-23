@@ -4,7 +4,7 @@
          element-loading-text="拼命计算中..."
          element-loading-background="rgb(250, 250, 250)">
         <el-tabs type="border-card">
-            <el-tab-pane v-for="(item,index) in quotation" :label="item.asName + '-'+ item.city" :key=index :index=index v-model="quotation">
+            <el-tab-pane v-for="(item,index) in quotation" :label="item.asName + '-'+ item.city" :key="index" :index="index" v-model="quotation">
                 <div class="media_price">
                     <div class="ad_section AdvertDoor">
                         <el-row>
@@ -17,7 +17,7 @@
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
                                         <ul class="SM_info_ul">
-                                            <li v-for="(itemSM,indexSM) in item.priceMsg.adDoor.SM" :key=indexSM>{{itemSM}}</li>
+                                            <li v-for="(itemSM,indexSM) in item.priceMsg.adDoor.SM" :key="indexSM">{{itemSM}}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -154,7 +154,6 @@
                                     </el-col>
                                     <el-col :span="5">
                                         <h4>广告费折扣</h4>
-<!--                                        <p>{{item.priceMsg.roadGate.discount}}%</p>-->
                                         <p>{{returnTwoFloat(item.priceMsg.roadGate.discount)}}%</p>
                                         <h4>制作费折扣</h4>
                                         <p>{{item.priceMsg.roadGate.makeDiscount}}%</p>
@@ -379,7 +378,6 @@
                 totalChangeOther: true,         // 修改制作费其他费用输入验证
                 priceInfo:{},                   // 当前修改的信息
                 cityPriceData: {},              // 当前修改的城市价格信息
-                // mediaClassifiedPremium:{},
                 premiumData:'',                 // 溢价信息
                 MaxGMDate: 0,                   // 最大赠送面天
                 isDetail: true,                 // 标示来源-创建、详情等
@@ -397,7 +395,6 @@
         props: {
             quotationData: {
                 type: Object,
-                // type: Array,
                 required: true,
             },
             shopingList: {
@@ -414,16 +411,13 @@
             }
         },
         watch: {
-            quotationData: function(newVal,oldVal){
-                // console.log('父组件相子组件传值',newVal,oldVal)
-                // this.quotation = newVal.quotation;
+            quotationData: function(newVal, oldVal){
                 this.quotation = JSON.parse(JSON.stringify(newVal.quotation))
                 this.isDetail = newVal.isDetail
                 this.getADPriceByUID()
             },
             copydata(){
                 if(this.quotationData.isDetail){
-                    // console.log('copydata-----', this.copydata);
                     if(this.ADPriceList.length){
                         this.setQuotateData()
                     }
@@ -496,7 +490,6 @@
                 };
                 api.getApi(this.apiVar.Advertisement+"/GetAPD", info)
                     .then(res =>{
-                        // console.log('test--', res.data);
                         if (!res.data.SysCode) {
                             let plandata = res.data;
                             this.planData = res.data
@@ -516,7 +509,6 @@
             },
             // 详情报价单(订单/方案) this.planData this.ADPriceList
             setQuotateData() {
-                // console.log('this.ADPriceList',this.ADPriceList)
                 let plandata = this.planData
                 let adPrice = this.ADPriceList;
                 let detailInfo = [];
@@ -671,11 +663,9 @@
             // 获取指定城市下所有点位的广告费
             getAllADSPrice(cityName,asrID){
                 if(this.copydata.length){
-                    // console.log('this.copydata',this.copydata,cityName,asrID)
                     let priceData = {city: cityName,adDoor: 0,roadGate: 0,isAllA: true}
                     for(let key of this.copydata){
                         if(key.city == cityName && key.asrID == asrID){
-                            // console.log('1')
                             let dayNum = 0
                             if(key.pbEnd){
                                 dayNum = this.DateDiff(key.pbEnd, key.pbStar,'-') + 1
@@ -1774,7 +1764,7 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     strong{
         font-weight: bold;
     }
@@ -1871,6 +1861,7 @@
     }
     .SM_info_ul::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
         -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: #C1C1C1;
         border-radius: 4px;
     }

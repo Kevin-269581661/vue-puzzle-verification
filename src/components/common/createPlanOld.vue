@@ -1845,7 +1845,6 @@
                                 cityList.push(cityObj);
                             }
                             this.throwCity = cityList
-                            // console.log('cityList', cityList)
                             this.cityOptions = areaArr.province()
                         } else {
                             sessFun.messageFun('warning', '城市数据获取异常')
@@ -3202,7 +3201,6 @@
                                 le: this.indexData.dateInput[1]
                             }
                             this.mapBtn = false
-                            // this.getMapADList()
                         }
                     } else {
                         console.log('error submit!!')
@@ -5730,7 +5728,6 @@
             },
             // 创建方案基本信息及投放城市详情(报价单数据提交)
             creatAdPlan() {
-                console.log('creatAdPlan', this.quotation)
                 let arr = []
                 let cityArea = []
                 for (let key of this.quotation) {
@@ -5776,7 +5773,6 @@
                         })
                     }
                 }
-                console.log('城市详情', arr, 'cityArea', cityArea)
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,

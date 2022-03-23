@@ -798,30 +798,6 @@
                         </el-dialog>
                     </div>
                 </div>
-                <!-- <div class="step3" v-if="active==2">
-                    <div class="confirmBox">
-                        <div class="bill-title">
-                            <div class="bill-title-left">
-                                <h4>{{planName}}</h4>
-                                <p>{{cName}}</p>
-                                <p>{{cBand}}</p>
-                            </div>
-                            <div class="bill-title-right">
-                                <ul>
-                                    <li><p><em>现金结算：</em><span>¥{{priceFormat(cash)}}</span></p></li>
-                                    <li><p><em>资源置换：</em><span>¥{{priceFormat(zyzh)}}</span></p></li>
-                                    <li><p><em>其他费用：</em><span>¥{{priceFormat(other)}}</span></p></li>
-                                    <li><p><em style="top: 5px">总计：</em><span class="totalPrice">¥{{priceFormat(totalPrice)}}</span>
-                                    </p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="panel">
-                            <ap-quotation :quotationData="quotationObj" :shopingList="shopingList" @APQuotationArr="APQuotationArr" :copydata="[]"></ap-quotation>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="step3" v-if="active==2">
                     <div class="createSuccess">
                         <div class="successIcon">

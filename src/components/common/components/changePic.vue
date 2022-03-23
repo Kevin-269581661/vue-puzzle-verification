@@ -1,4 +1,3 @@
-<!-- 换画tab -->
 <template>
     <div class="pic_box" v-loading="pageInfo.loading" element-loading-text="玩命加载中.."
          element-loading-spinner="el-icon-loading">
@@ -269,8 +268,6 @@
                     </el-select>
                   </el-row>
                 </el-col>
-                <!--<el-button type="primary" @click="showUpload()">换画</el-button>-->
-                <!--<el-button plain @click="cancelPain()">取消换画</el-button>-->
             </el-row>
             <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
                <el-col :span="8">
@@ -1068,11 +1065,8 @@
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
-                            }else{
-                                // this.getImgCount()
                             }
                             this.getImgCount()
-                            let percent = dataInfo.totalCount ? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount) * 100).toFixed(2)) : 0;
                             this.pageInfo = {
                                 ...this.pageInfo,
                                 ...({totalNum: dataInfo.searchCount}),
@@ -1300,8 +1294,6 @@
                 };
                 this.activePainIndex = index;
                 // 去获取换画列表
-                // 换画id
-                let painId = this.painList[index].id;
                 this.search();
             },
             // 编辑报告
@@ -1826,8 +1818,6 @@
                 this.shoplist = [];
                 this.selectList = [];
                 this.$emit('hidePainModal','false');
-                // this.selectNum = 0;
-                // this.search();
             }
             ,
             // 确认-生成换画任务
@@ -1890,7 +1880,6 @@
                             } else {
                                 sessFun.messageFun('warning', res.data.MSG);
                             }
-                            // this.search();
                         });
                     } else {
                         sessFun.messageFun('warning', res.data.msg);
@@ -2043,7 +2032,6 @@
             ,
             // 上刊图片上传
             submitUpload() {
-                let type = this.getTypeToText();
                 if (!this.constractArr.length) {
                     return;
                 }
@@ -2073,8 +2061,7 @@
                     formData.append('type', arr[i].type);
                     formData.append('replaceRecordId', arr[i].replaceRecordId);
                     formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);
-                    let pro = this.uploadFun(formData);
-                    funs.push(pro);
+                    funs.push(this.uploadFun(formData));
                 }
                 Promise.all(funs).then((values) => {
                     console.log(values);

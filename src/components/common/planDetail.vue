@@ -1099,7 +1099,6 @@ export default {
       };
       api.postApi("/addsp/match/UpdatePlan", info).then((res) => {
         if (res.data.SysCode === 200200) {
-          // this.getInitData();
           location.reload(false)
           sessFun.messageFun("success", '保存配点成功！');
         } else {

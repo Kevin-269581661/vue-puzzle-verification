@@ -2896,16 +2896,12 @@ export default {
             );
             return;
           }
-          // this.PushADBFun(res.data.Data);
-          // this.CreateShareADSFun();
           this.active++;
           //清除草稿箱缓存
           this.clearDrafts();
           this.ADloading.close();
-          // sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
         } else {
           this.ADloading.close();
-          // sessFun.messageFun("warning", "失败");
           sessFun.messageFun("warning", res.data.MSG);
         }
       });

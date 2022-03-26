@@ -26,7 +26,7 @@
                     <el-select
                       v-model="recForm.rt"
                       placeholder="请选择资源类型"
-                      :disabled="PathHaveEdit"
+                      :disabled="pathHaveEdit"
                       @change="selectRec"
                       @blur="blurFun('rt')"
                     >
@@ -544,30 +544,30 @@
       </div>
       <!--媒体一-->
       <div class="mediaList_content">
-        <el-tabs v-model="activeMedia" @tab-click="handleClickMedia">
-          <el-tab-pane label="广告门" name="first">
+        <el-tabs v-model="activeMediaType" @tab-click="handleClickMedia">
+          <el-tab-pane v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypeList" :key="mediaTypeIndex" :label="mediaTypeItem.name || '--'" :name="mediaTypeIndex + ''">
             <div class="content_bottom_wrap_box">
               <div
                 class="content_bottom_wrap"
-                v-for="(item, key) in arrMedia"
-                :key="key"
+                v-for="(meidaItem, mediaIndex) in mediaTypeItem.mediaList"
+                :key="mediaIndex"
               >
                 <div class="content_bottom_head">
-                  <h2>{{ item.text }}</h2>
+                  <h2>{{ meidaItem.text }}</h2>
                   <div
                     class="media_deleBtn"
-                    @click="mediaDelBtnFun(key)"
-                    v-show="key + 1 > editMediaLength"
+                    @click="mediaDelBtnFun(mediaTypeIndex, mediaIndex)"
+                    v-show="mediaIndex + 1 > mediaTypeItem.editMediaLength"
                   >
                     <i class="el-icon-remove"></i>
                   </div>
                 </div>
                 <div class="content_bottom_form_wrap">
                   <el-form
-                    :model="item.mediaForm"
+                    :model="meidaItem.mediaForm"
                     status-icon
                     :rules="mediaRules"
-                    ref="mediaForm"
+                    :ref="`mediaForm${mediaTypeIndex}${mediaIndex}`"
                     label-width="100px"
                     class="demo-ruleForm"
                   >
@@ -579,40 +579,9 @@
                           ref="adMediaName"
                         >
                           <el-input
-                            v-model="item.mediaForm.mediaName"
+                            v-model="meidaItem.mediaForm.mediaName"
                             placeholder="例：东门"
                           ></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="可投面数" prop="usableNum">
-                          <el-input-number
-                            v-model.number="item.mediaForm.usableNum"
-                            :min="1"
-                            :max="26"
-                            controls-position="right"
-                            :disabled="
-                              PathHaveEdit && key <= editMediaLength - 1
-                            "
-                          >
-                          </el-input-number>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="媒体状态" prop="mstate">
-                          <el-select
-                            v-model="item.mediaForm.mstate"
-                            placeholder="请选择媒体状态"
-                            @blur="adDoorBlur('mstate', key)"
-                            @change="selectMstate(item.mediaForm, key)"
-                          >
-                            <el-option
-                              v-for="state in mediaOptions[key]"
-                              :label="state.label"
-                              :value="state.value + key"
-                              :key="state.value"
-                            ></el-option>
-                          </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6" class="el_col_box">
@@ -620,35 +589,31 @@
                           label="资产编号"
                           prop="assetId"
                           ref="ResAssetId"
-                          :rules="
-                            item.mediaForm.assetIdBolean
-                              ? assetIdRules
-                              : mediaRules.assetId
-                          "
+                          :rules="mediaRules.assetId"
                         >
                           <el-input
-                            v-model.trim="item.mediaForm.assetId"
+                            v-model.trim="meidaItem.mediaForm.assetId"
                             placeholder="例:0034FASF342-X21"
-                            :disabled="item.mediaForm.assetIdBolean"
+                            :disabled="meidaItem.mediaForm.assetIdBolean"
                           ></el-input>
                         </el-form-item>
                         <el-tooltip
                           class="item"
                           effect="dark"
                           placement="bottom-end"
-                          v-show="item.isAssetIdError"
+                          v-show="meidaItem.isAssetIdError"
                         >
                           <div slot="content">
                             <ul style="font-size: 12px; color: #fff">
                               <li>
-                                资源：{{ item.assetIdCommentData.resName }}
+                                资源：{{ meidaItem.assetIdCommentData.resName }}
                               </li>
                               <li>
-                                媒体：{{ item.assetIdCommentData.mediaName }}
+                                媒体：{{ meidaItem.assetIdCommentData.mediaName }}
                               </li>
                               <li>
                                 创建时间：{{
-                                  item.assetIdCommentData.updateTime
+                                  meidaItem.assetIdCommentData.updateTime
                                 }}
                               </li>
                             </ul>
@@ -658,108 +623,27 @@
                           </p>
                         </el-tooltip>
                       </el-col>
-                    </el-row>
-                    <el-row :gutter="76" class="from_row">
                       <el-col :span="6">
                         <el-form-item label="设备类型" prop="doorType">
                           <el-input
-                            v-model="item.mediaForm.doorType"
+                            v-model="meidaItem.mediaForm.doorType"
                             placeholder="例:消防门"
                           ></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                        <el-form-item label="广告尺寸" required>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="adSizeW" class="">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.mediaForm.adSizeW"
-                                  placeholder="宽度"
-                                ></el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="adSizeH">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.mediaForm.adSizeH"
-                                  placeholder="高度"
-                                >
-                                </el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="可视画面" required>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="visualW">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.mediaForm.visualW"
-                                  placeholder="宽度"
-                                ></el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="visualH">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.mediaForm.visualH"
-                                  placeholder="高度"
-                                ></el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item
-                          label="广告限制"
-                          prop="adLimit"
-                          class="right_form_item"
-                        >
-                          <el-select
-                            v-model="item.mediaForm.adLimit"
-                            multiple
-                            collapse-tags
-                            placeholder="请选择广告限制"
-                            @focus="adLimitFocus(key)"
-                            @change="changeAdLimit"
-                          >
-                            <el-option
-                              v-for="(limit, index) in adLimit"
-                              :key="index"
-                              :label="limit.label"
-                              :value="limit.value"
-                            >
-                            </el-option>
-                          </el-select>
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
-                    <el-row :gutter="76" class="from_row">
-                      <el-col :span="6">
                         <el-form-item
                           label="媒体等级"
                           prop="adDoorLevel"
-                          v-if="PathHaveEdit && classified"
+                          v-if="pathHaveEdit && meidaItem.classified"
                         >
                           <el-select
-                            v-model="item.mediaForm.adDoorLevel"
+                            v-model="meidaItem.mediaForm.adDoorLevel"
                             placeholder="请选择媒体等级"
                           >
                             <el-option
-                              v-for="(level, index) in mediaLevel"
-                              :key="index"
+                              v-for="(level, levelIndex) in mediaLevel"
+                              :key="levelIndex"
                               :label="level.label"
                               :value="level.value"
                             >
@@ -777,30 +661,106 @@
                           </span>
                         </el-form-item>
                       </el-col>
+                    </el-row>
+                    <el-row :gutter="76" class="from_row" v-for="(adSpaceItem, adSpaceIndex) in meidaItem.mediaForm.adSpaceInfo" :key="adSpaceIndex">
                       <el-col :span="6">
-                        <el-form-item label="备注" prop="mediaRemark">
-                          <el-input
-                            type="textarea"
-                            v-model.trim="item.mediaForm.mediaRemark"
-                            placeholder="请填写备注信息"
-                          ></el-input>
+                        <el-form-item :label="adSpaceItem.name + '广告尺寸'" required>
+                          <div class="form_item_box_son">
+                            <el-form-item :prop="`adSpaceInfo[${adSpaceIndex}].adSizeWidth`" class=""
+                              :rules="{
+                                required: true,
+                                type: 'string',
+                                message: '不能为空且只能输入数字!',
+                                trigger: ['blur', 'change'],
+                              }"
+                            >
+                              <div class="mm">
+                                <el-input
+                                  v-model="adSpaceItem.adSizeWidth"
+                                  placeholder="宽度"
+                                ></el-input>
+                                <span>mm</span>
+                              </div>
+                            </el-form-item>
+                          </div>
+                          <div class="form_item_box_son">
+                            <el-form-item 
+                              :prop="`adSpaceInfo[${adSpaceIndex}].adSizeHeight`" 
+                              :rules="{
+                                required: true,
+                                type: 'string',
+                                message: '不能为空且只能输入数字!',
+                                trigger: ['blur', 'change'],
+                              }"
+                            >
+                              <div class="mm">
+                                <el-input
+                                  v-model="adSpaceItem.adSizeHeight"
+                                  placeholder="高度"
+                                >
+                                </el-input>
+                                <span>mm</span>
+                              </div>
+                            </el-form-item>
+                          </div>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                        <el-form-item label="门禁照片:" prop="mImg">
+                        <el-form-item :label="adSpaceItem.name + '可视尺寸'" required>
+                          <div class="form_item_box_son">
+                            <el-form-item :prop="`adSpaceInfo[${adSpaceIndex}].adViewSizeWidth`"
+                              :rules="{
+                                required: true,
+                                type: 'string',
+                                message: '不能为空且只能输入数字!',
+                                trigger: ['blur', 'change'],
+                              }"
+                            >
+                              <div class="mm">
+                                <el-input
+                                  v-model="adSpaceItem.adViewSizeWidth"
+                                  placeholder="宽度"
+                                ></el-input>
+                                <span>mm</span>
+                              </div>
+                            </el-form-item>
+                          </div>
+                          <div class="form_item_box_son">
+                            <el-form-item :prop="`adSpaceInfo[${adSpaceIndex}].adViewSizeHeight`"
+                              :rules="{
+                                required: true,
+                                type: 'string',
+                                message: '不能为空且只能输入数字!',
+                                trigger: ['blur', 'change'],
+                              }"
+                            >
+                              <div class="mm">
+                                <el-input
+                                  v-model="adSpaceItem.adViewSizeHeight"
+                                  placeholder="高度"
+                                ></el-input>
+                                <span>mm</span>
+                              </div>
+                            </el-form-item>
+                          </div>
+                        </el-form-item>
+                      </el-col>
+                    </el-row>
+                    <el-row :gutter="76" class="from_row">
+                      <el-col :span="6">
+                        <el-form-item label="媒体预览图:" prop="mImg">
                           <div class="upload_img_wrap">
-                            <!-- @click="saveImgInfo(item.text)"-->
                             <el-upload
                               :disabled="isUpload"
                               :action="doUpload"
                               list-type="picture-card"
-                              :limit="2"
-                              :file-list="item.mediaForm.updataImg"
+                              :limit="1"
+                              :file-list="meidaItem.mediaForm.updataImg"
                               :before-upload="beforeUpload_ad"
-                              :on-success="adUploadSuccess"
+                              :on-success="(res) => adUploadSuccess(res, meidaItem)"
                               :on-remove="adHandleRemove"
                               :on-preview="handlePictureCardPreview"
-                              @click.native="saveImgInfo(item.text)"
+                              @click.native="saveImgInfo(meidaItem.text)"
                             >
                               <i class="el-icon-plus"></i>
                             </el-upload>
@@ -811,235 +771,7 @@
                   </el-form>
                 </div>
               </div>
-              <div class="add_media_btn" @click="mediaAddFun()">+ 新增媒体</div>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="道 闸" name="second">
-            <div class="content_bottom_wrap_box">
-              <div
-                class="content_bottom_wrap"
-                v-for="(item, key) in roadGateMedia"
-                :key="key"
-              >
-                <div class="content_bottom_head">
-                  <h2>{{ item.text }}</h2>
-                  <div
-                    class="media_deleBtn"
-                    @click="roadGateDelBtnFun(key)"
-                    v-show="key + 1 > editRoadGateLength"
-                  >
-                    <i class="el-icon-remove"></i>
-                  </div>
-                </div>
-                <div class="content_bottom_form_wrap">
-                  <el-form
-                    :model="item.roadGateForm"
-                    status-icon
-                    :rules="roadGateRules"
-                    ref="roadGateForm"
-                    label-width="100px"
-                    class="demo-ruleForm"
-                  >
-                    <el-row :gutter="76" class="from_row">
-                      <el-col :span="6">
-                        <el-form-item
-                          label="媒体名称"
-                          prop="mediaName"
-                          ref="adMediaName"
-                        >
-                          <el-input
-                            v-model="item.roadGateForm.mediaName"
-                            placeholder="例：东门"
-                          ></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6" class="el_col_box">
-                        <el-form-item
-                          label="资产编号"
-                          prop="assetId"
-                          ref="ResAssetId"
-                          :rules="
-                            item.roadGateForm.assetIdBolean
-                              ? assetIdRules
-                              : mediaRules.assetId
-                          "
-                        >
-                          <el-input
-                            v-model.trim="item.roadGateForm.assetId"
-                            placeholder="例:0034FASF342-X21"
-                            :disabled="item.roadGateForm.assetIdBolean"
-                          ></el-input>
-                        </el-form-item>
-                        <el-tooltip
-                          class="item"
-                          effect="dark"
-                          placement="bottom-end"
-                          v-show="item.isAssetIdError"
-                        >
-                          <div slot="content">
-                            <ul style="font-size: 12px; color: #fff">
-                              <li>
-                                资源：{{ item.assetIdCommentData.resName }}
-                              </li>
-                              <li>
-                                媒体：{{ item.assetIdCommentData.mediaName }}
-                              </li>
-                              <li>
-                                创建时间：{{
-                                  item.assetIdCommentData.updateTime
-                                }}
-                              </li>
-                            </ul>
-                          </div>
-                          <p class="the_same_error">
-                            这个资产编号已存在 <i class="el-icon-warning"></i>
-                          </p>
-                        </el-tooltip>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="可投面数" prop="usableNum">
-                          <el-input-number
-                            v-model.number="item.roadGateForm.usableNum"
-                            :min="1"
-                            :max="3"
-                            :disabled="true"
-                            controls-position="right"
-                          >
-                          </el-input-number>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="媒体状态" prop="mstate">
-                          <el-select
-                            v-model="item.roadGateForm.mstate"
-                            placeholder="请选择媒体状态"
-                            @blur="roadGateBlur('mstate', key)"
-                            @change="selectMstate(item.roadGateForm)"
-                          >
-                            <el-option
-                              v-for="state in mediaOptions2[key]"
-                              :label="state.label"
-                              :value="state.value + key"
-                              :key="state.value"
-                            ></el-option>
-                          </el-select>
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
-                    <el-row :gutter="76" class="from_row">
-                      <el-col :span="6">
-                        <el-form-item label="广告限制" prop="adLimit">
-                          <el-select
-                            v-model="item.roadGateForm.adLimit"
-                            multiple
-                            collapse-tags
-                            placeholder="请选择广告限制"
-                            @focus="adLimitFocus(key)"
-                            @change="changeAdLimit"
-                          >
-                            <el-option
-                              v-for="(limit, index) in adLimit"
-                              :key="index"
-                              :label="limit.label"
-                              :value="limit.value"
-                            >
-                            </el-option>
-                          </el-select>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="画面尺寸" required>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="visualW">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.roadGateForm.visualW"
-                                  placeholder="宽度"
-                                ></el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="visualH">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.roadGateForm.visualH"
-                                  placeholder="高度"
-                                >
-                                </el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="灯箱尺寸" required>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="LBSizeW">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.roadGateForm.LBSizeW"
-                                  placeholder="宽度"
-                                ></el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                          <div class="form_item_box_son">
-                            <el-form-item prop="LBSizeH">
-                              <div class="mm">
-                                <el-input
-                                  v-model="item.roadGateForm.LBSizeH"
-                                  placeholder="高度"
-                                >
-                                </el-input>
-                                <span>mm</span>
-                              </div>
-                            </el-form-item>
-                          </div>
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
-                    <el-row :gutter="76" class="from_row">
-                      <el-col :span="6">
-                        <el-form-item label="备注" prop="mediaRemark">
-                          <el-input
-                            type="textarea"
-                            v-model.trim="item.roadGateForm.mediaRemark"
-                            placeholder="请填写备注信息"
-                          ></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-form-item label="门禁照片:" prop="mImg">
-                          <div class="upload_img_wrap">
-                            <!--@click="saveImgInfo(item.text)"-->
-                            <el-upload
-                              :disabled="isUpload"
-                              :action="doUpload"
-                              list-type="picture-card"
-                              :limit="2"
-                              :file-list="item.roadGateForm.updataImg"
-                              :before-upload="beforeUpload_rg"
-                              :on-success="rgUploadSuccess"
-                              :on-remove="rgHandleRemove"
-                              :on-preview="rgHandlePictureCardPreview"
-                              @click.native="saveImgRGInfo(item.text)"
-                            >
-                              <i class="el-icon-plus"></i>
-                            </el-upload>
-                          </div>
-                        </el-form-item>
-                      </el-col>
-                    </el-row>
-                  </el-form>
-                </div>
-              </div>
-              <div class="add_media_btn" @click="roadGateAddFun()">
-                + 新增媒体
-              </div>
+              <div v-if="!pathHaveEdit || mediaTypeIdsOfCompany.includes(mediaTypeItem.id)" class="add_media_btn" @click="mediaAddFun(mediaTypeItem)">+ 新增媒体</div>
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -1048,9 +780,9 @@
             type="primary"
             class="create"
             :disabled="submitBtnIsAble"
-            @click="submitForm('recForm', 'mediaForm', 'roadGateForm')"
+            @click="submitForm()"
           >
-            {{ PathHaveEdit ? "保存" : "创建" }}
+            {{ pathHaveEdit ? "保存" : "创建" }}
           </el-button>
           <el-button plain class="cancel" @click="clearData"> 取消</el-button>
         </div>
@@ -1059,7 +791,7 @@
     <el-dialog :visible.sync="mediaImgDialogVisible" :title="mediaImgTitle">
       <div class="block mediaImg">
         <el-carousel height="550px">
-          <el-carousel-item v-for="(src, index) in mediaImgSrc" :key="index">
+          <el-carousel-item v-for="(src, imgIndex) in mediaImgSrc" :key="imgIndex">
             <img :src="src" alt="媒体图片" />
           </el-carousel-item>
         </el-carousel>
@@ -1115,42 +847,6 @@
         >
       </span>
     </el-dialog>
-    <!--媒体拆除-->
-    <el-dialog
-      :visible.sync="dismantleVisible"
-      :close-on-click-modal="false"
-      :show-close="false"
-      width="480px"
-      custom-class="mStatueDialog"
-    >
-      <h3 slot="title" class="dismantle_title">
-        <i class="el-icon-question"></i>
-        媒体拆除
-      </h3>
-      <div>
-        <p style="line-height: 28px">被拆除的媒体将不可重新被启用</p>
-        <el-input
-          type="textarea"
-          v-model.trim="dismantleInfo"
-          placeholder="请填写拆除记录"
-        ></el-input>
-        <p class="push_map_box_p" v-show="isShowTag">
-          <i class="el-icon-warning" style="color: #faad14"></i>
-          在【维护管理】页面，可查阅每个拆除的媒体记录
-          <i class="el-icon-close" @click="isShowTag = false"></i>
-        </p>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="canceDismantle">取 消</el-button>
-        <el-button
-          size="mini"
-          type="primary"
-          style="margin-left: 35px"
-          @click="dismantleMedia"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -1177,12 +873,6 @@ import areaPackageNew from "../../commonFun/areaPackage_new";
 import areaToTextNew from "../../commonFun/areaToText_new";
 import sessFun from "../../commonFun/sessFun.js";
 
-const MEDIA_OPTIONS = [
-  { label: "正常", value: "1" },
-  { label: "待安装", value: "2" },
-  { label: "待维修", value: "3" },
-  { label: "已拆除", value: "4" },
-];
 export default {
   name: "mediaInput",
   components: {
@@ -1247,7 +937,6 @@ export default {
     };
     let validateLat = (rule, value, callback) => {
       let reg = /^\d+(\.\d+)?$/;
-      // let reg =  /[^\d\.]/g
       if (value !== "" && !reg.test(value)) {
         callback(new Error("只能输入数字!"));
       } else {
@@ -1295,78 +984,11 @@ export default {
     return {
       isUpload: true,
       assetIdBolean: false,
-      activeMedia: "first",
       dialogImageUrl: "", //缩略图
       dialogVisible: false,
-      ADTitleIndex: 1, // 广告门title下标
-      roadGateTitleIndex: 1, // 道闸title下标
-      arrMediaStatue: [], // 编辑媒体时记录状态
-      arrMedia: [
-        {
-          text: "媒体1",
-          isAssetIdError: false, // 资源编号重名信息
-          assetIdCommentData: {
-            // 资源编号重名信息
-            resName: "",
-            mediaName: "",
-            updateTime: "",
-          },
-          mediaForm: {
-            mediaType: "广告门", //媒体类型mVehicle
-            mediaName: "", //媒体名称mtitle
-            adDoorLevel: [], // 广告门等级
-            usableNum: "2", //广告位面数pnum
-            mstate: "", //媒体状态mstate
-            assetId: "", //资产编号assettag
-            doorType: "", // 门类型mType
-            adSizeW: "", //广告尺寸adsize
-            adSizeH: "", //广告尺寸
-            visualW: "", //可视画面adviewsize
-            visualH: "", //可视画面
-            mediaRemark: "", //备注 mrk
-            adLimit: [], //请选择广告限制 notpush
-            assetIdBolean: false, // 媒体状态为待安装时：资产编号非必填
-            mImg: "",
-            updataImg: [],
-          },
-        },
-      ],
-      // 广告门表单验证
-      m_boolean: { isOne: false, flag: false },
-      // 道闸表单验证
-      rt_boolean: { isOne: false, flag: false },
-      // 编辑媒体时记录状态
-      editRoadGateStatue: [],
-      roadGateMedia: [
-        {
-          text: "媒体1",
-          isAssetIdError: false, // 资源编号重名信息
-          assetIdCommentData: {
-            // 资源编号重名信息
-            resName: "",
-            mediaName: "",
-            updateTime: "",
-          },
-          roadGateForm: {
-            mediaType: "道闸", //道闸类型mVehicle
-            mediaName: "", //道闸名称mtitle
-            usableNum: "3", //广告位面数pnum
-            mstate: "", //道闸状态mstate
-            assetId: "", //资产编号assettag
-            LBSizeW: "", //灯箱尺寸高度
-            LBSizeH: "", //灯箱尺寸宽度
-            visualW: "", //可视画面adviewsize
-            visualH: "", //可视画面
-            mediaRemark: "", //备注 mrk
-            adLimit: [], //请选择广告限制 notpush
-            assetIdBolean: false,
-            mImg: "",
-            updataImg: [],
-          },
-        },
-      ],
-      // 广告限制下拉
-      adLimit: [],
+      activeMediaType: '0',
+      mediaTypeList: [],
+      mediaTypeIdsOfCompany: [],
       // 判断资源名称是否有重名
       isResError: false,
       // 资源名称重名信息
@@ -1584,13 +1206,6 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        usableNum: [
-          { validator: validateNum, trigger: "blur" },
-          { required: true, message: "可投面数不能为空!", trigger: "change" },
-        ],
-        mstate: [
-          { required: true, message: "请选择媒体状态!", trigger: "change" },
-        ],
         assetId: [
           {
             required: true,
@@ -1620,7 +1235,16 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        adSizeW: [
+        /* adSizeWidth: [
+          {
+            required: true,
+            type: "string",
+            message: "不能为空且只能输入数字!",
+            trigger: ["blur", "change"],
+          },
+          { validator: validatePrice, trigger: ["blur", "change"] },
+        ], */
+        /* adSizeHeight: [
           {
             required: true,
             type: "string",
@@ -1629,7 +1253,16 @@ export default {
           },
           { validator: validatePrice, trigger: ["blur", "change"] },
         ],
-        adSizeH: [
+        adViewSizeWidth: [
+          {
+            required: true,
+            type: "string",
+            message: "不能为空且只能输入数字!",
+            trigger: ["blur", "change"],
+          },
+          { validator: validatePrice, trigger: "change" },
+        ], */
+        /* adViewSizeHeight: [
           {
             required: true,
             type: "string",
@@ -1637,99 +1270,7 @@ export default {
             trigger: ["blur", "change"],
           },
           { validator: validatePrice, trigger: ["blur", "change"] },
-        ],
-        visualW: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ],
-        visualH: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: ["blur", "change"] },
-        ],
-      },
-      //道闸表单验证
-      roadGateRules: {
-        mediaName: [
-          {
-            required: true,
-            message: "媒体名称不能为空!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validateSpace, trigger: "blur" },
-          { validator: this.validateMediaName, trigger: "blur" },
-          { max: 40, message: "最多只能输入40个字节!", trigger: "change" },
-        ],
-        usableNum: [
-          { validator: validateNum, trigger: "change" },
-          {
-            required: true,
-            message: "可投面数不能为空!",
-            trigger: ["blur", "change"],
-          },
-        ],
-        mstate: [
-          {
-            required: true,
-            message: "请选择媒体状态!",
-            trigger: ["blur", "change"],
-          },
-        ],
-        assetId: [
-          {
-            required: true,
-            message: "资产编号不能为空!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validateAssetId, trigger: "change" },
-          { validator: this.validateAssetTag, trigger: "blur" },
-          { max: 40, message: "最多只能输入40个字节!", trigger: "change" },
-        ],
-        LBSizeW: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能为数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ],
-        LBSizeH: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能为数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ],
-        visualW: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ],
-        visualH: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ],
+        ], */
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片
@@ -1763,7 +1304,7 @@ export default {
         { label: "公共场所", value: "公共场所" },
       ],
       selectedOptions: [], // 城市默认选项
-      PathHaveEdit: false, // 新建/编辑
+      pathHaveEdit: false, // 新建/编辑
       mediaImg_title: "", // 媒体图片对应的媒体信息
       rgImg_title: "", // 道闸对应的媒体信息
       mediaImg: {
@@ -1802,8 +1343,6 @@ export default {
       },
       resUpdata: [], // 编辑资源时显示已有图片
       updataMedia: [],
-      editMediaLength: 0, // 编辑状态下 - 记录广告门原个数以禁止删除
-      editRoadGateLength: 0, // 编辑状态下 - 记录道闸原个数以禁止删除
       mediaIndex: 0, // 当选择广告限制是记录下媒体的下标
       Editloading: true, // 提交时的loading
       throwCity: "", // 用户权限不为全国时，根据uWho确定可选城市
@@ -1839,8 +1378,6 @@ export default {
       },
       searchResName: "", // 搜索的社区名
       resMap: "", // 百度地图
-      // 拆除
-      dismantleVisible: false,
       // 拆除信息
       dismantleInfo: "",
       // 拆除提示标签
@@ -1849,23 +1386,26 @@ export default {
       rowData: {},
       changeBeforMediaState: "",
       customPermission: {}, //巡点权限
-      // queryTimeout: null,
       fangJiaWangPrivateCity: [], // 房价网权限城市
-
-      mediaOptions: [[{ label: "正常", value: "1" }]],
-      mediaOptions2: [[{ label: "正常", value: "1" }]],
     };
   },
   created() {
     this.getFangJiaWangCity();
-    this.getMediaTypesOfCompanyAndRes();
-    this.getMediaTypesOfCompany();
+    if(this.$route.path.indexOf("media/mediaEdit") !== -1) {
+      this.pathHaveEdit = true;
+      this.getMediaTypesOfCompanyAndRes();
+      this.getMediaTypesOfCompany(true);
+    } else {
+      this.pathHaveEdit = false;
+      this.getMediaTypesOfCompany();
+      sessionStorage.removeItem("recDetail");
+      sessionStorage.removeItem("mediaTypeObj");
+    }
   },
   mounted: function () {
     this.customPermission = this.sessionData.customPermission;
     this.resUpdata = [];
     this.ShowRegion();
-    this.editFun(); // 编辑方法
     this.getADLimit(); // 获取广告限制列表
   },
   methods: {
@@ -1873,17 +1413,37 @@ export default {
     getMediaTypesOfCompanyAndRes() {
       api.getApi('/addsp/api/v1/mediaType/listCompanyAllMediaTypeDetails').then((res) => {
         if (res.data.SysCode == 200200) {
-          
+          let tempMediaTypeList = res.data.data || [];
+          tempMediaTypeList.forEach((item, index) => {
+              item.ADTitleIndex = 0;
+              item.mediaList = [];
+            });
+          this.mediaTypeList = tempMediaTypeList;
+          this.editFun();
         } else {
           Message.warning(res.data.MSG || '媒体类型集合获取失败！');
         }
       });
     },
     // 获取公司媒体类型列表
-    getMediaTypesOfCompany() {
+    getMediaTypesOfCompany(editFlag) {
       api.getApi('/addsp/api/v1/mediaType/listCompanyMediaTypeDetails').then((res) => {
         if (res.data.SysCode == 200200) {
-          
+          if(editFlag) {
+            // 编辑时，公司当前的媒体类型可以增加媒体，过往遗留媒体只能编辑
+            this.mediaTypeIdsOfCompany = (res.data.data || []).map(item => item.id);
+          } else {
+            let resultArr = res.data.data || [];
+            resultArr.forEach((item, index) => {
+              item.ADTitleIndex = 0;
+              item.mediaList = []
+              if(index === 0) {
+                // 第一个媒体类型下，默认添加一个空媒体呈现给用户
+                this.mediaAddFun(item);
+              }
+            });
+            this.mediaTypeList = resultArr;
+          }
         } else {
           Message.warning(res.data.MSG || '公司权限内媒体类型获取失败！');
         }
@@ -1905,8 +1465,11 @@ export default {
         }
       });
     },
-    handleClickMedia(tab, event) {
-      console.log(tab, event);
+    handleClickMedia() {
+      let tempActiveMediaType = this.mediaTypeList[this.activeMediaType]
+      if(tempActiveMediaType.mediaList.length === 0) {
+        this.mediaAddFun(tempActiveMediaType)
+      }
     },
     // 获取广告限制列表
     getADLimit() {
@@ -1929,8 +1492,8 @@ export default {
             let limitObj = { value: limit[i].nTitle, label: limit[i].nTitle };
             limitArr.push(limitObj);
           }
-          this.adLimit = limitArr;
-          console.log("广告限制adLimit", this.adLimit);
+          // this.adLimit = limitArr;
+          // console.log("广告限制adLimit", this.adLimit);
         } else {
           Message.warning(res.data.MSG);
         }
@@ -2062,7 +1625,6 @@ export default {
           this.recForm.resaddr = obj.address || ""; // 资源地址
           this.recForm.business = obj.commercialArea || ""; // 商圈
           this.recForm.floorType = obj.propertyType; // 楼盘类型
-          // this.recForm.doorwayNum = obj.doorwayNum                 // 出入数
           this.recForm.buildingNum = obj.buildingCount; // 楼栋数量
           this.recForm.households = obj.totalUnitCount; // 住户数量
           this.recForm.peopleFlowrate = obj.peopleFlowrate || ""; // 人流量
@@ -2175,7 +1737,6 @@ export default {
         renderOptions: {
           map: this.resMap,
           autoViewport: false,
-          // selectFirstResult: true
         },
         onSearchComplete: function (results) {
           console.log("2results", results);
@@ -2194,17 +1755,14 @@ export default {
         },
         onMarkersSet: function (pois) {
           // 给创建的标注添加点击事件
-          // console.log('onMarkersSet', pois)
           that.markerArr = pois;
           for (let key of pois) {
             key.marker.addEventListener("click", that.showInfo);
           }
         },
       };
-      // console.log('3options',options)
       let local = new BMap.LocalSearch(this.resMap, options);
       local.search(this.resAddres.city + this.searchResName);
-      // console.log('4')
     },
     //获取点击标注的坐标
     showInfo(e) {
@@ -2255,119 +1813,40 @@ export default {
       this.recForm.lng = this.searchResData.lat;
       this.mapVisible = false;
     },
-    // 广告限制，当选择为不限时
-    changeAdLimit(val) {
-      let valArr = val;
-      console.log("选择了的广告限制", valArr);
-      for (let i = 0; i < valArr.length; i++) {
-        if (valArr[i] === "不限") {
-          this.arrMedia[this.mediaIndex].mediaForm.adLimit = [];
-        }
-      }
-    },
-    // 当广告限制的选择框获取焦点的时候，记录下当前媒体的下标
-    adLimitFocus(key) {
-      this.mediaIndex = key;
-    },
     //新增媒体面板
-    mediaAddFun() {
-      let mediaArr = [
-        {
-          text: "媒体2",
-          isAssetIdError: false, // 资源编号重名信息
-          assetIdCommentData: {
-            // 资源编号重名信息
-            resName: "",
-            mediaName: "",
-            updateTime: "",
-          },
-          mediaForm: {
-            mediaType: "广告门",
-            mediaName: "",
-            usableNum: "2",
-            mstate: "",
-            assetId: "",
-            doorType: "",
-            adSizeW: "",
-            adSizeH: "",
-            visualW: "",
-            visualH: "",
-            mediaRemark: "",
-            adLimit: [],
-            mImg: "",
-            updataImg: [],
-            assetIdBolean: false,
-            adDoorLevel: [],
-          },
+    mediaAddFun(mediaTypeItem) {
+      let tempMediaTypeItem = JSON.parse(JSON.stringify(mediaTypeItem))
+      let tempMedia = {
+        text: (tempMediaTypeItem.name || '媒体') + ++mediaTypeItem.ADTitleIndex,
+        isAssetIdError: false, // 资源编号重名信息
+        assetIdCommentData: {
+          // 资源编号重名信息
+          resName: "",
+          mediaName: "",
+          updateTime: "",
         },
-      ];
-
-      this.mediaOptions.push([{ label: "正常", value: "1" }]);
-
-      if (this.PathHaveEdit) {
-        mediaArr[0].mediaForm.mediaType = "广告门";
-      }
-      mediaArr[0].text = "媒体" + ++this.ADTitleIndex;
-      this.arrMedia.push(mediaArr[0]);
+        mediaForm: {
+          adSpaceInfo: tempMediaTypeItem.adSpaceConfig || [],
+          mediaName: "",
+          assetId: "",
+          doorType: "",
+          mImg: "",
+          updataImg: [],
+          adDoorLevel: '',
+        }
+      };
+      mediaTypeItem.mediaList.push(tempMedia);
     },
-    //删除广告门媒体面板
-    mediaDelBtnFun(index) {
-      // 删除指定下标媒体面板
-      this.arrMedia.splice(index, 1);
-      console.log("长度为", this.arrMedia.length, "index:", index);
-      // 修改面板title标签
-      if (index < this.arrMedia.length) {
-        for (let i = 0; i < this.arrMedia.length; i++) {
-          this.arrMedia[i].text = "媒体" + (i + 1);
+    // 删除指定下标媒体面板
+    mediaDelBtnFun(mediaTypeIndex, mediaIndex) {
+      this.mediaTypeList[mediaTypeIndex].mediaList.splice(mediaIndex, 1)
+      // 修改面板title标签, 删除最后不用重命名
+      if (mediaIndex < this.mediaTypeList[mediaTypeIndex].mediaList.length) {
+        for (let i = 0; i < this.mediaTypeList[mediaTypeIndex].mediaList.length; i++) {
+          this.mediaTypeList[mediaTypeIndex].mediaList[i].text = (this.mediaTypeList[mediaTypeIndex].name || '媒体') + (i + 1);
         }
       }
-      this.ADTitleIndex--;
-    },
-    // 新增道闸面板
-    roadGateAddFun() {
-      let roadGateMedia = [
-        {
-          text: "媒体2",
-          isAssetIdError: false, // 资源编号重名信息
-          assetIdCommentData: {
-            // 资源编号重名信息
-            resName: "",
-            mediaName: "",
-            updateTime: "",
-          },
-          roadGateForm: {
-            mediaType: "道闸", //道闸类型mVehicle
-            mediaName: "", //道闸名称mtitle
-            usableNum: "3", //广告位面数pnum
-            mstate: "", //道闸状态mstate
-            assetId: "", //资产编号assettag
-            LBSizeW: "", //灯箱尺寸高度
-            LBSizeH: "", //灯箱尺寸宽度
-            visualW: "", //可视画面adviewsize
-            visualH: "", //可视画面
-            mediaRemark: "", //备注 mrk
-            adLimit: [], //请选择广告限制 notpush
-            mImg: "",
-            updataImg: [],
-            assetIdBolean: false,
-          },
-        },
-      ];
-      roadGateMedia[0].text = "媒体" + ++this.roadGateTitleIndex;
-      this.mediaOptions2.push([{ label: "正常", value: "1" }]);
-      this.roadGateMedia.push(roadGateMedia[0]);
-    },
-    //删除道闸媒体面板
-    roadGateDelBtnFun(index) {
-      this.roadGateMedia.splice(index, 1); //  删除指定下标媒体面板
-      console.log("长度为", this.roadGateMedia.length, "index:", index);
-      if (index < this.roadGateMedia.length) {
-        // 修改面板title标签
-        for (let i = 0; i < this.roadGateMedia.length; i++) {
-          this.roadGateMedia[i].text = "媒体" + (i + 1);
-        }
-      }
-      this.roadGateTitleIndex--;
+      this.mediaTypeList[mediaTypeIndex].ADTitleIndex--;
     },
     // 城市地区联动-省级
     ShowRegion() {
@@ -2394,10 +1873,8 @@ export default {
     },
     // 资源输入框和下拉框失去光标
     blurFun(name) {
-      console.log("name", name);
       // 手动触发校验
       this.$refs.recForm.validateField(name, (valid) => {
-        // console.log('错误提示信息',valid)
         if (!valid) {
           console.log("校验通过");
         } else {
@@ -2422,7 +1899,6 @@ export default {
             name: this.recForm.resname,
           },
         };
-        console.log("params", params);
         api.postApi_new(this.apiVar.Media, params).then((res) => {
           console.log("资源名称查重res", res);
           if (res.data.SysCode == 200200) {
@@ -2463,13 +1939,12 @@ export default {
           asrId: this.sessionData.asrID,
         },
       };
-      console.log("params", params);
       api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("资产编号校验去重res", res);
         if (res.data.SysCode == 200200) {
           let resData = res.data.data;
           console.log("小区信息", this.recForm);
           if (resData.length) {
+            // 对比数据库资产id
             let flag = this.filterAssetId(resData, value);
             if (flag) {
               callback(new Error(" "));
@@ -2477,8 +1952,9 @@ export default {
               callback();
             }
           } else {
-            let number = this.filterlocalAssetId(resData, value);
-            if (number >= 2) {
+            // 对比当前页面中所有媒体的资产id
+            let flag = this.filterlocalAssetId(value);
+            if (flag) {
               callback(new Error("这个资产编号已在该小区内存在!"));
             } else {
               callback();
@@ -2490,79 +1966,64 @@ export default {
       });
     },
     // 接口返回为空时校验当前是否有重复的
-    filterlocalAssetId(resData, value) {
-      let num = 0;
-      for (let key of this.arrMedia) {
-        if (key.mediaForm.assetId === value) {
-          key.isAssetIdError = false;
-          num++;
+    filterlocalAssetId(value) {
+      let result = 0
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+        let mediaLength = tempMediaList.length;
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          let mediaItem = tempMediaList[mediaIndex]
+          if (mediaItem.mediaForm.assetId === value) {
+            result += 1;
+            mediaItem.isAssetIdError = false;
+          }
         }
       }
-      for (let rgKey of this.roadGateMedia) {
-        if (rgKey.roadGateForm.assetId === value) {
-          rgKey.isAssetIdError = false;
-          num++;
-        }
-      }
-      return num;
+      return result >= 2;
     },
     // 判断同资源下资产编号是否重复
     filterAssetId(resData, value) {
-      let adDoor = false;
-      let roadGate = false;
-      for (let key of this.arrMedia) {
-        if (key.mediaForm.assetId === value) {
-          for (let rKey of resData) {
-            if (rKey.mId !== key.mediaForm.mid) {
-              key.isAssetIdError = true;
-              key.assetIdCommentData.mediaName = rKey.mediaName;
-              key.assetIdCommentData.resName = rKey.resName;
-              key.assetIdCommentData.updateTime = rKey.createTime;
-              adDoor = true;
-            } else {
-              // 编辑情况下
-              key.isAssetIdError = false;
+      let result = false
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+        let mediaLength = tempMediaList.length;
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          let mediaItem = tempMediaList[mediaIndex]
+          if (mediaItem.mediaForm.assetId === value) {
+            for (let resItem of resData) {
+              if (resItem.mId !== mediaItem.mid) {
+                mediaItem.isAssetIdError = true;
+                mediaItem.assetIdCommentData.mediaName = resItem.mediaName;
+                mediaItem.assetIdCommentData.resName = resItem.resName;
+                mediaItem.assetIdCommentData.updateTime = resItem.createTime;
+                result = true;
+              } else {
+                // 编辑情况下
+                mediaItem.isAssetIdError = false;
+              }
             }
           }
         }
       }
-      for (let key of this.roadGateMedia) {
-        if (key.roadGateForm.assetId === value) {
-          for (let rKey of resData) {
-            if (rKey.mId !== key.roadGateForm.mid) {
-              key.isAssetIdError = true;
-              key.assetIdCommentData.mediaName = rKey.mediaName;
-              key.assetIdCommentData.resName = rKey.resName;
-              key.assetIdCommentData.updateTime = rKey.createTime;
-              roadGate = true;
-            } else {
-              key.isAssetIdError = false;
-            }
-          }
-        }
-      }
-      if (adDoor || roadGate) {
-        return true;
-      } else {
-        return false;
-      }
+      return result;
     },
     // 媒体名称校验去重
     validateMediaName(rule, value, callback) {
-      console.log("广告门", this.arrMedia, "道闸", this.roadGateMedia);
-      // 广告门
-      let adArr = this.arrMedia.filter((item, index, list) => {
-        if (item.mediaForm.mediaName === value) {
-          return item;
+      let result = 0
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+        let mediaLength = tempMediaList.length;
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          let mediaItem = tempMediaList[mediaIndex]
+          if (mediaItem.mediaForm.mediaName === value) {
+            result += 1;
+          }
         }
-      });
-      // 道闸
-      let rgArr = this.roadGateMedia.filter((item, index, list) => {
-        if (item.roadGateForm.mediaName === value) {
-          return item;
-        }
-      });
-      if (adArr.length + rgArr.length >= 2) {
+      }
+      if (result >= 2) {
         // console.log('存在相同媒体名称value-----',value)
         let timer = setTimeout(() => {
           clearTimeout(timer);
@@ -2571,25 +2032,12 @@ export default {
       } else {
         callback();
       }
-      console.log("媒体名称校验去重", adArr, rgArr);
     },
     // 广告门输入框和下拉框失去光标
     adDoorBlur(name, index) {
       console.log("广告门name", name);
       // 手动触发校验 validateField
       this.$refs.mediaForm[index].validateField(name, (valid) => {
-        if (!valid) {
-          console.log("校验通过");
-        } else {
-          console.log("校验不通过");
-        }
-      });
-    },
-    // 道闸 roadGate
-    roadGateBlur(name, index) {
-      console.log("道闸name", name);
-      // 手动触发校验 validateField
-      this.$refs.roadGateForm[index].validateField(name, (valid) => {
         if (!valid) {
           console.log("校验通过");
         } else {
@@ -2610,126 +2058,10 @@ export default {
         this.floorType = this.officeBuilding;
       }
     },
-    // 选择媒体状态为待安装时修改资源编号的验证为非必填
-    selectMstate(val, index) {
-      console.log("选择了", val, this.arrMediaStatue, this.editRoadGateStatue);
-      let valArr = val.mstate.split("");
-      console.log("valArr", valArr);
-      let i = Number(valArr[1]);
-      if (this.PathHaveEdit) {
-        if (val.mediaType === "广告门" && i <= this.editMediaLength - 1) {
-          if (valArr[0] === "4") {
-            // 拆除媒体 this.editRoadGateStatue
-            this.dismantleVisible = true;
-            this.rowData = val;
-            this.changeBeforMediaState = val.mstate;
-          } else {
-            this.arrMedia[i].mediaForm.assetIdBolean = false;
-            this.editMState(val.mid, valArr[0], "media", index);
-          }
-        } else if (
-          val.mediaType === "道闸" &&
-          i <= this.editRoadGateLength - 1
-        ) {
-          if (valArr[0] === "4") {
-            // 拆除媒体
-            this.dismantleVisible = true;
-          } else {
-            this.roadGateMedia[i].roadGateForm.assetIdBolean = false;
-            this.editMState(val.mid, valArr[0], "roadGate", index);
-          }
-        } else {
-          this.newMediaChangeMstatus(val.mediaType, valArr, i);
-        }
-      } else {
-        this.newMediaChangeMstatus(val.mediaType, valArr, i);
-      }
-      console.log("this.$refs", this.$refs["ResAssetId"]);
-      this.$refs["ResAssetId"][0].clearValidate(); // 清除资产编号的验证
-    },
-    // 新建媒体时的媒体状态或编辑时新增媒体
-    newMediaChangeMstatus(mkind, mState, index) {
-      console.log("mkind", mkind, "mState", mState, "index", index);
-      if (mState[0] === "2") {
-        if (mkind === "广告门") {
-          this.arrMedia[index].mediaForm.assetIdBolean = true;
-          this.arrMedia[index].mediaForm.assetId = "";
-        } else if (mkind === "道闸") {
-          this.roadGateMedia[index].roadGateForm.assetIdBolean = true;
-          this.roadGateMedia[index].roadGateForm.assetId = "";
-        }
-      } else {
-        if (mkind === "广告门") {
-          this.arrMedia[index].mediaForm.assetIdBolean = false;
-          if (this.arrMedia[index].mediaForm.assetId === "") {
-            this.arrMedia[index].mediaForm.assetId = " ";
-            let that = this;
-            setTimeout(function () {
-              that.arrMedia[index].mediaForm.assetId = "";
-            }, 10);
-          }
-        } else if (mkind === "道闸") {
-          this.roadGateMedia[index].roadGateForm.assetIdBolean = false;
-          if (this.roadGateMedia[index].roadGateForm.assetId === "") {
-            this.roadGateMedia[index].roadGateForm.assetId = " ";
-            let that = this;
-            setTimeout(function () {
-              that.roadGateMedia[index].roadGateForm.assetId = "";
-            }, 10);
-          }
-        }
-      }
-    },
-    // 拆除媒体
-    dismantleMedia() {
-      if (!this.dismantleInfo) {
-        sessFun.messageFun("warning", "请填写拆除备注信息!");
-        return;
-      }
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "AddDismantleRecord",
-        data: {
-          mID: this.rowData.mid,
-          remark: this.dismantleInfo,
-          resName: this.recForm.resname,
-          rId: this.recForm.region,
-        },
-      };
-      console.log("拆除媒体params", params);
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        if (res.data.SysCode === 200200) {
-          this.dismantleVisible = false;
-          sessFun.messageFun("success", "拆除成功!");
-          this.rowData.mediaState = 4;
-        } else {
-          sessFun.messageFun("warning", res.data.MSG);
-        }
-      });
-    },
-    // 取消拆除
-    canceDismantle() {
-      let rowData = this.rowData;
-      console.log("rowData", rowData);
-      let mStateArr = rowData.mstate.split("");
-      let index = Number(mStateArr[1]);
-      if (rowData.mediaType === "广告门") {
-        rowData.mstate = this.arrMediaStatue[index] + mStateArr[1];
-      } else if (rowData.mediaType === "道闸") {
-        rowData.mstate = this.editRoadGateStatue[index] + mStateArr[1];
-      }
-      this.dismantleVisible = false;
-    },
     //添加资源媒体
     createRes() {
-      console.log(this.arrMedia);
       this.recForm.uid = this.sessionData.uID;
       this.recForm.latlng = this.recForm.lat + ";" + this.recForm.lng;
-      console.log("this.recForm", this.recForm);
-      for (let i = 0; i < this.arrMedia.length; i++) {
-        console.log("arrMedia", i, this.arrMedia[i].mediaForm);
-      }
       let recObj = {
         uid: this.recForm.uid,
         rid: Number(this.recForm.region),
@@ -2795,7 +2127,7 @@ export default {
             // 设置资源图片信息
             this.resImg.ptid = recData.resID; // 资源图片的ptid就是资源的id
             this.resImg.palt = this.recForm.resname + "-" + recData.rID;
-            this.creadMediaFun(0, 0);
+            this.creadMediaFun();
           } else if (
             res.data.SysCode === 100302 ||
             res.data.MSG === "登陆超时"
@@ -2812,90 +2144,64 @@ export default {
         });
     },
     // 批量创建媒体
-    creadMediaFun(adIndex, rtIndex, operateString) {
-      let rid = "";
-      let resID = "";
-      if (this.PathHaveEdit) {
-        rid = this.recForm.region;
-        resID = sessionStorage.getItem("resID");
+    creadMediaFun() {
+      let resId = "";
+      if (this.pathHaveEdit) {
+        resId = sessionStorage.getItem("resID");
       } else {
-        rid = this.resData.rID;
-        resID = this.resData.resID;
+        resId = this.resData.resID;
       }
-      let arr = [];
-      if (this.m_boolean.flag) {
-        let mediaFrom = this.arrMedia;
-        for (let i = adIndex; i < mediaFrom.length; i++) {
-          let key = mediaFrom[i].mediaForm;
-          if (key.mediaName && key.mediaType && key.adSizeW && key.adSizeH) {
+      let params = [];
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
+        let tempMediaList = mediaTypeItem.mediaList;
+        let mediaLength = tempMediaList.length;
+        mediaTop:
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          let mediaItem = tempMediaList[mediaIndex];
+          let tempMediaForm = mediaItem.mediaForm;
+          let tempAdSpaceInfo = []
+          for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
+            let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex]
+            let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, id: adSpaceId } = adSpaceItem
+            if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && adSpaceId) {
+              tempAdSpaceInfo.push({
+                adSpaceId,
+                adSizeWidth,
+                adSizeHeight,
+                adViewSizeWidth,
+                adViewSizeHeight
+              })
+            } else {
+              break mediaTop;
+            }
+          }
+          if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+            // 单个媒体下所有广告位验证通过
             let obj = {
-              resID: resID,
-              uID: this.recForm.uid,
-              mTitle: key.mediaName,
-              pNum: key.usableNum,
-              actualNum: key.usableNum,
-              adSize: key.adSizeW + "*" + key.adSizeH,
-              adViewSize: key.visualW + "*" + key.visualH,
-              notPush: key.adLimit.join("、"),
-              assetTag: key.assetId,
-              mType: key.doorType,
-              mImg: key.mImg || "",
-              mVehicle: key.mediaType,
-              mRemark: key.mediaRemark,
-              mState: key.mstate.split("")[0],
-              mSaleState: 1,
+              resId,
+              name: tempMediaForm.mediaName || '',
+              mediaTypeId: mediaTypeItem.id,
+              assetTag: tempMediaForm.assetId,
+              deviceType: tempMediaForm.doorType || '',
+              mediaPicture: tempMediaForm.mImg || '',
+              adSpaceInfo: tempAdSpaceInfo
             };
-            arr.push(obj);
-          } else {
-            continue;
+            params.push(obj);
           }
         }
       }
-      if (this.rt_boolean.flag) {
-        let mediaFrom = this.roadGateMedia;
-        for (let i = rtIndex; i < mediaFrom.length; i++) {
-          let key = mediaFrom[i].roadGateForm;
-          if (key.mediaName && key.LBSizeW && key.LBSizeH) {
-            arr.push({
-              resID: resID,
-              uID: this.recForm.uid,
-              mTitle: key.mediaName,
-              pNum: 1,
-              actualNum: key.usableNum,
-              adSize: "",
-              adViewSize: "",
-              notPush: key.adLimit.join("、"),
-              assetTag: key.assetId,
-              mType: "",
-              mImg: key.mImg || "",
-              mVehicle: key.mediaType,
-              mRemark: key.mediaRemark,
-              mState: key.mstate.split("")[0],
-              picSize: key.visualW + "*" + key.visualH,
-              lightBoxSize: key.LBSizeW + "*" + key.LBSizeH,
-              mSaleState: 1,
-            });
-          } else {
-            continue;
-          }
-        }
-      }
-      let params = {
-        uid: this.sessionData.uID,
-        service: "CreateMediaBatch",
-        token: this.sessionData.token,
-        data: {
-          medias: arr,
-          rId: rid,
-        },
-      };
+      this.batchCreateApi(params);
+    },
+    batchCreateApi(params, editFlag) {
       console.log("params", params);
-      if (params.data.medias.length) {
-        api.postApi_new(this.apiVar.Media, params).then((res) => {
+      if (params.length) {
+        api.postApi_json('/addsp/api/v1/media/create/batch', params).then((res) => {
           console.log("批量创建媒体", res);
           this.Editloading.close();
-          if (res.data.SysCode == 200200 && res.data.data.length > 0) {
-            if (operateString !== "edit") {
+          if (res.data.SysCode == 200200) {
+            if (!editFlag) {
               this.$confirm("资源媒体创建成功!", "提示", {
                 confirmButtonText: "继续创建",
                 cancelButtonText: "前往列表",
@@ -2923,32 +2229,29 @@ export default {
         console.log("媒体数据为空");
       }
     },
-    // 将创建的媒体资源绑定到地图无忧标注的社区
-    pushResMediaToWydt(mIDArr) {
-      let params = {
-        service: "PushMediaToDtwy",
-        data: {
-          resID: this.resData.resID,
-          mIDs: mIDArr,
-        },
-      };
-      console.log("资源媒体图片-无忧地图参数", params);
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("资源媒体图片无忧地图", res);
+    batchUpdateApi(params) {
+      api.postApi_json('/addsp/api/v1/media/update/batch', params).then((res) => {
+        this.Editloading.close();
+        if (res.data.SysCode == 200200) {
+          this.Editloading.close();
+          sessFun.messageFun("success", "媒体保存成功！");
+          this.$router.push("./mediaDetail");
+        } else {
+          sessFun.messageFun("warning", "媒体编辑失败！");
+        }
       });
     },
     // 资源图片上传前验证格式和大小
     beforeUpload_res(file) {
       const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 4;
-
+      const isLt4M = file.size / 1024 / 1024 < 4;
       if (!isJPG) {
         sessFun.messageFun("warning", "上传图片只能是 JPG 或 PNG 格式!");
       }
-      if (!isLt2M) {
+      if (!isLt4M) {
         sessFun.messageFun("warning", "上传图片大小不能超过 4MB!");
       }
-      return isJPG && isLt2M;
+      return isJPG && isLt4M;
     },
     // 资源图片上传成功
     handleDownSuccess(res) {
@@ -2993,23 +2296,17 @@ export default {
       return false;
     },
     // 广告门图片上传成功
-    adUploadSuccess(res) {
-      console.log("上传媒体图片", res); // mediaADImg
-      for (let key of this.arrMedia) {
-        if (this.mediaImg_title === key.text) {
-          if (key.mediaForm.mImg === "") {
-            key.mediaForm.mImg = res[0].pURL;
-          } else {
-            key.mediaForm.mImg = key.mediaForm.mImg + ";" + res[0].pURL;
-          }
-          break;
-        }
+    adUploadSuccess(res, meidaItem) {
+      console.log("上传媒体图片", res, meidaItem);
+      if (meidaItem.mediaForm.mImg === "") {
+        meidaItem.mediaForm.mImg = res[0].pURL;
+      } else {
+        meidaItem.mediaForm.mImg = meidaItem.mediaForm.mImg + ";" + res[0].pURL;
       }
-      console.log(this.updataMedia, "媒体图片上传成功", this.arrMedia);
     },
     //广告门图片放大
     handlePictureCardPreview(file) {
-      console.log("媒体图片放大", this.arrMedia);
+      /* console.log("媒体图片放大", this.arrMedia);
       let timer = setTimeout(() => {
         for (let key of this.arrMedia) {
           if (this.mediaImg_title === key.text) {
@@ -3025,15 +2322,15 @@ export default {
           }
         }
         clearTimeout(timer);
-      }, 50);
+      }, 50); */
     },
     //删除广告门图片
     adHandleRemove(file, fileList) {
-      console.log("删除媒体图片", file, fileList);
+      /* console.log("删除媒体图片", file, fileList);
       let timer = setTimeout(() => {
         for (let key of this.arrMedia) {
           if (this.mediaImg_title === key.text) {
-            if (this.PathHaveEdit) {
+            if (this.pathHaveEdit) {
               key.mediaForm.mImg = fileList[0].url;
             } else {
               key.mediaForm.mImg = fileList[0].response[0].pURL;
@@ -3043,82 +2340,10 @@ export default {
         }
         console.log(this.updataMedia, "删除媒体图片", this.arrMedia);
         clearTimeout(timer);
-      }, 100);
+      }, 100); */
     },
-    //道闸图片
-    saveImgRGInfo(m_title) {
-      sessFun.messageFun("warning", "该功能暂未开放");
-      this.rgImg_title = m_title;
-    },
-    // 道闸图片上传前校验
-    beforeUpload_rg(file) {
-      sessFun.messageFun("warning", "该功能暂未开放");
-      return false;
-      // const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-      // const isLt6M = file.size / 1024 / 1024 < 6;
-      //
-      // if (!isJPG) {
-      //     this.$message.error('上传图片只能是 JPG 或 PNG 格式!');
-      // }
-      // if (!isLt6M) {
-      //     this.$message.error('上传图片大小不能超过 6MB!');
-      // }
-      // return isJPG && isLt6M;
-    },
-    // 道闸图片上传成功
-    rgUploadSuccess(res) {
-      console.log("上传媒体图片", res); // mediaADImg
-      for (let key of this.roadGateMedia) {
-        if (this.rgImg_title === key.text) {
-          if (key.roadGateForm.mImg === "") {
-            key.roadGateForm.mImg = res[0].pURL;
-          } else {
-            key.roadGateForm.mImg = key.roadGateForm.mImg + ";" + res[0].pURL;
-          }
-          break;
-        }
-      }
-      console.log(this.updataMedia, "媒体图片上传成功", this.roadGateMedia);
-    },
-    //道闸图片放大
-    rgHandlePictureCardPreview() {
-      console.log("媒体图片放大", this.roadGateMedia);
-      let timer = setTimeout(() => {
-        for (let key of this.roadGateMedia) {
-          if (this.rgImg_title === key.text) {
-            this.mediaImgTitle = key.roadGateForm.mediaName;
-            if (key.roadGateForm.mImg.includes(";")) {
-              this.mediaImgSrc = key.roadGateForm.mImg.split(";");
-            } else {
-              this.mediaImgSrc = key.roadGateForm.mImg.split(",");
-            }
-            this.mediaImgDialogVisible = true;
-            break;
-          }
-        }
-        clearTimeout(timer);
-      }, 50);
-    },
-    // 道闸图片删除
-    rgHandleRemove(file, fileList) {
-      console.log("删除道闸图片", file, fileList);
-      let timer = setTimeout(() => {
-        for (let key of this.roadGateMedia) {
-          if (this.rgImg_title === key.text) {
-            if (this.PathHaveEdit) {
-              key.roadGateForm.mImg = fileList[0].url;
-            } else {
-              key.roadGateForm.mImg = fileList[0].response[0].pURL;
-            }
-            break;
-          }
-        }
-        console.log("删除道闸图片", this.roadGateMedia);
-        clearTimeout(timer);
-      }, 100);
-    },
-    // 表单验证 resFrom:资源表单、adDoorFrom：广告门的表单、rgFrom：道闸的表单
-    submitForm(resFrom, adDoorFrom, rgFrom) {
+    // 表单验证: 资源表单、媒体表单
+    submitForm() {
       console.log("校验开始-----------");
       this.submitBtnIsAble = true;
       let timer = setTimeout(() => {
@@ -3126,162 +2351,75 @@ export default {
         clearTimeout(timer);
       }, 500);
       // 资源表单校验
-      let validateResArr = [
-        "rt",
-        "city",
-        "region",
-        "resname",
-        "resaddr",
-        "lat",
-        "lng",
-        "floorType",
-        "households",
-        "buildingNum",
-        "liveTime",
-      ];
-      let validatesPro = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
-      for (let key of validateResArr) {
-        let validate = new Promise((resolve, reject) => {
-          this.$refs.recForm.validateField(key, (valid) => {
-            // valid为错误信息，不为空这表示错误
-            if (!valid) {
-              resolve(true);
-            } else {
-              reject(false);
-            }
-          });
-        });
-        validatesPro.push(validate);
-      }
-      Promise.all(validatesPro)
-        .then((res) => {
-          // 验证全部通过
-          console.log("验证全部通过", res);
-          this.adDoorValidateFrom(adDoorFrom, 0);
-        })
-        .catch((err) => {
-          console.log("验证失败", err);
-          //验证失败 提示reject失败状态的值
+      console.log('资源表单校验recForm', this.$refs.recForm)
+      this.$refs.recForm.validate((valid, invalidObject) => {
+        if (valid) {
+          // 验证全部通过后校验媒体表单
+          this.adDoorValidateFrom();
+        } else {
+          console.log('资源表单invalidObject', invalidObject);
           sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
-        });
-    },
-    // 广告门校验
-    adDoorValidateFrom(fromName, index) {
-      console.log("广告门校验", fromName, index);
-      let mediaList = this.arrMedia;
-      if (index < this.arrMedia.length) {
-        if (
-          mediaList[index].mediaForm.mediaName ||
-          mediaList[index].mediaForm.mstate !== "" ||
-          mediaList[index].mediaForm.doorType ||
-          mediaList[index].mediaForm.adSizeW ||
-          mediaList[index].mediaForm.visualH
-        ) {
-          this.$refs[fromName][index].validate((valid) => {
-            console.log("-----------广告门表单-----------");
-            if (valid) {
-              index += 1;
-              // console.log('广告门通过',index)
-              this.m_boolean.flag = true;
-              this.adDoorValidateFrom(fromName, index);
-            } else {
-              console.log("广告门不通过", valid);
-              sessFun.messageFun("warning", "必填项信息不能为空或填写有误!");
-              this.m_boolean.flag = false;
-              return;
-            }
-          });
-        } else {
-          index += 1;
-          this.adDoorValidateFrom(fromName, index);
         }
-      } else {
-        this.rgValidateFrom("roadGateForm", 0);
-      }
+      });
     },
-    // 道闸表单校验 roadGateForm
-    rgValidateFrom(fromName, index) {
-      console.log("道闸表单校验", fromName);
-      let mediaList = this.roadGateMedia;
-      if (index < this.roadGateMedia.length) {
-        if (
-          mediaList[index].roadGateForm.mediaName !== "" ||
-          mediaList[index].roadGateForm.mstate !== "" ||
-          mediaList[index].roadGateForm.LBSizeW !== "" ||
-          mediaList[index].roadGateForm.visualW !== ""
-        ) {
-          this.$refs[fromName][index].validate((valid) => {
-            console.log("-------------道闸表单---------------");
-            if (valid) {
-              // console.log('道闸通过')
-              index += 1;
-              this.rt_boolean.flag = true;
-              this.rgValidateFrom(fromName, index);
-            } else {
-              console.log("道闸不通过");
+    // 校验所有媒体表单 v-for包含ref时，refs.key获取结果为数组, 注意：验证操作为异步
+    adDoorValidateFrom() {
+      let mediaValidFlag = 0
+      const mediaTypeLength = this.mediaTypeList.length;
+      console.log('mediaTypeList', this.mediaTypeList)
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+        let mediaLength = tempMediaList.length;
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          mediaValidFlag += 1;
+          this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].validate((valid, invalidObject) => {
+            if (!valid) {
+              console.log(`invalidObject--mediaForm${mediaTypeIndex}${mediaIndex}`, invalidObject);
               sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
-              this.rt_boolean.flag = false;
               return;
+            } else {
+              mediaValidFlag -= 1
+              if(mediaValidFlag === 0) {
+                // 全部媒体表单验证通过
+                this.validateFinted();
+              }
             }
           });
-        } else {
-          console.log("道闸无需校验通过");
-          index += 1;
-          this.rgValidateFrom(fromName, index);
         }
-      } else {
-        // 资源、广告门、道闸校验完成
-        this.validateFinted();
       }
     },
     validateFinted() {
-      console.log("校验结束");
-      console.log("m_boolean", this.m_boolean, "rt_boolean", this.rt_boolean);
-      if (this.m_boolean.flag || this.rt_boolean.flag) {
-        if (this.PathHaveEdit) {
-          // 判断是创建还是修改
-          console.log("编辑--------");
-          this.Editloading = this.$loading({
-            lock: true,
-            text: "保存中...",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)",
-          });
-          this.postEditMsg();
-        } else {
-          console.log("创建--------");
-          this.Editloading = this.$loading({
-            lock: true,
-            text: "创建中...",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)",
-          });
-          this.createRes();
-        }
+      if (this.pathHaveEdit) {
+        // 判断是创建还是修改
+        console.log("编辑--------");
+        this.Editloading = this.$loading({
+          lock: true,
+          text: "保存中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        this.postEditMsg();
       } else {
-        this.$refs["mediaForm"][0].validate((valid) => {});
-        sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
+        console.log("创建--------");
+        this.Editloading = this.$loading({
+          lock: true,
+          text: "创建中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        this.createRes();
       }
     },
     //重置表单数据
     resetForm() {
       this.$refs["recForm"].resetFields();
-      for (let i = 0; i < this.arrMedia.length; i++) {
-        this.$refs["mediaForm"][i].resetFields();
-      }
-      for (let i = 0; i < this.roadGateMedia.length; i++) {
-        this.$refs["roadGateForm"][i].resetFields();
-      }
-    },
-    //编辑媒体，记录媒体状态change前的状态
-    keepMStatue(index, statue, mKind) {
-      let i = index;
-      let mStatue = statue;
-      console.log("i", i, ",mStatue", mStatue);
-      if (mKind === "广告门") {
-        this.arrMediaStatue[i] = mStatue;
-      } else if (mKind === "道闸") {
-        this.editRoadGateStatue[i] = mStatue;
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+        let mediaLength = tempMediaList.length;
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].resetFields();
+        }
       }
     },
     // 清除表单校验
@@ -3289,11 +2427,13 @@ export default {
       console.log("清除表单校验------");
       let timer = setTimeout(() => {
         this.$refs["recForm"].clearValidate();
-        for (let i = 0; i < this.arrMedia.length; i++) {
-          this.$refs["mediaForm"][i].clearValidate();
-        }
-        for (let j = 0; j < this.roadGateMedia.length; j++) {
-          this.$refs["roadGateForm"][j].clearValidate();
+        const mediaTypeLength = this.mediaTypeList.length;
+        for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+          let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+          let mediaLength = tempMediaList.length;
+          for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+            this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].clearValidate();
+          }
         }
         clearTimeout(timer);
       }, 500);
@@ -3309,281 +2449,145 @@ export default {
     },
     // 媒体详情跳转过来，获取信息并编辑 添加
     editFun() {
-      let routePath = this.$route.path;
-      console.log("routePath", routePath, this.$route.query);
-      if (routePath.indexOf("media/mediaEdit") !== -1) {
-        let recObj = JSON.parse(sessionStorage.getItem("recDetail"));
-        let mediaObj = JSON.parse(sessionStorage.getItem("mediaList"));
-        this.resData.resID = sessionStorage.getItem("resID");
-        if (recObj !== null || mediaObj !== null) {
-          this.PathHaveEdit = true;
-          // 设置默认选中的城市
-          this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + "0000";
-          this.recForm.city[1] = recObj.cityId;
-          this.handleChange(this.recForm.city);
-          this.resAddres.city = recObj.city;
-          this.resAddres.area = recObj.cityArea;
-          // 获取设置资源信息
-          let tempObj = {
-            resID: recObj.resID,
-            rt: recObj.cType,
-            resname: recObj.resName,
-            city: this.recForm.city,
-            region: recObj.rid.toString(),
-            business: recObj.tradingArea,
-            resaddr: recObj.resAddress,
-            floorType: recObj.houseType,
-            doorwayNum: recObj.EntryExitNum,
-            buildingNum: recObj.buildingNum,
-            households: recObj.HouseNum,
-            buildingPrice: recObj.housePrice,
-            liveTime: recObj.joinTime, // 入住时间
-            pmc: recObj.pmc, // 物业公司
-            peopleFlowrate: recObj.peopleFlowrate, // 人流量
-            carNumber: recObj.carNumber, // 车位数
-            carFlowrate: recObj.carFlowrate, // 车流量
-            fullViewUrl: recObj.fullViewUrl || "",
-            lat: "", // 经度
-            lng: "", // 纬度
-            // 房价网信息
-            // city: recObj.city,
-            district: recObj.district,
-            resAlias: recObj.resAlias, // 资源别名
-            addressAlias: recObj.addressAlias, // 地址别名
-            description: recObj.description || "", // 描述
-            supportingFacilities: recObj.supportingFacilities || "", // 周边配套
-            buildingType: recObj.buildingType || "", // 建筑类型
-            transportation: recObj.transportation || "", // 交通状况
-            floorSpace: recObj.floorSpace || "", // 占地面积
-            constructionSpace: recObj.constructionSpace || "", // 建筑面积
-            buildingStructure: recObj.buildingStructure || "", // 建筑结构
-            plotRatio: recObj.plotRatio || "", // 容积率
-            greenPercentage: recObj.greenPercentage || "", // 绿化率
-            ownershipPeriod: recObj.ownershipPeriod || "", // 产权年限
-            developer: recObj.developer || "", // 开发商
-            // propertyManagement : resData.propertyManagement || '',       // 物业公司
-            managementFee: recObj.managementFee || "", // 物业费
-            salesOfficeAdd: recObj.salesOfficeAdd || "", // 售楼地址
-            preSalePermit: recObj.preSalePermit || "", // 预售许可证
-            ownershipType: recObj.ownershipType || "", // 产权性质
-            salesPhoneNumber: recObj.salesPhoneNumber, // 售楼电话
-            discount: recObj.discount, // 折扣信息
-          };
-          //    console.log('经纬度',typeof(recObj.latLng),recObj.latLng)
-          if (
-            recObj.latLng != null &&
-            recObj.latLng != "" &&
-            recObj.latLng != undefined
-          ) {
-            tempObj.lat = Number(recObj.latLng.split(";")[0]); // 经度
-            tempObj.lng = Number(recObj.latLng.split(";")[1]); // 纬度
-          } else {
-            console.log("暂无经纬度！！");
-          }
-          if (tempObj.rt === "写字楼") {
-            this.selectRec("2");
-          }
-          this.recForm = tempObj;
-          console.log("recForm", this.recForm);
-          //设置媒体信息
-          this.editMediaLength = mediaObj.length;
-          for (let i = 0; i < mediaObj.length; i++) {
-            if (i < mediaObj.length - 1) {
-              // 创建媒体面板，默认已有一个
-              this.mediaAddFun();
-            }
-            this.keepMStatue(i, mediaObj[i].mState, "广告门"); // 记录编辑媒体，初始\修改前的媒体状态
-            let adSize = { w: "", h: "" };
-            let visual = { w: "", h: "" };
-            if (mediaObj[i].adSize) {
-              adSize.w = mediaObj[i].adSize.split("*")[0];
-              adSize.h = mediaObj[i].adSize.split("*")[1];
-            }
-            if (mediaObj[i].adViewSize) {
-              visual.w = mediaObj[i].adViewSize.split("*")[0];
-              visual.h = mediaObj[i].adViewSize.split("*")[1];
-            }
-            let media = {
-              mid: mediaObj[i].mID,
-              mediaType: mediaObj[i].mVehicle,
-              mediaName: mediaObj[i].mTitle,
-              usableNum: mediaObj[i].pNum,
-              mstate: mediaObj[i].mState.toString() + i, // 媒体状态
-              mediaState: mediaObj[i].mState,
-              assetId: mediaObj[i].assetTag,
-              doorType: mediaObj[i].mType,
-              adSizeW: adSize.w,
-              adSizeH: adSize.h,
-              visualW: visual.w,
-              visualH: visual.h,
-              mediaRemark: mediaObj[i].mRemark,
-              adDoorLevel: mediaObj[i].grade,
-              mImg: mediaObj[i].mImg,
-              updataImg: [],
-              assetIdBolean: mediaObj[i].mState == 2 ? true : false,
-            };
-
-            // 编辑时只保留正常与原来所选择的媒体状态
-            const currentOption = MEDIA_OPTIONS.filter((item) => {
-              return item.value === mediaObj[i].mState.toString();
-            })[0];
-            let newMediaOptions = [];
-            if (currentOption.value === "1") {
-              newMediaOptions[0] = currentOption;
-            } else {
-              newMediaOptions[0] = currentOption;
-              newMediaOptions[1] = { label: "正常", value: "1" };
-            }
-            this.mediaOptions[i] = newMediaOptions;
-            console.log(
-              this.mediaOptions[i],
-              "this.mediaOptions[i]this.mediaOptions[i]"
-            );
-
-            if (mediaObj[i].classified == 1) {
-              this.classified = true;
-            }
-            if (mediaObj[i].mImg) {
-              let imgArr = [];
-              if (mediaObj[i].mImg.includes(";")) {
-                imgArr = mediaObj[i].mImg.split(";");
-              } else {
-                imgArr = mediaObj[i].mImg.split(",");
-              }
-              for (let ikey of imgArr) {
-                media.updataImg.push({
-                  name: media.mediaName + i,
-                  url: ikey,
-                });
-              }
-            }
-            if (
-              mediaObj[i].notPush !== "" &&
-              mediaObj[i].notPush !== undefined &&
-              mediaObj[i].notPush !== null
-            ) {
-              media.adLimit = mediaObj[i].notPush.split("、");
-            } else {
-              media.adLimit = [];
-            }
-
-            console.log("media", media);
-            for (let key in media) {
-              if (media[key] == undefined || media[key] == null) {
-                media[key] = "";
-              }
-            }
-            this.arrMedia[i].mediaForm = media;
-          }
-          console.log(" 编辑状态媒体数据", this.arrMedia);
-          this.fillRoadGateData(); // 道闸数据填充
-
-          if (this.$route.query.add) {
-            // console.log('来源于点击添加媒体')
-            this.scrollBottom();
-          }
-          // 清除表单校验
-          this.clearFromValidate();
-        } else {
-          this.$router.push("./mediaInput");
-          this.PathHaveEdit = false;
-        }
-        this.constructResImg(); // 组装要显示的资源图片
-      } else {
-        this.PathHaveEdit = false;
-        sessionStorage.removeItem("recDetail");
-        sessionStorage.removeItem("mediaList");
-      }
-    },
-    // 编辑状态填充道闸媒体
-    fillRoadGateData() {
-      let roadGateList = JSON.parse(sessionStorage.getItem("roadGateList"));
-      console.log(roadGateList, "roadGateListroadGateListroadGateList");
-      console.log("roadGateList", roadGateList);
-      this.editRoadGateLength = roadGateList.length;
-      for (let i = 0; i < roadGateList.length; i++) {
-        if (i < roadGateList.length - 1) {
-          // 创建媒体面板，默认已有一个
-          this.roadGateAddFun();
-        }
-        this.keepMStatue(i, roadGateList[i].mState, "道闸"); // 记录编辑媒体，初始\修改前的媒体状态
-        let LBoxSizeArr = { w: "", h: "" };
-        let adSizeArr = { w: "", h: "" };
-        if (!roadGateList[i].lightBoxSize) {
-        } else {
-          LBoxSizeArr.w = roadGateList[i].lightBoxSize.split("*")[0];
-          LBoxSizeArr.h = roadGateList[i].lightBoxSize.split("*")[1];
-        }
-        if (!roadGateList[i].picSize) {
-        } else {
-          adSizeArr.w = roadGateList[i].picSize.split("*")[0];
-          adSizeArr.h = roadGateList[i].picSize.split("*")[1];
-        }
-        let media = {
-          mid: roadGateList[i].mID,
-          mediaType: roadGateList[i].mVehicle,
-          mediaName: roadGateList[i].mTitle,
-          usableNum: roadGateList[i].pNum,
-          mstate: roadGateList[i].mState.toString() + i,
-          mediaState: roadGateList[i].mState,
-          assetId: roadGateList[i].assetTag,
-          LBSizeW: LBoxSizeArr.w,
-          LBSizeH: LBoxSizeArr.h,
-          visualW: adSizeArr.w,
-          visualH: adSizeArr.h,
-          mediaRemark: roadGateList[i].mRemark,
-          mImg: roadGateList[i].mImg,
-          updataImg: [],
-          assetIdBolean: roadGateList[i].mState == 2 ? true : false,
+      let recObj = JSON.parse(sessionStorage.getItem("recDetail"));
+      this.resData.resID = sessionStorage.getItem("resID");
+      if (recObj !== null || mediaTypeObj !== null) {
+        // 设置默认选中的城市
+        this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + "0000";
+        this.recForm.city[1] = recObj.cityId;
+        this.handleChange(this.recForm.city);
+        this.resAddres.city = recObj.city;
+        this.resAddres.area = recObj.cityArea;
+        // 获取设置资源信息
+        let tempObj = {
+          resID: recObj.resID,
+          rt: recObj.cType,
+          resname: recObj.resName,
+          city: this.recForm.city,
+          region: recObj.rid.toString(),
+          business: recObj.tradingArea,
+          resaddr: recObj.resAddress,
+          floorType: recObj.houseType,
+          doorwayNum: recObj.EntryExitNum,
+          buildingNum: recObj.buildingNum,
+          households: recObj.HouseNum,
+          buildingPrice: recObj.housePrice,
+          liveTime: recObj.joinTime, // 入住时间
+          pmc: recObj.pmc, // 物业公司
+          peopleFlowrate: recObj.peopleFlowrate, // 人流量
+          carNumber: recObj.carNumber, // 车位数
+          carFlowrate: recObj.carFlowrate, // 车流量
+          fullViewUrl: recObj.fullViewUrl || "",
+          lat: "", // 经度
+          lng: "", // 纬度
+          // 房价网信息
+          district: recObj.district,
+          resAlias: recObj.resAlias, // 资源别名
+          addressAlias: recObj.addressAlias, // 地址别名
+          description: recObj.description || "", // 描述
+          supportingFacilities: recObj.supportingFacilities || "", // 周边配套
+          buildingType: recObj.buildingType || "", // 建筑类型
+          transportation: recObj.transportation || "", // 交通状况
+          floorSpace: recObj.floorSpace || "", // 占地面积
+          constructionSpace: recObj.constructionSpace || "", // 建筑面积
+          buildingStructure: recObj.buildingStructure || "", // 建筑结构
+          plotRatio: recObj.plotRatio || "", // 容积率
+          greenPercentage: recObj.greenPercentage || "", // 绿化率
+          ownershipPeriod: recObj.ownershipPeriod || "", // 产权年限
+          developer: recObj.developer || "", // 开发商
+          managementFee: recObj.managementFee || "", // 物业费
+          salesOfficeAdd: recObj.salesOfficeAdd || "", // 售楼地址
+          preSalePermit: recObj.preSalePermit || "", // 预售许可证
+          ownershipType: recObj.ownershipType || "", // 产权性质
+          salesPhoneNumber: recObj.salesPhoneNumber, // 售楼电话
+          discount: recObj.discount, // 折扣信息
         };
-
-        // 编辑时只保留正常与原来所选择的媒体状态
-        const currentOption = MEDIA_OPTIONS.filter((item) => {
-          return item.value === roadGateList[i].mState.toString();
-        })[0];
-        let newMediaOptions = [];
-        if (currentOption.value === "1") {
-          newMediaOptions[0] = currentOption;
-        } else {
-          newMediaOptions[0] = currentOption;
-          newMediaOptions[1] = { label: "正常", value: "1" };
-        }
-        this.mediaOptions2[i] = newMediaOptions;
-
-        if (roadGateList[i].mImg) {
-          // let imgArr = roadGateList[i].mImg.split(',')
-          let imgArr = [];
-          if (roadGateList[i].mImg.includes(";")) {
-            imgArr = roadGateList[i].mImg.split(";");
-          } else {
-            imgArr = roadGateList[i].mImg.split(",");
-          }
-          for (let ikey of imgArr) {
-            media.updataImg.push({
-              name: media.mediaName + i,
-              url: ikey,
-            });
-          }
-        }
         if (
-          roadGateList[i].notPush !== "" &&
-          roadGateList[i].notPush !== undefined &&
-          roadGateList[i].notPush !== null
+          recObj.latLng != null &&
+          recObj.latLng != "" &&
+          recObj.latLng != undefined
         ) {
-          console.log("广告限制不为空");
-          media.adLimit = roadGateList[i].notPush.split("、");
+          tempObj.lat = Number(recObj.latLng.split(";")[0]); // 经度
+          tempObj.lng = Number(recObj.latLng.split(";")[1]); // 纬度
         } else {
-          console.log("广告限制为空");
-          media.adLimit = [];
+          console.log("暂无经纬度！！");
         }
-        console.log("media", media);
-        for (let key in media) {
-          if (media[key] == undefined || media[key] == null) {
-            media[key] = "";
+        if (tempObj.rt === "写字楼") {
+          this.selectRec("2");
+        }
+        this.recForm = tempObj;
+        //设置媒体信息
+        let mediaTypeObj = JSON.parse(sessionStorage.getItem("mediaTypeObj"));
+        for (let i = 0; i < this.mediaTypeList.length; i++) {
+          let tempMediaTypeItem = this.mediaTypeList[i];
+          // 将媒体详情中已有类型的媒体合并至mediaTypeList对应的媒体类型下
+          if(mediaTypeObj[tempMediaTypeItem.id]) {
+            let mediaTypeItemDetail = mediaTypeObj[tempMediaTypeItem.id];
+            // 标记原有媒体个数
+            this.mediaTypeList[i].editMediaLength = mediaTypeItemDetail.mediaList.length;
+            mediaTypeItemDetail.mediaList.forEach(mediaItem => {
+              let tempAdSpaceInfos = (mediaItem.adSpaceInfos || []).map(adSpaceItem => {
+                let { adSizeHeight, adSizeWidth, adViewSizeHeight, adViewSizeWidth, asId, asLab } = adSpaceItem;
+                return {
+                  adSizeHeight: adSizeHeight + '', 
+                  adSizeWidth: adSizeWidth + '', 
+                  adViewSizeHeight: adViewSizeHeight + '', 
+                  adViewSizeWidth: adViewSizeWidth + '', 
+                  asId, 
+                  name: asLab
+                }
+              })
+              let tempMediaObj = {
+                adSpaceInfo: tempAdSpaceInfos,
+                mediaName: mediaItem.mTitle || '',
+                assetId: mediaItem.assetTag || '',
+                doorType: mediaItem.mType || '',
+                adDoorLevel: mediaItem.grade || '',
+                mImg: mediaItem.mImg || '',
+                updataImg: []
+              };
+              if (mediaItem.mImg) {
+                let imgArr = [];
+                if (mediaItem.mImg.includes(";")) {
+                  imgArr = mediaItem.mImg.split(";");
+                } else {
+                  imgArr = mediaItem.mImg.split(",");
+                }
+                for (let ikey of imgArr) {
+                  tempMediaObj.updataImg.push({
+                    name: tempMediaObj.mediaName + i,
+                    url: ikey,
+                  });
+                }
+              }
+              this.mediaTypeList[i].mediaList.push({
+                text: (tempMediaTypeItem.name || '媒体') + ++this.mediaTypeList[i].ADTitleIndex,
+                isAssetIdError: false, // 资源编号重名信息
+                classified: mediaItem.classified,
+                mid: mediaItem.mID,
+                assetIdCommentData: {
+                  // 资源编号重名信息
+                  resName: "",
+                  mediaName: "",
+                  updateTime: "",
+                },
+                mediaForm: tempMediaObj
+              });
+            })
           }
         }
-        this.roadGateMedia[i].roadGateForm = media;
+        console.log(" 编辑状态媒体数据", this.mediaTypeList);
+        if (this.$route.query.add) {
+          // 来源于点击添加媒体
+          this.scrollBottom();
+        }
+        // 清除表单校验
+        this.clearFromValidate();
+      } else {
+        this.$router.push("./mediaInput");
+        this.pathHaveEdit = false;
       }
+      this.constructResImg(); // 组装要显示的资源图片
     },
     // 组装要显示的资源图片
     constructResImg() {
@@ -3646,7 +2650,6 @@ export default {
       //     hn      int             小区户数
       let uid = this.sessionData.uID;
       this.recForm.uid = uid;
-      // let rID = sessionStorage.getItem('resID')
       let recObj = this.recForm;
       console.log("recObj", recObj);
       let SetResCTObj = {
@@ -3680,7 +2683,6 @@ export default {
         greenPercentage: recObj.greenPercentage || "", // 绿化率
         ownershipPeriod: recObj.ownershipPeriod || "", // 产权年限
         developer: recObj.developer || "", // 开发商
-        // propertyManagement : resData.propertyManagement || '',       // 物业公司
         managementFee: recObj.managementFee || "", // 物业费
         salesOfficeAdd: recObj.salesOfficeAdd || "", // 售楼地址
         preSalePermit: recObj.preSalePermit || "", // 预售许可证
@@ -3710,36 +2712,7 @@ export default {
         console.log("修改资源信息", res);
         if (res.data.SysCode == 200200) {
           // 设置资源图片信息
-          console.log(
-            "m_boolean",
-            this.m_boolean,
-            "rt_boolean",
-            this.rt_boolean
-          );
-          if (this.m_boolean.flag) {
-            this.postAdDoorData();
-          }
-          if (this.rt_boolean.flag) {
-            this.postRoadGateData();
-          }
-          if (
-            this.arrMedia.length > this.editMediaLength ||
-            this.roadGateMedia.length > this.editRoadGateLength
-          ) {
-            console.log(
-              "广告门",
-              this.arrMedia.length,
-              this.editMediaLength,
-              "道闸",
-              this.roadGateMedia.length,
-              this.editRoadGateLength
-            );
-            this.creadMediaFun(
-              this.editMediaLength,
-              this.editRoadGateLength,
-              "edit"
-            );
-          }
+          this.postEditAdDoorData();
         } else {
           if (res.data.SysCode == 100302 || res.data.MSG === "登陆超时") {
             this.Editloading.close();
@@ -3750,183 +2723,95 @@ export default {
         }
       });
     },
-    // 提交编辑后的广告门信息
-    postAdDoorData() {
-      let mediaArr = this.arrMedia;
-      let mIDArr = [];
-      for (let i = 0; i < mediaArr.length; i++) {
-        console.log("下标", i, "this.editMediaLength", this.editMediaLength);
-        let tempObj = mediaArr[i].mediaForm;
-        if (i < this.editMediaLength) {
-          if (tempObj.assetId === null || tempObj.assetId === undefined) {
-            tempObj.assetId = "";
-          }
-          let temp_media = {
-            uid: this.sessionData.uID,
-            mid: tempObj.mid,
-            mtitle: tempObj.mediaName,
-            adsize: tempObj.adSizeW + "*" + tempObj.adSizeH,
-            adviewsize: tempObj.visualW + "*" + tempObj.visualH,
-            notpush: tempObj.adLimit.join("、"),
-            assettag: tempObj.assetId,
-            mtype: tempObj.doorType,
-            mrk: tempObj.mediaRemark || "",
-            mImg: tempObj.mImg || "",
-            grade: tempObj.adDoorLevel || "",
-          };
-
-          console.log("更新媒体temp_media", temp_media);
-          if (tempObj.mstate === "正常") {
-            tempObj.mstate = "1";
-          } else if (tempObj.mstate === "禁用" || tempObj.mstate === "禁止") {
-            tempObj.mstate = "0";
-          } else if (tempObj.mstate === "待安装") {
-            tempObj.mstate = "2";
-          } else if (tempObj.mstate === "待维修") {
-            tempObj.mstate = "3";
-          }
-          tempObj.mstate = tempObj.mstate.split("")[0];
-          let mParams = {
-            uid: this.sessionData.uID,
-            token: this.sessionData.token,
-            service: "SetMediaInfo",
-            data: temp_media,
-          };
-          api.postApi_new(this.apiVar.Media, mParams).then((res) => {
-            console.log("广告门修改", res);
-            if (res.data.SysCode == 200200) {
-              mIDArr.push(res.data.data.mID);
-              if (i >= mediaArr.length - 1) {
-                let timer = setTimeout(() => {
-                  this.pushResMediaToWydt(mIDArr);
-                  clearTimeout(timer);
-                }, 500);
-                this.Editloading.close();
-                sessFun.messageFun("success", "媒体保存成功");
-                this.$router.push("./mediaDetail");
+    // 提交编辑后的广告门信息,媒体创建时传广告位id,编辑的媒体传点位id
+    postEditAdDoorData() {
+      let resId = sessionStorage.getItem("resID");
+      let editMediaParams = [];
+      let newMediaParams = [];
+      const mediaTypeLength = this.mediaTypeList.length;
+      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
+        let tempMediaList = mediaTypeItem.mediaList;
+        let mediaLength = tempMediaList.length;
+        mediaTop:
+        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+          let mediaItem = tempMediaList[mediaIndex];
+          let tempMediaForm = mediaItem.mediaForm;
+          if(mediaIndex < mediaTypeItem.editMediaLength) {
+            // 编辑中的媒体
+            let tempAdSpaceInfo = [];
+            for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
+              let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex];
+              let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, asId } = adSpaceItem
+              if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && asId) {
+                tempAdSpaceInfo.push({
+                  asId,
+                  adSizeWidth,
+                  adSizeHeight,
+                  adViewSizeWidth,
+                  adViewSizeHeight
+                })
+              } else {
+                break mediaTop;
               }
-            } else {
-              sessFun.messageFun("warning", tempObj.mediaName + "保存失败");
             }
-          });
-        } else {
-          console.log("编辑时创建媒体的下标", i);
-          this.Editloading.close();
-          break;
-        }
-      }
-    },
-    // 提交编辑后的道闸媒体信息
-    postRoadGateData() {
-      let mediaArr = this.roadGateMedia;
-      let mIDArr = [];
-      for (let i = 0; i < mediaArr.length; i++) {
-        console.log(
-          "下标",
-          i,
-          "this.editRoadGateLength",
-          this.editRoadGateLength
-        );
-        let tempObj = mediaArr[i].roadGateForm;
-        if (i < this.editRoadGateLength) {
-          if (tempObj.assetId === null || tempObj.assetId === undefined) {
-            tempObj.assetId = "";
-          }
-          let temp_media = {
-            uid: this.sessionData.uID,
-            mid: tempObj.mid,
-            mtitle: tempObj.mediaName,
-            notpush: tempObj.adLimit.join("、"),
-            assettag: tempObj.assetId,
-            mtype: tempObj.doorType,
-            mrk: tempObj.mediaRemark === "" ? "暂无备注" : tempObj.mediaRemark,
-            mimg: "",
-            picSize: tempObj.visualW + "*" + tempObj.visualH,
-            lightBoxSize: tempObj.LBSizeW + "*" + tempObj.LBSizeH,
-          };
-          console.log("更新媒体temp_media", temp_media);
-          if (tempObj.mstate === "正常") {
-            tempObj.mstate = "1";
-          } else if (tempObj.mstate === "禁用" || tempObj.mstate === "禁止") {
-            tempObj.mstate = "0";
-          } else if (tempObj.mstate === "待安装") {
-            tempObj.mstate = "2";
-          } else if (tempObj.mstate === "待维修") {
-            tempObj.mstate = "3";
-          }
-          tempObj.mstate = tempObj.mstate.split("")[0];
-          let mParams = {
-            uid: this.sessionData.uID,
-            token: this.sessionData.token,
-            service: "SetMediaInfo",
-            data: temp_media,
-          };
-          api.postApi_new(this.apiVar.Media, mParams).then((res) => {
-            console.log("道闸修改", res);
-            if (res.data.SysCode == 200200) {
-              mIDArr.push(res.data.data.mID);
-              if (i >= mediaArr.length - 1) {
-                let timer = setTimeout(() => {
-                  this.pushResMediaToWydt(mIDArr);
-                  clearTimeout(timer);
-                }, 500);
-                this.Editloading.close();
-                sessFun.messageFun("success", "媒体保存成功");
-                this.$router.push("./mediaDetail");
-              }
-            } else {
-              sessFun.messageFun("warning", tempObj.mediaName + "保存失败");
+            if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+              // 单个媒体下所有广告位验证通过
+              let obj = {
+                mediaId: mediaItem.mid,
+                name: tempMediaForm.mediaName || '',
+                assetTag: tempMediaForm.assetId,
+                deviceType: tempMediaForm.doorType || '',
+                mediaPicture: tempMediaForm.mImg || '',
+                grade: tempMediaForm.adDoorLevel || '',
+                adSpaceInfo: tempAdSpaceInfo
+              };
+              editMediaParams.push(obj);
             }
-          });
-        } else {
-          console.log("编辑时创建媒体的下标", i);
-          this.Editloading.close();
-          break;
-        }
-      }
-    },
-    // 修改媒体状态
-    editMState(mid, mstate, type, index) {
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "CtrlMedia",
-        data: {
-          uid: this.sessionData.uID,
-          mid: mid,
-          mstate: mstate,
-        },
-      };
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("修改媒体状态", res);
-        if (res.data.SysCode === 200200 || res.data.MSG === "操作成功") {
-          // 如果编辑时原来状态为已拆除，则把已拆除的媒体状态去掉
-          // 广告门
-          if (type === "media") {
-            let mediaObj = JSON.parse(sessionStorage.getItem("mediaList"));
-            mediaObj[index].mState = 1;
-            sessionStorage.setItem("mediaList", JSON.stringify(mediaObj));
           } else {
-            // 道闸
-            let roadGateList = JSON.parse(
-              sessionStorage.getItem("roadGateList")
-            );
-            roadGateList[index].mState = 1;
-            sessionStorage.setItem("mediaList", JSON.stringify(roadGateList));
+            // 新建中的媒体
+            let tempAdSpaceInfo = [];
+            for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
+              let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex];
+              let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, id: adSpaceId } = adSpaceItem;
+              if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && adSpaceId) {
+                tempAdSpaceInfo.push({
+                  adSpaceId,
+                  adSizeWidth,
+                  adSizeHeight,
+                  adViewSizeWidth,
+                  adViewSizeHeight
+                })
+              } else {
+                break mediaTop;
+              }
+            }
+            if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+              // 单个媒体下所有广告位验证通过
+              let obj = {
+                resId,
+                name: tempMediaForm.mediaName || '',
+                mediaTypeId: mediaTypeItem.id,
+                assetTag: tempMediaForm.assetId,
+                deviceType: tempMediaForm.doorType || '',
+                mediaPicture: tempMediaForm.mImg || '',
+                adSpaceInfo: tempAdSpaceInfo
+              };
+              newMediaParams.push(obj);
+            }
           }
-          this.editFun();
-
-          // this.editFun()
-          sessFun.messageFun("success", "修改成功");
-        } else if (
-          res.data.SysCode === 200302 ||
-          res.data.MSG === "广告位已被占用"
-        ) {
-          sessFun.messageFun("warning", res.data.MSG);
-        } else {
-          sessFun.messageFun("warning", "状态更改失败");
         }
-      });
+      }
+      if (editMediaParams.length) {
+        this.batchUpdateApi(editMediaParams);
+      } else {
+        console.log("媒体编辑数据为空");
+      }
+      if (newMediaParams.length) {
+        this.batchCreateApi(newMediaParams, true);
+      } else {
+        console.log("媒体数据为空");
+      }
     },
     // 取消
     clearData() {
@@ -4138,9 +3023,8 @@ export default {
 }
 
 /deep/ .el-form-item.is-required .el-form-item__label:before {
-  margin-right: -6px !important;
-  position: relative;
-  left: 60px;
+  position: absolute;
+  right: 0px;
 }
 
 /deep/ .el-form-item.floor_house_item.is-required .el-form-item__label:before {
@@ -4261,14 +3145,12 @@ export default {
 /*新增媒体*/
 .add_media_btn {
   box-sizing: border-box;
-  /*width: 100%;*/
   height: 32px;
   border: 1px dashed #d9d9d9;
   border-radius: 4px;
   text-align: center;
   line-height: 32px;
   cursor: pointer;
-  /*margin-top: 10px;*/
   margin: 10px 32px 0;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.65);
@@ -4278,6 +3160,7 @@ export default {
   display: none;
 }
 /deep/ .el-form-item__label {
+  position: relative;
   float: none;
   line-height: 32px;
   color: rgba(0, 0, 0, 0.85);
@@ -4311,8 +3194,6 @@ export default {
   text-align: center;
 }
 /*地图弹出框*/
-.map_dialog {
-}
 /deep/ .map_dialog .el-dialog__header {
   text-align: left;
 }
@@ -4350,30 +3231,6 @@ export default {
 
 /deep/ .el-input-number .el-input__inner {
   text-align: left !important;
-}
-
-/*拆除*/
-/deep/ .mStatueDialog {
-  width: 285px;
-}
-
-/deep/ .mStatueDialog h4 {
-  margin: 12px 0;
-}
-
-/deep/ .mStatueDialog .el-dialog__body {
-  padding: 0 20px 10px;
-}
-
-.dismantle_title {
-  font-size: 16px;
-  color: #333;
-  font-weight: 600;
-}
-
-.dismantle_title .el-icon-question {
-  font-size: 21px;
-  color: #faad14;
 }
 
 .push_map_box_p {

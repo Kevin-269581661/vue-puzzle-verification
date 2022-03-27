@@ -1685,6 +1685,7 @@
                     this.planForm.ownerSales = this.BDData.realName
                     this.BDData.uid = sess.uID
                     this.BDData.uType = sess.uType
+                    this.BDData.asrID = sess.asrID
                     this.isBD = true
                     this.getCityList()      // 获取权限下的城市列表
                     this.Get_cName()
@@ -2892,11 +2893,11 @@
                         if (key.value == val) {
                             this.planForm.realNamesName = key.label
                             this.BDData.uType = key.uType
+                            this.BDData.asrID = key.asrID
                             break
                         }
                     }
                     this.BDData.uid = val
-                    // console.log('----',this.planForm.realNamesName)
                     this.getCityList()
                     this.Get_cName()
                 } else {
@@ -2921,6 +2922,7 @@
                                     label: key.realName + '(' + key.sName + ')',
                                     value: key.uID,
                                     uType: key.uType,
+                                    asrID: key.asrID,
                                 })
                             }
                             this.salerList = arr
@@ -3078,7 +3080,11 @@
             },
             // 根据公司id获取媒体类型
             getMediaTypesByCompany() {
-                api.getApi("/addsp/api/v1/company/mediaTypes", { companyIds: this.planForm.pointOfAsrIDs.join(',') }).then(res => {
+                let selectedAsrIds = this.planForm.pointOfAsrIDs.join(',')
+                if(!selectedAsrIds) {
+                    selectedAsrIds = this.BDData.asrID + ''
+                }
+                api.getApi("/addsp/api/v1/company/mediaTypes", { companyIds: selectedAsrIds }).then(res => {
                     if (res.data.SysCode == 200200) {
                         this.mediaTypeObjectArr = res.data.data || []
                         if(this.mediaTypeObjectArr.length) {

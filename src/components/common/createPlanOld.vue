@@ -5346,7 +5346,7 @@
             flex-flow: row wrap;
             overflow: auto;
             .space-item + .space-item {
-                margin-left: 12px;
+                margin-right: 12px;
             }
         }
     }
@@ -6398,22 +6398,22 @@
         border: 1px solid #409EFF;
         color: #409EFF;
     }
-
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell {
-        width: 110px;
+        min-width: 110px;
+        height: auto;
     }
 
     /deep/ .el-table .el-table-column-resName .cell {
-        width: 200px;
+        min-width: 200px;
     }
 
     /deep/ .el-table .el-table-column-mediaName .cell {
-        width: 140px;
+        min-width: 140px;
     }
 
     /deep/ .el-table .el-table-column-mediaRemark .cell {
-        width: 140px;
+        min-width: 140px;
     }
 
     .ad_pagination /deep/ .el-pagination__sizes .el-input__inner {

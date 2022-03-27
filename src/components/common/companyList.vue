@@ -302,7 +302,7 @@ export default {
     // 获取所有媒体类型
     getMediaTypes() {
       api
-        .getApi("http://192.168.1.143:8026/addsp/api/v1/mediaTypes")
+        .getApi("/addsp/api/v1/mediaTypes")
         .then((res) => {
           if (res.data.SysCode === 200200) {
             console.log("获取所有媒体类型", res.data);
@@ -432,7 +432,7 @@ export default {
           };
           api
             .postApi_json(
-              "http://192.168.1.143:8026/addsp/api/v1/company/create",
+              "/addsp/api/v1/company/create",
               info
             )
             .then((res) => {
@@ -458,7 +458,7 @@ export default {
           };
           api
             .postApi_json(
-              "http://192.168.1.143:8026/addsp/api/v1/company/update",
+              "/addsp/api/v1/company/update",
               info
             )
             .then((res) => {

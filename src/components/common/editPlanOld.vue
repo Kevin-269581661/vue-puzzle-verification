@@ -383,29 +383,29 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="巡点问题"
                                     align="right"
                                     min-width="110"
-                                    show-overflow-tooltip
-                                    v-if="customPermission.patrolPermission">
+                                    show-overflow-tooltip>
                                     <template slot-scope="scope">
                                         {{ scope.row.remark || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="通行情况"
                                     align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission">
+                                    min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.trafficState || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission==2"
                                     label="通电情况"
                                     align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission==2">
+                                    min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.electrifyState || '--' }}
                                     </template>
@@ -537,10 +537,10 @@
                         </div>
                         <!--购物车-->
                         <el-dialog title="已选点位" :visible.sync="dialogTableVisible"
-                                   :close-on-click-modal="false"
-                                   :close-on-press-escape="false"
-                                   :before-close="shopingBeforeClose"
-                                   custom-class="custom-dialog-wrapper shop-cart-wrapper">
+                            :close-on-click-modal="false"
+                            :close-on-press-escape="false"
+                            :before-close="shopingBeforeClose"
+                            custom-class="custom-dialog-wrapper shop-cart-wrapper">
                             <template>
                                 <div class="table_wrap car-list" style="margin-top: 60px"
                                     v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
@@ -1189,6 +1189,8 @@
                 resType: ['社区', '写字楼'],
                 // step2  1:社区 0:写字楼
                 recType: 1,
+                // 媒体类型
+                currentMediaType: '',
                 // 动画起始坐标
                 shopXY: {x: '', y: ''},
                 // 动画效果的显示隐藏
@@ -1267,7 +1269,6 @@
                 //搜索框
                 searchInput: '',
                 planSelect: '',
-                // mState: '',                //媒体状态
                 activeGrade: '',           // 媒体等级
                 active: 1,                  //步骤
                 pickerOptions: {
@@ -1351,7 +1352,6 @@
                 mStateIndex: 0,               // 切换媒体状态时，如果状态为1(正常)则进行滚动加载，mStateIndex记录下标
                 editApid: '',                  // 编辑方案的id
                 editApRemark: [],              // 编辑方案之前的备注信息，[{rid:440100,remark:''}]
-                // ADLockNum: 0,                  // 被锁点位的数量
                 mapADList: [],                 // 地图选择的点位数据
                 mapParams: {},                  // 记录当前地图选点时的参数，包括排期、城市名和rid
                 mapBtn: true,                   // 获取地图选点数据的按钮，默认不可点击
@@ -1416,7 +1416,6 @@
                 total: 1,                    // 总页数
                 pageSize: 20,                    //每页条数
                 getAdsParamsData: {},    //　获取点位列表的参数data
-                currentMediaType: '',   //
                 pdidList: [],           // 方案对应的dpid
                 IsAll: false,           //当前是否为全选状态
                 isShowAll: false,       // 控制表头显示时的过渡效果
@@ -1629,7 +1628,6 @@
                 this.dialogVisible();
             },
             // 根据导入返回的数据,设置购物车所需要的数据格式
-            // TODO
             setShopDataByImport(arr){
                 console.log('方案导入返回的数据---', arr);
                 for(let data of arr){
@@ -1661,12 +1659,11 @@
                             address: info.resAddress || '',
                             dNum: info.dNum || '',       // 出入口数
                             adLimit: info.notPush || '',
-                            checkBox: {A: false, B: false, ABC: false},
                             connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                             connID: info.connID || '',        // 连排门id
                             industryInfos: info.industryInfos || [],   // 同行业资源回避
                             mediaLevel: info.grade || '',
-                            adPrice: info.asPrice / 700 || 0,
+                            adPrice: (info.asPrice||0) / 700,
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
                             province: info.province,
@@ -1679,31 +1676,6 @@
                             importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
                         }
                         this.isHaveDiffPush(importInfo);
-                        /* if(info.mediaTypeName == '广告门'){
-                            let asLabsArr = importInfo.asLabs.split(',');
-                            let asIDArr = importInfo.asIDs.toString().split(',');
-                            for (let n = 0; n < asLabsArr.length; n++) {
-                                if (i === 0 && asLabsArr[n] === 'A') {
-                                    importInfo.checkBox.A = true;
-                                    importInfo.A_B = 'A';
-                                    importInfo.asID = asIDArr[n];
-                                    this.isHaveDiffPush(importInfo);
-                                    break;
-                                } else if (i === 1 && asLabsArr[n] === 'B') {
-                                    importInfo.checkBox.B = true;
-                                    importInfo.A_B = 'B';
-                                    importInfo.asID = asIDArr[n];
-                                    this.isHaveDiffPush(importInfo);
-                                    break;
-                                }
-                            }
-                        }else if(info.mediaTypeName =='道闸'){
-                            importInfo.checkBox.ABC = true;
-                            importInfo.A_B = 'ABC';
-                            importInfo.asID = info.asID
-                            this.isHaveDiffPush(importInfo);
-                            break;
-                        } */
                     }
                 }
                 sessFun.messageFun('success','成功导入'+arr.length+'条数据')
@@ -1959,7 +1931,7 @@
                     connID: info.connID || '',        // 连排门id
                     industryInfos: info.industryInfos || [],   // 同行业资源回避
                     mediaLevel: info.grade || '',
-                    adPrice: info.asPrice / 700 || 0,
+                    adPrice: (info.asPrice || 0) / 700,
                     asName: info.asName || '',         // 点位所属公司名称
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
@@ -2142,7 +2114,6 @@
                 this.currPageSelect = 0
                 this.IsAll = false
                 this.pageNo = val
-                // this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdList()
             },
             // 每页条数切换
@@ -2229,7 +2200,7 @@
                 }
                 console.log('当前页码',this.pageNo,'当前时间',this.dateInput)
                 this.loading = true
-                this.getAdsParamsData.prID = this.city[0].rid
+                this.getAdsParamsData.prID = this.city[this.activeIndex].rid,
                 this.getAdsParamsData.act = 1
                 this.getAdsParamsData.resType = this.recType,
                 this.getAdsParamsData.mediaTypeId = this.currentMediaType,
@@ -2322,7 +2293,7 @@
                     // if (key.mediaTypeName === '道闸') {
                     //     adObj.adPrice = key.asPrice / 100
                     // } else {
-                        if (key.asPrice) {
+                        if (key.asPrice !== null || key.asPrice !== undefined) {
                             adObj.adPrice = key.asPrice / 700
                         } else {
                             if (key.grade === 'A') {
@@ -2587,7 +2558,7 @@
                                 connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                                 industryInfos : key.industryInfos || [],
                                 mediaLevel: key.grade || '',
-                                adPrice: key.asPrice / 700 || 0,
+                                adPrice: (key.asPrice || 0) / 700,
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
                                 province: key.province,
@@ -2656,13 +2627,11 @@
             },
             // tab切换城市
             activeCity(item, index) {
-                console.log('item',item,'index',index)
                 this.activeIndex = index
                 this.activeRName = item.rName
                 this.activeCityData = item
                 this.areaName = '全市'
                 this.getAdsParamsData.area = ''
-                this.getAdsParamsData.prID = this.city[index].rid
                 this.setPageNoAndTableData()
                 this.getAdList()
             },
@@ -2913,7 +2882,7 @@
                 }
             },
             // 表头全选
-            allCheckboxAds(){
+            allCheckboxAds() {
                 if(this.IsAll){
                     this.allSelectAdsBtn()
                 }else{
@@ -2921,7 +2890,7 @@
                 }
             },
             // 表头勾选重置
-            allCheckboxUpdata(){
+            allCheckboxUpdata() {
                 if( this.shopingList.length <= 0){
                     this.IsAll = false
                 }else{
@@ -2943,17 +2912,20 @@
                 this.shopShow_hide('all')
             },
             //取消全选
-            cancleSelectAds(){
-                console.log('取消全选',this.planList,this.currPageSelect)
+            cancleSelectAds() {
                 for(let mediaItem of this.planList) {
-                    let shopingLength = this.shopingList.length
-                    for(let i = 0; i < shopingLength;) {
-                        if(mediaItem.mID === this.shopingList[i].mID){
-                            this.shopingList.splice(i,1)
-                        } else {
-                            i++
+                    (mediaItem.adsList || []).forEach(adSpaceItem => {
+                        if(adSpaceItem.checkFlag && adSpaceItem.checkBox) {
+                            for(let i = 0; i < this.shopingList.length;) {
+                                if(adSpaceItem.asID === this.shopingList[i].asID) {
+                                    this.shopingList.splice(i,1);
+                                    adSpaceItem.checkBox = false;
+                                } else {
+                                    i += 1;
+                                }
+                            }
                         }
-                    }
+                    });
                 }
                 this.currPageSelect = 0
             },
@@ -2963,14 +2935,15 @@
                 for (let i = 0; i < planListLength; i++) {
                     let mediaInfo = this.planList[i];
                     (mediaInfo.adsList || []).forEach(adSpaceItem => {
-                        if(adSpaceItem.checkFlag) {
+                        if(adSpaceItem.checkFlag && !adSpaceItem.checkBox) {
+                            adSpaceItem.checkBox = true;
                             let selectInfo = this.setShopingTable(mediaInfo, adSpaceItem);
                             this.currPageSelect++;
                             this.shopingList.push(selectInfo);
                         }
                     });
                 }
-                console.log('广告门全选时购物车', this.shopingList)
+                console.log('全选时购物车', this.shopingList)
             },
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
@@ -3237,7 +3210,6 @@
                             }
                         }
                         let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
-                        console.log('pdid',pdid)
                         cityDetailList.push({
                             "pdID": pdid ? pdid : '',
                             "pdRemark": key.priceMsg[i].remark || '',
@@ -3254,7 +3226,7 @@
                             "pdTotal": Number((key.priceMsg[i].cash * 100).toFixed(0)),
                             "pdSendFee": Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
                             "pdOtherFee": Number((key.priceMsg[i].other * 100).toFixed(0)),
-                            "pdType": i === 'adDoor' ? 0 : 1,
+                            "mediaTypeId": i,
                             "abList": [],
                         })
                     }
@@ -3277,12 +3249,8 @@
                             if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
                                 adsData.recommendReason = key.recommendReason || '';  //  亲粤邻定制：推荐理由
                             }
-                            if (key.mediaTypeName === '广告门' && detailKey.pdType === 0) {
+                            if (key.mediaTypeId*1 === detailKey.mediaTypeId*1) {
                                 detailKey.abList.push(adsData)
-                                break
-                            } else if (key.mediaTypeName === '道闸' && detailKey.pdType === 1) {
-                                detailKey.abList.push(adsData)
-                                break
                             }
                         }
                     }
@@ -3324,9 +3292,9 @@
             getpdidByCityAndMType(mType, city, asrID) {
                 console.log('this.pdidList', this.pdidList, mType, city, asrID)
                 for (let key of this.pdidList) {
-                    if (mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID) {
+                    if (key.city === city && asrID == key.asrID) {
                         return key.pdID
-                    } else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID) {
+                    } else if (key.city === city && asrID == key.asrID) {
                         return key.pdID
                     }
                 }
@@ -3433,49 +3401,31 @@
                         rid: key.rid,
                         asrID: key.asrID,
                         asName: key.asName,
-                        priceMsg:{
-                            adDoor:{
-                                schedules: [],                // 排期
-                                GMDate: 0,                   // 赠送面.天
-                                LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
-                                discount: '100',            // 广告费折扣
-                                advertyPrice: 0,            // 广告费
-                                ADNumber: 0,                // 广告画数量
-                                makeDiscount: '100',        // 制作费折扣
-                                MPrice: 100.00,             // 制作费单价
-                                reaPrice: 0,                // 广告费每次修改前的价格
-                                oldPrice: 0,                //  广告费初始价格
-                                MReaPrice: 0,              // 制作费原价
-                                makePrice: 0,           // 制作费
-                                ADPrice: 0,             // 刊例价(面/周)
-                                tfl: 0,                    //投放量
-                                cash: 0,               // 现金结算
-                                zyzh: 0,                   // 资源置换
-                                other: 0,                  // 其他费用
-                                total: 0,
-                                remark: '',                 //备注信息
-                            },
-                            roadGate:{
-                                schedules: [],                // 排期
-                                GMDate: 0,                   // 赠送面.天
-                                discount: '100',           // 广告费折扣
-                                advertyPrice: 0,             // 广告费
-                                ADNumber: 0,                 // 广告画数量
-                                makeDiscount: '100',      // 制作费折扣
-                                MPrice: 300.00,                // 制作费单价
-                                reaPrice: 0,                // 广告费每次修改前的价格
-                                oldPrice: 0,                 //  广告费初始价格
-                                MReaPrice: 0,              // 制作费原价
-                                makePrice: 0,              // 制作费
-                                ADPrice: 0,                // 刊例价(面/周)
-                                tfl: 0,                    //投放量
-                                cash: 0,                   // 现金结算
-                                zyzh: 0,                   // 资源置换
-                                other: 0,                  // 其他费用
-                                total: 0,
-                            },
-                        },
+                        priceMsg: {}
                     }
+                    this.typeShopList.forEach(mediaTypeItem => {
+                        quotationObj.priceMsg[mediaTypeItem.type] = {
+                            schedules: [],                // 排期
+                            GMDate: 0,                   // 赠送面.天
+                            LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
+                            discount: 100,            // 广告费折扣
+                            advertyPrice: 0,            // 广告费
+                            ADNumber: 0,                // 广告画数量
+                            makeDiscount: 100,        // 制作费折扣
+                            MPrice: 100.00,             // 制作费单价
+                            reaPrice: 0,                // 广告费每次修改前的价格
+                            oldPrice: 0,                //  广告费初始价格
+                            MReaPrice: 0,              // 制作费原价
+                            makePrice: 0,           // 制作费
+                            ADPrice: 0,             // 刊例价(面/周)
+                            tfl: 0,                    //投放量
+                            cash: 0,               // 现金结算
+                            zyzh: 0,                   // 资源置换
+                            other: 0,                  // 其他费用
+                            total: 0,
+                            remark: '',                 //备注信息
+                        }
+                    })
                     quotationArr.push(quotationObj)
                 }
                 this.quotation = quotationArr
@@ -3523,7 +3473,6 @@
                         }
                     }
                 }
-                console.log('shopingList0000000', this.shopingList, adSpaceGroupByMediaType)
                 return Object.entries(adSpaceGroupByMediaType).map(([key, value]) => value);
             },
             // 切换tab
@@ -3537,7 +3486,6 @@
                 if(this.typeShopList[this.activeName]) {
                     this.shopShowList = this.typeShopList[this.activeName].asidList || [];
                 }
-                console.log('this.shopShowList--',this.typeShopList, this.activeName)
             },
             // 获取事件
             getEventList(){
@@ -3777,7 +3725,7 @@
                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                     connID: mediaInfo.connID,        // 连排门id
                     industryInfos: mediaInfo.industryInfos,   // 同行业资源回避
-                    adPrice: adSpaceInfo.adPrice,               // 点位价格
+                    adPrice: adSpaceInfo.adPrice || 0,               // 点位价格
                     mediaLevel: mediaInfo.mediaLevel,        // 媒体等级
                     asrID: mediaInfo.asrID,                // 所属公司id
                     asName: mediaInfo.asName,                // 所属公司名称
@@ -4018,20 +3966,18 @@
                         resType: key.resType,
                         resID: key.resID,
                         asID: key.asID,
-                        asLabs: key.asLab,
-                        A_B: key.asLab,
+                        asLab: key.asLab,
                         resName: key.resName,
                         city:  this.activeCityData.rName,
                         rid:  this.activeCityData.rid,
                         origin: key.rName,
                         buildType: key.cType,
                         houseNum: key.hNum,
-                        buildPrice: (key.hPrice / 100),
+                        buildPrice: key.hPrice / 100,
                         mediaName: key.mTitle || '',
                         mediaTypeName: key.mediaTypeName,
                         mediaTypeId: key.mediaTypeId,
                         buildNum: key.fNum,
-                        // schedules: this.dateInput[0] + '-' + this.dateInput[1],
                         schedules: key.startDate + '-' + key.endDate,
                         remark: key.remark || "",
                         trafficState: key.trafficState || "",
@@ -4044,12 +3990,11 @@
                         address: key.resAddress || '',
                         dNum: key.dNum || '',              // 出入口数
                         adLimit: key.notPush || '',
-                        checkBox: {A: false, B: false,ABC: false},
                         connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                         connID: key.connID || '',        // 连排门id
                         industryInfos: key.industryInfos || [],   // 同行业资源回避
                         mediaLevel: key.grade || '',
-                        adPrice: key.asPrice / 700 || 0,
+                        adPrice: (key.asPrice || 0) / 700,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
                         province: key.province,
@@ -4081,16 +4026,16 @@
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
                 this.computeMedia_AD('mapAD');
-                this.judgeByselect()
+                this.judgeByselect();
             },
             // 判断点位是否已存在购物车（亲邻地图）
-            qinLinJudgeHaveDiffAD(data,SourceType) {
+            qinLinJudgeHaveDiffAD(data, SourceType) {
                 let ADData = data;
                 let shopArr = this.shopingList;
                 let ifBoolea = true;
                 if (shopArr.length !== 0) {
                     for (let i = 0; i < shopArr.length; i++) {
-                        if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
+                        if (ADData.asID === shopArr[i].asID) {
                             console.log('相同mid,相同面', ADData);
                             let ADScheArr = ADData.schedules.split('-');
                             let shopScheArr = shopArr[i].schedules.split('-');
@@ -4500,19 +4445,17 @@
                 // A面数量、B面数量
                 let adSpaceStatistics = {};
                 for (let key of shopList) {
-                    if(key.mediaTypeName === '广告门'){
-                        // 等级ABC
-                        if(key.mediaLevel === 'A'){
-                            mediaLevelNum.ALevel++
-                        }else if(key.mediaLevel === 'B'){
-                            mediaLevelNum.BLevel++
-                        }else if(key.mediaLevel === 'C'){
-                            mediaLevelNum.CLevel++
-                        }
-                        // A\B面
-                        if(key.asLab) {
-                            adSpaceStatistics[key.asLab] = (adSpaceStatistics[key.asLab] || 0) + 1;
-                        }
+                    // 等级ABC
+                    if(key.mediaLevel === 'A') {
+                        mediaLevelNum.ALevel++
+                    } else if(key.mediaLevel === 'B') {
+                        mediaLevelNum.BLevel++
+                    } else if(key.mediaLevel === 'C') {
+                        mediaLevelNum.CLevel++
+                    }
+                    // A\B面
+                    if(key.asLab) {
+                        adSpaceStatistics[key.asLab] = (adSpaceStatistics[key.asLab] || 0) + 1;
                     }
                     if (!mediaArr.includes(key.mID)) {
                         mediaArr.push(key.mID)
@@ -4621,14 +4564,6 @@
                             for (let data of resultArr) {
                                 let time = this.formatTime(data.pbStar) + "-" + this.formatTime(data.pbEnd);
                                 this.$set(data, "schedules", time);
-                                let checkBox = {A: false, B: false,ABC:false}
-                                if (data.asLab === 'A') {
-                                    checkBox.A = true
-                                } else if (data.asLab === 'B') {
-                                    checkBox.B = true
-                                } else if (data.asLab === 'ABC') {
-                                    checkBox.ABC = true
-                                }
                                 if(data.IsLock.length > 0){
                                     LockNum += 1
                                 }
@@ -4639,7 +4574,7 @@
                                     resID: data.resID,
                                     mID: data.mID,
                                     asID: data.asID,
-                                    asLabs: data.asLab,
+                                    asLab: data.asLab,
                                     lState: data.IsLock ? data.IsLock : '',   // 是否被占
                                     resName: data.resName,
                                     city: data.city,
@@ -4663,8 +4598,6 @@
                                     reference: data.reference || '',         // 地图中心点data
                                     address: data.resAddress || '',
                                     dNum: data.dNum || '',       // 出入口数
-                                    A_B: data.asLab,//data.A_B,
-                                    checkBox: {A:checkBox.A, B:checkBox.B, ABC:checkBox.ABC},
                                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                                     connID: data.connID || '',        // 连排门id
                                     industryInfos: data.industryInfos || [],
@@ -4677,11 +4610,11 @@
                                     notPush: data.notPush,
                                     province: data.province,
                                 }
-                                if (data.mediaTypeName === '道闸') {
-                                    selectInfo.adPrice = data.asPrice / 100
-                                } else {
-                                    if (data.asPrice) {
-                                        selectInfo.adPrice = data.asPrice / 700
+                                // if (data.mediaTypeName === '道闸') {
+                                //     selectInfo.adPrice = data.asPrice / 100
+                                // } else {
+                                    if (data.asPrice === null || data.asPrice === undefined) {
+                                        selectInfo.adPrice = data.asPrice*1 / 700
                                     } else {
                                         if (data.grade === 'A') {
                                             selectInfo.adPrice = 3080 / 7
@@ -4693,7 +4626,7 @@
                                             selectInfo.adPrice = 1900 / 7
                                         }
                                     }
-                                }
+                                // }
                                 shopList.push(selectInfo)
                             }
                             this.shopingList = shopList;
@@ -4923,7 +4856,7 @@
                     }
                     this.searchBtnAbled = false
                 })
-            },
+            }
         }
     }
 </script>

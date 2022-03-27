@@ -6,7 +6,7 @@
         <el-tabs type="border-card">
             <el-tab-pane v-for="(item,index) in quotation" :label="item.asName + '-'+ item.city" :key="index" :index="index" v-model="quotation">
                 <div class="media_price">
-                    <div class="ad_section AdvertDoor">
+                    <div v-for="(mediaTypeItem, mediaTypeKey) in item.priceMsg" :key="mediaTypeKey" class="ad_section AdvertDoor">
                         <el-row>
                             <el-col :span="6">
                                 <h4 style="text-align: left;padding-left: 16px">媒介载体</h4>
@@ -17,7 +17,7 @@
                                     <div class="ad_SM_info">
                                         <h5>排期</h5>
                                         <ul class="SM_info_ul">
-                                            <li v-for="(itemSM,indexSM) in item.priceMsg.adDoor.SM" :key="indexSM">{{itemSM}}</li>
+                                            <li v-for="(itemSM,indexSM) in mediaTypeItem.SM" :key="indexSM">{{itemSM}}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -31,19 +31,19 @@
                                             B级：¥{{item.levelPrice.B}}/面/周 <br>
                                             C级：¥{{item.levelPrice.C}}/面/周 <br>
                                         </p>
-                                        <p v-else>¥{{item.priceMsg.adDoor.ADPrice}}/面/周</p>
+                                        <p v-else>¥{{mediaTypeItem.ADPrice}}/面/周</p>
                                         <h4>制作费单价</h4>
-                                        <p>¥{{item.priceMsg.adDoor.MPrice}}/面</p>
+                                        <p>¥{{mediaTypeItem.MPrice}}/面</p>
                                         <h4>现金金额</h4>
-                                        <p>¥ {{item.priceMsg.adDoor.cash}}</p>
+                                        <p>¥ {{mediaTypeItem.cash}}</p>
                                     </el-col>
                                     <el-col :span="6">
                                         <h4>投放量/赠送</h4>
-                                        <p>{{item.priceMsg.adDoor.tfl}}(面·天)/{{item.priceMsg.adDoor.GMDate}}(面·天)</p>
+                                        <p>{{mediaTypeItem.tfl}}(面·天)/{{mediaTypeItem.GMDate}}(面·天)</p>
                                         <h4>广告面数</h4>
-                                        <p>{{item.priceMsg.adDoor.ADNumber}}面</p>
+                                        <p>{{mediaTypeItem.ADNumber}}面</p>
                                         <h4>置换金额</h4>
-                                        <p>¥ {{item.priceMsg.adDoor.zyzh}}</p>
+                                        <p>¥ {{mediaTypeItem.zyzh}}</p>
                                     </el-col>
                                     <el-col :span="5">
                                         <h4>
@@ -62,11 +62,11 @@
                                                 <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
                                             </el-popover>
                                         </h4>
-                                        <p>{{returnTwoFloat(item.priceMsg.adDoor.discount)}}%</p>
+                                        <p>{{returnTwoFloat(mediaTypeItem.discount)}}%</p>
                                         <h4>制作费折扣</h4>
-                                        <p>{{item.priceMsg.adDoor.makeDiscount}}%</p>
+                                        <p>{{mediaTypeItem.makeDiscount}}%</p>
                                         <h4>其他金额</h4>
-                                        <p>¥{{item.priceMsg.adDoor.other}}</p>
+                                        <p>¥{{mediaTypeItem.other}}</p>
                                     </el-col>
                                     <el-col :span="5">
                                         <h4>
@@ -82,11 +82,11 @@
                                                 <i slot="reference" class="el-icon-question" style="color: #dfdfdf"></i>
                                             </el-popover>
                                         </h4>
-                                        <p>¥ {{item.priceMsg.adDoor.advertyPrice}}</p>
+                                        <p>¥ {{mediaTypeItem.advertyPrice}}</p>
                                         <h4>制作费</h4>
-                                        <p>¥ {{item.priceMsg.adDoor.makePrice}}</p>
+                                        <p>¥ {{mediaTypeItem.makePrice}}</p>
                                         <h4>小计</h4>
-                                        <p>¥{{item.priceMsg.adDoor.total}}</p>
+                                        <p>¥{{mediaTypeItem.total}}</p>
                                     </el-col>
                                     <el-col :span="3">
                                         <template v-if="isDetail">
@@ -99,15 +99,15 @@
                                         </template>
                                         <template v-else>
                                             <h4></h4>
-                                            <p class="changeICon" @click="changePrice('AD','adDoor',item,item.priceMsg.adDoor)"
+                                            <p class="changeICon" @click="changePrice('AD', mediaTypeKey, item, mediaTypeItem)"
                                                >
                                                 <i class="el-icon-edit-outline"></i></p>
                                             <h4></h4>
-                                            <p class="changeICon" @click="changePrice('M','adDoor',item,item.priceMsg.adDoor)"
+                                            <p class="changeICon" @click="changePrice('M', mediaTypeKey, item, mediaTypeItem)"
                                                >
                                                 <i class="el-icon-edit-outline"></i></p>
                                             <h4></h4>
-                                            <p class="changeICon" @click="changePrice('TP','adDoor',item,item.priceMsg.adDoor)"
+                                            <p class="changeICon" @click="changePrice('TP', mediaTypeKey, item, mediaTypeItem)"
                                                >
                                                 <i class="el-icon-edit-outline"></i></p>
                                         </template>
@@ -115,92 +115,7 @@
                                 </el-row>
                             </el-col>
                         </el-row>
-                        <p class="remark">备注：{{item.priceMsg.adDoor.remark}}</p><!--置换物品为线上商城单价为100元的购物卡-->
-                    </div>
-                    <div class="ad_section">
-                        <el-row>
-                            <el-col :span="6">
-                                <h4 style="text-align: left;padding-left: 16px">媒介载体</h4>
-                                <div class="ad_SM">
-                                    <div>
-                                        <img class="ad_rodeGare" src="../../../../static/images/adRodeGare.png"/>
-                                    </div>
-                                    <span>道闸的广告费价格为模糊计算 请以实际合同价格修改广告费</span>
-                                    <div class="ad_SM_info">
-                                        <h5>排期</h5>
-                                        <ul class="SM_info_ul">
-                                            <li v-for="(itemSM,indexSM) in item.priceMsg.roadGate.SM" :key=indexSM>{{itemSM}}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </el-col>
-                            <el-col :span="18">
-                                <el-row class="AdvertDoor_price">
-                                    <el-col :span="5">
-                                        <h4>广告刊例价</h4>
-                                        <p>¥{{item.priceMsg.roadGate.ADPrice}}/面/月</p>
-                                        <h4>制作费单价</h4>
-                                        <p>¥{{item.priceMsg.roadGate.MPrice}}/面</p>
-                                        <h4>现金金额</h4>
-                                        <p>¥ {{item.priceMsg.roadGate.cash}}</p>
-                                    </el-col>
-                                    <el-col :span="6">
-                                        <h4>投放量</h4>
-                                        <p>{{item.priceMsg.roadGate.tfl}}(面·天)</p><!--/{{item.priceMsg.roadGate.GMDate}}(面·天)-->
-                                        <h4>广告面数</h4>
-                                        <p>{{item.priceMsg.roadGate.ADNumber}}面</p>
-                                        <h4>置换金额</h4>
-                                        <p>¥{{item.priceMsg.roadGate.zyzh}}</p>
-                                    </el-col>
-                                    <el-col :span="5">
-                                        <h4>广告费折扣</h4>
-                                        <p>{{returnTwoFloat(item.priceMsg.roadGate.discount)}}%</p>
-                                        <h4>制作费折扣</h4>
-                                        <p>{{item.priceMsg.roadGate.makeDiscount}}%</p>
-                                        <h4>其他金额</h4>
-                                        <p>¥{{item.priceMsg.roadGate.other}}</p>
-                                    </el-col>
-                                    <el-col :span="5">
-                                        <h4>广告费</h4>
-                                        <p>¥{{item.priceMsg.roadGate.advertyPrice}}</p>
-                                        <h4>制作费</h4>
-                                        <p>¥{{item.priceMsg.roadGate.makePrice}}</p>
-                                        <h4>小计</h4>
-                                        <p>¥{{item.priceMsg.roadGate.total}}</p>
-                                    </el-col>
-                                    <el-col :span="3">
-                                        <template v-if="isDetail">
-                                            <h4></h4>
-                                            <p class="changeICon">
-                                            </p>
-                                            <h4></h4>
-                                            <p class="changeICon">
-                                            </p>
-                                            <h4></h4>
-                                            <p class="changeICon">
-                                            </p>
-                                        </template>
-                                        <template  v-else>
-                                            <h4></h4>
-                                            <p class="changeICon" @click="changePrice('AD','roadGate',item,item.priceMsg.roadGate)"
-                                               >
-                                                <i class="el-icon-edit-outline"></i>
-                                            </p>
-                                            <h4></h4>
-                                            <p class="changeICon" @click="changePrice('M','roadGate',item,item.priceMsg.roadGate)"
-                                               >
-                                                <i class="el-icon-edit-outline"></i>
-                                            </p>
-                                            <h4></h4>
-                                            <p class="changeICon" @click="changePrice('TP','roadGate',item,item.priceMsg.roadGate)"
-                                               >
-                                                <i class="el-icon-edit-outline"></i>
-                                            </p>
-                                        </template>
-                                    </el-col>
-                                </el-row>
-                            </el-col>
-                        </el-row>
+                        <p class="remark">备注：{{mediaTypeItem.remark}}</p><!--置换物品为线上商城单价为100元的购物卡-->
                     </div>
                 </div>
             </el-tab-pane>
@@ -211,7 +126,7 @@
             :visible.sync="changeAD"
             width="30%">
             <div class="changeMakePrice">
-                <div  v-show="ADchanger.kind === 'adDoor'">
+                <div>
                     <div v-if="cityPriceData.classified === 1">
                         <p>赠送(面·天)</p>
                         <span class="change_make_price_level">A级：</span>
@@ -226,13 +141,13 @@
                     </div>
                     <div v-else class="NoClassified">
                         <p>赠送(面·天)</p>
-                        <el-input-number v-model="ADchanger.totalGMDate" :min='0' :max="MaxGMDate"controls-position="right" @change="GMDateChange()">
+                        <el-input-number v-model="ADchanger.totalGMDate" :min='0' :max="MaxGMDate" controls-position="right" @change="GMDateChange()">
                         </el-input-number>
                     </div>
                 </div>
                 <p style="margin-top: 12px">
                     广告费
-                    <span v-if="cityPriceData.classified === 1 && ADchanger.kind === 'adDoor'">
+                    <span v-if="cityPriceData.classified === 1">
                         (A级:{{ADchanger.levelNum.ALevel || 0}}面、B级:{{ADchanger.levelNum.BLevel || 0}}面、C级:{{ADchanger.levelNum.Clevel || 0}}面)
                     </span>
                 </p>
@@ -277,8 +192,8 @@
                 <p>其他费用</p>
                 <el-input v-model="totalChange.other" placeholder="请输入内容" @change="checkOther"
                           :clearable="true"></el-input>
-                <p v-show="totalChange.kind === 'adDoor'">结算备注</p>
-                <el-input v-model="totalChange.remark" type="textarea" v-show="totalChange.kind === 'adDoor'"></el-input>
+                <p>结算备注</p>
+                <el-input v-model="totalChange.remark" type="textarea"></el-input>
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="changeBill = false">取 消</el-button>
@@ -310,7 +225,7 @@
                     //     mediaClassifiedPremium: '',      // 溢价信息
                     //     levelPrice: {A: 0, B: 0, C: 0}   // 执行媒体分层时各等级媒体价格
                     //     priceMsg:{
-                    //         adDoor:{
+                    //         [mediaTypeId]:{
                     //             schedules: '',                // 排期
                     //             GMDate: 0,                   // 赠送面.天
                     //             discount: '100',           // 广告费折扣
@@ -330,26 +245,6 @@
                     //             total: 0,
                     //             remark: '', //备注信息
                     //             isAllA: true,               // 是否全为A面
-                    //         },
-                    //         roadGate:{
-                    //             schedules: '',                // 排期
-                    //             GMDate: 0,                   // 赠送面.天
-                    //             discount: '100',           // 广告费折扣
-                    //             advertyPrice: 0,             // 广告费
-                    //             ADNumber: 0,                 // 广告画数量
-                    //             makeDiscount: '100%',      // 制作费折扣
-                    //             MPrice: 100.00,                // 制作费单价
-                    //             reaPrice: 0,                // 广告费每次修改前的价格
-                    //             oldPrice: 0,                 //  广告费初始价格
-                    //             MReaPrice: 0,              // 制作费原价
-                    //             makePrice: 0,              // 制作费
-                    //             ADPrice: 0,                // 刊例价(面/周)
-                    //             tfl: 0,                    //投放量
-                    //             cash: 0,                   // 现金结算
-                    //             zyzh: 0,                   // 资源置换
-                    //             other: 0,                  // 其他费用
-                    //             total: 0,
-                    //         },
                     //     }
                     // },
                 ],
@@ -431,7 +326,7 @@
             console.log('数据',this.quotationData)
             if(this.quotationData.quotation !== undefined){
                 this.quotation = JSON.parse(JSON.stringify(this.quotationData.quotation))
-                // console.log('mounted',this.quotation)
+                console.log('mounted',this.quotation)
                 this.isDetail = this.quotationData.isDetail
                 this.judgeIsDetail()
             }
@@ -517,7 +412,7 @@
                     let obj = {
                         apID: data.apID,
                         pdID: data.pdID,
-                        pdType: data.pdType,
+                        mediaTypeId: data.mediaTypeId,
                         city: data.city,
                         rID: data.rID,
                         asrID: data.asrID,
@@ -535,19 +430,10 @@
                         rID: item.rID,
                         asrID: item.asrID,
                         asName: item.asName,
-                        priceMsg: {
-                            adDoor: {},
-                            roadGate: {},
-                        }
+                        priceMsg: {}
                     };
-                    if (item.pdType == 0) {
-                        dataObj.priceMsg.adDoor = pObj;
-                    } else if (item.pdType == 1) {
-                        dataObj.priceMsg.roadGate = pObj;
-                    }
-                    // console.log('ddd---', dataObj);
+                    dataObj.priceMsg[item.mediaTypeId] = pObj;
                     arr.push(dataObj);
-                    // console.log('dfalsjfla---', arr);
                 }
                 for (let dataItem of arr) {
                     for (let planItem of plandata) {
@@ -558,18 +444,10 @@
                             rID: planItem.rID,
                             asrID: planItem.asrID,
                             asName: planItem.asName || '',
-                            priceMsg: {
-                                adDoor: dataItem.priceMsg.adDoor,
-                                roadGate: dataItem.priceMsg.roadGate,
-                            }
+                            priceMsg: dataItem.priceMsg || {}
                         };
                         if (dataItem.rID == planItem.rID && dataItem.asrID == planItem.asrID) {
-                            if (planItem.pdType == 0) {
-                                dataItem.priceMsg.adDoor = dObj;
-                            } else if (planItem.pdType == 1) {
-                                dataItem.priceMsg.roadGate = dObj;
-                            }
-                            // console.log('dataObj---', dataObj);
+                            dataItem.priceMsg[planItem.mediaTypeId] = dObj;
                         } else {
                             let door = 1;
                             for (let item of arr) {
@@ -578,18 +456,14 @@
                                 }
                             }
                             if (door) {
-                                if (planItem.pdType == 0) {
-                                    dataObj.priceMsg.adDoor = dObj;
-                                } else if (planItem.pdType == 1) {
-                                    dataObj.priceMsg.roadGate = dObj;
-                                }
+                                dataObj.priceMsg[planItem.mediaTypeId] = dObj;
                                 // console.log('data--fda0-dataobj', dataObj);
                                 arr.push(dataObj);
                             }
                         }
                     }
                 }
-                // console.log('报价单arr-----', arr)
+                console.log('报价单arr-----', arr)
                 // 为每一条添加刊例价,广告费折扣百分比，制作费折扣百分比
                 // console.log('城市刊例价adPrice',adPrice)
                 for (let ta of arr) {
@@ -604,14 +478,9 @@
                             ta.levelPrice = {A: adKey.gradeA / 100, B: adKey.gradeB / 100, C: adKey.gradeC / 100}
                             // 获取指定城市下所有点位的广告费
                             let adsPriceData =  this.getAllADSPrice(ta.city,ta.asrID)
-                            // console.log('adsPriceData',adsPriceData)
                             if (adsPriceData) {
                                 for (let key in ta.priceMsg) {
-                                    if (key == 'adDoor') {
-                                        ta.priceMsg[key] = this.discountData(ta.priceMsg.adDoor, adKey, adsPriceData, 0);
-                                    } else if (key == 'roadGate') {
-                                        ta.priceMsg[key] = this.discountData(ta.priceMsg.roadGate, adKey, adsPriceData, 1);
-                                    }
+                                    ta.priceMsg[key] = this.discountData(ta.priceMsg[key], adKey, adsPriceData);
                                 }
                             } else {
                                 console.log('点位暂无数据')
@@ -624,46 +493,30 @@
                     let asidRes = this.getSchedules(this.copydata);
                     // 整合排期信息并且渲染页面
                     this.setSchedules(arr, asidRes);
-                    // console.log('setSchedules------', arr);
                 }
-                // console.log('arr----fda', arr);
                 this.quotation = arr;
             },
-            discountData(data, cityPriceInfo, adsPrice,type){
-                // console.log('折扣计算data:',data,cityPriceInfo,type)
-                if(type == 0){  // 广告门
-                    data.adPrice = cityPriceInfo.adPrice / 100 // 刊例价(面/周)
-                    let realPrice = Math.floor(adsPrice.adDoor * 100) / 100                  // 无折扣原价
-                    let discount = 100
-                    if(cityPriceInfo.classified == 1 && cityPriceInfo.mediaClassifiedCondition &&cityPriceInfo.mediaClassifiedCondition.premium == 1 && adsPrice.isAllA){
-                        // 溢价计算反推
-                        let noPremiumPrice =  data.pdAdFee / 100 / (1 + cityPriceInfo.mediaClassifiedCondition.mediaClassifiedPremium.onlyAPremium / 100)
-                        // console.log('noPremiumPrice',noPremiumPrice)
-                        discount = Math.floor((noPremiumPrice / realPrice ) * 10000 ) / 100
-                    }else{
-                        discount = Math.floor((data.pdAdFee / 100 / realPrice ) * 10000 ) / 100
-                    }
-                    // console.log(data.pdAdFee,realPrice)
-                    // console.log('discount',discount)
-                    let ADMakeDiscount = data.pdNum ? Math.floor(data.pdAdMake/100 /(100 * data.pdNum) * 10000) / 100 : 100;
-                    // let ADMakeDiscount = 0 ? Math.floor(data.pdAdMake/100 /(100 * 0) * 10000) / 100 : 100;
-                    data.discount = isNaN(discount)? 0: (discount).toFixed(2); // 广告费折扣百分比
-                    // console.log('ADMakeDiscount',ADMakeDiscount)
-                    data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
-                    data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0
-                    return data;
-                }else if(type == 1){    // 道闸
-                    data.adPrice = cityPriceInfo.barrierPrice / 100; // 刊例价(面/月)
-                    let ADMakeDiscount = data.pdNum ? Math.ceil(data.pdAdMake/300 /(100 * data.pdNum) *10000) / 100 : 100;
-                    data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
-                    data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0;
-                    return data;
+            discountData(data, cityPriceInfo, adsPrice){
+                data.adPrice = cityPriceInfo.adPrice / 100 // 刊例价(面/周)
+                let realPrice = Math.floor(adsPrice.adDoor * 100) / 100                  // 无折扣原价
+                let discount = 100
+                if(cityPriceInfo.classified == 1 && cityPriceInfo.mediaClassifiedCondition &&cityPriceInfo.mediaClassifiedCondition.premium == 1 && adsPrice.isAllA){
+                    // 溢价计算反推
+                    let noPremiumPrice =  data.pdAdFee / 100 / (1 + cityPriceInfo.mediaClassifiedCondition.mediaClassifiedPremium.onlyAPremium / 100)
+                    discount = Math.floor((noPremiumPrice / realPrice ) * 10000 ) / 100
+                }else{
+                    discount = Math.floor((data.pdAdFee / 100 / realPrice ) * 10000 ) / 100
                 }
+                let ADMakeDiscount = data.pdNum ? Math.floor(data.pdAdMake/100 /(100 * data.pdNum) * 10000) / 100 : 100;
+                data.discount = isNaN(discount)? 0: (discount).toFixed(2); // 广告费折扣百分比
+                data.makeDiscount = isNaN(ADMakeDiscount)? 0: (ADMakeDiscount).toFixed(2); // 制作费折扣百分比
+                data.ADPrice = data.adPrice ? this.priceFormat(data.adPrice) : 0
+                return data;
             },
             // 获取指定城市下所有点位的广告费
             getAllADSPrice(cityName,asrID){
                 if(this.copydata.length){
-                    let priceData = {city: cityName,adDoor: 0,roadGate: 0,isAllA: true}
+                    let priceData = {city: cityName,adDoor: 0, isAllA: true}
                     for(let key of this.copydata){
                         if(key.city == cityName && key.asrID == asrID){
                             let dayNum = 0
@@ -672,29 +525,14 @@
                             }else{
                                 dayNum = this.DateDiff(key.lEnd, key.lStar,'-') + 1
                             }
-                            if (key.mVehicle === '广告门') {
-                                if(key.asLab !== 'A'){
-                                    priceData.isAllA = false
-                                }
-                                priceData.adDoor += (key.asPrice / 700) * dayNum
-                            } else if (key.mVehicle === '道闸') {
-                                console.log('++++++++道闸+++++++++',key.asPrice)
-                                // key.adPrice = 9800
-                                if (dayNum > 30) {
-                                    let monthNum = parseInt(dayNum / 30)
-                                    let remainderDay = dayNum % 30
-                                    let dayReaPrice = this.judgeDayNum(remainderDay, 1, key.asPrice)
-                                    priceData.roadGate += monthNum * key.asPrice + dayReaPrice
-                                } else {
-                                    priceData.roadGate += this.judgeDayNum(dayNum, 1, key.asPrice)
-                                }
-                            } else {
-                                this.$message.warning('存在异常媒体类型！！',key.mID)
+                            if(key.asLab !== 'A'){
+                                priceData.isAllA = false
                             }
+                            priceData.adDoor += (key.asPrice / 700) * dayNum
                         }
                     }
                     return priceData
-                }else{
+                } else {
                     return false
                 }
 
@@ -714,7 +552,7 @@
                     obj.asrID = asidArr[0].asrID;
                     obj.city = asidArr[0].city;
                     obj.rID = asidArr[0].rID;
-                    obj.mVehicle = asidArr[0].mVehicle;
+                    obj.mediaTypeName = asidArr[0].mediaTypeName;
                     obj.asidlist = "";
                     obj.mNum = "";
                     obj.ds = dateFormat.toDate(asidArr[0].lStar);
@@ -742,16 +580,16 @@
                             asrID: init.asrID,
                             city: init.city,
                             rID: init.rID,
-                            mVehicle: init.mVehicle,
+                            mediaTypeName: init.mediaTypeName,
                             ds: start,
                             de: end,
                             asidlist: "",
                             mNum: ""
                         };
                         // if (resRID == dataRID && res.ds == start && res.de == end
-                        //     && res.mVehicle == init.mVehicle && res.asrID == init.asrID) {
+                        //     && res.mediaTypeName == init.mediaTypeName && res.asrID == init.asrID) {
                         if (res.city == init.city && res.ds == start && res.de == end
-                            && res.mVehicle == init.mVehicle && res.asrID == init.asrID) {
+                            && res.mediaTypeName == init.mediaTypeName && res.asrID == init.asrID) {
                             if (asIDs === "") {
                                 asIDs = init.asID.toString();
                                 mNum = 1;
@@ -768,7 +606,7 @@
                                     data.city == init.city &&
                                     data.ds == start &&
                                     data.de == end &&
-                                    data.mVehicle == init.mVehicle
+                                    data.mediaTypeName == init.mediaTypeName
                                     && data.asrID == init.asrID
                                 ) {
                                     door = 0;
@@ -787,24 +625,14 @@
             },
             // 整合排期信息
             setSchedules(arr, asidRes) {
-                // console.log('test---set', arr, asidRes);
                 for (let arrData of arr) {
                     let obj = {
-                        mVehicle: '广告门',
-                        schedules: [],
-                        SM: [],
-                        schedul:[],
-                    };
-                    let daoObj = {
-                        mVehicle: '道闸',
+                        mediaTypeName: '广告门',
                         schedules: [],
                         SM: [],
                         schedul:[],
                     };
                     for (let asid of asidRes) {
-                        // let arrDataRID = arrData.rID.toString().substring(0, 4);
-                        // let dataRID = asid.rID.toString().substring(0, 4);
-                        // console.log('arrDataRID',arrDataRID,'dataRID',dataRID)
                         let ds = dateFormat.toDate(asid.ds, "/");
                         let de = dateFormat.toDate(asid.de, "/");
                         let days = this.dateToDays(ds, de);
@@ -817,65 +645,28 @@
                         }else{
                             weekDays = weekDay.week +'周'+weekDay.day+'天';
                         }
-                        // if (arrDataRID == dataRID && arrData.asrID == asid.asrID) {
                         if (arrData.city == asid.city && arrData.asrID == asid.asrID) {
-                            if (asid.mVehicle == '广告门') {
-                                obj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
-                                obj.schedules.push(ds+'-'+de);
-                                // console.log('obj.schedules', obj.schedules)
-                                let schedul = this.DateDiff(ds, de,'/') + 1
-                                // console.log('schedul', schedul)
-                                let mNum = asid.mNum;
-                                obj.schedul.push({
-                                    schedul: schedul,
-                                    mNum: mNum
-                                });
-                            }else if(asid.mVehicle == '道闸'){
-                                daoObj.schedules.push(ds+'-'+de);
-                                daoObj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
-                                let schedul = this.DateDiff(ds, de,'/') + 1
-                                // console.log('schedul', schedul)
-                                let mNum = asid.mNum;
-                                daoObj.schedul.push({
-                                    schedul: schedul,
-                                    mNum: mNum
-                                });
-                            }
+                            obj.SM.push(ds + "-" + de +"("+ weekDays+',共'+ asid.mNum + "面)");
+                            obj.schedules.push(ds+'-'+de);
+                            let schedul = this.DateDiff(ds, de,'/') + 1
+                            let mNum = asid.mNum;
+                            obj.schedul.push({
+                                schedul: schedul,
+                                mNum: mNum
+                            });
                         }
                     }
-                    arrData.priceMsg.adDoor.SM = obj.SM;
-                    arrData.priceMsg.adDoor.schedules = obj.schedules;
-                    arrData.priceMsg.adDoor.schedul = obj.schedul;
-                    arrData.priceMsg.roadGate.SM = daoObj.SM;
-                    arrData.priceMsg.roadGate.schedules = daoObj.schedules;
-                    arrData.priceMsg.roadGate.schedul = daoObj.schedul;
-                    // 道闸费用计算
-                    let reaPrice = 0;
-                    let adPrice = arrData.priceMsg.roadGate.adPrice;
-                    let pdAdFee = arrData.priceMsg.roadGate.pdAdFee;
-                    // console.log('arrData.priceMsg.roadGate.schedul', arrData.priceMsg.roadGate.schedul);
-                    for(let schItem of arrData.priceMsg.roadGate.schedul){
-                        if (schItem.schedul > 30) {
-                            let monthNum = parseInt(schItem.schedul / 30)
-                            let remainderDay = schItem.schedul % 30
-                            let dayReaPrice = this.judgeDayNum(remainderDay, schItem.mNum, adPrice );
-                            reaPrice +=  monthNum * schItem.mNum * adPrice + dayReaPrice;
-                        }else{
-                            reaPrice += this.judgeDayNum(schItem.schedul, schItem.mNum, adPrice);
-                        }
+                    for (const mediaTypeKey of arrData.priceMsg) {
+                        arrData.priceMsg[mediaTypeKey].SM = obj.SM;
+                        arrData.priceMsg[mediaTypeKey].schedules = obj.schedules;
+                        arrData.priceMsg[mediaTypeKey].schedul = obj.schedul;
                     }
-                    // console.log('reaPrice----', reaPrice);
-                    arrData.priceMsg.roadGate.reaPrice = reaPrice;
-                    let discount = pdAdFee/reaPrice;
-                    arrData.priceMsg.roadGate.discount = isNaN(discount)?0:(discount).toFixed(0);
-                    // console.log('arrdata----fdas', arrData);
                 }
 
                 return arr;
             },
             // 价格加上逗号
             priceFormat(price) {
-                // console.log('price--', price);
                 return commaFormat.init(price);
             },
             formatData(data){
@@ -896,9 +687,9 @@
                     ADNumber: data.pdNum,
                     pdNum: data.pdNum,
                     // 制作费折扣
-                    makeDiscount: '100',
+                    makeDiscount: 100,
                     // 制作费单价
-                    MPrice: data.pdType?300.00:100.00,
+                    MPrice: 100.00,
                     // 广告费每次修改前的价格
                     reaPrice: 0,
                     //  广告费初始价格
@@ -944,15 +735,11 @@
                         for(let ADPkey of this.ADPriceList){
                             if(ADPkey.rid == qkey.rid){
                                 qkey.classified = ADPkey.classified
-                                if (QPKey === 'adDoor'){
-                                    obj.price = ADPkey.adPrice
-                                    qkey.priceMsg[QPKey].levelPrice = {
-                                        A: ADPkey.gradeA,
-                                        B: ADPkey.gradeB,
-                                        C: ADPkey.gradec
-                                    }
-                                }else if(QPKey === 'roadGate'){
-                                    obj.price = ADPkey.barrierPrice
+                                obj.price = ADPkey.adPrice
+                                qkey.priceMsg[QPKey].levelPrice = {
+                                    A: ADPkey.gradeA,
+                                    B: ADPkey.gradeB,
+                                    C: ADPkey.gradec
                                 }
                             }
                         }
@@ -969,36 +756,26 @@
                 if(cityNames !== ''){
                     this.$message({
                         type: 'warning',
-                        message: cityNames + '暂无刊例价（广告门/道闸），请使用管理员账号设置该城市的刊例价' ,
+                        message: cityNames + '暂无刊例价，请使用管理员账号设置该城市的刊例价' ,
                         duration: 4000
                     })
                 }
             },
             // 从购物车列表获取排期
             getComSchedulNum(){
-                // this.judgeCityHavePrice()
-                console.log('购物车点位', this.shopingList)
+                console.log('购物车点位', this.shopingList, this.quotation)
                 for (let qKey of this.quotation) {
                     for (let sKey of this.shopingList) {
                         if (sKey.city === qKey.city && sKey.asrID == qKey.asrID) {
-                            if (sKey.mVehicle === '广告门') {
-                                if (qKey.priceMsg.adDoor.schedules.length <= 0) {
-                                    qKey.priceMsg.adDoor.schedules.push(sKey.schedules)
-                                } else {
-                                    if (!qKey.priceMsg.adDoor.schedules.includes(sKey.schedules)) {
-                                        qKey.priceMsg.adDoor.schedules.push(sKey.schedules)
+                            for (const mediaTypeKey in qKey.priceMsg) {
+                                if (Object.hasOwnProperty.call(qKey.priceMsg, mediaTypeKey)) {
+                                    let item = qKey.priceMsg[mediaTypeKey];
+                                    if (item.schedules.length <= 0) {
+                                        item.schedules.push(sKey.schedules)
                                     } else {
-
-                                    }
-                                }
-                            } else if (sKey.mVehicle === '道闸') {
-                                if (qKey.priceMsg.roadGate.schedules.length <= 0) {
-                                    qKey.priceMsg.roadGate.schedules.push(sKey.schedules)
-                                } else {
-                                    if (!qKey.priceMsg.roadGate.schedules.includes(sKey.schedules)) {
-                                        qKey.priceMsg.roadGate.schedules.push(sKey.schedules)
-                                    } else {
-                                        // console.log('else++++++++++++')
+                                        if (!item.schedules.includes(sKey.schedules)) {
+                                            item.schedules.push(sKey.schedules)
+                                        }
                                     }
                                 }
                             }
@@ -1017,12 +794,7 @@
                 for (let key of this.quotation) {
                     let q_schedulesArr = key.priceMsg
                     for (let qsKey in q_schedulesArr){
-                        let mkind = ''
-                        if(qsKey === 'adDoor'){
-                            mkind = '广告门'
-                        }else if(qsKey === 'roadGate'){
-                            mkind = '道闸'
-                        }
+                        let mkind = qsKey || '--'
                         for(let qsmkey of q_schedulesArr[qsKey].schedules){
                             let schedulesList = qsmkey.split('-')
                             let dayNum = this.DateDiff(schedulesList[0], schedulesList[1],'/') + 1
@@ -1055,7 +827,7 @@
                 for(let skey of this.shopingList){
                     for(let akey of arr){
                         if (skey.city === akey.city && skey.schedules == akey.schedules
-                            && skey.mVehicle === akey.mKind && skey.asrID == akey.asrID) {
+                            && skey.mediaTypeId === akey.mKind && skey.asrID == akey.asrID) {
                             akey.mNum++
                         }
                         // 判断是否全为A面
@@ -1063,7 +835,7 @@
                             akey.isAllA = false
                         }
                         // 计算广告门各等级的数量
-                        if(skey.mVehicle === '广告门' && skey.mVehicle === akey.mKind
+                        if(skey.mediaTypeId === akey.mKind
                             && skey.city === akey.city && skey.asrID == akey.asrID){
                             if (skey.mediaLevel === 'A') {
                                 akey.adLevelNum.ALevel++
@@ -1075,34 +847,32 @@
                         }
                     }
                     // 获取广告门点位等级的面天数
-                    if(skey.mVehicle === '广告门'){
-                        let ishadCity = false
-                        let schedulesList = skey.schedules.split('-')
-                        let dayNum = this.DateDiff(schedulesList[0], schedulesList[1],'/') + 1
-                        for(let key of cityADDoorLevelNum){
-                            if(key.city === skey.city && key.asrID == skey.asrID){
-                                if(skey.mediaLevel === 'A'){
-                                    key.A += dayNum
-                                }else if(skey.mediaLevel === 'B'){
-                                    key.B += dayNum
-                                }else if(skey.mediaLevel === 'C'){
-                                    key.C += dayNum
-                                }
-                                ishadCity = true
-                                break
+                    let ishadCity = false
+                    let schedulesList = skey.schedules.split('-')
+                    let dayNum = this.DateDiff(schedulesList[0], schedulesList[1],'/') + 1
+                    for(let key of cityADDoorLevelNum){
+                        if(key.city === skey.city && key.asrID == skey.asrID){
+                            if(skey.mediaLevel === 'A'){
+                                key.A += dayNum
+                            }else if(skey.mediaLevel === 'B'){
+                                key.B += dayNum
+                            }else if(skey.mediaLevel === 'C'){
+                                key.C += dayNum
                             }
+                            ishadCity = true
+                            break
                         }
-                        if(!ishadCity){
-                            let ADLevelObj = {city: skey.city, asrID: skey.asrID,A: 0, B: 0, C: 0,percent:0}
-                            if (skey.mediaLevel === 'A') {
-                                ADLevelObj.A = dayNum
-                            } else if (skey.mediaLevel === 'B') {
-                                ADLevelObj.B = dayNum
-                            } else if (skey.mediaLevel === 'C') {
-                                ADLevelObj.C = dayNum
-                            }
-                            cityADDoorLevelNum.push(ADLevelObj)
+                    }
+                    if(!ishadCity){
+                        let ADLevelObj = {city: skey.city, asrID: skey.asrID,A: 0, B: 0, C: 0,percent:0}
+                        if (skey.mediaLevel === 'A') {
+                            ADLevelObj.A = dayNum
+                        } else if (skey.mediaLevel === 'B') {
+                            ADLevelObj.B = dayNum
+                        } else if (skey.mediaLevel === 'C') {
+                            ADLevelObj.C = dayNum
                         }
+                        cityADDoorLevelNum.push(ADLevelObj)
                     }
                 }
                 console.log('统计购物车中不同等级点位的面天数',cityADDoorLevelNum)
@@ -1111,7 +881,7 @@
                     let IsHad = false
                     for (let ckey of this.CSMList) {
                         if (ckey.city === akey.city && ckey.asrID == akey.asrID) {
-                            if (ckey.mKind === akey.mKind) {
+                            if (ckey.mKind == akey.mKind) {
                                 IsHad = true
                                 ckey.SM.push(akey.SM + ',' + akey.mNum + '面)')
                                 ckey.mNum += akey.mNum
@@ -1134,17 +904,15 @@
                 console.log('城市不同排期的所有面数', JSON.stringify(this.CSMList))
                 for (let qkey of this.quotation){
                     for(let ckey of this.CSMList){
+                        // debugger
                         if(qkey.city === ckey.city && qkey.asrID == ckey.asrID){
-                            for (let PKey in qkey.priceMsg){
-                                if(PKey === 'adDoor' && ckey.mKind === '广告门'){
-                                    qkey.priceMsg[PKey].SM = ckey.SM
-                                    qkey.priceMsg[PKey].ADNumber += ckey.mNum
-                                    qkey.priceMsg[PKey].adLevelNum = ckey.adLevelNum        // 记录广告门各等级数量，方便计算A级占比并计算溢价
-                                    qkey.priceMsg[PKey].isAllA = ckey.isAllA
-                                }else if(PKey === 'roadGate' && ckey.mKind === '道闸'){
-                                    qkey.priceMsg[PKey].SM = ckey.SM
-                                    qkey.priceMsg[PKey].ADNumber += ckey.mNum
-                                    qkey.priceMsg[PKey].adLevelNum = ckey.adLevelNum
+                            for (const mediaTypeKey in qkey.priceMsg) {
+                                if (Object.hasOwnProperty.call(qkey.priceMsg, mediaTypeKey)) {
+                                    let item = qkey.priceMsg[mediaTypeKey];
+                                    item.SM = ckey.SM
+                                    item.ADNumber += ckey.mNum
+                                    item.adLevelNum = ckey.adLevelNum        // 记录广告门各等级数量，方便计算A级占比并计算溢价
+                                    item.isAllA = ckey.isAllA
                                 }
                             }
                         }
@@ -1159,33 +927,22 @@
                 let mediaAD = []
                 for(let qkey of this.quotation){
                     let doorNum = 0
-                    let roadGateNum = 0
                     let diffAD_door = []
-                    let diffAD_roadGate = []
                     for (let i in qkey.priceMsg) {
                         for(let skey of this.shopingList){
                             if(qkey.asrID == skey.asrID && qkey.city && skey.city){
-                                if (i === 'adDoor' && skey.mVehicle === '广告门') {
-                                    if (!diffAD_door.includes(skey.asID)) {
-                                        diffAD_door.push(skey.asID)
-                                    } else {
-                                        doorNum++
-                                    }
-                                }else if(qkey.asrID == skey.asrID && i === 'roadGate' && skey.mVehicle === '道闸'){
-                                    if (diffAD_roadGate.indexOf(skey.asID) === -1) {
-                                        diffAD_roadGate.push(skey.asID)
-                                    } else {
-                                        roadGateNum++
-                                    }
+                                if (!diffAD_door.includes(skey.asID)) {
+                                    diffAD_door.push(skey.asID)
+                                } else {
+                                    doorNum++
                                 }
                             }
                         }
                     }
-                    let obj = {rid: qkey.rid, asrID: qkey.asrID,doorCommentNum: doorNum,roadGateCommentNum: roadGateNum}
+                    let obj = {rid: qkey.rid, asrID: qkey.asrID, doorCommentNum: doorNum}
                     mediaAD.push(obj)
                 }
                 this.commentMediaADNum = mediaAD
-                // this.computeAuotation.close()
                 console.log('this.commentMediaADNum', this.commentMediaADNum)
             },
             // step3 报价单 - 媒体分层 adPrice
@@ -1197,36 +954,17 @@
                     let dayNum = this.DateDiff(schedulesList[0], schedulesList[1], '/') + 1
                     // console.log(schedulesList, '媒体分层-排期天数', dayNum)
                     let adsPrice = ''
-                    if (key.mVehicle === '广告门') {
-                        adsPrice = key.adPrice * dayNum
-                        if(!adsPrice){
-                            console.log(key.adPrice,dayNum,'adsPrice',adsPrice)
-                        }
-                    } else if (key.mVehicle === '道闸') {
-                        if (dayNum > 30) {
-                            let monthNum = parseInt(dayNum / 30)
-                            let remainderDay = dayNum % 30
-                            let dayReaPrice = this.judgeDayNum(remainderDay, 1, key.adPrice)
-                            adsPrice = monthNum * key.adPrice + dayReaPrice
-                        } else {
-                            adsPrice = this.judgeDayNum(dayNum, 1, key.adPrice)
-                        }
-                    } else {
-                        this.$message.warning('存在异常媒体类型！！',key.mID)
+                    adsPrice = key.adPrice * dayNum
+                    if(!adsPrice){
+                        console.log(key.adPrice, dayNum, 'adsPrice', adsPrice)
                     }
                     let isHadCity = false
                     for (let CPKey of cityPrice) {
                         if (CPKey.cityName === key.city && CPKey.asrID == key.asrID) {
                             isHadCity = true
-                            if (key.mVehicle === '广告门') {
-                                CPKey.adDoorDateNum += dayNum
-                                CPKey.adDoorTotolPrice += adsPrice
-                                CPKey.adDoorNum++
-                            } else if (key.mVehicle === '道闸') {
-                                CPKey.roadGateDateNum += dayNum
-                                CPKey.roadGateTotalPrice += adsPrice
-                                CPKey.roadGateNum++
-                            }
+                            CPKey.adDoorDateNum += dayNum
+                            CPKey.adDoorTotolPrice += adsPrice
+                            CPKey.adDoorNum++
                             break
                         }
                     }
@@ -1245,23 +983,17 @@
                             mediaClassifiedPremium: priceObj.mediaClassifiedPremium,    // 溢价信息
                             adDoorPrice: priceObj.adDoor,
                             levelPrice: priceObj.levelPrice,
-                            roadGatePrice: priceObj.roadGate,
+                            // roadGatePrice: priceObj.roadGate,
                             adDoorDateNum: 0,
-                            roadGateDateNum:0,
+                            // roadGateDateNum:0,
                             adDoorTotolPrice: 0,
-                            roadGateTotalPrice: 0,
+                            // roadGateTotalPrice: 0,
                             adDoorNum: 0,
-                            roadGateNum: 0,
+                            // roadGateNum: 0,
                         }
-                        if (key.mVehicle === '广告门') {
-                            priceData.adDoorNum = 1
-                            priceData.adDoorDateNum = dayNum
-                            priceData.adDoorTotolPrice = adsPrice
-                        } else if (key.mVehicle === '道闸') {
-                            priceData.roadGateNum = 1
-                            priceData.roadGateDateNum = dayNum
-                            priceData.roadGateTotalPrice = adsPrice
-                        }
+                        priceData.adDoorNum = 1
+                        priceData.adDoorDateNum = dayNum
+                        priceData.adDoorTotolPrice = adsPrice
                         cityPrice.push(priceData)
                     }
                 }
@@ -1269,7 +1001,7 @@
                     cityName = cityName.substring(0, cityName.length - 1)
                     this.$message({
                         type: 'warning',
-                        message: cityName + '暂无刊例价（广告门/道闸），请使用管理员账号设置该城市的刊例价',
+                        message: cityName + '暂无刊例价，请使用管理员账号设置该城市的刊例价',
                         duration: 4000
                     })
                 }
@@ -1283,7 +1015,7 @@
                     if(key.city === cName && key.asrID == asrID){
                         return {
                             adDoor: key.adPrice / 100,
-                            roadGate: key.barrierPrice / 100,
+                            // roadGate: key.barrierPrice / 100,
                             classified: key.classified,         // 是否媒体分层
                             levelPrice: {A: key.gradeA / 100,B: key.gradeB / 100,C: key.gradeC / 100},
                             premium: key.mediaClassifiedCondition ? key.mediaClassifiedCondition.premium : 0,                                  // 是否执行溢价
@@ -1294,7 +1026,7 @@
                 }
                 return {
                     adDoor: 0,
-                    roadGate: 0,
+                    // roadGate: 0,
                     classified: 2,
                     levelPrice: {A: 0,B: 0,C: 0},
                     premium: 0,
@@ -1313,14 +1045,12 @@
                     for (let QKey of this.quotation) {
                         if (CKey.cityName === QKey.city){
                             for (let QPKey in QKey.priceMsg){
-                                if (QPKey === 'adDoor'){
-                                    if(CKey.classified == 1 && CKey.premium === 1){   // 执行媒体分层
-                                        if(QKey.priceMsg[QPKey].isAllA){   // 全是A面点位时执行溢价计算
-                                            isBool = false
-                                            cityName += QKey.city + '、'
-                                            Premium = CKey.mediaClassifiedPremium.onlyAPremium
-                                            break
-                                        }
+                                if(CKey.classified == 1 && CKey.premium === 1){   // 执行媒体分层
+                                    if(QKey.priceMsg[QPKey].isAllA){   // 全是A面点位时执行溢价计算
+                                        isBool = false
+                                        cityName += QKey.city + '、'
+                                        Premium = CKey.mediaClassifiedPremium.onlyAPremium
+                                        break
                                     }
                                 }
                             }
@@ -1357,35 +1087,23 @@
                             QKey.mediaClassifiedPremium = CKey.mediaClassifiedPremium     // 溢价信息
                             for (let QPKey in QKey.priceMsg) {
                                 let commentNum = 0
-                                if (QPKey === 'adDoor') {       // 广告门
-                                    console.log('cityPrice',cityPrice)
-                                    commentNum = this.returnCommentADNum(QKey.rid,QKey.asrID,'adDoor')
-                                    // 广告费计算
-                                    QKey.priceMsg[QPKey].ADPrice = CKey.adDoorPrice
-                                    QKey.priceMsg[QPKey].tfl = CKey.adDoorDateNum                // 投放量(面·天)
-                                    // 广告费总价
-                                    QKey.priceMsg[QPKey].reaPrice = CKey.adDoorTotolPrice.toFixed(2)
-                                    let premiumPrice = 0
-                                    if(CKey.classified == 1 && CKey.premium === 1){             // 执行媒体分层且执行溢价
-                                        if(QKey.priceMsg[QPKey].isAllA){                        // 全是A面媒体时执行溢价计算
-                                            premiumPrice = QKey.priceMsg[QPKey].reaPrice * (CKey.mediaClassifiedPremium.onlyAPremium / 100)
-                                        }
+                                commentNum = this.returnCommentADNum(QKey.rid, QKey.asrID)
+                                // 广告费计算
+                                QKey.priceMsg[QPKey].ADPrice = CKey.adDoorPrice
+                                QKey.priceMsg[QPKey].tfl = CKey.adDoorDateNum                // 投放量(面·天)
+                                // 广告费总价
+                                QKey.priceMsg[QPKey].reaPrice = CKey.adDoorTotolPrice.toFixed(2)
+                                let premiumPrice = 0
+                                if(CKey.classified == 1 && CKey.premium === 1){             // 执行媒体分层且执行溢价
+                                    if(QKey.priceMsg[QPKey].isAllA){                        // 全是A面媒体时执行溢价计算
+                                        premiumPrice = QKey.priceMsg[QPKey].reaPrice * (CKey.mediaClassifiedPremium.onlyAPremium / 100)
                                     }
-                                    // 显示的广告费
-                                    QKey.priceMsg[QPKey].advertyPrice = Number(QKey.priceMsg[QPKey].reaPrice ? (Number(QKey.priceMsg[QPKey].reaPrice) + premiumPrice).toFixed(2) : premiumPrice.toFixed(2))
-                                    QKey.priceMsg[QPKey].discount = 100                             // 广告费折扣百分比
-                                    // 制作费计算
-                                    QKey.priceMsg[QPKey].ADNumber = CKey.adDoorNum - commentNum     // 广告画数量
-                                } else if (QPKey === 'roadGate') {      // 道闸
-                                    commentNum = this.returnCommentADNum(QKey.rid,'roadGate')
-                                    // 广告费计算
-                                    QKey.priceMsg[QPKey].ADPrice = CKey.roadGatePrice
-                                    QKey.priceMsg[QPKey].tfl = CKey.roadGateDateNum                                 // 投放量(面·天)
-                                    QKey.priceMsg[QPKey].reaPrice = CKey.roadGateTotalPrice                         // 广告费总价
-                                    QKey.priceMsg[QPKey].advertyPrice = QKey.priceMsg[QPKey].reaPrice.toFixed(2)    // 显示的广告费
-                                    // 制作费计算
-                                    QKey.priceMsg[QPKey].ADNumber = CKey.roadGateNum - commentNum                   // 广告画数量
                                 }
+                                // 显示的广告费
+                                QKey.priceMsg[QPKey].advertyPrice = Number(QKey.priceMsg[QPKey].reaPrice ? (Number(QKey.priceMsg[QPKey].reaPrice) + premiumPrice).toFixed(2) : premiumPrice.toFixed(2))
+                                QKey.priceMsg[QPKey].discount = 100                             // 广告费折扣百分比
+                                // 制作费计算
+                                QKey.priceMsg[QPKey].ADNumber = CKey.adDoorNum - commentNum 
 
                                 QKey.priceMsg[QPKey].oldPrice = QKey.priceMsg[QPKey].reaPrice                       // 保存最初计算的价格
                                 // 制作费 = 广告画数量 * 制作费单价 MPrice
@@ -1406,28 +1124,24 @@
 
             },
             // 根据对应的城市及媒体类型返回重复的点位数
-            returnCommentADNum(rid,asrID,adKind){
+            returnCommentADNum(rid, asrID){
                 let adNum = 0
                 for (let CMADNKey of this.commentMediaADNum) {
                     if (rid === CMADNKey.rid && asrID == CMADNKey.asrID) {
-                        if (adKind === 'adDoor') {
-                            adNum = CMADNKey.doorCommentNum
-                        } else if (adKind === 'roadGate') {
-                            adNum = CMADNKey.roadGateCommentNum
-                        }
+                        adNum = CMADNKey.doorCommentNum
                     }
                 }
                 return adNum
             },
             // 判断当前天数是否小于等于31、15
-            judgeDayNum(schedul,mNum,adPrice){
+            /* judgeDayNum(schedul,mNum,adPrice){
                 adPrice = adPrice || 0
                 if (schedul <= 15) {
                     return mNum * (adPrice / 2)
                 }else if (schedul > 15 && schedul <= 31) {
                     return mNum * adPrice
                 }
-            },
+            }, */
             //修改赠送面天时
             GMDateChange(letter){
                 console.log('等级',letter,'赠送面天',this.ADchanger,this.cityPriceData)
@@ -1454,13 +1168,13 @@
             discoundChange(val){
                 console.log('val',val)
             },
-            // 点击修改-填充相应的价格
+            // 点击修改-填充相应的价格 mediaTypeKey, item, mediaTypeItem
             changePrice(letter,kind,cityData,info){
                 this.priceInfo = JSON.parse(JSON.stringify(info))
                 this.cityPriceData = cityData
                 console.log('info',this.priceInfo,'cityData',cityData)
                 if (letter === 'AD') {             // 广告费
-                    if(cityData.classified === 1 && kind === 'adDoor'){
+                    if(cityData.classified === 1){
                         for (let key of this.cityADLevelNum) {
                             if (key.city === cityData.city) {
                                 this.activeLevelNum = {
@@ -1472,7 +1186,7 @@
                                 break
                             }
                         }
-                        this.ADchanger.levelNum = cityData.priceMsg.adDoor.adLevelNum
+                        this.ADchanger.levelNum = info.adLevelNum
                         // A、B、C媒体等级赠送的面天数
                         this.ADchanger.AGMDate = info.LevelGMDate.A
                         this.ADchanger.BGMDate = info.LevelGMDate.B
@@ -1486,7 +1200,7 @@
                     this.ADchanger.rid = cityData.rid       // 记录城市
                     this.ADchanger.reaPrice = Math.floor(info.reaPrice * 100) / 100             // 溢价前的价格
                     this.ADchanger.advertyPrice = Math.floor(info.advertyPrice * 100) / 100     // 溢价后显示的广告费
-                    this.ADchanger.discount = info.discount
+                    this.ADchanger.discount = info.discount * 1
                     this.MaxGMDate = info.tfl                                                   //　最大赠送面天
                     this.changeAD = true
                 } else if (letter === 'M') {        // 制作费
@@ -1586,7 +1300,7 @@
                             for (let key of QArr) {
                                 if (key.rid === this.ADchanger.rid) {
                                     for (let i in key.priceMsg) {
-                                        if (this.ADchanger.kind === i) {
+                                        if (this.ADchanger.kind == i) {
                                             key.priceMsg[i] = this.priceInfo
                                         }
                                     }
@@ -1599,11 +1313,8 @@
                     console.log('this.makeChange',this.makeChange)
                     for (let i = 0; i < QArr.length; i++) {
                         let tempObj = ''
-                        if(this.makeChange.kind === 'adDoor'){
-                            tempObj = QArr[i].priceMsg.adDoor
-                        }else if(this.makeChange.kind === 'roadGate'){
-                            tempObj = QArr[i].priceMsg.roadGate
-                        }
+                        console.log('this.makeChange.kind--', this.makeChange.kind)
+                        tempObj = QArr[i].priceMsg[this.makeChange.kind]
                         if (QArr[i].rid === this.makeChange.rid) {
                             if (this.makeChange.MReaPrice > tempObj.MReaPrice) {
                                 this.$message({
@@ -1638,7 +1349,7 @@
                             for (let key of QArr) {
                                 if (key.rid === this.totalChange.rid) {
                                     for (let i in key.priceMsg) {
-                                        if (this.totalChange.kind === i) {
+                                        if (this.totalChange.kind == i) {
                                             key.priceMsg[i] = this.priceInfo
                                         }
                                     }
@@ -1742,8 +1453,8 @@
                 return iDays
             },
             // 返回两位小数
-            returnTwoFloat(num,r) {
-                console.log('num',typeof(num),num,'r----',r)
+            returnTwoFloat(num) {
+                console.log('num',typeof(num),num)
                 if (!num) {
                     return  num || 0
                 } else if(!isFinite(num)){

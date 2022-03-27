@@ -383,29 +383,29 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="巡点问题"
                                     align="right"
                                     min-width="110"
-                                    show-overflow-tooltip
-                                    v-if="customPermission.patrolPermission">
+                                    show-overflow-tooltip>
                                     <template slot-scope="scope">
                                         {{ scope.row.remark || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission"
                                     label="通行情况"
                                     align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission">
+                                    min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.trafficState || '--' }}
                                     </template>
                                 </el-table-column>
                                 <el-table-column
+                                    v-if="customPermission.patrolPermission==2"
                                     label="通电情况"
                                     align="right"
-                                    min-width="110"
-                                    v-if="customPermission.patrolPermission==2">
+                                    min-width="110">
                                     <template slot-scope="scope">
                                         {{ scope.row.electrifyState || '--' }}
                                     </template>
@@ -537,10 +537,10 @@
                         </div>
                         <!--购物车-->
                         <el-dialog title="已选点位" :visible.sync="dialogTableVisible"
-                                   :close-on-click-modal="false"
-                                   :close-on-press-escape="false"
-                                   :before-close="shopingBeforeClose"
-                                   custom-class="custom-dialog-wrapper shop-cart-wrapper">
+                            :close-on-click-modal="false"
+                            :close-on-press-escape="false"
+                            :before-close="shopingBeforeClose"
+                            custom-class="custom-dialog-wrapper shop-cart-wrapper">
                             <template>
                                 <div class="table_wrap car-list" style="margin-top: 60px"
                                     v-loading="shopLoading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
@@ -1189,6 +1189,8 @@
                 resType: ['社区', '写字楼'],
                 // step2  1:社区 0:写字楼
                 recType: 1,
+                // 媒体类型
+                currentMediaType: '',
                 // 动画起始坐标
                 shopXY: {x: '', y: ''},
                 // 动画效果的显示隐藏
@@ -1267,7 +1269,6 @@
                 //搜索框
                 searchInput: '',
                 planSelect: '',
-                // mState: '',                //媒体状态
                 activeGrade: '',           // 媒体等级
                 active: 1,                  //步骤
                 pickerOptions: {
@@ -1351,7 +1352,6 @@
                 mStateIndex: 0,               // 切换媒体状态时，如果状态为1(正常)则进行滚动加载，mStateIndex记录下标
                 editApid: '',                  // 编辑方案的id
                 editApRemark: [],              // 编辑方案之前的备注信息，[{rid:440100,remark:''}]
-                // ADLockNum: 0,                  // 被锁点位的数量
                 mapADList: [],                 // 地图选择的点位数据
                 mapParams: {},                  // 记录当前地图选点时的参数，包括排期、城市名和rid
                 mapBtn: true,                   // 获取地图选点数据的按钮，默认不可点击
@@ -1416,7 +1416,6 @@
                 total: 1,                    // 总页数
                 pageSize: 20,                    //每页条数
                 getAdsParamsData: {},    //　获取点位列表的参数data
-                currentMediaType: '',   //
                 pdidList: [],           // 方案对应的dpid
                 IsAll: false,           //当前是否为全选状态
                 isShowAll: false,       // 控制表头显示时的过渡效果
@@ -1629,7 +1628,6 @@
                 this.dialogVisible();
             },
             // 根据导入返回的数据,设置购物车所需要的数据格式
-            // TODO
             setShopDataByImport(arr){
                 console.log('方案导入返回的数据---', arr);
                 for(let data of arr){
@@ -1661,7 +1659,6 @@
                             address: info.resAddress || '',
                             dNum: info.dNum || '',       // 出入口数
                             adLimit: info.notPush || '',
-                            checkBox: {A: false, B: false, ABC: false},
                             connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                             connID: info.connID || '',        // 连排门id
                             industryInfos: info.industryInfos || [],   // 同行业资源回避
@@ -1679,31 +1676,6 @@
                             importInfo.recommendReason = data.recommendReason;  //  亲粤邻定制：推荐理由
                         }
                         this.isHaveDiffPush(importInfo);
-                        /* if(info.mediaTypeName == '广告门'){
-                            let asLabsArr = importInfo.asLabs.split(',');
-                            let asIDArr = importInfo.asIDs.toString().split(',');
-                            for (let n = 0; n < asLabsArr.length; n++) {
-                                if (i === 0 && asLabsArr[n] === 'A') {
-                                    importInfo.checkBox.A = true;
-                                    importInfo.A_B = 'A';
-                                    importInfo.asID = asIDArr[n];
-                                    this.isHaveDiffPush(importInfo);
-                                    break;
-                                } else if (i === 1 && asLabsArr[n] === 'B') {
-                                    importInfo.checkBox.B = true;
-                                    importInfo.A_B = 'B';
-                                    importInfo.asID = asIDArr[n];
-                                    this.isHaveDiffPush(importInfo);
-                                    break;
-                                }
-                            }
-                        }else if(info.mediaTypeName =='道闸'){
-                            importInfo.checkBox.ABC = true;
-                            importInfo.A_B = 'ABC';
-                            importInfo.asID = info.asID
-                            this.isHaveDiffPush(importInfo);
-                            break;
-                        } */
                     }
                 }
                 sessFun.messageFun('success','成功导入'+arr.length+'条数据')
@@ -2142,7 +2114,6 @@
                 this.currPageSelect = 0
                 this.IsAll = false
                 this.pageNo = val
-                // this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdList()
             },
             // 每页条数切换
@@ -2229,7 +2200,7 @@
                 }
                 console.log('当前页码',this.pageNo,'当前时间',this.dateInput)
                 this.loading = true
-                this.getAdsParamsData.prID = this.city[0].rid
+                this.getAdsParamsData.prID = this.city[this.activeIndex].rid,
                 this.getAdsParamsData.act = 1
                 this.getAdsParamsData.resType = this.recType,
                 this.getAdsParamsData.mediaTypeId = this.currentMediaType,
@@ -2656,13 +2627,11 @@
             },
             // tab切换城市
             activeCity(item, index) {
-                console.log('item',item,'index',index)
                 this.activeIndex = index
                 this.activeRName = item.rName
                 this.activeCityData = item
                 this.areaName = '全市'
                 this.getAdsParamsData.area = ''
-                this.getAdsParamsData.prID = this.city[index].rid
                 this.setPageNoAndTableData()
                 this.getAdList()
             },
@@ -2913,7 +2882,7 @@
                 }
             },
             // 表头全选
-            allCheckboxAds(){
+            allCheckboxAds() {
                 if(this.IsAll){
                     this.allSelectAdsBtn()
                 }else{
@@ -2921,7 +2890,7 @@
                 }
             },
             // 表头勾选重置
-            allCheckboxUpdata(){
+            allCheckboxUpdata() {
                 if( this.shopingList.length <= 0){
                     this.IsAll = false
                 }else{
@@ -2943,8 +2912,7 @@
                 this.shopShow_hide('all')
             },
             //取消全选
-            cancleSelectAds(){
-                console.log('取消全选',this.planList,this.currPageSelect)
+            cancleSelectAds() {
                 for(let mediaItem of this.planList) {
                     (mediaItem.adsList || []).forEach(adSpaceItem => {
                         if(adSpaceItem.checkFlag && adSpaceItem.checkBox) {
@@ -3518,7 +3486,6 @@
                 if(this.typeShopList[this.activeName]) {
                     this.shopShowList = this.typeShopList[this.activeName].asidList || [];
                 }
-                console.log('this.shopShowList--',this.typeShopList, this.activeName)
             },
             // 获取事件
             getEventList(){
@@ -4011,7 +3978,6 @@
                         mediaTypeName: key.mediaTypeName,
                         mediaTypeId: key.mediaTypeId,
                         buildNum: key.fNum,
-                        // schedules: this.dateInput[0] + '-' + this.dateInput[1],
                         schedules: key.startDate + '-' + key.endDate,
                         remark: key.remark || "",
                         trafficState: key.trafficState || "",
@@ -4024,7 +3990,6 @@
                         address: key.resAddress || '',
                         dNum: key.dNum || '',              // 出入口数
                         adLimit: key.notPush || '',
-                        checkBox: {A: false, B: false,ABC: false},
                         connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                         connID: key.connID || '',        // 连排门id
                         industryInfos: key.industryInfos || [],   // 同行业资源回避
@@ -4061,16 +4026,16 @@
                 this.typeShopList = this.getTypeList();
                 this.getShowList();
                 this.computeMedia_AD('mapAD');
-                this.judgeByselect()
+                this.judgeByselect();
             },
             // 判断点位是否已存在购物车（亲邻地图）
-            qinLinJudgeHaveDiffAD(data,SourceType) {
+            qinLinJudgeHaveDiffAD(data, SourceType) {
                 let ADData = data;
                 let shopArr = this.shopingList;
                 let ifBoolea = true;
                 if (shopArr.length !== 0) {
                     for (let i = 0; i < shopArr.length; i++) {
-                        if (ADData.mID === shopArr[i].mID && ADData.A_B === shopArr[i].A_B) {
+                        if (ADData.asID === shopArr[i].asID) {
                             console.log('相同mid,相同面', ADData);
                             let ADScheArr = ADData.schedules.split('-');
                             let shopScheArr = shopArr[i].schedules.split('-');
@@ -4891,7 +4856,7 @@
                     }
                     this.searchBtnAbled = false
                 })
-            },
+            }
         }
     }
 </script>

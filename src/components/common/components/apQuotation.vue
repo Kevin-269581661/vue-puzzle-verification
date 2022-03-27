@@ -416,7 +416,8 @@
                         city: data.city,
                         rID: data.rID,
                         asrID: data.asrID,
-                        asName: data.asName
+                        asName: data.asName,
+                        mediaTypeId: data.mediaTypeId
                     };
                     detailInfo.push(obj);
                 }

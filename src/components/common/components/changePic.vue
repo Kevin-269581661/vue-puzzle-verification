@@ -6,8 +6,7 @@
             <template>
                 <el-radio-group v-model="publishSearchInfo.mediaType" size="medium" @change="changeMedia()"
                                 class="radio_style">
-                    <el-radio-button label="广告门">广告门({{publishNumInfo.door.hasPhotoCount}}/{{publishNumInfo.door.totalCount}})</el-radio-button>
-                    <el-radio-button label="道闸">道闸({{publishNumInfo.barrier.hasPhotoCount}}/{{publishNumInfo.barrier.totalCount}})</el-radio-button>
+                    <el-radio-button v-for="item in mediaTypeList" :key="item.mediaTypeId" :label="item.mediaTypeId">{{item.mediaTypeName}}({{item.uploadCnt}}/{{item.totalCnt}})</el-radio-button>
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
@@ -563,10 +562,11 @@
         },
         data() {
             return {
+                mediaTypeList: [],
                 // 上下刊搜索
                 publishSearchInfo: {
                     // 媒体类型
-                    mediaType: '广告门',
+                    mediaType: null,
                     // 城市选择
                     citySelect: ['全部'],
                     // 资源选择
@@ -619,7 +619,7 @@
                 activePainIndex: 0,
                 // 搜索信息
                 searchInfo: {
-                    mediaType: "全部",
+                    mediaType: "",
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
@@ -627,18 +627,6 @@
                     // 搜索列表数据
                     // 媒体类型
                     mediaTypeArr: [
-                        {
-                            label: "全部",
-                            value: 0
-                        },
-                        {
-                            label: "广告门",
-                            value: 1
-                        },
-                        {
-                            label: "道闸",
-                            value: 2
-                        }
                     ],
                     // 城市区域
                     citys: [],
@@ -773,8 +761,6 @@
         mounted() {
             console.log(this.fromType, 'fromtype----');
             this.sessionData = sessFun.getSess();
-            // 获取报告列表
-            this.getImgArr();
             // 获取城市区域
             this.getCitys();
             //获取换画城市列表
@@ -784,6 +770,7 @@
             //得到换画排期筛选列表
             this.getAdChangeLaunchDateList()
             console.log('scheduleList', this.scheduleList)
+            this.getAdsUploadImgCnt();
         },
         watch: {
             fromType(newVal, oldVal) {
@@ -797,6 +784,57 @@
         },
 
         methods: {
+            //获取媒体类型数据
+            getMediaTypes(){
+                let info = {
+                    apID:sessionStorage.getItem('order_apid'),
+                    replaceRecordId: this.painList[this.activePainIndex].id
+                }
+                api.getApi("/replace/v1/report/mediaTypes", info).then(res => {
+                    if(res.data.SysCode==200200){
+                        let _data=res.data.data;
+                        let _newData=[{
+                            label: '全部',
+                            value: null
+                        }];
+                        _data.forEach((item)=>{
+                            _newData.push({
+                                label: item.name,
+                                value: item.id
+                            })
+                        })
+                        this.searchInfo.mediaTypeArr=_newData;
+                        this.searchInfo.mediaType='';
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                })
+            },
+            //获取媒体类型及上下刊点位数量和上传图片数量
+            getAdsUploadImgCnt(){ 
+                let _type
+                if(this.type==1){
+                    _type =0;
+                }else if(this.type==2){
+                    _type =1;
+                }
+                let info={
+                    apID: sessionStorage.getItem('order_apid'),
+                    imgType: _type
+                }
+                api.getApi("/addsp/api/v1/adPlan/getAdsUploadImgCnt", info).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        let _data=res.data.data;
+                        this.mediaTypeList=_data;
+                        this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: null;
+                        
+                        // 获取报告列表
+                        this.getImgArr();
+                    }
+                }).catch(err=>{
+                    console.log(err);
+                })
+            },
             // 改变页数
             sizeChange(pageVal) {
                 this.pageInfo.loading = true;
@@ -1148,6 +1186,8 @@
                                     name: item.replaceRecordName,
                                 };
                             });
+                            if(this.painList.length <= 0) return;
+                            this.getMediaTypes();
 
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
@@ -1240,15 +1280,14 @@
                     prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize,
+                    mediaTypeId: mediaType
                     // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
                     // ...(city.length && {districtId: city[1]}),
                     // ...(resName && {resIds: [resName]}),
                     // ...(status && {reportStatus: status == 1 ? 1 : 0})
                 };
                 console.log(mediaType, city, resName, status);
-                if (mediaType!=='全部'&&mediaType!='0') {
-                    info.mType = mediaType == 1 ? 0 : 1
-                }
+              
                 if (city[0]!='全部') {
                     info.districtId = city[1]
                 }
@@ -1295,6 +1334,9 @@
                 this.activePainIndex = index;
                 // 去获取换画列表
                 this.search();
+
+                //去获取媒体类型
+                this.getMediaTypes();
             },
             // 编辑报告
             editReport(isEdit) {

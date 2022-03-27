@@ -450,6 +450,11 @@ export default {
                         item.num=(this.searchParams.pageNum-1)*this.searchParams.pageSize+index+1
                     })
                     this.companyList= _list;
+                }else{
+                    this.$message({
+                        message: res.data.MSG,
+                        type: 'error'
+                    });
                 }
             }).catch(err => {
                 console.log(err);
@@ -487,6 +492,11 @@ export default {
                         let _data=res.data.data;
                         _data.publishPriceModel=_data.publishPriceModel.split(",").map(Number);
                         this.mediaTypeForm=res.data.data;
+                    }else{
+                        this.$message({
+                            message: res.data.MSG,
+                            type: 'error'
+                        });
                     }
                 }).catch(err=>{
                     console.log(err);
@@ -522,6 +532,11 @@ export default {
                     let _currentActiveTab=this.currentActiveTab;
                     let firstMediaType=_mediaTypeList[_currentActiveTab]
                     this.getMediaTypeDetail(firstMediaType,_currentActiveTab)
+                }else{
+                    this.$message({
+                        message: res.data.MSG,
+                        type: 'error'
+                    });
                 }
             }).catch(err => {
                 console.log(err);
@@ -572,10 +587,15 @@ export default {
                             text: '正在保存中，请稍候...'
                         });
                         api.postApi_json('/addsp/api/v1/mediaTypes',params).then(res=>{
+                            Loading.close();
                             if(res.data.SysCode == 200200) {
                                 this.getMediaTypes();
+                            }else{
+                                this.$message({
+                                    message: res.data.MSG,
+                                    type: 'error'
+                                });
                             }
-                            Loading.close();
                         }).catch(err => {
                             console.log(err);
                             Loading.close();
@@ -597,10 +617,15 @@ export default {
                             text: '正在保存中，请稍候...'
                         });
                         api.postApi_json('/addsp/api/v1/mediaTypes/update',params).then(res=>{
+                            Loading.close();
                             if(res.data.SysCode == 200200) {
                                 this.getMediaTypes();
+                            }else{
+                                this.$message({
+                                    message: res.data.MSG,
+                                    type: 'error'
+                                });
                             }
-                            Loading.close();
                         }).catch(err => {
                             console.log(err);
                             Loading.close();

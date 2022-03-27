@@ -58,12 +58,8 @@
                                 <dd>{{adsUserData.totalAdSpaceInfoCount}}</dd>
                             </dl>
                             <dl>
-                                <dt>A面上刊率</dt>
-                                <dd>{{adsUserData.publicationRateOfA}}%</dd>
-                            </dl>
-                            <dl>
-                                <dt>B面上刊率</dt>
-                                <dd>{{adsUserData.publicationRateOfB}}%</dd>
+                                <dt>点位上刊率</dt>
+                                <dd>{{adsUserData.publicationRate}}%</dd>
                             </dl>
                         </div>
                         <div class="line2">
@@ -365,8 +361,9 @@
                     planCount:0,
                     orderCount:0,
                     orderUnitPrice:0,
-                    publicationRateOfA:0,
-                    publicationRateOfB:0,
+                    // publicationRateOfA:0,
+                    // publicationRateOfB:0,
+                    publicationRate:0,
                     orderSpotCount:0,
                     planSpotCount: 0,
                     allToPlanConversionRate: 0,
@@ -575,8 +572,9 @@
                             planCount: adsData.planCount || 0,
                             orderCount: adsData.orderCount || 0,
                             orderUnitPrice: (adsData.orderUnitPrice / 100) || 0,
-                            publicationRateOfA: adsData.publicationRateOfA !== undefined ? (adsData.publicationRateOfA * 100).toFixed(2) : 0,
-                            publicationRateOfB:  adsData.publicationRateOfB !== undefined ? (adsData.publicationRateOfB * 100).toFixed(2) : 0,
+                            // publicationRateOfA: adsData.publicationRateOfA !== undefined ? (adsData.publicationRateOfA * 100).toFixed(2) : 0,
+                            // publicationRateOfB:  adsData.publicationRateOfB !== undefined ? (adsData.publicationRateOfB * 100).toFixed(2) : 0,
+                            publicationRate: adsData.publicationRate !== undefined ? (adsData.publicationRate * 100).toFixed(2) : 0,
                             orderSpotCount: adsData.orderSpotCount || 0,
                             planSpotCount: adsData.planSpotCount || 0,
                             allToPlanConversionRate: adsData.allToPlanConversionRate !== undefined ? (adsData.allToPlanConversionRate * 100).toFixed(2) : 0,

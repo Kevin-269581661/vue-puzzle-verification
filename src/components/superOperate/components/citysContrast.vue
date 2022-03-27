@@ -6,8 +6,15 @@
              element-loading-text="玩命加载中.."
              element-loading-spinner="el-icon-loading">
             <el-card class="box-card" shadow="never">
-                <div slot="header" class="clearfix">
+                <div slot="header" class="clearfix flexBox">
                     <span class="box_card_title">城市数据展示</span>
+                    <div class="data-tab noMB noHeight" v-if="mediaTypeList.length>0">
+                        <span>媒体类型：</span>
+                        <el-radio-group v-model="showMediaTypeValue" size="mini" @change="getAllCityInfo">
+                            <el-radio-button :label="null">全部</el-radio-button>
+                            <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>
+                        </el-radio-group>
+                    </div>
                 </div>
                 <el-row>
                     <el-col :lg="12" :xl="10" class="chinaMapChart">
@@ -46,7 +53,7 @@
                             </el-table-column>
                             <el-table-column
                                 prop="countMedia"
-                                label="广告门数"
+                                label="媒体数"
                                 align="right"
                                 sortable
                                 :sort-method="sortMedia"
@@ -117,7 +124,7 @@
                                         size="mini"
                                         @change="cityBattleRadio">
                             <el-radio-button label="社区数"></el-radio-button>
-                            <el-radio-button label="广告门数"></el-radio-button>
+                            <!-- <el-radio-button label="广告门数"></el-radio-button> -->
                             <el-radio-button label="点位数"></el-radio-button>
                             <el-radio-button label="上刊率"></el-radio-button>
                             <el-radio-button label="订单数"></el-radio-button>
@@ -170,6 +177,13 @@
                                 :label="item.label">
                             </el-option>
                         </el-select>
+                    </div>
+                    <div class="data-tab" v-if="mediaTypeList.length>0">
+                        <span>媒体类型1：</span>
+                        <el-radio-group v-model="contrastMediaTypeValue" size="mini" @change="cityBattleRadio">
+                            <el-radio-button :label="null">全部</el-radio-button>
+                            <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>
+                        </el-radio-group>
                     </div>
                 </div>
                 <div class="cityBattleChart"
@@ -275,7 +289,7 @@
                             <div class="charts" ref="keyDataPie"
                                  style="width: 1200px;height: 600px"></div>
                             <p>社区</p>
-                            <p>广告门</p>
+                            <p>媒体数</p>
                             <p>点位</p>
                             <p>订单</p>
                             <p>订单总额</p>
@@ -297,6 +311,9 @@
         name: "citysContrast",
         data() {
             return {
+                mediaTypeList:[],  //媒体类型tab
+                showMediaTypeValue: null,  //城市数据展示媒体类型的值
+                contrastMediaTypeValue: null,  //城市数据对比媒体类型的值
                 isGetData: false,
                 // 城市对比选择的城市只能为0
                 // selectCity: '0',
@@ -441,7 +458,8 @@
                     //全国
                     console.log('请求数据了')
                     this.getCityContrastData()
-                }
+                }            
+                this.getMediaType()
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
@@ -462,9 +480,21 @@
         mounted(){
             this.setTime()
             this.echartsListener()
-
         },
         methods:{
+            //获取媒体类型
+            getMediaType(){
+                api.getApi("/addsp/api/v1/company/mediaTypes", {
+                    companyIds:this.returnAsrID()
+                })
+                .then(res=>{
+                    if(res.data.SysCode==200200){
+                        this.mediaTypeList=res.data.data;
+                    }
+                }).catch(err=>{
+                    console.log(err);
+                })
+            },
             // 设置初始时间
             setTime() {
                 let starTime = timeFormat.returnMonthCount(5,'-')
@@ -541,7 +571,8 @@
                     token: this.sessionData.token,
                     startDate: this.toDay.substring(0,4) + '/01/01',
                     endDate: this.toDay,
-                    asrIds: this.returnAsrID()
+                    asrIds: this.returnAsrID(),
+                    mediaTypeId: this.showMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/api/v2/getCityInfo', params).then(res=>{
                     console.log('城市数据展示表格res',res)
@@ -821,7 +852,8 @@
                     token: this.sessionData.token,
                     asrIDs: asrID,
                     onStart: onStart,
-                    onEnd: onEnd
+                    onEnd: onEnd,
+                    mediaTypeId: this.contrastMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + url, params).then(res => {
                     console.log('asrID', asrID, '城市数据对比社区接口 - 接口', res)
@@ -1349,7 +1381,7 @@
                             data: this.cityResKeyData,
                         },
                         {
-                            name: '广告门',
+                            name: '媒体数',
                             type: "pie",
                             radius: ["25%", "35%"],
                             center: ['50%', '25%'],
@@ -1492,6 +1524,17 @@
 </script>
 
 <style scoped>
+    .flexBox{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .noMB{
+        margin-bottom: 0px !important;
+    }
+    .noHeight{
+        height: auto !important;
+    }
     .citys_contrast_box{
         margin-bottom: 16px;
     }

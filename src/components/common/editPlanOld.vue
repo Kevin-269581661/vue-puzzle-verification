@@ -1666,7 +1666,7 @@
                             connID: info.connID || '',        // 连排门id
                             industryInfos: info.industryInfos || [],   // 同行业资源回避
                             mediaLevel: info.grade || '',
-                            adPrice: info.asPrice / 700 || 0,
+                            adPrice: (info.asPrice||0) / 700,
                             asName: info.asName || '',         // 点位所属公司名称
                             asrID: info.asrID,                 // 所属公司id
                             province: info.province,
@@ -1959,7 +1959,7 @@
                     connID: info.connID || '',        // 连排门id
                     industryInfos: info.industryInfos || [],   // 同行业资源回避
                     mediaLevel: info.grade || '',
-                    adPrice: info.asPrice / 700 || 0,
+                    adPrice: (info.asPrice || 0) / 700,
                     asName: info.asName || '',         // 点位所属公司名称
                     asrID: info.asrID,                 // 所属公司id,
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
@@ -2322,7 +2322,7 @@
                     // if (key.mediaTypeName === '道闸') {
                     //     adObj.adPrice = key.asPrice / 100
                     // } else {
-                        if (key.asPrice) {
+                        if (key.asPrice !== null || key.asPrice !== undefined) {
                             adObj.adPrice = key.asPrice / 700
                         } else {
                             if (key.grade === 'A') {
@@ -2587,7 +2587,7 @@
                                 connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                                 industryInfos : key.industryInfos || [],
                                 mediaLevel: key.grade || '',
-                                adPrice: key.asPrice / 700 || 0,
+                                adPrice: (key.asPrice || 0) / 700,
                                 asName: key.asName || '',         // 点位所属公司名称
                                 asrID: key.asrID,                 // 所属公司id
                                 province: key.province,
@@ -2946,14 +2946,18 @@
             cancleSelectAds(){
                 console.log('取消全选',this.planList,this.currPageSelect)
                 for(let mediaItem of this.planList) {
-                    let shopingLength = this.shopingList.length
-                    for(let i = 0; i < shopingLength;) {
-                        if(mediaItem.mID === this.shopingList[i].mID){
-                            this.shopingList.splice(i,1)
-                        } else {
-                            i++
+                    (mediaItem.adsList || []).forEach(adSpaceItem => {
+                        if(adSpaceItem.checkFlag && adSpaceItem.checkBox) {
+                            for(let i = 0; i < this.shopingList.length;) {
+                                if(adSpaceItem.asID === this.shopingList[i].asID) {
+                                    this.shopingList.splice(i,1);
+                                    adSpaceItem.checkBox = false;
+                                } else {
+                                    i += 1;
+                                }
+                            }
                         }
-                    }
+                    });
                 }
                 this.currPageSelect = 0
             },
@@ -2963,14 +2967,15 @@
                 for (let i = 0; i < planListLength; i++) {
                     let mediaInfo = this.planList[i];
                     (mediaInfo.adsList || []).forEach(adSpaceItem => {
-                        if(adSpaceItem.checkFlag) {
+                        if(adSpaceItem.checkFlag && !adSpaceItem.checkBox) {
+                            adSpaceItem.checkBox = true;
                             let selectInfo = this.setShopingTable(mediaInfo, adSpaceItem);
                             this.currPageSelect++;
                             this.shopingList.push(selectInfo);
                         }
                     });
                 }
-                console.log('广告门全选时购物车', this.shopingList)
+                console.log('全选时购物车', this.shopingList)
             },
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
@@ -3237,7 +3242,6 @@
                             }
                         }
                         let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
-                        console.log('pdid',pdid)
                         cityDetailList.push({
                             "pdID": pdid ? pdid : '',
                             "pdRemark": key.priceMsg[i].remark || '',
@@ -3254,7 +3258,7 @@
                             "pdTotal": Number((key.priceMsg[i].cash * 100).toFixed(0)),
                             "pdSendFee": Number((key.priceMsg[i].zyzh * 100).toFixed(0)),
                             "pdOtherFee": Number((key.priceMsg[i].other * 100).toFixed(0)),
-                            "pdType": i === 'adDoor' ? 0 : 1,
+                            "mediaTypeId": i,
                             "abList": [],
                         })
                     }
@@ -3277,12 +3281,8 @@
                             if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
                                 adsData.recommendReason = key.recommendReason || '';  //  亲粤邻定制：推荐理由
                             }
-                            if (key.mediaTypeName === '广告门' && detailKey.pdType === 0) {
+                            if (key.mediaTypeId*1 === detailKey.mediaTypeId*1) {
                                 detailKey.abList.push(adsData)
-                                break
-                            } else if (key.mediaTypeName === '道闸' && detailKey.pdType === 1) {
-                                detailKey.abList.push(adsData)
-                                break
                             }
                         }
                     }
@@ -3324,9 +3324,9 @@
             getpdidByCityAndMType(mType, city, asrID) {
                 console.log('this.pdidList', this.pdidList, mType, city, asrID)
                 for (let key of this.pdidList) {
-                    if (mType === 'adDoor' && key.pdType == 0 && key.city === city && asrID == key.asrID) {
+                    if (key.city === city && asrID == key.asrID) {
                         return key.pdID
-                    } else if (mType === 'roadGate' && key.pdType == 1 && key.city === city && asrID == key.asrID) {
+                    } else if (key.city === city && asrID == key.asrID) {
                         return key.pdID
                     }
                 }
@@ -3433,49 +3433,31 @@
                         rid: key.rid,
                         asrID: key.asrID,
                         asName: key.asName,
-                        priceMsg:{
-                            adDoor:{
-                                schedules: [],                // 排期
-                                GMDate: 0,                   // 赠送面.天
-                                LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
-                                discount: '100',            // 广告费折扣
-                                advertyPrice: 0,            // 广告费
-                                ADNumber: 0,                // 广告画数量
-                                makeDiscount: '100',        // 制作费折扣
-                                MPrice: 100.00,             // 制作费单价
-                                reaPrice: 0,                // 广告费每次修改前的价格
-                                oldPrice: 0,                //  广告费初始价格
-                                MReaPrice: 0,              // 制作费原价
-                                makePrice: 0,           // 制作费
-                                ADPrice: 0,             // 刊例价(面/周)
-                                tfl: 0,                    //投放量
-                                cash: 0,               // 现金结算
-                                zyzh: 0,                   // 资源置换
-                                other: 0,                  // 其他费用
-                                total: 0,
-                                remark: '',                 //备注信息
-                            },
-                            roadGate:{
-                                schedules: [],                // 排期
-                                GMDate: 0,                   // 赠送面.天
-                                discount: '100',           // 广告费折扣
-                                advertyPrice: 0,             // 广告费
-                                ADNumber: 0,                 // 广告画数量
-                                makeDiscount: '100',      // 制作费折扣
-                                MPrice: 300.00,                // 制作费单价
-                                reaPrice: 0,                // 广告费每次修改前的价格
-                                oldPrice: 0,                 //  广告费初始价格
-                                MReaPrice: 0,              // 制作费原价
-                                makePrice: 0,              // 制作费
-                                ADPrice: 0,                // 刊例价(面/周)
-                                tfl: 0,                    //投放量
-                                cash: 0,                   // 现金结算
-                                zyzh: 0,                   // 资源置换
-                                other: 0,                  // 其他费用
-                                total: 0,
-                            },
-                        },
+                        priceMsg: {}
                     }
+                    this.typeShopList.forEach(mediaTypeItem => {
+                        quotationObj.priceMsg[mediaTypeItem.type] = {
+                            schedules: [],                // 排期
+                            GMDate: 0,                   // 赠送面.天
+                            LevelGMDate: {A: 0, B: 0, C: 0},     // 赠送面.天
+                            discount: 100,            // 广告费折扣
+                            advertyPrice: 0,            // 广告费
+                            ADNumber: 0,                // 广告画数量
+                            makeDiscount: 100,        // 制作费折扣
+                            MPrice: 100.00,             // 制作费单价
+                            reaPrice: 0,                // 广告费每次修改前的价格
+                            oldPrice: 0,                //  广告费初始价格
+                            MReaPrice: 0,              // 制作费原价
+                            makePrice: 0,           // 制作费
+                            ADPrice: 0,             // 刊例价(面/周)
+                            tfl: 0,                    //投放量
+                            cash: 0,               // 现金结算
+                            zyzh: 0,                   // 资源置换
+                            other: 0,                  // 其他费用
+                            total: 0,
+                            remark: '',                 //备注信息
+                        }
+                    })
                     quotationArr.push(quotationObj)
                 }
                 this.quotation = quotationArr
@@ -3523,7 +3505,6 @@
                         }
                     }
                 }
-                console.log('shopingList0000000', this.shopingList, adSpaceGroupByMediaType)
                 return Object.entries(adSpaceGroupByMediaType).map(([key, value]) => value);
             },
             // 切换tab
@@ -3777,7 +3758,7 @@
                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                     connID: mediaInfo.connID,        // 连排门id
                     industryInfos: mediaInfo.industryInfos,   // 同行业资源回避
-                    adPrice: adSpaceInfo.adPrice,               // 点位价格
+                    adPrice: adSpaceInfo.adPrice || 0,               // 点位价格
                     mediaLevel: mediaInfo.mediaLevel,        // 媒体等级
                     asrID: mediaInfo.asrID,                // 所属公司id
                     asName: mediaInfo.asName,                // 所属公司名称
@@ -4018,15 +3999,14 @@
                         resType: key.resType,
                         resID: key.resID,
                         asID: key.asID,
-                        asLabs: key.asLab,
-                        A_B: key.asLab,
+                        asLab: key.asLab,
                         resName: key.resName,
                         city:  this.activeCityData.rName,
                         rid:  this.activeCityData.rid,
                         origin: key.rName,
                         buildType: key.cType,
                         houseNum: key.hNum,
-                        buildPrice: (key.hPrice / 100),
+                        buildPrice: key.hPrice / 100,
                         mediaName: key.mTitle || '',
                         mediaTypeName: key.mediaTypeName,
                         mediaTypeId: key.mediaTypeId,
@@ -4049,7 +4029,7 @@
                         connID: key.connID || '',        // 连排门id
                         industryInfos: key.industryInfos || [],   // 同行业资源回避
                         mediaLevel: key.grade || '',
-                        adPrice: key.asPrice / 700 || 0,
+                        adPrice: (key.asPrice || 0) / 700,
                         asName: key.asName || '',         // 点位所属公司名称
                         asrID: key.asrID,                 // 所属公司id
                         province: key.province,
@@ -4500,19 +4480,17 @@
                 // A面数量、B面数量
                 let adSpaceStatistics = {};
                 for (let key of shopList) {
-                    if(key.mediaTypeName === '广告门'){
-                        // 等级ABC
-                        if(key.mediaLevel === 'A'){
-                            mediaLevelNum.ALevel++
-                        }else if(key.mediaLevel === 'B'){
-                            mediaLevelNum.BLevel++
-                        }else if(key.mediaLevel === 'C'){
-                            mediaLevelNum.CLevel++
-                        }
-                        // A\B面
-                        if(key.asLab) {
-                            adSpaceStatistics[key.asLab] = (adSpaceStatistics[key.asLab] || 0) + 1;
-                        }
+                    // 等级ABC
+                    if(key.mediaLevel === 'A') {
+                        mediaLevelNum.ALevel++
+                    } else if(key.mediaLevel === 'B') {
+                        mediaLevelNum.BLevel++
+                    } else if(key.mediaLevel === 'C') {
+                        mediaLevelNum.CLevel++
+                    }
+                    // A\B面
+                    if(key.asLab) {
+                        adSpaceStatistics[key.asLab] = (adSpaceStatistics[key.asLab] || 0) + 1;
                     }
                     if (!mediaArr.includes(key.mID)) {
                         mediaArr.push(key.mID)
@@ -4621,14 +4599,6 @@
                             for (let data of resultArr) {
                                 let time = this.formatTime(data.pbStar) + "-" + this.formatTime(data.pbEnd);
                                 this.$set(data, "schedules", time);
-                                let checkBox = {A: false, B: false,ABC:false}
-                                if (data.asLab === 'A') {
-                                    checkBox.A = true
-                                } else if (data.asLab === 'B') {
-                                    checkBox.B = true
-                                } else if (data.asLab === 'ABC') {
-                                    checkBox.ABC = true
-                                }
                                 if(data.IsLock.length > 0){
                                     LockNum += 1
                                 }
@@ -4639,7 +4609,7 @@
                                     resID: data.resID,
                                     mID: data.mID,
                                     asID: data.asID,
-                                    asLabs: data.asLab,
+                                    asLab: data.asLab,
                                     lState: data.IsLock ? data.IsLock : '',   // 是否被占
                                     resName: data.resName,
                                     city: data.city,
@@ -4663,8 +4633,6 @@
                                     reference: data.reference || '',         // 地图中心点data
                                     address: data.resAddress || '',
                                     dNum: data.dNum || '',       // 出入口数
-                                    A_B: data.asLab,//data.A_B,
-                                    checkBox: {A:checkBox.A, B:checkBox.B, ABC:checkBox.ABC},
                                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                                     connID: data.connID || '',        // 连排门id
                                     industryInfos: data.industryInfos || [],
@@ -4677,11 +4645,11 @@
                                     notPush: data.notPush,
                                     province: data.province,
                                 }
-                                if (data.mediaTypeName === '道闸') {
-                                    selectInfo.adPrice = data.asPrice / 100
-                                } else {
-                                    if (data.asPrice) {
-                                        selectInfo.adPrice = data.asPrice / 700
+                                // if (data.mediaTypeName === '道闸') {
+                                //     selectInfo.adPrice = data.asPrice / 100
+                                // } else {
+                                    if (data.asPrice === null || data.asPrice === undefined) {
+                                        selectInfo.adPrice = data.asPrice*1 / 700
                                     } else {
                                         if (data.grade === 'A') {
                                             selectInfo.adPrice = 3080 / 7
@@ -4693,7 +4661,7 @@
                                             selectInfo.adPrice = 1900 / 7
                                         }
                                     }
-                                }
+                                // }
                                 shopList.push(selectInfo)
                             }
                             this.shopingList = shopList;

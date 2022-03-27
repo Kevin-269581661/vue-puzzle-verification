@@ -107,8 +107,7 @@
                     <el-tab-pane label="监播图片" name="third">
                         <div class="sec-wrap box-wrap">
                             <el-radio-group v-model="mediaType" size="medium" @change="changeMedia()">
-                                <el-radio-button label="广告门"></el-radio-button>
-                                <el-radio-button label="道闸"></el-radio-button>
+                                <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>
                             </el-radio-group>
                             <div class="pager">
                                 <el-pagination small background :current-page.sync="currUpPage" :page-sizes="[6, 12]"
@@ -352,6 +351,7 @@
         },
         data() {
             return {
+                mediaTypeList: [],  //媒体类型
                 isCustomize: false,//是否开通自定义模板，
                 customizeCode: 0,//为0时为普通模板，大于0自定义模板
                 templateType: null,//模板类型
@@ -396,7 +396,7 @@
                 //发布情况
                 postDetail: [],
                 // 媒体类型
-                mediaType: '广告门',
+                mediaType: null,
                 // 监播图片
                 reportArr: [],
                 // 查看监播
@@ -432,12 +432,31 @@
             this.getReportInfo();
             this.getPeriod();
             this.getTemplateOptions();
+            this.getMediaType();
         },
         mounted(){
             // 缓存不存在时为null
             this.templateType = localStorage.getItem('templateType');
         },
         methods: {
+            //获取媒体类型
+            getMediaType(){
+                let apID = sessionStorage.getItem("order_apid");
+                let info={
+                    apID
+                }
+                api.getApi("/addsp/api/v1/mediaTypes/getPlanMediaTypes", info).then(res => {
+                    if(res.data.SysCode== 200200){
+                        this.mediaTypeList=res.data.data;
+                        if(this.mediaTypeList.length>0){
+                            this.mediaType=this.mediaTypeList[0].id;
+                            this.changeMedia();
+                        }
+                    }
+                }).catch((err)=>{
+                    console.log(err);
+                })
+            },
             // 状态变中文
             stateToText(type) {
                 let arr = [

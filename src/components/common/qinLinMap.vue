@@ -534,8 +534,7 @@
         @clear="transfersFun()"
         @change="filterMediaType"
       >
-        <el-option label="广告门" value="广告门"></el-option>
-        <el-option label="道闸" value="道闸"></el-option>
+        <el-option v-for="item in mediaTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
       </el-select>
       <!--媒体等级-->
       <el-select
@@ -1616,6 +1615,15 @@ export default {
         this.areaList = areaPackage.findArea(this.adListParams.rid);
       }
     }
+
+    //获取媒体类型
+    if(this.adListParams.asrIDs&&this.adListParams.asrIDs.length>0){
+      //存在公司id--根据公司id获取媒体类型
+      this.getCompanyediaTypes();
+    }else{
+      //不存在公司id--查询系统所有媒体类型
+      this.getSystemMediaTypes();
+    }
   },
   computed: {
     currentAreaArr: function () {
@@ -1633,6 +1641,29 @@ export default {
     },
   },
   methods: {
+    //获取系统所有媒体类型列表
+    getSystemMediaTypes(){
+      api.getApi("/addsp/api/v1/mediaTypes").then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    //获取公司下媒体类型列表
+    getCompanyediaTypes(){
+      let params = {
+        companyIds: this.adListParams.asrIDs.join(","),
+      }
+      api.getApi("/addsp/api/v1/company/mediaTypes",params).then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
     // 将点位数据转换成小区数据，并去重,放入资源列表
     selectedListToResList () {
       let selectedListTemp = this.adListParams.selectedList;
@@ -1942,7 +1973,8 @@ export default {
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
         // mType: this.selectDoorType,
-        mVehicle: this.selectMediaType,
+        // mVehicle: this.selectMediaType,
+        mediaTypeId: this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,

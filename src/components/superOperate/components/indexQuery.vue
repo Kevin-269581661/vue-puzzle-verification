@@ -26,7 +26,7 @@
                                         @change="keydataRadio(allkeydatakind,'all')"
                                         :disabled="isReskeyDataKind">
                             <el-radio-button label="社区数"></el-radio-button>
-                            <el-radio-button label="广告门数"></el-radio-button>
+                            <!-- <el-radio-button label="广告门数"></el-radio-button> -->
                             <el-radio-button label="点位数"></el-radio-button>
                             <el-radio-button label="上刊率"></el-radio-button>
                             <el-radio-button label="订单数"></el-radio-button>
@@ -67,6 +67,14 @@
                             </el-date-picker>
                         </div>
                     </div>
+                    <div class="data-tab" v-if="mediaTypeList.length>0">
+                        <span>媒体类型：</span>
+                        <el-radio-group v-model="allMediaTypeValue" size="mini"
+                            @change="keydataRadio(allkeydatakind,'all')">
+                            <el-radio-button :label="null">全部</el-radio-button>
+                            <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>
+                        </el-radio-group>
+                    </div>
                     <div class="keyDataChart"
                          v-loading="keyDataLineLoading"
                          element-loading-text="玩命加载中..."
@@ -104,7 +112,7 @@
                                         @change="keydataRadio(addkeyDataKind,'add')"
                                         :disabled="isAddkeyDataKind">
                             <el-radio-button label="社区数"></el-radio-button>
-                            <el-radio-button label="广告门数"></el-radio-button>
+                            <!-- <el-radio-button label="广告门数"></el-radio-button> -->
                             <el-radio-button label="点位数"></el-radio-button>
                             <el-radio-button label="上刊率"></el-radio-button>
                             <el-radio-button label="订单数"></el-radio-button>
@@ -169,6 +177,14 @@
                                 @change="addKeyDataChangeMonthCompare">
                             </el-date-picker>
                         </div>
+                    </div>
+                    <div class="data-tab" v-if="mediaTypeList.length>0">
+                        <span>媒体类型：</span>
+                        <el-radio-group v-model="addMediaTypeValue" size="mini"
+                            @change="keydataRadio(addkeyDataKind,'add')">
+                            <el-radio-button :label="null">全部</el-radio-button>
+                            <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>
+                        </el-radio-group>
                     </div>
                     <div class="keyDataChart"
                          v-loading="keyDataBarLoading"
@@ -582,6 +598,9 @@
         },
         data() {
             return {
+                mediaTypeList:[],  //媒体类型tab
+                allMediaTypeValue: null,  //总量趋势的媒体类型
+                addMediaTypeValue: null,  //增量对比的媒体类型
                 isGetData: false,
                 // 前一次-全局选择的城市
                 oldSelectCity: '0',
@@ -786,6 +805,7 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
+                this.getMediaType();
                 if (this.activeName === 'third') {
                     this.getIndexQueryData()
                 } else {
@@ -830,6 +850,19 @@
             this.echartsListener();
         },
         methods:{
+            //获取媒体类型
+            getMediaType(){
+                api.getApi("/addsp/api/v1/company/mediaTypes", {
+                    companyIds:this.returnAsrID()
+                })
+                .then(res=>{
+                    if(res.data.SysCode==200200){
+                        this.mediaTypeList=res.data.data;
+                    }
+                }).catch(err=>{
+                    console.log(err);
+                })
+            },
             // 设置初始时间
             setTime() {
                 let starTime = timeFormat.returnMonthCount(5,'-');
@@ -1048,7 +1081,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate(dateList[0], 'start'),
-                    onEnd: this.returnDate(dateList[1])
+                    onEnd: this.returnDate(dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 console.log('关键数据总量/增量趋势 - params',params)
                 api.getApi(this.apiVar.report + '/GetResCountOfTotalAndIncrement', params).then(res => {
@@ -1119,7 +1153,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate( dateList[0], 'start'),
-                    onEnd: this.returnDate( dateList[1])
+                    onEnd: this.returnDate( dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/GetAdSpaceCountOfTotalAndIncrement', params).then(res => {
                     console.log('点位数总量趋势', res)
@@ -1151,7 +1186,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate( dateList[0], 'start'),
-                    onEnd: this.returnDate( dateList[1])
+                    onEnd: this.returnDate( dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/GetPublicationRateTotalAndIncrement', params).then(res=>{
                     console.log('上刊率总量趋势',res)
@@ -1182,7 +1218,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate( dateList[0], 'start'),
-                    onEnd: this.returnDate( dateList[1])
+                    onEnd: this.returnDate( dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/GetOrderTotalAndIncrement', params).then(res=>{
                     console.log('订单总量/增量趋势',res)
@@ -1214,7 +1251,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate( dateList[0], 'start'),
-                    onEnd: this.returnDate( dateList[1])
+                    onEnd: this.returnDate( dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/GetOrderIncomeTotalAndIncrement', params).then(res=>{
                     console.log('订单总额/增量趋势',res)
@@ -1246,7 +1284,8 @@
                     token: this.sessionData.token,
                     asrIDs: this.returnAsrID(),
                     onStart: this.returnDate( dateList[0], 'start'),
-                    onEnd: this.returnDate( dateList[1])
+                    onEnd: this.returnDate( dateList[1]),
+                    mediaTypeId: temp==='all'?this.allMediaTypeValue:this.addMediaTypeValue
                 }
                 api.getApi(this.apiVar.report + '/GetAdOwnerTotalAndIncrement', params).then(res=>{
                     console.log('广告主总数/增量趋势',res)
@@ -2727,6 +2766,7 @@
             },
             // 根据权限公司返回 asrIDs
             returnAsrID(){
+                console.log('根据权限公司返回 asrIDs');
                 if (this.selectCity == '0'){
                     let asrIDs = []
                     for (let key of this.citys) {

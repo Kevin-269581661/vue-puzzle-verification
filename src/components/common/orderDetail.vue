@@ -412,6 +412,7 @@
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
               :material="materialInfo"
+              :materialInfoData="materialInfoJson"
               :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="true"
@@ -480,7 +481,7 @@
           :close-on-press-escape="false"
           :show-close="true"
         >
-          <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
+          <add-ads :IsAddAds="IsAddPoint" :MediaTypeData="mediaTypeList" @ievent="ievent"></add-ads>
           <span slot="footer" class="dialog-footer">
             <el-button plain @click="cancelAddPoint">取 消</el-button>
             <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
@@ -1199,6 +1200,9 @@ export default {
   },
   data () {
     return {
+      companyId: null,  //公司ID
+      mediaTypeList: [],  //媒体类型
+      materialInfoJson:{},  //物料信息数据
       // session信息
       sessionData: {},
       isDown: false,
@@ -1396,6 +1400,9 @@ export default {
     this.getInitData();
     // 选点排期
     this.getMaterInfo();
+
+    //获取物料信息
+    this.getMaterialInfo();
 
     if (
       ['ADN_BD_KA', 'ADN_BD'].includes(this.role)
@@ -1821,6 +1828,7 @@ export default {
           console.log(res.data);
           if (res.data.SysCode == 200200) {
             let info = res.data.data;
+            this.companyId= info.asrIDs;
             this.orderDetail = {
               adcID: info.adcID,
               apID: info.apID,
@@ -1947,6 +1955,37 @@ export default {
           console.log(res);
         });
     },
+
+    // 获取物料新接口
+    getMaterialInfo (){
+      let apID = sessionStorage.getItem("order_apid");
+      let info = {
+        apID
+      };
+      api.getApi("/addsp/material/getMaterialCntByPlan", info).then(res=>{
+        if(res.data.SysCode== 200200){
+          let _data=res.data.data;
+          let _materialCntInfoList=[];
+          let _mediaTypeName=[];
+          _data.forEach((item)=>{
+            _mediaTypeName.push(item.mediaTypeName);
+            _materialCntInfoList.push(item.materialCntInfoList);
+          })
+          this.materialInfoJson={
+            mediaTypeName:_mediaTypeName,
+            materialCntInfoList:_materialCntInfoList
+          };
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+
     // 获取当前用户所有的排期区间列表
     getScheduleList () {
       let apID = sessionStorage.getItem("order_apid");
@@ -2461,9 +2500,29 @@ export default {
     },
     //显示添加点位的模态框
     showAddPointDialog () {
+      this.getMediaTypes();
       this.dialogAddPoint = true
       this.IsAddPoint = !this.IsAddPoint
     },
+    //请求媒体类型列表
+    getMediaTypes(){
+      let info={
+        companyIds:this.companyId
+      }
+      api.getApi('/addsp/api/v1/company/mediaTypes', info).then(res => {
+        if(res.data.SysCode==200200){
+          this.mediaTypeList=res.data.data
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err =>{
+        console.log('err:',err);
+      })
+    },
+
     // excel 导入点位弹框
     excelAddPointDialog () {
       this.dialogImportPoint = true
@@ -2506,6 +2565,7 @@ export default {
         // this.pdidList该数据在非意向方案的订单由报价单组件返回
         this.pdidList = JSON.parse(sessionStorage.getItem('priceData'))
       }
+      
       for (let key of this.addAdsArr) {
         for (let pKey of this.pdidList) {
           if (key.city == pKey.city && key.asrID == pKey.asrID) {
@@ -2519,7 +2579,8 @@ export default {
               pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
               uID: this.sessionData.uID,
               mTitle: key.mediaName,
-              asLab: key.A_B,
+              // asLab: key.A_B,
+              asLab: key.asLab,
               rName: key.origin,
               cType: key.buildType,
               timeRange: key.schedules,
@@ -2530,14 +2591,17 @@ export default {
               notPush: key.adLimit,
               isNew: 1,
             }
-
-            if (pKey.pdType == 0 && key.mVehicle === '广告门') {
-              arr.push(adsInfo)
-              break
-            } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
+            if(pKey.mediaTypeId==key.mediaTypeId){
               arr.push(adsInfo)
               break
             }
+            // if (pKey.pdType == 0 && key.mVehicle === '广告门') {
+            //   arr.push(adsInfo)
+            //   break
+            // } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
+            //   arr.push(adsInfo)
+            //   break
+            // }
           }
         }
       }
@@ -2547,8 +2611,6 @@ export default {
         orderNewAdsInfos: arr,
         orderStoppedAdsInfos: []
       }
-
-      console.log('添加点位对话框确认按钮', this.changePointInfo.addPointlist)
       api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder',
         JSON.stringify(postData)).then(res => {
           console.log('添加选点返回信息', res)

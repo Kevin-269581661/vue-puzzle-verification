@@ -368,16 +368,7 @@ export default {
         },
       ],
       // 媒体权限
-      mediaPermissionArr: [
-        {
-          label: "广告门",
-          value: 0,
-        },
-        {
-          label: "道闸",
-          value: 1,
-        },
-      ],
+      mediaPermissionArr: [],
       //表单
       accountForm: {
         account: "",
@@ -493,6 +484,36 @@ export default {
     }
   },
   methods: {
+    //获取媒体权限数据
+    getMediaPermission(){
+      let info={
+        companyIds: this.accountForm.company
+      }
+      api.getApi("/addsp/api/v1/company/mediaTypes", info).then(res => {
+        if(res.data.SysCode== 200200){
+          let _data=res.data.data;
+          let _newData=[];
+
+          if(_data.length>0){
+            _data.forEach((item)=>{
+              _newData.push({
+                label: item.name,
+                value: item.id,
+              })
+            })
+          }
+          this.mediaPermissionArr=_newData;
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+
     /**
      * @description: level转换成角色uType
      * @param {*} utype
@@ -664,6 +685,7 @@ export default {
           // this.accountForm.role = "";
         }
       }
+      this.getMediaPermission();
     },
     // 输入账号获取上级信息(远程搜索)
     querySearchAsync(queryString, callback) {

@@ -1443,7 +1443,6 @@ export default {
     getOrderPriceDetail () {
       api.getApi(this.apiVar.Advertisement + "/GetAPD", { apid: sessionStorage.getItem("order_apid") })
         .then(res => {
-          // console.log('test--', res.data);
           if (!res.data.SysCode) {
             sessionStorage.setItem('priceData', JSON.stringify(res.data))
             let priceData = res.data
@@ -1906,7 +1905,6 @@ export default {
               data.finishTimeRange = finishTimeRange;
             }
             // 选点排期
-            // this.copyAsidArr = JSON.parse(JSON.stringify(result));
             this.exportArr = result;
 
             // 广告门物料信息
@@ -2052,10 +2050,6 @@ export default {
             this.total = initData.total
             this.pointTotal = initData.total
             this.changePointInfo.allPoint = initData.total
-            // this.changePointInfo.stopPointNum = initData.stoppedAdsCount
-            // this.changePointInfo.addPointNum = initData.newAdsCount
-            // this.changePointInfo.changeAdsCount = initData.changeAdsCount
-            // this.addNewAdsNum = res.data.isNewCount
             for (let data of result) {
               let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
               data.timeRange = time;

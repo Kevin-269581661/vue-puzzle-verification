@@ -407,8 +407,8 @@
                 let plandata = this.planData
                 let adPrice = this.ADPriceList;
                 let detailInfo = [];
-                let arr = [];
                 for (let data of plandata) {
+                    // 按媒体类型分组
                     let obj = {
                         apID: data.apID,
                         pdID: data.pdID,
@@ -416,54 +416,32 @@
                         city: data.city,
                         rID: data.rID,
                         asrID: data.asrID,
-                        asName: data.asName,
-                        mediaTypeId: data.mediaTypeId
+                        asName: data.asName
                     };
                     detailInfo.push(obj);
                 }
                 this.infoDetail = detailInfo;
-                if (!arr.length) {
-                    let item = plandata[0];
-                    let pObj = this.formatData(item);
-                    let dataObj = {
-                        city: item.city,
-                        rid: item.rID,
-                        rID: item.rID,
-                        asrID: item.asrID,
-                        asName: item.asName,
-                        priceMsg: {}
-                    };
-                    dataObj.priceMsg[item.mediaTypeId] = pObj;
-                    arr.push(dataObj);
-                }
-                for (let dataItem of arr) {
-                    for (let planItem of plandata) {
-                        let dObj = this.formatData(planItem);
-                        let dataObj = {
+                let tempMap = {};
+                for (let planItem of plandata) {
+                    // 以rid 和 asrID 为主键分组
+                    let tempKey = planItem.rID + ';' + planItem.asrID;
+                    if(tempMap.tempKey) {
+                        tempMap.tempKey.priceMsg[planItem.mediaTypeId] = this.formatData(planItem);
+                    } else {
+                        tempMap.tempKey = {
                             city: planItem.city,
                             rid: planItem.rID,
                             rID: planItem.rID,
                             asrID: planItem.asrID,
                             asName: planItem.asName || '',
-                            priceMsg: dataItem.priceMsg || {}
+                            priceMsg: {
+                                [planItem.mediaTypeId]: this.formatData(planItem)
+                            }
                         };
-                        if (dataItem.rID == planItem.rID && dataItem.asrID == planItem.asrID) {
-                            dataItem.priceMsg[planItem.mediaTypeId] = dObj;
-                        } else {
-                            let door = 1;
-                            for (let item of arr) {
-                                if (item.rID == planItem.rID && item.asrID == planItem.asrID) {
-                                    door = 0;
-                                }
-                            }
-                            if (door) {
-                                dataObj.priceMsg[planItem.mediaTypeId] = dObj;
-                                // console.log('data--fda0-dataobj', dataObj);
-                                arr.push(dataObj);
-                            }
-                        }
                     }
                 }
+                // 城市公司为一条数据
+                let arr = Object.entries(tempMap).map(([key, value]) => value);
                 console.log('报价单arr-----', arr)
                 // 为每一条添加刊例价,广告费折扣百分比，制作费折扣百分比
                 // console.log('城市刊例价adPrice',adPrice)
@@ -626,9 +604,10 @@
             },
             // 整合排期信息
             setSchedules(arr, asidRes) {
+                console.log('setSchedules--', arr, asidRes)
                 for (let arrData of arr) {
                     let obj = {
-                        mediaTypeName: '广告门',
+                        mediaTypeName: '',
                         schedules: [],
                         SM: [],
                         schedul:[],
@@ -657,7 +636,7 @@
                             });
                         }
                     }
-                    for (const mediaTypeKey of arrData.priceMsg) {
+                    for (const [mediaTypeKey, value] of Object.entries(arrData.priceMsg)) {
                         arrData.priceMsg[mediaTypeKey].SM = obj.SM;
                         arrData.priceMsg[mediaTypeKey].schedules = obj.schedules;
                         arrData.priceMsg[mediaTypeKey].schedul = obj.schedul;

@@ -906,20 +906,26 @@
                 console.log('统计购物车中相同城市不同排期的同一asids个数', this.quotation, this.shopingList)
                 let mediaAD = []
                 for(let qkey of this.quotation){
-                    let doorNum = 0
-                    let diffAD_door = []
+                    let mediaTypeDoorNumObj = {}
                     for (let i in qkey.priceMsg) {
                         for(let skey of this.shopingList){
-                            if(qkey.asrID == skey.asrID && qkey.city && skey.city){
-                                if (!diffAD_door.includes(skey.asID)) {
-                                    diffAD_door.push(skey.asID)
+                            if(qkey.asrID == skey.asrID && qkey.city === skey.city){
+                                if(mediaTypeDoorNumObj[i]) {
+                                    if(mediaTypeDoorNumObj[i].diffAD_door.includes(skey.asID)) {
+                                        mediaTypeDoorNumObj[i].doorNum += 1
+                                    } else {
+                                        mediaTypeDoorNumObj[i].diffAD_door.push(skey.asID)
+                                    }
                                 } else {
-                                    doorNum++
+                                    mediaTypeDoorNumObj[i] = {
+                                        doorNum: 0,
+                                        diffAD_door: [skey.asID]
+                                    }
                                 }
                             }
                         }
                     }
-                    let obj = {rid: qkey.rid, asrID: qkey.asrID, doorCommentNum: doorNum}
+                    let obj = {rid: qkey.rid, asrID: qkey.asrID, mediaTypeDoorNumObj}
                     mediaAD.push(obj)
                 }
                 this.commentMediaADNum = mediaAD
@@ -940,7 +946,7 @@
                     }
                     let isHadCity = false
                     for (let CPKey of cityPrice) {
-                        if (CPKey.cityName === key.city && CPKey.asrID == key.asrID) {
+                        if (CPKey.cityName === key.city && CPKey.asrID == key.asrID && CPKey.mediaTypeId == key.mediaTypeId) {
                             isHadCity = true
                             CPKey.adDoorDateNum += dayNum
                             CPKey.adDoorTotolPrice += adsPrice
@@ -958,6 +964,7 @@
                             cityName: key.city,
                             asrID: key.asrID,
                             asName: key.asName,
+                            mediaTypeId: key.mediaTypeId,
                             classified: priceObj.classified,     // 是否媒体分层
                             premium: priceObj.premium,           // 是否溢价
                             mediaClassifiedPremium: priceObj.mediaClassifiedPremium,    // 溢价信息
@@ -1057,7 +1064,7 @@
 
             },
             computeQuotation(cityPrice){
-                console.log('this.quotation',this.quotation)
+                console.log('this.quotation',this.quotation, cityPrice)
                 for (let CKey of cityPrice) {
                     for (let QKey of this.quotation) {
                         if (CKey.cityName === QKey.city && CKey.asrID == QKey.asrID) {
@@ -1067,7 +1074,7 @@
                             QKey.mediaClassifiedPremium = CKey.mediaClassifiedPremium     // 溢价信息
                             for (let QPKey in QKey.priceMsg) {
                                 let commentNum = 0
-                                commentNum = this.returnCommentADNum(QKey.rid, QKey.asrID)
+                                commentNum = this.returnCommentADNum(QKey.rid, QKey.asrID, QPKey)
                                 // 广告费计算
                                 QKey.priceMsg[QPKey].ADPrice = CKey.adDoorPrice
                                 QKey.priceMsg[QPKey].tfl = CKey.adDoorDateNum                // 投放量(面·天)
@@ -1084,6 +1091,7 @@
                                 QKey.priceMsg[QPKey].discount = 100                             // 广告费折扣百分比
                                 // 制作费计算
                                 QKey.priceMsg[QPKey].ADNumber = CKey.adDoorNum - commentNum 
+                                console.log('制作费计算--', CKey.adDoorNum, commentNum, QKey.priceMsg[QPKey].ADNumber)
 
                                 QKey.priceMsg[QPKey].oldPrice = QKey.priceMsg[QPKey].reaPrice                       // 保存最初计算的价格
                                 // 制作费 = 广告画数量 * 制作费单价 MPrice
@@ -1104,11 +1112,11 @@
 
             },
             // 根据对应的城市及媒体类型返回重复的点位数
-            returnCommentADNum(rid, asrID){
+            returnCommentADNum(rid, asrID, mediaTypeId){
                 let adNum = 0
                 for (let CMADNKey of this.commentMediaADNum) {
                     if (rid === CMADNKey.rid && asrID == CMADNKey.asrID) {
-                        adNum = CMADNKey.doorCommentNum
+                        adNum = CMADNKey.mediaTypeDoorNumObj[mediaTypeId].doorNum
                     }
                 }
                 return adNum

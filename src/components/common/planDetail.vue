@@ -284,9 +284,11 @@
           <el-tab-pane label="物料信息" name="third">
             <material
               :material="materialInfo"
+              :materialInfoData="materialInfoJson"
               :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="false"
+              v-if="planPanel == 'third'"
             ></material>
           </el-tab-pane>
         </el-tabs>
@@ -490,6 +492,7 @@ export default {
       }
     };
     return {
+      materialInfoJson:{},  //物料信息数据
       // 登录信息
       sessionData: {},
       addPointDialogVisible: false,
@@ -559,13 +562,17 @@ export default {
       }
     };
   },
-  created () {
+  created () { 
+     //获取物料信息
+    this.getMaterialInfo();
     // 获取角色
     this.getRole();
     // 获取选点排期数据
     this.getInitData();
     this.getMatchCnt(sessionStorage.getItem("plan_apid"));
     this.getADLimit()       // 获取广告限制列表
+
+  
   },
   computed: {
     currentPagination () {
@@ -924,6 +931,37 @@ export default {
           console.log(res);
         });
     },
+
+    // 获取物料新接口
+    getMaterialInfo (){
+      let apID = sessionStorage.getItem("plan_apid");
+      let info = {
+        apID
+      };
+      api.getApi("/addsp/material/getMaterialCntByPlan", info).then(res=>{
+        if(res.data.SysCode== 200200){
+          let _data=res.data.data;
+          let _materialCntInfoList=[];
+          let _mediaTypeName=[];
+          _data.forEach((item)=>{
+            _mediaTypeName.push(item.mediaTypeName);
+            _materialCntInfoList.push(item.materialCntInfoList);
+          })
+          this.materialInfoJson={
+            mediaTypeName:_mediaTypeName,
+            materialCntInfoList:_materialCntInfoList
+          };
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+
     // 时间格式规范
     formatTime (val) {
       return dateFormat.toDate(val, "/");

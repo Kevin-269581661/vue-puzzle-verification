@@ -557,7 +557,7 @@
                   <div
                     class="media_deleBtn"
                     @click="mediaDelBtnFun(mediaTypeIndex, mediaIndex)"
-                    v-show="mediaIndex + 1 > mediaTypeItem.editMediaLength"
+                    v-if="!meidaItem.mid"
                   >
                     <i class="el-icon-remove"></i>
                   </div>

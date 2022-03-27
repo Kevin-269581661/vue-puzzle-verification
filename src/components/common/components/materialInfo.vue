@@ -397,14 +397,16 @@
             let _materialInfoData=this.materialInfoData;
             let {mediaTypeName,materialCntInfoList}=_materialInfoData;
             this.mediaTypeName=mediaTypeName;
-            materialCntInfoList.forEach((materialCntInfoItem)=>{
-                materialCntInfoItem.forEach((item)=>{
-                    console.log('item：',item);
-                    item.resolution= "150dpi";
-                    item.colorMode="CMYK";
-                    item.photoFormat="JPG/TIF/AI/PSD/CDR";
+            if(materialCntInfoList.length > 0){
+                materialCntInfoList.forEach((materialCntInfoItem)=>{
+                    materialCntInfoItem.forEach((item)=>{
+                        console.log('item：',item);
+                        item.resolution= "150dpi";
+                        item.colorMode="CMYK";
+                        item.photoFormat="JPG/TIF/AI/PSD/CDR";
+                    })
                 })
-            })
+            }
             this.materialCntInfoList=materialCntInfoList;
         },
         beforeDestroy() {

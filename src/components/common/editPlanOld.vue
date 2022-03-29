@@ -2609,11 +2609,12 @@
                 this.getAdList()
             },
             //媒体类型切换
-            activeMediaType(mType){
+            activeMediaType(mType) {
                 console.log('媒体类型',mType)
                 this.setPageNoAndTableData()
                 this.currentMediaType = mType
                 this.getAdsParamsData.mediaTypeId = mType
+                // TODO 存在异步问题
                 this.getAdList()
             },
             // tab切换城市
@@ -3136,7 +3137,7 @@
                                     spinner: 'el-icon-loading',
                                     background: 'rgba(0, 0, 0, 0.7)'
                                 })
-                                this.UpdateAdPlanFun() // 创建方案
+                                this.updateAdPlanFun() // 创建方案
                             } else {
                                 sessFun.messageFun('warning', '单城市总价格大于系统支持的最大价格（2000万）')
                             }
@@ -3240,7 +3241,7 @@
                 return cityDetailList
             },
             // 编辑方案
-            UpdateAdPlanFun(){
+            updateAdPlanFun() {
                 let detail = this.setDetailData()
                 let params = {
                     uid: this.sessionData.uID,
@@ -3271,7 +3272,6 @@
             },
             // 根据城市和公司id返回pdid
             getpdidByCityAndMType(mType, city, asrID) {
-                console.log('this.pdidList', this.pdidList, mType, city, asrID)
                 for (let key of this.pdidList) {
                     if (key.city === city && asrID == key.asrID) {
                         return key.pdID
@@ -3360,7 +3360,6 @@
                         }
                     }
                     if(isHad){
-                        console.log('sKey',sKey)
                         asrIDs.push({
                             asrID: sKey.asrID,
                             asName: sKey.asName,
@@ -4633,12 +4632,12 @@
                         this.FAInfo.cityList = [...new Set(this.FAInfo.rIDs.split(','))]
                         if ((this.sessionData.uType === 'ADN_BD_KA')
                             ||(this.sessionData.uType === 'ADN_MD_COUNTRY')) {
-                            this.setAllCityAndArea(this.FAInfo.cityList)
+                                this.setAllCityAndArea(this.FAInfo.cityList)
                         } else {
                             this.getCityList()
                         }
-                        this.computeConnectAdData()
                         this.getMediaTypesByCompany()
+                        this.computeConnectAdData()
                         this.getRejectPlanList()    // 获取排斥方案列表
                     } else {
                         sessFun.messageFun('warning',res.data.MSG)

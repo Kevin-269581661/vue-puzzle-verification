@@ -326,11 +326,19 @@ export default {
       api.getApi(this.apiVar.UCAPI + "/AscrList", params).then((res) => {
         console.log(res.data);
         if (!res.data.SysCode) {
-          console.log(res.data);
           let dataInfo = res.data;
           this.totalNum = dataInfo.count;
-          let dataArr = dataInfo.data;
-          this.companyList = this.funcData(dataArr);
+          let dataArr = dataInfo.data || [];
+          this.companyList = dataArr.map(item => {
+            return {
+              asrID: item.asrID || "",
+              name: item.asName || "",
+              state: item.ascState || "",
+              type: item.ascType >= 0 ? item.ascType : "",
+              mediaTypeList: item.mediaTypeList || [],
+              createTime: item.createTime || ""
+            }
+          })
           this.loading = false;
           if (dataInfo.totalpage == 0) {
             Message.warning("暂无数据");
@@ -339,17 +347,6 @@ export default {
           Message.warning(res.data.MSG);
         }
       });
-    },
-    // 数据处理
-    funcData(dataArr) {
-      console.log("dataArr---", dataArr);
-      let result = [];
-      for (let data of dataArr) {
-        let tmpObj = "";
-        tmpObj = this.setTableData(data);
-        result.push(tmpObj);
-      }
-      return result;
     },
     // 搜索数据格式化
     searchFormat() {
@@ -552,12 +549,14 @@ export default {
     },
     // 编辑
     isEdit(row) {
+      console.log('mediaTypeIds--', row)
       this.isShowNew = true;
       this.isAdd = false;
       this.companyInfo = {
         keyword: row.name,
         type: row.type - 0,
         asrID: row.asrID,
+        mediaTypeIds: row.mediaTypeList.map(item => item.mediaTypeId)
       };
     },
   },

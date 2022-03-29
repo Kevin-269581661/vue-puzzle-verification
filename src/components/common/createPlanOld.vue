@@ -3316,7 +3316,7 @@
                     // if (key.mediaTypeName === '道闸') {
                     //     adObj.adPrice = key.asPrice / 100
                     // } else {
-                        if (key.asPrice !== null || key.asPrice !== undefined) {
+                        if (key.asPrice !== null && key.asPrice !== undefined) {
                             adObj.adPrice = key.asPrice / 700
                         } else {
                             if (key.grade === 'A') {
@@ -4635,7 +4635,6 @@
             },
             // 打开购物车则计算连排门信息
             computeConnectAdData() {
-                let date1 = new Date();
                 let shopData = this.shopingList
                 let shopDataLength = shopData.length
                 for (let i = 0; i < shopDataLength; i++) {
@@ -4682,9 +4681,6 @@
                         }
                     }
                 }
-                let date2 = new Date();
-                let haomiao = date2.getTime() - date1.getTime();
-                console.log('打开购物车则计算连排门信息', this.shopingList, haomiao / (1000 * 60))
             },
             // 重置购物车连排门信息
             resetConnectAdData() {
@@ -4768,7 +4764,6 @@
                     mediaLevel: mediaInfo.mediaLevel,        // 媒体等级
                     asrID: mediaInfo.asrID,                // 所属公司id
                     asName: mediaInfo.asName,                // 所属公司名称
-                    asName: mediaInfo.asName,
                     remark: mediaInfo.remark,
                     trafficState: mediaInfo.trafficState || '',
                     electrifyState: mediaInfo.electrifyState || '',

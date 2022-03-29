@@ -544,7 +544,7 @@
       </div>
       <!--媒体一-->
       <div class="mediaList_content">
-        <el-tabs v-model="activeMediaType" @tab-click="handleClickMedia">
+        <el-tabs v-model="activeMediaType">
           <el-tab-pane v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypeList" :key="mediaTypeIndex" :label="mediaTypeItem.name || '--'" :name="mediaTypeIndex + ''">
             <div class="content_bottom_wrap_box">
               <div
@@ -1437,10 +1437,6 @@ export default {
             resultArr.forEach((item, index) => {
               item.ADTitleIndex = 0;
               item.mediaList = []
-              if(index === 0) {
-                // 第一个媒体类型下，默认添加一个空媒体呈现给用户
-                this.mediaAddFun(item);
-              }
             });
             this.mediaTypeList = resultArr;
           }
@@ -1464,12 +1460,6 @@ export default {
           Message.warning(res.data.MSG);
         }
       });
-    },
-    handleClickMedia() {
-      let tempActiveMediaType = this.mediaTypeList[this.activeMediaType]
-      if(tempActiveMediaType.mediaList.length === 0) {
-        this.mediaAddFun(tempActiveMediaType)
-      }
     },
     // 获取广告限制列表
     getADLimit() {
@@ -2443,7 +2433,7 @@ export default {
       let timer = setTimeout(() => {
         console.log("来源于点击添加媒体", document.body.scrollHeight); //clientHeight
         window.scrollTo(0, document.body.scrollHeight);
-        this.mediaAddFun();
+        this.mediaAddFun(this.mediaTypeList[this.activeMediaType])
         clearTimeout(timer);
       }, 500);
     },

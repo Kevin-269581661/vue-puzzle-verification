@@ -704,14 +704,14 @@
         <li>
           <span>媒体类型：</span>
           <el-select
-            class="m_ehicle_class"
             size="small"
-            v-model="exportInfo.mVehicle"
+            class="m_ehicle_class"
+            multiple
+            collapse-tags
+            v-model="exportInfo.mediaTypeIds"
             placeholder="请选择媒体类型"
           >
-            <el-option label="仅有广告门" value="广告门"></el-option>
-            <el-option label="仅有道闸" value="道闸"></el-option>
-            <el-option label="广告门或道闸" value=""></el-option>
+            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </li>
         <li>
@@ -915,12 +915,13 @@ export default {
       isSale: false,//销售权限
       // 资源导出
       isResExport: false,
+      allMediaTypes: [],
       // 当前步骤
       exportAction: '/image/GetCenterPointRes',
       exportResStep: 1,
       exportInfo: {
         date: '',
-        mVehicle: '',
+        mediaTypeIds: '',
         radius: '',
         type: '',
       },
@@ -2016,12 +2017,22 @@ export default {
       this.exportResStep = 1
       this.exportInfo = {
         date: '',
-        mVehicle: '',
+        mediaTypeIds: '',
         radius: '',
         type: '',
       }
       this.exportFileData = []
       this.isResExport = true
+      this.getAllMediaTypes()
+    },
+    getAllMediaTypes() {
+      api.getApi('/addsp/api/v1/mediaTypes').then(res => {
+        if (res.data.SysCode == 200200) {
+          this.allMediaTypes = res.data.data || []
+        } else {
+          this.messageFun('warning', res.data.MSG);
+        }
+      })
     },
     exportUploadFile (params) {
       this.exportFileData = [];
@@ -2076,8 +2087,8 @@ export default {
       formData.append('radius', this.exportInfo.radius);
       formData.append('startDate', this.exportInfo.date[0]);
       formData.append('endDate', this.exportInfo.date[1]);
-      formData.append('mVehicle', this.exportInfo.mVehicle);
       formData.append('type', this.exportInfo.type);
+      formData.append('mediaTypeIds', this.exportInfo.mediaTypeIds.join(','));
       if ((this.sessionData.uType == 'ADN_MD') || (this.sessionData.uType == 'ADN_BD')) {
         formData.append('asrId', this.sessionData.asrID);
       }

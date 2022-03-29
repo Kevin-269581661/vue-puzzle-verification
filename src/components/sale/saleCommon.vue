@@ -37,7 +37,7 @@
                 <template slot="title">
                     更多
                 </template>
-                <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item>
+                <!-- <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item> -->
                 <!--<el-menu-item index="/sale/questionAndAnswer">常见问题</el-menu-item>-->
                 <el-menu-item index="/sale/compact">资料下载</el-menu-item>
                 <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>

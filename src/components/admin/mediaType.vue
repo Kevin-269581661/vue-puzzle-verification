@@ -65,7 +65,7 @@
                                             <p>{{monitoringPhotosSizeData | getOptionsLabel(mediaTypeForm.pptType)}}</p>
                                         </div>
                                     </div>
-                                    <div class="mediaTable_tr">
+                                    <!-- <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>刊例价模式</p>
                                         </div>
@@ -76,7 +76,7 @@
                                                 </span>
                                             </p>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>投放方式</p>
@@ -107,7 +107,7 @@
                             </div>
                             <el-form v-else :model="mediaTypeForm" :rules="rules" ref="mediaTypeForm">
                                 <el-form-item prop="name" style="width: 220px;">
-                                    <el-input v-model.trim="mediaTypeForm.name" placeholder="请输入类型名称"></el-input>
+                                    <el-input v-model.trim="mediaTypeForm.name" maxlength="15" placeholder="请输入类型名称"></el-input>
                                 </el-form-item>
                             
                                 <div class="mediaTable form">
@@ -123,7 +123,11 @@
                                         <div class="mediaTable_td">
                                             <p>适用公司</p>
                                         </div>
-                                        <div class="mediaTable_td">
+                                        <!--编辑-则显示查看全部，新增-则显示暂无-->
+                                        <div class="mediaTable_td" v-if="mediaTypeForm.id">
+                                            <p><span class="see_all" @click="seeCompany(mediaTypeForm.id)">查看全部</span></p>
+                                        </div>
+                                        <div class="mediaTable_td" v-else>
                                             <p>暂无</p>
                                         </div>
                                     </div>
@@ -175,7 +179,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="mediaTable_tr">
+                                    <!-- <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>刊例价模式</p>
                                         </div>
@@ -188,7 +192,7 @@
                                                 </el-form-item>
                                             </p>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>广告下发方式</p>
@@ -210,7 +214,7 @@
                                         <div class="mediaTable_td">
                                             <p v-for="(item,index) in mediaTypeForm.adSpaceConfig" :key="index">
                                                 <el-form-item :prop="`adSpaceConfig.${index}.name`" :rules="rules.name">
-                                                    <el-input :disabled="type=='edit'" style="width: 220px;" v-model.trim="item.name" placeholder="广告位名称"></el-input>
+                                                    <el-input :disabled="type=='edit'" style="width: 220px;" v-model.trim="item.name" maxlength="15" placeholder="广告位名称"></el-input>
                                                 </el-form-item>
                                             </p>
                                         </div>
@@ -225,6 +229,7 @@
                                                     v-model.trim="mediaTypeForm.remark"
                                                     type="textarea"
                                                     :rows="3"
+                                                    maxlength="50"
                                                     placeholder="请输入媒体说明">
                                                 </el-input>
                                             </p>
@@ -366,9 +371,9 @@ export default {
                 pptType:[
                     { required: true, message: '请选择监播照片尺寸', trigger: 'change' }
                 ],
-                publishPriceModel:[
-                    { required: true, type: 'array', message: '请选择刊例价模式', trigger: 'change' }
-                ],
+                // publishPriceModel:[
+                //     { required: true, type: 'array', message: '请选择刊例价模式', trigger: 'change' }
+                // ],
                 releaseModel:[
                     { required: true, message: '请选择投放方式', trigger: 'change' }
                 ],
@@ -468,7 +473,7 @@ export default {
                 adSpaceNum: 1, //可投面数
                 saleModel: null, //售卖方式
                 pptType: null,  //监播照片尺寸
-                publishPriceModel: [], //刊例价模式
+                // publishPriceModel: [], //刊例价模式
                 releaseModel: null, //投放方式
                 adSpaceConfig: [
                     {
@@ -490,7 +495,7 @@ export default {
                 }).then(res=>{
                     if(res.data.SysCode == 200200) {
                         let _data=res.data.data;
-                        _data.publishPriceModel=_data.publishPriceModel.split(",").map(Number);
+                        // _data.publishPriceModel=_data.publishPriceModel.split(",").map(Number);
                         this.mediaTypeForm=res.data.data;
                     }else{
                         this.$message({
@@ -560,24 +565,24 @@ export default {
                             adSpaceNum,
                             saleModel,
                             pptType,
-                            publishPriceModel,
+                            // publishPriceModel,
                             releaseModel,
                             adSpaceConfig,
                             remark
                         } = this.mediaTypeForm;
                         let _publishPriceModel='';
-                        publishPriceModel=publishPriceModel.sort()
-                        publishPriceModel.forEach((item)=>{
-                            _publishPriceModel+=item+','
-                        })
-                        _publishPriceModel=_publishPriceModel.slice(0,_publishPriceModel.length-1)
+                        // publishPriceModel=publishPriceModel.sort()
+                        // publishPriceModel.forEach((item)=>{
+                        //     _publishPriceModel+=item+','
+                        // })
+                        // _publishPriceModel=_publishPriceModel.slice(0,_publishPriceModel.length-1)
                         let params={
                             name,
                             source,
                             adSpaceNum,
                             saleModel,
                             pptType,
-                            publishPriceModel:_publishPriceModel,
+                            // publishPriceModel:_publishPriceModel,
                             releaseModel,
                             adSpaceConfig,
                             remark

@@ -531,11 +531,11 @@
                         title: '图片库',
                         link: './superOperate/photoGallery',
                     },
-                    {
-                        imgurl: require('../../assets/images/adPrice.png'),
-                        title: '刊例价',
-                        link: './superOperate/publishPriceList'
-                    }
+                    // {
+                    //     imgurl: require('../../assets/images/adPrice.png'),
+                    //     title: '刊例价',
+                    //     link: './superOperate/publishPriceList'
+                    // }
                 ],
                 isRetailCompany: false,     // 判断是否为7大直营公司或平台商
                 listDirectList: [],         // 直营城市公司列表

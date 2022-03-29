@@ -985,7 +985,7 @@
                     </el-table-column>
                     <el-table-column min-width="70" label="投放面">
                         <template slot-scope="scope">
-                            <span>{{scope.row.asLab}}面</span>
+                            <span>{{scope.row.asLab}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="assetTag" label="资产编号" min-width="130" >
@@ -1064,7 +1064,7 @@
                         <el-tooltip class="item" effect="dark" placement="right-start">
                             <div slot="content">
                                 <span v-for="(key,otherIndex) of item.otherArr" :key="otherIndex">
-                                    {{key.resName + '-' + key.mediaName + '-' + key.asLab + '面'}}
+                                    {{key.resName + '-' + key.mediaName + '-' + key.asLab}}
                                 </span>
                             </div>
                             <span class="defead_ads_num"> {{item.adsNum}} </span>
@@ -5966,16 +5966,16 @@
     }
     /*safari下表头错位*/
     /deep/ .el-table .el-table-column-checkbox .cell{
-        width: 110px;
+        min-width: 110px;
     }
     /deep/ .el-table .el-table-column-resName .cell{
-        width: 200px;
+        min-width: 200px;
     }
     /deep/ .el-table .el-table-column-mediaName .cell{
-        width: 140px;
+        min-width: 140px;
     }
     /deep/ .el-table .el-table-column-mediaRemark .cell{
-        width: 140px;
+        min-width: 140px;
     }
 
     /deep/ .el-badge__content.is-fixed.is-dot {

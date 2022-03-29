@@ -301,7 +301,7 @@
                                 <span class="el-icon-location">{{img.pRemarks.city}}</span>
                                 <span>
                                     <i class="fa fa-file-text"></i>
-                                    {{img.pRemarks.asLab}}面
+                                    {{img.pRemarks.asLab}}
                                 </span>
                                 <el-tooltip placement="bottom" effect="light">
                                     <span class="el-icon-info"></span>

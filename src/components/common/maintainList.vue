@@ -414,7 +414,7 @@
       <div class="loglist_box">
         <div class="title">
           <p>{{ logList.resName }}</p>
-          <p>{{ logList.mTitle }}（{{ logList.assetTag }}）<template v-if="logList.asLab">· {{logList.asLab}}面</template></p>
+          <p>{{ logList.mTitle }}（{{ logList.assetTag }}）<template v-if="logList.asLab">· {{logList.asLab}}</template></p>
         </div>
 
         <log-list

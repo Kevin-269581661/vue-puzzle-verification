@@ -1170,7 +1170,7 @@
                     </el-table-column>
                     <el-table-column min-width="70" label="投放面">
                         <template slot-scope="scope">
-                            <span>{{scope.row.asLab}}面</span>
+                            <span>{{scope.row.asLab}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="assetTag" label="资产编号" min-width="130">

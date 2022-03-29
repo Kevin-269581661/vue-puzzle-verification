@@ -85,23 +85,6 @@
                 >
                 </el-cascader>
               </el-col>
-
-              <el-col :span="6">
-                <span
-                  style="display: inline-block; width: 70px; text-align: right"
-                  >投放面：</span
-                >
-                <!-- <el-select
-                  v-model="searchInfo.LabSelect"
-                  :clearable="true"
-                  placeholder="选择投放面"
-                  class="plan-select"
-                  size="small"
-                >
-                  <el-option label="A面" value="A"></el-option>
-                  <el-option label="B面" value="B"></el-option>
-                </el-select> -->
-              </el-col>
               <el-col :span="6">
                 <span>投放日期：</span>
                 <el-date-picker

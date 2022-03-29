@@ -659,7 +659,7 @@
                         </el-checkbox>
                       </div>
                     </div>
-                    <div v-else>{{ scope.row.asLabs }}面</div>
+                    <div v-else>{{ scope.row.asLabs }}</div>
                   </template>
                 </el-table-column>
 

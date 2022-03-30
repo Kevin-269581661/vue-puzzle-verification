@@ -577,8 +577,8 @@
                                             点位:<span>{{shopMedia_ADNum.ADNum}}</span
                                             >(<span v-for="(spaceItem, spaceKey) in adSpaceStatistics" :key="spaceKey">
                                                 {{spaceKey}}:<span>{{spaceItem || 0}}</span></span>)
-                                            <div class="divide-border"></div>
                                             <template v-if="mediaLevelNum.ALevel || mediaLevelNum.BLevel || mediaLevelNum.CLevel">
+                                                <div class="divide-border"></div>
                                                 A级:<span>{{mediaLevelNum.ALevel}}</span>
                                                 B级:<span>{{mediaLevelNum.BLevel}}</span>
                                                 C级:<span>{{mediaLevelNum.CLevel}}</span>
@@ -1222,7 +1222,6 @@
                 loadSign: true,            // table滚轮
                 shopMedia_ADNum: {resNum: 0, mediaNum: 0, ADNum: 0, oneNum: 0, twoNum: 0, threeNum: 0, moreNum: 0},
                 ADloading: '',                 // 创建方案、提交选点和报价单时的loading
-                computeAuotation: '',         // 计算报价单时的loading
                 areaCity: [],
                 CityPlanIndex: [],            // 记录每个城市遍历到的下标
                 activeCityData: {},          // 城市切换的数据，默认为this.city[0]
@@ -2857,55 +2856,6 @@
                     }
                 }
             },
-            // 设置提交的详情数据
-            setDetailData() {
-                let cityDetailList = []
-                for (let key of this.quotation) {
-                    for (let i in key.priceMsg) {
-                        let pdid = this.getpdidByCityAndMType(i,key.city,key.asrID)
-                        cityDetailList.push({
-                            "pdID": pdid ? pdid : '',
-                            "rID": key.rid,
-                            "city": key.city,
-                            "asrID": key.asrID,
-                            // 总的投放天数
-                            "pdDays":  key.priceMsg[i].tfl,
-                            // 总的点位数
-                            "pdNum": key.priceMsg[i].ADNumber,                                    // 点位数
-                            "pdStar": minAndMaxDate[0],
-                            "pdEnd": minAndMaxDate[1],
-                            "pdType": i === 'adDoor' ? 0 : 1,
-                            "abList": []
-                        })
-                    }
-                }
-                // 点位与城市详情关联
-                let pbSetTime = this.timestampToTime(Date.parse(new Date()))
-                for (let key of this.shopingList) {
-                    for (let detailKey of cityDetailList) {
-                        if (key.city === detailKey.city && key.asrID == detailKey.asrID) {
-                            let adsData = {
-                                asID: key.asID,
-                                pdID: detailKey.pdID,
-                                pbStar: key.schedules.split('-')[0],
-                                pbEnd: key.schedules.split('-')[1],
-                                uID: this.sessionData.uID,
-                                pbSetTime: pbSetTime,
-                                resID: key.resID,
-                                mapCenterName: key.mapCenter,
-                            }
-                            if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
-                                adsData.recommendReason = key.recommendReason || '';  //  亲粤邻定制：推荐理由
-                            }
-                            if (key.mediaTypeId*1 === detailKey.mediaTypeId*1) {
-                                detailKey.abList.push(adsData)
-                            }
-                        }
-                    }
-                }
-                console.log('城市详情cityDetailList',cityDetailList)
-                return cityDetailList
-            },
             // 继续创建
             continueCreate() {
                 // 媒介创建方案或者是加盟销售创建方案
@@ -3220,7 +3170,7 @@
                     resultArr = this.isEnoughMedia(type, resultArr);
                     this.getResultData(resultArr);
                     if(len != resultArr.length){
-                        sessFun.messageFun('success',`成功移除同门${type}面的点位！`)
+                        sessFun.messageFun('success',`成功移除同门${type}的点位！`)
                     }else{
                         sessFun.messageFun('warning', '暂无可移除点位')
                     }

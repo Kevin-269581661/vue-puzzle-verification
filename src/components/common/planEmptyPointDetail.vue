@@ -279,7 +279,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 报价单
-import apQuotation from "./components/apQuotation.vue";
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue'
@@ -291,7 +290,6 @@ import {
 export default {
   name: "planDetail",
   components: {
-    apQuotation,
     material,
     detail,
     addPoint
@@ -334,10 +332,6 @@ export default {
       daoInfo: [],
       // 报价单详情
       priceSheet: [],
-      quotation: {
-        isDetail: true,
-        quotation: [],
-      },
       //物料信息
       // materialInfo: [],
       // 城市过滤结果

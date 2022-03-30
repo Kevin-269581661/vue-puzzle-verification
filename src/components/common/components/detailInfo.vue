@@ -123,7 +123,7 @@ export default {
                         <dt>
                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">
-                                    <div v-if="detail.planMode!=1" class="tooltip-box">
+                                    <!-- <div v-if="detail.planMode!=1" class="tooltip-box">
                                         <p class="tooltip-box__p">
                                             <b>广告门</b>
                                             <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
@@ -136,7 +136,7 @@ export default {
                                             <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
                                             <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
                                         </p>
-                                    </div>
+                                    </div> -->
                                     <div class="tooltip-box">
                                         <p class="tooltip-box__p">
                                             <b>金额备注</b>

@@ -180,6 +180,8 @@
                     min-width="10.3%"
                   >
                   </el-table-column>
+                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="10.3%">
+                  </el-table-column>
                   <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                   </el-table-column>
                   <el-table-column

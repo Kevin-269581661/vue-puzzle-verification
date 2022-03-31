@@ -22,106 +22,155 @@
         个点位</span
       >
     </p>
-
-    <div class="adsTable">
-      <div class="myCheckbox">
-        <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
-      </div>
-      <el-table border :data="successList" style="width: 100%">
-        <el-table-column width="120px">
-          <template slot-scope="scope">
-            <div class="space-group">
-              <div
-                v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList"
-                :key="adSpaceIndex"
-                class="space-item"
-              >
-                <el-checkbox
-                  v-if="adSpaceItem.checkFlag"
-                  v-model="adSpaceItem.checkBox"
-                  :label="adSpaceItem.asLab || '--'"
-                  @change="changeCheckBox(scope.row, adSpaceItem)"
+    <template v-if="activeType == 1">
+      <div class="adsTable">
+        <div class="myCheckbox">
+          <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
+        </div>
+        <el-table border :data="successList" style="width: 100%">
+          <el-table-column width="120px">
+            <template slot-scope="scope">
+              <div class="space-group">
+                <div
+                  v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList"
+                  :key="adSpaceIndex"
+                  class="space-item"
                 >
-                </el-checkbox>
-                <el-popover
-                  v-else
-                  placement="top-start"
-                  width="310"
-                  trigger="hover"
-                >
-                  <span v-if="scope.row.adlInfo === ''">暂无被禁用的信息</span>
-                  <ul v-else>
-                    <li v-for="(item, index) in scope.row.adlInfo" :key="index">
-                      <template v-if="item.lState == null">
-                        <p style="margin-bottom: 5px">
-                          <span style="color: #333"
-                            >该点位：{{ item.asState }}中</span
-                          >
-                        </p>
-                        <div style="margin-bottom: 5px">
-                          <span style="color: #333">状态原因：</span>
-                          <span
-                            style="color: #333"
-                            v-for="(u, i) in item.unSaleableReason"
-                            :key="i"
-                          >
-                            <template v-if="item.unSaleableReason.length > 1"
-                              >{{ i + 1 }}.</template
-                            >
-                            {{ u }}
-                          </span>
-                        </div>
-                      </template>
-                      <template v-else>
-                        <p style="margin-bottom: 5px">
-                          <span style="color: #333">占点方案：</span>
-                          <span>
-                            <span style="font-weight: bold">{{
-                              ["ADN_MD_COUNTRY", "ADN_MD"].includes(
-                                sessionData.uType
-                              )
-                                ? item.beOccupieApName
-                                : "******"
-                            }}</span>
-                            方案（{{
-                              item.lState == 0
-                                ? "预锁"
-                                : item.lState == 1
-                                ? "被占"
-                                : "强制停止"
-                            }}）
-                          </span>
-                        </p>
-                        <p style="margin-bottom: 5px">
-                          <span style="color: #333">占点排期：</span
-                          >{{ item.schedules }}
-                        </p>
-                      </template>
-                    </li>
-                  </ul>
                   <el-checkbox
-                    slot="reference"
+                    v-if="adSpaceItem.checkFlag"
                     v-model="adSpaceItem.checkBox"
                     :label="adSpaceItem.asLab || '--'"
-                    :disabled="true"
+                    @change="changeCheckBox(scope.row, adSpaceItem)"
                   >
                   </el-checkbox>
-                </el-popover>
+                  <el-popover
+                    v-else
+                    placement="top-start"
+                    width="310"
+                    trigger="hover"
+                  >
+                    <span v-if="scope.row.adlInfo === ''"
+                      >暂无被禁用的信息</span
+                    >
+                    <ul v-else>
+                      <li
+                        v-for="(item, index) in scope.row.adlInfo"
+                        :key="index"
+                      >
+                        <template v-if="item.lState == null">
+                          <p style="margin-bottom: 5px">
+                            <span style="color: #333"
+                              >该点位：{{ item.asState }}中</span
+                            >
+                          </p>
+                          <div style="margin-bottom: 5px">
+                            <span style="color: #333">状态原因：</span>
+                            <span
+                              style="color: #333"
+                              v-for="(u, i) in item.unSaleableReason"
+                              :key="i"
+                            >
+                              <template v-if="item.unSaleableReason.length > 1"
+                                >{{ i + 1 }}.</template
+                              >
+                              {{ u }}
+                            </span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <p style="margin-bottom: 5px">
+                            <span style="color: #333">占点方案：</span>
+                            <span>
+                              <span style="font-weight: bold">{{
+                                ["ADN_MD_COUNTRY", "ADN_MD"].includes(
+                                  sessionData.uType
+                                )
+                                  ? item.beOccupieApName
+                                  : "******"
+                              }}</span>
+                              方案（{{
+                                item.lState == 0
+                                  ? "预锁"
+                                  : item.lState == 1
+                                  ? "被占"
+                                  : "强制停止"
+                              }}）
+                            </span>
+                          </p>
+                          <p style="margin-bottom: 5px">
+                            <span style="color: #333">占点排期：</span
+                            >{{ item.schedules }}
+                          </p>
+                        </template>
+                      </li>
+                    </ul>
+                    <el-checkbox
+                      slot="reference"
+                      v-model="adSpaceItem.checkBox"
+                      :label="adSpaceItem.asLab || '--'"
+                      :disabled="true"
+                    >
+                    </el-checkbox>
+                  </el-popover>
+                </div>
               </div>
-            </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="资源名称" min-width="140" prop="resName">
+          </el-table-column>
+          <el-table-column prop="mediaName" label="媒体名称" min-width="130">
+          </el-table-column>
+          <el-table-column prop="city" label="城市" min-width="85">
+          </el-table-column>
+          <el-table-column prop="origin" label="区域" min-width="85">
+          </el-table-column>
+          <el-table-column prop="assetTag" label="资产编号" min-width="130">
+          </el-table-column>
+          <el-table-column prop="schedules" label="排期" min-width="160">
+            <template slot-scope="scope">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="scope.row.schedules"
+                placement="bottom"
+              >
+                <span>{{ scope.row.schedules }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <template v-if="customPermission.patrolPermission">
+            <el-table-column prop="feedback" label="巡点问题" min-width="130">
+            </el-table-column>
+            <el-table-column
+              prop="trafficState"
+              label="通行情况"
+              min-width="130"
+            >
+            </el-table-column>
+            <el-table-column
+              v-if="customPermission.patrolPermission == 2"
+              prop="electrifyState"
+              label="通电情况"
+              min-width="130"
+            >
+            </el-table-column>
           </template>
-        </el-table-column>
+        </el-table>
+      </div>
+    </template>
+    <template v-if="activeType == 2">
+      <el-table border :data="errorList" style="width: 100%">
         <el-table-column label="资源名称" min-width="140" prop="resName">
         </el-table-column>
-        <el-table-column prop="mediaName" label="媒体名称" min-width="130">
+        <el-table-column prop="province" label="省份" min-width="85">
         </el-table-column>
         <el-table-column prop="city" label="城市" min-width="85">
         </el-table-column>
         <el-table-column prop="origin" label="区域" min-width="85">
         </el-table-column>
-        <el-table-column prop="assetTag" label="资产编号" min-width="130">
+        <el-table-column prop="resAddress" label="详细地址" min-width="85">
         </el-table-column>
-        <el-table-column prop="schedules" label="排期" min-width="160">
+        <el-table-column prop="schedules" label="投放排期" min-width="160">
           <template slot-scope="scope">
             <el-tooltip
               class="item"
@@ -133,21 +182,14 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <template v-if="customPermission.patrolPermission">
-          <el-table-column prop="feedback" label="巡点问题" min-width="130">
-          </el-table-column>
-          <el-table-column prop="trafficState" label="通行情况" min-width="130">
-          </el-table-column>
-          <el-table-column
-            v-if="customPermission.patrolPermission == 2"
-            prop="electrifyState"
-            label="通电情况"
-            min-width="130"
-          >
-          </el-table-column>
-        </template>
+        <el-table-column
+          prop="failReason"
+          label="失败原因"
+          show-overflow-tooltip
+        >
+        </el-table-column>
       </el-table>
-    </div>
+    </template>
     <p class="button_box">
       <el-button @click="cancelImport()" size="small">取 消</el-button>
       <el-button type="primary" @click="confirmImport()" size="small"
@@ -254,6 +296,7 @@ export default {
     },
     // 勾选表格数据格式
     setTableData(arr) {
+      arr = JSON.parse(JSON.stringify(arr));
       let result = [];
       let pointSet = new Set();
       for (let key of arr) {
@@ -348,7 +391,7 @@ export default {
     },
     // 选中A、B面的时候
     changeCheckBox(row, adSpaceItem) {
-        console.log('row, adSpaceItem', row, adSpaceItem.checkBox)
+      console.log("row, adSpaceItem", row, adSpaceItem.checkBox);
       if (adSpaceItem.checkBox) {
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
       } else {
@@ -493,6 +536,9 @@ export default {
     },
     // 导出有问题的点
     downLoadExcel() {
+      if (this.errorList.length === 0) {
+        return this.$message.warning("数据为空！");
+      }
       let arr = this.questionPoint(this.errorList);
       let allHead = [
         "资源名称",

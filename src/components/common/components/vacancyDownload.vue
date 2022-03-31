@@ -193,8 +193,9 @@ export default {
           }
         });
     },
+    // 个人权限公司下媒体类型列表
     getAllMediaTypes() {
-      api.getApi('/addsp/api/v1/mediaTypes').then(res => {
+      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
         if (res.data.SysCode == 200200) {
           this.allMediaTypes = res.data.data || []
         } else {
@@ -305,6 +306,10 @@ export default {
         };
         returnObj.city.push(resObj.sheetName);
         let dataArr = data.adsList || [];
+        if(dataArr.length === 0) {
+          this.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
+          break;
+        }
         for (let item of dataArr) {
           let obj = {
             resName: item.resName || "",

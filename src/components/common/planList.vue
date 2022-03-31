@@ -2025,8 +2025,9 @@ export default {
       this.isResExport = true
       this.getAllMediaTypes()
     },
+    // 个人权限公司下媒体类型列表
     getAllMediaTypes() {
-      api.getApi('/addsp/api/v1/mediaTypes').then(res => {
+      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
         if (res.data.SysCode == 200200) {
           this.allMediaTypes = res.data.data || []
         } else {

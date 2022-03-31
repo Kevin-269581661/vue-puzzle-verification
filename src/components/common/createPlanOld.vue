@@ -4195,6 +4195,12 @@ export default {
         ls: this.dateInput[0],
         le: this.dateInput[1],
       };
+      let _asrIDs=null;
+      if(this.planForm.pointOfAsrIDs&&this.planForm.pointOfAsrIDs.length>0){
+        _asrIDs=this.planForm.pointOfAsrIDs;
+      }else{
+        _asrIDs=this.BDData.asrID.split(" ");
+      }
       localStorage.setItem(
         "mapParams",
         JSON.stringify({
@@ -4203,7 +4209,7 @@ export default {
           le: this.dateInput[1],
           adSystemId: [this.industryID],
           suID: this.BDData.uid,
-          asrIDs: this.planForm.pointOfAsrIDs,
+          asrIDs: _asrIDs
         })
       );
       let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`;
@@ -6112,9 +6118,12 @@ export default {
     align-items: center;
     flex-flow: row wrap;
     overflow: auto;
-    .space-item + .space-item {
-      margin-left: 12px;
+    .space-item{
+        margin-right: 12px;
     }
+    // .space-item + .space-item {
+    //   margin-left: 12px;
+    // }
   }
 }
 

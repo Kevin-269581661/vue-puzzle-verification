@@ -1673,7 +1673,6 @@ import {
   InputNumber,
   Radio,
 } from "element-ui";
-import apQuotation from "./components/apQuotation";
 import api from "../../api/api";
 import areaArr from "../../commonFun/areaPackage_new";
 import commaFormat from "../../commonFun/commaFormat";
@@ -1709,7 +1708,6 @@ export default {
     elBadge: Badge,
     elCheckbox: Checkbox,
     elInputNumber: InputNumber,
-    apQuotation,
     importResult,
   },
   data() {
@@ -1802,8 +1800,6 @@ export default {
       activeRName: "", //step2当前选中的城市名称
       areaName: "全市", // step2当前选中的区域
       areaRid: "", // step2当前选中的区域rid
-      quotation: [], // step3 报价单汇总
-      quotationObj: {}, // 传递给报价单组件的数据，标示是否来自详情
       totalPrice: 0, //总价
       remark: "无", //备注
       cash: 0, // 现金结算
@@ -2063,7 +2059,6 @@ export default {
       connectAdDialogVisible: false, // 连排门模态框
       ActiveConnectADList: {}, // 购物车 - 当前点击行的连排门信息
       mediaLevelNum: { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 },
-    //   asrIDList: [], // 已选点位里存在的公司及城市
       adSpaceStatistics: {},
       indexData: "", // 首页来源的数据-前置地图选点
       unfinishedData: "", // 未完成方案信息
@@ -5752,6 +5747,7 @@ export default {
             let tempObj = {
                 asrID: sKey.asrID,
                 rID: sKey.rid,
+                city: sKey.city,
                 mediaTypeId: sKey.mediaTypeId,
                 pdStar: tempSchedules[0],
                 pdEnd: tempSchedules[1],
@@ -5793,6 +5789,19 @@ export default {
             this.PushADBFun(res.data.Data);
             this.CreateShareADSFun();
             sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
+            let tempSet = new Set();
+            let cityArea = [];
+            mediaTypeList.forEach(item => {
+                let asrIDAndRid = `${item.asrID}&&${item.rid}`;
+                if(!tempSet.has(asrIDAndRid)) {
+                    cityArea.push({
+                        asrID: item.asrID,
+                        city: item.city,
+                        rid: item.rID
+                    })
+                    tempSet.add(asrIDAndRid)
+                }
+            })
             sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
           } else {
             this.ADloading.close();
@@ -6104,7 +6113,7 @@ export default {
     flex-flow: row wrap;
     overflow: auto;
     .space-item + .space-item {
-      margin-right: 12px;
+      margin-left: 12px;
     }
   }
 }

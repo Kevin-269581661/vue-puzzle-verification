@@ -926,6 +926,7 @@ export default {
     let validatePrice = (rule, value, callback) => {
       let reg = /^\d+(\.\d+)?$/;
       if (value !== "" && !reg.test(value)) {
+        console.error(rule, value);
         callback(new Error("只能输入数字!"));
       } else {
         if (value > 9999999) {
@@ -1234,43 +1235,7 @@ export default {
             message: "最多只能输入20个字节!",
             trigger: ["blur", "change"],
           },
-        ],
-        /* adSizeWidth: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: ["blur", "change"] },
-        ], */
-        /* adSizeHeight: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: ["blur", "change"] },
-        ],
-        adViewSizeWidth: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: "change" },
-        ], */
-        /* adViewSizeHeight: [
-          {
-            required: true,
-            type: "string",
-            message: "不能为空且只能输入数字!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validatePrice, trigger: ["blur", "change"] },
-        ], */
+        ]
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片
@@ -2443,8 +2408,8 @@ export default {
       this.resData.resID = sessionStorage.getItem("resID");
       if (recObj !== null || mediaTypeObj !== null) {
         // 设置默认选中的城市
-        this.recForm.city[0] = recObj.rid.toString().substring(0, 2) + "0000";
-        this.recForm.city[1] = recObj.cityId;
+         this.recForm.city = [];
+         this.recForm.city.push(recObj.rid.toString().substring(0, 2) + "0000", recObj.cityId + '')
         this.handleChange(this.recForm.city);
         this.resAddres.city = recObj.city;
         this.resAddres.area = recObj.cityArea;
@@ -2458,7 +2423,7 @@ export default {
           business: recObj.tradingArea,
           resaddr: recObj.resAddress,
           floorType: recObj.houseType,
-          doorwayNum: recObj.EntryExitNum,
+          doorwayNum: recObj.EntryExitNum || "",
           buildingNum: recObj.buildingNum,
           households: recObj.HouseNum,
           buildingPrice: recObj.housePrice,

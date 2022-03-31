@@ -2413,7 +2413,11 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
+        if(dataArr.length === 0) {
+          sessFun.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
+          break;
+        }
         for (let item of dataArr) {
           let obj = {
             resName: item.resName || "",
@@ -2648,7 +2652,7 @@ export default {
               resName: item.resName,
               tradingArea: item.tradingArea,
               resAddress: item.resAddress,
-              mediaTypeName: item.mediaTypeName,
+              mVehicle: item.mVehicle,
               fNum: item.fNum,
               hNum: item.hNum,
               hPrice: item.hPrice / 100,

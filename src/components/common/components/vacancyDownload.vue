@@ -36,6 +36,23 @@
     </el-row>
     <el-row>
       <el-col :span="6">
+        <span>媒体类型:</span>
+      </el-col>
+      <el-col :span="18">
+          <el-select
+            size="small"
+            class="m_ehicle_class"
+            multiple
+            collapse-tags
+            v-model="downLoadInfo.mediaTypeIds"
+            placeholder="请选择媒体类型"
+          >
+            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="6">
         <span>选择日期:</span>
       </el-col>
       <el-col :span="18">
@@ -88,8 +105,10 @@ export default {
         loadType: "1",
         city: [],
         dateType: "1",
+        mediaTypeIds: '',
         daterange: [],
       },
+      allMediaTypes: [],
       // 城市列表
       cityList: [],
       pickerOptions: {
@@ -109,7 +128,6 @@ export default {
       this.$emit("cancelClick", false);
     },
     confirmDown () {
-      console.log("downLoadInfo----", this.downLoadInfo);
       let { loadType, city, daterange, dateType } = this.downLoadInfo;
       if (!city.length) {
         Message.warning("请选择城市!");
@@ -130,12 +148,13 @@ export default {
           this.dateRangeEmpty();
         }
       } else {
-        let { city, daterange } = this.downLoadInfo;
+        let { city, daterange, mediaTypeIds } = this.downLoadInfo;
         let rid = city.join(",");
         let info = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
           rIDs: rid,
+          mediaTypeIds: mediaTypeIds.join(',')
         };
         if (dateType == "1") {
           // 半年日期按照点位来导
@@ -174,10 +193,20 @@ export default {
           }
         });
     },
+    // 个人权限公司下媒体类型列表
+    getAllMediaTypes() {
+      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
+        if (res.data.SysCode == 200200) {
+          this.allMediaTypes = res.data.data || []
+        } else {
+          this.messageFun('warning', res.data.MSG);
+        }
+      })
+    },
     // 自定义日期按照小区
     dateRangeEmpty () {
       this.postDownLoadNum(0);
-      let { city, daterange } = this.downLoadInfo;
+      let { city, daterange, mediaTypeIds } = this.downLoadInfo;
       let loadingPoint = this.$loading({
         lock: true,
         text: "玩命加载中...",
@@ -192,6 +221,7 @@ export default {
         rIDs: rid,
         startTime: daterange[0],
         endTime: daterange[1],
+        mediaTypeIds: mediaTypeIds.join(',')
       };
       api
         .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
@@ -263,7 +293,7 @@ export default {
     },
 
     // 导出空点格式化数据
-    formatData (arr) {
+    formatData(arr) {
       let returnObj = {
         city: [],
         arr: "",
@@ -275,7 +305,11 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
+        if(dataArr.length === 0) {
+          this.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
+          break;
+        }
         for (let item of dataArr) {
           let obj = {
             resName: item.resName || "",
@@ -369,20 +403,16 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      let dateArr = [];
       let request_times = this.downLoadInfo.city.length; //计算分几次请求
       let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
       for (let i = 0; i < request_times; i++) {
         // 循环请求次数，构造请求的Promise对象并插入funcs数组
         let func = new Promise((resolve, reject) => {
-          //定义Promise并处理请求逻辑
           let data = [];
-          console.log(this.downLoadInfo.city[i]);
           api
             .getApi(
-              // this.apiVar.jsonLink+this.downLoadInfo.city[i]+'.json'
               this.apiVar.Advertisement + "/ExportHalfYearSpaceRes",
-              { cityIds: this.downLoadInfo.city[i] }
+              { cityIds: this.downLoadInfo.city[i], mediaTypeIds: this.downLoadInfo.mediaTypeIds.join(',') }
             )
             .then((response) => {
               if (response.data.SysCode == 200200) {
@@ -491,7 +521,6 @@ export default {
           showList: [],
         };
         filenameArr.push(resObj.sheetName);
-        // console.log(data)
         for (let k = 0, kLen = data.length; k < kLen; k++) {
           for (let item of data[k]) {
             let dateArr = [];
@@ -763,6 +792,7 @@ export default {
   mounted () {
     this.getSessionData();
     this.getCity();
+    this.getAllMediaTypes();
   },
   computed: {
     //显示导点位

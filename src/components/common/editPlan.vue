@@ -2888,7 +2888,7 @@
             },
             // step3
             getAsNameByShopingList(planGroupByMediaType){
-                if(Array.isArray(planGroupByMediaType) && planGroupByMediaType.length && !this.creating) {
+                if(!this.creating) {
                     this.creating = true
                     let timer = setTimeout(() => {
                         this.creating = false
@@ -2900,8 +2900,7 @@
                             })
                             let asrIDs = [],
                                 apMinTime = null,
-                                isHad = null,
-                                recommendReason = this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1';
+                                isHad = null;
                             for(let sKey of this.shopingList){
                                 isHad = false;
                                 let tempSchedules = sKey.schedules.split('-');
@@ -2909,53 +2908,39 @@
                                     apMinTime = tempSchedules[0]
                                 }
                                 for (let aKey of asrIDs) {
-                                    if (aKey.asrID == sKey.asrID && aKey.city == sKey.city && aKey.mediaTypeId == sKey.mediaTypeId) {
+                                    if (aKey.asrID == sKey.asrID && aKey.rID == sKey.rid && aKey.mediaTypeId == sKey.mediaTypeId) {
                                         isHad = true;
                                         tempSchedules[0]<aKey.pdStar && (aKey.pdStar=tempSchedules[0]);
                                         tempSchedules[1]>aKey.pdEnd && (aKey.pdEnd=tempSchedules[1]);
                                         aKey.pdNum++;
                                         aKey.pdDays += (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1;
-                                        aKey.abList.push({
-                                            asID: sKey.asID,
-                                            pdID: aKey.pdID,
-                                            pbStar: tempSchedules[0],
-                                            pbEnd: tempSchedules[1],
-                                            uID: this.sessionData.uID,
-                                            resID: sKey.resID,
-                                            mapCenterName: sKey.mapCenter,
-                                            recommendReason: recommendReason?(sKey.recommendReason||''):null
-                                        })
+                                        aKey.abList.push(this.getSpaceInfo(sKey, aKey.pdID))
                                         break;
                                     } else {
                                         isHad = false;
                                     }
                                 }
                                 if(!isHad){
+                                    let tempPdID = null;
+                                    if(Array.isArray(planGroupByMediaType)) {
+                                        let planMediaTypeObj = planGroupByMediaType.find((planMediaTypeItem) => sKey.rid == planMediaTypeItem.rID && sKey.asrID == planMediaTypeItem.asrID && sKey.mediaTypeId == planMediaTypeItem.mediaTypeId)
+                                        if(planMediaTypeObj) {
+                                            tempPdID = planMediaTypeObj.pdID;
+                                        }
+                                    }
                                     let tempObj = {
+                                        pdID: tempPdID,
                                         asrID: sKey.asrID,
                                         city: sKey.city,
-                                        rid: sKey.rid,
+                                        rID: sKey.rid,
+                                        mediaTypeId: sKey.mediaTypeId,
                                         pdStar: tempSchedules[0],
                                         pdEnd: tempSchedules[1],
                                         pdNum: 1,
-                                        pdDays: (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1,                    //总投放天数
+                                        //总投放天数
+                                        pdDays: (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1,
+                                        abList: [this.getSpaceInfo(sKey, tempPdID)],     
                                     };
-                                    planGroupByMediaType.forEach((mediaTypeOfPlan) => {
-                                        tempObj.pdID = mediaTypeOfPlan.pdID
-                                        tempObj.mediaTypeId = mediaTypeOfPlan.mediaTypeId
-                                        tempObj.abList = [
-                                            {
-                                                asID: sKey.asID,
-                                                pdID: mediaTypeOfPlan.pdID,
-                                                pbStar: tempSchedules[0],
-                                                pbEnd: tempSchedules[1],
-                                                uID: this.sessionData.uID,
-                                                resID: sKey.resID,
-                                                mapCenterName: sKey.mapCenter,
-                                                recommendReason: recommendReason?(sKey.recommendReason||''):null
-                                            }
-                                        ]
-                                    })
                                     asrIDs.push(tempObj)
                                 }
                             }
@@ -2986,6 +2971,22 @@
                         clearTimeout(timer)
                     }, 500)
                 }
+            },
+            // 返回点位数据
+            getSpaceInfo(shopingItem, pdID) {
+                let tempSpaceInfo = {
+                    asID: shopingItem.asID,
+                    pdID: pdID || this.getpdidByCityAndMType(shopingItem),
+                    pbStar: shopingItem.schedules.split('-')[0],
+                    pbEnd: shopingItem.schedules.split('-')[1],
+                    uID: this.sessionData.uID,
+                    resID: shopingItem.resID,
+                    mapCenterName: shopingItem.mapCenter,
+                }
+                if (this.customPermission.pptPermission && this.customPermission.pptPermission.gzqylPermission == '1') {
+                    tempSpaceInfo.recommendReason = shopingItem.recommendReason || '';  //  亲粤邻定制：推荐理由
+                }
+                return tempSpaceInfo;
             },
             // dialog购物筐的显示全选中后添加都购物车
             dialogVisible() {

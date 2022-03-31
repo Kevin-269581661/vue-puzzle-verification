@@ -884,7 +884,6 @@
                 console.log('城市不同排期的所有面数', JSON.stringify(this.CSMList))
                 for (let qkey of this.quotation){
                     for(let ckey of this.CSMList){
-                        // debugger
                         if(qkey.city === ckey.city && qkey.asrID == ckey.asrID){
                             for (const mediaTypeKey in qkey.priceMsg) {
                                 if (Object.hasOwnProperty.call(qkey.priceMsg, mediaTypeKey)) {

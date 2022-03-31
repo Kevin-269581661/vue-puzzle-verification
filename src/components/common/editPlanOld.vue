@@ -1699,7 +1699,7 @@
                         origin: data.district,
                         resAddress: data.resAddress,
                         mediaTypeName: data.mediaTypeName,
-                        mediaTypeId: info.mediaTypeId,
+                        mediaTypeId: data.mediaTypeId,
                         mediaName: data.mTitle,
                         assetTag: data.assetTag,
                         asLab: data.asLab,

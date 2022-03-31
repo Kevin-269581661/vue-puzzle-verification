@@ -270,19 +270,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane
-            v-if="planDetail.planMode == 0"
-            label="报价单"
-            name="second"
-          >
-            <ap-quotation
-              @detailInfo="setInfo"
-              :quotationData="quotation"
-              :copydata="copyAsidArr"
-              :shopingList="[]"
-              class="price_quo"
-            ></ap-quotation>
-          </el-tab-pane>
           <el-tab-pane label="物料信息" name="third">
             <material
               :material="materialInfo"
@@ -448,7 +435,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 报价单
-import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue';
@@ -466,7 +452,6 @@ import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 export default {
   name: "planDetail",
   components: {
-    apQuotation,
     material,
     detail,
     addPoint,
@@ -524,17 +509,12 @@ export default {
       },
       // 选点排期
       setpointArr: [],
-      copyAsidArr: [],
       // 广告物料信息
       materialInfo: [],
       // 道闸物料信息
       daoInfo: [],
       // 报价单详情
       priceSheet: [],
-      quotation: {
-        isDetail: true,
-        quotation: []
-      },
       // 城市过滤结果
       filterCityData: [],
       // 排期时间过滤
@@ -588,9 +568,6 @@ export default {
     },
     handleCurrentChange (val) {
       this.currentPage = val;
-    },
-    setInfo (data) {
-      this.priceSheet = data;
     },
     // 导出excel
     export2Excel (name) {
@@ -881,7 +858,6 @@ export default {
             this.filtersArea = filterFormat(resInfo, "rName");
             this.filtersData = filterFormat(resInfo, "timeRange");
             // 选点排期
-            this.copyAsidArr = JSON.parse(JSON.stringify(resInfo));
             this.setpointArr = resInfo;
 
             // 广告门物料信息
@@ -1321,9 +1297,6 @@ export default {
 
 .box-wrap {
   background-color: #fff;
-}
-.price_quo {
-  margin: 8px 32px;
 }
 /deep/ .el-tabs__nav-scroll {
   padding-left: 28px;

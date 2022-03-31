@@ -3166,7 +3166,7 @@ export default {
   border: 1px solid rgba(230, 231, 233, 1);
 }
 /deep/ .el-tabs__item {
-  width: 80px;
+  min-width: 80px;
   font-size: 16px;
   text-align: center;
 }

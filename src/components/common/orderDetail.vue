@@ -1124,7 +1124,7 @@
           </span>
         </el-dialog>
         <!--修改订单金额-->
-        <el-dialog
+        <!-- <el-dialog
           v-if="orderDetail.planMode != 1"
           title="修改订单金额"
           width="768px"
@@ -1139,10 +1139,9 @@
             :changePriceData="changePriceData"
             v-if="changePriceModal"
           ></changeOrderPrice>
-        </el-dialog>
+        </el-dialog> -->
 
         <changeProposalOrderPrice
-          v-else
           :apID="orderDetail.apID"
           :requesInfo="{ mark: this.handleTime, opType: 1 }"
           :settlementFormVisible="changePriceModal"

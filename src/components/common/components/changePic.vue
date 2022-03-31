@@ -619,7 +619,7 @@
                 activePainIndex: 0,
                 // 搜索信息
                 searchInfo: {
-                    mediaType: "",
+                    mediaType: null,
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
@@ -627,6 +627,10 @@
                     // 搜索列表数据
                     // 媒体类型
                     mediaTypeArr: [
+                        {
+                            label: '全部',
+                            value: null
+                        }
                     ],
                     // 城市区域
                     citys: [],
@@ -786,6 +790,9 @@
         methods: {
             //获取媒体类型数据
             getMediaTypes(){
+                //如果当前换画组数据为空时，则不进行数据请求
+
+                if(this.painList.length <= 0) return;
                 let info = {
                     apID:sessionStorage.getItem('order_apid'),
                     replaceRecordId: this.painList[this.activePainIndex].id
@@ -804,7 +811,7 @@
                             })
                         })
                         this.searchInfo.mediaTypeArr=_newData;
-                        this.searchInfo.mediaType='';
+                        this.searchInfo.mediaType=null;
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -1186,7 +1193,6 @@
                                     name: item.replaceRecordName,
                                 };
                             });
-                            if(this.painList.length <= 0) return;
                             this.getMediaTypes();
 
                         } else {

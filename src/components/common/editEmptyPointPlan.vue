@@ -1423,7 +1423,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
         .then((res) => {
-          // console.log(res.data);
           if (!res.data.SysCode) {
             if (res.data.length) {
               let returnobj = this.formatData(res.data);
@@ -1503,7 +1502,7 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
         for (let item of dataArr) {
           let obj = {
             province: item.prName || "--",

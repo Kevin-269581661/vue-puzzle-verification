@@ -2412,7 +2412,7 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
         for (let item of dataArr) {
           let obj = {
             resName: item.resName || "",

@@ -1016,7 +1016,7 @@
                     pType: type,
                     pageNum: currPage,
                     pageSize: pageSize2,
-                    mVehicle: mediaType,
+                    mediaTypeId: mediaType,
                     time: dateRange.includes('全部')?'':dateRange,
                     materialRemark: materialRemark.includes('全部')?'':materialRemark,
                     prStatus: prStatus=='全部'?'':prStatus

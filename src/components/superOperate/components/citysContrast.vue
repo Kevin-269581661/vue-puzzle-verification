@@ -179,7 +179,7 @@
                         </el-select>
                     </div>
                     <div class="data-tab" v-if="mediaTypeList.length>0">
-                        <span>媒体类型1：</span>
+                        <span>媒体类型：</span>
                         <el-radio-group v-model="contrastMediaTypeValue" size="mini" @change="cityBattleRadio">
                             <el-radio-button :label="null">全部</el-radio-button>
                             <el-radio-button v-for="item in mediaTypeList" :key="item.id" :label="item.id">{{item.name}}</el-radio-button>

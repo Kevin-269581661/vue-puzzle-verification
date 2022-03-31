@@ -568,10 +568,12 @@
     }
 
     /deep/ .mediaList_wrap .el-tabs__item{
-        width: 68px;
+        min-width: 68px;
+        padding-right: 4px;
+        box-sizing: border-box;
         height: 54px;
         line-height: 54px;
-        padding: 0;
+        // padding: 0;
         text-align: center;
         font-size: 16px;
         color: #666666;
@@ -586,7 +588,7 @@
     } */
 
     /deep/ .el-tabs__active-bar{
-        width: 68px !important;
+        // width: 68px !important;
     }
     /deep/ .el_tab_road{
         text-align: right;

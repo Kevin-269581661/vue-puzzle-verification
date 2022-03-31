@@ -1558,6 +1558,12 @@
     .otherSelect /deep/ .el-input__icon {
         line-height: unset;
     }
+    /deep/ .el-table__row .cell{
+        min-width: 110px;
+        overflow-x: auto !important;
+        white-space: normal !important;
+        height: auto !important;
+    }
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 535px !important;
     }
@@ -1766,8 +1772,11 @@
     .adDoor .el-checkbox {
         margin-right: 0;
     }
+    /deep/ .el-checkbox{
+        margin-right: 12px;
+    }
     /deep/ .el-checkbox + .el-checkbox {
-        margin-left: 4px;
+        /* margin-left: 4px; */
     }
 
     /deep/ .el-table__expanded-cell[class*="cell"] {
@@ -1839,11 +1848,11 @@
     }
 
     /*超出省略*/
-    /deep/ .el-table .cell {
+    /* /deep/ .el-table .cell {
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
+    } */
 
     /deep/ .el-table__row td:nth-child(2) .cell span {
         width: 225px;

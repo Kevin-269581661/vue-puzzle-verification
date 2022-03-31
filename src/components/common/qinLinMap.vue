@@ -1305,6 +1305,7 @@ export default {
   data () {
     let _this = this;
     return {
+      mediaTypes: [],  //媒体类型
       systemSource: mapConfig.system,
       citySelect: [],
       // userInfo:'',
@@ -1458,7 +1459,7 @@ export default {
       // 选择到设备类型
       selectDoorType: "",
       // 媒介载体
-      selectMediaType: "",
+      selectMediaType: null,
       // 媒体等级
       selectMediaLevel: "",
       // 终端类型列表
@@ -1617,12 +1618,21 @@ export default {
     }
 
     //获取媒体类型
-    if(this.adListParams.asrIDs&&this.adListParams.asrIDs.length>0){
-      //存在公司id--根据公司id获取媒体类型
-      this.getCompanyediaTypes();
+    if(this.adListParams.planAdsCnt){
+      //意向方案--媒体类型直接写死广告门
+      this.mediaTypes=[
+        {id: 1, name: "广告门"}
+      ];
+      this.selectMediaType=1;
     }else{
-      //不存在公司id--查询系统所有媒体类型
-      this.getSystemMediaTypes();
+      //非意向方案
+      if(this.adListParams.asrIDs&&this.adListParams.asrIDs.length>0){
+        //存在公司id--根据公司id获取媒体类型
+        this.getCompanyediaTypes();
+      }else{
+        //不存在公司id--查询系统所有媒体类型
+        this.getSystemMediaTypes();
+      }
     }
   },
   computed: {
@@ -2211,6 +2221,7 @@ export default {
       // console.log('获取指定资源到媒体列表-----')
       let params = {
         resID: this.showResInfo.resID,
+        mediaTypeId: this.selectMediaType
       };
       if (this.isShare) {
         params.shareCode = this.routeQuery.code;
@@ -3862,6 +3873,7 @@ export default {
     },
     // 媒介载体
     filterMediaType () {
+      if(this.adListParams.planAdsCnt) return;
       if (this.selectMediaType) {
         this.transfersFun();
       }
@@ -3904,7 +3916,7 @@ export default {
       this.buildPrice = ["", ""];
       this.liveYear = ["", ""];
       this.selectDoorType = "";
-      this.selectMediaType = "";
+      this.selectMediaType = null;
       this.selectMediaLevel = "";
       this.selectMachineType = [];
       this.selectLimits = [];

@@ -394,7 +394,7 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane
+          <!-- <el-tab-pane
             v-if="role != 'ADN_EP' && orderDetail.planMode != 1"
             label="报价单"
             name="second"
@@ -410,7 +410,7 @@
                 class="price_quo"
               ></ap-quotation>
             </div>
-          </el-tab-pane>
+          </el-tab-pane> -->
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
               :material="materialInfo"

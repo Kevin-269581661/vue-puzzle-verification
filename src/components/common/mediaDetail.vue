@@ -217,12 +217,22 @@
                                     element-loading-spinner="el-icon-loading"
                                     border
                                     :data="mediaTypeItem.mediaList"
-                                    style="width: 100%">
+                                    style="width: 100%"
+                                    show-overflow-tooltip>
                                     <el-table-column
                                         prop="mTitle"
                                         label="媒体名称"
                                         min-width="8.6%"
                                     >
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="mediaTypeName"
+                                        label="媒体类型"
+                                        min-width="10%"
+                                        show-overflow-tooltip>
+                                        <template slot-scope="scope">
+                                            {{scope.row.mediaTypeName || '--'}}
+                                        </template>
                                     </el-table-column>
                                     <el-table-column
                                         prop="grade"

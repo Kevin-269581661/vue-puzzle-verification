@@ -391,12 +391,9 @@ export default {
     },
     // 选中A、B面的时候
     changeCheckBox(row, adSpaceItem) {
-      console.log("row, adSpaceItem", row, adSpaceItem.checkBox);
       if (adSpaceItem.checkBox) {
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
       } else {
-        // A、B都勾选的时候
-        this.IsAll = false;
         this.deleteShopRow(row, adSpaceItem);
       }
     },
@@ -411,7 +408,7 @@ export default {
           break;
         }
       }
-      this.allCheckboxUpdata();
+      this.isAll = false;
     },
     // 表头全选
     allCheckboxAds() {
@@ -426,16 +423,15 @@ export default {
       if (this.shopList.length <= 0) {
         this.isAll = false;
       } else {
-        let isCheckBox = false;
+        let isAllCheckBox = true;
         for (let key of this.successList) {
-          if (key.checkBox) {
-            isCheckBox = true;
-            break;
-          }
+          (key.adsList||[]).forEach((item) => {
+            if (!item.checkBox) {
+              isAllCheckBox = false;
+            }
+          })
         }
-        if (!isCheckBox) {
-          this.isAll = false;
-        }
+        this.isAll = isAllCheckBox;
       }
     },
     // 全选放进购物车
@@ -515,7 +511,7 @@ export default {
     AddShopingInfo(mediaInfo, adSpaceInfo) {
       let selectInfo = this.setShopingTable(mediaInfo, adSpaceInfo);
       this.shopList.push(selectInfo);
-      // this.isAll = true
+      this.allCheckboxUpdata();
     },
     // 处理有问题的点
     checkPointFun(errorList) {

@@ -2765,7 +2765,7 @@ export default {
       if (newMediaParams.length) {
         this.batchCreateApi(newMediaParams, true);
       } else {
-        console.log("媒体数据为空");
+        console.log("媒体新增数据为空");
       }
     },
     // 取消

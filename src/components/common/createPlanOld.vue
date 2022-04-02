@@ -1758,6 +1758,7 @@ export default {
       }
     };
     return {
+      cacheAsrID: '',  //缓存的公司id
       // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
       isShowHalfYear: false,
       // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
@@ -3727,7 +3728,7 @@ export default {
     getMediaTypesByCompany() {
       let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
       if (!selectedAsrIds) {
-        selectedAsrIds = this.BDData.asrID + "";
+        selectedAsrIds = this.BDData.asrID?(this.BDData.asrID + ""):this.cacheAsrID;
       }
       api
         .getApi("/addsp/api/v1/company/mediaTypes", {
@@ -4203,7 +4204,7 @@ export default {
       if(this.planForm.pointOfAsrIDs&&this.planForm.pointOfAsrIDs.length>0){
         _asrIDs=this.planForm.pointOfAsrIDs;
       }else{
-        _asrIDs=this.BDData.asrID.split(" ");
+        _asrIDs=this.BDData.asrID?this.BDData.asrID.split(" "):this.cacheAsrID.split(",");
       }
       localStorage.setItem(
         "mapParams",
@@ -5975,10 +5976,16 @@ export default {
     // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
     saveApInfo() {
       this.isSelect = true;
+      //获取当前选择的公司id
+      let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
+      if (!selectedAsrIds) {
+        selectedAsrIds = this.BDData.asrID?(this.BDData.asrID + ""):this.cacheAsrID;
+      }
       let planInfo = {
         uid: this.sessionData.uID,
         setTime: this.timestampToTime(Date.parse(new Date())),
         planData: {
+          asrID: selectedAsrIds,   //缓存公司id
           suid: this.BDData.uid, // 销售uid,如果是销售自己创建方案则uid与suid相同
           uType: this.BDData.uType, // 销售权限
           baseInfo: this.planForm,
@@ -6019,6 +6026,7 @@ export default {
         this.throwCity = returnData.planData.throwCity;
         this.shopingList = returnData.planData.adsList;
         this.companyBrand = returnData.planData.companyBrand;
+        this.cacheAsrID = returnData.planData.asrID;
         if (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
           this.getCityList();
           // getIndustryBycID需要先获取Get_cName

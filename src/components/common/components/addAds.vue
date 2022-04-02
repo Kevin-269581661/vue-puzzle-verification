@@ -1182,39 +1182,6 @@
                 }
 
             },
-            // 选中A、B面的时候
-            // changeA(row) {
-            //     let check = row
-            //     if (check.checkBox.A) {
-            //         this.AddShopingInfo(row, 'A') // 添加到购物车
-            //     } else {
-            //         this.IsAll = false
-            //         this.deleteShopRow(check, 'A')
-
-            //     }
-            // },
-            // changeB(row) {
-            //     let check = row
-            //     if (check.checkBox.B === true) {
-            //         this.AddShopingInfo(row, 'B') // 添加到购物车
-            //     } else {
-            //         this.IsAll = false
-            //         this.deleteShopRow(check, 'B')
-
-            //     }
-            // },
-            // 道闸点位选择
-            // changeABC(row){
-            //     if (row.checkBox.ABC === true){
-            //         let obj = this.setShopingTable(row,'ABC')
-            //         this.shopingList.push(obj)
-            //     }else{
-            //         this.deleteShopRow(row, 'ABC')
-
-            //     }
-            //     this.$emit('ievent',this.shopingList);
-            //     this.IsAll = true
-            // },
             // 全选是放进购物车-广告门
             allSelectToShop_adDoor(){
                 for (let i = 0; i < this.planList.length; i++) {
@@ -1301,58 +1268,40 @@
             },
             // 全选表格点位
             allSelectAdsBtn() {
-                console.log('全选')
-                // for (let pkey of this.planList) {
-                //     if(this.mediaType === '广告门'){
-                //         // 根据是否被占用去打勾
-                //         if (!pkey.box.A) {
-                //             pkey.checkBox.A = true
-                //         }
-                //         if (!pkey.box.B) {
-                //             pkey.checkBox.B = true
-                //         }
-                //     }else if(this.mediaType === '道闸'){
-                //         pkey.checkBox.ABC = true
-                //     }
-                // }
-                if(this.mediaType === '广告门'){
-                    this.allSelectToShop_adDoor()
-                }else if(this.mediaType === '道闸'){
-                    this.allSelectToShop_roadGate()
+                //全选
+                for(let planItem of this.planList){
+                    for(let adsItem of planItem.adsList){
+                        if(adsItem.checkFlag&&!adsItem.isCheck){
+                            this.$set(adsItem,'isCheck',true);
+                            let selectInfo = this.setShopingTable(planItem,adsItem);
+                            this.currPageSelect++;
+                            this.shopingList.push(selectInfo)
+                        }
+                    }
                 }
-                // this.allSelectToShop(selection)
+                this.$emit('ievent',this.shopingList);
+
             },
             //取消全选
             cancleSelectAds(){
-                console.log('取消全选',this.planList)
-                for(let pkey of this.planList){
-                    if(pkey.checkBox.A || pkey.checkBox.B || pkey.checkBox.ABC){
-                        for(let i=0; i<this.shopingList.length;){
-                            if(pkey.mID === this.shopingList[i].mID){
-                                if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.A = false
-                                }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.B = false
-                                }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.ABC = false
+                //取消全选
+                for(let planItem of this.planList){
+                    for(let adsItem of planItem.adsList){
+                        if(adsItem.checkFlag&&adsItem.isCheck){
+                            this.$set(adsItem,'isCheck',false);
+                            for(let i=0;i<this.shopingList.length;){
+                                if(this.shopingList[i].asID==adsItem.asID){
+                                    this.shopingList.splice(i,1);
+                                    this.currPageSelect--;
                                 }else{
-                                    i++
+                                    i++;
                                 }
-                            }else{
-                                i++
                             }
                         }
                     }
                 }
-                // this.computeMedia_AD()
-                // this.getBadeNumberByShopList()
                 this.$emit('ievent',this.shopingList);
+
             },
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
@@ -1421,28 +1370,7 @@
                 console.log('选中的row信息', info)
                 this.currPageSelect++
                 let selectInfo = this.setShopingTable(info,adSpaceInfo)
-                // let asLabsArr = selectInfo.asLabs.split(',')
-                // let asIDArr = selectInfo.asIDs.split(',')
-                // if (letter == 'B') {
-                //     //  alert('B')
-                //     for (let n = 0; n < asLabsArr.length; n++) {
-                //         if (asLabsArr[n] === 'B') {
-                //             console.log('B', asIDArr[n])
-                //             selectInfo.asID = asIDArr[n]
-                //             break
-                //         }
-                //     }
-                //     this.shopingList.push(selectInfo)
-                // } else if (letter == 'A') {
-                //     for (let n = 0; n < asLabsArr.length; n++) {
-                //         if (asLabsArr[n] === 'A') {
-                //             console.log('A', asIDArr[n])
-                //             selectInfo.asID = asIDArr[n]
-                //             break
-                //         }
-                //     }
-                //     this.shopingList.push(selectInfo)
-                // }
+                
                 this.shopingList.push(selectInfo)
                 if (this.currPageSelect == this.currPageAsLength) {
                     this.IsAll = true
@@ -1508,17 +1436,8 @@
                             console.log('购物车中不存在相同点位')
                         }
                     }
-                    // if (this.shopingList[j].mID === row.mID && this.shopingList[j].A_B === letter) {
-                    //     let crossIf = this.crossSchedules(this.shopingList[j].schedules)
-                    //     if (crossIf) {
-                    //         this.shopingList.splice(j, 1)
-                    //         break
-                    //     } else {
-                    //         console.log('购物车中不存在相同点位')
-                    //     }
-                    // }
                 }
-                this.allCheckboxUpdata()
+                // this.allCheckboxUpdata()
             },
             /*公用方法*/
             //点位有时间交叉

@@ -576,7 +576,23 @@
                         <el-form-item
                           label="媒体名称"
                           prop="mediaName"
-                          ref="adMediaName"
+                          :rules="[{
+                            validator: validateMediaName, 
+                            trigger: ['blur', 'change'],
+                            options: {checkMediaTypeIndex: mediaTypeIndex}
+                          },
+                          {
+                            required: true,
+                            message: '媒体名称不能为空!',
+                            trigger: ['blur', 'change'],
+                          },
+                          { validator: validateSpace, trigger: ['blur', 'change'] },
+                          { validator: validateSpecialString, trigger: ['blur', 'change'] },
+                          {
+                            max: 40,
+                            message: '最多只能输入40个字节!',
+                            trigger: ['blur', 'change'],
+                          }]"
                         >
                           <el-input
                             v-model="meidaItem.mediaForm.mediaName"
@@ -987,7 +1003,7 @@ export default {
       assetIdBolean: false,
       dialogImageUrl: "", //缩略图
       dialogVisible: false,
-      activeMediaType: '0',
+      activeMediaType: "0",
       mediaTypeList: [],
       mediaTypeIdsOfCompany: [],
       // 判断资源名称是否有重名
@@ -1192,21 +1208,6 @@ export default {
         { max: 40, message: "最多只能输入40个字节!", trigger: "blur" },
       ],
       mediaRules: {
-        mediaName: [
-          {
-            required: true,
-            message: "媒体名称不能为空!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validateSpace, trigger: ["blur", "change"] },
-          { validator: validateSpecialString, trigger: ["blur", "change"] },
-          { validator: this.validateMediaName, trigger: "blur" },
-          {
-            max: 40,
-            message: "最多只能输入40个字节!",
-            trigger: ["blur", "change"],
-          },
-        ],
         assetId: [
           {
             required: true,
@@ -1235,7 +1236,7 @@ export default {
             message: "最多只能输入20个字节!",
             trigger: ["blur", "change"],
           },
-        ]
+        ],
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片
@@ -1356,7 +1357,7 @@ export default {
   },
   created() {
     this.getFangJiaWangCity();
-    if(this.$route.path.indexOf("media/mediaEdit") !== -1) {
+    if (this.$route.path.indexOf("media/mediaEdit") !== -1) {
       this.pathHaveEdit = true;
       this.getMediaTypesOfCompanyAndRes();
       this.getMediaTypesOfCompany(true);
@@ -1374,41 +1375,67 @@ export default {
     this.getADLimit(); // 获取广告限制列表
   },
   methods: {
+    validateSpace(rule, value, callback) {
+      this.isResError = false;
+      if (value) {
+        if (value.match(/^\s+$/)) {
+          callback(new Error("所填内容不能为空格!"));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    },
+    validateSpecialString(rule, value, callback) {
+      let reg = /[\/]/;
+      if (reg.test(value)) {
+        callback(new Error("不可填写特殊符号!"));
+      } else {
+        callback();
+      }
+    },
     // 获取公司和小区媒体类型的集合
     getMediaTypesOfCompanyAndRes() {
-      api.getApi('/addsp/api/v1/mediaType/listCompanyAllMediaTypeDetails').then((res) => {
-        if (res.data.SysCode == 200200) {
-          let tempMediaTypeList = res.data.data || [];
-          tempMediaTypeList.forEach((item, index) => {
+      api
+        .getApi("/addsp/api/v1/mediaType/listCompanyAllMediaTypeDetails")
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let tempMediaTypeList = res.data.data || [];
+            tempMediaTypeList.forEach((item, index) => {
               item.ADTitleIndex = 0;
               item.mediaList = [];
             });
-          this.mediaTypeList = tempMediaTypeList;
-          this.editFun();
-        } else {
-          Message.warning(res.data.MSG || '媒体类型集合获取失败！');
-        }
-      });
+            this.mediaTypeList = tempMediaTypeList;
+            this.editFun();
+          } else {
+            Message.warning(res.data.MSG || "媒体类型集合获取失败！");
+          }
+        });
     },
     // 获取公司媒体类型列表
     getMediaTypesOfCompany(editFlag) {
-      api.getApi('/addsp/api/v1/mediaType/listCompanyMediaTypeDetails').then((res) => {
-        if (res.data.SysCode == 200200) {
-          if(editFlag) {
-            // 编辑时，公司当前的媒体类型可以增加媒体，过往遗留媒体只能编辑
-            this.mediaTypeIdsOfCompany = (res.data.data || []).map(item => item.id);
+      api
+        .getApi("/addsp/api/v1/mediaType/listCompanyMediaTypeDetails")
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            if (editFlag) {
+              // 编辑时，公司当前的媒体类型可以增加媒体，过往遗留媒体只能编辑
+              this.mediaTypeIdsOfCompany = (res.data.data || []).map(
+                (item) => item.id
+              );
+            } else {
+              let resultArr = res.data.data || [];
+              resultArr.forEach((item, index) => {
+                item.ADTitleIndex = 0;
+                item.mediaList = [];
+              });
+              this.mediaTypeList = resultArr;
+            }
           } else {
-            let resultArr = res.data.data || [];
-            resultArr.forEach((item, index) => {
-              item.ADTitleIndex = 0;
-              item.mediaList = []
-            });
-            this.mediaTypeList = resultArr;
+            Message.warning(res.data.MSG || "公司权限内媒体类型获取失败！");
           }
-        } else {
-          Message.warning(res.data.MSG || '公司权限内媒体类型获取失败！');
-        }
-      });
+        });
     },
     getFangJiaWangCity() {
       let params = {
@@ -1770,9 +1797,9 @@ export default {
     },
     //新增媒体面板
     mediaAddFun(mediaTypeItem) {
-      let tempMediaTypeItem = JSON.parse(JSON.stringify(mediaTypeItem))
+      let tempMediaTypeItem = JSON.parse(JSON.stringify(mediaTypeItem));
       let tempMedia = {
-        text: (tempMediaTypeItem.name || '媒体') + ++mediaTypeItem.ADTitleIndex,
+        text: (tempMediaTypeItem.name || "媒体") + ++mediaTypeItem.ADTitleIndex,
         isAssetIdError: false, // 资源编号重名信息
         assetIdCommentData: {
           // 资源编号重名信息
@@ -1787,18 +1814,23 @@ export default {
           doorType: "",
           mImg: "",
           updataImg: [],
-          adDoorLevel: '',
-        }
+          adDoorLevel: "",
+        },
       };
       mediaTypeItem.mediaList.push(tempMedia);
     },
     // 删除指定下标媒体面板
     mediaDelBtnFun(mediaTypeIndex, mediaIndex) {
-      this.mediaTypeList[mediaTypeIndex].mediaList.splice(mediaIndex, 1)
+      this.mediaTypeList[mediaTypeIndex].mediaList.splice(mediaIndex, 1);
       // 修改面板title标签, 删除最后不用重命名
       if (mediaIndex < this.mediaTypeList[mediaTypeIndex].mediaList.length) {
-        for (let i = 0; i < this.mediaTypeList[mediaTypeIndex].mediaList.length; i++) {
-          this.mediaTypeList[mediaTypeIndex].mediaList[i].text = (this.mediaTypeList[mediaTypeIndex].name || '媒体') + (i + 1);
+        for (
+          let i = 0;
+          i < this.mediaTypeList[mediaTypeIndex].mediaList.length;
+          i++
+        ) {
+          this.mediaTypeList[mediaTypeIndex].mediaList[i].text =
+            (this.mediaTypeList[mediaTypeIndex].name || "媒体") + (i + 1);
         }
       }
       this.mediaTypeList[mediaTypeIndex].ADTitleIndex--;
@@ -1922,13 +1954,17 @@ export default {
     },
     // 接口返回为空时校验当前是否有重复的
     filterlocalAssetId(value) {
-      let result = 0
+      let result = 0;
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
-          let mediaItem = tempMediaList[mediaIndex]
+        for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
+          let mediaItem = tempMediaList[mediaIndex];
           if (mediaItem.mediaForm.assetId === value) {
             result += 1;
             mediaItem.isAssetIdError = false;
@@ -1939,13 +1975,17 @@ export default {
     },
     // 判断同资源下资产编号是否重复
     filterAssetId(resData, value) {
-      let result = false
+      let result = false;
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
-          let mediaItem = tempMediaList[mediaIndex]
+        for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
+          let mediaItem = tempMediaList[mediaIndex];
           if (mediaItem.mediaForm.assetId === value) {
             for (let resItem of resData) {
               if (resItem.mId !== mediaItem.mid) {
@@ -1965,27 +2005,26 @@ export default {
       return result;
     },
     // 媒体名称校验去重
-    validateMediaName(rule, value, callback) {
-      let result = 0
+    validateMediaName(rule, value, callback, source, options) {
+      const checkMediaTypeIndex = rule.options.checkMediaTypeIndex;
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
-        let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
+      if (checkMediaTypeIndex >= 0 && checkMediaTypeIndex < mediaTypeLength) {
+        let result = 0;
+        let tempMediaList = this.mediaTypeList[checkMediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
-          let mediaItem = tempMediaList[mediaIndex]
+        for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
+          let mediaItem = tempMediaList[mediaIndex];
           if (mediaItem.mediaForm.mediaName === value) {
             result += 1;
           }
         }
-      }
-      if (result >= 2) {
-        // console.log('存在相同媒体名称value-----',value)
-        let timer = setTimeout(() => {
-          clearTimeout(timer);
-          callback(new Error("这个媒体名称已在同小区内存在!"));
-        }, 50);
+        if (result >= 2) {
+          callback(new Error("该媒体名称已存在!"));
+        } else {
+          callback();
+        }
       } else {
-        callback();
+        callback(new Error("媒体名称验证失败!"));
       }
     },
     // 广告门输入框和下拉框失去光标
@@ -2108,40 +2147,63 @@ export default {
       }
       let params = [];
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
         let tempMediaList = mediaTypeItem.mediaList;
         let mediaLength = tempMediaList.length;
-        mediaTop:
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+        mediaTop: for (
+          let mediaIndex = 0;
+          mediaIndex < mediaLength;
+          mediaIndex++
+        ) {
           let mediaItem = tempMediaList[mediaIndex];
           let tempMediaForm = mediaItem.mediaForm;
-          let tempAdSpaceInfo = []
-          for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
-            let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex]
-            let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, id: adSpaceId } = adSpaceItem
-            if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && adSpaceId) {
+          let tempAdSpaceInfo = [];
+          for (
+            let adSpaceIndex = 0;
+            adSpaceIndex < tempMediaForm.adSpaceInfo.length;
+            adSpaceIndex++
+          ) {
+            let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex];
+            let {
+              adSizeWidth,
+              adSizeHeight,
+              adViewSizeWidth,
+              adViewSizeHeight,
+              id: adSpaceId,
+            } = adSpaceItem;
+            if (
+              adSizeWidth &&
+              adSizeHeight &&
+              adViewSizeWidth &&
+              adViewSizeHeight &&
+              adSpaceId
+            ) {
               tempAdSpaceInfo.push({
                 adSpaceId,
                 adSizeWidth,
                 adSizeHeight,
                 adViewSizeWidth,
-                adViewSizeHeight
-              })
+                adViewSizeHeight,
+              });
             } else {
               break mediaTop;
             }
           }
-          if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+          if (tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
             // 单个媒体下所有广告位验证通过
             let obj = {
               resId,
-              name: tempMediaForm.mediaName || '',
+              name: tempMediaForm.mediaName || "",
               mediaTypeId: mediaTypeItem.id,
               assetTag: tempMediaForm.assetId,
-              deviceType: tempMediaForm.doorType || '',
-              mediaPicture: tempMediaForm.mImg || '',
-              adSpaceInfo: tempAdSpaceInfo
+              deviceType: tempMediaForm.doorType || "",
+              mediaPicture: tempMediaForm.mImg || "",
+              adSpaceInfo: tempAdSpaceInfo,
             };
             params.push(obj);
           }
@@ -2152,49 +2214,53 @@ export default {
     batchCreateApi(params, editFlag) {
       console.log("params", params);
       if (params.length) {
-        api.postApi_json('/addsp/api/v1/media/create/batch', params).then((res) => {
-          console.log("批量创建媒体", res);
-          this.Editloading.close();
-          if (res.data.SysCode == 200200) {
-            if (!editFlag) {
-              this.$confirm("资源媒体创建成功!", "提示", {
-                confirmButtonText: "继续创建",
-                cancelButtonText: "前往列表",
-                showClose: false,
-                type: "success ",
-              })
-                .then(() => {
-                  this.resetForm(); // 请求成功后重置表单
-                  this.recForm.fullViewUrl = ""; // 小区照片未进行recForm数据绑定
-                  this.resUpdata = [];
+        api
+          .postApi_json("/addsp/api/v1/media/create/batch", params)
+          .then((res) => {
+            console.log("批量创建媒体", res);
+            this.Editloading.close();
+            if (res.data.SysCode == 200200) {
+              if (!editFlag) {
+                this.$confirm("资源媒体创建成功!", "提示", {
+                  confirmButtonText: "继续创建",
+                  cancelButtonText: "前往列表",
+                  showClose: false,
+                  type: "success ",
                 })
-                .catch(() => {
-                  this.resetForm();
-                  this.$router.push("./mediaList");
-                });
+                  .then(() => {
+                    this.resetForm(); // 请求成功后重置表单
+                    this.recForm.fullViewUrl = ""; // 小区照片未进行recForm数据绑定
+                    this.resUpdata = [];
+                  })
+                  .catch(() => {
+                    this.resetForm();
+                    this.$router.push("./mediaList");
+                  });
+              } else {
+                sessFun.messageFun("success", "媒体创建成功");
+                this.$router.push("./mediaDetail");
+              }
             } else {
-              sessFun.messageFun("success", "媒体创建成功");
-              this.$router.push("./mediaDetail");
+              sessFun.messageFun("warning", "媒体创建失败");
             }
-          } else {
-            sessFun.messageFun("warning", "媒体创建失败");
-          }
-        });
+          });
       } else {
         console.log("媒体数据为空");
       }
     },
     batchUpdateApi(params) {
-      api.postApi_json('/addsp/api/v1/media/update/batch', params).then((res) => {
-        this.Editloading.close();
-        if (res.data.SysCode == 200200) {
+      api
+        .postApi_json("/addsp/api/v1/media/update/batch", params)
+        .then((res) => {
           this.Editloading.close();
-          sessFun.messageFun("success", "媒体保存成功！");
-          this.$router.push("./mediaDetail");
-        } else {
-          sessFun.messageFun("warning", "媒体编辑失败！");
-        }
-      });
+          if (res.data.SysCode == 200200) {
+            this.Editloading.close();
+            sessFun.messageFun("success", "媒体保存成功！");
+            this.$router.push("./mediaDetail");
+          } else {
+            sessFun.messageFun("warning", "媒体编辑失败！");
+          }
+        });
     },
     // 资源图片上传前验证格式和大小
     beforeUpload_res(file) {
@@ -2306,40 +2372,48 @@ export default {
         clearTimeout(timer);
       }, 500);
       // 资源表单校验
-      console.log('资源表单校验recForm', this.$refs.recForm)
+      console.log("资源表单校验recForm", this.$refs.recForm);
       this.$refs.recForm.validate((valid, invalidObject) => {
         if (valid) {
           // 验证全部通过后校验媒体表单
           this.adDoorValidateFrom();
         } else {
-          console.log('资源表单invalidObject', invalidObject);
+          console.log("资源表单invalidObject", invalidObject);
           sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
         }
       });
     },
     // 校验所有媒体表单 v-for包含ref时，refs.key获取结果为数组, 注意：验证操作为异步
     adDoorValidateFrom() {
-      let mediaValidFlag = 0
+      let mediaValidFlag = 0;
       const mediaTypeLength = this.mediaTypeList.length;
-      console.log('mediaTypeList', this.mediaTypeList)
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+        for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
           mediaValidFlag += 1;
-          this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].validate((valid, invalidObject) => {
-            if (!valid) {
-              console.log(`invalidObject--mediaForm${mediaTypeIndex}${mediaIndex}`, invalidObject);
-              sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
-              return;
-            } else {
-              mediaValidFlag -= 1
-              if(mediaValidFlag === 0) {
-                // 全部媒体表单验证通过
-                this.validateFinted();
+          this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].validate(
+            (valid, invalidObject) => {
+              if (!valid) {
+                console.log(
+                  `invalidObject--mediaForm${mediaTypeIndex}${mediaIndex}`,
+                  invalidObject
+                );
+                sessFun.messageFun("warning", "必填项信息不能为空或填写有误！");
+                return;
+              } else {
+                mediaValidFlag -= 1;
+                if (mediaValidFlag === 0) {
+                  // 全部媒体表单验证通过
+                  this.validateFinted();
+                }
               }
             }
-          });
+          );
         }
       }
     },
@@ -2369,11 +2443,17 @@ export default {
     resetForm() {
       this.$refs["recForm"].resetFields();
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
-          this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].resetFields();
+        for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
+          this.$refs[
+            `mediaForm${mediaTypeIndex}${mediaIndex}`
+          ][0].resetFields();
         }
       }
     },
@@ -2383,11 +2463,17 @@ export default {
       let timer = setTimeout(() => {
         this.$refs["recForm"].clearValidate();
         const mediaTypeLength = this.mediaTypeList.length;
-        for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+        for (
+          let mediaTypeIndex = 0;
+          mediaTypeIndex < mediaTypeLength;
+          mediaTypeIndex++
+        ) {
           let tempMediaList = this.mediaTypeList[mediaTypeIndex].mediaList;
           let mediaLength = tempMediaList.length;
-          for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
-            this.$refs[`mediaForm${mediaTypeIndex}${mediaIndex}`][0].clearValidate();
+          for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
+            this.$refs[
+              `mediaForm${mediaTypeIndex}${mediaIndex}`
+            ][0].clearValidate();
           }
         }
         clearTimeout(timer);
@@ -2398,7 +2484,7 @@ export default {
       let timer = setTimeout(() => {
         console.log("来源于点击添加媒体", document.body.scrollHeight); //clientHeight
         window.scrollTo(0, document.body.scrollHeight);
-        this.mediaAddFun(this.mediaTypeList[this.activeMediaType])
+        this.mediaAddFun(this.mediaTypeList[this.activeMediaType]);
         clearTimeout(timer);
       }, 500);
     },
@@ -2408,8 +2494,11 @@ export default {
       this.resData.resID = sessionStorage.getItem("resID");
       if (recObj !== null || mediaTypeObj !== null) {
         // 设置默认选中的城市
-         this.recForm.city = [];
-         this.recForm.city.push(recObj.rid.toString().substring(0, 2) + "0000", recObj.cityId + '')
+        this.recForm.city = [];
+        this.recForm.city.push(
+          recObj.rid.toString().substring(0, 2) + "0000",
+          recObj.cityId + ""
+        );
         this.handleChange(this.recForm.city);
         this.resAddres.city = recObj.city;
         this.resAddres.area = recObj.cityArea;
@@ -2476,30 +2565,40 @@ export default {
         for (let i = 0; i < this.mediaTypeList.length; i++) {
           let tempMediaTypeItem = this.mediaTypeList[i];
           // 将媒体详情中已有类型的媒体合并至mediaTypeList对应的媒体类型下
-          if(mediaTypeObj[tempMediaTypeItem.id]) {
+          if (mediaTypeObj[tempMediaTypeItem.id]) {
             let mediaTypeItemDetail = mediaTypeObj[tempMediaTypeItem.id];
             // 标记原有媒体个数
-            this.mediaTypeList[i].editMediaLength = mediaTypeItemDetail.mediaList.length;
-            mediaTypeItemDetail.mediaList.forEach(mediaItem => {
-              let tempAdSpaceInfos = (mediaItem.adSpaceInfos || []).map(adSpaceItem => {
-                let { adSizeHeight, adSizeWidth, adViewSizeHeight, adViewSizeWidth, asId, asLab } = adSpaceItem;
-                return {
-                  adSizeHeight: adSizeHeight + '', 
-                  adSizeWidth: adSizeWidth + '', 
-                  adViewSizeHeight: adViewSizeHeight + '', 
-                  adViewSizeWidth: adViewSizeWidth + '', 
-                  asId, 
-                  name: asLab
+            this.mediaTypeList[i].editMediaLength =
+              mediaTypeItemDetail.mediaList.length;
+            mediaTypeItemDetail.mediaList.forEach((mediaItem) => {
+              let tempAdSpaceInfos = (mediaItem.adSpaceInfos || []).map(
+                (adSpaceItem) => {
+                  let {
+                    adSizeHeight,
+                    adSizeWidth,
+                    adViewSizeHeight,
+                    adViewSizeWidth,
+                    asId,
+                    asLab,
+                  } = adSpaceItem;
+                  return {
+                    adSizeHeight: adSizeHeight + "",
+                    adSizeWidth: adSizeWidth + "",
+                    adViewSizeHeight: adViewSizeHeight + "",
+                    adViewSizeWidth: adViewSizeWidth + "",
+                    asId,
+                    name: asLab,
+                  };
                 }
-              })
+              );
               let tempMediaObj = {
                 adSpaceInfo: tempAdSpaceInfos,
-                mediaName: mediaItem.mTitle || '',
-                assetId: mediaItem.assetTag || '',
-                doorType: mediaItem.mType || '',
-                adDoorLevel: mediaItem.grade || '',
-                mImg: mediaItem.mImg || '',
-                updataImg: []
+                mediaName: mediaItem.mTitle || "",
+                assetId: mediaItem.assetTag || "",
+                doorType: mediaItem.mType || "",
+                adDoorLevel: mediaItem.grade || "",
+                mImg: mediaItem.mImg || "",
+                updataImg: [],
               };
               if (mediaItem.mImg) {
                 let imgArr = [];
@@ -2516,7 +2615,9 @@ export default {
                 }
               }
               this.mediaTypeList[i].mediaList.push({
-                text: (tempMediaTypeItem.name || '媒体') + ++this.mediaTypeList[i].ADTitleIndex,
+                text:
+                  (tempMediaTypeItem.name || "媒体") +
+                  ++this.mediaTypeList[i].ADTitleIndex,
                 isAssetIdError: false, // 资源编号重名信息
                 classified: mediaItem.classified,
                 mid: mediaItem.mID,
@@ -2526,9 +2627,9 @@ export default {
                   mediaName: "",
                   updateTime: "",
                 },
-                mediaForm: tempMediaObj
+                mediaForm: tempMediaObj,
               });
-            })
+            });
           }
         }
         console.log(" 编辑状态媒体数据", this.mediaTypeList);
@@ -2684,73 +2785,112 @@ export default {
       let editMediaParams = [];
       let newMediaParams = [];
       const mediaTypeLength = this.mediaTypeList.length;
-      for(let mediaTypeIndex = 0; mediaTypeIndex < mediaTypeLength; mediaTypeIndex++ ) {
+      for (
+        let mediaTypeIndex = 0;
+        mediaTypeIndex < mediaTypeLength;
+        mediaTypeIndex++
+      ) {
         let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
         let tempMediaList = mediaTypeItem.mediaList;
         let mediaLength = tempMediaList.length;
-        mediaTop:
-        for(let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++ ) {
+        mediaTop: for (
+          let mediaIndex = 0;
+          mediaIndex < mediaLength;
+          mediaIndex++
+        ) {
           let mediaItem = tempMediaList[mediaIndex];
           let tempMediaForm = mediaItem.mediaForm;
-          if(mediaIndex < mediaTypeItem.editMediaLength) {
+          if (mediaIndex < mediaTypeItem.editMediaLength) {
             // 编辑中的媒体
             let tempAdSpaceInfo = [];
-            for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
+            for (
+              let adSpaceIndex = 0;
+              adSpaceIndex < tempMediaForm.adSpaceInfo.length;
+              adSpaceIndex++
+            ) {
               let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex];
-              let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, asId } = adSpaceItem
-              if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && asId) {
+              let {
+                adSizeWidth,
+                adSizeHeight,
+                adViewSizeWidth,
+                adViewSizeHeight,
+                asId,
+              } = adSpaceItem;
+              if (
+                adSizeWidth &&
+                adSizeHeight &&
+                adViewSizeWidth &&
+                adViewSizeHeight &&
+                asId
+              ) {
                 tempAdSpaceInfo.push({
                   asId,
                   adSizeWidth,
                   adSizeHeight,
                   adViewSizeWidth,
-                  adViewSizeHeight
-                })
+                  adViewSizeHeight,
+                });
               } else {
                 break mediaTop;
               }
             }
-            if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+            if (tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
               // 单个媒体下所有广告位验证通过
               let obj = {
                 mediaId: mediaItem.mid,
-                name: tempMediaForm.mediaName || '',
+                name: tempMediaForm.mediaName || "",
                 assetTag: tempMediaForm.assetId,
-                deviceType: tempMediaForm.doorType || '',
-                mediaPicture: tempMediaForm.mImg || '',
-                grade: tempMediaForm.adDoorLevel || '',
-                adSpaceInfo: tempAdSpaceInfo
+                deviceType: tempMediaForm.doorType || "",
+                mediaPicture: tempMediaForm.mImg || "",
+                grade: tempMediaForm.adDoorLevel || "",
+                adSpaceInfo: tempAdSpaceInfo,
               };
               editMediaParams.push(obj);
             }
           } else {
             // 新建中的媒体
             let tempAdSpaceInfo = [];
-            for(let adSpaceIndex = 0;  adSpaceIndex < tempMediaForm.adSpaceInfo.length; adSpaceIndex++) {
+            for (
+              let adSpaceIndex = 0;
+              adSpaceIndex < tempMediaForm.adSpaceInfo.length;
+              adSpaceIndex++
+            ) {
               let adSpaceItem = tempMediaForm.adSpaceInfo[adSpaceIndex];
-              let { adSizeWidth, adSizeHeight, adViewSizeWidth, adViewSizeHeight, id: adSpaceId } = adSpaceItem;
-              if (adSizeWidth && adSizeHeight && adViewSizeWidth && adViewSizeHeight && adSpaceId) {
+              let {
+                adSizeWidth,
+                adSizeHeight,
+                adViewSizeWidth,
+                adViewSizeHeight,
+                id: adSpaceId,
+              } = adSpaceItem;
+              if (
+                adSizeWidth &&
+                adSizeHeight &&
+                adViewSizeWidth &&
+                adViewSizeHeight &&
+                adSpaceId
+              ) {
                 tempAdSpaceInfo.push({
                   adSpaceId,
                   adSizeWidth,
                   adSizeHeight,
                   adViewSizeWidth,
-                  adViewSizeHeight
-                })
+                  adViewSizeHeight,
+                });
               } else {
                 break mediaTop;
               }
             }
-            if(tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
+            if (tempAdSpaceInfo.length === tempMediaForm.adSpaceInfo.length) {
               // 单个媒体下所有广告位验证通过
               let obj = {
                 resId,
-                name: tempMediaForm.mediaName || '',
+                name: tempMediaForm.mediaName || "",
                 mediaTypeId: mediaTypeItem.id,
                 assetTag: tempMediaForm.assetId,
-                deviceType: tempMediaForm.doorType || '',
-                mediaPicture: tempMediaForm.mImg || '',
-                adSpaceInfo: tempAdSpaceInfo
+                deviceType: tempMediaForm.doorType || "",
+                mediaPicture: tempMediaForm.mImg || "",
+                adSpaceInfo: tempAdSpaceInfo,
               };
               newMediaParams.push(obj);
             }

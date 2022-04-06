@@ -290,14 +290,6 @@
                     materialCntInfoList:[]
                 }
             },
-            material: {
-                type: Array,
-                default: []
-            },
-            daomater: {
-                type: Array,
-                default: []
-            },
             loading: {
                 type: Boolean,
                 default: true
@@ -389,8 +381,6 @@
         },
         created() {
             this.sessionData = sessFun.getSess();
-            this.materialInfo = this.material;
-            this.daomaterInfo = this.daomater;
             this.orderApType = sessionStorage.getItem("order_apSrc");
             this.$EventBus.$on('resetSearchInfo', this.resetInfo)
 

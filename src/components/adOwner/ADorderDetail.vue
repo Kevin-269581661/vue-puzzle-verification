@@ -303,7 +303,6 @@ export default {
             // 选点排期
             setpointArr: [],
             currentSetpoint: [],
-            // copyAsidArr: [],
             // 城市过滤结果
             filterCityData: [],
             // 地区过滤结果
@@ -664,8 +663,6 @@ export default {
                             }
                             data.finishTimeRange = finishTimeRange;
                         }
-                        // 选点排期
-                        // this.copyAsidArr = JSON.parse(JSON.stringify(result));
                         this.setpointArr = result;
                         this.currentSetpoint = this.setpointArr;
                         // 城市筛选过滤

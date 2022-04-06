@@ -634,8 +634,6 @@
     </div>
     <div class="content_bottom_btn">
       <div class="finishBtn" v-if="active == 2">
-        <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
-        <!-- <el-button plain type="default" @click="ToDetail"> 查看方案 </el-button> -->
         <el-button plain @click="downLoadFanan()" class="urlBtn"
           >导出方案</el-button
         >
@@ -649,58 +647,6 @@
     <div class="shopAnimateAll" v-show="selectAll">
       <img src="../../assets/images/allselect.png" alt="" />
     </div>
-    <!-- 导出空位时间弹出框 -->
-    <el-dialog
-      :visible.sync="showEmptyPoint"
-      :modal="false"
-      top="35vh"
-      width="40%"
-    >
-      <p>
-        <el-radio-group v-model="dateType">
-          <el-radio label="1" v-if="isShowHalfYear">默认半年日期</el-radio>
-          <el-radio label="2">自定义日期</el-radio>
-        </el-radio-group>
-      </p>
-      <p v-if="dateType == '2'" style="margin-top: 10px">
-        <el-date-picker
-          v-model="emptyRange"
-          type="daterange"
-          size="mini"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy/MM/dd"
-          format="yyyy/MM/dd"
-          class="date-select input-with-select"
-          :picker-options="emptyPointPickerOptions"
-        >
-        </el-date-picker>
-      </p>
-      <span slot="footer">
-        <el-button size="small" type="primary" @click="downEmptyPoint()"
-          >确认</el-button
-        >
-      </span>
-    </el-dialog>
-    <!-- 导出空位弹出框 -->
-    <el-dialog
-      title="链接地址："
-      :visible.sync="showEmpty"
-      :modal="false"
-      top="35vh"
-      width="40%"
-    >
-      <p id="shareDownUrl">{{ downUrl }}</p>
-      <p style="text-align: center; margin-top: 25px">
-        <el-button
-          type="primary"
-          @click="copyUrlDown()"
-          size="small"
-          style="width: 80px; height: 34px; outline: none; cursor: pointer"
-          >复制链接
-        </el-button>
-      </p>
-    </el-dialog>
     <!-- 导入表格组件 -->
     <import-village-by-excel
       ref="importexcel"
@@ -809,17 +755,7 @@ export default {
       planAdsCnt: 1,
       isDialogImport: false,
       handleTime: "", //上传时间
-      isSelectPoint: false, //是否展示点位选择弹窗
-      // 导空点是否展示半年json下载(全国媒介或全国销售有权限下载)
-      isShowHalfYear: false,
       doUpload: "/addsp/proposal/importResExcel",
-      // 空位导出url
-      downUrl: "",
-      // 是否显示空位导出弹出框
-      showEmpty: false,
-      showEmptyPoint: false,
-      dateType: "1",
-      emptyRange: [],
       active: 1, // 当前步骤step
       mapADDialog: false,
       loading: true, //加载中
@@ -904,11 +840,6 @@ export default {
       pickerOptions: {
         disabledDate (time) {
           return time.getTime() <= Date.now();
-        },
-      },
-      emptyPointPickerOptions: {
-        disabledDate (time) {
-          return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
       dateInput: [], // 时间输入框
@@ -1260,14 +1191,8 @@ export default {
       this.handleImportDrafts(1, successList, 'pullAll');
       sessFun.messageFun("success", "成功导入" + successList.length + "条数据");
     },
-    //导入表格选点
-    automaticSelectPoint () {
-      this.isSelectPoint = false;
-      this.isDialogImport = true;
-    },
     // 分页
     changePage (val) {
-      // console.log('当前页',val)
       this.currPageSelect = 0;
       this.IsAll = false;
       this.pageNum = val;
@@ -1390,179 +1315,6 @@ export default {
         this.active = 1;
       }
     },
-    // 确认导出空位
-    downEmptyPoint () {
-      if (this.dateType == "1") {
-        this.exportExcelData();
-      } else {
-        if (this.emptyRange.length) {
-          this.dateRangeEmpty();
-        } else {
-          sessFun.messageFun("warning", "请先选择日期");
-        }
-      }
-    },
-    // 导出时间段的空位
-    dateRangeEmpty () {
-      let loadingPoint = this.$loading({
-        lock: true,
-        text: "玩命加载中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      let rid = this.planForm.throwCity.join(",");
-      console.log(this.emptyRange, rid);
-      let info = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        rIDs: rid,
-        startTime: this.emptyRange[0],
-        endTime: this.emptyRange[1],
-        asrIDs: this.planForm.pointOfAsrIDs.join(","),
-      };
-      api
-        .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
-        .then((res) => {
-          if (!res.data.SysCode) {
-            if (res.data.length) {
-              let returnobj = this.formatData(res.data);
-              let head = [
-                "省份",
-                "城市",
-                "区域",
-                "资源名称",
-                "商圈",
-                "地址",
-                "媒介载体",
-                "楼栋数量",
-                "住户数量",
-                "楼盘价格",
-                "楼盘类型",
-                "入住时间",
-                "车流量",
-                "车位数",
-                "人流量",
-                "广告限制",
-                "点位备注",
-                "媒体数量(面)",
-              ];
-              let customPermission = JSON.parse(
-                sessionStorage.getItem("session_data")
-              ).customPermission;
-
-
-              switch (customPermission.patrolPermission) {
-                case 1:
-                  head.push("巡点问题", "通行情况");
-                  break;
-                case 2:
-                  head.push("巡点问题", "通行情况", "通电情况");
-                  break;
-              }
-
-              if (
-                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                (this.sessionData.uType == "ADN_BD_KA")
-              ) {
-                head.push("归属公司");
-              }
-
-              let allHead = head.concat([info.startTime + "-" + info.endTime]);
-              let filename =
-                returnobj.city.join("-") +
-                "-" +
-                info.startTime +
-                "~" +
-                info.endTime +
-                "空位表";
-              sheetExcel.toDownload(allHead, returnobj.arr, filename);
-            } else {
-              sessFun.messageFun("warning", "此城市没有点位");
-            }
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-          loadingPoint.close();
-        })
-        .catch((err) => {
-          console.log(err);
-          loadingPoint.close();
-        });
-    },
-    // 导出空点格式化数据
-    formatData (arr) {
-      let returnObj = {
-        city: [],
-        arr: "",
-      };
-      let result = [];
-      for (let data of arr) {
-        let resObj = {
-          sheetName: this.getCityName(data.rID),
-          showList: [],
-        };
-        returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adsList || [];
-        if(dataArr.length === 0) {
-          sessFun.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
-          break;
-        }
-        for (let item of dataArr) {
-          let obj = {
-            province: item.prName || "--",
-            city: item.crName || "--",
-            rName: item.rName || "--",
-            resName: item.resName || "--",
-            tradingArea: item.tradingArea || "--",
-            resAddress: item.resAddress || "--",
-            mVehicle: item.mVehicle,
-            fNum: item.fNum || "--",
-            hNum: item.hNum || "--",
-            hPrice: item.hPrice / 100,
-            cType: item.cType || "--",
-            chDay: item.chDay || "--",
-            carFlow: item.carFlow || "--",
-            parkSpaceNum: item.parkSpaceNum || "--",
-            peopleFlow: item.peopleFlow || "--",
-            notPush: item.allNotPush || "--",
-            remark: item.allremark || "--",
-            adsNum: item.adsNum || 0,
-          };
-          let customPermission = JSON.parse(
-            sessionStorage.getItem("session_data")
-          ).customPermission;
-
-          // 巡点定制
-          if (customPermission) {
-            switch (customPermission.patrolPermission) {
-              case 1:
-                obj.allRemark = item.allRemark;
-                obj.allTrafficState = item.allTrafficState;
-                break;
-              case 2:
-                obj.allRemark = item.allRemark;
-                obj.allTrafficState = item.allTrafficState;
-                obj.allElectrifyState = item.allElectrifyState;
-                break;
-            }
-          }
-
-          if (
-            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-            (this.sessionData.uType == "ADN_BD_KA")
-          ) {
-            obj.asNames = item.asNames;
-          }
-
-          obj[this.emptyRange[0] + "-" + this.emptyRange[1]] =
-            item.DateInfo.adsNum || 0;
-          resObj.showList.push(obj);
-        }
-        result.push(resObj);
-      }
-      returnObj.arr = result;
-      return returnObj;
-    },
     // 获取城市中文名称
     getCityName (rid) {
       let str = "";
@@ -1573,14 +1325,6 @@ export default {
         }
       }
       return str;
-    },
-    // 导出空位表
-    exportEmpty () {
-      if (this.planForm.throwCity.length) {
-        this.showEmptyPoint = true;
-      } else {
-        sessFun.messageFun("warning", "请先选择投放城市");
-      }
     },
     // 导出空点导出次数接口
     postDownLoadNum (type) {
@@ -1594,120 +1338,6 @@ export default {
         .then((res) => {
           console.log(res);
         });
-    },
-    /*step1*/
-    // 导出数据
-    exportExcelData: function () {
-      this.postDownLoadNum(0);
-      // this.planForm.throwCity = [110100, 440100];
-      if (this.planForm.throwCity.length) {
-        let loadingPoint = this.$loading({
-          lock: true,
-          text: "玩命加载中...",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)",
-        });
-        let self = this;
-        let request_times = self.planForm.throwCity.length; //计算分几次请求
-        let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
-
-        for (let i = 0; i < request_times; i++) {
-          // 循环请求次数，构造请求的Promise对象并插入funcs数组
-          let func = new Promise((resolve, reject) => {
-            //定义Promise并处理请求逻辑
-            let data = [];
-            api
-              .getApi(
-                // this.apiVar.jsonLink + self.planForm.throwCity[i] + '.json'
-                this.apiVar.Advertisement + "/ExportHalfYearSpaceRes",
-                {
-                  cityIds: self.planForm.throwCity[i],
-                  asrIDs: this.planForm.pointOfAsrIDs.join(","),
-                }
-              )
-              .then(function (response) {
-                if (response.data.SysCode == 200200) {
-                  let dataArr = response.data.data[0];
-                  data.push(dataArr);
-                  resolve(data);
-                } else {
-                  resolve("");
-                }
-              })
-              .catch(function (error) {
-                resolve("");
-              });
-          });
-          funcs.push(func);
-        }
-
-        Promise.all(funcs).then((values) => {
-          //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
-          let resultValus = [];
-          for (let val of values) {
-            if (val) {
-              resultValus.push(val);
-            }
-          }
-          if (resultValus.length) {
-            let returnobj = self.hasPointData(resultValus);
-            console.log("returnobj----", returnobj);
-            let date = returnobj.date;
-            let head = [
-              "省份",
-              "城市",
-              "区域",
-              "资源名称",
-              "商圈",
-              "地址",
-              "媒介载体",
-              "楼栋数量",
-              "住户数量",
-              "楼盘价格",
-              "楼盘类型",
-              "入住时间",
-              "广告限制",
-              "点位备注",
-              "媒体数量(面)",
-            ];
-            let customPermission = JSON.parse(
-              sessionStorage.getItem("session_data")
-            ).customPermission;
-
-            switch (customPermission.patrolPermission) {
-              case 1:
-                head.push("巡点问题", "通行情况");
-                break;
-              case 2:
-                head.push("巡点问题", "通行情况", "通电情况");
-                break;
-            }
-
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              head.push("归属公司");
-            }
-
-
-            let allHead = head.concat(date);
-            let filename =
-              returnobj.filename +
-              "-" +
-              date[0].substring(0, 10) +
-              "~" +
-              date[date.length - 1].substring(11) +
-              "空位表";
-            sheetExcel.toDownload(allHead, returnobj.arr, filename);
-          } else {
-            sessFun.messageFun("warning", "此城市没有点位");
-          }
-          loadingPoint.close();
-        });
-      } else {
-        sessFun.messageFun("warning", "请先选择投放城市");
-      }
     },
     // 处理数据
     hasPointData (arr) {
@@ -1976,30 +1606,6 @@ export default {
       };
       dateArr.push(obj);
       return dateArr;
-    },
-    // 导出空位
-    downEmpty () {
-      console.log("this.planForm.throwCity----", this.planForm.throwCity);
-      if (this.planForm.throwCity.length) {
-        let rID = this.planForm.throwCity.join(",");
-        this.downUrl = window.location.origin + "/emptyPoint?rid=" + rID;
-        console.log("downUrl-----", this.downUrl);
-        this.showEmpty = true;
-      } else {
-        sessFun.messageFun("warning", "请先选择投放城市");
-      }
-    },
-    // 复制空位导出链接
-    copyUrlDown () {
-      let Url = document.getElementById("shareDownUrl").innerText;
-      console.log("url", Url);
-      let oInput = document.createElement("input");
-      oInput.value = Url;
-      document.body.appendChild(oInput);
-      oInput.select(); // 选择对象
-      document.execCommand("Copy"); // 执行浏览器复制命令
-      oInput.style.display = "none";
-      sessFun.messageFun("success", "复制成功");
     },
 
     // 获取公司及品牌

@@ -345,7 +345,6 @@ export default {
                 console.log(res.data);
                 if(res.data.code == 500200){
                     let result = res.data.data;
-                    // let result = dataObj;
                     let setpointArr = result.planDetailSummaries;
                     let materialInfo = result.plansAttachments;
                     let areaNum = result.planDetails;
@@ -396,7 +395,6 @@ export default {
                     for(let item of materialInfo){
                         for(let data of this.materialMsgTableData){
                             if(item.type == data.typeIndex){
-                                // scope.row.fileName.url.includes('http')?scope.row.fileName.name:scope.row.fileName.url
                                 this.$set(data.fileName, 'name', item.url.includes('http')?item.file_name:item.url);
                                 this.$set(data.fileName, 'url', item.url);
                                 break;

@@ -340,13 +340,6 @@
                       <span v-else>{{ scope.row.timeRange }}</span>
                     </template>
                   </el-table-column>
-                  <!-- <el-table-column label="操作" min-width="4.3%" v-if="showHandel">
-                                         <template slot-scope="scope">
-                                             <span style="color:#999;cursor: pointer;" v-if="scope.row.lState==2">终止</span>
-                                             <span style="color:#409EFF;cursor: pointer;" v-else @click="disContinue(scope.row)"
-                                                   >终止</span>
-                                         </template>
-                                     </el-table-column>-->
 
                   <div slot="empty">
                     <no-search-result></no-search-result>
@@ -396,9 +389,7 @@
           </el-tab-pane>
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
-              :material="materialInfo"
               :materialInfoData="materialInfoJson"
-              :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="true"
               v-if="planPanel == 'third'"
@@ -569,9 +560,6 @@
                       @click.native="excelAddPointDialog"
                     ></el-option>
                   </el-select>
-                  <!-- <el-button type="primary" @click="showAddPointDialog"
-                                               >新增点位
-                                    </el-button> -->
                 </div>
               </el-col>
             </el-row>
@@ -882,7 +870,6 @@
                 @click="recommendationInnerModal = false"
                 >取 消</el-button
               >
-              <!-- <el-button class="export-btn" size="small" type="primary" :loading="isBroundImport"> -->
               <el-button
                 class="export-btn"
                 size="small"
@@ -1201,7 +1188,6 @@ export default {
       currentPointArr: [],//选点排期列表
       exportArr: [],
       currPointloading: true,
-      copyAsidArr: [],
       // addNewAdsNum: 0,    // 添加点位数
       // 报价单详情
       quotation: {
@@ -1224,10 +1210,6 @@ export default {
       selectRecName: "1",
       // 保存当前点击的那项
       imgOrder: "",
-      // 广告物料信息
-      materialInfo: [],
-      // 道闸物料信息
-      daoInfo: [],
       // 默认合同编号(如果订单详情没有合同编号)
       apQC: "",
       // 图片显示放大按钮控件
@@ -1475,6 +1457,7 @@ export default {
       this.pageSize = 10;
       this.dialogChangePoint = false;
       this.getSetPoint();
+      this.getMaterInfo();
     },
     //更换点位对话框-完成
     doneChangePoint () {
@@ -1579,8 +1562,7 @@ export default {
       this.changePointloading = true;
       this.pointCurrPage = 1;
       this.pointPageSize = pageVal;
-      // this.getSetPoint('change')
-      this.changePointPageFn()
+      this.changePointPageFn();
     },
     // 点击页数
     pointChangePage (page) {
@@ -1625,12 +1607,8 @@ export default {
           peopleFlow: data.peopleFlow || "",
           mType: data.mType || "",
         };
-
         resultArr.push(obj);
       }
-
-      console.log(resultArr, 'resultArr')
-
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
         let tHeader = [
@@ -1815,11 +1793,7 @@ export default {
         });
     },
     // 获取物料
-    getMaterInfo (string) {
-      if (this.setpointArr.length && string !== 'add') {
-        return;
-      }
-      // 真实数据
+    getMaterInfo () {
       let loginData = this.sessionData;
       let apid = sessionStorage.getItem("order_apid");
       let info = {
@@ -1831,11 +1805,9 @@ export default {
       // apid        int             公司对应方案apID
       api.getApi(this.apiVar.Advertisement + "/GetAdLaunch", info)
         .then(res => {
-          console.log(res.data);
           if (!res.data.SysCode) {
             let initData = res.data;
             let result = initData.adSpaceInfo;
-            // this.addNewAdsNum = res.data.isNewCount
             for (let data of result) {
               let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
               data.timeRange = time;
@@ -1847,41 +1819,6 @@ export default {
             }
             // 选点排期
             this.exportArr = result;
-
-            // 广告门物料信息
-            let mInfo = initData.gateMaterialInfo;
-            let materialRes = [];
-            for (let data of mInfo) {
-              let str = data.gateMaterialSize.split('-');
-              let obj = {
-                adSize: str[0],
-                adViewSize: str[1],
-                pointNum: data.gateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              materialRes.push(obj);
-            }
-            this.materialInfo = materialRes;
-
-            // 道闸物料信息
-            let InfoTest = initData.roadGateMaterialInfo;
-            let daoRes = [];
-            for (let data of InfoTest) {
-              let str = data.roadGateMaterialSize.split('-');
-              let obj = {
-                adSize: str[1],
-                adViewSize: str[0],
-                pointNum: data.roadGateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              daoRes.push(obj);
-            }
-            this.daoInfo = daoRes;
-
             this.loading = false;
             this.maLoading = false;
           } else {
@@ -1902,7 +1839,7 @@ export default {
         apID
       };
       api.getApi("/addsp/material/getMaterialCntByPlan", info).then(res=>{
-        if(res.data.SysCode== 200200){
+        if(res.data.SysCode == 200200){
           let _data=res.data.data;
           let _materialCntInfoList=[];
           let _mediaTypeName=[];
@@ -2001,7 +1938,6 @@ export default {
               data.finishTimeRange = finishTimeRange;
             }
             // 选点排期
-            this.copyAsidArr = JSON.parse(JSON.stringify(result));
             if (type && (type == 'change')) {
               this.setpointArr = result
               if (lIDs && lIDs.length > 0) {
@@ -2090,8 +2026,6 @@ export default {
     },
     //全选
     handleSelectAll (selection) {
-      // console.log(selection);
-
       if (selection.length) {
         for (let data of selection) {
           if (!this.isHaveFun(this.changePointInfo.stopPointlist, data)) {
@@ -2150,7 +2084,6 @@ export default {
     },
     //更换点位列表前端分页
     changePointPageFn () {
-      console.log('更换点位所有数据--', this.setpointArr);
       let total = this.setpointArr.length
       let pageNum = this.pointCurrPage
       let pageSize = this.pointPageSize
@@ -2214,7 +2147,6 @@ export default {
         }
 
         this.setpointArr = arr
-        console.log(this.setpointArr);
         this.changePointPageFn()
       } else {
         this.getSetPoint('type')
@@ -2369,62 +2301,6 @@ export default {
         });
       this.changeCID = false;
     },
-    // 终止点位
-    /* conFirmStopAds() {
-        let info = {
-            uid: this.sessionData.uID,
-            token: this.sessionData.token,
-            lids: this.nowRow.lID
-        };
-        console.log('info---', info);
-        MessageBox.confirm(
-            `是否在${this.finishDate}这一天终止 ${this.nowRow.resName + this.nowRow.mTitle + this.nowRow.asLab}面在 ${
-                this.nowRow.timeRange
-                } 的投放？\n`,
-            "提示",
-            {
-                dangerouslyUseHTMLString: true,
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning"
-            }
-        ).then(() => {
-            api.postApi(this.apiVar.Advertisement + "/StopADS", info)
-                .then(res => {
-                    console.log(res.data);
-                    if (!res.data.SysCode) {
-                        let resdata = res.data;
-                        this.$set(this.nowRow, "lState", resdata.lState);
-                        this.$set(this.nowRow, "lSetTime", resdata.lSetTime);
-                        let time = this.formatTime(resdata.lStar) + "-" + this.formatTime(resdata.lSetTime);
-                        this.$set(this.nowRow, 'finishTimeRange', time);
-                        this.isFinish = false;
-                        Message.success("终止成功");
-                    } else {
-                        Message.warning(res.data.MSG);
-                    }
-                })
-                .catch(res => {
-                    console.log(res);
-                });
-        })
-            .catch(() => {
-                Message.info("已取消操作");
-                this.isFinish = false;
-            });
-
-    }, */
-
-    //恢复/取消终止操作
-    // restoreState(row) {
-    //     for (let data of this.setpointArr) {
-    //         if (data.lID == row.lID) {
-    //             this.$set(row, "lState", 1);
-    //             this.changePointInfo.stopPointlist.splice(data, 1)
-    //         }
-    //     }
-
-    // },
     //点击换点
     changeHandleType (handleType) {
       this.handleType = handleType
@@ -2552,7 +2428,6 @@ export default {
               Message.success("添加点位成功")
               for (let data of arr) {
                 this.changePointInfo.addPointlist.push(data)
-                // this.setpointArr.unshift(data)
               }
               this.dialogAddPoint = false
               this.IsAddPoint = true
@@ -2564,9 +2439,7 @@ export default {
     },
     //添加点位对话框取消按钮
     cancelAddPoint () {
-      // this.IsAddPoint = true
       this.dialogAddPoint = false;
-      // Message.info("已取消操作");
     },
     // 换画
     // 获取换画列表
@@ -2610,37 +2483,6 @@ export default {
         this.fromType = !this.fromType;
       }, 10);
     },
-    // 新增换画报告
-    /* addPainReport() {
-         let info = {
-             apId: sessionStorage.getItem("order_apid")
-         };
-         api.getApi(this.apiVar.replace + '/report/list', info).then(res => {
-             console.log(res);
-             if (res.data.SysCode == 200200) {
-                 this.painlist = res.data.data;
-                 let len = this.painlist.length;
-                 let painInfo = {
-                     apId: this.orderDetail.apID,
-                     replaceRecordName: `换画${len + 1}`,
-                 };
-                 api.postApi_json(this.apiVar.replace + '/report/add', painInfo).then(res => {
-                     if (res.data.SysCode == 200200) {
-                         sessFun.messageFun('success', '新增换画报告成功！');
-                         // this.showPain = true;
-                         // this.planPanel = 'sixth';
-                         // setTimeout(() => {
-                         //     this.fromType = !this.fromType;
-                         // }, 10);
-                     } else {
-                         sessFun.messageFun('warning', res.data.msg);
-                     }
-                 });
-             } else {
-                 sessFun.messageFun('warning', res.data.msg);
-             }
-         });
-     },*/
     // 操作提示统一方法
     messageFun (mesType, mes) {
       this.$message({

@@ -1459,13 +1459,13 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .otherSelect /deep/ .el-input__icon {
         line-height: unset;
     }
     /deep/ .el-table__row .cell{
         min-width: 110px;
-        overflow-x: auto !important;
+        // overflow-x: auto !important;
         white-space: normal !important;
         height: auto !important;
     }

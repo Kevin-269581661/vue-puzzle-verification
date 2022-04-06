@@ -2491,7 +2491,6 @@ export default {
     },
     //获取子组件选择的点位数据
     ievent (...data) {
-      console.log('allData:', data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
       this.addAdsArr = data[0] //this.encodeHtml(data[0])
     },
     //添加点位对话框确认按钮
@@ -2502,37 +2501,40 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      let arr = []
+      let arr = [];
+      console.log('000000', this.addAdsArr, this.pdidList)
       for (let key of this.addAdsArr) {
+        let adsInfo = {
+          resName: key.resName,
+          city: key.city,
+          tradingArea: key.tradingArea,
+          asrID: key.asrID,
+          cityId: key.rid,
+          mediaTypeId: key.mediaTypeId,
+          asID: Number(key.asID),
+          pdID: null,
+          pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
+          pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
+          uID: this.sessionData.uID,
+          mTitle: key.mediaName,
+          asLab: key.asLab,
+          rName: key.origin,
+          cType: key.buildType,
+          timeRange: key.schedules,
+          hNum: key.houseNum,
+          hPrice: key.buildPrice * 100,
+          fNum: key.buildNum,
+          chDay: key.liveYear,
+          notPush: key.adLimit,
+          isNew: 1,
+        }
         for (let pKey of this.pdidList) {
-          if (key.city == pKey.city && key.asrID == pKey.asrID) {
-            let adsInfo = {
-              resName: key.resName,
-              city: key.city,
-              tradingArea: key.tradingArea,
-              asID: Number(key.asID),
-              pdID: pKey.pdID,
-              pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
-              pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
-              uID: this.sessionData.uID,
-              mTitle: key.mediaName,
-              asLab: key.asLab,
-              rName: key.origin,
-              cType: key.buildType,
-              timeRange: key.schedules,
-              hNum: key.houseNum,
-              hPrice: key.buildPrice * 100,
-              fNum: key.buildNum,
-              chDay: key.liveYear,
-              notPush: key.adLimit,
-              isNew: 1,
-            }
-            if(pKey.mediaTypeId==key.mediaTypeId){
-              arr.push(adsInfo)
-              break
-            }
+          if (key.city == pKey.city && key.asrID == pKey.asrID && pKey.mediaTypeId == key.mediaTypeId) {
+            adsInfo.pdID = pKey.pdID;
+            break;
           }
         }
+        arr.push(adsInfo);
       }
       let postData = {
         apID: this.orderDetail.apID,

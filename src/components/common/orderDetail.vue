@@ -394,23 +394,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <!-- <el-tab-pane
-            v-if="role != 'ADN_EP' && orderDetail.planMode != 1"
-            label="报价单"
-            name="second"
-          >
-            <div>
-              <ap-quotation
-                ref="apQuotation"
-                @detailInfo="setInfo"
-                :quotationData="quotation"
-                :copydata="copyAsidArr"
-                :isorder="true"
-                :shopingList="[]"
-                class="price_quo"
-              ></ap-quotation>
-            </div>
-          </el-tab-pane> -->
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
               :material="materialInfo"
@@ -1123,23 +1106,6 @@
             >
           </span>
         </el-dialog>
-        <!--修改订单金额-->
-        <!-- <el-dialog
-          v-if="orderDetail.planMode != 1"
-          title="修改订单金额"
-          width="768px"
-          top="20vh"
-          custom-class="price-dialog"
-          :visible.sync="changePriceModal"
-          :before-close="cancelChangePrice"
-        >
-          <changeOrderPrice
-            @cancel="cancelChangePrice"
-            @done="doneChangePrice"
-            :changePriceData="changePriceData"
-            v-if="changePriceModal"
-          ></changeOrderPrice>
-        </el-dialog> -->
 
         <changeProposalOrderPrice
           :apID="orderDetail.apID"
@@ -1147,8 +1113,8 @@
           :settlementFormVisible="changePriceModal"
           @cancel="changePriceModal = false"
           @planMoneyUpdated="
-            changePriceModal = false
-            getInitData()
+            changePriceModal = false;
+            getInitData();
           "
         ></changeProposalOrderPrice>
       </div>
@@ -1179,7 +1145,6 @@ import importPointByExcel from "./components/importPointByExcel"
 import changePointPlayDateRange from "./components/changePointPlayDateRange"
 import noSearchResult from "./components/noSearchResult.vue";
 import changePic from "./components/changePic.vue";
-import changeOrderPrice from "./components/changeOrderPrice.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 
@@ -1195,7 +1160,6 @@ export default {
     changePointPlayDateRange,
     changePic,
     noSearchResult,
-    changeOrderPrice,
     changeProposalOrderPrice,
     ScheduleAlter
   },
@@ -1445,9 +1409,8 @@ export default {
       api.getApi(this.apiVar.Advertisement + "/GetAPD", { apid: sessionStorage.getItem("order_apid") })
         .then(res => {
           if (!res.data.SysCode) {
-            sessionStorage.setItem('priceData', JSON.stringify(res.data))
+            this.pdidList = res.data || []
             let priceData = res.data
-            console.log('订单金额', priceData);
             let obj = {
               AdDoorAdPrice: 0,
               AdDoorMakePrice: 0,
@@ -1470,18 +1433,11 @@ export default {
               if (isHave) {
                 for (let data of obj.orderCompanyList) {
                   if (item.asrID == data.asrID && item.rID == data.rID) {
-                    let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100
-                    if (data.pdType == 1) {
-                      data.BreakAdPrice = data.pdAdFee / 100;
-                      data.BreakMakePrice = data.pdAdMake / 100;
-                      data.AdDoorAdPrice = item.pdAdFee / 100;
-                      data.AdDoorMakePrice = item.pdAdMake / 100;
-                    } else {
-                      data.BreakAdPrice = item.pdAdFee / 100;
-                      data.BreakMakePrice = item.pdAdMake / 100;
-                      data.AdDoorAdPrice = data.pdAdFee / 100;
-                      data.AdDoorMakePrice = data.pdAdMake / 100;
-                    }
+                    let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100;
+                    data.BreakAdPrice = item.pdAdFee / 100;
+                    data.BreakMakePrice = item.pdAdMake / 100;
+                    data.AdDoorAdPrice = data.pdAdFee / 100;
+                    data.AdDoorMakePrice = data.pdAdMake / 100;
                     data.orderOldPrice = this.priceFormat(totalPrice)
                   }
                 }
@@ -1498,14 +1454,12 @@ export default {
             for (let data of obj.orderCompanyList) {
               result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
             }
-            console.log(result);
             obj.orderOldPrice = this.priceFormat(result)
             obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
             obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
             obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice
             obj.BreakMakePrice = obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice
 
-            console.log(obj);
             this.changePriceData = obj
           } else if (res.data.SysCode == 100302) {
             this.loginTimeout();
@@ -1537,15 +1491,11 @@ export default {
         }
       ).then(() => {
         this.changePriceModal = true
-        if (this.orderDetail.planMode != 1) {
-          // 非意向方案,更新报价单
-          this.getOrderPriceDetail()
-        }
+        this.getOrderPriceDetail()
       })
         .catch(() => {
           // Message.info("已取消操作");
         });
-      // this.dialogChangePoint = false
     },
     // 更改排期操作
     changePointPlayDateRange () {
@@ -1640,13 +1590,7 @@ export default {
     pointChangePage (page) {
       this.changePointloading = true;
       this.pointCurrPage = page;
-      // this.getSetPoint('change')
-
-      this.changePointPageFn()
-    },
-    setInfo (data) {
-      console.log('defail------data', data);
-      this.pdidList = data;
+      this.changePointPageFn();
     },
     // 导出excel
     export2Excel (name) {
@@ -2559,11 +2503,6 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       });
       let arr = []
-      if (this.orderDetail.planMode == 1) {
-        // this.pdidList该数据在非意向方案的订单由报价单组件返回
-        this.pdidList = JSON.parse(sessionStorage.getItem('priceData'))
-      }
-      
       for (let key of this.addAdsArr) {
         for (let pKey of this.pdidList) {
           if (key.city == pKey.city && key.asrID == pKey.asrID) {
@@ -2577,7 +2516,6 @@ export default {
               pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
               uID: this.sessionData.uID,
               mTitle: key.mediaName,
-              // asLab: key.A_B,
               asLab: key.asLab,
               rName: key.origin,
               cType: key.buildType,
@@ -2593,13 +2531,6 @@ export default {
               arr.push(adsInfo)
               break
             }
-            // if (pKey.pdType == 0 && key.mVehicle === '广告门') {
-            //   arr.push(adsInfo)
-            //   break
-            // } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
-            //   arr.push(adsInfo)
-            //   break
-            // }
           }
         }
       }
@@ -2725,30 +2656,12 @@ export default {
     //修改订单金额-取消
     cancelChangePrice () {
       this.changePriceModal = false
-      // this.changePriceData = {
-      //     AdDoorAdPrice: 0,
-      //     AdDoorMakePrice: 0,
-      //     BreakAdPrice: 0,
-      //     BreakMakePrice: 0,
-      //     orderOldPrice: 0,
-      //     orderCompanyList: [],
-      //     priceCurrCompany: 0,
-      // }
       this.getOrderPriceDetail()
       Message.info("已取消操作");
     },
     //修改金额-成功
     doneChangePrice () {
       this.changePriceModal = false
-      // this.changePriceData = {
-      //     AdDoorAdPrice: 0,
-      //     AdDoorMakePrice: 0,
-      //     BreakAdPrice: 0,
-      //     BreakMakePrice: 0,
-      //     orderOldPrice: 0,
-      //     orderCompanyList: [],
-      //     priceCurrCompany: 0,
-      // }
       this.getOrderPriceDetail()
       this.getInitData();
       sessFun.messageFun('success', '修改订单金额成功')

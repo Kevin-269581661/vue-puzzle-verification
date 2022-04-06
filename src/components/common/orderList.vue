@@ -924,7 +924,7 @@ export default {
         .getApi(this.apiVar.Advertisement + "/GetAPD", { apid: apID })
         .then((res) => {
           if (!res.data.SysCode) {
-            sessionStorage.setItem("priceData", JSON.stringify(res.data));
+            // sessionStorage.setItem("priceData", JSON.stringify(res.data));
             let priceData = res.data;
             console.log("订单金额", priceData);
             let obj = {

@@ -649,6 +649,26 @@
                       </el-col>
                       <el-col :span="6">
                         <el-form-item
+                          label="位置类型"
+                          prop="mediaSite"
+                        >
+                          <el-select
+                            v-model="meidaItem.mediaForm.mediaSite"
+                            placeholder="请选择位置类型"
+                            clearable
+                          >
+                            <el-option
+                              v-for="(siteName, siteIndex) in ['小区大门', '侧门', '停车场', '单元门', '楼栋门']"
+                              :key="siteIndex"
+                              :label="siteName"
+                              :value="siteName"
+                            >
+                            </el-option>
+                          </el-select>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="6">
+                        <el-form-item
                           label="媒体等级"
                           prop="adDoorLevel"
                           v-if="pathHaveEdit && meidaItem.classified"
@@ -1815,6 +1835,7 @@ export default {
           mImg: "",
           updataImg: [],
           adDoorLevel: "",
+          mediaSite: ""
         },
       };
       mediaTypeItem.mediaList.push(tempMedia);
@@ -2597,6 +2618,7 @@ export default {
                 assetId: mediaItem.assetTag || "",
                 doorType: mediaItem.mType || "",
                 adDoorLevel: mediaItem.grade || "",
+                mediaSite: mediaItem.site || "",
                 mImg: mediaItem.mImg || "",
                 updataImg: [],
               };
@@ -2843,6 +2865,7 @@ export default {
                 deviceType: tempMediaForm.doorType || "",
                 mediaPicture: tempMediaForm.mImg || "",
                 grade: tempMediaForm.adDoorLevel || "",
+                site: tempMediaForm.mediaSite || "",
                 adSpaceInfo: tempAdSpaceInfo,
               };
               editMediaParams.push(obj);

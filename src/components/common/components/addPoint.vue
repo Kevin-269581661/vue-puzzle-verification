@@ -598,7 +598,7 @@ export default {
           label: "投放面",
           prop: "asLab",
           width: "80px",
-          value: (row)=>`${row.asLab}面`
+          value: (row)=>`${row.asLab}`
         }
       ],
     };

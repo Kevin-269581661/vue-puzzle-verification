@@ -18,7 +18,7 @@
                         <span>{{scope.$index+1}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="adSize" label="广告尺寸" min-width="12.4%">
+                <el-table-column prop="adSize" label="素材尺寸" min-width="12.4%">
                 </el-table-column>
                 <el-table-column prop="adViewSize" label="可视画面" min-width="12.4%">
                 </el-table-column>

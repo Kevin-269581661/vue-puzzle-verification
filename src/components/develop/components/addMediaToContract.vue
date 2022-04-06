@@ -2,7 +2,7 @@
  * @Author: penglei
  * @Date: 2021-06-28 14:06:42
  * @LastEditors: penglei
- * @LastEditTime: 2021-07-15 20:56:47
+ * @LastEditTime: 2022-04-06 15:50:21
  * @FilePath: /frontend/src/components/develop/components/addMediaToContract.vue
 -->
 <template>
@@ -157,7 +157,7 @@
             </el-row>
             <el-row :gutter="32">
               <el-col :span="6">
-                <el-form-item label="广告尺寸" required>
+                <el-form-item label="素材尺寸" required>
                   <div class="custom-form-item">
                     <el-form-item prop="adSizeW">
                       <el-input
@@ -359,7 +359,7 @@ export default {
           width: "90px",
         },
         {
-          label: "广告尺寸",
+          label: "素材尺寸",
           prop: "adSize",
           width: "100px",
         },
@@ -546,8 +546,8 @@ export default {
           usableNum: "2", //广告位面数pnum
           mstate: 2, //媒体状态此处新建都是2
           doorType: "",
-          adSizeW: "", //广告尺寸adsize
-          adSizeH: "", //广告尺寸
+          adSizeW: "", //素材尺寸adsize
+          adSizeH: "", //素材尺寸
           visualW: "", //可视画面adviewsize
           visualH: "", //可视画面
           mediaRemark: "", //备注 mrk

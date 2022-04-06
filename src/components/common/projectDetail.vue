@@ -92,7 +92,7 @@
                         </el-table-column>
                         <el-table-column prop="asLab" label="投放面">
                         </el-table-column>
-                        <el-table-column prop="adSize" label="广告尺寸">
+                        <el-table-column prop="adSize" label="素材尺寸">
                         </el-table-column>
                         <el-table-column prop="assetTag" label="资产编号">
                         </el-table-column>

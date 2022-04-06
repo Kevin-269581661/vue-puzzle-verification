@@ -108,11 +108,8 @@
                             <li class="mbox_li">楼盘价格<span></span><b>¥{{mediaInfo.buildPrice}}/m²</b></li>
                             <li class="mbox_li">商圈<span></span><b>{{mediaInfo.tradingArea}}</b></li>
                             <li class="mbox_li">楼栋数量<span></span><b>{{mediaInfo.fNum}}</b></li>
-                            <!--<li class="mbox_li">资产编号<span></span><b>{{mediaInfo.assetTag}}</b></li>-->
-                            <!--<li class="mbox_li">广告尺寸<span></span><b>{{mediaInfo.adSize}}</b></li>-->
                             <li class="mbox_li">入住年份<span></span><b>{{mediaInfo.chDay}}</b></li>
                             <li class="mbox_li">小区户数<span></span><b>{{mediaInfo.houseNum}}</b></li>
-                            <!--<li class="mbox_li">广告限制<span></span><b>{{mediaInfo.adLimit}}</b></li>-->
                         </ul>
                     </div>
                     <div class="resMessage_Btn">

@@ -680,7 +680,7 @@
                     </el-row>
                     <el-row :gutter="76" class="from_row" v-for="(adSpaceItem, adSpaceIndex) in meidaItem.mediaForm.adSpaceInfo" :key="adSpaceIndex">
                       <el-col :span="6">
-                        <el-form-item :label="adSpaceItem.name + '广告尺寸'" required>
+                        <el-form-item :label="adSpaceItem.name + '素材尺寸'" required>
                           <div class="form_item_box_son">
                             <el-form-item :prop="`adSpaceInfo[${adSpaceIndex}].adSizeWidth`" class=""
                               :rules="{
@@ -3176,7 +3176,7 @@ export default {
   line-height: 810px;
   cursor: pointer;
 }
-/*广告尺寸单位等*/
+/*素材尺寸单位等*/
 .mm {
   display: inline-block;
   position: relative;

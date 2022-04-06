@@ -4320,8 +4320,8 @@
             align-items: center;
             flex-flow: row wrap;
             overflow: auto;
-            .space-item + .space-item {
-                margin-left: 12px;
+            .space-item {
+                margin-right: 12px;
             }
         }
     }

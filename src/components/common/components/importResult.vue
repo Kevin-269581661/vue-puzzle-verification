@@ -28,7 +28,7 @@
           <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
         </div>
         <el-table border :data="successList" style="width: 100%">
-          <el-table-column width="120px">
+          <el-table-column width="120px" class-name="el-table-column-checkbox">
             <template slot-scope="scope">
               <div class="space-group">
                 <div
@@ -624,6 +624,10 @@ export default {
 }
 
 /* 表头全勾选 */
+/deep/ .el-table .el-table-column-checkbox .cell {
+  min-width: 110px;
+  height: auto;
+}
 .adsTable {
   position: relative;
   .space-group {
@@ -631,8 +635,8 @@ export default {
     align-items: center;
     flex-flow: row wrap;
     overflow: auto;
-    .space-item + .space-item {
-      margin-left: 12px;
+    .space-item {
+      margin-right: 12px;
     }
   }
 }

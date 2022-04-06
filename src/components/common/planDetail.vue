@@ -50,10 +50,6 @@
                   >协同选点</el-button
                 >
                 <el-button
-                  v-if="
-                    customPermission.proposalPermission == 1 &&
-                    planDetail.planMode == 1
-                  "
                   type="default"
                   @click="setPlanPrice"
                   >设置金额</el-button
@@ -1128,8 +1124,6 @@ export default {
         this.$refs.settlementForm.resetFields()
         done()
       }
-      // this.$refs[formName].resetFields()
-      // this.settlementFormVisible = false
     },
     //清空草稿箱数据
     clearDrafts (apid) {

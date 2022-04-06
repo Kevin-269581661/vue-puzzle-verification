@@ -213,7 +213,7 @@
             <!--提示-->
             <div class="tip">
                 <i class="el-icon-info"></i>
-                <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{shopingList.length||0}}</span>个</p>
+                <p>共 <span>{{adsCount}}</span> 个点位，已选点位 <span>{{shopingList.length||0}}</span> 个</p>
             </div>
             <!--表格-->
             <div class="table_wrap adsTable">

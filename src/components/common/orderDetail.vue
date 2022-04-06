@@ -1518,12 +1518,10 @@ export default {
             type: "warning"
           }
         ).then(() => {
-          console.log(this.changePointInfo);
           let orderNewAdsInfos = []
           let orderStoppedAdsInfos = []
           if (this.changePointInfo.stopPointlist.length > 0) {
             for (let data of this.changePointInfo.stopPointlist) {
-              // console.log(data);
               orderStoppedAdsInfos.push(data)
             }
           }
@@ -1533,11 +1531,9 @@ export default {
             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
           }
-          // console.log(this.orderDetail);
           api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder', JSON.stringify(info)).then(res => {
             console.log(res.data)
             if (res.data.SysCode == 200200) {
-              // this.dialogChangePoint = false
               Message.success(res.data.MSG)
               this.changePointInfo.lIDArr = this.changePointInfo.lIDArr.concat(this.changePointInfo.stopPointlist)
               this.changePointInfo.stopPointNum = this.changePointInfo.lIDArr.length
@@ -2483,7 +2479,6 @@ export default {
         // 新增点位
         this.getSetPoint('change')
       }
-      // this.selectioUpdate()
       this.isHandleChange = true
     },
     resetDialogChangeRange () {
@@ -2502,7 +2497,6 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       });
       let arr = [];
-      console.log('000000', this.addAdsArr, this.pdidList)
       for (let key of this.addAdsArr) {
         let adsInfo = {
           resName: key.resName,

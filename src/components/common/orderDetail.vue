@@ -2066,7 +2066,10 @@ export default {
               this.setpointArr = result
               if (lIDs && lIDs.length > 0) {
                 // 更改排期点位
-                this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
+                // this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
+                let newlIDArr=lIDs.concat(this.changePointInfo.lIDArr)
+                newlIDArr=Array.from(new Set(newlIDArr))
+                this.changePointInfo.lIDArr=newlIDArr
                 this.setpointArr.forEach(item => {
                   if (this.changePointInfo.lIDArr.includes(item.lID) && item.isChange == 1) {
                     item.changePeriod = 1

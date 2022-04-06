@@ -136,9 +136,9 @@
                         <el-tooltip class="item" effect="dark"
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
                                     placement="bottom"
-                                    v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
+                                    v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>26'>
                             <span>
-                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}
+                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 26)}}
                             </span>
                         </el-tooltip>
                         <span v-else>
@@ -598,14 +598,14 @@
 
                 // 上下刊以及换画百分比数量等
                 publishNumInfo: {
-                    "door": {
-                        "totalCount": 0,
-                        "hasPhotoCount": 0
-                    },
-                    "barrier": {
-                        "totalCount": 0,
-                        "hasPhotoCount": 0
-                    },
+                    // "door": {
+                    //     "totalCount": 0,
+                    //     "hasPhotoCount": 0
+                    // },
+                    // "barrier": {
+                    //     "totalCount": 0,
+                    //     "hasPhotoCount": 0
+                    // },
                     "changePic":{
                         percent: 0,
                         currNum: 0,
@@ -1082,24 +1082,6 @@
                 }
                 this.getImgArr();
             },
-            //图片数量
-            getImgCount() {
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apId: sessionStorage.getItem('order_apid'),
-                    pType: this.type==1?'SK':'XK',
-                }
-                api.postApi(this.apiVar.Advertisement + "/GetImgCount", params).then(res=>{
-                    if (!res.data.SysCode) {
-                        this.publishNumInfo.door = res.data.door
-                        this.publishNumInfo.barrier = res.data.barrier
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG);
-                    }
-
-                })
-            },
             // 上下刊报告列表
             getImgInfo(params) {
                 this.pageInfo.loading = true;
@@ -1111,7 +1093,6 @@
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
                             }
-                            this.getImgCount()
                             this.pageInfo = {
                                 ...this.pageInfo,
                                 ...({totalNum: dataInfo.searchCount}),
@@ -2119,6 +2100,7 @@
                     if (type == 1 || type == 2) {
                         // 上下刊报告列表
                         this.searchFun();
+                        this.getAdsUploadImgCnt();
                     } else if (type == 3) {
                         // 换画报告列表
                         this.search();
@@ -2319,6 +2301,7 @@
                             if (type == 1 || type == 2) {
                                 // 上下刊报告列表
                                 this.searchFun();
+                                this.getAdsUploadImgCnt();
                             } else if (type == 3) {
                                 // 换画报告列表
                                 this.search();
@@ -2348,10 +2331,18 @@
                 let type = this.type;
                 if (type == 1 || type == 2) {
                     // 上下刊报告列表
-                    if (this.publishNumInfo.door.hasPhotoCount==0&&this.publishNumInfo.barrier.hasPhotoCount==0) {
+                    //是否有图片
+                    let isHaveImg=this.mediaTypeList.some((item)=>{
+                        return item.uploadCnt>0
+                    })
+                    if(!isHaveImg){
                         sessFun.messageFun('warning', '暂无图片记录');
                         return;
                     }
+                    // if (this.publishNumInfo.door.hasPhotoCount==0&&this.publishNumInfo.barrier.hasPhotoCount==0) {
+                    //     sessFun.messageFun('warning', '暂无图片记录');
+                    //     return;
+                    // }
                 } else if (type == 3) {
                     // 换画报告列表
                     if (!this.publishNumInfo.changePic.currNum) {

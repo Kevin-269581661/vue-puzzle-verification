@@ -279,7 +279,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 报价单
-import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue'
 import {
@@ -290,7 +289,6 @@ import {
 export default {
   name: "planDetail",
   components: {
-    material,
     detail,
     addPoint
   },
@@ -325,15 +323,8 @@ export default {
       },
       // 选点排期
       setpointArr: [],
-      copyAsidArr: [],
-      // 广告物料信息
-      materialInfo: [],
-      // 道闸物料信息
-      daoInfo: [],
       // 报价单详情
       priceSheet: [],
-      //物料信息
-      // materialInfo: [],
       // 城市过滤结果
       filterCityData: [],
       // 排期时间过滤

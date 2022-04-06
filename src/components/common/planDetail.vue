@@ -94,13 +94,12 @@
             <div class="first-wrap box-wrap">
               <div class="table_wrap">
                 <el-table
-                  border
                   :data="currentPagination"
-                  style="width: 100%"
-                  max-height="500"
-                >
                   :default-sort="{prop: 'recName', order: 'descending'}"
+                  border
+                  style="width: 100%"
                   v-loading="loading" element-loading-text="玩命加载中.."
+                  max-height="500"
                   element-loading-spinner="el-icon-loading">
                   <el-table-column type="expand">
                     <template slot-scope="props">
@@ -268,9 +267,7 @@
           </el-tab-pane>
           <el-tab-pane label="物料信息" name="third">
             <material
-              :material="materialInfo"
               :materialInfoData="materialInfoJson"
-              :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="false"
               v-if="planPanel == 'third'"
@@ -435,11 +432,6 @@ import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue';
 import {
-  // Table,
-  // TableColumn,
-  // Tabs,
-  // TabPane,
-  // Button,
   Message,
   MessageBox
 } from "element-ui";
@@ -505,10 +497,6 @@ export default {
       },
       // 选点排期
       setpointArr: [],
-      // 广告物料信息
-      materialInfo: [],
-      // 道闸物料信息
-      daoInfo: [],
       // 报价单详情
       priceSheet: [],
       // 城市过滤结果
@@ -832,7 +820,6 @@ export default {
         .then(res => {
           if (!res.data.SysCode) {
             let initData = res.data;
-            console.log(initData, 'initDatainitDatainitData')
             let resInfo = initData.adSpaceInfo;
             // 城市中文名称
             for (let data of resInfo) {
@@ -855,40 +842,6 @@ export default {
             this.filtersData = filterFormat(resInfo, "timeRange");
             // 选点排期
             this.setpointArr = resInfo;
-
-            // 广告门物料信息
-            let mInfo = initData.gateMaterialInfo;
-            let materialRes = [];
-            for (let data of mInfo) {
-              let str = data.gateMaterialSize.split('-');
-              let obj = {
-                adSize: str[0],
-                adViewSize: str[1],
-                pointNum: data.gateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              materialRes.push(obj);
-            }
-            this.materialInfo = materialRes;
-
-            // 道闸物料信息
-            let InfoTest = initData.roadGateMaterialInfo;
-            let daoRes = [];
-            for (let data of InfoTest) {
-              let str = data.roadGateMaterialSize.split('-');
-              let obj = {
-                adSize: str[1],
-                adViewSize: str[0],
-                pointNum: data.roadGateMaterialCount,
-                resolution: "150dpi",
-                colorMode: "CMYK",
-                photoFormat: "JPG/TIF/AI/PSD/CDR",
-              };
-              daoRes.push(obj);
-            }
-            this.daoInfo = daoRes;
             this.loading = false;
             this.maLoading = false;
 

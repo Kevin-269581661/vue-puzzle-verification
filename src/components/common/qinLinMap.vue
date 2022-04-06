@@ -903,7 +903,7 @@
             <p class="li_p">
               <span>{{ key.grade || '--' }}级</span>
               <span>{{ key.mType || '--' }}</span>
-              <span>{{ key.adSize || key.picSize }}</span>
+              <span>{{ key.adSize }}</span>
             </p>
           </li>
           <li

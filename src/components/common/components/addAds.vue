@@ -330,20 +330,6 @@
                         min-width="100">
                     </el-table-column>
                     <el-table-column
-                        label="广告尺寸"
-                        min-width="110">
-                        <template slot-scope="scope">
-                            {{ scope.row.adSize || '--' }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        label="画面尺寸"
-                        min-width="110">
-                        <template slot-scope="scope">
-                            {{ scope.row.picSize || '--' }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
                         prop="liveYear"
                         :label="recType === 1? '入住年份' : '建成年份'"
                         min-width="90">
@@ -838,7 +824,7 @@
                         adLimit: key.notPush || '',
                         mState: key.mState === 1 ? '正常' : (key.mState === 2 ? '待安装' : '--'),
                         adSize: key.adSize || '',
-                        picSize: key.picSize || '',
+                        // picSize: key.picSize || '',
                         adsList: key.adsList,
                         // checkBox: {A: false, B: false,ABC:false},
                         // box: {A: false, B: false},

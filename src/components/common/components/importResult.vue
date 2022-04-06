@@ -327,7 +327,7 @@ export default {
           mState:
             key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
           adSize: key.adSize || "",
-          picSize: key.picSize || "",
+          // picSize: key.picSize || "",
           mapCenter: key.reference || "", // 地图中心点
           recommendReason: key.recommendReason || "", //  亲粤邻定制：推荐理由
           address: key.resAddress || "",

@@ -466,20 +466,6 @@
                                     min-width="100">
                                 </el-table-column>
                                 <el-table-column
-                                    label="广告尺寸"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.adSize || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
-                                    label="画面尺寸"
-                                    min-width="110">
-                                    <template slot-scope="scope">
-                                        {{ scope.row.picSize || '--' }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column
                                     prop="liveYear"
                                     align="right"
                                     :label="recType === 1? '入住年份' : '建成年份'"
@@ -2228,7 +2214,7 @@
                         adLimit: key.notPush || '',
                         mState: key.mState === 1 ? '正常' : (key.mState === 2 ? '待安装' : '--'),
                         adSize: key.adSize || '',
-                        picSize: key.picSize || '',
+                        // picSize: key.picSize || '',
                         mapCenter: key.reference || '',      // 地图中心点
                         address: key.resAddress || '',
                         dNum: key.dNum || '',               // 出入口数

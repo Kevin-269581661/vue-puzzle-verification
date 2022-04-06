@@ -1259,9 +1259,9 @@
         >取消
       </el-button>
       <!-- 空点导出 -->
-      <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
+      <!-- <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
         >导空点
-      </el-button>
+      </el-button> -->
 
       <el-button @click="next" v-if="active == 0 || active == 1" type="primary">
         下一步

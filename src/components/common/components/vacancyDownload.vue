@@ -249,6 +249,8 @@ export default {
                 "人流量",
                 "媒体数量(面)",
                 "点位备注",
+                "经度",
+                "纬度"
               ];
               let customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
@@ -330,6 +332,8 @@ export default {
             peopleFlow: item.peopleFlow || "",
             adsNum: item.adsNum || 0,
             remark: item.allRemark1 || "",
+            lng: item.lng || "",
+            lat: item.lat || ""
           };
 
           let customPermission = JSON.parse(
@@ -462,6 +466,8 @@ export default {
                 "人流量",
                 "媒体数量(面)",
                 "点位备注",
+                "经度",
+                "纬度",
               ],
               customPermission = JSON.parse(
                 sessionStorage.getItem("session_data")
@@ -503,7 +509,6 @@ export default {
     },
     // 处理数据
     hasPointData (arr) {
-      console.log(arr, 'arrr')
       let returnObj = {
         arr: "",
         date: "",
@@ -544,6 +549,8 @@ export default {
               peopleFlow: item.peopleFlow || "",
               adsNum: item.adsNum || 0,
               remark: item.allRemark1 || "",
+              lng: item.lng || "",
+              lat: item.lat || ""
             };
             let customPermission = JSON.parse(
               sessionStorage.getItem("session_data")
@@ -655,14 +662,14 @@ export default {
                   "素材尺寸",
                   "可视尺寸",
                   "点位备注",
+                  "位置类型",
+                  "经度",
+                  "纬度"
                 ];
 
                 let customPermission = JSON.parse(
                   sessionStorage.getItem("session_data")
                 ).customPermission;
-                /* if(customPermission && customPermission.patrolPermission) {
-                                head.push('巡点问题', '通行情况');
-                            } */
                 switch (customPermission.patrolPermission) {
                   case 1:
                     head.push("巡点问题", "通行情况");
@@ -739,6 +746,9 @@ export default {
               adSize: item.adSize || "",
               adViewSize: item.adViewSize || "",
               allremark: item.allremark || "",
+              site: item.site || "",
+              lng: item.lng || "",
+              lat: item.lat || "",
             };
 
             let customPermission = JSON.parse(

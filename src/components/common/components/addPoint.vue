@@ -309,7 +309,7 @@
             确定并添加到购物车
           </el-button>
         </template>
-        <template v-else-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)">
+        <template v-else-if="['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)">
           <el-button
             class="merge-btn"
             plain
@@ -373,7 +373,7 @@
     >
       <div class="content-tip">选择“全部小区”则之前的配点将被覆盖</div>
       <el-radio v-model="formDataObj.matchRange" label="1">全部小区</el-radio>
-      <el-tooltip v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" placement="top" trigger="hover" effect="dark">
+      <el-tooltip v-if="['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" placement="top" trigger="hover" effect="dark">
         <div slot="content">个别未配点小区请联系媒介协助配点</div>
         <el-radio disabled v-model="formDataObj.matchRange" label="0">未配点小区</el-radio>
       </el-tooltip>
@@ -663,7 +663,7 @@ export default {
     },
     // 重新配点
     rematchPoint() {
-      this.$confirm(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
+      this.$confirm(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)?'本次配点结果质量高，重新配点可能会错失最优点位配置，确定放弃本次配点结果吗？':'重新配点会清除原配点结果信息',
         "是否重新配点？", {
         confirmButtonText: "确 定",
         dangerouslyUseHTMLString: true,
@@ -750,7 +750,7 @@ export default {
       let params = {}
       if(this.formDataObj.aFaceRateChecked && ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
         params.aFaceRate = this.formDataObj.aFaceRate||0
-      } else if(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+      } else if(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         params.aFaceRate = this.formDataObj.aFaceRate||50
       }
       this.formDataObj.pointDemand.forEach(item => {
@@ -773,7 +773,7 @@ export default {
           if (res.data.SysCode == 200200) {
             resolve(res.data.data)
             // 获取销售已配点次数
-            ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.getMatchCnt()
+            ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.getMatchCnt()
           } else {
             sessFun.messageFun('warning', res.data.MSG)
           }

@@ -33,7 +33,7 @@
                 <template slot="title">
                     更多
                 </template>
-                <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item>
+                <!-- <el-menu-item index="/sale/publishPriceList">刊例价</el-menu-item> -->
                 <el-menu-item index="/sale/compact">资料下载</el-menu-item>
                 <el-menu-item index="/sale/tvOrderList">电视广告</el-menu-item>
             </el-submenu>
@@ -121,7 +121,7 @@
             getUserName() {
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                    if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                         this.$message({
                             type: 'warning',
                             message: '权限异常,请重新登录'

@@ -203,26 +203,36 @@
                     </div>
                 </div>
                 <!--媒介载体-->
-                <div class="ad_ad">
-                    <div v-if="haveEdit && activeMedia === 'first'" class="connect_door">
+                <div class="ad_ad" v-if="activeMedia*1">
+                    <div v-if="haveEdit" class="connect_door">
                         <span class="connect_door_btn" @click="connectDoorFun"
                               >设置连排门</span>
                     </div>
                     <el-tabs v-model="activeMedia">
-                        <el-tab-pane label="广告门" name="first">
+                        <el-tab-pane :label="mediaTypeItem.mediaTypeName" :name="mediaTypeKey + ''" v-for="(mediaTypeItem, mediaTypeKey) in mediaTypeObj" :key="mediaTypeKey">
                             <div class="table_wrap">
                                 <el-table
                                     v-loading="mediaLoading"
                                     element-loading-text="玩命加载中.."
                                     element-loading-spinner="el-icon-loading"
                                     border
-                                    :data="mediaList"
-                                    style="width: 100%">
+                                    :data="mediaTypeItem.mediaList"
+                                    style="width: 100%"
+                                    show-overflow-tooltip>
                                     <el-table-column
                                         prop="mTitle"
                                         label="媒体名称"
                                         min-width="8.6%"
                                     >
+                                    </el-table-column>
+                                    <el-table-column
+                                        prop="mediaTypeName"
+                                        label="媒体类型"
+                                        min-width="10%"
+                                        show-overflow-tooltip>
+                                        <template slot-scope="scope">
+                                            {{scope.row.mediaTypeName || '--'}}
+                                        </template>
                                     </el-table-column>
                                     <el-table-column
                                         prop="grade"
@@ -231,13 +241,6 @@
                                         <template slot-scope="scope">
                                             {{scope.row.grade || '--'}}
                                         </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="equipmentType"
-                                        v-if="isAddEquipmentTypeAsTable" 
-                                        label="设备型号"
-                                        min-width="8.6%"
-                                    >
                                     </el-table-column>
                                     <el-table-column
                                         prop="mType"
@@ -261,18 +264,6 @@
                                         <template slot-scope="scope">
                                             {{ scope.row.assetTag || '&#45;&#45;' }}
                                         </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="adSize"
-                                        label="广告尺寸"
-                                        min-width="7%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="adViewSize"
-                                        label="可视画面"
-                                        min-width="7%"
-                                    >
                                     </el-table-column>
                                     <el-table-column
                                         label="广告限制"
@@ -303,78 +294,6 @@
                                 </el-table>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="道闸" name="second">
-                            <div class="table_wrap">
-                                <el-table
-                                    border
-                                    :data="roadGateList"
-                                    style="width: 100%">
-                                    <el-table-column
-                                        prop="mTitle"
-                                        label="媒体名称"
-                                        min-width="133"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mState"
-                                        label="状态"
-                                        min-width="113"
-                                    >
-                                        <template slot-scope="scope">
-                                            {{scope.row.mState == 0 ? '禁用' : scope.row.mState == 1 ? '正常' :
-                                            scope.row.mState == 2 ? '待安装' : scope.row.mState == 3 ? '待维修' : '已拆除'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="资产编号"
-                                        min-width="163"
-                                        :show-overflow-tooltip="true">
-                                        <template slot-scope="scope">
-                                            {{ scope.row.assetTag || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="picSize"
-                                        label="广告尺寸"
-                                        min-width="114"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="lightBoxSize"
-                                        label="可视画面"
-                                        min-width="114"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="广告限制"
-                                        min-width="163"
-                                        class="tar"
-                                        :show-overflow-tooltip="true">
-                                        <template slot-scope="scope">
-                                            {{ scope.row.notPush || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="备注"
-                                        min-width="196"
-                                        :show-overflow-tooltip="true">
-                                        <template slot-scope="scope">
-                                            {{ scope.row.mRemark || '--' }}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        label="门禁图片"
-                                        min-width="100"
-                                    >
-                                        <template slot-scope="scope">
-                                            <div style="color: #108EE9;cursor: pointer;"
-                                                 @click="showRGImg(scope.row.mID)">查看
-                                            </div>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
-                            </div>
-                        </el-tab-pane>
                     </el-tabs>
                 </div>
                 <div class="content_bottom_btn">
@@ -390,7 +309,6 @@
                     <img class="resImg" :src='item' alt="资源图片">
                 </el-carousel-item>
             </el-carousel>
-            <!-- <img class="resImg" :src='ResImgSrc' alt="资源图片"> -->
         </el-dialog>
         <!--媒体图片模态框-->
         <el-dialog
@@ -407,7 +325,7 @@
         <!--设置连排门-->
         <el-dialog :visible.sync="ConnectDoorDialogVisible" title="连排门设置" custom-class="connectAD">
             <ul>
-                <li v-for="(item,index) in connectAdArr" class="connect_door_li">
+                <li v-for="(item,index) in connectAdArr" :key="index" class="connect_door_li">
                     <span class="connect_door_h4">连排门{{AToZList[index].value}}:</span>
                     <el-select v-model="item.selectMIDs" size="small" multiple placeholder="请选择"
                                @change="changeMedia">
@@ -434,9 +352,7 @@
 <script>
     import api from '../../api/api'
     import sessFun from '../../commonFun/sessFun.js'
-    import {Button, Table, TableColumn, Row, Col, Message} from 'element-ui';
-
-    import sheetExcel from "../../commonFun/sheetExcel.js";
+    import {Button, Table, TableColumn, Row, Col} from 'element-ui';
 
     export default {
         name: "mediaDetail",
@@ -475,9 +391,8 @@
                     liftType: "",
                     liveRate: "",
                 },
-                activeMedia: 'first',
-                mediaList: [],       // 广告门媒体
-                roadGateList:[],    // 道闸媒体
+                activeMedia: '',
+                mediaTypeObj: {},
                 res_village: {hType: '楼盘类型', hNum: '住户数量', joinTime: '入住年份'},
                 ResImgDialogVisible: false,     // 显示资源图片
                 ResImgSrc: [],
@@ -525,12 +440,6 @@
                 selectMedia: [],
             }
         },
-        computed:{
-            //页面是否需要添加设备型号字段
-            isAddEquipmentTypeAsTable(){
-            return sheetExcel.isAddEquipmentTypeAsTable()
-            }
-        },
         mounted() {
             let nowPath = this.$route.path;
             if (nowPath.indexOf('/operate/') !== -1) {
@@ -551,8 +460,7 @@
             // 编辑
             edit(goto) {
                 sessionStorage.setItem('recDetail', JSON.stringify(this.resData))
-                sessionStorage.setItem('mediaList', JSON.stringify(this.mediaList))
-                sessionStorage.setItem('roadGateList', JSON.stringify(this.roadGateList))
+                sessionStorage.setItem('mediaTypeObj', JSON.stringify(this.mediaTypeObj))
                 if (goto === 'add') {
                     this.$router.push('./mediaEdit?add=true')
                 } else {
@@ -573,7 +481,6 @@
                     }
                 }
                 api.postApi_new(this.apiVar.Media, params).then(res => {
-                    console.log('mediaDetail', res.data) //fNum楼栋数量 dNum出入数量 hNum住户数量
                     if (res.data.SysCode == 200200) {
                         if (res.data.data === null || res.data.data === '') {
                             sessFun.messageFun('warning', '媒体资源信息为空!')
@@ -650,7 +557,6 @@
                                 this.showAllDetail.tpt = false
                                 this.judgeShowBtn.tpt = true
                             }
-                            console.log('this.resData', this.resData)
                         }
                     } else {
                         sessFun.messageFun('warning', '资源详情获取异常!')
@@ -667,26 +573,36 @@
                     }
                 }
                 api.postApi_new(this.apiVar.Media, mParams).then(res => {
-                    console.log('媒体信息', res.data)
                     if (res.data.SysCode == 200200) {
                         if (res.data.data.length === 0 || res.data.data === '') {
                             sessFun.messageFun('warning', '媒体资源信息为空!')
                         } else {
                             // classified--是否执行媒体分层 1启用 2关闭
-                            let MediaList = res.data.data
-                            for (let i = 0; i < MediaList.length; i++) {
-                                if (MediaList[i].mVehicle === '广告门') {
-                                    this.mediaList.push(MediaList[i])
-                                } else if (MediaList[i].mVehicle === '道闸') {
-                                    this.roadGateList.push(MediaList[i])
-                                    // this.roadGateImgSrc.push({mid: MediaList[i].mID, src: ''})
+                            let mediaList = res.data.data || [];
+                            let mediaTypeObj = {};
+                            for (let i = 0; i < mediaList.length; i++) {
+                                let tempMediaInfo = mediaList[i];
+                                let { mediaTypeId } = tempMediaInfo;
+                                if(!mediaTypeId) continue;
+                                if(mediaTypeObj[mediaTypeId]) {
+                                    mediaTypeObj[mediaTypeId].mediaList.push(tempMediaInfo);
+                                } else {
+                                    mediaTypeObj[mediaTypeId] = {
+                                        mediaTypeId,
+                                        mediaTypeName: tempMediaInfo.mediaTypeName || '',
+                                        mediaList: [tempMediaInfo]
+                                    };
+                                    if(i === 0) {
+                                        this.activeMedia = mediaTypeId + '';
+                                    }
                                 }
                             }
+                            this.mediaTypeObj = mediaTypeObj
                         }
-                        this.mediaLoading = false
+                        this.mediaLoading = false;
                     } else {
                         sessFun.messageFun('warning', '媒体详情获取异常!')
-                        this.mediaLoading = false
+                        this.mediaLoading = false;
                     }
                 }).catch(err => {
                     console.log(err);
@@ -694,7 +610,6 @@
             },
             // 点击查看显示该资源的图片
             showResImg() {
-                console.log('点击查看资源图片')
                 if (this.ResImgSrc.length > 0) {
                     this.ResImgDialogVisible = true
                 } else if (this.resData.fullViewUrl !== '' && this.resData.fullViewUrl !== undefined && this.resData.fullViewUrl !== null) {
@@ -709,12 +624,9 @@
                         ptype: 'resType'
                     }
                     api.getApi(this.apiVar.UCAPI + '/GetImg', params).then(res => {
-                        console.log('资源图片的信息', res)
                         if (res.data.length === 0) {
                             sessFun.messageFun('warning', '暂时没有该资源的图片!')
                         } else if(Array.isArray(res.data)) {
-                            // this.ResImgSrc = res.data[0].pURL
-                            // this.ResImgDialogVisible = true
                             res.data.forEach(item=>{
                                 item.pURL && this.ResImgSrc.push(item.pURL)
                             })
@@ -728,39 +640,12 @@
             // 点击查看显示该媒体的图片
             showMediaImg(mID) {
                 sessFun.messageFun('warning', '该功能暂未开放!')
-                console.log('mID', mID)
-                console.log('媒体列表', this.mediaList)
                 console.log('媒体图片列表', this.mediaImgSrc)
-                // for(let i=0;i<this.mediaList.length;i++){
-                //     if(this.mediaList[i].mID === mID){
-                //         this.mediaImgTitle =  this.mediaList[i].mTitle
-                //         // this.mediaImgSrc = this.mediaList[i].mImg.split(',')
-                //         if (this.mediaList[i].mImg.includes(';')) {
-                //             this.mediaImgSrc = this.mediaList[i].mImg.split(';')
-                //         } else {
-                //             this.mediaImgSrc = this.mediaList[i].mImg.split(',')
-                //         }
-                //         this.mediaImgDialogVisible = true
-                //     }
-                // }
-                // console.log('媒体图片列表',this.mediaImgSrc)
             },
             // 点击查看道闸媒体图片
+            /// TODO
             showRGImg(mID) {
                 sessFun.messageFun('warning', '该功能暂未开放!')
-                // for(let i=0;i<this.roadGateList.length;i++){
-                //     if(this.roadGateList[i].mID === mID){
-                //         this.mediaImgTitle =  this.roadGateList[i].mTitle
-                //         // this.mediaImgSrc = this.roadGateList[i].mImg.split(',')
-                //         if (this.roadGateList[i].mImg.includes(';')) {
-                //             this.mediaImgSrc = this.roadGateList[i].mImg.split(';')
-                //         } else {
-                //             this.mediaImgSrc = this.roadGateList[i].mImg.split(',')
-                //         }
-                //         this.mediaImgDialogVisible = true
-                //     }
-                // }
-                // console.log('媒体图片列表',this.mediaImgSrc)
             },
             // 设置连排门
             connectDoorFun() {
@@ -768,7 +653,7 @@
                 if (this.isUpdataConnectAD) {
                     let arr = []
                     // 下拉选项
-                    for (let key of this.mediaList) {
+                    for (let key of this.mediaTypeObj[this.activeMedia].mediaList) {
                         arr.push({
                             value: key.mID.toString(),
                             label: key.mTitle + '-' + key.assetTag,
@@ -776,7 +661,6 @@
                         })
                     }
                     this.connectOptions = arr
-                    console.log('connectOptions', this.connectOptions)
                     let params = {
                         uid: this.sessionData.uID,
                         token: this.sessionData.token,
@@ -785,7 +669,6 @@
                     api.getApi(this.apiVar.Advertisement + '/GetConnRowInfo', params).then(res => {
                         this.ConnectDoorDialogVisible = true
                         this.isUpdataConnectAD = false
-                        console.log('获取该资源的连排门信息', res)
                         let resArr = res.data
                         // 初始化连排门-最少一个
                         let connectAdBox = []
@@ -806,7 +689,6 @@
                         })
                         this.connectAdArr = connectAdBox
                         this.changeMedia()
-                        console.log('this.connectAdArr', this.connectAdArr)
 
                     })
                 } else {
@@ -816,7 +698,6 @@
             },
             // 选择广告门
             changeMedia(val) {
-                console.log('选择广告门-连排门', val)
                 //以选择的mID
                 let arr = []
                 for (let key of this.connectAdArr) {
@@ -826,7 +707,6 @@
                         }
                     }
                 }
-                // console.log('arr------',arr)
                 this.selectMedia = arr
                 // 非当前选择的连排门下去禁用选项
                 for (let key of this.connectAdArr) {
@@ -842,7 +722,6 @@
                         }
                     }
                 }
-                console.log('connectAdArr------', this.connectAdArr)
             },
             // 增加选择行
             addRowSelect() {
@@ -888,15 +767,12 @@
             },
             // 删除连排门信息
             delConnectAdInfo(index) {
-                console.log(this.connectAdArr[index])
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
                     connIDs: this.connectAdArr[index].connID,
                 }
-                console.log('删除连排门信息params', params)
                 api.postApi(this.apiVar.Advertisement + '/DeleteConnRowInfo', params).then(res => {
-                    console.log('删除连排门信息', res)
                     this.connectAdArr.splice(index, 1)
                     this.changeMedia()
                     this.isUpdataConnectAD = true
@@ -904,7 +780,6 @@
             },
             // 获取广告门名称及mID以构建设置连排门的数据
             setConnectAdData() {
-                console.log('this.connectAdArr', this.connectAdArr)
                 this.isConnectBtn = true
                 let isGreaterThanOne = true
                 let isConnHaveDoor = true       // 已有连排门不能为空
@@ -927,7 +802,6 @@
                         }
                     }
                 }
-                console.log('arr---', arr)
                 if (!isGreaterThanOne) {
                     this.isConnectBtn = false
                     sessFun.messageFun('warning', '同一个连排门最少需要两个广告门!')
@@ -948,11 +822,9 @@
                         resID: this.resID,
                         connRowList: arr,
                     }
-                    console.log('params', params)
                     api.postApi_json(this.apiVar.Advertisement + '/SaveOrUpdateConnRowInfo?uid=' + this.sessionData.uID
                         + '&token=' + this.sessionData.token, params)
                         .then(res => {
-                            console.log('设置连排门res', res)
                             this.isConnectBtn = false
                             this.isUpdataConnectAD = true
                             if (res.data.msg.includes('操作成功')) {
@@ -974,7 +846,6 @@
                         let btn = document.getElementsByClassName('showAllTextDes')[0]
                         let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
-                        console.log('top', top)
                     }, 10)
                 } else if (letter === 'sfs') {
                     this.showAllDetail.sfs = !this.showAllDetail.sfs
@@ -983,7 +854,6 @@
                         let btn = document.getElementsByClassName('showAllTextSfs')[0]
                         let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
-                        console.log('top', top)
                     }, 10)
                 } else if (letter === 'tpt') {
                     this.showAllDetail.tpt = !this.showAllDetail.tpt
@@ -992,7 +862,6 @@
                         let btn = document.getElementsByClassName('showAllTextTpt')[0]
                         let top = des.offsetHeight - 20
                         btn.style.top = top + "px"
-                        console.log('top', top)
                     }, 10)
                 }
             },

@@ -38,7 +38,7 @@
           :disabled="item.asSaleState === 1"
           class="u-radio"
           :style="{width: item.asSaleState === 1 ? '91px': '69'}"
-          >{{ item.asLab }}面
+          >{{ item.asLab }}
           <el-tooltip
             v-if="item.asSaleState === 1"
             effect="dark"
@@ -102,7 +102,7 @@ export default {
       const asLabName = mediaAdsStateAction.filter(item => {
         return item.asID === asID
       })[0]
-      this.asLabName = asLabName ? `${asLabName.asLab}面` : `设备`
+      this.asLabName = asLabName ? `${asLabName.asLab}` : `设备`
     },
 
     handleConfirm () {

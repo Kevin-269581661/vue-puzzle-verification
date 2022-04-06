@@ -259,7 +259,7 @@
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
               :filter-multiple="true"
-              v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
+              v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
             >
             </el-table-column>
             <el-table-column
@@ -318,7 +318,7 @@
               label="操作"
               width="80px"
               v-if="
-                !['ADN_OP', 'AD', 'ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
+                !['ADN_OP', 'AD', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
               "
             >
               <template slot-scope="scope">
@@ -392,23 +392,7 @@
     </el-dialog>
     <!-- 画像申请的弹出框结束 -->
     <!--修改金额弹框-->
-    <el-dialog
-      v-if="orderRow.planMode != 1"
-      title="修改订单金额"
-      width="768px"
-      top="20vh"
-      custom-class="price-dialog-list"
-      :visible.sync="changePriceModal"
-      :before-close="cancelChangePrice"
-    >
-      <changeOrderPrice
-        @cancel="cancelChangePrice"
-        @done="doneChangePrice"
-        :changePriceData="changePriceData"
-      ></changeOrderPrice>
-    </el-dialog>
     <changeProposalOrderPrice
-      v-else
       :apID="currApid"
       :requesInfo="{ mark: this.handleTime, opType: 2 }"
       :settlementFormVisible="changePriceModal"
@@ -433,7 +417,6 @@ import sessFun from "../../commonFun/sessFun.js";
 import applyphoto from "./components/applyPhoto.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
-import changeOrderPrice from "./components/changeOrderPrice.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
@@ -443,7 +426,6 @@ export default {
     applyphoto,
     noSearchResult,
     pointState,
-    changeOrderPrice,
     changeProposalOrderPrice,
   },
   data() {
@@ -533,7 +515,7 @@ export default {
     if (this.isAll) {
       this.getCompany();
     }
-    if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+    if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
       this.getSubSaleList();
     }
     // 获得初始数据
@@ -655,8 +637,7 @@ export default {
       let sess = this.sessionData;
       if (
         sess.ascType == 0 ||
-        (sess.uType == "ADN_MD_COUNTRY") ||
-        (sess.uType == "ADN_BD_COUNTRY")
+        (sess.uType == "ADN_MD_COUNTRY")
       ) {
         this.isAll = true;
       } else {
@@ -921,11 +902,7 @@ export default {
                 )
                   .then(() => {
                     this.handleTime = new Date().getTime();
-                    if (row.planMode == 1) {
-                      this.changePriceModal = true;
-                    } else {
-                      this.getOrderPriceDetail(row.apID);
-                    }
+                    this.changePriceModal = true;
                   })
                   .catch(() => {
                     // Message.info("已取消操作");
@@ -947,7 +924,7 @@ export default {
         .getApi(this.apiVar.Advertisement + "/GetAPD", { apid: apID })
         .then((res) => {
           if (!res.data.SysCode) {
-            sessionStorage.setItem("priceData", JSON.stringify(res.data));
+            // sessionStorage.setItem("priceData", JSON.stringify(res.data));
             let priceData = res.data;
             console.log("订单金额", priceData);
             let obj = {
@@ -978,17 +955,10 @@ export default {
                         item.pdAdFee +
                         item.pdAdMake) /
                       100;
-                    if (data.pdType == 1) {
-                      data.BreakAdPrice = data.pdAdFee / 100;
-                      data.BreakMakePrice = data.pdAdMake / 100;
-                      data.AdDoorAdPrice = item.pdAdFee / 100;
-                      data.AdDoorMakePrice = item.pdAdMake / 100;
-                    } else {
-                      data.BreakAdPrice = item.pdAdFee / 100;
-                      data.BreakMakePrice = item.pdAdMake / 100;
-                      data.AdDoorAdPrice = data.pdAdFee / 100;
-                      data.AdDoorMakePrice = data.pdAdMake / 100;
-                    }
+                    data.BreakAdPrice = item.pdAdFee / 100;
+                    data.BreakMakePrice = item.pdAdMake / 100;
+                    data.AdDoorAdPrice = data.pdAdFee / 100;
+                    data.AdDoorMakePrice = data.pdAdMake / 100;
                     data.orderOldPrice = this.priceFormat(totalPrice);
                   }
                 }
@@ -1019,7 +989,6 @@ export default {
             obj.BreakMakePrice =
               obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice;
 
-            console.log(obj);
             this.changePriceData = obj;
             this.changePriceModal = true;
           } else if (res.data.SysCode == 100302) {

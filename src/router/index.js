@@ -18,6 +18,7 @@ const admin = () => import(/* webpackChunkName: "adminCommon" */ '../components/
 const SMqinlinzk = () => import(/* webpackChunkName: "SMqinlinzk" */ '../components/admin/SMqinlinzk.vue')
 const ADlimitList = () => import(/* webpackChunkName: "ADlimitList" */ '../components/admin/ADlimitList.vue')
 const notice = () => import(/* webpackChunkName: "notice" */ '../components/admin/notice.vue')
+const mediaType = () => import(/* webpackChunkName: "mediaType" */ '../components/admin/mediaType.vue')
 
 // 空点导出
 const emptyPoint = () => import(/* webpackChunkName: "downEmptyPoint" */ '../components/common/downEmptyPoint.vue')
@@ -213,6 +214,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/admin/myInfo', component: myInfo},
                         {path: '/admin/ADlimitList', component: ADlimitList},
                         {path: '/admin/notice', component: notice},
+                        {path: '/admin/mediaType', component: mediaType},
                     ]
                 }]
             break;
@@ -301,7 +303,6 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
-        case 'ADN_BD_COUNTRY':
         case 'ADN_BD_KA':
         case 'ADN_BD':
             let tempBD = null

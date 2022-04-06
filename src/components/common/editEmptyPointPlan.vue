@@ -1287,7 +1287,7 @@ export default {
     getsessionData () {
       this.sessionData = sessFun.getSess();
       this.customPermission = this.sessionData.customPermission;
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         this.BDData.realName = this.sessionData.username;
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = this.sessionData.uID;
@@ -1423,7 +1423,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
         .then((res) => {
-          // console.log(res.data);
           if (!res.data.SysCode) {
             if (res.data.length) {
               let returnobj = this.formatData(res.data);
@@ -1503,7 +1502,11 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
+        if(dataArr.length === 0) {
+          sessFun.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
+          break;
+        }
         for (let item of dataArr) {
           let obj = {
             province: item.prName || "--",
@@ -2896,16 +2899,12 @@ export default {
             );
             return;
           }
-          // this.PushADBFun(res.data.Data);
-          // this.CreateShareADSFun();
           this.active++;
           //清除草稿箱缓存
           this.clearDrafts();
           this.ADloading.close();
-          // sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
         } else {
           this.ADloading.close();
-          // sessFun.messageFun("warning", "失败");
           sessFun.messageFun("warning", res.data.MSG);
         }
       });

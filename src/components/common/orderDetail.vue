@@ -264,17 +264,12 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    v-if="isAddEquipmentTypeAsTable"
-                    prop="equipmentType"
-                    label="设备型号"
-                    min-width="10.3%"
-                  >
-                  </el-table-column>
-                  <el-table-column
                     prop="mTitle"
                     label="媒体名称"
                     min-width="10.3%"
                   >
+                  </el-table-column>
+                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="10.3%">
                   </el-table-column>
                   <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                   </el-table-column>
@@ -399,26 +394,10 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane
-            v-if="role != 'ADN_EP' && orderDetail.planMode != 1"
-            label="报价单"
-            name="second"
-          >
-            <div>
-              <ap-quotation
-                ref="apQuotation"
-                @detailInfo="setInfo"
-                :quotationData="quotation"
-                :copydata="copyAsidArr"
-                :isorder="true"
-                :shopingList="[]"
-                class="price_quo"
-              ></ap-quotation>
-            </div>
-          </el-tab-pane>
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
               :material="materialInfo"
+              :materialInfoData="materialInfoJson"
               :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="true"
@@ -487,7 +466,7 @@
           :close-on-press-escape="false"
           :show-close="true"
         >
-          <add-ads :IsAddAds="IsAddPoint" @ievent="ievent"></add-ads>
+          <add-ads :IsAddAds="IsAddPoint" :MediaTypeData="mediaTypeList" @ievent="ievent"></add-ads>
           <span slot="footer" class="dialog-footer">
             <el-button plain @click="cancelAddPoint">取 消</el-button>
             <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
@@ -732,13 +711,6 @@
                 <el-table-column
                   prop="mTitle"
                   label="媒体名称"
-                  min-width="10.3%"
-                >
-                </el-table-column>
-                <el-table-column
-                  v-if="isAddEquipmentTypeAsTable"
-                  prop="equipmentType"
-                  label="设备型号"
                   min-width="10.3%"
                 >
                 </el-table-column>
@@ -1038,13 +1010,6 @@
                     >
                     </el-table-column>
                     <el-table-column
-                      v-if="isAddEquipmentTypeAsTable"
-                      prop="equipmentType"
-                      label="设备型号"
-                      min-width="6%"
-                    >
-                    </el-table-column>
-                    <el-table-column
                       prop="mTitle"
                       label="媒体名称"
                       min-width="6%"
@@ -1141,33 +1106,15 @@
             >
           </span>
         </el-dialog>
-        <!--修改订单金额-->
-        <el-dialog
-          v-if="orderDetail.planMode != 1"
-          title="修改订单金额"
-          width="768px"
-          top="20vh"
-          custom-class="price-dialog"
-          :visible.sync="changePriceModal"
-          :before-close="cancelChangePrice"
-        >
-          <changeOrderPrice
-            @cancel="cancelChangePrice"
-            @done="doneChangePrice"
-            :changePriceData="changePriceData"
-            v-if="changePriceModal"
-          ></changeOrderPrice>
-        </el-dialog>
 
         <changeProposalOrderPrice
-          v-else
           :apID="orderDetail.apID"
           :requesInfo="{ mark: this.handleTime, opType: 1 }"
           :settlementFormVisible="changePriceModal"
           @cancel="changePriceModal = false"
           @planMoneyUpdated="
-            changePriceModal = false
-            getInitData()
+            changePriceModal = false;
+            getInitData();
           "
         ></changeProposalOrderPrice>
       </div>
@@ -1198,12 +1145,9 @@ import importPointByExcel from "./components/importPointByExcel"
 import changePointPlayDateRange from "./components/changePointPlayDateRange"
 import noSearchResult from "./components/noSearchResult.vue";
 import changePic from "./components/changePic.vue";
-import changeOrderPrice from "./components/changeOrderPrice.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 
-
-import sheetExcel from '../../commonFun/sheetExcel';
 
 export default {
   name: "orderDetail",
@@ -1216,12 +1160,14 @@ export default {
     changePointPlayDateRange,
     changePic,
     noSearchResult,
-    changeOrderPrice,
     changeProposalOrderPrice,
     ScheduleAlter
   },
   data () {
     return {
+      companyId: null,  //公司ID
+      mediaTypeList: [],  //媒体类型
+      materialInfoJson:{},  //物料信息数据
       // session信息
       sessionData: {},
       isDown: false,
@@ -1420,8 +1366,11 @@ export default {
     // 选点排期
     this.getMaterInfo();
 
+    //获取物料信息
+    this.getMaterialInfo();
+
     if (
-      ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)
+      ['ADN_BD_KA', 'ADN_BD'].includes(this.role)
       ||
       ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
     ) {
@@ -1431,10 +1380,6 @@ export default {
     this.getOrderPriceDetail()
   },
   computed: {
-    //页面是否需要添加设备型号字段
-    isAddEquipmentTypeAsTable(){
-        return sheetExcel.isAddEquipmentTypeAsTable()
-    },
     currentPagination () {
       this.recommendationTotalNum = this.recommendationList.length;
       return this.recommendationList.slice((this.recommendationCurrentPage - 1) * this.recommendationPageSize, this.recommendationCurrentPage * this.recommendationPageSize);
@@ -1463,11 +1408,9 @@ export default {
     getOrderPriceDetail () {
       api.getApi(this.apiVar.Advertisement + "/GetAPD", { apid: sessionStorage.getItem("order_apid") })
         .then(res => {
-          // console.log('test--', res.data);
           if (!res.data.SysCode) {
-            sessionStorage.setItem('priceData', JSON.stringify(res.data))
+            this.pdidList = res.data || []
             let priceData = res.data
-            console.log('订单金额', priceData);
             let obj = {
               AdDoorAdPrice: 0,
               AdDoorMakePrice: 0,
@@ -1490,18 +1433,11 @@ export default {
               if (isHave) {
                 for (let data of obj.orderCompanyList) {
                   if (item.asrID == data.asrID && item.rID == data.rID) {
-                    let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100
-                    if (data.pdType == 1) {
-                      data.BreakAdPrice = data.pdAdFee / 100;
-                      data.BreakMakePrice = data.pdAdMake / 100;
-                      data.AdDoorAdPrice = item.pdAdFee / 100;
-                      data.AdDoorMakePrice = item.pdAdMake / 100;
-                    } else {
-                      data.BreakAdPrice = item.pdAdFee / 100;
-                      data.BreakMakePrice = item.pdAdMake / 100;
-                      data.AdDoorAdPrice = data.pdAdFee / 100;
-                      data.AdDoorMakePrice = data.pdAdMake / 100;
-                    }
+                    let totalPrice = (data.pdAdFee + data.pdAdMake + item.pdAdFee + item.pdAdMake) / 100;
+                    data.BreakAdPrice = item.pdAdFee / 100;
+                    data.BreakMakePrice = item.pdAdMake / 100;
+                    data.AdDoorAdPrice = data.pdAdFee / 100;
+                    data.AdDoorMakePrice = data.pdAdMake / 100;
                     data.orderOldPrice = this.priceFormat(totalPrice)
                   }
                 }
@@ -1518,14 +1454,12 @@ export default {
             for (let data of obj.orderCompanyList) {
               result += data.AdDoorAdPrice + data.AdDoorMakePrice + data.BreakAdPrice + data.BreakMakePrice
             }
-            console.log(result);
             obj.orderOldPrice = this.priceFormat(result)
             obj.AdDoorAdPrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice
             obj.AdDoorMakePrice = obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice
             obj.BreakAdPrice = obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice
             obj.BreakMakePrice = obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice
 
-            console.log(obj);
             this.changePriceData = obj
           } else if (res.data.SysCode == 100302) {
             this.loginTimeout();
@@ -1557,15 +1491,11 @@ export default {
         }
       ).then(() => {
         this.changePriceModal = true
-        if (this.orderDetail.planMode != 1) {
-          // 非意向方案,更新报价单
-          this.getOrderPriceDetail()
-        }
+        this.getOrderPriceDetail()
       })
         .catch(() => {
           // Message.info("已取消操作");
         });
-      // this.dialogChangePoint = false
     },
     // 更改排期操作
     changePointPlayDateRange () {
@@ -1588,12 +1518,10 @@ export default {
             type: "warning"
           }
         ).then(() => {
-          console.log(this.changePointInfo);
           let orderNewAdsInfos = []
           let orderStoppedAdsInfos = []
           if (this.changePointInfo.stopPointlist.length > 0) {
             for (let data of this.changePointInfo.stopPointlist) {
-              // console.log(data);
               orderStoppedAdsInfos.push(data)
             }
           }
@@ -1603,11 +1531,9 @@ export default {
             orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
             orderStoppedAdsInfos: orderStoppedAdsInfos ? orderStoppedAdsInfos : []
           }
-          // console.log(this.orderDetail);
           api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder', JSON.stringify(info)).then(res => {
             console.log(res.data)
             if (res.data.SysCode == 200200) {
-              // this.dialogChangePoint = false
               Message.success(res.data.MSG)
               this.changePointInfo.lIDArr = this.changePointInfo.lIDArr.concat(this.changePointInfo.stopPointlist)
               this.changePointInfo.stopPointNum = this.changePointInfo.lIDArr.length
@@ -1660,13 +1586,7 @@ export default {
     pointChangePage (page) {
       this.changePointloading = true;
       this.pointCurrPage = page;
-      // this.getSetPoint('change')
-
-      this.changePointPageFn()
-    },
-    setInfo (data) {
-      console.log('defail------data', data);
-      this.pdidList = data;
+      this.changePointPageFn();
     },
     // 导出excel
     export2Excel (name) {
@@ -1691,8 +1611,8 @@ export default {
           hNum: data.hNum == '0' ? '&' : data.hNum,
           fNum: data.fNum,
           chDay: data.chDay,
-          adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
-          adViewSize: data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
+          adSize: data.adSize,
+          adViewSize: data.adViewSize,
           notPush: data.notPush,
           mRemark: data.mRemark,
           resAddress: data.resAddress,
@@ -1705,7 +1625,6 @@ export default {
           peopleFlow: data.peopleFlow || "",
           mType: data.mType || "",
         };
-        obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
 
         resultArr.push(obj);
       }
@@ -1736,7 +1655,7 @@ export default {
           '车位数',
           '车流量',
           '人流量',
-          '广告尺寸',
+          '素材尺寸',
           '可视尺寸',
           '媒体备注',
           '地图中心点',
@@ -1786,9 +1705,6 @@ export default {
           tHeader.push('归属公司');
           filterVal.push('asName')
         }
-
-        tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
-        filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
 
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
@@ -1852,6 +1768,7 @@ export default {
           console.log(res.data);
           if (res.data.SysCode == 200200) {
             let info = res.data.data;
+            this.companyId= info.asrIDs;
             this.orderDetail = {
               adcID: info.adcID,
               apID: info.apID,
@@ -1929,7 +1846,6 @@ export default {
               data.finishTimeRange = finishTimeRange;
             }
             // 选点排期
-            // this.copyAsidArr = JSON.parse(JSON.stringify(result));
             this.exportArr = result;
 
             // 广告门物料信息
@@ -1978,6 +1894,37 @@ export default {
           console.log(res);
         });
     },
+
+    // 获取物料新接口
+    getMaterialInfo (){
+      let apID = sessionStorage.getItem("order_apid");
+      let info = {
+        apID
+      };
+      api.getApi("/addsp/material/getMaterialCntByPlan", info).then(res=>{
+        if(res.data.SysCode== 200200){
+          let _data=res.data.data;
+          let _materialCntInfoList=[];
+          let _mediaTypeName=[];
+          _data.forEach((item)=>{
+            _mediaTypeName.push(item.mediaTypeName);
+            _materialCntInfoList.push(item.materialCntInfoList);
+          })
+          this.materialInfoJson={
+            mediaTypeName:_mediaTypeName,
+            materialCntInfoList:_materialCntInfoList
+          };
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+
     // 获取当前用户所有的排期区间列表
     getScheduleList () {
       let apID = sessionStorage.getItem("order_apid");
@@ -2044,10 +1991,6 @@ export default {
             this.total = initData.total
             this.pointTotal = initData.total
             this.changePointInfo.allPoint = initData.total
-            // this.changePointInfo.stopPointNum = initData.stoppedAdsCount
-            // this.changePointInfo.addPointNum = initData.newAdsCount
-            // this.changePointInfo.changeAdsCount = initData.changeAdsCount
-            // this.addNewAdsNum = res.data.isNewCount
             for (let data of result) {
               let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
               data.timeRange = time;
@@ -2063,7 +2006,10 @@ export default {
               this.setpointArr = result
               if (lIDs && lIDs.length > 0) {
                 // 更改排期点位
-                this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
+                // this.changePointInfo.lIDArr = lIDs.concat(this.changePointInfo.lIDArr)
+                let newlIDArr=lIDs.concat(this.changePointInfo.lIDArr)
+                newlIDArr=Array.from(new Set(newlIDArr))
+                this.changePointInfo.lIDArr=newlIDArr
                 this.setpointArr.forEach(item => {
                   if (this.changePointInfo.lIDArr.includes(item.lID) && item.isChange == 1) {
                     item.changePeriod = 1
@@ -2492,9 +2438,29 @@ export default {
     },
     //显示添加点位的模态框
     showAddPointDialog () {
+      this.getMediaTypes();
       this.dialogAddPoint = true
       this.IsAddPoint = !this.IsAddPoint
     },
+    //请求媒体类型列表
+    getMediaTypes(){
+      let info={
+        companyIds:this.companyId
+      }
+      api.getApi('/addsp/api/v1/company/mediaTypes', info).then(res => {
+        if(res.data.SysCode==200200){
+          this.mediaTypeList=res.data.data
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err =>{
+        console.log('err:',err);
+      })
+    },
+
     // excel 导入点位弹框
     excelAddPointDialog () {
       this.dialogImportPoint = true
@@ -2513,7 +2479,6 @@ export default {
         // 新增点位
         this.getSetPoint('change')
       }
-      // this.selectioUpdate()
       this.isHandleChange = true
     },
     resetDialogChangeRange () {
@@ -2521,7 +2486,6 @@ export default {
     },
     //获取子组件选择的点位数据
     ievent (...data) {
-      console.log('allData:', data);// data为包含传过来所有数据的数组，第一个元素是对象，第二个元素是字符串
       this.addAdsArr = data[0] //this.encodeHtml(data[0])
     },
     //添加点位对话框确认按钮
@@ -2532,45 +2496,39 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      let arr = []
-      if (this.orderDetail.planMode == 1) {
-        // this.pdidList该数据在非意向方案的订单由报价单组件返回
-        this.pdidList = JSON.parse(sessionStorage.getItem('priceData'))
-      }
+      let arr = [];
       for (let key of this.addAdsArr) {
+        let adsInfo = {
+          resName: key.resName,
+          city: key.city,
+          tradingArea: key.tradingArea,
+          asrID: key.asrID,
+          cityId: key.rid,
+          mediaTypeId: key.mediaTypeId,
+          asID: Number(key.asID),
+          pdID: null,
+          pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
+          pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
+          uID: this.sessionData.uID,
+          mTitle: key.mediaName,
+          asLab: key.asLab,
+          rName: key.origin,
+          cType: key.buildType,
+          timeRange: key.schedules,
+          hNum: key.houseNum,
+          hPrice: key.buildPrice * 100,
+          fNum: key.buildNum,
+          chDay: key.liveYear,
+          notPush: key.adLimit,
+          isNew: 1,
+        }
         for (let pKey of this.pdidList) {
-          if (key.city == pKey.city && key.asrID == pKey.asrID) {
-            let adsInfo = {
-              resName: key.resName,
-              city: key.city,
-              tradingArea: key.tradingArea,
-              asID: Number(key.asID),
-              pdID: pKey.pdID,
-              pbStar: (key.schedules.split('-')[0]).split('/').join('-'),    // 开始投放时间
-              pbEnd: (key.schedules.split('-')[1]).split('/').join('-'),       // 开始投放时间添加点位对话框确认按钮
-              uID: this.sessionData.uID,
-              mTitle: key.mediaName,
-              asLab: key.A_B,
-              rName: key.origin,
-              cType: key.buildType,
-              timeRange: key.schedules,
-              hNum: key.houseNum,
-              hPrice: key.buildPrice * 100,
-              fNum: key.buildNum,
-              chDay: key.liveYear,
-              notPush: key.adLimit,
-              isNew: 1,
-            }
-
-            if (pKey.pdType == 0 && key.mVehicle === '广告门') {
-              arr.push(adsInfo)
-              break
-            } else if (pKey.pdType == 1 && key.mVehicle === '道闸') {
-              arr.push(adsInfo)
-              break
-            }
+          if (key.city == pKey.city && key.asrID == pKey.asrID && pKey.mediaTypeId == key.mediaTypeId) {
+            adsInfo.pdID = pKey.pdID;
+            break;
           }
         }
+        arr.push(adsInfo);
       }
       let postData = {
         apID: this.orderDetail.apID,
@@ -2578,8 +2536,6 @@ export default {
         orderNewAdsInfos: arr,
         orderStoppedAdsInfos: []
       }
-
-      console.log('添加点位对话框确认按钮', this.changePointInfo.addPointlist)
       api.postApi_json(this.apiVar.Advertisement + '/UpdateOrder',
         JSON.stringify(postData)).then(res => {
           console.log('添加选点返回信息', res)
@@ -2696,30 +2652,12 @@ export default {
     //修改订单金额-取消
     cancelChangePrice () {
       this.changePriceModal = false
-      // this.changePriceData = {
-      //     AdDoorAdPrice: 0,
-      //     AdDoorMakePrice: 0,
-      //     BreakAdPrice: 0,
-      //     BreakMakePrice: 0,
-      //     orderOldPrice: 0,
-      //     orderCompanyList: [],
-      //     priceCurrCompany: 0,
-      // }
       this.getOrderPriceDetail()
       Message.info("已取消操作");
     },
     //修改金额-成功
     doneChangePrice () {
       this.changePriceModal = false
-      // this.changePriceData = {
-      //     AdDoorAdPrice: 0,
-      //     AdDoorMakePrice: 0,
-      //     BreakAdPrice: 0,
-      //     BreakMakePrice: 0,
-      //     orderOldPrice: 0,
-      //     orderCompanyList: [],
-      //     priceCurrCompany: 0,
-      // }
       this.getOrderPriceDetail()
       this.getInitData();
       sessFun.messageFun('success', '修改订单金额成功')

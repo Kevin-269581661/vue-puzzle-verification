@@ -202,14 +202,14 @@
                     le: this.dateInput[1],
                 }
                 let tempwindow = window.open()
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     params.suID = this.sessionData.uID
                 }
                 api.getApi(this.apiVar.Map + '/GetMapInfo', params).then(res=>{
                     console.log(this.apiVar.wuYouMap,'GetMapInfo地图mapid返回的信息', res)
                     if (!res.data.SysCode) {
                         let mapid = res.data.MapID
-                        if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                        if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                             tempwindow.location = this.apiVar.wuYouMap + mapid + '&city=' + this.mapCityName + '&flag=' + true
                             this.confirmVisible = true
                         } else if (this.sessionData.uType === 'ADN_SM') {
@@ -245,7 +245,7 @@
                     url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
                 }
                 // 角色
-                if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+                if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     url = url + '&flag=' + true;
                     this.confirmVisible = true;
                     localStorage.removeItem('qinlinMapCode');

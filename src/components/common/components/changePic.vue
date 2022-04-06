@@ -1,4 +1,3 @@
-<!-- 换画tab -->
 <template>
     <div class="pic_box" v-loading="pageInfo.loading" element-loading-text="玩命加载中.."
          element-loading-spinner="el-icon-loading">
@@ -7,8 +6,7 @@
             <template>
                 <el-radio-group v-model="publishSearchInfo.mediaType" size="medium" @change="changeMedia()"
                                 class="radio_style">
-                    <el-radio-button label="广告门">广告门({{publishNumInfo.door.hasPhotoCount}}/{{publishNumInfo.door.totalCount}})</el-radio-button>
-                    <el-radio-button label="道闸">道闸({{publishNumInfo.barrier.hasPhotoCount}}/{{publishNumInfo.barrier.totalCount}})</el-radio-button>
+                    <el-radio-button v-for="item in mediaTypeList" :key="item.mediaTypeId" :label="item.mediaTypeId">{{item.mediaTypeName}}({{item.uploadCnt}}/{{item.totalCnt}})</el-radio-button>
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
@@ -138,9 +136,9 @@
                         <el-tooltip class="item" effect="dark"
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
                                     placement="bottom"
-                                    v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>23'>
+                                    v-if='(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab).length>26'>
                             <span>
-                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 23)}}
+                                {{wordlimit(item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab, 26)}}
                             </span>
                         </el-tooltip>
                         <span v-else>
@@ -269,8 +267,6 @@
                     </el-select>
                   </el-row>
                 </el-col>
-                <!--<el-button type="primary" @click="showUpload()">换画</el-button>-->
-                <!--<el-button plain @click="cancelPain()">取消换画</el-button>-->
             </el-row>
             <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
                <el-col :span="8">
@@ -566,10 +562,11 @@
         },
         data() {
             return {
+                mediaTypeList: [],
                 // 上下刊搜索
                 publishSearchInfo: {
                     // 媒体类型
-                    mediaType: '广告门',
+                    mediaType: null,
                     // 城市选择
                     citySelect: ['全部'],
                     // 资源选择
@@ -601,14 +598,14 @@
 
                 // 上下刊以及换画百分比数量等
                 publishNumInfo: {
-                    "door": {
-                        "totalCount": 0,
-                        "hasPhotoCount": 0
-                    },
-                    "barrier": {
-                        "totalCount": 0,
-                        "hasPhotoCount": 0
-                    },
+                    // "door": {
+                    //     "totalCount": 0,
+                    //     "hasPhotoCount": 0
+                    // },
+                    // "barrier": {
+                    //     "totalCount": 0,
+                    //     "hasPhotoCount": 0
+                    // },
                     "changePic":{
                         percent: 0,
                         currNum: 0,
@@ -622,7 +619,7 @@
                 activePainIndex: 0,
                 // 搜索信息
                 searchInfo: {
-                    mediaType: "全部",
+                    mediaType: null,
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
@@ -631,16 +628,8 @@
                     // 媒体类型
                     mediaTypeArr: [
                         {
-                            label: "全部",
-                            value: 0
-                        },
-                        {
-                            label: "广告门",
-                            value: 1
-                        },
-                        {
-                            label: "道闸",
-                            value: 2
+                            label: '全部',
+                            value: null
                         }
                     ],
                     // 城市区域
@@ -776,8 +765,6 @@
         mounted() {
             console.log(this.fromType, 'fromtype----');
             this.sessionData = sessFun.getSess();
-            // 获取报告列表
-            this.getImgArr();
             // 获取城市区域
             this.getCitys();
             //获取换画城市列表
@@ -787,6 +774,7 @@
             //得到换画排期筛选列表
             this.getAdChangeLaunchDateList()
             console.log('scheduleList', this.scheduleList)
+            this.getAdsUploadImgCnt();
         },
         watch: {
             fromType(newVal, oldVal) {
@@ -800,6 +788,60 @@
         },
 
         methods: {
+            //获取媒体类型数据
+            getMediaTypes(){
+                //如果当前换画组数据为空时，则不进行数据请求
+
+                if(this.painList.length <= 0) return;
+                let info = {
+                    apID:sessionStorage.getItem('order_apid'),
+                    replaceRecordId: this.painList[this.activePainIndex].id
+                }
+                api.getApi("/replace/v1/report/mediaTypes", info).then(res => {
+                    if(res.data.SysCode==200200){
+                        let _data=res.data.data;
+                        let _newData=[{
+                            label: '全部',
+                            value: null
+                        }];
+                        _data.forEach((item)=>{
+                            _newData.push({
+                                label: item.name,
+                                value: item.id
+                            })
+                        })
+                        this.searchInfo.mediaTypeArr=_newData;
+                        this.searchInfo.mediaType=null;
+                    }
+                }).catch(err =>{
+                    console.log(err);
+                })
+            },
+            //获取媒体类型及上下刊点位数量和上传图片数量
+            getAdsUploadImgCnt(){ 
+                let _type
+                if(this.type==1){
+                    _type =0;
+                }else if(this.type==2){
+                    _type =1;
+                }
+                let info={
+                    apID: sessionStorage.getItem('order_apid'),
+                    imgType: _type
+                }
+                api.getApi("/addsp/api/v1/adPlan/getAdsUploadImgCnt", info).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        let _data=res.data.data;
+                        this.mediaTypeList=_data;
+                        this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: null;
+                        
+                        // 获取报告列表
+                        this.getImgArr();
+                    }
+                }).catch(err=>{
+                    console.log(err);
+                })
+            },
             // 改变页数
             sizeChange(pageVal) {
                 this.pageInfo.loading = true;
@@ -981,7 +1023,7 @@
                     pType: type,
                     pageNum: currPage,
                     pageSize: pageSize2,
-                    mVehicle: mediaType,
+                    mediaTypeId: mediaType,
                     time: dateRange.includes('全部')?'':dateRange,
                     materialRemark: materialRemark.includes('全部')?'':materialRemark,
                     prStatus: prStatus=='全部'?'':prStatus
@@ -1040,24 +1082,6 @@
                 }
                 this.getImgArr();
             },
-            //图片数量
-            getImgCount() {
-                let params = {
-                    uid: this.sessionData.uID,
-                    token: this.sessionData.token,
-                    apId: sessionStorage.getItem('order_apid'),
-                    pType: this.type==1?'SK':'XK',
-                }
-                api.postApi(this.apiVar.Advertisement + "/GetImgCount", params).then(res=>{
-                    if (!res.data.SysCode) {
-                        this.publishNumInfo.door = res.data.door
-                        this.publishNumInfo.barrier = res.data.barrier
-                    } else {
-                        sessFun.messageFun('warning', res.data.MSG);
-                    }
-
-                })
-            },
             // 上下刊报告列表
             getImgInfo(params) {
                 this.pageInfo.loading = true;
@@ -1068,11 +1092,7 @@
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
-                            }else{
-                                // this.getImgCount()
                             }
-                            this.getImgCount()
-                            let percent = dataInfo.totalCount ? Number(((dataInfo.hasPhotoCount / dataInfo.totalCount) * 100).toFixed(2)) : 0;
                             this.pageInfo = {
                                 ...this.pageInfo,
                                 ...({totalNum: dataInfo.searchCount}),
@@ -1154,6 +1174,7 @@
                                     name: item.replaceRecordName,
                                 };
                             });
+                            this.getMediaTypes();
 
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
@@ -1246,15 +1267,14 @@
                     prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize,
+                    mediaTypeId: mediaType
                     // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
                     // ...(city.length && {districtId: city[1]}),
                     // ...(resName && {resIds: [resName]}),
                     // ...(status && {reportStatus: status == 1 ? 1 : 0})
                 };
                 console.log(mediaType, city, resName, status);
-                if (mediaType!=='全部'&&mediaType!='0') {
-                    info.mType = mediaType == 1 ? 0 : 1
-                }
+              
                 if (city[0]!='全部') {
                     info.districtId = city[1]
                 }
@@ -1300,9 +1320,10 @@
                 };
                 this.activePainIndex = index;
                 // 去获取换画列表
-                // 换画id
-                let painId = this.painList[index].id;
                 this.search();
+
+                //去获取媒体类型
+                this.getMediaTypes();
             },
             // 编辑报告
             editReport(isEdit) {
@@ -1826,8 +1847,6 @@
                 this.shoplist = [];
                 this.selectList = [];
                 this.$emit('hidePainModal','false');
-                // this.selectNum = 0;
-                // this.search();
             }
             ,
             // 确认-生成换画任务
@@ -1890,7 +1909,6 @@
                             } else {
                                 sessFun.messageFun('warning', res.data.MSG);
                             }
-                            // this.search();
                         });
                     } else {
                         sessFun.messageFun('warning', res.data.msg);
@@ -2043,7 +2061,6 @@
             ,
             // 上刊图片上传
             submitUpload() {
-                let type = this.getTypeToText();
                 if (!this.constractArr.length) {
                     return;
                 }
@@ -2073,8 +2090,7 @@
                     formData.append('type', arr[i].type);
                     formData.append('replaceRecordId', arr[i].replaceRecordId);
                     formData.append('replaceRecordDetailId', arr[i].replaceRecordDetailId);
-                    let pro = this.uploadFun(formData);
-                    funs.push(pro);
+                    funs.push(this.uploadFun(formData));
                 }
                 Promise.all(funs).then((values) => {
                     console.log(values);
@@ -2084,6 +2100,7 @@
                     if (type == 1 || type == 2) {
                         // 上下刊报告列表
                         this.searchFun();
+                        this.getAdsUploadImgCnt();
                     } else if (type == 3) {
                         // 换画报告列表
                         this.search();
@@ -2284,6 +2301,7 @@
                             if (type == 1 || type == 2) {
                                 // 上下刊报告列表
                                 this.searchFun();
+                                this.getAdsUploadImgCnt();
                             } else if (type == 3) {
                                 // 换画报告列表
                                 this.search();
@@ -2313,10 +2331,18 @@
                 let type = this.type;
                 if (type == 1 || type == 2) {
                     // 上下刊报告列表
-                    if (this.publishNumInfo.door.hasPhotoCount==0&&this.publishNumInfo.barrier.hasPhotoCount==0) {
+                    //是否有图片
+                    let isHaveImg=this.mediaTypeList.some((item)=>{
+                        return item.uploadCnt>0
+                    })
+                    if(!isHaveImg){
                         sessFun.messageFun('warning', '暂无图片记录');
                         return;
                     }
+                    // if (this.publishNumInfo.door.hasPhotoCount==0&&this.publishNumInfo.barrier.hasPhotoCount==0) {
+                    //     sessFun.messageFun('warning', '暂无图片记录');
+                    //     return;
+                    // }
                 } else if (type == 3) {
                     // 换画报告列表
                     if (!this.publishNumInfo.changePic.currNum) {

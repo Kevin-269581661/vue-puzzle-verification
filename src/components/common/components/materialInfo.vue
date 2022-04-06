@@ -8,18 +8,17 @@
                 </el-button>
             </p>
             <el-radio-group v-model="mediaType" size="medium">
-                <el-radio-button label="广告门"></el-radio-button>
-                <el-radio-button label="道闸"></el-radio-button>
+                <el-radio-button :label="index" v-for="(item,index) in mediaTypeName" :key="index">{{item}}</el-radio-button>
             </el-radio-group>
-            <!-- 广告门 -->
-            <el-table :data="material" border style="margin-top:16px;" v-if="mediaType=='广告门'" v-loading="loading"
+
+            <el-table :data="materialCntInfoList[mediaType]" border style="margin-top:16px;" v-loading="loading"
                       element-loading-text="玩命加载中.." class="table-wrap">
                 <el-table-column label="序号" min-width="5.9%">
                     <template slot-scope="scope">
                         <span>{{scope.$index+1}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="adSize" label="广告尺寸" min-width="12.4%">
+                <el-table-column prop="adSize" label="素材尺寸" min-width="12.4%">
                 </el-table-column>
                 <el-table-column prop="adViewSize" label="可视画面" min-width="12.4%">
                 </el-table-column>
@@ -29,30 +28,10 @@
                 </el-table-column>
                 <el-table-column prop="photoFormat" label="文件格式" min-width="17.6%">
                 </el-table-column>
-                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%" align="right">
+                <el-table-column prop="count" label="点位面数" min-width="12.7%" align="right">
                 </el-table-column>
             </el-table>
 
-            <el-table :data="daomater" border style="margin-top:16px;" v-loading="loading"
-                      element-loading-text="玩命加载中.." v-else>
-                <el-table-column label="序号" min-width="5.9%">
-                    <template slot-scope="scope">
-                        <span>{{scope.$index+1}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="adSize" label="广告尺寸" min-width="12.4%">
-                </el-table-column>
-                <el-table-column prop="adViewSize" label="可视画面" min-width="12.4%">
-                </el-table-column>
-                <el-table-column prop="resolution" label="分辨率" min-width="12.4%">
-                </el-table-column>
-                <el-table-column prop="colorMode" label="颜色模式" min-width="12.4%">
-                </el-table-column>
-                <el-table-column prop="photoFormat" label="文件格式" min-width="17.6%">
-                </el-table-column>
-                <el-table-column prop="pointNum" label="点位面数" min-width="12.7%" align="right">
-                </el-table-column>
-            </el-table>
         </div>
 
         <!-- 上传上画素材、备注弹框 -->
@@ -304,6 +283,13 @@
             dialogImportExcel
         },
         props: {
+            materialInfoData: {
+                type: Object,
+                default: {
+                    mediaTypeName:[],
+                    materialCntInfoList:[]
+                }
+            },
             material: {
                 type: Array,
                 default: []
@@ -324,10 +310,12 @@
         computed: {},
         data() {
             return {
+                mediaTypeName: [], //媒体类型名称tab
+                materialCntInfoList:[],  //媒体类型对应的物料信息数据
                 //图片预览
                 dialogVisible: false,
                 dialogImageUrl: '',
-                mediaType: '广告门',
+                mediaType: 0,
                 sessionData: '',
                 // 排期时间过滤
                 filtersData: [],
@@ -405,6 +393,21 @@
             this.daomaterInfo = this.daomater;
             this.orderApType = sessionStorage.getItem("order_apSrc");
             this.$EventBus.$on('resetSearchInfo', this.resetInfo)
+
+            let _materialInfoData=this.materialInfoData;
+            let {mediaTypeName,materialCntInfoList}=_materialInfoData;
+            this.mediaTypeName=mediaTypeName;
+            if(materialCntInfoList.length > 0){
+                materialCntInfoList.forEach((materialCntInfoItem)=>{
+                    materialCntInfoItem.forEach((item)=>{
+                        console.log('item：',item);
+                        item.resolution= "150dpi";
+                        item.colorMode="CMYK";
+                        item.photoFormat="JPG/TIF/AI/PSD/CDR";
+                    })
+                })
+            }
+            this.materialCntInfoList=materialCntInfoList;
         },
         beforeDestroy() {
             this.$EventBus.$off('resetSearchInfo', this.resetInfo);

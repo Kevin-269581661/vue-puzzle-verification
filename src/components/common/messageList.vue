@@ -143,7 +143,6 @@ export default {
         },
       ],
       messageList: [],
-      // system:'http://192.168.1.239:8021/system/message',
     };
   },
   methods: {

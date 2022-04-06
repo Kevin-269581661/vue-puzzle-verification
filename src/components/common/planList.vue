@@ -262,7 +262,7 @@
               min-width="6.1%"
               v-if="
                 !(role == 'AD') &&
-                !['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)
+                !['ADN_BD_KA', 'ADN_BD'].includes(role)
               "
               show-overflow-tooltip
             >
@@ -271,7 +271,7 @@
               prop="realName"
               label="所有人"
               min-width="6.1%"
-              v-if="['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)"
+              v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
               show-overflow-tooltip
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
@@ -482,7 +482,7 @@
                       @click.native.prevent="splitAdPlan(scope.row)"
                       v-if="
                         scope.row.apControlLevel === 2 &&
-                        ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(
+                        ['ADN_BD_KA', 'ADN_BD'].includes(
                           sessionData.uType
                         )
                       "
@@ -704,14 +704,14 @@
         <li>
           <span>媒体类型：</span>
           <el-select
-            class="m_ehicle_class"
             size="small"
-            v-model="exportInfo.mVehicle"
+            class="m_ehicle_class"
+            multiple
+            collapse-tags
+            v-model="exportInfo.mediaTypeIds"
             placeholder="请选择媒体类型"
           >
-            <el-option label="仅有广告门" value="广告门"></el-option>
-            <el-option label="仅有道闸" value="道闸"></el-option>
-            <el-option label="广告门或道闸" value=""></el-option>
+            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </li>
         <li>
@@ -915,12 +915,13 @@ export default {
       isSale: false,//销售权限
       // 资源导出
       isResExport: false,
+      allMediaTypes: [],
       // 当前步骤
       exportAction: '/image/GetCenterPointRes',
       exportResStep: 1,
       exportInfo: {
         date: '',
-        mVehicle: '',
+        mediaTypeIds: '',
         radius: '',
         type: '',
       },
@@ -1074,7 +1075,7 @@ export default {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       // ascType 0:平台商 1:媒体主
-      if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY') || (sess.uType == 'ADN_BD_COUNTRY')) {
+      if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY')) {
         this.isAll = true;
       } else {
         this.isAll = false;
@@ -1108,23 +1109,23 @@ export default {
     getRole () {
       let role = this.sessionData.uType;
       this.role = role;
-      this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
+      this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
       if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
         this.isDisable = false;
         if (this.sessionData.uType == 'ADN_MD') {
           this.isNation = false
         }
       }
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)) {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(role)) {
         this.isSale = true
       }
-      if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
+      if (!['ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
         this.showNewBtn = false;
       }
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
         this.isDisable = true;
       }
-      if (role == "ADN_BD" || role == "ADN_BD_COUNTRY") {
+      if (role == "ADN_BD") {
         this.isNation = false
       }
     },
@@ -1168,7 +1169,7 @@ export default {
     routeSelect () {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
-        if (["ADN_BD_COUNTRY", "ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+        if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
           this.$router.push("./createPlan")
         } else {
           this.$router.push("./createPlanOld")
@@ -1497,7 +1498,6 @@ export default {
     ToEdit (row) {
       sessionStorage.setItem("plan_apid", row.apID);
       sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
-      console.log('roweedit', row)
       if (row.planMode == 1) {
         // 意向方案
         this.$router.push("./editPlan");
@@ -1899,8 +1899,6 @@ export default {
       obj.unLock = item.details.some(function (item, index) {
         return item.RemainDay;
       })
-      // console.log(obj.canLock); //false表示不能再预锁
-      // console.log(obj.unLock); //true 表示可解锁
       for (let data of item.details) {
         data.apState = item.apState //新增字段,判断是否是意向方案,点位面数显示为--
         if (asrIDarr.includes(data.asrID)) {
@@ -2019,12 +2017,23 @@ export default {
       this.exportResStep = 1
       this.exportInfo = {
         date: '',
-        mVehicle: '',
+        mediaTypeIds: '',
         radius: '',
         type: '',
       }
       this.exportFileData = []
       this.isResExport = true
+      this.getAllMediaTypes()
+    },
+    // 个人权限公司下媒体类型列表
+    getAllMediaTypes() {
+      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
+        if (res.data.SysCode == 200200) {
+          this.allMediaTypes = res.data.data || []
+        } else {
+          this.messageFun('warning', res.data.MSG);
+        }
+      })
     },
     exportUploadFile (params) {
       this.exportFileData = [];
@@ -2079,8 +2088,8 @@ export default {
       formData.append('radius', this.exportInfo.radius);
       formData.append('startDate', this.exportInfo.date[0]);
       formData.append('endDate', this.exportInfo.date[1]);
-      formData.append('mVehicle', this.exportInfo.mVehicle);
       formData.append('type', this.exportInfo.type);
+      formData.append('mediaTypeIds', this.exportInfo.mediaTypeIds.join(','));
       if ((this.sessionData.uType == 'ADN_MD') || (this.sessionData.uType == 'ADN_BD')) {
         formData.append('asrId', this.sessionData.asrID);
       }

@@ -7,9 +7,8 @@
             </p>
         </div>
         <div class="mediaList_wrap">
-            <el-tabs v-model="activeTabName" @tab-click="handleClick">
-                <el-tab-pane label="广告门" name="adDoor"></el-tab-pane>
-                <el-tab-pane label="道闸" name="roadGate" class="el_tab_roadGate" style="text-align: right;"></el-tab-pane>
+            <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
+                <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
             </el-tabs>
             <div class="tab_conten">
                 <div :gutter="32" class="tab_conten_row">
@@ -109,14 +108,6 @@
                             fixed>
                         </el-table-column>
                         <el-table-column
-                            v-if="isAddEquipmentTypeAsTable&&activeTabName=='adDoor'"
-                            class-name="el-table-column-asLab"
-                            prop="equipmentType"
-                            label="设备型号"
-                            min-width="90"
-                            fixed>
-                        </el-table-column>
-                        <el-table-column
                             v-for="(item,index) in tableHeader"
                             :prop="item.dayOfMonth"
                             :key="index"
@@ -192,12 +183,12 @@
     import timeFormat from '../../commonFun/timeFormat'
     import areaArr from '../../commonFun/areaPackage_new'
 
-    import sheetExcel from '../../commonFun/sheetExcel';
-
     export default {
         name: "adsDialPlate",
         data() {
             return {
+                mediaTypeId: '', //当前选择的媒体类型id
+                mediaTypesArr:[],  //媒体类型数据
                 sessionData:'',
                 // 页码及条数
                 pageData:{
@@ -208,8 +199,6 @@
                 checkDate: '',
                 // 点位表盘loading
                 tableLoading: true,
-                // 当前tab
-                activeTabName: 'adDoor',
                 searchInfo: {
                     keywordType: "resName",
                     resName: "",
@@ -266,18 +255,33 @@
         mounted(){
             this.getSessionData()
             this.setTime()
-            this.getTableData()
             this.getCity()
             // 设置表格左侧定位的高度
             this.setFixedTableHieght()
-        },
-        computed: {
-            //页面是否需要添加设备型号字段
-            isAddEquipmentTypeAsTable(){
-                return sheetExcel.isAddEquipmentTypeAsTable()
-            }
+            this.getMediaType();
         },
         methods:{
+            //根据公司id获取媒体类型
+            getMediaType(){
+                let info={
+                    companyIds: this.sessionData.asrID
+                }
+                api.getApi("/addsp/api/v1/company/mediaTypes", info).then(res => {
+                    if(res.data.SysCode== 200200){
+                        let _mediaTypesArr=res.data.data;
+                        _mediaTypesArr.forEach((item)=>{
+                            item.id=item.id.toString();
+                        })
+                        this.mediaTypesArr=_mediaTypesArr;
+                        this.mediaTypeId=this.mediaTypesArr[0].id||'';
+                        this.getTableData();
+                    }else{
+                        this.messageFun('warning', res.data.MSG)
+                    }
+                }).catch((err)=>{
+                    console.log()
+                })
+            },
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
                 if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
@@ -308,7 +312,6 @@
             },
             // tab切换
             handleClick(){
-                console.log('tab切换',this.activeTabName)
                 this.pageData.pageNum = 1
                 this.pageData.pageSize = 10
                 this.searchInfo.resName = ''
@@ -377,7 +380,7 @@
                     token: this.sessionData.token,
                     pageNum: this.pageData.pageNum,
                     pageSize: this.pageData.pageSize,
-                    mVehicle: this.activeTabName == 'adDoor' ? '广告门' : this.activeTabName == 'roadGate' ? '道闸' : '',
+                    mediaTypeId: this.mediaTypeId,
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
                     [this.searchInfo.keywordType]: this.searchInfo[this.searchInfo.keywordType],
@@ -425,10 +428,6 @@
                             districtName: key.districtName || '--',
                             asLab: key.asLab,
                             occupyingPlanList: key.occupyingPlanList
-                        }
-                        if(sheetExcel.isAddEquipmentTypeAsTable()){
-                            //页面需要添加设备型号字段
-                            obj.equipmentType=key.equipmentType
                         }
                         for (let oKey of key.occupyInfos) {
                             obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));
@@ -569,10 +568,12 @@
     }
 
     /deep/ .mediaList_wrap .el-tabs__item{
-        width: 68px;
+        min-width: 68px;
+        padding-right: 4px;
+        box-sizing: border-box;
         height: 54px;
         line-height: 54px;
-        padding: 0;
+        // padding: 0;
         text-align: center;
         font-size: 16px;
         color: #666666;
@@ -587,7 +588,7 @@
     } */
 
     /deep/ .el-tabs__active-bar{
-        width: 68px !important;
+        // width: 68px !important;
     }
     /deep/ .el_tab_road{
         text-align: right;

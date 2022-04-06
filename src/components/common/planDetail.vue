@@ -50,10 +50,6 @@
                   >协同选点</el-button
                 >
                 <el-button
-                  v-if="
-                    customPermission.proposalPermission == 1 &&
-                    planDetail.planMode == 1
-                  "
                   type="default"
                   @click="setPlanPrice"
                   >设置金额</el-button
@@ -61,8 +57,7 @@
                 <el-button
                   v-if="
                     customPermission.proposalPermission == 1 &&
-                    planDetail.planMode == 1 &&
-                    (role == 'ADN_BD' || role == 'ADN_BD_COUNTRY')
+                    planDetail.planMode == 1 && role == 'ADN_BD'
                   "
                   type="default"
                   :disabled="matchCnt >= 10"
@@ -74,10 +69,10 @@
                   type="primary"
                   @click="edit()"
                   v-if="
-                    (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                    (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                       customPermission.proposalPermission == 0 &&
                       planDetail.planMode != 1) ||
-                    (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                    (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                       customPermission.proposalPermission == 1 &&
                       planDetail.planMode == 1) ||
                     ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
@@ -176,17 +171,12 @@
                   >
                   </el-table-column>
                   <el-table-column
-                    v-if="isAddEquipmentTypeAsTable"
-                    prop="equipmentType"
-                    label="设备型号"
-                    min-width="10.3%"
-                  >
-                  </el-table-column>
-                  <el-table-column
                     prop="mTitle"
                     label="媒体名称"
                     min-width="10.3%"
                   >
+                  </el-table-column>
+                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="10.3%">
                   </el-table-column>
                   <el-table-column prop="asLab" label="投放面" min-width="8.8%">
                   </el-table-column>
@@ -276,25 +266,14 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane
-            v-if="planDetail.planMode == 0"
-            label="报价单"
-            name="second"
-          >
-            <ap-quotation
-              @detailInfo="setInfo"
-              :quotationData="quotation"
-              :copydata="copyAsidArr"
-              :shopingList="[]"
-              class="price_quo"
-            ></ap-quotation>
-          </el-tab-pane>
           <el-tab-pane label="物料信息" name="third">
             <material
               :material="materialInfo"
+              :materialInfoData="materialInfoJson"
               :daomater="daoInfo"
               :loading="maLoading"
               :isOrder="false"
+              v-if="planPanel == 'third'"
             ></material>
           </el-tab-pane>
         </el-tabs>
@@ -452,7 +431,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 报价单
-import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue';
@@ -467,12 +445,9 @@ import {
 } from "element-ui";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 
-import sheetExcel from '../../commonFun/sheetExcel';
-
 export default {
   name: "planDetail",
   components: {
-    apQuotation,
     material,
     detail,
     addPoint,
@@ -500,6 +475,7 @@ export default {
       }
     };
     return {
+      materialInfoJson:{},  //物料信息数据
       // 登录信息
       sessionData: {},
       addPointDialogVisible: false,
@@ -529,17 +505,12 @@ export default {
       },
       // 选点排期
       setpointArr: [],
-      copyAsidArr: [],
       // 广告物料信息
       materialInfo: [],
       // 道闸物料信息
       daoInfo: [],
       // 报价单详情
       priceSheet: [],
-      quotation: {
-        isDetail: true,
-        quotation: []
-      },
       // 城市过滤结果
       filterCityData: [],
       // 排期时间过滤
@@ -569,19 +540,19 @@ export default {
       }
     };
   },
-  created () {
+  created () { 
+     //获取物料信息
+    this.getMaterialInfo();
     // 获取角色
     this.getRole();
     // 获取选点排期数据
     this.getInitData();
     this.getMatchCnt(sessionStorage.getItem("plan_apid"));
     this.getADLimit()       // 获取广告限制列表
+
+  
   },
   computed: {
-    //页面是否需要添加设备型号字段
-    isAddEquipmentTypeAsTable(){
-      return sheetExcel.isAddEquipmentTypeAsTable()
-    },
     currentPagination () {
       this.totalNum = this.setpointArr.length;
       return this.setpointArr.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
@@ -594,9 +565,6 @@ export default {
     handleCurrentChange (val) {
       this.currentPage = val;
     },
-    setInfo (data) {
-      this.priceSheet = data;
-    },
     // 导出excel
     export2Excel (name) {
       this.isDown = true;
@@ -606,7 +574,7 @@ export default {
           resName: data.resName,
           city: data.city,
           rName: data.rName,
-          mVehicle: data.mVehicle,
+          mediaTypeName: data.mediaTypeName,
           mTitle: data.mTitle,
           mType: data.mType,
           asLab: data.asLab,
@@ -619,8 +587,8 @@ export default {
           hNum: data.hNum == '0' ? '#' : data.hNum,
           fNum: data.fNum == '0' ? '#' : data.fNum,
           chDay: data.chDay,
-          adSize: data.mVehicle == "广告门" ? data.adSize : data.picSize,
-          adViewSize: data.mVehicle == "广告门" ? data.adViewSize : data.lightBoxSize,
+          adSize: data.adSize,
+          adViewSize: data.adViewSize,
           notPush: data.notPush,
           mRemark: data.mRemark,
           resAddress: data.resAddress,
@@ -634,7 +602,6 @@ export default {
           peopleFlow: data.peopleFlow || "",
           province: data.province || ""
         };
-        obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
         resultArr.push(obj);
       }
       require.ensure([], () => {
@@ -661,7 +628,7 @@ export default {
           '车位数',
           '车流量',
           '人流量',
-          '广告尺寸',
+          '素材尺寸',
           '可视尺寸',
           '媒体备注',
           '地图中心点',
@@ -673,7 +640,7 @@ export default {
           'city',
           'rName',
           'resAddress',
-          'mVehicle',
+          'mediaTypeName',
           'mTitle',
           'assetTag',
           'asLab',
@@ -711,9 +678,6 @@ export default {
           tHeader.push('归属公司')
           filterVal.push('asName');
         }
-        
-        tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
-        filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
 
         const list = resultArr;
         const data = this.formatJson(filterVal, list);
@@ -890,7 +854,6 @@ export default {
             this.filtersArea = filterFormat(resInfo, "rName");
             this.filtersData = filterFormat(resInfo, "timeRange");
             // 选点排期
-            this.copyAsidArr = JSON.parse(JSON.stringify(resInfo));
             this.setpointArr = resInfo;
 
             // 广告门物料信息
@@ -942,6 +905,37 @@ export default {
           console.log(res);
         });
     },
+
+    // 获取物料新接口
+    getMaterialInfo (){
+      let apID = sessionStorage.getItem("plan_apid");
+      let info = {
+        apID
+      };
+      api.getApi("/addsp/material/getMaterialCntByPlan", info).then(res=>{
+        if(res.data.SysCode== 200200){
+          let _data=res.data.data;
+          let _materialCntInfoList=[];
+          let _mediaTypeName=[];
+          _data.forEach((item)=>{
+            _mediaTypeName.push(item.mediaTypeName);
+            _materialCntInfoList.push(item.materialCntInfoList);
+          })
+          this.materialInfoJson={
+            mediaTypeName:_mediaTypeName,
+            materialCntInfoList:_materialCntInfoList
+          };
+        }else{
+          this.$message({
+              message: res.data.MSG,
+              type: 'error'
+          });
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+
     // 时间格式规范
     formatTime (val) {
       return dateFormat.toDate(val, "/");
@@ -1117,7 +1111,6 @@ export default {
       };
       api.postApi("/addsp/match/UpdatePlan", info).then((res) => {
         if (res.data.SysCode === 200200) {
-          // this.getInitData();
           location.reload(false)
           sessFun.messageFun("success", '保存配点成功！');
         } else {
@@ -1131,8 +1124,6 @@ export default {
         this.$refs.settlementForm.resetFields()
         done()
       }
-      // this.$refs[formName].resetFields()
-      // this.settlementFormVisible = false
     },
     //清空草稿箱数据
     clearDrafts (apid) {
@@ -1167,7 +1158,7 @@ export default {
           if (!res.data.IsLock) {
             // 意向方案
             if (this.planDetail.planMode == 1) {
-              if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.role)) {
+              if (['ADN_BD_KA', 'ADN_BD'].includes(this.role)) {
                 // 编辑意向小区
                 (await this.clearDrafts(apid)) && this.$router.push("./editEmptyPointPlan");
               } else {
@@ -1300,9 +1291,6 @@ export default {
 
 .box-wrap {
   background-color: #fff;
-}
-.price_quo {
-  margin: 8px 32px;
 }
 /deep/ .el-tabs__nav-scroll {
   padding-left: 28px;

@@ -21,7 +21,7 @@
                     </el-input>
                     <el-date-picker size="small" class="marginR" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
                     </el-date-picker>
-                    <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="marginR">
+                    <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="!['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="marginR">
                         <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                     <el-button type="primary" icon="el-icon-search" @click="search()"
@@ -153,7 +153,7 @@ export default {
     },
     mounted: function() {
         this.getRole();
-        if(!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
+        if(!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
             this.getCompany();
         }else{
             this.getSubSaleList()
@@ -221,7 +221,7 @@ export default {
         // 判断角色是否有新建按钮(销售有)
         getRole() {
             this.sessionData = sessFun.getSess();
-            if (!['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+            if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                 this.showNewBtn = false;
             }
         },

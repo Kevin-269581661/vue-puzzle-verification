@@ -504,10 +504,10 @@
         <el-option label="排除同行小区" value="1"></el-option>
         <el-option label="排除同行点位" value="2"></el-option>
       </el-select>
-      <!--媒体类型-->
+      <!--设备类型-->
       <el-select
         v-if="systemSource === 0"
-        placeholder="媒体类型"
+        placeholder="设备类型"
         size="small"
         v-model="selectDoorType"
         v-show="showMore"
@@ -534,8 +534,7 @@
         @clear="transfersFun()"
         @change="filterMediaType"
       >
-        <el-option label="广告门" value="广告门"></el-option>
-        <el-option label="道闸" value="道闸"></el-option>
+        <el-option v-for="item in mediaTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
       </el-select>
       <!--媒体等级-->
       <el-select
@@ -904,7 +903,7 @@
             <p class="li_p">
               <span>{{ key.grade || '--' }}级</span>
               <span>{{ key.mType || '--' }}</span>
-              <span>{{ key.adSize || key.picSize }}</span>
+              <span>{{ key.adSize }}</span>
             </p>
           </li>
           <li
@@ -1282,8 +1281,6 @@ import api from "../../api/api";
 import BMapLib from "BMapLib";
 // import mapStyle from "./map/mapStyle"
 
-import sheetExcel from '../../commonFun/sheetExcel';
-
 const mapConfig = {
   // 1:QFAD  0:QADN
   system: 0,
@@ -1308,6 +1305,7 @@ export default {
   data () {
     let _this = this;
     return {
+      mediaTypes: [],  //媒体类型
       systemSource: mapConfig.system,
       citySelect: [],
       // userInfo:'',
@@ -1456,12 +1454,12 @@ export default {
       tradingAreaList: [],
       // 选择到商圈
       selectTradingArea: "",
-      // 媒体类型
+      // 设备类型
       doorTypeList: [],
-      // 选择到媒体类型
+      // 选择到设备类型
       selectDoorType: "",
       // 媒介载体
-      selectMediaType: "",
+      selectMediaType: null,
       // 媒体等级
       selectMediaLevel: "",
       // 终端类型列表
@@ -1610,12 +1608,30 @@ export default {
         this.getResList();
         // 获取商圈list
         this.getTradingArea();
-        // 获取媒体类型(门类型)
+        // 获取设备类型(门类型)
         this.getDoorType();
         // 获取广告限制列表
         this.getADLimit();
         // 查找城市id下面所有的区
         this.areaList = areaPackage.findArea(this.adListParams.rid);
+      }
+    }
+
+    //获取媒体类型
+    if(this.adListParams.planAdsCnt){
+      //意向方案--媒体类型直接写死广告门
+      this.mediaTypes=[
+        {id: 1, name: "广告门"}
+      ];
+      this.selectMediaType=1;
+    }else{
+      //非意向方案
+      if(this.adListParams.asrIDs&&this.adListParams.asrIDs.length>0){
+        //存在公司id--根据公司id获取媒体类型
+        this.getCompanyediaTypes();
+      }else{
+        //不存在公司id--查询系统所有媒体类型
+        this.getSystemMediaTypes();
       }
     }
   },
@@ -1635,6 +1651,29 @@ export default {
     },
   },
   methods: {
+    //获取系统所有媒体类型列表
+    getSystemMediaTypes(){
+      api.getApi("/addsp/api/v1/mediaTypes").then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    //获取公司下媒体类型列表
+    getCompanyediaTypes(){
+      let params = {
+        companyIds: this.adListParams.asrIDs.join(","),
+      }
+      api.getApi("/addsp/api/v1/company/mediaTypes",params).then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
     // 将点位数据转换成小区数据，并去重,放入资源列表
     selectedListToResList () {
       let selectedListTemp = this.adListParams.selectedList;
@@ -1795,7 +1834,7 @@ export default {
           }
         });
     },
-    // 获取媒体类型(门类型)list
+    // 获取设备类型(门类型)list
     getDoorType () {
       api.getApi(mapConfig.apiVar.mapApi + "/mediaType", {}).then((res) => {
         if (res.data.SysCode === 200200) {
@@ -1806,7 +1845,7 @@ export default {
             };
           });
         } else {
-          sessFun.messageFun("warning", "媒体类型获取异常！");
+          sessFun.messageFun("warning", "设备类型获取异常！");
         }
       });
     },
@@ -1944,7 +1983,8 @@ export default {
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
         // mType: this.selectDoorType,
-        mVehicle: this.selectMediaType,
+        // mVehicle: this.selectMediaType,
+        mediaTypeId: this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,
@@ -2181,6 +2221,7 @@ export default {
       // console.log('获取指定资源到媒体列表-----')
       let params = {
         resID: this.showResInfo.resID,
+        mediaTypeId: this.selectMediaType
       };
       if (this.isShare) {
         params.shareCode = this.routeQuery.code;
@@ -3824,7 +3865,7 @@ export default {
         this.transfersFun();
       }
     },
-    // 媒体类型（消防门、钣金门等）
+    // 设备类型（消防门、钣金门等）
     filterDoorType () {
       if (this.selectDoorType) {
         this.transfersFun();
@@ -3832,6 +3873,7 @@ export default {
     },
     // 媒介载体
     filterMediaType () {
+      if(this.adListParams.planAdsCnt) return;
       if (this.selectMediaType) {
         this.transfersFun();
       }
@@ -3874,7 +3916,7 @@ export default {
       this.buildPrice = ["", ""];
       this.liveYear = ["", ""];
       this.selectDoorType = "";
-      this.selectMediaType = "";
+      this.selectMediaType = null;
       this.selectMediaLevel = "";
       this.selectMachineType = [];
       this.selectLimits = [];
@@ -4073,8 +4115,6 @@ export default {
           };
           if (this.systemSource === 0) {
             obj.city = this.routeQuery.city;
-
-            obj=sheetExcel.addEquipmentTypeVal(obj,data.equipmentType)
           } else if (this.systemSource === 1) {
             obj.city = data.cityName;
           }
@@ -4200,8 +4240,7 @@ export default {
               tHeader.push("归属公司");
               filterVal.push("asNames");
             }
-            tHeader=sheetExcel.addEquipmentTypeHead(tHeader)
-            filterVal=sheetExcel.addEquipmentFilterVal(filterVal)
+            
           }
           const list = resultArr;
           const data = this.formatJson(filterVal, list);

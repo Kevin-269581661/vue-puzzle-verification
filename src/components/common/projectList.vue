@@ -105,7 +105,7 @@
             custom-class="size_detail_dialog"
             width="540px">
             <el-table border :data="sizeList" height="450">
-                <el-table-column prop="materialSize" label="广告尺寸" >
+                <el-table-column prop="materialSize" label="素材尺寸" >
                 </el-table-column>
                 <el-table-column prop="materialCount" label="数量">
                 </el-table-column>

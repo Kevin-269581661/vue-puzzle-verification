@@ -659,7 +659,7 @@
                         </el-checkbox>
                       </div>
                     </div>
-                    <div v-else>{{ scope.row.asLabs }}面</div>
+                    <div v-else>{{ scope.row.asLabs }}</div>
                   </template>
                 </el-table-column>
 
@@ -826,25 +826,14 @@
         >取消
       </el-button>
       <!-- 空点导出 -->
-      <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
+      <!-- <el-button plain v-if="active === 0" type="default" @click="exportEmpty()"
         >导空点
-      </el-button>
+      </el-button> -->
 
       <el-button @click="next" v-if="active == 0" type="primary">
         下一步
       </el-button>
-      <!-- <el-button
-        @click="next"
-        v-if="active == 2"
-        type="primary"
-        
-        >创建方案
-      </el-button> -->
-
-      <!-- <p v-if="active === 0" style="color: #666;font-size: 14px;margin-top:10px;">备注：导空点功能目前导出的为最近一年的空点</p> -->
-
       <div class="finishBtn" v-if="active == 2">
-        <!-- <el-button type="default" @click="continueCreate">继续创建</el-button> -->
         <el-button @click="downLoadFanan()" type="default" class="urlBtn"
           >导出方案</el-button
         >
@@ -1567,14 +1556,10 @@ export default {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       this.customPermission = sess.customPermission;
-      if (
-        (sess.uType == "ADN_BD_COUNTRY") ||
-        (sess.uType == "ADN_MD_COUNTRY")
-      ) {
+      if (sess.uType == "ADN_MD_COUNTRY") {
         this.isShowHalfYear = true;
       }
-      console.log("sessionData", this.sessionData);
-      if (['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+      if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
         this.BDData.realName = sess.realName; // username
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = sess.uID;
@@ -1686,7 +1671,6 @@ export default {
     next () {
       if (this.active === 0) {
         console.log("planForm--", this.planForm);
-        // console.log('this.dynamicTags--', this.dynamicTags)
         this.submitForm("planForm");
 
       } else if (this.active === 1) {
@@ -1756,7 +1740,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
         .then((res) => {
-          // console.log(res.data);
           if (!res.data.SysCode) {
             if (res.data.length) {
               let returnobj = this.formatData(res.data);
@@ -1800,8 +1783,6 @@ export default {
                 head.push("归属公司");
               }
 
-              head=sheetExcel.addEquipmentTypeHead(head)
-
               let allHead = head.concat([info.startTime + "-" + info.endTime]);
               let filename =
                 returnobj.city.join("-") +
@@ -1837,7 +1818,11 @@ export default {
           showList: [],
         };
         returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adDoor.concat(data.barrier);
+        let dataArr = data.adsList || [];
+        if(dataArr.length === 0) {
+          sessFun.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
+          break;
+        }
         for (let item of dataArr) {
           let obj = {
             province: item.prName || "--",
@@ -1884,8 +1869,6 @@ export default {
           ) {
             obj.asNames = item.asNames;
           }
-
-          obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
           
           obj[this.emptyRange[0] + "-" + this.emptyRange[1]] =
             item.DateInfo.adsNum || 0;
@@ -2024,8 +2007,6 @@ export default {
               head.push("归属公司");
             }
 
-            head=sheetExcel.addEquipmentTypeHead(head)
-
             let allHead = head.concat(date);
             let filename =
               returnobj.filename +
@@ -2108,7 +2089,7 @@ export default {
             ) {
               obj.asNames = item.asNames;
             }
-            obj=sheetExcel.addEquipmentTypeVal(obj,item.equipmentType)
+            
             let showData = item.DateInfo.sort(this.sortDate);
             for (let date of showData) {
               dateArr.push(
@@ -3770,7 +3751,6 @@ export default {
           if (res.data.dataerrorResNames) {
             this.ADloading.close();
             sessFun.messageFun("warning", "存在失败小区：" + res.data.dataerrorResNames || '');
-            // sessFun.messageFun("warning", "存在失败小区");
             return;
           }
           this.active++;

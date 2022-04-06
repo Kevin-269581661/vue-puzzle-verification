@@ -36,13 +36,13 @@
                 <el-button @click="reLock">预 锁</el-button>
               </el-tooltip>
               <template v-if="planDetail.apState == -1">
-                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role)" plain @click="createShareCode">协同选点</el-button>
-                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role) && sessionData.uType != 'ADN_BD_KA'" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_KA', 'ADN_BD'].includes(role)" plain @click="createShareCode">协同选点</el-button>
+                <el-button v-if="customPermission.proposalPermission == 1 && ['ADN_BD_KA', 'ADN_BD'].includes(role) && sessionData.uType != 'ADN_BD_KA'" plain :disabled="matchCnt>=10" @click="matchRes(planDetail.apID)">{{`配点(${10-matchCnt})`}}</el-button>
                 <el-button v-if="customPermission.proposalPermission && ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" plain @click="editPlan">配点</el-button>
                 <el-button
                   type="primary"
                   @click="edit()"
-                  v-if="customPermission.proposalPermission && (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) || ['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role))"
+                  v-if="customPermission.proposalPermission && (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) || ['ADN_BD_KA', 'ADN_BD'].includes(role))"
                   >编辑</el-button
                 >
               </template>
@@ -279,7 +279,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 报价单
-import apQuotation from "./components/apQuotation.vue";
 import material from "./components/materialInfo.vue";
 import detail from "./components/detailInfo.vue";
 import addPoint from './components/addPoint.vue'
@@ -291,7 +290,6 @@ import {
 export default {
   name: "planDetail",
   components: {
-    apQuotation,
     material,
     detail,
     addPoint
@@ -334,10 +332,6 @@ export default {
       daoInfo: [],
       // 报价单详情
       priceSheet: [],
-      quotation: {
-        isDetail: true,
-        quotation: [],
-      },
       //物料信息
       // materialInfo: [],
       // 城市过滤结果

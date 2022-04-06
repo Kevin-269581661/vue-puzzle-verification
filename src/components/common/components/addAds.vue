@@ -21,9 +21,8 @@
                     <dd :class="recType === 2?'active': ''" @click="activeRecType(2)">写字楼</dd>
                 </dl>
                 <dl>
-                    <dt>媒体类型：</dt><!--mediaType-->
-                    <dd :class="mediaType === '广告门'?'active': ''" @click="activeMediaType('广告门')">广告门</dd>
-                    <dd :class="mediaType === '道闸'?'active': ''" @click="activeMediaType('道闸')">道闸</dd>
+                    <dt>媒体类型：</dt>
+                    <dd :class="mediaType==item.id?'active':''" v-for="item in mediaTypeList" :key="item.id" @click="activeMediaType(item.id)">{{item.name}}</dd>
                 </dl>
                 <dl style="border: none">
                     <dt>城市区域：</dt>
@@ -214,7 +213,7 @@
             <!--提示-->
             <div class="tip">
                 <i class="el-icon-info"></i>
-                <p>共 <span>{{adsCount}}</span>个点位，已选点位 <span>{{shopingList.length||0}}</span>个</p>
+                <p>共 <span>{{adsCount}}</span> 个点位，已选点位 <span>{{shopingList.length||0}}</span> 个</p>
             </div>
             <!--表格-->
             <div class="table_wrap adsTable">
@@ -233,21 +232,9 @@
                     height="545">
                     <el-table-column width="110px" fixed>
                         <template slot-scope="scope">
-                            <div class="adDoor" v-if="mediaType === '广告门'">
-                                <el-checkbox v-model="scope.row.checkBox.A" label="A面"
-                                             @change="changeA(scope.row)"
-                                             :disabled="scope.row.box.A">
-                                </el-checkbox>
-                                <el-checkbox v-model="scope.row.checkBox.B" label="B面"
-                                             @change="changeB(scope.row)"
-                                             :disabled="scope.row.box.B">
-                                </el-checkbox>
-                            </div>
-                            <div class="roadGate" v-else>
-                                <el-checkbox v-model="scope.row.checkBox.ABC" label="ABC面"
-                                             @change="changeABC(scope.row)">
-                                </el-checkbox><!--v-model="scope.row.checkBox.ABC"-->
-                            </div>
+                            <el-checkbox v-for="(item,index) in scope.row.adsList" :key="index" v-model="item.isCheck" :label="item.asLab"
+                                            @change="changeAds(scope.row,item)" :disabled="!item.checkFlag">
+                            </el-checkbox>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -343,20 +330,6 @@
                         min-width="100">
                     </el-table-column>
                     <el-table-column
-                        label="广告尺寸"
-                        min-width="110">
-                        <template slot-scope="scope">
-                            {{ scope.row.adSize || '--' }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        label="画面尺寸"
-                        min-width="110">
-                        <template slot-scope="scope">
-                            {{ scope.row.picSize || '--' }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
                         prop="liveYear"
                         :label="recType === 1? '入住年份' : '建成年份'"
                         min-width="90">
@@ -423,6 +396,8 @@
         name: "addAds",
         data() {
             return {
+                mediaTypeList: [],  //媒体类型
+                currentMediaTypeIndex: 0, //当前选中的
                 loading: true,//加载中
                 sessionData:'',           //
                 loadScroll: true,           // 搜索后不执行滚动加载
@@ -505,7 +480,7 @@
                 areaName: '全市',           // step2当前选中的区域
                 CityPlanIndex: [],            // 记录每个城市遍历到的下标
                 recType: 1,                  // step2  1:社区 0:写字楼
-                mediaType: '广告门',          // 媒体类型 广告门、道闸
+                mediaType: 0,          // 媒体类型 广告门、道闸
                 city: [],                     // step2 城市
                 area: [],                    // step2城市下属区域
                 cityOptions: [],
@@ -551,6 +526,10 @@
                 type: Boolean,
                 required: true,
             },
+            MediaTypeData: {
+                type: Array,
+                default: []
+            }
         },
         watch: {
             IsAddAds: function(newVal,oldVal){
@@ -565,7 +544,11 @@
                 // this.resetPlanList()
                 this.getInitData()
                 // this.getAdList()
-            }
+            },
+            MediaTypeData: function(newVal){
+                this.mediaTypeList=newVal;
+                this.mediaType=this.mediaTypeList[0]?this.mediaTypeList[0].id:0;
+            } 
         },
         mounted(){
             this.sessionData = sessFun.getSess();
@@ -648,7 +631,8 @@
                             dateTimeBegin: this.dateInput[0],
                             dateTimeEnd: this.dateInput[1],
                             resType: this.recType,
-                            mVehicle: this.mediaType,
+                            mediaTypeId: this.mediaTypeId,
+                            // mVehicle: this.mediaType,
                             pageNo: this.pageNo,
                             pageSize: this.pageSize,
                         }
@@ -772,7 +756,7 @@
                 this.getAdsParamsData.dateTimeEnd = this.dateInput[1]
                 this.getAdsParamsData.pageNo = this.pageNo
                 this.getAdsParamsData.pageSize = this.pageSize
-                this.getAdsParamsData.mVehicle = this.mediaType
+                this.getAdsParamsData.mediaTypeId =this.mediaType
                 this.getAdsParamsData.uid = this.sUID
                 let params = {
                     "uid": uid,
@@ -816,8 +800,8 @@
                         mID: key.mID,
                         resType: key.resType,
                         resID: key.resID,
-                        asIDs: key.asIDs,
-                        asLabs: key.asLabs,
+                        // asIDs: key.asIDs,
+                        // asLabs: key.asLabs,
                         resName: key.resName,
                         city: this.city[this.activeIndex].rName,
                         rid: this.city[this.activeIndex].rid,
@@ -826,7 +810,8 @@
                         houseNum: key.hNum,
                         buildPrice: (key.hPrice / 100),
                         mediaName: key.mTitle,
-                        mVehicle: key.mVehicle,       // 媒体类型
+                        mediaTypeId: key.mediaTypeId,
+                        // mVehicle: key.mVehicle,       // 媒体类型
                         mediaRemark: key.mRemark || '--',
                         parkSpaceNum: key.parkSpaceNum,
                         carFlow: key.carFlow,
@@ -839,27 +824,33 @@
                         adLimit: key.notPush || '',
                         mState: key.mState === 1 ? '正常' : (key.mState === 2 ? '待安装' : '--'),
                         adSize: key.adSize || '',
-                        picSize: key.picSize || '',
-                        checkBox: {A: false, B: false,ABC:false},
-                        box: {A: false, B: false},
+                        // picSize: key.picSize || '',
+                        adsList: key.adsList,
+                        // checkBox: {A: false, B: false,ABC:false},
+                        // box: {A: false, B: false},
                         asrID: key.asrID,                   // 所属公司id
                     }
-                    if (key.asLabs.indexOf('A') === -1) {
-                        adObj.box.A = true
-                    }else {
-                        //本页可选点位
-                        i++;
-                    }
-                    if (key.asLabs.indexOf('B') === -1) {
-                        adObj.box.B = true
-                    }else {
-                        //本页可选点位
-                        i++;
-                    }
+
+                    // if (key.asLabs.indexOf('A') === -1) {
+                    //     adObj.box.A = true
+                    // }else {
+                    //     //本页可选点位
+                    //     i++;
+                    // }
+                    // if (key.asLabs.indexOf('B') === -1) {
+                    //     adObj.box.B = true
+                    // }else {
+                    //     //本页可选点位
+                    //     i++;
+                    // }
+                    key.adsList.forEach((item)=>{
+                        if(item.checkFlag){
+                            i++;
+                        }
+                    })
                     // console.log('adObj',adObj)
                     this.planList.push(adObj)
                 }
-                console.log('表格数据',this.planList)
                 this.currPageAsLength = i
                 // this.loading = false
                 this.loadScroll = true
@@ -935,7 +926,6 @@
                 console.log('媒体类型',mType)
                 this.setPageNoAndTableData()
                 this.mediaType = mType
-                this.getAdsParamsData.mVehicle = mType
                 this.getAdList()
             },
             // tab切换城市
@@ -1166,38 +1156,17 @@
                 this.HSearch = l
                 console.log('this.HSearch',this.HSearch )
             },
-            // 选中A、B面的时候
-            changeA(row) {
-                let check = row
-                if (check.checkBox.A) {
-                    this.AddShopingInfo(row, 'A') // 添加到购物车
-                } else {
-                    this.IsAll = false
-                    this.deleteShopRow(check, 'A')
-
-                }
-            },
-            changeB(row) {
-                let check = row
-                if (check.checkBox.B === true) {
-                    this.AddShopingInfo(row, 'B') // 添加到购物车
-                } else {
-                    this.IsAll = false
-                    this.deleteShopRow(check, 'B')
-
-                }
-            },
-            // 道闸点位选择
-            changeABC(row){
-                if (row.checkBox.ABC === true){
-                    let obj = this.setShopingTable(row,'ABC')
-                    this.shopingList.push(obj)
+            //选中点位
+            changeAds(row,adsItem){
+                if(adsItem.isCheck){
+                    //选中
+                    this.AddShopingInfo(row,adsItem);
                 }else{
-                    this.deleteShopRow(row, 'ABC')
-
+                    //未选中
+                    this.IsAll = false
+                    this.deleteShopRow(adsItem)
                 }
-                this.$emit('ievent',this.shopingList);
-                this.IsAll = true
+
             },
             // 全选是放进购物车-广告门
             allSelectToShop_adDoor(){
@@ -1285,58 +1254,40 @@
             },
             // 全选表格点位
             allSelectAdsBtn() {
-                console.log('全选')
-                // for (let pkey of this.planList) {
-                //     if(this.mediaType === '广告门'){
-                //         // 根据是否被占用去打勾
-                //         if (!pkey.box.A) {
-                //             pkey.checkBox.A = true
-                //         }
-                //         if (!pkey.box.B) {
-                //             pkey.checkBox.B = true
-                //         }
-                //     }else if(this.mediaType === '道闸'){
-                //         pkey.checkBox.ABC = true
-                //     }
-                // }
-                if(this.mediaType === '广告门'){
-                    this.allSelectToShop_adDoor()
-                }else if(this.mediaType === '道闸'){
-                    this.allSelectToShop_roadGate()
+                //全选
+                for(let planItem of this.planList){
+                    for(let adsItem of planItem.adsList){
+                        if(adsItem.checkFlag&&!adsItem.isCheck){
+                            this.$set(adsItem,'isCheck',true);
+                            let selectInfo = this.setShopingTable(planItem,adsItem);
+                            this.currPageSelect++;
+                            this.shopingList.push(selectInfo)
+                        }
+                    }
                 }
-                // this.allSelectToShop(selection)
+                this.$emit('ievent',this.shopingList);
+
             },
             //取消全选
             cancleSelectAds(){
-                console.log('取消全选',this.planList)
-                for(let pkey of this.planList){
-                    if(pkey.checkBox.A || pkey.checkBox.B || pkey.checkBox.ABC){
-                        for(let i=0; i<this.shopingList.length;){
-                            if(pkey.mID === this.shopingList[i].mID){
-                                if(pkey.checkBox.A && this.shopingList[i].A_B === 'A'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.A = false
-                                }else if (pkey.checkBox.B && this.shopingList[i].A_B === 'B'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.B = false
-                                }else if (pkey.checkBox.ABC && this.shopingList[i].A_B === 'ABC'){
-                                    this.shopingList.splice(i,1)
-                                    this.currPageSelect--
-                                    pkey.checkBox.ABC = false
+                //取消全选
+                for(let planItem of this.planList){
+                    for(let adsItem of planItem.adsList){
+                        if(adsItem.checkFlag&&adsItem.isCheck){
+                            this.$set(adsItem,'isCheck',false);
+                            for(let i=0;i<this.shopingList.length;){
+                                if(this.shopingList[i].asID==adsItem.asID){
+                                    this.shopingList.splice(i,1);
+                                    this.currPageSelect--;
                                 }else{
-                                    i++
+                                    i++;
                                 }
-                            }else{
-                                i++
                             }
                         }
                     }
                 }
-                // this.computeMedia_AD()
-                // this.getBadeNumberByShopList()
                 this.$emit('ievent',this.shopingList);
+
             },
             // 根据购物车已有的mID对应AB面判断勾选
             judgeByselect() {
@@ -1401,32 +1352,12 @@
                 console.log('重置planList的勾选结束')
             },
             // 添加到购物车
-            AddShopingInfo(info, letter) {
+            AddShopingInfo(info, adSpaceInfo) {
                 console.log('选中的row信息', info)
                 this.currPageSelect++
-                let selectInfo = this.setShopingTable(info,letter)
-                let asLabsArr = selectInfo.asLabs.split(',')
-                let asIDArr = selectInfo.asIDs.split(',')
-                if (letter == 'B') {
-                    //  alert('B')
-                    for (let n = 0; n < asLabsArr.length; n++) {
-                        if (asLabsArr[n] === 'B') {
-                            console.log('B', asIDArr[n])
-                            selectInfo.asID = asIDArr[n]
-                            break
-                        }
-                    }
-                    this.shopingList.push(selectInfo)
-                } else if (letter == 'A') {
-                    for (let n = 0; n < asLabsArr.length; n++) {
-                        if (asLabsArr[n] === 'A') {
-                            console.log('A', asIDArr[n])
-                            selectInfo.asID = asIDArr[n]
-                            break
-                        }
-                    }
-                    this.shopingList.push(selectInfo)
-                }
+                let selectInfo = this.setShopingTable(info,adSpaceInfo)
+                
+                this.shopingList.push(selectInfo)
                 if (this.currPageSelect == this.currPageAsLength) {
                     this.IsAll = true
                 } else {
@@ -1436,14 +1367,18 @@
                 // this.IsAll = true
             },
             // 选点列表数据到购物车数据
-            setShopingTable(info,letter){
+            setShopingTable(info,adSpaceInfo){
                 let selectInfo = {
                     rid: info.rid,
                     mID: info.mID,
-                    mVehicle: info.mVehicle,
-                    asID: info.asIDs,//info.asIDs.split(','),
-                    asIDs: info.asIDs,
-                    asLabs: info.asLabs,
+                    asID: adSpaceInfo.asID,
+                    asLab: adSpaceInfo.asLab,
+                    adPrice: adSpaceInfo.adPrice,               // 点位价格
+                    mediaTypeId: info.mediaTypeId,
+                    // mVehicle: info.mVehicle,
+                    // asID: info.asIDs,//info.asIDs.split(','),
+                    // asIDs: info.asIDs,
+                    // asLabs: info.asLabs,
                     resName: info.resName,
                     resID: info.resID,
                     city: info.city,
@@ -1458,9 +1393,9 @@
                     assetTag: info.assetTag,
                     liveYear: info.liveYear,
                     adLimit: info.adLimit,
-                    A_B: letter,
-                    checkBox: {A: info.checkBox.A, B: info.checkBox.B,ABC:  info.checkBox.ABC},
-                    box: {A:info.box.A,B:info.box.B},
+                    // A_B: letter,
+                    // checkBox: {A: info.checkBox.A, B: info.checkBox.B,ABC:  info.checkBox.ABC},
+                    // box: {A:info.box.A,B:info.box.B},
                     asrID: info.asrID,                // 所属公司id
                 }
                 return selectInfo
@@ -1475,10 +1410,10 @@
                 }
             },
             // 取消勾时,删除购物车里对应的数据行
-            deleteShopRow(row, letter) {
+            deleteShopRow(row) {
                 this.currPageSelect--
                 for (let j = 0; j < this.shopingList.length; j++) {
-                    if (this.shopingList[j].mID === row.mID && this.shopingList[j].A_B === letter) {
+                    if (this.shopingList[j].asID === row.asID) {
                         let crossIf = this.crossSchedules(this.shopingList[j].schedules)
                         if (crossIf) {
                             this.shopingList.splice(j, 1)
@@ -1488,7 +1423,7 @@
                         }
                     }
                 }
-                this.allCheckboxUpdata()
+                // this.allCheckboxUpdata()
             },
             /*公用方法*/
             //点位有时间交叉
@@ -1524,9 +1459,15 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .otherSelect /deep/ .el-input__icon {
         line-height: unset;
+    }
+    /deep/ .el-table__row .cell{
+        min-width: 110px;
+        // overflow-x: auto !important;
+        white-space: normal !important;
+        height: auto !important;
     }
     /deep/ .el-table__fixed,/deep/ .el-table__fixed-right{
         height: 535px !important;
@@ -1736,8 +1677,11 @@
     .adDoor .el-checkbox {
         margin-right: 0;
     }
+    /deep/ .el-checkbox{
+        margin-right: 12px;
+    }
     /deep/ .el-checkbox + .el-checkbox {
-        margin-left: 4px;
+        /* margin-left: 4px; */
     }
 
     /deep/ .el-table__expanded-cell[class*="cell"] {
@@ -1809,11 +1753,11 @@
     }
 
     /*超出省略*/
-    /deep/ .el-table .cell {
+    /* /deep/ .el-table .cell {
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
+    } */
 
     /deep/ .el-table__row td:nth-child(2) .cell span {
         width: 225px;

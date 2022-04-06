@@ -885,18 +885,6 @@
         // background: #C1C1C1;
         // border-radius: 4px;
     }
-
-    /* /deep/ .el-table td .cell {
-        height: 30px;
-        line-height: 30px;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    } */
-
-    /* /deep/ .el-table__row .cell span{
-        overflow-x: initial;
-    } */
     /*城市按钮*/
     .city_radio{
         display: inline-block;

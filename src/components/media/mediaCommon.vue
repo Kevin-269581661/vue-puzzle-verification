@@ -47,7 +47,7 @@
                 <template slot="title">
                     更多
                 </template>
-                <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item>
+                <!-- <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item> -->
                 <el-menu-item index="/media/compact">资料下载</el-menu-item>
             </el-submenu>
             <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->

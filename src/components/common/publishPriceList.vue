@@ -16,10 +16,7 @@
                         <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small">
                             <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                         </el-select>
-                        <!-- <el-select v-model="searchInfo.city" placeholder="请选择城市" filterable size="small">
-                            <el-option v-for="item of cityList" :key="item.rID" :label="item.text" :value="item.value"></el-option>
-                        </el-select> -->
-                        <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" filterable></el-cascader>
+                        <el-cascader :options="allProvince" v-model="searchInfo.cityArr" separator="-" :show-all-levels="false" placeholder="请选择城市" filterable></el-cascader>
                         <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch">搜索</el-button>
                         <el-button plain @click="reset()" :disabled="!isReset">重置</el-button>
                     </el-col>
@@ -102,7 +99,7 @@
                     <div class="new_box">
                         <p style="font-size:16px;"><b>{{priceInfo.company}}</b></p>
                         <b style="margin-right:20px;">{{priceInfo.city}}</b>
-                        <el-select v-model="priceInfo.cityLevel" placeholder="请选择" @change="selectLevel()">
+                        <el-select v-model="priceInfo.cityLevel" placeholder="请选择城市等级" @change="selectLevel()">
                             <el-option v-for="item in cityLevelArr" :key="item.level" :label="item.name" :value="item.level"></el-option>
                         </el-select>
                         <hr class="hr_style">
@@ -112,8 +109,8 @@
                     <el-select v-model="priceInfo.asrID" placeholder="请选择所属公司" filterable >
                         <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
-                    <el-cascader :options="allProvince" v-model="priceInfo.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange"></el-cascader>
-                    <el-select v-model="priceInfo.cityLevel" placeholder="请选择" @change="selectLevel()">
+                    <el-cascader :options="allProvince" v-model="priceInfo.cityArr" separator="-" :show-all-levels="false" @change="seleProClient" @active-item-change="handleItemChange" placeholder="请选择城市"></el-cascader>
+                    <el-select v-model="priceInfo.cityLevel" placeholder="请选择城市等级" @change="selectLevel()">
                         <el-option v-for="item in cityLevelArr" :key="item.level" :label="item.name" :value="item.level"></el-option>
                     </el-select>
                     <hr class="hr_style">

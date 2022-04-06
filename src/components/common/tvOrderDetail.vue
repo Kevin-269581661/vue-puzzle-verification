@@ -17,7 +17,7 @@
                             <img src="../../assets/images/orderlogo.png" alt="">{{planDetail.apName}}
                         </h4>
                         <div class="handleBtn">
-                            <el-button type="primary" @click="edit()" v-if="(['ADN_BD_COUNTRY', 'ADN_BD_KA', 'ADN_BD'].includes(role))|| (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role))" :disabled="planDetail.apState!=0">编辑</el-button>
+                            <el-button type="primary" @click="edit()" v-if="(['ADN_BD_KA', 'ADN_BD'].includes(role))|| (['ADN_MD_COUNTRY', 'ADN_MD'].includes(role))" :disabled="planDetail.apState!=0">编辑</el-button>
                             <el-button @click="changState()" :disabled="planDetail.apState!=0" >投放</el-button>
                         </div>
                     </div>

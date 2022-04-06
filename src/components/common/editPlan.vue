@@ -2962,7 +2962,7 @@
             getSpaceInfo(shopingItem, pdID) {
                 let tempSpaceInfo = {
                     asID: shopingItem.asID,
-                    pdID: pdID || this.getpdidByCityAndMType(shopingItem),
+                    pdID: pdID,
                     pbStar: shopingItem.schedules.split('-')[0],
                     pbEnd: shopingItem.schedules.split('-')[1],
                     uID: this.sessionData.uID,

@@ -1605,7 +1605,7 @@
                         city: data.city,
                         origin: data.district,
                         mediaTypeName: data.mediaTypeName,
-                        mediaTypeId: info.mediaTypeId,
+                        mediaTypeId: data.mediaTypeId,
                         mediaName: data.mTitle,
                         assetTag: data.assetTag,
                         asLab: data.asLab,
@@ -3194,14 +3194,15 @@
                 this.allCheckboxUpdata()
             },
             getResultData(resultArr){
+                // 非当前媒体类型点位
                 let other = [];
-                for(let data of this.typeShopList){
-                    if(this.activeName != data.type){
-                        other = other.concat(data.asidList);
+                this.typeShopList.forEach((item, index) => {
+                    if(this.activeName != index){
+                        other = other.concat(item.asidList);
                     }else{
-                        data.asidList = resultArr;
+                        item.asidList = resultArr;
                     }
-                }
+                })
                 this.shopingList = other.concat(resultArr);
                 this.shopShowList = resultArr;
             },

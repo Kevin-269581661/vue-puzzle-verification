@@ -1787,7 +1787,6 @@
                     address: info.resAddress || '',
                     dNum: info.dNum || '',       // 出入口数
                     adLimit: info.notPush || '',
-                    checkBox: checkBox,
                     connData: { connectResName: '', connectMedia: '', commentWorkRes:'', commentworkMedia:''},
                     connID: info.connID || '',        // 连排门id
                     industryInfos: info.industryInfos || [],   // 同行业资源回避

@@ -2696,7 +2696,6 @@ export default {
         address: info.resAddress || "",
         dNum: info.dNum || "", // 出入口数
         adLimit: info.notPush || "",
-        checkBox: checkBox,
         connData: {
           connectResName: "",
           connectMedia: "",

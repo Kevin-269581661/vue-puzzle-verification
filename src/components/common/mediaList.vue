@@ -639,7 +639,7 @@ export default {
       importAsrID: '',                // 导入媒体时所选择的公司id
       importSelectLoading: true,      // 公司下拉选项
       companyList: [],                // SA媒体导入时获取的公司列表
-      doUpload: this.apiVar.qadnUrl + '/mediaService/media/MediaInfoImport',
+      doUpload: this.apiVar.qadnUrl + '/addsp/api/v1/media/batchImport',
       fileData: [],                            // 当前上传文件的数据- 表格
       excelDataUpload: [],                     // 导入excel之后返回的数组
       showUploadFail: false,                  // 导入失败的媒体弹出框

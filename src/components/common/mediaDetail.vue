@@ -222,52 +222,59 @@
                                     <el-table-column
                                         prop="mTitle"
                                         label="媒体名称"
-                                        min-width="8.6%"
+                                        width="100px"
                                     >
                                     </el-table-column>
                                     <el-table-column
-                                        prop="mediaTypeName"
-                                        label="媒体类型"
-                                        min-width="10%"
+                                        prop="site"
+                                        label="位置类型"
+                                        width="100px"
                                         show-overflow-tooltip>
                                         <template slot-scope="scope">
-                                            {{scope.row.mediaTypeName || '--'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="grade"
-                                        label="媒体等级"
-                                        min-width="7%">
-                                        <template slot-scope="scope">
-                                            {{scope.row.grade || '--'}}
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mType"
-                                        label="门体类型"
-                                        min-width="7%"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="mState"
-                                        label="状态"
-                                        min-width="7%">
-                                        <template slot-scope="scope">
-                                            {{scope.row.mState == 0 ? '禁用' : scope.row.mState == 1 ? '正常' :
-                                            scope.row.mState == 2 ? '待安装' : scope.row.mState == 3 ? '待维修' : '已拆除'}}
+                                            {{scope.row.site || '--'}}
                                         </template>
                                     </el-table-column>
                                     <el-table-column
                                         label="资产编号"
-                                        min-width="10.2%"
+                                        min-width="100px"
                                         :show-overflow-tooltip="true">
                                         <template slot-scope="scope">
                                             {{ scope.row.assetTag || '&#45;&#45;' }}
                                         </template>
                                     </el-table-column>
                                     <el-table-column
+                                        prop="mType"
+                                        label="设备类型"
+                                        min-width="100px"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="素材尺寸"
+                                        min-width="200px"
+                                        class-name="pre-column">
+                                        <template slot-scope="scope">
+                                            {{scope.row.adSizeInfo || '--'}}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                        label="可视尺寸"
+                                        min-width="200px"
+                                        class-name="pre-column">
+                                        <template slot-scope="scope">
+                                            {{scope.row.adViewSizeInfo || '--'}}
+                                        </template>
+                                    </el-table-column>
+                                    <!-- <el-table-column
+                                        prop="grade"
+                                        label="媒体等级"
+                                        min-width="7%">
+                                        <template slot-scope="scope">
+                                            {{scope.row.grade || '--'}}
+                                        </template>
+                                    </el-table-column> -->
+                                    <el-table-column
                                         label="广告限制"
-                                        min-width="10%"
+                                        min-width="120px"
                                         class="tar"
                                         :show-overflow-tooltip="true">
                                         <template slot-scope="scope">
@@ -276,13 +283,22 @@
                                     </el-table-column>
                                     <el-table-column
                                         label="备注"
-                                        min-width="12%"
+                                        min-width="100px"
                                         :show-overflow-tooltip="true">
                                         <template slot-scope="scope">
                                             {{ scope.row.mRemark || '--' }}
                                         </template>
                                     </el-table-column>
                                     <el-table-column
+                                        prop="mState"
+                                        label="状态"
+                                        min-width="80px">
+                                        <template slot-scope="scope">
+                                            {{scope.row.mState == 0 ? '禁用' : scope.row.mState == 1 ? '正常' :
+                                            scope.row.mState == 2 ? '待安装' : scope.row.mState == 3 ? '待维修' : '已拆除'}}
+                                        </template>
+                                    </el-table-column>
+                                    <!-- <el-table-column
                                         label="门禁图片"
                                         min-width="6%">
                                         <template slot-scope="scope">
@@ -290,7 +306,7 @@
                                                  @click="showMediaImg(scope.row.mID)">查看
                                             </div>
                                         </template>
-                                    </el-table-column>
+                                    </el-table-column> -->
                                 </el-table>
                             </div>
                         </el-tab-pane>
@@ -584,6 +600,27 @@
                                 let tempMediaInfo = mediaList[i];
                                 let { mediaTypeId } = tempMediaInfo;
                                 if(!mediaTypeId) continue;
+                                let adSizeInfo = {};
+                                let adViewSizeInfo = {};
+                                (tempMediaInfo.adSpaceInfos || []).forEach(adSpaceItem => {
+                                    let adSizeKey = `${adSpaceItem.adSizeWidth}*${adSpaceItem.adSizeHeight}`;
+                                    let adSizeValue = adSizeInfo[adSizeKey];
+                                    let adViewSizeKey = `${adSpaceItem.adViewSizeWidth}*${adSpaceItem.adViewSizeHeight}`;
+                                    let adViewSizeValue = adViewSizeInfo[adViewSizeKey];
+                                    if(Array.isArray(adSizeValue) && adSizeValue.length) {
+                                        adSizeValue.push(adSpaceItem.asLab || '--')
+                                    } else {
+                                        adSizeInfo[adSizeKey] = [adSpaceItem.asLab || '--']
+                                    }
+                                    if(Array.isArray(adViewSizeValue) && adViewSizeValue.length) {
+                                        adViewSizeValue.push(adSpaceItem.asLab || '--')
+                                    } else {
+                                        adViewSizeInfo[adViewSizeKey] = [adSpaceItem.asLab || '--']
+                                    }
+
+                                })
+                                tempMediaInfo.adSizeInfo = Object.entries(adSizeInfo).map(([key, value]) => `${value.join('、')}：${key}`).join('\r\n');
+                                tempMediaInfo.adViewSizeInfo = Object.entries(adViewSizeInfo).map(([key, value]) => `${value.join('、')}：${key}`).join('\r\n');
                                 if(mediaTypeObj[mediaTypeId]) {
                                     mediaTypeObj[mediaTypeId].mediaList.push(tempMediaInfo);
                                 } else {
@@ -869,7 +906,12 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    /deep/ .pre-column .cell {
+        height: auto;
+        line-height: unset;
+        white-space: pre-line;
+    }
     .resImg{
         max-width: 100%;
         width: auto;

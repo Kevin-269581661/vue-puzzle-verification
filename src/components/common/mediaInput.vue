@@ -1837,7 +1837,7 @@ export default {
           adDoorLevel: "",
           site: "",
           mRemark: '',
-          adLimit: [],            //请选择广告限制 notpush
+          adLimit: []
         },
       };
       mediaTypeItem.mediaList.push(tempMedia);
@@ -2874,7 +2874,7 @@ export default {
                 site: tempMediaForm.site || "",
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                notpush: tempMediaForm.adLimit.join('、'),
+                notPush: tempMediaForm.adLimit.join('、'),
               };
               editMediaParams.push(obj);
             }

@@ -709,6 +709,8 @@
                                             <p class="warningInfo">
                                                 <span style="background: #FFC1BE;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">被占点位</span>
+                                                <span style="background: #C0C4CC;" class="warningInfoColor"></span>
+                                                <span class="warningInfoName">不可售卖点位</span>
                                                 <span style="background: #FFE093;" class="warningInfoColor"></span>
                                                 <span class="warningInfoName">连排门、同行资源回避、同行媒体回避</span>
                                             </p>
@@ -2970,6 +2972,8 @@
             tableRowClassName({row}) {
                 if (row.lState !== undefined && row.lState.length > 0) {
                     return "warning-row";
+                } else if(row.asSaleState === 2) {
+                    return "warning-sale";
                 } else if (row.connData.connectResName !== '' || row.connData.commentWorkRes !=='' || row.connData.connectMedia !=='') {
                     return "warning-row-conncet";
                 }else {
@@ -4323,6 +4327,7 @@
                                     asID: data.asID,
                                     asLab: data.asLab,
                                     lState: data.IsLock ? data.IsLock : '',   // 是否被占
+                                    asSaleState: data.asSaleState,   // 1: 可售卖 2: 不可售卖
                                     resName: data.resName,
                                     city: data.city,
                                     origin: data.rName,
@@ -4515,6 +4520,10 @@
                         sessFun.messageFun('warning','请先删除完被占点位再进行其它操作')
                         break;
                     }
+                    if (this.shopingList[j].asSaleState === 2) {
+                        sessFun.messageFun('warning','请先删除完不可售卖点位再进行其它操作')
+                        break;
+                    }
                     if (j >= this.shopingList.length - 1) {
                         console.log('退出购物车')
                         this.dialogTableVisible = !this.dialogTableVisible
@@ -4698,7 +4707,9 @@
     /deep/ .el-table .warning-row {
         background: #FFC1BE;
     }
-
+    /deep/ .el-table .warning-sale {
+        background: #C0C4CC;
+    }
     /deep/ .el-table .warning-row-conncet {
         background: #FFE093;
     }

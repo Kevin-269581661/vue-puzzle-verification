@@ -549,22 +549,22 @@
             <div class="content_bottom_wrap_box">
               <div
                 class="content_bottom_wrap"
-                v-for="(meidaItem, mediaIndex) in mediaTypeItem.mediaList"
+                v-for="(mediaItem, mediaIndex) in mediaTypeItem.mediaList"
                 :key="mediaIndex"
               >
                 <div class="content_bottom_head">
-                  <h2>{{ meidaItem.text }}</h2>
+                  <h2>{{ mediaItem.text }}</h2>
                   <div
                     class="media_deleBtn"
                     @click="mediaDelBtnFun(mediaTypeIndex, mediaIndex)"
-                    v-if="!meidaItem.mid"
+                    v-if="!mediaItem.mid"
                   >
                     <i class="el-icon-remove"></i>
                   </div>
                 </div>
                 <div class="content_bottom_form_wrap">
                   <el-form
-                    :model="meidaItem.mediaForm"
+                    :model="mediaItem.mediaForm"
                     status-icon
                     :rules="mediaRules"
                     :ref="`mediaForm${mediaTypeIndex}${mediaIndex}`"
@@ -595,7 +595,7 @@
                           }]"
                         >
                           <el-input
-                            v-model="meidaItem.mediaForm.mediaName"
+                            v-model="mediaItem.mediaForm.mediaName"
                             placeholder="例：东门"
                           ></el-input>
                         </el-form-item>
@@ -608,28 +608,28 @@
                           :rules="mediaRules.assetId"
                         >
                           <el-input
-                            v-model.trim="meidaItem.mediaForm.assetId"
+                            v-model.trim="mediaItem.mediaForm.assetId"
                             placeholder="例:0034FASF342-X21"
-                            :disabled="meidaItem.mediaForm.assetIdBolean"
+                            :disabled="mediaItem.mediaForm.assetIdBolean"
                           ></el-input>
                         </el-form-item>
                         <el-tooltip
                           class="item"
                           effect="dark"
                           placement="bottom-end"
-                          v-show="meidaItem.isAssetIdError"
+                          v-show="mediaItem.isAssetIdError"
                         >
                           <div slot="content">
                             <ul style="font-size: 12px; color: #fff">
                               <li>
-                                资源：{{ meidaItem.assetIdCommentData.resName }}
+                                资源：{{ mediaItem.assetIdCommentData.resName }}
                               </li>
                               <li>
-                                媒体：{{ meidaItem.assetIdCommentData.mediaName }}
+                                媒体：{{ mediaItem.assetIdCommentData.mediaName }}
                               </li>
                               <li>
                                 创建时间：{{
-                                  meidaItem.assetIdCommentData.updateTime
+                                  mediaItem.assetIdCommentData.updateTime
                                 }}
                               </li>
                             </ul>
@@ -642,18 +642,31 @@
                       <el-col :span="6">
                         <el-form-item label="设备类型" prop="doorType">
                           <el-input
-                            v-model="meidaItem.mediaForm.doorType"
+                            v-model="mediaItem.mediaForm.doorType"
                             placeholder="例:消防门"
                           ></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
+                        <el-form-item label="广告限制" prop="adLimit" class="right_form_item">
+                            <el-select v-model="mediaItem.mediaForm.adLimit" multiple collapse-tags placeholder="请选择广告限制"
+                                @change="(value) => changeAdLimit(value, mediaItem)">
+                                <el-option
+                                    v-for="(limit, index) in adLimit"
+                                    :key="index"
+                                    :label="limit.label"
+                                    :value="limit.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                      <el-col :span="6">
                         <el-form-item
                           label="位置类型"
-                          prop="mediaSite"
+                          prop="site"
                         >
                           <el-select
-                            v-model="meidaItem.mediaForm.mediaSite"
+                            v-model="mediaItem.mediaForm.site"
                             placeholder="请选择位置类型"
                             clearable
                           >
@@ -671,10 +684,10 @@
                         <el-form-item
                           label="媒体等级"
                           prop="adDoorLevel"
-                          v-if="pathHaveEdit && meidaItem.classified"
+                          v-if="pathHaveEdit && mediaItem.classified"
                         >
                           <el-select
-                            v-model="meidaItem.mediaForm.adDoorLevel"
+                            v-model="mediaItem.mediaForm.adDoorLevel"
                             placeholder="请选择媒体等级"
                           >
                             <el-option
@@ -698,7 +711,7 @@
                         </el-form-item>
                       </el-col>
                     </el-row>
-                    <el-row :gutter="76" class="from_row" v-for="(adSpaceItem, adSpaceIndex) in meidaItem.mediaForm.adSpaceInfo" :key="adSpaceIndex">
+                    <el-row :gutter="76" class="from_row" v-for="(adSpaceItem, adSpaceIndex) in mediaItem.mediaForm.adSpaceInfo" :key="adSpaceIndex">
                       <el-col :span="6">
                         <el-form-item :label="adSpaceItem.name + '素材尺寸'" required>
                           <div class="form_item_box_son">
@@ -784,6 +797,11 @@
                     </el-row>
                     <el-row :gutter="76" class="from_row">
                       <el-col :span="6">
+                          <el-form-item label="备注" prop="mRemark">
+                              <el-input type="textarea" v-model.trim="mediaItem.mediaForm.mRemark" placeholder="请填写备注信息"></el-input>
+                          </el-form-item>
+                      </el-col>
+                      <el-col :span="6">
                         <el-form-item label="媒体预览图:" prop="mImg">
                           <div class="upload_img_wrap">
                             <el-upload
@@ -791,12 +809,12 @@
                               :action="doUpload"
                               list-type="picture-card"
                               :limit="1"
-                              :file-list="meidaItem.mediaForm.updataImg"
+                              :file-list="mediaItem.mediaForm.updataImg"
                               :before-upload="beforeUpload_ad"
-                              :on-success="(res) => adUploadSuccess(res, meidaItem)"
+                              :on-success="(res) => adUploadSuccess(res, mediaItem)"
                               :on-remove="adHandleRemove"
                               :on-preview="handlePictureCardPreview"
-                              @click.native="saveImgInfo(meidaItem.text)"
+                              @click.native="saveImgInfo(mediaItem.text)"
                             >
                               <i class="el-icon-plus"></i>
                             </el-upload>
@@ -1026,6 +1044,8 @@ export default {
       activeMediaType: "0",
       mediaTypeList: [],
       mediaTypeIdsOfCompany: [],
+      // 广告限制下拉
+      adLimit: [],
       // 判断资源名称是否有重名
       isResError: false,
       // 资源名称重名信息
@@ -1242,21 +1262,6 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        doorType: [
-          {
-            required: true,
-            message: "设备类型不能为空!",
-            trigger: ["blur", "change"],
-          },
-          { validator: validateSpace, trigger: ["blur", "change"] },
-          {
-            required: true,
-            min: 1,
-            max: 20,
-            message: "最多只能输入20个字节!",
-            trigger: ["blur", "change"],
-          },
-        ],
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片
@@ -1302,20 +1307,6 @@ export default {
         ptid: "", // 关联类型对应唯一ID
         ptp: "", // 关联类型区分属性
       },
-      roadGateImg: [
-        // 道闸图片
-        {
-          text: "媒体1",
-          mediaImg: {
-            uid: JSON.parse(sessionStorage.getItem("session_data")).uID,
-            pid: "", // 图片id
-            palt: "", // 图片标题
-            ptype: "", // 关联类型
-            ptid: "", // 关联类型对应唯一ID
-            ptp: "", // 关联类型区分属性
-          },
-        },
-      ],
       liveTime: "", // 资源时间
       doUpload: this.apiVar.qadnUrl + "/advertisement/UpLoad",
       resImg: {
@@ -1494,8 +1485,7 @@ export default {
             let limitObj = { value: limit[i].nTitle, label: limit[i].nTitle };
             limitArr.push(limitObj);
           }
-          // this.adLimit = limitArr;
-          // console.log("广告限制adLimit", this.adLimit);
+          this.adLimit = limitArr;
         } else {
           Message.warning(res.data.MSG);
         }
@@ -1815,6 +1805,16 @@ export default {
       this.recForm.lng = this.searchResData.lat;
       this.mapVisible = false;
     },
+    // 广告限制，当选择为不限时
+    changeAdLimit(val, mediaItem) {
+      console.log('value, mediaItem', val, mediaItem)
+        let valArr = val
+        for (let i = 0; i < valArr.length; i++) {
+            if (valArr[i] === '不限') {
+                mediaItem.mediaForm.adLimit = []
+            }
+        }
+    },
     //新增媒体面板
     mediaAddFun(mediaTypeItem) {
       let tempMediaTypeItem = JSON.parse(JSON.stringify(mediaTypeItem));
@@ -1835,7 +1835,9 @@ export default {
           mImg: "",
           updataImg: [],
           adDoorLevel: "",
-          mediaSite: ""
+          site: "",
+          mRemark: '',
+          adLimit: []
         },
       };
       mediaTypeItem.mediaList.push(tempMedia);
@@ -2223,8 +2225,11 @@ export default {
               mediaTypeId: mediaTypeItem.id,
               assetTag: tempMediaForm.assetId,
               deviceType: tempMediaForm.doorType || "",
+              site: tempMediaForm.site || "",
+              mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
+              notPush: tempMediaForm.adLimit.join('、')
             };
             params.push(obj);
           }
@@ -2233,7 +2238,6 @@ export default {
       this.batchCreateApi(params);
     },
     batchCreateApi(params, editFlag) {
-      console.log("params", params);
       if (params.length) {
         api
           .postApi_json("/addsp/api/v1/media/create/batch", params)
@@ -2338,12 +2342,12 @@ export default {
       return false;
     },
     // 广告门图片上传成功
-    adUploadSuccess(res, meidaItem) {
-      console.log("上传媒体图片", res, meidaItem);
-      if (meidaItem.mediaForm.mImg === "") {
-        meidaItem.mediaForm.mImg = res[0].pURL;
+    adUploadSuccess(res, mediaItem) {
+      console.log("上传媒体图片", res, mediaItem);
+      if (mediaItem.mediaForm.mImg === "") {
+        mediaItem.mediaForm.mImg = res[0].pURL;
       } else {
-        meidaItem.mediaForm.mImg = meidaItem.mediaForm.mImg + ";" + res[0].pURL;
+        mediaItem.mediaForm.mImg = mediaItem.mediaForm.mImg + ";" + res[0].pURL;
       }
     },
     //广告门图片放大
@@ -2618,9 +2622,11 @@ export default {
                 assetId: mediaItem.assetTag || "",
                 doorType: mediaItem.mType || "",
                 adDoorLevel: mediaItem.grade || "",
-                mediaSite: mediaItem.site || "",
+                site: mediaItem.site || "",
+                mRemark: mediaItem.mRemark,
                 mImg: mediaItem.mImg || "",
                 updataImg: [],
+                adLimit: mediaItem.notPush ? mediaItem.notPush.split('、') : []
               };
               if (mediaItem.mImg) {
                 let imgArr = [];
@@ -2865,8 +2871,10 @@ export default {
                 deviceType: tempMediaForm.doorType || "",
                 mediaPicture: tempMediaForm.mImg || "",
                 grade: tempMediaForm.adDoorLevel || "",
-                site: tempMediaForm.mediaSite || "",
+                site: tempMediaForm.site || "",
+                mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
+                notPush: tempMediaForm.adLimit.join('、'),
               };
               editMediaParams.push(obj);
             }
@@ -2913,6 +2921,8 @@ export default {
                 assetTag: tempMediaForm.assetId,
                 deviceType: tempMediaForm.doorType || "",
                 mediaPicture: tempMediaForm.mImg || "",
+                mRemark: tempMediaForm.mRemark || "",
+                site: tempMediaForm.site || "",
                 adSpaceInfo: tempAdSpaceInfo,
               };
               newMediaParams.push(obj);

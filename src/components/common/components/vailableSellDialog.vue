@@ -248,6 +248,10 @@ export default {
 }
 
 .u-targetRadio {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
   margin-bottom: 24px;
   li {
     font-size: 14px;
@@ -310,11 +314,6 @@ export default {
   }
 }
 
-.u-targetRadio {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 /deep/ .el-radio__label {
   display: flex;
   align-items: center;
@@ -325,11 +324,13 @@ export default {
 }
 
 /deep/ .el-radio {
-  width: 69px;
+  // width: 69px;
   display: flex;
   align-items: center;
   margin-bottom: 5px;
   margin-right: 0;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 /deep/ .el-dialog__footer {

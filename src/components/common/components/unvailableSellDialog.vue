@@ -293,7 +293,11 @@ export default {
 }
 
 .u-targetRadio {
+  display: flex;
+  flex-wrap: wrap;
   margin-bottom: 24px;
+  margin-left: -12px;
+  margin-right: -12px;
   /deep/ .el-radio__label {
     font-size: 14px;
     font-family: PingFangSC-Regular, PingFang SC;
@@ -345,11 +349,6 @@ export default {
   }
 }
 
-.u-targetRadio {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 /deep/ .el-radio__label {
   display: flex;
   align-items: center;
@@ -360,11 +359,12 @@ export default {
 }
 
 /deep/ .el-radio {
-  width: 69px;
+  // width: 69px;
   display: flex;
   align-items: center;
   margin-bottom: 5px;
-  margin-right: 0;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 /deep/ .el-dialog__footer {

@@ -442,13 +442,13 @@
           </h4>
         </div>
         <el-table border :data="excelDataUpload" style="width: 100%">
-          <el-table-column prop="resID" label="resID" min-width="55">
-          </el-table-column>
           <el-table-column prop="resName" label="资源名称" min-width="80">
           </el-table-column>
-          <el-table-column prop="city" label="市区" min-width="80">
+          <el-table-column prop="city" label="城市" min-width="80">
           </el-table-column>
-          <el-table-column prop="mtitle" label="媒体名称" min-width="85">
+          <el-table-column prop="area" label="区域" min-width="80">
+          </el-table-column>
+          <el-table-column prop="mTitle" label="媒体名称" min-width="85">
           </el-table-column>
           <el-table-column prop="assetTag" label="资产编号" min-width="85">
           </el-table-column>
@@ -1207,9 +1207,8 @@ export default {
         api.postUpload_file(this.doUpload + '?uid=' + this.sessionData.uID + '&token=' +
           this.sessionData.token + '&asrID=' + this.importAsrID, formData).then(res => {
             console.log('导入媒体', res)
-            if (!res.data.SysCode) {
-              let resData = res.data
-              // this.$message.success('成功导入条数据');
+            if (res.data.SysCode === 200200) {
+              let resData = res.data.data
               if (resData.errorList.length) {
                 console.log('导入失败媒体', resData.errorList)
                 this.setErrorMediaTable(resData.errorList)
@@ -1245,11 +1244,11 @@ export default {
       for (let data of errorList) {
         resultarr.push({
           errorMsg: data.msg,
-          resID: data.resInfo.resID,
           resName: data.resInfo.resName,
-          city: data.resInfo.rid,
-          mtitle: data.resInfo.mtitle,
-          mvehicle: data.resInfo.mvehicle,
+          city: data.resInfo.city,
+          area: data.resInfo.area,
+          mTitle: data.resInfo.mTitle,
+          mVehicle: data.resInfo.mVehicle,
           assetTag: data.resInfo.assetTag
         })
       }
@@ -1263,19 +1262,18 @@ export default {
       for (let data of this.excelDataUpload) {
         let obj = {
           errorMsg: data.errorMsg,
-          resID: data.resID,
           resName: data.resName,
-          rID: data.city,
-          mtitle: data.mtitle,
-          // mvehicle: data.mvehicle,
+          city: data.city,
+          area: data.area,
+          mTitle: data.mTitle,
           assetTag: data.assetTag
         };
         resultarr.push(obj);
       }
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        const tHeader = ['resID', '资源名称', '市区', '媒体名称', '资产编号', '失败信息'];
-        const filterVal = ['resID', 'resName', 'rID', 'mtitle', 'assetTag', 'errorMsg'];
+        const tHeader = ['资源名称', '城市', '区域', '媒体名称', '资产编号', '失败信息'];
+        const filterVal = ['resName', 'city', 'area', 'mTitle', 'assetTag', 'errorMsg'];
         const list = resultarr;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, '问题媒体表');

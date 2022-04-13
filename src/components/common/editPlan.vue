@@ -335,7 +335,7 @@
                                             </div>
                                         </div>
                                         <div v-else>
-                                            {{scope.row.adsList.map(item=>item.asLab).join('、')}}
+                                            {{scope.row.asLabs}}
                                         </div>
                                     </template>
                                 </el-table-column>

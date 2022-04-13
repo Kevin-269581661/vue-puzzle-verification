@@ -750,7 +750,7 @@
                     </div>
                     <div v-else>
                       {{
-                        scope.row.adsList.map((item) => item.asLab).join("、")
+                        scope.row.asLabs
                       }}
                     </div>
                   </template>
@@ -3521,12 +3521,9 @@ export default {
       console.log("搜索排期时间", this.dateInput);
       this.areaName = "全市";
       if (this.selectValue === "被占查询") {
-        // this.loadScroll = false
-        //    this.isOccupied = false     // 被占搜索时隐藏过滤条件
         this.beOccupiedGetList(); // 获取被占列表接口
         this.beOccupiedNumber++;
       } else {
-        // this.loadScroll = true
         this.isOccupied = true; //  || this.dateInput !== this.beforeDate
         if (this.searchInput !== "" && this.dateInput !== null) {
           this.setPageNoAndTableData();
@@ -3540,7 +3537,7 @@ export default {
           this.getAdList();
           this.beforeDate = this.dateInput;
         } else if (!this.dateInput) {
-          sessFun.messageFun("warning", "搜索时间不能为空");
+          sessFun.messageFun('warning', '搜索时间不能为空！');
           this.searchBtnAbled = false;
         } else {
           this.searchBtnAbled = false;
@@ -3603,6 +3600,11 @@ export default {
     },
     //  查询被占点位
     beOccupiedGetList() {
+      if(!(Array.isArray(this.dateInput) && this.dateInput.length === 2)) {
+          sessFun.messageFun('warning', '搜索时间不能为空！');
+          this.searchBtnAbled = false;
+          return;
+      }
       let starTime = this.dateInput[0];
       let endTime = this.dateInput[1];
       let params = {
@@ -5170,9 +5172,8 @@ export default {
         );
       }
     },
-    //行被点击 beOccupiedGetList timeFormat
+    //行被点击
     rowClick(row, event, column) {
-      // console.log('row',row,event,column)
       if (!this.isOccupied) {
         let star = timeFormat.toDate(row.lStar, "/");
         let end = timeFormat.toDate(row.lEnd, "/");

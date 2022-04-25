@@ -657,7 +657,7 @@
                     paginationShow: true,
                     currPage: 1,
                     totalNum: 0,
-                    pageSize: 500,
+                    // pageSize: 500,
                     loading: false,
                     pageSize2: 6 
                 },
@@ -1260,13 +1260,13 @@
             searchPointFormat() {
                 console.log(this.painList, this.activePainIndex, 'point--active--');
                 let {mediaType, city, resName, status, prStatus} = this.searchInfo;
-                let {currPage, pageSize} = this.pageInfo;
+                let {currPage, pageSize2} = this.pageInfo;
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
                     replaceRecordId: this.painList.length ? this.painList[this.activePainIndex].id : '',
                     prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
-                    pageSize: pageSize,
+                    pageSize: pageSize2,
                     mediaTypeId: mediaType
                     // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
                     // ...(city.length && {districtId: city[1]}),

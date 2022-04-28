@@ -364,7 +364,6 @@
             <div class="finishBtn" v-if="active == 3">
                 <el-button type="primary" @click="continueCreate">继续创建</el-button>
                 <el-button type="default" @click="ToDetail">
-                    <!--<router-link to="{path='/orderList'}"></router-link>-->
                     查看方案
                 </el-button>
             </div>

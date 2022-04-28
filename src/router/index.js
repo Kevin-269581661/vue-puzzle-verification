@@ -33,6 +33,7 @@ const publishPriceList = () => import(/* webpackChunkName: "publishPriceList" */
 const createAccount = () => import(/* webpackChunkName: "createAccount" */ '../components/common/createAccount.vue')
 const accountList = () => import(/* webpackChunkName: "accountList" */ '../components/common/accountList.vue')
 const orderList = () => import(/* webpackChunkName: "orderList" */ '../components/common/orderList.vue')
+const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */ '../components/common/countryOrderList.vue')
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 直营销售创建意向方案
 const createPlan = () => import(/* webpackChunkName: "createPlan" */ '../components/common/createPlan.vue')
@@ -277,6 +278,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/planList', component: planList},
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
+                        {path: '/media/countryOrderList', component: countryOrderList},
                         {path: '/media/planDetail', component: planDetail},
                         {path: '/media/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/media/orderDetail', component: orderDetail},

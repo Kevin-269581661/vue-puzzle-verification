@@ -146,24 +146,23 @@
     <el-dialog
       :title="isAdd ? '新建公司' : '编辑公司'"
       :visible.sync="isShowNew"
-      width="30%"
+      width="380px"
+      class="company-dialog"
     >
       <p class="conpany-form-item">
-        <span>公司名称:</span>
+        <span class="conpany-form__label">公司名称：</span>
         <el-input
           v-model.trim="companyInfo.keyword"
           placeholder="请输入"
           size="small"
-          style="max-width: 200px"
         ></el-input>
       </p>
       <p class="conpany-form-item">
-        <span>公司类型:</span>
+        <span class="conpany-form__label">公司类型：</span>
         <el-select
           v-model="companyInfo.type"
           placeholder="请选择"
           size="small"
-          style="max-width: 200px"
         >
           <el-option
             v-for="item of typeArr"
@@ -174,20 +173,35 @@
         </el-select>
       </p>
       <p class="conpany-form-item">
-        <span>媒体类型:</span>
+        <span class="conpany-form__label">媒体类型：</span>
         <el-select
           v-model="companyInfo.mediaTypeIds"
           multiple
           collapse-tags
           placeholder="请选择"
           size="small"
-          style="max-width: 200px"
         >
           <el-option
             v-for="item of mediaTypes"
             :key="item.id"
             :label="item.name"
             :value="item.id"
+          ></el-option>
+        </el-select>
+      </p>
+      <p class="conpany-form-item">
+        <span class="conpany-form__label">公司属性：</span>
+        <el-select
+          v-model="companyInfo.systemEnableStatus"
+          collapse-tags
+          placeholder="系统开通状态"
+          size="small"
+        >
+          <el-option
+            v-for="item of systemEnableOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           ></el-option>
         </el-select>
       </p>
@@ -261,6 +275,17 @@ export default {
       ],
       // 所有媒体类型
       mediaTypes: [],
+      // 系统是否开通
+      systemEnableOptions: [
+        {
+          label: '已开通',
+          value: '已开通'
+        },
+        {
+          label: '未开通',
+          value: '未开通'
+        }
+      ],
       // 表格数据
       companyList: [],
       // 新增公司信息
@@ -268,6 +293,7 @@ export default {
         keyword: "",
         type: 1,
         mediaTypeIds: [],
+        systemEnableStatus: ''
       },
       isShowNew: false,
       // 是否可新建公司
@@ -411,7 +437,8 @@ export default {
       this.companyInfo = {
         keyword: "",
         type: 1,
-        mediaTypeIds: []
+        mediaTypeIds: [],
+        systemEnableStatus: ''
       };
       this.isAdd = true;
       this.isShowNew = true;
@@ -586,7 +613,22 @@ a {
 /deep/.name_row .el-input {
   width: calc(98% - 60px);
 }
+.company-dialog {
+  /deep/ .el-dialog__body {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
 .conpany-form-item {
+  display: flex;
+  flex-flow: row nowrap;
+  .el-select {
+    width: 100%;
+  }
+  .conpany-form__label {
+    white-space: nowrap;
+    line-height: 32px;
+  }
   & + .conpany-form-item {
     margin-top: 20px;
   }

@@ -35,6 +35,8 @@ const accountList = () => import(/* webpackChunkName: "accountList" */ '../compo
 const orderList = () => import(/* webpackChunkName: "orderList" */ '../components/common/orderList.vue')
 const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */ '../components/common/countryOrderList.vue')
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
+// 创建非系统全国单
+const createOrder = () => import(/* webpackChunkName: "createOrder" */ '../components/common/createOrder.vue')
 // 直营销售创建意向方案
 const createPlan = () => import(/* webpackChunkName: "createPlan" */ '../components/common/createPlan.vue')
 // 加盟销售和媒介或直营媒介创建方案（保持原逻辑）
@@ -48,6 +50,7 @@ const editEmptyPointPlan = () => import(/* webpackChunkName: "editEmptyPointPlan
 const planDetail = () => import(/* webpackChunkName: "planDetail" */ '../components/common/planDetail.vue')
 const planEmptyPointDetail = () => import(/* webpackChunkName: "planEmptyPointDetail" */ '../components/common/planEmptyPointDetail.vue')
 const orderDetail = () => import(/* webpackChunkName: "orderDetail" */ '../components/common/orderDetail.vue')
+const countryOrderDetail = () => import(/* webpackChunkName: "countryOrderDetail" */ '../components/common/countryOrderDetail.vue')
 const photoGallery = () => import(/* webpackChunkName: "photoGallery" */ '../components/common/photoGallery.vue')
 const advertTV = () => import(/* webpackChunkName: "advertTV" */ '../components/common/advertTV.vue')
 const tvOrderList = () => import(/* webpackChunkName: "tvOrderList" */ '../components/common/tvOrderList.vue')
@@ -246,6 +249,65 @@ function addRoutes(role, proposal, retain) {
                 }]
             break;
         case 'ADN_MD_COUNTRY':
+            //媒介
+            let tempMDp = null
+            if(proposal) {
+                // 直营媒介
+                tempMD = [
+                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}},
+                    {path: '/media/editPlan', component: editPlan, meta:{title: '编辑方案'}},
+                    {path: '/media/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
+                ]
+            } else {
+                // 加盟媒介和直营媒介
+                tempMD = [
+                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}}
+                ]
+            }
+            roleRoutes = [
+                {
+                    path: '/',
+                    component: mediaCommon,
+                    children: [
+                        ...tempMD,
+                        {path: '/media', component: mediaIndex},
+                        {path: '/media/mediaList', component: mediaList},
+                        {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                        {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
+                        {path: '/media/mediaDetail', component: mediaDetail},
+                        {path: '/media/planList', component: planList},
+                        {path: '/media/publishPriceList', component: publishPriceList},
+                        {path: '/media/orderList', component: orderList},
+                        {path: '/media/createOrder', component: createOrder},
+                        {path: '/media/countryOrderList', component: countryOrderList},
+                        {path: '/media/planDetail', component: planDetail},
+                        {path: '/media/planEmptyPointDetail', component: planEmptyPointDetail},
+                        {path: '/media/orderDetail', component: orderDetail},
+                        {path: '/media/countryOrderDetail', component: countryOrderDetail},
+                        {path: '/media/photoGallery', component: photoGallery},
+                        {path: '/media/changePwd', component: changePwd},
+                        {path: '/media/questionAndAnswer', component: questionAndAnswer},
+                        {path: '/media/advertTV', component: advertTV},
+                        {path: '/media/tvOrderList', component: tvOrderList},
+                        {path: '/media/tvOrderDetail', component: tvOrderDetail},
+                        {path: '/media/maintainList', component: maintainList},
+                        {path: '/media/myInfo', component: myInfo},
+                        {path: '/media/compact', component: compact},
+                        {path: '/media/paintedPath', component: paintedPath},
+                        {path: '/media/adsDialPlate', component: adsDialPlate},
+                        {path: '/media/projectList', component: projectList},
+                        {path: '/media/projectDetail', component: projectDetail},
+                        {path: '/media/paintedCount', component: paintedCount},
+                        {path: '/media/messageList', component: messageList},
+                        {path: '/media/communityPortrait',component: communityPortrait},
+                        {path: '/media/communityRank',component: communityRank},
+                        {path: '/media/portraitDetail',component: portraitDetail},
+                    ]
+                }
+            ]
+            break;
         case 'ADN_MD':
             //媒介
             let tempMD = null
@@ -288,7 +350,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/advertTV', component: advertTV},
                         {path: '/media/tvOrderList', component: tvOrderList},
                         {path: '/media/tvOrderDetail', component: tvOrderDetail},
-                        // {path: '/media/mapMessage', component: mapMessage},
                         {path: '/media/maintainList', component: maintainList},
                         {path: '/media/myInfo', component: myInfo},
                         {path: '/media/compact', component: compact},

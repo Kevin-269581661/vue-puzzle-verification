@@ -97,23 +97,9 @@
               ></el-option>
             </el-select>
           </el-col>
-          <!-- <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-            <span class="search_label">订单状态：</span>
-            <el-select
-              v-model="searchInfo.status"
-              placeholder="请选择状态"
-              size="small"
-            >
-              <el-option
-                v-for="item of stateList"
-                :key="item.value"
-                :label="item.text"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col> -->
-          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+          <!-- <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6"> -->
             <el-button
+              style="margin-left: 18px"
               type="primary"
               icon="el-icon-search"
               @click="search()"
@@ -126,7 +112,12 @@
               :disabled="!isReset"
               >重置
             </el-button>
-          </el-col>
+            <el-button
+              plain
+              @click="navigateCreate()"
+              >新建
+            </el-button>
+          <!-- </el-col> -->
         </el-row>
         <div class="table_wrap">
           <el-table
@@ -790,20 +781,14 @@ export default {
     },
     // 跳转到详情页面
     ToDetail(row) {
-      if (this.role == "AD") {
-        sessionStorage.setItem("ADorder_apid", row.apID);
-        sessionStorage.setItem("ADorder_apSrc", row.apSrc);
-        this.$router.push("./ADorderDetail");
-      } else {
-        sessionStorage.setItem("change_point", "no");
+      sessionStorage.setItem("change_point", "no");
         sessionStorage.setItem(
           "order_citylist",
           JSON.stringify(row.companyList)
         );
         sessionStorage.setItem("order_apid", row.apID);
         sessionStorage.setItem("order_apSrc", row.apSrc);
-        this.$router.push("./orderDetail");
-      }
+        this.$router.push("./countryOrderDetail");
     },
     // 更换点位
     changePoint(row) {
@@ -1031,6 +1016,10 @@ export default {
         type: "warning",
       });
       this.$router.push("/login");
+    },
+    // 跳转到新建全国单页面
+    navigateCreate() {
+      this.$router.push("./createPlan");
     },
     // 重置
     reset() {

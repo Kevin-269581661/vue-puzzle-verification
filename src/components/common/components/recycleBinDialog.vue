@@ -33,7 +33,6 @@
     <!--分页-->
     <div class="pagination clearfix">
       <el-pagination
-        class="fr"
         :total="total"
         :page-size="searchParams.pageSize"
         :current-page.sync="searchParams.start"

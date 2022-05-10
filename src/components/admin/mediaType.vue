@@ -265,7 +265,6 @@
             <!--分页-->
             <div class="pagination clearfix">
             <el-pagination
-                class="fr"
                 @size-change="handleSizeChange" 
                 @current-change="handleCurrentChange"
                 :current-page="searchParams.pageNum"

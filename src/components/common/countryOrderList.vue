@@ -1019,7 +1019,7 @@ export default {
     },
     // 跳转到新建全国单页面
     navigateCreate() {
-      this.$router.push("./createPlan");
+      this.$router.push("./createOrder");
     },
     // 重置
     reset() {

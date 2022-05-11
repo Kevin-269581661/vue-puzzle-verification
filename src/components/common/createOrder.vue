@@ -757,7 +757,7 @@ export default {
     },
     // 第一步的取消按钮
     clearData () {
-      this.$router.push("./planList");
+      this.$router.push("./countryOrderList");
     },
     // 获取城市中文名称
     getCityName (rid) {

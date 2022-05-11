@@ -15,6 +15,7 @@
                 </div>
             </el-menu-item>
             <el-menu-item index="/media">首页</el-menu-item>
+            <el-menu-item index="/media/workplace">工作台</el-menu-item>
 
             <el-submenu index="6" :show-timeout="80" popper-class="submenu">
                 <template slot="title">媒体管理</template>

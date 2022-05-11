@@ -82,6 +82,7 @@ const operateCommon = () => import(/* webpackChunkName: "operateCommon" */ '../c
 //媒介
 const mediaIndex = () => import(/* webpackChunkName: "mediaIndex" */  '../components/media/media_index.vue')
 const mediaCommon = () => import(/* webpackChunkName: "mediaCommon" */  '../components/media/mediaCommon.vue')
+const mediaWorkplace = () => import(/* webpackChunkName: "mediaWorkplace" */  '../components/media/mediaWorkplace.vue')
 const projectList = () => import(/* webpackChunkName: "projectList" */  '../components/common/projectList.vue')
 const projectDetail = () => import(/* webpackChunkName: "projectDetail" */  '../components/common/projectDetail.vue')
 const paintedCount = () => import(/* webpackChunkName: "paintedCount" */  '../components/common/paintedCount.vue')
@@ -270,6 +271,7 @@ function addRoutes(role, proposal, retain) {
                     children: [
                         ...tempMD,
                         {path: '/media', component: mediaIndex},
+                        {path: '/media/workplace', component: mediaWorkplace},
                         {path: '/media/mediaList', component: mediaList},
                         {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
                         {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},

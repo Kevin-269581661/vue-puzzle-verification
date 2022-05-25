@@ -2,7 +2,7 @@
   <el-dialog
     width="368px"
     custom-class="divide-media-dialog"
-    :visible.sync="divideMediaDialogVisible"
+    :visible.sync="dialogVisible"
     :show-close="false"
     :close-on-click-modal="false"
     :close-on-press-escap="false"
@@ -117,22 +117,26 @@
 </template>
 
 <script>
-// 价格格式化
 import api from "../../../api/api.js";
 export default {
-  name: "divideMediaDialog",
+  name: "DivideMediaDialog",
   props: {
     mediasOfRes: {
       type: Array,
       default: () => [],
     },
-    divideMediaDialogVisible: {
+    dialogVisible: {
       type: Boolean,
       default: () => false,
     },
     resName: {
       type: String,
       default: "",
+    },
+    resID: {
+      type: [Number, String],
+      required: true,
+      default: -1,
     },
     rid: {
       type: [String, Number],
@@ -207,14 +211,14 @@ export default {
     async isHaveCommenName(rule, value, callback) {
       const sameResNameCount = this.divideMediaForm.divideResArr.reduce(
         (count, item) => {
-          if(value === item.resName) {
+          if (value === item.resName) {
             count += 1;
           }
           return count;
         },
         0
       );
-      if(sameResNameCount > 1) {
+      if (sameResNameCount > 1) {
         callback(new Error("小区名称不能重复哦～"));
         return;
       }
@@ -232,45 +236,42 @@ export default {
         if (res.data.SysCode == 200200) {
           let resData = res.data.data;
           if (resData.length) {
-            let isResError = false;
-            for (let key of resData) {
-              if (key.resId != this.resID) {
-                isResError = true;
-                break;
-              }
-            }
-            if (isResError) {
-              callback(new Error("该小区名称已存在！"));
-            } else {
-              callback();
-            }
+            callback(new Error("该小区名称已存在！"));
           } else {
             callback();
           }
         } else {
-          this.$message.warning(res.data.MSG);
+          this.$message.warning(res.data.MSG || "小区查询失败！");
         }
       });
     },
     postDivideData() {
-      return;
       let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
+        originResID: this.resID,
+        resDivideInfos: this.divideMediaForm.divideResArr.map((item, index) => {
+          const { resName, value: mediaIDs } = item;
+          const groupItem = {
+            mediaIDs,
+            resName,
+          };
+          if (index === 0) {
+            groupItem.resID = this.resID;
+          }
+          return groupItem;
+        }),
       };
-      api.postApi("/addsp/proposal/updatePlanMoney", params).then((res) => {
+      api.postApi_json("/addsp/api/v1/resInfo/divide", params).then((res) => {
         if (res.data.SysCode === 200200) {
-          // this.$emit("update:divideMediaDialogVisible", false);
           this.cancelDialog();
-          this.$emit("planMoneyUpdated");
+          this.$emit("refreshDetail");
           this.$message({
             type: "success",
-            message: "金额设置成功！",
+            message: res.data.MSG || "小区拆分成功！",
           });
         } else {
           this.$message({
             type: "warning",
-            message: "金额设置失败！",
+            message: res.data.MSG || "小区拆分失败！",
           });
         }
       });
@@ -278,7 +279,11 @@ export default {
     cancelDialog() {
       if (this.$refs.divideMediaForm) {
         this.$refs.divideMediaForm.resetFields();
-        this.$emit("update:divideMediaDialogVisible", false);
+        this.currentStep = 1;
+        this.divideMediaForm.divideResCount = 0;
+        this.divideMediaForm.divideResArr.length = 0;
+        this.mediasOfResChange();
+        this.$emit("update:dialogVisible", false);
       }
     },
     changeStep(nextStep) {

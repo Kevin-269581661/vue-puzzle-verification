@@ -1,75 +1,94 @@
 <template>
-  <el-card class="workplace-card">
-    <div slot="header" class="workplace-card__header">
-      <span>媒体登记</span>
-      <el-input
-        style="float: right; width: 240px; padding: 3px 0"
-        v-model="search"
-        size="mini"
-        placeholder="输入关键字搜索"
-      >
-        <el-button slot="append" icon="el-icon-search"></el-button>
-      </el-input>
-    </div>
-    <table style="width: 100%">
-      <tbody>
-        <tr
-          v-for="(trItem, trIndex) in tableData"
-          :key="trIndex"
-          class="table-tr"
+  <div>
+    <el-card class="workplace-card">
+      <div slot="header" class="workplace-card__header">
+        <span>媒体登记</span>
+        <el-input
+          style="float: right; width: 240px; padding: 3px 0"
+          v-model="search"
+          size="mini"
+          placeholder="输入关键字搜索"
         >
-          <td
-            v-for="(tdValue, tdKey, tdIndex) in trItem"
-            :key="tdIndex"
-            class="table-td"
+          <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+      </div>
+      <table style="width: 100%">
+        <tbody>
+          <tr
+            v-for="(trItem, trIndex) in tableData"
+            :key="trIndex"
+            class="table-tr"
           >
-            {{ tdValue }}
-          </td>
-          <td class="operate-text">处理</td>
-        </tr>
-      </tbody>
-    </table>
-    <el-pagination
-      background
-      @size-change="sizeChange"
-      @current-change="changePage"
-      :hide-on-single-page="true"
-      :current-page.sync="currentPage"
-      :page-sizes="pageSizes"
-      :page-size.sync="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="paginationTotal"
-    >
-    </el-pagination>
-  </el-card>
+            <td class="table-td" style="width: 60px;">
+              <div class="font-base font-bold" style="font-size: 16px">
+                {{ trItem.projectName || "--" }}
+              </div>
+              <div class="font-base">
+                {{ `${trItem.mediaTitle || "--"}·${trItem.assetTag}` }}
+              </div>
+            </td>
+            <td class="table-td" style="width: 60px;">
+              <div class="font-base">媒体类型</div>
+              <div class="font-base font-bold">
+                {{ `${trItem.mediaTypeName || "--"}` }}
+              </div>
+            </td>
+            <td class="table-td" style="width: 60px;">
+              <div class="font-base">登记类型</div>
+              <div class="font-base font-bold">
+                {{ trItem.registerTypeName || "--" }}
+              </div>
+            </td>
+            <td class="table-td" style="width: 60px;">
+              <div class="font-base">合同编号</div>
+              <div class="font-base font-bold">
+                {{ trItem.contractCode || "--" }}
+              </div>
+            </td>
+            <td class="table-td">
+              <div class="font-base">更新时间</div>
+              <div class="font-base font-bold">
+                {{ trItem.updateTime || "--" }}
+              </div>
+            </td>
+            <td class="operate-text" @click="dealRegister(trItem)">处理</td>
+          </tr>
+        </tbody>
+      </table>
+      <el-pagination
+        background
+        @size-change="sizeChange"
+        @current-change="changePage"
+        :hide-on-single-page="false"
+        :current-page.sync="currentPage"
+        :page-sizes="pageSizes"
+        :page-size.sync="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="paginationTotal"
+        style='margin-top: 14px; text-align: right;'
+      >
+      </el-pagination>
+    </el-card>
+    <Registration-Media
+      :dialogVisible.sync="registrationMediaVisible"
+      :registrationData="currentRegistration"
+    ></Registration-Media>
+  </div>
 </template>
 
 <script>
+import api from "../../api/api.js";
+import RegistrationMedia from "../../components/media/components/RegistrationMedia.vue";
 export default {
+  name: "mediaWorkplace",
+  components: {
+    RegistrationMedia,
+  },
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      registrationMediaVisible: false,
+      currentRegistration: {},
+      tableData: [],
       search: "",
       pageSizes: [10, 20, 30],
       pageSize: 10,
@@ -84,37 +103,88 @@ export default {
     handleDelete(index, row) {
       console.log(index, row);
     },
+    // 获取待登记列表
+    getRegistrationList() {
+      api
+        .getApi("/addsp/api/v1/register/page", {
+          keyword: "",
+          pageNum: this.currentPage,
+          pageSize: this.pageSize,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            const resData = res.data.data;
+            this.tableData = resData.list || [];
+            console.log("this.tableData", this.tableData);
+            this.paginationTotal = resData.total || 0;
+          } else {
+            this.$message({
+              type: "warning",
+              message: res.data.MSG || "媒体登记列表获取异常！",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     sizeChange(val) {
-      console.log("val----", val);
       this.pageSize = val;
       this.currentPage = 1;
-      // this.searchFun();
+      this.getRegistrationList();
     },
     changePage(page) {
       this.currentPage = page;
-      console.log("page----", page);
-      // this.searchFun();
+      this.getRegistrationList();
     },
+    // 点击处理
+    dealRegister(rowData) {
+      this.registrationMediaVisible = true;
+      this.currentRegistration = rowData;
+    }
+  },
+  mounted() {
+    this.getRegistrationList();
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.font-base {
+  font-style: normal;
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  mix-blend-mode: normal;
+  opacity: 0.45;
+}
+.font-bold {
+  font-weight: 600;
+  opacity: 0.85;
+}
 .workplace-card {
   margin: 24px 64px;
   .workplace-card__header {
   }
   .table-tr {
     display: flex;
-    border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
+    align-items: center;
+    margin: 0 0 0 -12px;
+    // & + .table-tr {
+      border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
+    // }
     .table-td {
       flex-grow: 1;
-      padding: 10px 0;
+      padding: 10px 12px;
+      overflow-x: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .operate-text {
       font-size: 14px;
       line-height: 22px;
       color: #1890ff;
+      cursor: pointer;
     }
   }
 }

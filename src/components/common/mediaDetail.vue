@@ -503,12 +503,13 @@
       </div>
     </el-dialog>
     <DivideMediaDialog
-      :divideMediaDialogVisible.sync="divideMediaDialogVisible"
+      :dialogVisible.sync="divideMediaDialogVisible"
       :mediasOfRes="mediasOfRes"
       :resID="resData.resID"
       :resName="resData.resName || ''"
       :cityId="resData.cityId"
       :rid="resData.rid"
+      @refreshDetail="getDataFun"
     ></DivideMediaDialog>
   </div>
 </template>
@@ -516,7 +517,7 @@
 <script>
 import api from "../../api/api";
 import sessFun from "../../commonFun/sessFun.js";
-import DivideMediaDialog from "./components/divideMediaDialog.vue";
+import DivideMediaDialog from "../../components/media/components/DivideMediaDialog.vue";
 export default {
   name: "mediaDetail",
   components: {

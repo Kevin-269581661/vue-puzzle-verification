@@ -51,20 +51,22 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      let formData = new FormData();
-      formData.append("type", this.exportType);
       api
-        .postExportFile("/addsp/api/v1/excel/export/exportAds", formData)
+        .getApi_file("/addsp/api/v1/excel/export/exportAds", {
+          type: this.exportType,
+        })
         .then((res) => {
-          if (res.data.SysCode === 200200) {
+          if (res.data && res.data.SysCode) {
+            this.messageFun("warning", res.data.MSG || "导出失败！");
+          } else if (res.data) {
             let blob = new Blob([res.data], {
-              type: "application/ms-download;charset=utf-8",
+              type: "application/vnd.ms-excel;charset=utf-8",
             });
             let downloadElement = document.createElement("a");
             let href = window.URL.createObjectURL(blob); //创建下载的链接
             downloadElement.href = href;
             downloadElement.download =
-              "总点导出-" +
+              `总点导出-${this.exportType === 1 ? "按面" : "按媒体"}` +
               new Date().getFullYear() +
               (new Date().getMonth() + 1) +
               new Date().getDate() +
@@ -76,31 +78,14 @@ export default {
             downloadElement.click(); //点击下载
             document.body.removeChild(downloadElement); //下载完成移除元素
             window.URL.revokeObjectURL(href); //释放掉blob对象
+            this.cancelDown();
           } else {
-            this.messageFun("warning", res.data.MSG || "导出失败！");
+            this.messageFun("warning", "导出失败！");
           }
         })
         .finally(() => {
           loadingPoint.close();
         });
-      /* api
-        .getApi(this.apiVar.Advertisement + "/addsp/api/v1/excel/export/exportAds", {
-        .postApi(
-          "192.168.1.176:8026" + "/addsp/api/v1/excel/export/exportAds",
-          {
-            type: this.exportType,
-          }
-        )
-        .then((response) => {
-          if (response.data.SysCode == 200200) {
-          } else {
-            this.messageFun("warning", "导出失败！");
-          }
-        })
-        .catch((error) => {})
-        .finally(() => {
-          loadingPoint.close();
-        }); */
     },
 
     // 操作提示统一方法

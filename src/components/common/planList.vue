@@ -195,7 +195,10 @@
                     </template>
                     <el-dropdown-item
                       plain
-                      v-if="showExportBtns.includes(8)"
+                      v-if="
+                        ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
+                        showExportBtns.includes(8)
+                      "
                       @click.native.prevent="allPointExportVisible = true"
                       >总点导出</el-dropdown-item
                     >
@@ -1144,9 +1147,9 @@ export default {
         ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType);
       if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
         this.isDisable = false;
-        if (this.sessionData.uType == "ADN_MD") {
-          this.isNation = false;
-        }
+      }
+      if (["ADN_BD", "ADN_MD"].includes(role)) {
+        this.isNation = false;
       }
       if (["ADN_BD_KA", "ADN_BD"].includes(role)) {
         this.isSale = true;
@@ -1157,11 +1160,8 @@ export default {
       ) {
         this.showNewBtn = false;
       }
-      if (["ADN_BD_KA", "ADN_BD"].includes(role) || role == "ADN_SM") {
+      if (["ADN_BD_KA", "ADN_BD", "ADN_SM"].includes(role)) {
         this.isDisable = true;
-      }
-      if (role == "ADN_BD") {
-        this.isNation = false;
       }
     },
     // 状态转换成文本

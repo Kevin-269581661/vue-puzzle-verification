@@ -5,11 +5,15 @@
         <span>媒体登记</span>
         <el-input
           style="float: right; width: 240px; padding: 3px 0"
-          v-model="search"
+          v-model="searchKeyword"
           size="mini"
           placeholder="输入关键字搜索"
+          @change="getRegistrationList"
         >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+          ></el-button>
         </el-input>
       </div>
       <table style="width: 100%">
@@ -19,7 +23,7 @@
             :key="trIndex"
             class="table-tr"
           >
-            <td class="table-td" style="width: 60px;">
+            <td class="table-td" style="width: 60px">
               <div class="font-base font-bold" style="font-size: 16px">
                 {{ trItem.projectName || "--" }}
               </div>
@@ -27,19 +31,19 @@
                 {{ `${trItem.mediaTitle || "--"}·${trItem.assetTag}` }}
               </div>
             </td>
-            <td class="table-td" style="width: 60px;">
+            <td class="table-td" style="width: 60px">
               <div class="font-base">媒体类型</div>
               <div class="font-base font-bold">
                 {{ `${trItem.mediaTypeName || "--"}` }}
               </div>
             </td>
-            <td class="table-td" style="width: 60px;">
+            <td class="table-td" style="width: 60px">
               <div class="font-base">登记类型</div>
               <div class="font-base font-bold">
                 {{ trItem.registerTypeName || "--" }}
               </div>
             </td>
-            <td class="table-td" style="width: 60px;">
+            <td class="table-td" style="width: 60px">
               <div class="font-base">合同编号</div>
               <div class="font-base font-bold">
                 {{ trItem.contractCode || "--" }}
@@ -65,13 +69,14 @@
         :page-size.sync="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="paginationTotal"
-        style='margin-top: 14px; text-align: right;'
+        style="margin-top: 14px; text-align: right"
       >
       </el-pagination>
     </el-card>
     <Registration-Media
       :dialogVisible.sync="registrationMediaVisible"
       :registrationData="currentRegistration"
+      @refreshWorkplace="getRegistrationList"
     ></Registration-Media>
   </div>
 </template>
@@ -89,11 +94,11 @@ export default {
       registrationMediaVisible: false,
       currentRegistration: {},
       tableData: [],
-      search: "",
       pageSizes: [10, 20, 30],
       pageSize: 10,
       currentPage: 1,
       paginationTotal: 0,
+      searchKeyword: "",
     };
   },
   methods: {
@@ -107,7 +112,7 @@ export default {
     getRegistrationList() {
       api
         .getApi("/addsp/api/v1/register/page", {
-          keyword: "",
+          keyword: this.searchKeyword || "",
           pageNum: this.currentPage,
           pageSize: this.pageSize,
         })
@@ -115,7 +120,6 @@ export default {
           if (res.data.SysCode === 200200) {
             const resData = res.data.data;
             this.tableData = resData.list || [];
-            console.log("this.tableData", this.tableData);
             this.paginationTotal = resData.total || 0;
           } else {
             this.$message({
@@ -141,7 +145,7 @@ export default {
     dealRegister(rowData) {
       this.registrationMediaVisible = true;
       this.currentRegistration = rowData;
-    }
+    },
   },
   mounted() {
     this.getRegistrationList();
@@ -165,13 +169,16 @@ export default {
 .workplace-card {
   margin: 24px 64px;
   .workplace-card__header {
+    /deep/ .el-input-group__append {
+      padding: 0;
+    }
   }
   .table-tr {
     display: flex;
     align-items: center;
     margin: 0 0 0 -12px;
     // & + .table-tr {
-      border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
+    border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
     // }
     .table-td {
       flex-grow: 1;

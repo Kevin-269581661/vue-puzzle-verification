@@ -188,11 +188,17 @@
                       >
                       <el-dropdown-item
                         plain
+                        v-if="showExportBtns.includes(6)"
                         @click.native.prevent="exportRes"
-                        v-if="isShowExportBtn"
                         >门店导点</el-dropdown-item
                       >
                     </template>
+                    <el-dropdown-item
+                      plain
+                      v-if="showExportBtns.includes(8)"
+                      @click.native.prevent="allPointExportVisible = true"
+                      >总点导出</el-dropdown-item
+                    >
                     <el-dropdown-item
                       plain
                       @click.native.prevent="openRecycleBin"
@@ -606,6 +612,12 @@
         @cancelClick="isOpenDownload = false"
       ></download-vacancy>
     </el-dialog>
+    <!-- 总点导出 -->
+    <el-dialog title="总点导出" :visible.sync="allPointExportVisible" width="300px">
+      <All-Point-Export
+        @cancelClick="allPointExportVisible = false"
+      ></All-Point-Export>
+    </el-dialog>
 
     <!--发布方案-->
     <el-dialog
@@ -810,6 +822,7 @@ import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan"
 import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
+import AllPointExport from "../../components/common/components/allPointExport.vue"
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from './components/pointState.vue';
 
@@ -824,8 +837,9 @@ export default {
     downloadVacancy,
     noSearchResult,
     pointState,
-    recycleBinDialog
-  },
+    recycleBinDialog,
+    AllPointExport
+},
   data () {
     return {
       // 搜索数据
@@ -871,7 +885,7 @@ export default {
       role: "",
       //   判断是否有发布，预锁解锁等功能
       isDisable: true,
-      isShowExportBtn: false, //资源导出按钮
+      showExportBtns: [], // 导出按钮type
       //加载中
       loading: true,
       currentItem: {},
@@ -910,6 +924,8 @@ export default {
       continueEditLoading: '',
       // 空位导出
       isOpenDownload: false,
+      // 总点导出弹框显示
+      allPointExportVisible: false,
       // 判断是否为全国媒介
       isNation: true,
       isSale: false,//销售权限
@@ -959,9 +975,9 @@ export default {
   methods: {
     // 导出周边资源
     getCustomConfig () {
-      api.getApi('/advertisement/GetCustomConfig', { type: 6 }).then(res => {
-        if (res.data.SysCode == 200200) {
-          this.isShowExportBtn = Array.isArray(res.data.data) && !!(res.data.data.length);
+      api.getApi('/advertisement/GetCustomConfig').then(res => {
+        if (res.data.SysCode == 200200 && Array.isArray(res.data.data)) {
+          this.showExportBtns = res.data.data.map(item => item.type);
         }
       }).catch(err => {
         console.log("导出周边资源--", err);
@@ -989,7 +1005,6 @@ export default {
       };
       if (sess.ascType == 0) {
         api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res => {
-          console.log(res);
           if (!res.data.SysCode) {
             let result = [];
             for (let data of res.data) {
@@ -1010,7 +1025,6 @@ export default {
         });
       } else {
         api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res => {
-          console.log(res);
           if (!res.data.SysCode) {
             let result = [];
             for (let data of res.data) {
@@ -1067,7 +1081,6 @@ export default {
         tmpObj = this.setTableData(data);
         result.push(tmpObj);
       }
-      console.log('result: ', result);
       return result;
     },
     // 获取session数据
@@ -1438,7 +1451,6 @@ export default {
           }
         })
         .catch(res => {
-          console.log(res);
           this.Ctrlloading.close();
         });
     },

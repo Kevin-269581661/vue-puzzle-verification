@@ -2,7 +2,7 @@
   <div class="ad_mediaDetail_wrap clearfix">
     <div class="ad_mediaDetail_nav">
       <p>
-        <a href="#" style="color: #999">订单管理</a>
+        <a href="#" style="color: #999">非系统全国单</a>
       </p>
     </div>
     <div class="mediaList_wrap">
@@ -674,21 +674,18 @@ export default {
     // 滚动加载获取数据(无搜索数据)
     getData(params) {
       api
-        .postApi(this.apiVar.Advertisement + "/GetOrderList", params)
+        .getApi('/national/api/v1/nationalAdPlan/pageList', params)
         .then((res) => {
-          console.log(res.data);
-          if (!res.data.SysCode) {
-            let dataInfo = res.data;
-            this.totalNum = dataInfo.totalCount;
-            let dataArr = dataInfo.orderList;
+          if(res.data.SysCode === 200200) {
+            let dataInfo = res.data.data || [];
+            this.totalNum = dataInfo.total;
+            let dataArr = dataInfo.list;
             this.currentOrder = this.funcData(dataArr);
-            this.loading = false;
-            if (dataInfo.totalPage == 0) {
-              Message.warning("暂无数据");
-            }
           } else {
             Message.warning(res.data.MSG);
           }
+        }).finally(() => {
+          this.loading = false;
         });
     },
     // 数据处理
@@ -781,19 +778,19 @@ export default {
     },
     // 跳转到详情页面
     ToDetail(row) {
-      sessionStorage.setItem("change_point", "no");
+      sessionStorage.setItem("change_point_country", "no");
         sessionStorage.setItem(
           "order_citylist",
           JSON.stringify(row.companyList)
         );
-        sessionStorage.setItem("order_apid", row.apID);
+        sessionStorage.setItem("country_order_apid", row.apID);
         sessionStorage.setItem("order_apSrc", row.apSrc);
         this.$router.push("./countryOrderDetail");
     },
     // 更换点位
     changePoint(row) {
-      sessionStorage.setItem("change_point", "yes");
-      sessionStorage.setItem("order_apid", row.apID);
+      sessionStorage.setItem("change_point_country", "yes");
+      sessionStorage.setItem("country_order_apid", row.apID);
       sessionStorage.setItem("order_citylist", JSON.stringify(row.companyList));
       this.$router.push("./orderDetail");
     },

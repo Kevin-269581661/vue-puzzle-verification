@@ -1,7 +1,7 @@
 <template>
   <div class="ad_mediaMana_wrap createPlan">
     <div class="ad_mediaMana_nav clearfix">
-      <p><a href="#">方案管理</a><em> / </em><a href="#">创建方案</a></p>
+      <p><a href="#">非系统全国单</a><em> / </em><a href="#">创建订单</a></p>
     </div>
     <div class="mediaMana_content_top">
       <div class="content_top_wrap">
@@ -16,10 +16,10 @@
               label-width="100px"
               class="demo-ruleForm"
             >
-              <el-form-item label="方案名称：" prop="planName">
+              <el-form-item label="订单名称：" prop="planName">
                 <el-input
                   v-model="planForm.planName"
-                  placeholder="请输入方案名称"
+                  placeholder="请输入订单名称"
                 ></el-input>
               </el-form-item>
               <el-form-item label="所属销售：" prop="ownerSales">
@@ -113,7 +113,7 @@
               </el-form-item>
               <el-form-item
                 v-if="BDData.uType == 'ADN_BD_KA'"
-                label="归属公司："
+                label="投放公司："
                 prop="pointOfAsrIDs"
                 ref="planPointOfAsrIDs"
               >
@@ -172,7 +172,7 @@
             </div>
             <div class="planPanel noShareUl">
               <ul>
-                <li><em>方案名称：</em>{{ planForm.planName }}</li>
+                <li><em>订单名称：</em>{{ planForm.planName }}</li>
                 <li><em>所属客户：</em>{{ cName || cacheCName || '--' }}</li>
                 <li><em>所属品牌：</em>{{ cBand || cacheBTitle || '--' }}</li>
               </ul>
@@ -194,10 +194,10 @@
       </el-button>
       <div class="finishBtn" v-if="active == 2">
         <el-button @click="downLoadFanan()" type="default" class="urlBtn"
-          >导出方案</el-button
+          >导出订单</el-button
         >
         <el-button type="primary" @click="toDetail">
-          查看方案
+          查看订单
         </el-button>
       </div>
     </div>
@@ -245,31 +245,27 @@
       </span>
     </el-dialog> -->
     <!-- 导入表格组件 -->
-    <import-village-by-excel
-      ref="importexcel"
+    <Create-Order-By-Import
+      ref="createOrderByImport"
       :isDialogImport.sync="isDialogImport"
       @skipAndAddShopping="handleSkipAndAdd"
       @submitBtn="submitUpload"
       :importInfoData="importInfoData"
       :importAction="doUpload"
-    ></import-village-by-excel>
+    ></Create-Order-By-Import>
   </div>
 </template>
 
 <script>
 import api from "../../api/api";
 import areaArr from "../../commonFun/areaPackage_new";
-import commaFormat from "../../commonFun/commaFormat";
 import sessFun from "../../commonFun/sessFun.js";
-// 时间格式化
-import timeFormat from "../../commonFun/timeFormat";
 // 筛选过滤
-import filterFormat from "../../commonFun/filterTableData.js";
 import sheetExcel from "../../commonFun/sheetExcel.js";
-// 方案导入结果
+// 订单导入结果
 import importResult from "./components/importResult.vue";
 //导入表格
-import importVillageByExcel from "./components/importVillageByExcel";
+import CreateOrderByImport from "./components/createOrderByImport";
 //购物车页面
 import shoppingCart from "./components/shoppingCart";
 
@@ -277,7 +273,7 @@ export default {
   name: "createOrder",
   components: {
     importResult,
-    importVillageByExcel,
+    CreateOrderByImport,
     shoppingCart,
   },
   data () {
@@ -315,7 +311,7 @@ export default {
     let validateName = (rule, value, callback) => {
       if (value) {
         if (value.match(/\s/)) {
-          callback(new Error("方案名称不能带有空格"));
+          callback(new Error("订单名称不能带有空格"));
         } else {
           callback();
         }
@@ -365,7 +361,7 @@ export default {
           return time.getTime() <= Date.now();
         }
       },
-      doUpload: "/addsp/proposal/importResExcel",
+      doUpload: "/national/api/v1/nationalAdPlan/importNationalAdPlanExcel",
       active: 0, // 当前步骤step
       mapADDialog: false,
       loading: true, //加载中
@@ -451,7 +447,7 @@ export default {
       activeGrade: "", // 媒体等级
       dateInput: [], // 时间输入框
       beforeDate: [], // 时间输入框的前一次时间
-      //setp1创建方案表单
+      //setp1创建订单表单
       planForm: {
         planName: "",
         ownerSales: "", // 所属销售
@@ -477,7 +473,7 @@ export default {
           {
             required: true,
             type: "string",
-            message: "方案名称不能为空",
+            message: "订单名称不能为空",
             trigger: "blur",
           },
           { max: 30, message: "最多只能输入30个字节", trigger: "blur" },
@@ -555,7 +551,7 @@ export default {
         threeNum: 0,
         moreNum: 0,
       },
-      ADloading: "", // 创建方案、提交选点和报价单时的loading
+      ADloading: "", // 创建订单、提交选点和报价单时的loading
       areaCity: [],
       activeCityData: {}, // 城市切换的数据，默认为this.city[0]
       loadScroll: true, // 搜索后不执行滚动加载
@@ -572,7 +568,7 @@ export default {
       mapParams: {}, // 记录当前地图选点时的参数，包括排期、城市名和rid
       mapBtn: true, // 获取地图选点数据的按钮，默认不可点击
       getMapLoading: "", // 获取地图选点时的loading
-      // 是否导入方案
+      // 是否导入订单
       isImport: false,
       importType: "",
       isShowTag: true,
@@ -589,15 +585,15 @@ export default {
       importInfoData: {},
       // 导入excel之后返回的数组
       excelDataUpload: [],
-      // 复制方案
+      // 复制订单
       isCopy: false,
-      // 搜索方案时的loading
+      // 搜索订单时的loading
       loadingOrder: false,
-      // 搜索方案名称
+      // 搜索订单名称
       orderName: "",
       // 返回的订单列表
       orderArr: [],
-      apAicode: "", // 方案的协同aicode
+      apAicode: "", // 订单的协同aicode
       shareADUrl: "", // 协同选点的url https://beta.qinlinad.com/shareADList?apid=649&aicode=0DDD2685D9D3842ECB0DDC45D79D2131
 
       isOccupied: true, // 被占搜索时隐藏过滤条件
@@ -605,7 +601,7 @@ export default {
       totalPage: 1, // 总页数
       pageSize: 20, //每页条数
       getAdsParamsData: {}, //　获取点位列表的参数data
-      apMinTime: "", // 方案创建的开始时间
+      apMinTime: "", // 订单创建的开始时间
       ADLimitActiveName: "1",
       isShowAll: false, // 控制表头显示时的过渡效果
       searchBtnAbled: false, // 搜索按钮禁止
@@ -613,13 +609,13 @@ export default {
       connectAdDialogVisible: false, // 连排门模态框
       mediaLevelNum: { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 },
       asrIDList: [], // 已选点位里存在的公司及城市
-      unfinishedData: "", // 未完成方案信息
-      /*方案排斥*/
+      unfinishedData: "", // 未完成订单信息
+      /*订单排斥*/
       activeSelect: "1", //
-      rejectAdPlan: [], // 排斥方案选项
-      activeAdPlan: "", // 当前选择的方案
+      rejectAdPlan: [], // 排斥订单选项
+      activeAdPlan: "", // 当前选择的订单
       routePath: "",
-      // 方案是否创建中，防多次点击创建-节流
+      // 订单是否创建中，防多次点击创建-节流
       creating: false,
       // 记录两个时间判断是窗口关闭还是刷新
       _beforeUnload_time: 0,
@@ -638,7 +634,7 @@ export default {
     this.getsessionData(); // 获取session中的数据
     this.areaCity = areaArr.cityArea();
     this.getADLimit(); // 获取广告限制列表
-    // 获取未完成的方案并填充
+    // 获取未完成的订单并填充
     this.routePath = this.$route.fullPath;
   },
   watch: {
@@ -692,7 +688,6 @@ export default {
                 cityList.push(cityObj);
               }
               this.throwCity = cityList;
-              console.log("cityList", cityList);
               this.cityOptions = areaArr.province();
             } else {
               sessFun.messageFun("warning", "城市数据获取异常");
@@ -719,7 +714,7 @@ export default {
         });
     },
     // 下一步
-    // TODO:下一步创建方案
+    // TODO:下一步创建订单
     next () {
       if (this.active === 0) {
         console.log("planForm--", this.planForm);
@@ -738,7 +733,7 @@ export default {
               background: "rgba(0, 0, 0, 0.7)",
             });
             this.getBand(); // 获取公司品牌
-            this.creatAdPlan(); // 创建方案
+            this.creatAdPlan(); // 创建订单
             clearTimeout(timer);
           }, 500);
         }
@@ -794,38 +789,43 @@ export default {
     // 确认上传
     submitUpload (importFileData) {
       if (importFileData.length) {
-        let rids = this.planForm.throwCity.join(",");
-        let sess = this.sessionData;
-        let info = `?uid=${sess.uID}&token=${sess.token}&suID=${this.BDData.uid
-          }&rIDs=${rids}&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
         let formData = new FormData();
+        formData.append("apName", this.planForm.planName);
+        formData.append("adcID", this.planForm.adcID);
+        formData.append("bID", this.planForm.companyBrand);
+        formData.append("companyIds", this.planForm.pointOfAsrIDs);
+        formData.append("price", this.planForm.customerBudget);
+        formData.append("suID", this.BDData.uid);
         formData.append("file", importFileData[0].raw);
-        this.resImport(formData, info);
+        this.resImport(formData);
+        // console.log('planForm.ownerSales', this.planForm.ownerSales);
       } else {
         sessFun.messageFun("warning", "请先上传文件");
       }
     },
     // 小区导入
-    resImport (formData, info) {
+    resImport (formData) {
       let Loading = this.$loading({
         lock: true,
         text: "快马加鞭选点中...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      // 上传文件
-
       api
-        .postApi_new(this.doUpload + info, formData)
+        .postApi_new(this.doUpload, formData)
         .then((res) => {
-          console.log("res: ", res);
           if (res.data.SysCode == 200200) {
-            let importInfo = res.data.data;
+            const importInfo = res.data.data;
             console.log("importInfo: ", importInfo);
-            this.importInfoData = importInfo;
+            if(Array.isArray(importInfo.errorList) && importInfo.errorList.length) {
+              this.importInfoData = importInfo;
+              this.$refs.createOrderByImport.dialogErrorPoint = true;
+            } else {
+              sessFun.messageFun("success", `导入${importInfo.successSize || '--'}个点位并成功创建订单！`);
+              this.$router.push('./countryOrderList')
+            }
             // this.importSuccessList = importInfo.successList;
             // this.importErrorList = importInfo.errorList;
-            this.$refs.importexcel.dialogResult = true;
             // this.showUploadFail = true;
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -952,17 +952,9 @@ export default {
       dateArr.push(obj);
       return dateArr;
     },
-    // 非全国，移除城市
+    // 移除城市
     removeCity (val) {
-      console.log("非全国，移除城市val", val, this.planForm.throwCity);
-      if (this.indexData.rid == val) {
-        sessFun.messageFun(
-          "warning",
-          this.indexData.city + "为选择的地图点位所在城市，不可删除"
-        );
-        this.planForm.throwCity.push(val);
-        this.$refs["planThrowCity"].clearValidate();
-      }
+      console.log("移除城市val", val, this.planForm.throwCity);
     },
     // 选择所属销售
     changeSaler (val) {
@@ -1002,7 +994,6 @@ export default {
         api
           .postApi(this.apiVar.UCAPI + "/findBDUserByKeyword", params)
           .then((res) => {
-            console.log("findBDUserByKeyword", res);
             if (res.data.SysCode === 200200) {
               let arr = [];
               for (let key of res.data.data) {
@@ -1120,8 +1111,6 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          //清空草稿箱
-          this.clearDrafts()
           this.isDialogImport = true;
         } else {
           console.log("error submit!!");
@@ -1130,7 +1119,7 @@ export default {
       });
     },
     /*step2*/
-    // 获取排斥方案选择列
+    // 获取排斥订单选择列
     getRejectPlanList () {
       let params = {
         uid: this.sessionData.uID,
@@ -1140,7 +1129,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/getSalesProject", params)
         .then((res) => {
-          console.log("销售所属方案", res);
+          console.log("销售所属订单", res);
           if (res.data.SysCode == 200200) {
             let resData = res.data.data;
             let tempList = [];
@@ -1178,14 +1167,14 @@ export default {
         }
       });
     },
-    // 创建方案基本信息及投放城市详情(报价单数据提交)
+    // 创建订单基本信息及投放城市详情(报价单数据提交)
     creatAdPlan () {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
       };
       api.postApi(this.apiVar.CreatePlan, params).then((res) => {
-        console.log("创建方案", res);
+        console.log("创建订单", res);
         if (res.data.SysCode == 200200) {
           sessionStorage.setItem("plan_apid", res.data.data.apID);
           this.FAData.apID = res.data.data.apID;
@@ -1200,7 +1189,7 @@ export default {
           this.ADloading.close();
         } else {
           this.ADloading.close();
-          sessFun.messageFun("warning", "方案创建失败：" + res.data.MSG);
+          sessFun.messageFun("warning", "订单创建失败：" + res.data.MSG);
         }
       });
     },
@@ -1208,7 +1197,7 @@ export default {
     toDetail () {
       this.$router.push('./planDetail');
     },
-    // 方案异常时，存储当前方案基本数据及购物车点位等临时信息
+    // 订单异常时，存储当前订单基本数据及购物车点位等临时信息
     handleImportDrafts (type, list, pullAll = null) {
       this.importDraftsConfig.suID = this.BDData.uid;
       this.importDraftsConfig.type = type;
@@ -1224,7 +1213,7 @@ export default {
         ...this.importDraftsConfig,
       };
       api.postApi(this.apiVar.CreateAdBackUp, params).then((res) => {
-        console.log("res创建方案缓存", res);
+        console.log("res创建订单缓存", res);
         if (res.data.SysCode == 200200) {
           if (pullAll) {
             (res.data.data || []).forEach((item) => {
@@ -1513,7 +1502,7 @@ export default {
   margin-left: 10px;
 }
 
-/*创建方案表单*/
+/*创建订单表单*/
 /deep/ .el-form.demo-ruleForm {
   width: 416px;
   margin: 0 auto;
@@ -1549,7 +1538,7 @@ export default {
   color: rgb(144, 147, 153);
 }
 
-/*方案排斥*/
+/*订单排斥*/
 /deep/ .reject_select {
   left: -6px;
 }
@@ -2199,7 +2188,7 @@ export default {
   font-size: 14px;
 }
 
-/* 方案导入 */
+/* 订单导入 */
 .import_fanan a {
   color: #606266;
 }

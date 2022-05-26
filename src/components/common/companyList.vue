@@ -264,10 +264,10 @@ export default {
       ],
       // 公司类型
       typeArr: [
-        {
-          label: "平台商",
-          value: 0,
-        },
+        // {
+        //   label: "平台商",
+        //   value: 0,
+        // },
         {
           label: "媒体主",
           value: 1,
@@ -279,11 +279,11 @@ export default {
       systemEnableOptions: [
         {
           label: '已开通',
-          value: '已开通'
+          value: true
         },
         {
           label: '未开通',
-          value: '未开通'
+          value: false
         }
       ],
       // 表格数据
@@ -362,7 +362,8 @@ export default {
               state: item.ascState || "",
               type: item.ascType >= 0 ? item.ascType : "",
               mediaTypeList: item.mediaTypeList || [],
-              createTime: item.createTime || ""
+              createTime: item.createTime || "",
+              openStatus: item.openStatus
             }
           })
           this.loading = false;
@@ -401,6 +402,7 @@ export default {
         state: item.ascState ? item.ascState : "",
         type: item.ascType >= 0 ? item.ascType : "",
         createTime: item.createTime || "",
+        openStatus: item.openStatus
       };
       return obj;
     },
@@ -448,11 +450,12 @@ export default {
       // 新增
       if (this.companyInfo.keyword) {
         if (this.isAdd) {
-          let { keyword, type, mediaTypeIds } = this.companyInfo;
+          let { keyword, type, mediaTypeIds, systemEnableStatus } = this.companyInfo;
           let info = {
             name: keyword,
             type,
             mediaTypeIds,
+            openStatus:systemEnableStatus
           };
           api
             .postApi_json(
@@ -473,12 +476,13 @@ export default {
             });
         } else {
           // 编辑
-          let { keyword, type, asrID, mediaTypeIds } = this.companyInfo;
+          let { keyword, type, asrID, mediaTypeIds, systemEnableStatus } = this.companyInfo;
           let info = {
             id: asrID * 1,
             name: keyword,
             type,
             mediaTypeIds,
+            openStatus:systemEnableStatus
           };
           api
             .postApi_json(
@@ -583,7 +587,8 @@ export default {
         keyword: row.name,
         type: row.type - 0,
         asrID: row.asrID,
-        mediaTypeIds: row.mediaTypeList.map(item => item.mediaTypeId)
+        mediaTypeIds: row.mediaTypeList.map(item => item.mediaTypeId),
+        systemEnableStatus: row.openStatus
       };
     },
   },

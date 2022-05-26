@@ -12,22 +12,29 @@ module.exports = {
     assetsPublicPath: '/',
     // proxyTable: {},
     proxyTable: {
-      '/devURL/': {  //使用"/api"来代替
-        target: 'https://test-qadn.qinlindmp.com/', //源地址
+      '/devURL/UCAPI/': {  //使用"/api"来代替
+        target: 'http://192.168.1.177:8010/', //源地址
         changeOrigin: true, //改变源
         pathRewrite: {
           '^/devURL': '' //路径重写
         }
       },
       '/devURL/national/': {  //使用"/api"来代替
-        target: 'http://192.168.1.173:8040/', //源地址
+        target: 'http://192.168.1.177:8040/', //源地址
         changeOrigin: true, //改变源
         pathRewrite: {
           '^/devURL': '' //路径重写
         }
       },
-      '/devURL/UCAPI/': {  //使用"/api"来代替
-        target: 'http://192.168.1.173:8010/', //源地址
+      '/devURL/addsp/': {  //使用"/api"来代替
+        target: 'http://192.168.1.177:8026/', //源地址
+        changeOrigin: true, //改变源
+        pathRewrite: {
+          '^/devURL': '' //路径重写
+        }
+      },
+      '/devURL/': {  //使用"/api"来代替
+        target: 'https://test-qadn.qinlindmp.com/', //源地址
         changeOrigin: true, //改变源
         pathRewrite: {
           '^/devURL': '' //路径重写

@@ -188,11 +188,20 @@
                       >
                       <el-dropdown-item
                         plain
+                        v-if="showExportBtns.includes(6)"
                         @click.native.prevent="exportRes"
-                        v-if="isShowExportBtn"
                         >门店导点</el-dropdown-item
                       >
                     </template>
+                    <el-dropdown-item
+                      plain
+                      v-if="
+                        ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
+                        showExportBtns.includes(8)
+                      "
+                      @click.native.prevent="allPointExportVisible = true"
+                      >总点导出</el-dropdown-item
+                    >
                     <el-dropdown-item
                       plain
                       @click.native.prevent="openRecycleBin"
@@ -260,10 +269,7 @@
               prop="realName"
               label="所有人"
               min-width="6.1%"
-              v-if="
-                !(role == 'AD') &&
-                !['ADN_BD_KA', 'ADN_BD'].includes(role)
-              "
+              v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role)"
               show-overflow-tooltip
             >
             </el-table-column>
@@ -312,13 +318,13 @@
                         <span>
                           {{
                             item.city +
-                            '(' +
+                            "(" +
                             item.num +
-                            '面,' +
+                            "面," +
                             formatTime(item.pdStar) +
-                            '至' +
+                            "至" +
                             formatTime(item.pdEnd) +
-                            ')'
+                            ")"
                           }}
                         </span>
                       </div>
@@ -364,24 +370,24 @@
                       <p v-if="item.apState == '-1'">
                         {{
                           item.city +
-                          '(' +
-                          '--面,' +
+                          "(" +
+                          "--面," +
                           formatTime(item.pdStar) +
-                          '至' +
+                          "至" +
                           formatTime(item.pdEnd) +
-                          ')'
+                          ")"
                         }}
                       </p>
                       <p v-else>
                         {{
                           item.city +
-                          '(' +
+                          "(" +
                           item.num +
-                          '面,' +
+                          "面," +
                           formatTime(item.pdStar) +
-                          '至' +
+                          "至" +
                           formatTime(item.pdEnd) +
-                          ')'
+                          ")"
                         }}
                       </p>
                     </el-tooltip>
@@ -482,9 +488,7 @@
                       @click.native.prevent="splitAdPlan(scope.row)"
                       v-if="
                         scope.row.apControlLevel === 2 &&
-                        ['ADN_BD_KA', 'ADN_BD'].includes(
-                          sessionData.uType
-                        )
+                        ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
                       "
                     >
                       拆单
@@ -596,7 +600,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="cancelEdit">放 弃</el-button>
-        <el-button type="primary" class="u-btn" @click="continueEdit">继续编辑</el-button>
+        <el-button type="primary" class="u-btn" @click="continueEdit"
+          >继续编辑</el-button
+        >
       </span>
     </el-dialog>
 
@@ -605,6 +611,16 @@
       <download-vacancy
         @cancelClick="isOpenDownload = false"
       ></download-vacancy>
+    </el-dialog>
+    <!-- 总点导出 -->
+    <el-dialog
+      title="总点导出"
+      :visible.sync="allPointExportVisible"
+      width="300px"
+    >
+      <All-Point-Export
+        @cancelClick="allPointExportVisible = false"
+      ></All-Point-Export>
     </el-dialog>
 
     <!--发布方案-->
@@ -679,10 +695,10 @@
         <i class="el-icon-warning" style="color: #1890ff"></i>
         {{
           exportResStep === 1
-            ? '第一步：填写导出的基本参数'
+            ? "第一步：填写导出的基本参数"
             : exportResStep === 2
-            ? '第二步：下载模板，指定周边越多，需要导出时间越长'
-            : '第三步：上传填写好的表格，并点击提交'
+            ? "第二步：下载模板，指定周边越多，需要导出时间越长"
+            : "第三步：上传填写好的表格，并点击提交"
         }}
         <!--                    <i class="el-icon-close" @click="isShowExportTag = false"></i>-->
       </p>
@@ -711,7 +727,12 @@
             v-model="exportInfo.mediaTypeIds"
             placeholder="请选择媒体类型"
           >
-            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
+            <el-option
+              v-for="(item, index) in allMediaTypes"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </li>
         <li>
@@ -785,7 +806,7 @@
           :loading="isBroundImport"
         >
           {{
-            isBroundImport ? '导出中..' : exportResStep >= 3 ? '确定' : '下一步'
+            isBroundImport ? "导出中.." : exportResStep >= 3 ? "确定" : "下一步"
           }}
         </el-button>
       </div>
@@ -808,25 +829,27 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
-import cacheAdPlan from "../../commonFun/cacheAdPlan"
-import downloadVacancy from "../../components/common/components/vacancyDownload.vue"
+import cacheAdPlan from "../../commonFun/cacheAdPlan";
+import downloadVacancy from "../../components/common/components/vacancyDownload.vue";
+import AllPointExport from "../../components/common/components/allPointExport.vue";
 import noSearchResult from "./components/noSearchResult.vue";
-import pointState from './components/pointState.vue';
+import pointState from "./components/pointState.vue";
 
 // 回收站
-import recycleBinDialog from './components/recycleBinDialog.vue';
+import recycleBinDialog from "./components/recycleBinDialog.vue";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
-import timeFormat from '../../commonFun/timeFormat.js';
+import timeFormat from "../../commonFun/timeFormat.js";
 export default {
   name: "projectList",
   components: {
     downloadVacancy,
     noSearchResult,
     pointState,
-    recycleBinDialog
+    recycleBinDialog,
+    AllPointExport,
   },
-  data () {
+  data() {
     return {
       // 搜索数据
       searchInfo: {
@@ -837,20 +860,19 @@ export default {
         // 时间范围
         rangeDate: "",
         //日期类型
-        dateType: '0',
+        dateType: "0",
         // 状态筛选
-        status: '',
+        status: "",
         // 公司搜索
-        company: '',
+        company: "",
         // 城市筛选
-        cityWord: '',
+        cityWord: "",
         // 是否预锁
-        Lock: '',
+        Lock: "",
         // 按照啥排序
-        orderby: '',
+        orderby: "",
         // 升序降序0/1
         desc: "",
-
       },
       // 公司列表
       companyData: [],
@@ -866,12 +888,12 @@ export default {
       // 登录信息、
       sessionData: {},
       // 合同编号
-      QCinfo: '',
+      QCinfo: "",
       // 登录者角色
       role: "",
       //   判断是否有发布，预锁解锁等功能
       isDisable: true,
-      isShowExportBtn: false, //资源导出按钮
+      showExportBtns: [], // 导出按钮type
       //加载中
       loading: true,
       currentItem: {},
@@ -885,12 +907,12 @@ export default {
       cityList: [],
       // 状态列表
       stateList: [
-        { text: '未配点', value: -1 },
-        { text: '已完成', value: 0 },
-        { text: '进行中', value: 1 },
-        { text: '未投放', value: 2 },
-        { text: '投放中', value: 3 },
-        { text: '强制结束', value: 5 }
+        { text: "未配点", value: -1 },
+        { text: "已完成", value: 0 },
+        { text: "进行中", value: 1 },
+        { text: "未投放", value: 2 },
+        { text: "投放中", value: 3 },
+        { text: "强制结束", value: 5 },
       ],
       // 根据角色判断是否显示新建按钮
       showNewBtn: true,
@@ -905,25 +927,27 @@ export default {
       // 未完成方案提示
       unfinishedDialogVisible: false,
       // 未完成方案
-      planInfo: '',
+      planInfo: "",
       // 继续编辑未完成方案跳转时的loading
-      continueEditLoading: '',
+      continueEditLoading: "",
       // 空位导出
       isOpenDownload: false,
+      // 总点导出弹框显示
+      allPointExportVisible: false,
       // 判断是否为全国媒介
       isNation: true,
-      isSale: false,//销售权限
+      isSale: false, //销售权限
       // 资源导出
       isResExport: false,
       allMediaTypes: [],
       // 当前步骤
-      exportAction: '/image/GetCenterPointRes',
+      exportAction: "/image/GetCenterPointRes",
       exportResStep: 1,
       exportInfo: {
-        date: '',
-        mediaTypeIds: '',
-        radius: '',
-        type: '',
+        date: "",
+        mediaTypeIds: "",
+        radius: "",
+        type: "",
       },
       // 导出时到提示标签
       isShowExportTag: true,
@@ -932,16 +956,16 @@ export default {
       // 导出中
       isBroundImport: false,
       publishPlanDialog: false,
-      planType: '0',
+      planType: "0",
       relatedApId: null,
       apList: [],
       IsSevenBD: false,
 
       // 是否展示回收站
-      isShowRecycleBin: false
+      isShowRecycleBin: false,
     };
   },
-  created () {
+  created() {
     this.getSessionData();
     this.getRole();
     this.getFanCity();
@@ -951,193 +975,204 @@ export default {
     this.searchFun();
     if (this.isSale) {
       this.getSubSaleList();
-    };
+    }
   },
-  mounted () {
+  mounted() {
     this.getCustomConfig();
   },
   methods: {
     // 导出周边资源
-    getCustomConfig () {
-      api.getApi('/advertisement/GetCustomConfig', { type: 6 }).then(res => {
-        if (res.data.SysCode == 200200) {
-          this.isShowExportBtn = Array.isArray(res.data.data) && !!(res.data.data.length);
-        }
-      }).catch(err => {
-        console.log("导出周边资源--", err);
-      });
+    getCustomConfig() {
+      api
+        .getApi("/advertisement/GetCustomConfig")
+        .then((res) => {
+          if (res.data.SysCode == 200200 && Array.isArray(res.data.data)) {
+            this.showExportBtns = res.data.data.map((item) => item.type);
+          }
+        })
+        .catch((err) => {
+          console.log("导出周边资源--", err);
+        });
     },
     // 切换页码
-    changePage (page) {
+    changePage(page) {
       this.currPage = page;
-      console.log('page----', page);
+      console.log("page----", page);
       this.searchFun();
     },
     // 每页条数切换
-    sizeChange (val) {
-      console.log('val----', val);
+    sizeChange(val) {
+      console.log("val----", val);
       this.pageSize = val;
       this.currPage = 1;
       this.searchFun();
     },
     // 获取公司
-    getCompany () {
+    getCompany() {
       let sess = this.sessionData;
       let info = {
         uid: sess.uID,
         token: sess.token,
       };
       if (sess.ascType == 0) {
-        api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res => {
-          console.log(res);
-          if (!res.data.SysCode) {
-            let result = [];
-            for (let data of res.data) {
-              let obj = {
-                label: data.asName,
-                value: data.asrID,
-              };
-              result.push(obj);
+        api
+          .getApi(this.apiVar.UCAPI + "/GetDirectAscr", info)
+          .then((res) => {
+            if (!res.data.SysCode) {
+              let result = [];
+              for (let data of res.data) {
+                let obj = {
+                  label: data.asName,
+                  value: data.asrID,
+                };
+                result.push(obj);
+              }
+              this.companyData = result;
+            } else if (res.data.SysCode == 100403) {
+              console.error("获取投放城市", res.data.MSG);
+            } else {
+              this.messageFun("warning", res.data.MSG);
             }
-            this.companyData = result;
-          } else if (res.data.SysCode == 100403) {
-            console.error('获取投放城市', res.data.MSG)
-          } else {
-            this.messageFun('warning', res.data.MSG);
-          }
-        }).catch(err => {
-          console.log(err);
-        });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } else {
-        api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res => {
-          console.log(res);
-          if (!res.data.SysCode) {
-            let result = [];
-            for (let data of res.data) {
-              let obj = {
-                label: data.asName,
-                value: data.asrID,
-              };
-              result.push(obj);
+        api
+          .getApi(this.apiVar.UCAPI + "/ShowAscr", info)
+          .then((res) => {
+            if (!res.data.SysCode) {
+              let result = [];
+              for (let data of res.data) {
+                let obj = {
+                  label: data.asName,
+                  value: data.asrID,
+                };
+                result.push(obj);
+              }
+              this.companyData = result;
+            } else {
+              this.messageFun("warning", res.data.MSG);
             }
-            this.companyData = result;
-          } else {
-            this.messageFun('warning', res.data.MSG);
-          }
-        }).catch(err => {
-          console.log(err);
-        });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     },
     // 滚动加载获取数据(无搜索数据)
-    getData (params) {
-      api.getApi(this.apiVar.Advertisement + '/GetProposal', params).then(res => {
-        if (!res.data.SysCode) {
-          let dataInfo = res.data;
-          this.totalNum = dataInfo.total;
-          this.currentPlan = this.funcData(dataInfo.list);
-          this.loading = false;
-          if (dataInfo.totalpage == 0) {
-            this.messageFun('warning', '暂无数据');
+    getData(params) {
+      api
+        .getApi(this.apiVar.Advertisement + "/GetProposal", params)
+        .then((res) => {
+          if (!res.data.SysCode) {
+            let dataInfo = res.data;
+            this.totalNum = dataInfo.total;
+            this.currentPlan = this.funcData(dataInfo.list);
+            this.loading = false;
+            if (dataInfo.totalpage == 0) {
+              this.messageFun("warning", "暂无数据");
+            }
+          } else {
+            this.messageFun("warning", res.data.MSG);
           }
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-      });
+        });
     },
     //获取下级销售列表
-    getSubSaleList () {
-      api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
+    getSubSaleList() {
+      api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
         if (res.data.SysCode == 200200) {
-          this.filterRealName = filterFormat(res.data.data, "realName", 'uID');
-
+          this.filterRealName = filterFormat(res.data.data, "realName", "uID");
         } else {
-          this.messageFun('warning', res.data.MSG);
+          this.messageFun("warning", res.data.MSG);
         }
       });
     },
-    filterRealNameFun (value, row) {
+    filterRealNameFun(value, row) {
       return row.realName === value;
     },
     // 数据处理
-    funcData (dataArr) {
+    funcData(dataArr) {
       let result = [];
       for (let data of dataArr) {
         let tmpObj = {};
         tmpObj = this.setTableData(data);
         result.push(tmpObj);
       }
-      console.log('result: ', result);
       return result;
     },
     // 获取session数据
-    getSessionData () {
+    getSessionData() {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       // ascType 0:平台商 1:媒体主
-      if (sess.ascType == 0 || (sess.uType == 'ADN_MD_COUNTRY')) {
+      if (sess.ascType == 0 || sess.uType == "ADN_MD_COUNTRY") {
         this.isAll = true;
       } else {
         this.isAll = false;
       }
     },
     // 获取城市
-    getFanCity () {
+    getFanCity() {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
       };
-      api.getApi(this.apiVar.Advertisement + '/GetAPDCityNames', info).then(res => {
-        let arr = res.data;
-        let result = [];
-        if (!arr.SysCode) {
-          for (let data of arr) {
-            result.push({
-              rName: data.rName,
-              rID: data.rID,
-              text: data.rName,
-              value: data.rName
-            });
+      api
+        .getApi(this.apiVar.Advertisement + "/GetAPDCityNames", info)
+        .then((res) => {
+          let arr = res.data;
+          let result = [];
+          if (!arr.SysCode) {
+            for (let data of arr) {
+              result.push({
+                rName: data.rName,
+                rID: data.rID,
+                text: data.rName,
+                value: data.rName,
+              });
+            }
+            this.filterCityData = result;
+          } else {
+            this.messageFun("warning", res.data.MSG);
           }
-          this.filterCityData = result;
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-      });
+        });
     },
     // 判断角色是否有新建按钮(媒介和销售有)
-    getRole () {
+    getRole() {
       let role = this.sessionData.uType;
       this.role = role;
-      this.IsSevenBD = (this.sessionData.customPermission.proposalPermission == 1 && ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType))
+      this.IsSevenBD =
+        this.sessionData.customPermission.proposalPermission == 1 &&
+        ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType);
       if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
         this.isDisable = false;
-        if (this.sessionData.uType == 'ADN_MD') {
-          this.isNation = false
-        }
       }
-      if (['ADN_BD_KA', 'ADN_BD'].includes(role)) {
-        this.isSale = true
+      if (["ADN_BD", "ADN_MD"].includes(role)) {
+        this.isNation = false;
       }
-      if (!['ADN_BD_KA', 'ADN_BD'].includes(role) && !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)) {
+      if (["ADN_BD_KA", "ADN_BD"].includes(role)) {
+        this.isSale = true;
+      }
+      if (
+        !["ADN_BD_KA", "ADN_BD"].includes(role) &&
+        !["ADN_MD_COUNTRY", "ADN_MD"].includes(role)
+      ) {
         this.showNewBtn = false;
       }
-      if (['ADN_BD_KA', 'ADN_BD'].includes(role) || role == "ADN_SM") {
+      if (["ADN_BD_KA", "ADN_BD", "ADN_SM"].includes(role)) {
         this.isDisable = true;
-      }
-      if (role == "ADN_BD") {
-        this.isNation = false
       }
     },
     // 状态转换成文本
-    stateToText (val) {
+    stateToText(val) {
       let state = [
-        { text: "已完成", value: 0, color: 'rgba(196,203,211,1)' },
-        { text: "未配点", value: -1, color: 'rgba(250, 173, 20, 1)' },
-        { text: "进行中", value: 1, color: 'rgba(113, 213, 217, 1)' },
-        { text: "未投放", value: 2, color: 'rgba(82,196,26,1)' },
-        { text: "投放中", value: 3, color: 'rgba(24,144,255,1)' },
-        { text: "强制结束", value: 5, color: 'rgba(245,34,45,1)' }
+        { text: "已完成", value: 0, color: "rgba(196,203,211,1)" },
+        { text: "未配点", value: -1, color: "rgba(250, 173, 20, 1)" },
+        { text: "进行中", value: 1, color: "rgba(113, 213, 217, 1)" },
+        { text: "未投放", value: 2, color: "rgba(82,196,26,1)" },
+        { text: "投放中", value: 3, color: "rgba(24,144,255,1)" },
+        { text: "强制结束", value: 5, color: "rgba(245,34,45,1)" },
       ];
       for (let data of state) {
         if (val == data.value) {
@@ -1146,16 +1181,16 @@ export default {
       }
     },
     // 时间格式规范预锁
-    formatTime (val) {
-      return dateFormat.toDate(val, '/');
+    formatTime(val) {
+      return dateFormat.toDate(val, "/");
     },
     // 价格加上逗号
-    priceFormat (price) {
+    priceFormat(price) {
       return commaFormat.init(price);
     },
     // 价格时间排序(请求后台接口进行排序)
-    sortChange (column) {
-      console.log('columm---', column);
+    sortChange(column) {
+      console.log("columm---", column);
       if (column.order == "ascending") {
         this.searchInfo.orderby = column.prop;
         this.searchInfo.desc = 0;
@@ -1166,132 +1201,139 @@ export default {
       this.currPage = 1;
       this.searchFun();
     },
-    routeSelect () {
+    routeSelect() {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
         if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
-          this.$router.push("./createPlan")
+          this.$router.push("./createPlan");
         } else {
-          this.$router.push("./createPlanOld")
+          this.$router.push("./createPlanOld");
         }
       } else {
         // 加盟
-        this.$router.push("./createPlanOld")
+        this.$router.push("./createPlanOld");
       }
     },
     //新增意向方案查询意向方案草稿箱
-    getProposalAdBackUp (params) {
-      api.getApi(this.apiVar.AddspProposal + '/getAdBackUp', params).then(res => {
-        console.log('获取意向方案缓存', res)
-        this.continueEditLoading.close()
-        if (res.data.SysCode == 200200) {
-          console.log('获取意向方案缓存成功', res.data)
-          let data = res.data.data
-          if (JSON.stringify(data) === '{}' || !data) {
-            this.$router.push("./createPlan")
-          } else {
-            // let planInfo = JSON.parse(data)
-            this.showProposalCookeAdPlan(data)
-            // 缓存到localStorage
-            // data.uiD = params.uid
-            // cacheAdPlan.setData(data)
-          }
-        } else {
-          // 后台返回异常则查看前台是否有缓存
-          let returnData = cacheAdPlan.getData(this.sessionData.uID)
-          if (returnData) {
-            this.showCookeAdPlan(returnData)
-          } else {
-            this.routeSelect()
-          }
-        }
-      }).catch(err => {
-        console.log('err', err)
-        this.continueEditLoading.close()
-        if (this.$route.path.includes('planList')) {
-          this.routeSelect()
-        }
-      })
-    },
-    // 新建方案
-    addOne () {
-      this.continueEditLoading = this.$loading({
-        lock: true,
-        text: '正在查询是否有未完成的方案',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token
-      }
-      if (this.IsSevenBD) {
-        this.getProposalAdBackUp(params)
-      } else {
-        api.getApi(this.apiVar.Advertisement + '/getAdPlanBackups', params).then(res => {
-          console.log('获取方案缓存', res)
-          this.continueEditLoading.close()
+    getProposalAdBackUp(params) {
+      api
+        .getApi(this.apiVar.AddspProposal + "/getAdBackUp", params)
+        .then((res) => {
+          console.log("获取意向方案缓存", res);
+          this.continueEditLoading.close();
           if (res.data.SysCode == 200200) {
-            console.log('获取缓存成功', res.data)
-            if (JSON.stringify(res.data.data) === '{}') {
-              this.routeSelect()
+            console.log("获取意向方案缓存成功", res.data);
+            let data = res.data.data;
+            if (JSON.stringify(data) === "{}" || !data) {
+              this.$router.push("./createPlan");
             } else {
-              let planInfo = JSON.parse(res.data.data)
-              this.showCookeAdPlan(planInfo)
+              // let planInfo = JSON.parse(data)
+              this.showProposalCookeAdPlan(data);
               // 缓存到localStorage
-              cacheAdPlan.setData(planInfo)
+              // data.uiD = params.uid
+              // cacheAdPlan.setData(data)
             }
           } else {
             // 后台返回异常则查看前台是否有缓存
-            let returnData = cacheAdPlan.getData(this.sessionData.uID)
+            let returnData = cacheAdPlan.getData(this.sessionData.uID);
             if (returnData) {
-              this.showCookeAdPlan(returnData)
+              this.showCookeAdPlan(returnData);
             } else {
-              this.routeSelect()
+              this.routeSelect();
             }
           }
-        }).catch(err => {
-          console.log('err', err)
-          this.continueEditLoading.close()
-          if (this.$route.path.includes('planList')) {
-            this.routeSelect()
-          }
         })
+        .catch((err) => {
+          console.log("err", err);
+          this.continueEditLoading.close();
+          if (this.$route.path.includes("planList")) {
+            this.routeSelect();
+          }
+        });
+    },
+    // 新建方案
+    addOne() {
+      this.continueEditLoading = this.$loading({
+        lock: true,
+        text: "正在查询是否有未完成的方案",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+      };
+      if (this.IsSevenBD) {
+        this.getProposalAdBackUp(params);
+      } else {
+        api
+          .getApi(this.apiVar.Advertisement + "/getAdPlanBackups", params)
+          .then((res) => {
+            console.log("获取方案缓存", res);
+            this.continueEditLoading.close();
+            if (res.data.SysCode == 200200) {
+              console.log("获取缓存成功", res.data);
+              if (JSON.stringify(res.data.data) === "{}") {
+                this.routeSelect();
+              } else {
+                let planInfo = JSON.parse(res.data.data);
+                this.showCookeAdPlan(planInfo);
+                // 缓存到localStorage
+                cacheAdPlan.setData(planInfo);
+              }
+            } else {
+              // 后台返回异常则查看前台是否有缓存
+              let returnData = cacheAdPlan.getData(this.sessionData.uID);
+              if (returnData) {
+                this.showCookeAdPlan(returnData);
+              } else {
+                this.routeSelect();
+              }
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+            this.continueEditLoading.close();
+            if (this.$route.path.includes("planList")) {
+              this.routeSelect();
+            }
+          });
       }
-
     },
     // 点位表盘
-    goToDiaPlate () {
-      console.log('this.$router', this.$router)
-      this.$router.push('./adsDialPlate')
+    goToDiaPlate() {
+      console.log("this.$router", this.$router);
+      this.$router.push("./adsDialPlate");
     },
     //显示意向方案缓存信息
-    showProposalCookeAdPlan (adPlan) {
+    showProposalCookeAdPlan(adPlan) {
       this.planInfo = {
         planName: adPlan.apName,
         ownerSales: adPlan.saleRealName,
         cleatTime: adPlan.lSetTime,
-        adsNum: adPlan.resList.length
-      }
-      this.unfinishedDialogVisible = true
-
+        adsNum: adPlan.resList.length,
+      };
+      this.unfinishedDialogVisible = true;
     },
     // 显示缓存方案的信息
-    showCookeAdPlan (adPlan) {
+    showCookeAdPlan(adPlan) {
       // this.planForm.realNamesName
-      let ownerSales = (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) && adPlan.planData.baseInfo.realNamesName) ?
-        adPlan.planData.baseInfo.realNamesName : adPlan.planData.baseInfo.ownerSales
+      let ownerSales =
+        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        adPlan.planData.baseInfo.realNamesName
+          ? adPlan.planData.baseInfo.realNamesName
+          : adPlan.planData.baseInfo.ownerSales;
       this.planInfo = {
         planName: adPlan.planData.baseInfo.planName,
         ownerSales: ownerSales,
         cleatTime: adPlan.setTime,
-        adsNum: adPlan.planData.adsList.length
-      }
-      this.unfinishedDialogVisible = true
+        adsNum: adPlan.planData.adsList.length,
+      };
+      this.unfinishedDialogVisible = true;
     },
 
     // 随机生成合同编号编码格式： 合同编码固定[QC],日期[20180328],省份[44],城市[01],等几份合同[001](随机数)
-    getContractNo (rid) {
+    getContractNo(rid) {
       let date = new Date();
       let result = "QC";
       result = result + dateFormat.toDate(date, "");
@@ -1300,51 +1342,61 @@ export default {
       return result;
     },
     // 获取方案列表
-    getPlanList (apID, suID) {
+    getPlanList(apID, suID) {
       return new Promise((resolve, reject) => {
         let params = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
-          sales_user: suID
-        }
-        api.getApi(this.apiVar.Advertisement + '/getSalesProject', params).then(res => {
-          console.log('销售所属方案', res)
-          if (res.data.SysCode == 200200) {
-            let resData = res.data.data
-            let tempList = []
-            for (let key of resData) {
-              if (apID != key.apId) {
-                tempList.push({
-                  value: key.apId,
-                  label: key.apName + '（' + key.cname + ' · ' + (key.pdStar || '') + '-' + (key.pdEnd || '') + '）'
-                })
+          sales_user: suID,
+        };
+        api
+          .getApi(this.apiVar.Advertisement + "/getSalesProject", params)
+          .then((res) => {
+            console.log("销售所属方案", res);
+            if (res.data.SysCode == 200200) {
+              let resData = res.data.data;
+              let tempList = [];
+              for (let key of resData) {
+                if (apID != key.apId) {
+                  tempList.push({
+                    value: key.apId,
+                    label:
+                      key.apName +
+                      "（" +
+                      key.cname +
+                      " · " +
+                      (key.pdStar || "") +
+                      "-" +
+                      (key.pdEnd || "") +
+                      "）",
+                  });
+                }
               }
+              this.apList = tempList;
+              resolve();
+            } else {
+              sessFun.messageFun("warning", res.data.MSG);
             }
-            this.apList = tempList
-            resolve()
-          } else {
-            sessFun.messageFun('warning', res.data.MSG)
-          }
-        })
-      })
+          });
+      });
     },
     // 发布
-    release (row) {
+    release(row) {
       // 1)	全国媒介可发布全部销售的方案
       // 2)	地方媒介只能发布只选择了该所属公司点位的方案
 
-      this.QCinfo = '';
+      this.QCinfo = "";
       // 真实数据
       this.currentItem = row;
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apid: row.apID
+        apid: row.apID,
       };
       let dataArr = row.cityArea;
       let sess = this.sessionData;
       let isRelease = false;
-      if (sess.uType == 'ADN_MD_COUNTRY') {
+      if (sess.uType == "ADN_MD_COUNTRY") {
         isRelease = true;
       } else {
         let num = 0;
@@ -1360,8 +1412,9 @@ export default {
       if (isRelease) {
         // uid         int【必填】     当前账户UserID
         // apid        int             公司对应方案apID
-        api.getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
-          .then(res => {
+        api
+          .getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
+          .then((res) => {
             console.log(res.data);
             if (res.data.SysCode == 200200) {
               let text = res.data.data;
@@ -1371,32 +1424,32 @@ export default {
                 this.QCinfo = this.getContractNo(text.rID);
               }
               this.getPlanList(text.apID, text.suID).then((resolve) => {
-                this.publishPlanDialog = true
-              })
+                this.publishPlanDialog = true;
+              });
             } else {
-              this.messageFun('warning', res.data.MSG);
+              this.messageFun("warning", res.data.MSG);
             }
-          })
+          });
       } else {
-        this.messageFun('warning', '您没有权限发布该方案');
+        this.messageFun("warning", "您没有权限发布该方案");
       }
     },
     // 提交
-    commitRelease () {
+    commitRelease() {
       if (/^[^\u4e00-\u9fa5]{0,}$/.test(this.QCinfo)) {
         this.Ctrlloading = this.$loading({
-          text: '请耐心等待...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.5)'
+          text: "请耐心等待...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.5)",
         });
         // 保存合同编号
         this.saveContractNo(this.QCinfo, this.planType, this.relatedApId);
       } else {
-        this.messageFun('warning', '只能输入数字,字母,字符');
+        this.messageFun("warning", "只能输入数字,字母,字符");
       }
     },
     // 保存合同编号
-    saveContractNo (contractNo, planType, relatedApId) {
+    saveContractNo(contractNo, planType, relatedApId) {
       // uid         int【必填】     当前账户UserID
       // apid        int【必填】     方案apID
       // qc          String【必填】  方案合同编号
@@ -1409,81 +1462,88 @@ export default {
       info.planType = planType;
       if (planType == 1 || planType == 2) {
         if (!relatedApId) {
-          this.messageFun('warning', `请选择${['常规', '续刊', '补刊', '空刊', '赠送'][planType]}的订单`);
+          this.messageFun(
+            "warning",
+            `请选择${["常规", "续刊", "补刊", "空刊", "赠送"][planType]}的订单`
+          );
           this.Ctrlloading.close();
-          return
+          return;
         }
-        info.relatedApId = relatedApId
-
+        info.relatedApId = relatedApId;
       }
-      api.postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
-        .then(res => {
-          console.log(res, 'reeeeeeeeeeeeee');
+      api
+        .postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
+        .then((res) => {
+          console.log(res, "reeeeeeeeeeeeee");
           if (res.data.SysCode == 300200) {
             // 查看是否被锁
-            api.postApi(this.apiVar.Advertisement + "/CheckLock", info).then(res => {
-              console.log(res.data);
-              if (!res.data.SysCode) {
-                if (!res.data.IsLock) {
-                  this.releaseFun();
-                } else {
-                  this.messageFun('warning', "该方案被预锁,请先解除预锁");
-                  this.Ctrlloading.close();
+            api
+              .postApi(this.apiVar.Advertisement + "/CheckLock", info)
+              .then((res) => {
+                console.log(res.data);
+                if (!res.data.SysCode) {
+                  if (!res.data.IsLock) {
+                    this.releaseFun();
+                  } else {
+                    this.messageFun("warning", "该方案被预锁,请先解除预锁");
+                    this.Ctrlloading.close();
+                  }
                 }
-              }
-            });
+              });
           } else {
-            this.messageFun('warning', res.data.MSG);
+            this.messageFun("warning", res.data.MSG);
             this.Ctrlloading.close();
           }
         })
-        .catch(res => {
-          console.log(res);
+        .catch((res) => {
           this.Ctrlloading.close();
         });
     },
-    releaseFun () {
+    releaseFun() {
       let reseleInfo = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apid: this.currentItem.apID,
         qc: this.QCinfo,
-        act: 'R'
+        act: "R",
       };
       this.releaseFangan(reseleInfo);
     },
     // 发布方案(优化后的接口)
-    releaseFangan (info) {
-      api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
-        console.log(res.data);
-        if (res.data.SysCode == 300200) {
-          this.messageFun('success', res.data.MSG);
-          for (let data of this.currentPlan) {
-            if (data.apID == this.currentItem.apID) {
-              this.$set(data, "apState", 2);
-              break;
+    releaseFangan(info) {
+      api
+        .postApi(this.apiVar.Advertisement + "/SetFangan", info)
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.SysCode == 300200) {
+            this.messageFun("success", res.data.MSG);
+            for (let data of this.currentPlan) {
+              if (data.apID == this.currentItem.apID) {
+                this.$set(data, "apState", 2);
+                break;
+              }
             }
-          }
-          this.publishPlanDialog = false
-        } else if (res.data.SysCode == 300500) {
-          if (res.data.asList) {
-            // 存在点位被占，是否立即去方案详情修改？
-            this.changeRoute();
+            this.publishPlanDialog = false;
+          } else if (res.data.SysCode == 300500) {
+            if (res.data.asList) {
+              // 存在点位被占，是否立即去方案详情修改？
+              this.changeRoute();
+            } else {
+              this.messageFun("warning", res.data.MSG);
+            }
           } else {
-            this.messageFun('warning', res.data.MSG);
+            this.messageFun("warning", res.data.MSG);
           }
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-        this.Ctrlloading.close();
-      }).catch(res => {
-        this.Ctrlloading.close();
-      });
+          this.Ctrlloading.close();
+        })
+        .catch((res) => {
+          this.Ctrlloading.close();
+        });
     },
     // 跳转到详情页面
-    ToDetail (row) {
+    ToDetail(row) {
       sessionStorage.setItem("plan_apid", row.apID);
-      sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
+      sessionStorage.setItem("cityArea", JSON.stringify(row.cityArea));
       if (row.apState == -1) {
         // 未配点意向方案详情
         this.$router.push("./planEmptyPointDetail");
@@ -1495,9 +1555,9 @@ export default {
       }
     },
     // 跳转到编辑页面
-    ToEdit (row) {
+    ToEdit(row) {
       sessionStorage.setItem("plan_apid", row.apID);
-      sessionStorage.setItem('cityArea', JSON.stringify(row.cityArea));
+      sessionStorage.setItem("cityArea", JSON.stringify(row.cityArea));
       if (row.planMode == 1) {
         // 意向方案
         this.$router.push("./editPlan");
@@ -1507,73 +1567,83 @@ export default {
       }
     },
     // 比较两个时间大小
-    compareTime (arr, sField, eField) {
+    compareTime(arr, sField, eField) {
       return dateFormat.compareTime(arr, sField, eField);
     },
     // 意向方案配点（直营媒介配点）
-    addPoint (row) {
-      if (["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1) {
+    addPoint(row) {
+      if (
+        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        this.sessionData.customPermission.proposalPermission == 1
+      ) {
         this.ToEdit(row);
       } else {
-        this.$message.warning('暂无权限！');
+        this.$message.warning("暂无权限！");
       }
     },
     //预锁
-    preload (row) {
-      this.$confirm('<p>锁定后，方案中的点位将被占用</p>', '是否确认锁定该方案的点位', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        dangerouslyUseHTMLString: true
-      }).then(() => {
-        this.currentItem = row;
-        let startObj = this.compareTime(row.cityArea, 'pdStar', 'pdEnd');
-        let date = timeFormat.toDate(new Date(), '/');
-        if (startObj.startTime <= date) {
-          this.messageFun('warning', '开始投放时间已经早于当前时间,请直接发布！');
-          return;
+    preload(row) {
+      this.$confirm(
+        "<p>锁定后，方案中的点位将被占用</p>",
+        "是否确认锁定该方案的点位",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          dangerouslyUseHTMLString: true,
         }
-        this.cityList = this.getCityList(row.cityArea);
-        if (this.cityList.length) {
-          this.cityChoose = [];
-          this.isLock = true;
-
-        } else {
-          this.messageFun('warning', '方案权限城市内您没有可以预锁的城市');
-        }
-        if (this.isNation) {
-          this.dialogVisible = true;
-        } else {
-          //地方媒介
-          this.Ctrlloading = this.$loading({
-            text: '请耐心等待...',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          });
-          if (this.isLock) {
-            this.LockCity(this.cityList, 'L');
-          } else {
-            this.noLockCity(this.cityList);
+      )
+        .then(() => {
+          this.currentItem = row;
+          let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
+          let date = timeFormat.toDate(new Date(), "/");
+          if (startObj.startTime <= date) {
+            this.messageFun(
+              "warning",
+              "开始投放时间已经早于当前时间,请直接发布！"
+            );
+            return;
           }
-          this.dialogVisible = false;
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消操作'
+          this.cityList = this.getCityList(row.cityArea);
+          if (this.cityList.length) {
+            this.cityChoose = [];
+            this.isLock = true;
+          } else {
+            this.messageFun("warning", "方案权限城市内您没有可以预锁的城市");
+          }
+          if (this.isNation) {
+            this.dialogVisible = true;
+          } else {
+            //地方媒介
+            this.Ctrlloading = this.$loading({
+              text: "请耐心等待...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)",
+            });
+            if (this.isLock) {
+              this.LockCity(this.cityList, "L");
+            } else {
+              this.noLockCity(this.cityList);
+            }
+            this.dialogVisible = false;
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消操作",
+          });
         });
-      });
-
     },
     // 获取权限城市内的城市,进行勾选
-    getCityList (arr) {
+    getCityList(arr) {
       // 1)	全国媒介可发布全部销售的方案
       // 2)	地方媒介只能发布只选择了该所属公司点位的方案
       // 1)	全国媒介可预锁全部的方案
       // 2)	地方媒介只能预锁方案中投放至该公司的部分
       let sess = this.sessionData;
       let resultArr = [];
-      if (sess.uType == 'ADN_MD_COUNTRY') {
+      if (sess.uType == "ADN_MD_COUNTRY") {
         resultArr = arr;
       } else {
         for (let data of arr) {
@@ -1585,7 +1655,7 @@ export default {
       let asrIDs = [];
       let resultInfo = [];
       for (let com of resultArr) {
-        if (!asrIDs.join(',').includes(com.asrID)) {
+        if (!asrIDs.join(",").includes(com.asrID)) {
           asrIDs.push(com.asrID);
           resultInfo.push(com);
         }
@@ -1593,120 +1663,134 @@ export default {
       return resultInfo;
     },
     // 解除预锁
-    clearLock (row) {
-      this.$confirm('<p>解锁后，方案中的点位将被释放</p>', '是否确认解锁该方案的点位', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        dangerouslyUseHTMLString: true
-      }).then(() => {
-        this.cityChoose = [];
-        this.isLock = false;
-        this.currentItem = row;
-        this.cityList = this.getCityList(row.cityArea);
-        if (this.isNation) {
-          this.dialogVisible = true;
-        } else {
-          //地方媒介
-          this.Ctrlloading = this.$loading({
-            text: '请耐心等待...',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          });
-          if (this.isLock) {
-            this.LockCity(this.cityList, 'L');
-          } else {
-            this.noLockCity(this.cityList);
-          }
-          this.dialogVisible = false;
+    clearLock(row) {
+      this.$confirm(
+        "<p>解锁后，方案中的点位将被释放</p>",
+        "是否确认解锁该方案的点位",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          dangerouslyUseHTMLString: true,
         }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消操作'
+      )
+        .then(() => {
+          this.cityChoose = [];
+          this.isLock = false;
+          this.currentItem = row;
+          this.cityList = this.getCityList(row.cityArea);
+          if (this.isNation) {
+            this.dialogVisible = true;
+          } else {
+            //地方媒介
+            this.Ctrlloading = this.$loading({
+              text: "请耐心等待...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)",
+            });
+            if (this.isLock) {
+              this.LockCity(this.cityList, "L");
+            } else {
+              this.noLockCity(this.cityList);
+            }
+            this.dialogVisible = false;
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消操作",
+          });
         });
-      });
-
     },
     // 检查当前拆分方案是否有点位被删除
-    checkPoin (row) {
+    checkPoin(row) {
       let params = {
-        apID: row.apID
-      }
+        apID: row.apID,
+      };
       return new Promise((resolve, reject) => {
-        api.getApi(this.apiVar.Advertisement + '/BeforeSplitAdPlanCheck', params).then(res => {
-          console.log('检查点位是否被占用', res)
-          if (res.data.SysCode === 200200) {
-            resolve(true)
-          } else if (res.data.SysCode === 200500) {
-            this.$confirm(`${res.data.data}`, '确认拆单', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              // 方案拆单
-              resolve(true)
-            }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: '已取消拆单'
-              });
-              resolve(false)
-            });
-          } else {
-            sessFun.messageFun('warning', res.data.MSG || '检查占用点位异常')
-            resolve(false)
-          }
-        })
-      }).catch(() => resolve(false))
+        api
+          .getApi(this.apiVar.Advertisement + "/BeforeSplitAdPlanCheck", params)
+          .then((res) => {
+            console.log("检查点位是否被占用", res);
+            if (res.data.SysCode === 200200) {
+              resolve(true);
+            } else if (res.data.SysCode === 200500) {
+              this.$confirm(`${res.data.data}`, "确认拆单", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+              })
+                .then(() => {
+                  // 方案拆单
+                  resolve(true);
+                })
+                .catch(() => {
+                  this.$message({
+                    type: "info",
+                    message: "已取消拆单",
+                  });
+                  resolve(false);
+                });
+            } else {
+              sessFun.messageFun("warning", res.data.MSG || "检查占用点位异常");
+              resolve(false);
+            }
+          });
+      }).catch(() => resolve(false));
     },
     // KA方案拆分
-    splitAdPlan (row) {
+    splitAdPlan(row) {
       if (row.planMode == 1) {
         // 意向方案
-        api.postApi('/addsp/proposal/splitAdPlan', { apID: row.apID }).then(res => {
-          console.log('方案拆分res', res)
-          if (res.data.SysCode === 200200) {
-            sessFun.messageFun('success', '拆分成功')
-            this.searchFun()
-          } else {
-            sessFun.messageFun('warning', res.data.MSG || '方案异常')
-          }
-        })
+        api
+          .postApi("/addsp/proposal/splitAdPlan", { apID: row.apID })
+          .then((res) => {
+            console.log("方案拆分res", res);
+            if (res.data.SysCode === 200200) {
+              sessFun.messageFun("success", "拆分成功");
+              this.searchFun();
+            } else {
+              sessFun.messageFun("warning", res.data.MSG || "方案异常");
+            }
+          });
       } else {
-        this.checkPoin(row).then(res => {
-          if (res === true) {
-            api.getApi(this.apiVar.Advertisement + '/SplitAdPlan', { apID: row.apID }).then(res => {
-              console.log('方案拆分res', res)
-              if (res.data.SysCode === 200200) {
-                sessFun.messageFun('success', '拆分成功')
-                this.searchFun()
-              } else {
-                sessFun.messageFun('warning', res.data.MSG || '方案异常')
-              }
-            })
-
-          }
-        }).catch(error => {
-
-        })
+        this.checkPoin(row)
+          .then((res) => {
+            if (res === true) {
+              api
+                .getApi(this.apiVar.Advertisement + "/SplitAdPlan", {
+                  apID: row.apID,
+                })
+                .then((res) => {
+                  console.log("方案拆分res", res);
+                  if (res.data.SysCode === 200200) {
+                    sessFun.messageFun("success", "拆分成功");
+                    this.searchFun();
+                  } else {
+                    sessFun.messageFun("warning", res.data.MSG || "方案异常");
+                  }
+                });
+            }
+          })
+          .catch((error) => {});
       }
     },
-    cancelLock () {
+    cancelLock() {
       this.dialogVisible = false;
       this.$message({
-        type: 'info',
-        message: '已取消操作'
+        type: "info",
+        message: "已取消操作",
       });
     },
     // 确定预锁
-    confirmLock () {
+    confirmLock() {
       console.log(this.cityChoose);
       if (this.cityChoose.length) {
         this.Ctrlloading = this.$loading({
-          text: '请耐心等待...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
+          text: "请耐心等待...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
         });
         let arr = [];
         for (let select of this.cityChoose) {
@@ -1719,22 +1803,22 @@ export default {
         }
 
         if (this.isLock) {
-          this.LockCity(arr, 'L');
+          this.LockCity(arr, "L");
         } else {
           this.noLockCity(arr);
         }
         this.dialogVisible = false;
       } else {
         if (this.isLock) {
-          this.messageFun('warning', '请选择预锁公司！');
+          this.messageFun("warning", "请选择预锁公司！");
         } else {
-          this.messageFun('warning', '请选择解锁公司！');
+          this.messageFun("warning", "请选择解锁公司！");
         }
       }
     },
     // 预锁
-    LockCity (arr, act) {
-      console.log('lockcity----', arr);
+    LockCity(arr, act) {
+      console.log("lockcity----", arr);
       let asrIDs = [];
       for (let data of arr) {
         asrIDs.push(data.asrID);
@@ -1745,32 +1829,34 @@ export default {
         token: this.sessionData.token,
         act: act,
         apid: apid,
-        asrIDs: asrIDs.join(',')
+        asrIDs: asrIDs.join(","),
       };
       console.log(info);
-      api.postApi(this.apiVar.Advertisement + '/SetFangan', info).then(res => {
-        if (res.data.SysCode == 300200) {
-          this.searchFun();
-          this.messageFun('success', res.data.MSG);
-
-        } else if (res.data.SysCode == 300500) {
-          if (res.data.asList) {
-            // 存在点位被占，是否立即去方案详情修改？
-            this.changeRoute();
+      api
+        .postApi(this.apiVar.Advertisement + "/SetFangan", info)
+        .then((res) => {
+          if (res.data.SysCode == 300200) {
+            this.searchFun();
+            this.messageFun("success", res.data.MSG);
+          } else if (res.data.SysCode == 300500) {
+            if (res.data.asList) {
+              // 存在点位被占，是否立即去方案详情修改？
+              this.changeRoute();
+            } else {
+              this.messageFun("warning", res.data.MSG);
+            }
           } else {
-            this.messageFun('warning', res.data.MSG);
+            this.messageFun("warning", res.data.MSG);
           }
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-        this.Ctrlloading.close();
-      }).catch(err => {
-        console.log(err);
-        this.Ctrlloading.close();
-      });
+          this.Ctrlloading.close();
+        })
+        .catch((err) => {
+          console.log(err);
+          this.Ctrlloading.close();
+        });
     },
     // 解锁
-    noLockCity (arr) {
+    noLockCity(arr) {
       let asrIDs = [];
       for (let data of arr) {
         asrIDs.push(data.asrID);
@@ -1780,66 +1866,73 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apId: apid,
-        asrIDs: asrIDs
+        asrIDs: asrIDs,
       };
       console.log(info);
-      api.postApi(this.apiVar.Advertisement + '/ClFangan', info).then(res => {
-        console.log(res.data);
-        this.Ctrlloading.close();
-        this.searchFun();
-        this.messageFun('success', res.data.MSG);
-      }).catch(err => {
-        console.log(err);
-        this.Ctrlloading.close();
-      });
+      api
+        .postApi(this.apiVar.Advertisement + "/ClFangan", info)
+        .then((res) => {
+          console.log(res.data);
+          this.Ctrlloading.close();
+          this.searchFun();
+          this.messageFun("success", res.data.MSG);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.Ctrlloading.close();
+        });
     },
     // 7天以上显示7天,否则显示相隔天数
-    countDay (time) {
+    countDay(time) {
       let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
-      console.log('dayA-----', dayA);
+      console.log("dayA-----", dayA);
       let RemainDay = dayA > 7 ? 7 : dayA;
       return RemainDay;
     },
     // 弹出框修改路径
-    changeRoute () {
-      this.$confirm(
-        `存在点位被占，是否修改方案？`,
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
+    changeRoute() {
+      this.$confirm(`存在点位被占，是否修改方案？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
         .then(() => {
           this.ToEdit(this.currentItem);
         })
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消操作'
+            type: "info",
+            message: "已取消操作",
           });
         });
     },
     // 搜索（优化）
-    search () {
-      let { keyword, rangeDate, status, company, cityWord, Lock, dateType } = this.searchInfo;
+    search() {
+      let { keyword, rangeDate, status, company, cityWord, Lock, dateType } =
+        this.searchInfo;
       this.isSearch = false;
       let timer = setTimeout(() => {
         this.isSearch = true;
         clearTimeout(timer);
       }, 1000);
-      if (keyword || rangeDate || status >= -1 || company || cityWord || Lock || dateType) {
+      if (
+        keyword ||
+        rangeDate ||
+        status >= -1 ||
+        company ||
+        cityWord ||
+        Lock ||
+        dateType
+      ) {
         this.currentPlan = [];
         this.loading = true;
         this.currPage = 1;
         this.searchFun();
-
       } else {
-        this.messageFun('warning', '请输入搜索条件');
+        this.messageFun("warning", "请输入搜索条件");
       }
     },
-    searchFun () {
+    searchFun() {
       this.paginationShow = false;
       this.loading = true;
       let info = this.searchFormat();
@@ -1849,45 +1942,56 @@ export default {
       });
     },
     // 搜索数据格式化
-    searchFormat () {
+    searchFormat() {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         start: this.currPage,
-        pagesize: this.pageSize
+        pagesize: this.pageSize,
       };
-      let { select, keyword, rangeDate, status, company, cityWord, Lock, orderby, desc, dateType } = this.searchInfo;
+      let {
+        select,
+        keyword,
+        rangeDate,
+        status,
+        company,
+        cityWord,
+        Lock,
+        orderby,
+        desc,
+        dateType,
+      } = this.searchInfo;
       info = {
         ...info,
         ...(keyword && { keywordType: select, keyword }),
         ...(rangeDate && { starttime: rangeDate[0], andtime: rangeDate[1] }),
-        ...(status !== '' && status >= -1 && { apstate: status }),
+        ...(status !== "" && status >= -1 && { apstate: status }),
         ...(company && { asrID: company }),
         ...(cityWord && { rname: cityWord }),
         ...(Lock && { onyusuo: Lock }),
         ...(orderby && { orderby }),
-        ...(desc !== '' && desc >= 0 && { desc }),
-        ...(rangeDate && { timeType: dateType })
+        ...(desc !== "" && desc >= 0 && { desc }),
+        ...(rangeDate && { timeType: dateType }),
       };
       return info;
     },
     // 设置表格数据
-    setTableData (item) {
+    setTableData(item) {
       let obj = {
         apSrc: item.src,
         adcID: item.adcID,
         apID: item.apID,
-        apName: item.apName || '',
-        apState: item.apState || '',
+        apName: item.apName || "",
+        apState: item.apState || "",
         planMode: item.planMode || 0,
-        apTotal: item.apTotal || '',
-        apcTime: item.apcTime || '',
-        bTitle: item.bTitle || '--',
-        cName: item.cName || '',
-        realName: item.realName || '',
+        apTotal: item.apTotal || "",
+        apcTime: item.apcTime || "",
+        bTitle: item.bTitle || "--",
+        cName: item.cName || "",
+        realName: item.realName || "",
         cityArea: [],
         // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
-        apControlLevel: item.apControlLevel   // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
+        apControlLevel: item.apControlLevel, // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
       };
       item.details.sort((a, b) => {
         return a.asrID - b.asrID;
@@ -1895,37 +1999,36 @@ export default {
       let asrIDarr = [];
       obj.canLock = item.details.some(function (item, index) {
         return !item.RemainDay;
-      })
+      });
       obj.unLock = item.details.some(function (item, index) {
         return item.RemainDay;
-      })
+      });
       for (let data of item.details) {
-        data.apState = item.apState //新增字段,判断是否是意向方案,点位面数显示为--
+        data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--
         if (asrIDarr.includes(data.asrID)) {
           data.isshow = 0;
         } else {
           asrIDarr.push(data.asrID);
           data.isshow = 1;
         }
-
       }
       obj.cityArea = item.details;
       return obj;
     },
-    formatJson (filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     // 重置
-    reset () {
+    reset() {
       this.searchInfo = {
         select: "1",
         keyword: "",
         rangeDate: "",
-        status: '',
-        company: '',
-        cityWord: '',
-        Lock: '',
-        dateType: '0',
+        status: "",
+        company: "",
+        cityWord: "",
+        Lock: "",
+        dateType: "0",
       };
 
       this.currPage = 1;
@@ -1938,68 +2041,75 @@ export default {
       this.searchFun();
     },
     // 操作提示统一方法
-    messageFun (mesType, mes) {
+    messageFun(mesType, mes) {
       this.$message({
         message: mes,
         type: mesType,
         showClose: true,
-      })
+      });
     },
     //清除意向方案缓存
-    clearProposalAdPlanBackups (params) {
-      api.postApi(this.apiVar.AddspProposal + '/cleanAdBackUp', params).then(res => {
-        console.log('清空意向方案缓存的方案', res)
-        if (res.data.SysCode == 200200) {
-          console.log('缓存意向方案清除成功')
-        } else {
-          console.log('缓存意向方案清除失败')
-        }
-      })
-      cacheAdPlan.removeData(this.sessionData.uID)
-      this.routeSelect()
+    clearProposalAdPlanBackups(params) {
+      api
+        .postApi(this.apiVar.AddspProposal + "/cleanAdBackUp", params)
+        .then((res) => {
+          console.log("清空意向方案缓存的方案", res);
+          if (res.data.SysCode == 200200) {
+            console.log("缓存意向方案清除成功");
+          } else {
+            console.log("缓存意向方案清除失败");
+          }
+        });
+      cacheAdPlan.removeData(this.sessionData.uID);
+      this.routeSelect();
     },
     // 放弃继续编辑
-    cancelEdit () {
-      this.$confirm('放弃后将清除该方案信息!', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+    cancelEdit() {
+      this.$confirm("放弃后将清除该方案信息!", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
         showClose: false,
-        type: 'warning '
-      }).then(() => {
-        this.unfinishedDialogVisible = false
-        let params = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token
-        }
-        if (this.IsSevenBD) {
-          this.clearProposalAdPlanBackups(params)
-        } else {
-          api.postApi(this.apiVar.Advertisement + '/clearAdPlanBackups', params).then(res => {
-            console.log('清空缓存的方案', res)
-            if (res.data.SysCode == 200200) {
-              console.log('缓存方案清除成功')
-            } else {
-
-            }
-          })
-          cacheAdPlan.removeData(this.sessionData.uID)
-          this.routeSelect()
-        }
-
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消成功'
-        });
+        type: "warning ",
       })
+        .then(() => {
+          this.unfinishedDialogVisible = false;
+          let params = {
+            uid: this.sessionData.uID,
+            token: this.sessionData.token,
+          };
+          if (this.IsSevenBD) {
+            this.clearProposalAdPlanBackups(params);
+          } else {
+            api
+              .postApi(
+                this.apiVar.Advertisement + "/clearAdPlanBackups",
+                params
+              )
+              .then((res) => {
+                console.log("清空缓存的方案", res);
+                if (res.data.SysCode == 200200) {
+                  console.log("缓存方案清除成功");
+                } else {
+                }
+              });
+            cacheAdPlan.removeData(this.sessionData.uID);
+            this.routeSelect();
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消成功",
+          });
+        });
     },
     // 继续创建
-    continueEdit () {
+    continueEdit() {
       this.continueEditLoading = this.$loading({
         lock: true,
-        text: '方案数据获取中...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
+        text: "方案数据获取中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
       });
       if (this.IsSevenBD) {
         this.$router.push("./createPlan?unfinishedPlan");
@@ -2007,158 +2117,173 @@ export default {
         this.$router.push("./createPlanOld?unfinishedPlan");
       }
 
-      this.unfinishedDialogVisible = false
+      this.unfinishedDialogVisible = false;
     },
     /**
      * 周边小区导出
      * */
-    exportRes () {
+    exportRes() {
       // 数据初始化
-      this.exportResStep = 1
+      this.exportResStep = 1;
       this.exportInfo = {
-        date: '',
-        mediaTypeIds: '',
-        radius: '',
-        type: '',
-      }
-      this.exportFileData = []
-      this.isResExport = true
-      this.getAllMediaTypes()
+        date: "",
+        mediaTypeIds: "",
+        radius: "",
+        type: "",
+      };
+      this.exportFileData = [];
+      this.isResExport = true;
+      this.getAllMediaTypes();
     },
     // 个人权限公司下媒体类型列表
     getAllMediaTypes() {
-      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
-        if (res.data.SysCode == 200200) {
-          this.allMediaTypes = res.data.data || []
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-      })
+      api
+        .getApi("/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes")
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.allMediaTypes = res.data.data || [];
+          } else {
+            this.messageFun("warning", res.data.MSG);
+          }
+        });
     },
-    exportUploadFile (params) {
+    exportUploadFile(params) {
       this.exportFileData = [];
       let fileObj = params.file;
       this.exportFileData.push(fileObj);
-      console.log('上传周边', params);
+      console.log("上传周边", params);
     },
     // 文件删除
-    exportFileRemove (file, fileList) {
+    exportFileRemove(file, fileList) {
       console.log(file, fileList);
-      this.exportFileData = fileList
+      this.exportFileData = fileList;
     },
     //周边小区导出下一步
-    nextExportRes () {
+    nextExportRes() {
       if (this.exportResStep === 1) {
         if (!Array.isArray(this.exportInfo.date)) {
-          sessFun.messageFun('warning', '请选择投放排期')
-          return
+          sessFun.messageFun("warning", "请选择投放排期");
+          return;
         }
         if (!this.exportInfo.radius) {
-          sessFun.messageFun('warning', '请填写半径范围')
-          return
+          sessFun.messageFun("warning", "请填写半径范围");
+          return;
         } else {
-          if (!(/(^[1-9]\d*$)/.test(this.exportInfo.radius)) || this.exportInfo.radius > 10000) {
-            sessFun.messageFun('warning', '请输入1~10000的整数')
+          if (
+            !/(^[1-9]\d*$)/.test(this.exportInfo.radius) ||
+            this.exportInfo.radius > 10000
+          ) {
+            sessFun.messageFun("warning", "请输入1~10000的整数");
             return;
           }
         }
         if (!this.exportInfo.type) {
-          sessFun.messageFun('warning', '请选择类型')
-          return
+          sessFun.messageFun("warning", "请选择类型");
+          return;
         }
-        this.exportResStep += 1
+        this.exportResStep += 1;
       } else if (this.exportResStep < 3) {
-        this.exportResStep += 1
+        this.exportResStep += 1;
       } else {
-        console.log('exportFileData', this.exportFileData)
-        this.isBroundImport = true
+        console.log("exportFileData", this.exportFileData);
+        this.isBroundImport = true;
         if (this.exportFileData.length) {
-          sessFun.messageFun('warning', '导出excel可能需要一分钟甚至更长时间!')
-          this.importBroundRes()
+          sessFun.messageFun("warning", "导出excel可能需要一分钟甚至更长时间!");
+          this.importBroundRes();
         } else {
-          sessFun.messageFun('warning', '请先上传文件！')
-          this.isBroundImport = false
+          sessFun.messageFun("warning", "请先上传文件！");
+          this.isBroundImport = false;
         }
       }
     },
     // 导出周边小区
-    importBroundRes () {
+    importBroundRes() {
       let formData = new FormData();
-      formData.append('file', this.exportFileData[0]);
-      formData.append('radius', this.exportInfo.radius);
-      formData.append('startDate', this.exportInfo.date[0]);
-      formData.append('endDate', this.exportInfo.date[1]);
-      formData.append('type', this.exportInfo.type);
-      formData.append('mediaTypeIds', this.exportInfo.mediaTypeIds.join(','));
-      if ((this.sessionData.uType == 'ADN_MD') || (this.sessionData.uType == 'ADN_BD')) {
-        formData.append('asrId', this.sessionData.asrID);
+      formData.append("file", this.exportFileData[0]);
+      formData.append("radius", this.exportInfo.radius);
+      formData.append("startDate", this.exportInfo.date[0]);
+      formData.append("endDate", this.exportInfo.date[1]);
+      formData.append("type", this.exportInfo.type);
+      formData.append("mediaTypeIds", this.exportInfo.mediaTypeIds.join(","));
+      if (
+        this.sessionData.uType == "ADN_MD" ||
+        this.sessionData.uType == "ADN_BD"
+      ) {
+        formData.append("asrId", this.sessionData.asrID);
       }
       // 上传文件
-      const tempPage = window.open('', '_blank');
-      api.postExportFile(this.exportAction, formData).then(res => {
-        if (res.data.SysCode == 200200) {
-          let routeUrl = this.$router.resolve({
-            path: "/progressDown",
-            query: { downtype: 3, uqKey: res.data.data.uqKey || "" },
-          });
-          tempPage.location = routeUrl.href;
-        } else {
-          this.$message({
-            message: res.data.MSG || "导出失败！",
-            type: 'warning',
-            showClose: true,
-            duration: 0
-          });
-        }
-        this.isBroundImport = false;
-        this.isResExport = false;
-      }).catch(res => {
-        console.error("导出周边小区", res);
-      });
+      const tempPage = window.open("", "_blank");
+      api
+        .postExportFile(this.exportAction, formData)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let routeUrl = this.$router.resolve({
+              path: "/progressDown",
+              query: { downtype: 3, uqKey: res.data.data.uqKey || "" },
+            });
+            tempPage.location = routeUrl.href;
+          } else {
+            this.$message({
+              message: res.data.MSG || "导出失败！",
+              type: "warning",
+              showClose: true,
+              duration: 0,
+            });
+          }
+          this.isBroundImport = false;
+          this.isResExport = false;
+        })
+        .catch((res) => {
+          console.error("导出周边小区", res);
+        });
     },
 
     // 删除方案
-    deleteAdPlan (row) {
-      console.log(this.apiVar, 'this.apiVar')
-      console.log(row)
+    deleteAdPlan(row) {
+      console.log(this.apiVar, "this.apiVar");
+      console.log(row);
 
       if (row.apState == 1 && !row.canLock) {
-        return sessFun.messageFun('warning', '删除失败，请先将方案解锁后再进行删除操作!')
+        return sessFun.messageFun(
+          "warning",
+          "删除失败，请先将方案解锁后再进行删除操作!"
+        );
       }
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apid: row.apID
-      }
-      this.$confirm('点击【确认】该方案将被移除至回收站', '确定删除该方案？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+        apid: row.apID,
+      };
+      this.$confirm("点击【确认】该方案将被移除至回收站", "确定删除该方案？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       }).then(() => {
-        api.postApi(this.apiVar.Advertisement + '/DeleteAdPlan', params).then(res => {
-          console.log('删除', res)
-          if (res.data.SysCode == 300200) {
-            this.messageFun('success', res.data.MSG);
-            this.reset();
-          } else {
-            this.messageFun('warning', res.data.MSG);
-          }
-        })
-      })
-
+        api
+          .postApi(this.apiVar.Advertisement + "/DeleteAdPlan", params)
+          .then((res) => {
+            console.log("删除", res);
+            if (res.data.SysCode == 300200) {
+              this.messageFun("success", res.data.MSG);
+              this.reset();
+            } else {
+              this.messageFun("warning", res.data.MSG);
+            }
+          });
+      });
     },
 
     // 回收站
-    openRecycleBin () {
-      this.isShowRecycleBin = true
-      console.log(this.isShowRecycleBin, 'this.isShowRecycleBin')
+    openRecycleBin() {
+      this.isShowRecycleBin = true;
+      console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
+    },
+  },
+  beforeDestroy() {
+    if (this.continueEditLoading) {
+      this.continueEditLoading.close();
     }
   },
-  beforeDestroy () {
-    if (this.continueEditLoading) {
-      this.continueEditLoading.close()
-    }
-  }
 };
 </script>
 <style lang="scss" scoped>

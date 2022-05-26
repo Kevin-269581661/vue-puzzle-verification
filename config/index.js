@@ -10,16 +10,30 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
-    // proxyTable: {
-    //   '/api': {  //使用"/api"来代替
-    //     target: 'https://beta.qinlinad.com/QADN', //源地址
-    //     changeOrigin: true, //改变源
-    //     pathRewrite: {
-    //       '^/api': '' //路径重写
-    //     }
-    //   }
-    // },
+    // proxyTable: {},
+    proxyTable: {
+      '/devURL/': {  //使用"/api"来代替
+        target: 'https://test-qadn.qinlindmp.com/', //源地址
+        changeOrigin: true, //改变源
+        pathRewrite: {
+          '^/devURL': '' //路径重写
+        }
+      },
+      '/devURL/national/': {  //使用"/api"来代替
+        target: 'http://192.168.1.173:8040/', //源地址
+        changeOrigin: true, //改变源
+        pathRewrite: {
+          '^/devURL': '' //路径重写
+        }
+      },
+      '/devURL/UCAPI/': {  //使用"/api"来代替
+        target: 'http://192.168.1.173:8010/', //源地址
+        changeOrigin: true, //改变源
+        pathRewrite: {
+          '^/devURL': '' //路径重写
+        }
+      }
+    },
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
     host:'0.0.0.0',

@@ -17,7 +17,7 @@ if(process.env.NODE_ENV == 'development'){
 }
 const apiRoot = {
     // devURL: '"http://192.168.1.239/"',
-    devURL: '"https://test-qadn.qinlindmp.com/"',
+    devURL: '"/devURL/"',
     // testURL: '"http://192.168.1.239/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',
     // 对外灰度域名

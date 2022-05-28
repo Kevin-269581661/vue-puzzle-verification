@@ -324,10 +324,10 @@
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
                       v-if="
-                        !(
-                          scope.row.apState == 0 ||
-                          scope.row.apState == 5 ||
-                          role != 'ADN_SM'
+                        (
+                          scope.row.apState !== 0 &&
+                          scope.row.apState !== 5 &&
+                          role === 'ADN_SM'
                         )
                       "
                       @click.native.prevent="finishOrder(scope.row)"
@@ -833,10 +833,7 @@ export default {
     // 结束订单
     finishOrder(row) {
       let info = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        apid: row.apID,
-        act: "E",
+        apID: row.apID
       };
       MessageBox.confirm(
         "结束后，[ <b>" +
@@ -860,10 +857,10 @@ export default {
             background: "rgba(0, 0, 0, 0.7)",
           });
           api
-            .postApi(this.apiVar.Advertisement + "/SetFangan", info)
+            .postApi("/national/api/v1/nationalAdPlan/stopAdPlan", info)
             .then((res) => {
               // console.log(res.data);
-              if (res.data.SysCode == 300200) {
+              if (res.data.SysCode == 200200) {
                 //结束订单成功
                 loading.close();
                 let price = row.apTotal

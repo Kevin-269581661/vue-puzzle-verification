@@ -6,7 +6,7 @@
     element-loading-spinner="el-icon-loading"
   >
     <!-- 上下刊 -->
-    <template v-if="type == 1 || type == 2">
+    <template v-if="type === 0 || type === 1">
       <template>
         <el-radio-group
           v-model="publishSearchInfo.mediaType"
@@ -355,11 +355,11 @@
                 ><i class="el-icon-date date_fa" type="text"></i
                 >{{ item.assetTag }}</span
               >
-              <span v-if="type == 1 || type == 2"
+              <span v-if="type === 0 || type === 1"
                 ><i class="el-icon-date date_fa" type="text"></i
                 >{{ item.timeRange }}</span
               >
-              <span v-if="type == 3"
+              <span v-if="type === 2"
                 ><i class="el-icon-date date_fa" type="text"></i>换画日期:{{
                   item.replaceDate
                 }}</span
@@ -770,6 +770,10 @@
           <el-col class="flex_box imgpain_box">
             <span>换画素材：</span>
             <el-upload
+              :headers="{
+                uid: sessionData.uID,
+                token: sessionData.token,
+              }"
               :action="doUpload"
               list-type="picture-card"
               :file-list="imgUrl"
@@ -841,6 +845,10 @@
           <span>换画素材：</span>
           <el-upload
             :action="doUpload"
+            :headers="{
+              uid: sessionData.uID,
+              token: sessionData.token,
+            }"
             list-type="picture-card"
             :file-list="imgUrl"
             :before-upload="beforeUpload"
@@ -936,6 +944,7 @@ export default {
   },
   data() {
     return {
+      sessionData: sessFun.getSess(),
       mediaTypeList: [],
       // 上下刊搜索
       publishSearchInfo: {
@@ -1094,7 +1103,7 @@ export default {
       // 上传图片以及换画日期弹出框
       isShowEdit: false,
       // 上传图片地址
-      doUpload: "/advertisement/UpLoad",
+      doUpload: "http://192.168.1.177:8040/national/api/v1/photo/upload",
       // doUpload: "http://192.168.1.239/advertisement/UpLoad",
       imgUrl: [],
       allEditInfo: {
@@ -1137,7 +1146,6 @@ export default {
     };
   },
   mounted() {
-    this.sessionData = sessFun.getSess();
     // 获取城市区域
     this.getCitys();
     //获取换画城市列表
@@ -1146,10 +1154,14 @@ export default {
     this.getResArr();
     //得到换画排期筛选列表
     this.getAdChangeLaunchDateList();
-    this.getAdsUploadImgCnt();
+    if (this.type == 0 || this.type == 1) {
+      this.getAdsUploadImgCnt();
+    } else if (this.type === 2) {
+      this.getImgArr();
+    }
   },
   watch: {
-    fromType(newVal, oldVal) {
+    fromType() {
       this.getPainList().then((res) => {
         this.isShowPic = true;
         this.editReport(false);
@@ -1194,30 +1206,30 @@ export default {
     },
     //获取媒体类型及上下刊点位数量和上传图片数量
     getAdsUploadImgCnt() {
+      let info = {
+        apID: this.apId,
+        companyId: this.companyId,
+      };
       if (this.type === 0 || this.type === 1) {
-        let info = {
-          apID: this.apId,
-          imgType: this.type,
-          companyId: this.companyId,
-        };
-        api
-          .getApi("/national/api/v1/nationalAdPlan/getAdsUploadImgCnt", info)
-          .then((res) => {
-            if (res.data.SysCode == 200200) {
-              let _data = res.data.data;
-              this.mediaTypeList = _data;
-              this.publishSearchInfo.mediaType = _data[0]
-                ? _data[0].mediaTypeId
-                : null;
-
-              // 获取报告列表
-              this.getImgArr();
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        info.imgType = this.type;
       }
+      api
+        .getApi("/national/api/v1/nationalAdPlan/getAdsUploadImgCnt", info)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let _data = res.data.data;
+            this.mediaTypeList = _data;
+            this.publishSearchInfo.mediaType = _data[0]
+              ? _data[0].mediaTypeId
+              : null;
+
+            // 获取报告列表
+            this.getImgArr();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     // 改变页数
     sizeChange(pageVal) {
@@ -1249,7 +1261,7 @@ export default {
         // 上下刊报告列表
         this.searchFun();
       } else if (this.type == 2) {
-        // // 获取换画名称列表
+        // 获取换画名称列表
         this.getPainList().then((res) => {
           // 换画报告列表
           if (this.painList.length > 0) {
@@ -1533,9 +1545,6 @@ export default {
       }
       return pIDList;
     }, */
-    /**
-     * 换画报告列表
-     */
     // 获取全部换画列表(换画名称以及id)
     getPainList() {
       let promise = new Promise((resolve, reject) => {
@@ -1544,7 +1553,6 @@ export default {
           companyId: this.companyId,
         };
         api.getApi("/national/api/v1/replace/list", info).then((res) => {
-          console.log("换画报告列表---", res.data);
           if (res.data.SysCode == 200200) {
             this.painList = res.data.data.map((item) => {
               return {
@@ -1646,7 +1654,6 @@ export default {
     },
     // 搜索换画列表条件
     searchPointFormat() {
-      console.log(this.painList, this.activePainIndex, "point--active--");
       let { mediaType, city, resName, status, prStatus } = this.searchInfo;
       let { currPage, pageSize } = this.pageInfo;
       let info = {
@@ -1895,18 +1902,15 @@ export default {
           });
         }
       }
-      console.log(this.selectList, "one--shoplist");
     },
     // 全选
     handleSelectAll(selection) {
-      console.log(selection, "selection-----all");
       if (selection.length) {
         for (let data of selection) {
           if (!this.isHaveFun(this.shoplist, data)) {
             this.shoplist.push(data);
           }
           if (!this.isHaveFun(this.selectList, data)) {
-            // this.selectNum++
             this.selectList.push(data);
           }
         }
@@ -1923,7 +1927,6 @@ export default {
           if (this.isHaveFun(this.selectList, data)) {
             this.selectList = this.selectList.filter((item) => {
               if (item.lID == data.lID) {
-                // this.selectNum--
                 return false;
               }
               return true;
@@ -1931,7 +1934,6 @@ export default {
           }
         }
       }
-      console.log(this.selectList, "all--shoplist");
     },
     // 判断一个对象是否已经在数组中
     isHaveFun(arr, obj) {
@@ -1948,12 +1950,10 @@ export default {
     },
     // 是否勾选更新
     selectioUpdate(type) {
-      console.log(type, this.shoplist, this.selectList, "arr---point--");
       let timer = setTimeout(() => {
         for (let item of this.selectList) {
           for (let data of this.pointArr) {
             if (data.lID == item.lID) {
-              // console.log(data);
               this.$refs.multipleTable.toggleRowSelection(data, true);
             }
           }
@@ -2133,8 +2133,9 @@ export default {
     },
     // 上传成功
     onsucess(res, file) {
+      const { data } = res;
       this.imgUrl = [];
-      let resImg = { name: "图片1", url: res[0].pURL };
+      let resImg = { name: "图片1", url: data.pURL };
       this.imgUrl = [resImg];
       console.log(this.imgUrl);
     },
@@ -2142,21 +2143,9 @@ export default {
     delectImg(res, file) {
       this.imgUrl = [];
       this.oneEditInfo.url = "";
-      // for (let data of this.pointArr) {
-      //     if (data.lID == this.changePicDetailInfo.lID) {
-      //         data.imgUrl = '';
-      //         data.uploadUser = this.sessionData.uID;
-      //         // this.selectNum=0
-      //         this.$refs.multipleTable.toggleRowSelection(data, false);
-      //         break;
-      //     }
-      // }
-
-      // console.log('删除图片', this.MaterDetailInfo);
     },
     // 提交换画信息
     confirmChange(type) {
-      console.log(this.selectList);
       this.handleFlag = true;
       if (type == "all") {
         let { date, url, remark } = this.allEditInfo;
@@ -2166,7 +2155,6 @@ export default {
           if (this.imgUrl[0]) {
             this.allEditInfo.url = this.imgUrl[0].url;
           }
-          console.log(this.allEditInfo, "allEditInfo---");
           for (let data of this.shoplist) {
             for (let item of this.selectList) {
               if (data.lID == item.lID) {
@@ -2187,7 +2175,6 @@ export default {
               }
             }
           }
-          // this.selectNum = 0
           this.selectList = [];
         } else {
           sessFun.messageFun("warning", "请选择换画日期!");
@@ -2202,15 +2189,11 @@ export default {
           } else {
             this.oneEditInfo.url = "";
           }
-          console.log(this.oneEditInfo, "oneEditInfo---");
           for (let data of this.pointArr) {
             if (data.lID == this.changePicDetailInfo.lID) {
-              console.log(data);
               data.remark = this.oneEditInfo.remark;
               data.replaceDate = this.oneEditInfo.date;
               data.picUrl = this.oneEditInfo.url;
-              //取消选中
-              // this.selectNum--
               this.$refs.multipleTable.toggleRowSelection(data, false);
             }
           }
@@ -2246,15 +2229,14 @@ export default {
       let that = this;
       let len = this.painList.length;
       let painInfo = {
-        apId: this.apId,
+        apId: this.apId * 1,
+        companyId: this.companyId * 1,
         replaceRecordName: `换画${len + 1}`,
       };
       api
-        .postApi_json(this.apiVar.replace + "/report/add", painInfo)
+        .postApi_json("/national/api/v1/replace/saveRecord", painInfo)
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            // sessFun.messageFun('success', '新增换画报告成功！');
-            //保存
             let result = [];
             for (let data of this.shoplist) {
               let obj = {
@@ -2265,15 +2247,13 @@ export default {
               result.push(obj);
             }
             api
-              .postApi_json(
-                this.apiVar.replace + "/report/saveDetailInfo",
-                result
-              )
+              .postApi_json("/national/api/v1/replace/saveRecordDetail", result)
               .then((res) => {
                 if (res.data.SysCode == 200200) {
                   that.isShowPic = false;
                   if (len == 0) {
                     //创建第一个换画报告，在父组件添加tab
+                    console.log("that.$parent", that.$parent);
                     that.$parent.getPainlist();
                     that.$emit("toSixthTab", "sixth");
                   }
@@ -2307,7 +2287,7 @@ export default {
           result.push(obj);
         }
         api
-          .postApi_json(this.apiVar.replace + "/report/saveDetailInfo", result)
+          .postApi_json("/national/api/v1/replace/saveRecordDetail", result)
           .then((res) => {
             if (res.data.SysCode == 200200) {
               this.isShowPic = false;
@@ -2672,22 +2652,24 @@ export default {
         let info = {
           photoId: file.pID,
         };
-        api.postApi("/national/api/v1/photo/deletePlanPic", info).then((res) => {
-          // 实时更新进度条
-          if (res.data.SysCode == 200200) {
-            sessFun.messageFun("success", res.data.MSG);
-            if (this.type === 0 || this.type === 1) {
-              // 上下刊报告列表
-              //   this.searchFun();
-              this.getAdsUploadImgCnt();
-            } else if (this.type === 2) {
-              // 换画报告列表
-              this.search();
+        api
+          .postApi("/national/api/v1/photo/deletePlanPic", info)
+          .then((res) => {
+            // 实时更新进度条
+            if (res.data.SysCode == 200200) {
+              sessFun.messageFun("success", res.data.MSG);
+              if (this.type === 0 || this.type === 1) {
+                // 上下刊报告列表
+                //   this.searchFun();
+                this.getAdsUploadImgCnt();
+              } else if (this.type === 2) {
+                // 换画报告列表
+                this.search();
+              }
+            } else {
+              sessFun.messageFun("warning", res.data.MSG);
             }
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
+          });
       } else {
         let upLoad = this.uploadImgArr;
         for (let i = 0, iLen = upLoad.length; i < iLen; i++) {
@@ -2730,14 +2712,8 @@ export default {
         apName: this.orderDetail.apName,
         downtype: 1,
       };
-      if (type == 1) {
-        info.type = 0;
-      } else if (type == 2) {
-        info.type = 1;
-      } else {
-        info.type = 2;
-        info.replaceRecordId = this.painList[this.activePainIndex].id;
-      }
+      info.type = this.type;
+      info.replaceRecordId = this.painList[this.activePainIndex].id;
       this.downLoading = true;
       const tempPage = window.open("", "_blank");
       api
@@ -2763,13 +2739,14 @@ export default {
       let info = {
         apId: this.apId,
         type: this.type,
+        companyId: this.companyId
       };
-      if (type == 3) {
+      if (this.type === 2) {
         info.replaceRecordId = this.painList[this.activePainIndex].id;
       }
       this.updateLoading = true;
       api
-        .postApi(this.apiVar.Advertisement + "/UpdateSXReport", info)
+        .postApi_json("/national/api/v1/powerPoint/updateSXReport", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
             sessFun.messageFun("success", res.data.MSG);
@@ -2791,10 +2768,10 @@ export default {
         id = this.painList[this.activePainIndex].id;
       }
       const typeMap = {
-          0: 'SK',
-          1: 'XK',
-          2: 'HH'
-      }
+        0: "SK",
+        1: "XK",
+        2: "HH",
+      };
       api
         .getApi(this.apiVar.UCAPI + "/EncryptNo", { num: id })
         .then((res) => {

@@ -495,20 +495,20 @@
         </span>
       </el-dialog>
       <!--excel导入点位对话框-->
-      <import-point-by-excel
+      <ImportPointByExcelCountry
         :dialogImportPoint="dialogImportPoint"
         :handleTime="handleTime"
         @resetDialogImportPoint="resetDialogImportPoint"
         @refreshCurrentTable="refreshCurrentTable"
-      ></import-point-by-excel>
+      ></ImportPointByExcelCountry>
       <!-- 更改排期对话框 -->
-      <changePointPlayDateRange
+      <ChangePointPlayDateRangeCountry
         :changeRangeDialog="changeRangeDialog"
         :changeList="changePointInfo.stopPointlist"
         :handleTime="handleTime"
         @resetDialogChangeRange="resetDialogChangeRange"
         @refreshCurrentTable="refreshCurrentTable"
-      ></changePointPlayDateRange>
+      ></ChangePointPlayDateRangeCountry>
       <!-- 图片查看显示 -->
       <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
         <img :src="dialogImageUrl" alt="" />
@@ -559,24 +559,12 @@
                   @click="stopPoint('stop')"
                   >终止点位
                 </el-button>
-                <el-select
+                <el-button
                   v-else-if="handleType === 3"
-                  size="mini"
-                  value="新增点位"
-                  placeholder="新增点位"
-                  class="add-point-select"
-                >
-                  <el-option
-                    label="手动添加"
-                    value="1"
-                    @click.native="showAddPointDialog"
-                  ></el-option>
-                  <el-option
-                    label="导入点位"
-                    value="2"
-                    @click.native="excelAddPointDialog"
-                  ></el-option>
-                </el-select>
+                  plain
+                  @click="excelAddPointDialog"
+                  >导入点位
+                </el-button>
               </div>
             </el-col>
           </el-row>
@@ -1020,8 +1008,8 @@ import apQuotation from "./components/apQuotation.vue";
 import material from "./components/materialInfo.vue";
 import detailInfo from "./components/detailInfo.vue";
 import AddAdsCountry from "./components/addAdsCountry";
-import importPointByExcel from "./components/importPointByExcel";
-import changePointPlayDateRange from "./components/changePointPlayDateRange";
+import ImportPointByExcelCountry from "./components/importPointByExcelCountry";
+import ChangePointPlayDateRangeCountry from "./components/ChangePointPlayDateRangeCountry";
 import noSearchResult from "./components/noSearchResult.vue";
 import ChangePicCountry from "./components/changePicCountry.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
@@ -1034,8 +1022,8 @@ export default {
     material,
     detailInfo,
     AddAdsCountry,
-    importPointByExcel,
-    changePointPlayDateRange,
+    ImportPointByExcelCountry,
+    ChangePointPlayDateRangeCountry,
     ChangePicCountry,
     noSearchResult,
     changeProposalOrderPrice,
@@ -1398,16 +1386,10 @@ export default {
             let info = {
               apID: this.orderDetail.apID,
               mark: this.handleTime,
-              orderNewAdsInfos: orderNewAdsInfos ? orderNewAdsInfos : [],
-              orderStoppedAdsInfos: orderStoppedAdsInfos
-                ? orderStoppedAdsInfos
-                : [],
+              orderStoppedLIds: (orderStoppedAdsInfos || []).map((_) => _.lID),
             };
             api
-              .postApi_json(
-                this.apiVar.Advertisement + "/UpdateOrder",
-                JSON.stringify(info)
-              )
+              .postApi_json("/national/api/v1/nationalAdPlan/stopAds", info)
               .then((res) => {
                 if (res.data.SysCode == 200200) {
                   Message.success(res.data.MSG);
@@ -1430,7 +1412,6 @@ export default {
                   this.changePointInfo.stopPointlist = [];
                   this.isHandleChange = true;
                   this.changePointPageFn();
-                  // this.refreshCurrentTable()
                 } else {
                   Message.warning(res.data.MSG);
                   this.dialogChangePoint = false;
@@ -1473,6 +1454,43 @@ export default {
     // 导出excel
     export2Excel(name) {
       this.isDown = true;
+      api
+        .getApi_file("/national/api/v1/excel/export/exportAds", {
+          apID: this.orderDetail.apID,
+          companyId: this.currentCompanyId,
+        })
+        .then((res) => {
+          if (res.data && res.data.SysCode) {
+            sessFun.messageFun("warning", res.data.MSG || "导出失败！");
+          } else if (res.data) {
+            let blob = new Blob([res.data], {
+              type: "application/vnd.ms-excel;charset=utf-8",
+            });
+            let downloadElement = document.createElement("a");
+            let href = window.URL.createObjectURL(blob); //创建下载的链接
+            downloadElement.href = href;
+            downloadElement.download =
+              `${name}-` +
+              new Date().getFullYear() +
+              (new Date().getMonth() + 1) +
+              new Date().getDate() +
+              new Date().getHours() +
+              new Date().getMinutes() +
+              new Date().getSeconds() +
+              ".xls"; //下载后文件名
+            document.body.appendChild(downloadElement);
+            downloadElement.click(); //点击下载
+            document.body.removeChild(downloadElement); //下载完成移除元素
+            window.URL.revokeObjectURL(href); //释放掉blob对象
+          } else {
+            sessFun.messageFun("warning", "导出失败！");
+          }
+        })
+        .finally(() => {
+          this.isDown = false;
+        });
+      return;
+      this.isDown = false;
       let resultArr = [];
       for (let data of this.exportArr) {
         let obj = {
@@ -1830,6 +1848,7 @@ export default {
           info.resName == this.changeKeyword;
           info.pageNum = this.pointCurrPage;
           info.pageSize = this.pointPageSize;
+          this.handleType === 2 && (info.enableStop = true);
           info.lState = 1;
         } else {
           info.resName = this.keyword;
@@ -2066,10 +2085,6 @@ export default {
         if (this.changeKeyword !== "") {
           for (let data of t) {
             if (data.resName.indexOf(this.changeKeyword) != -1) {
-              console.log(
-                data.resName,
-                data.resName.indexOf(this.keyword.trim())
-              );
               arr.push(data);
             }
           }

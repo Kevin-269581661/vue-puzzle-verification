@@ -208,42 +208,6 @@
     <div class="shopAnimateAll" v-show="selectAll">
       <img src="../../assets/images/allselect.png" alt="" />
     </div>
-    <!-- 选择选点方式弹窗 -->
-    <!-- <el-dialog
-      :visible.sync="isSelectPoint"
-      top="158px"
-      width="248px"
-      :show-close="false"
-      :lock-scroll="false"
-      class="select_point_dialog"
-    >
-      <div style="text-align: center">
-        <span
-          style="
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(0, 0, 0, 0.85);
-            line-height: 22px;
-          "
-          >请选择选点方式</span
-        >
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <div>
-          <el-button
-            type="goon"
-            @click="automaticSelectPoint"
-            style="width: 200px; margin-bottom: 8px"
-            >导入表格</el-button
-          >
-        </div>
-        <div>
-          <el-button type="goon" @click="manualSelectPoint" style="width: 200px"
-            >手动选点</el-button
-          >
-        </div>
-      </span>
-    </el-dialog> -->
     <!-- 导入表格组件 -->
     <Create-Order-By-Import
       ref="createOrderByImport"

@@ -61,24 +61,14 @@ export default {
       ],
     };
   },
-  watch: {
-    detailData: {
-      handler(val, oldVal) {
-        let apID = val.apID;
-        //如果是订单详情进入的话，val.apState应该不存在是undefined
-        let requestType =
-          val.apState == 1 || val.apState == -1 ? "plan" : "order";
-        this.getScheduleAlertData(apID, requestType); //获取选点排期alter框信息
-      },
-      deep: true,
-    },
+  mounted() {
+    this.getScheduleAlertData();
   },
-  created() {},
   methods: {
     //获取选点排期alter框信息
-    getScheduleAlertData(apID) {
+    getScheduleAlertData() {
       let info = {
-        apID,
+        apID: this.detailData.apID,
         companyId: this.companyId
       };
       api

@@ -679,7 +679,7 @@ export default {
         this.pptxFilter = this.pptxFilter.filter(item => {
           return item * 1 === 0
         });
-        return ['剔除被终止点位', '拆分多报告导出'];
+        return ['剔除被终止点位'];
       } else {
         return ['剔除被终止点位', '推荐理由', '楼盘信息'];
       }

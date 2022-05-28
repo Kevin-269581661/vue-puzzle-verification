@@ -95,7 +95,11 @@
       </div>
     </div>
     <div class="mediaList_wrap margin_16_64">
-      <el-tabs v-if="companiesOfOrder.length" v-model="currentCompanyId">
+      <el-tabs
+        v-if="companiesOfOrder.length"
+        v-model="currentCompanyId"
+        @tab-click="getSetPoint"
+      >
         <el-tab-pane
           v-for="(companyItem, companyIndex) in companiesOfOrder"
           :key="companyIndex"
@@ -108,309 +112,303 @@
             type="card"
           >
             <el-tab-pane label="选点排期" name="first">
-              <template v-if="planPanel == 'first'">
-                <Schedule-Alter-Country
-                  :detailData="orderDetail"
-                  :companyId="currentCompanyId"
-                />
-                <div class="first-wrap box-wrap">
-                  <el-row class="search-row">
-                    <el-col>
-                      <span style="font-size: 14px; color: rgba(0, 0, 0, 0.85)"
-                        >资源名称：</span
-                      >
-                      <el-input
-                        placeholder="请输入资源名称进行搜索"
-                        v-model="keyword"
-                        class="input-with-select"
-                        style="width: 260px"
-                      ></el-input>
-                      <el-button
-                        type="primary"
-                        icon="el-icon-search"
-                        @click="search('current')"
-                        style="position: relative; top: 2px; margin-left: 3px"
-                      >
-                        搜索
-                      </el-button>
-                      <el-button
-                        style="position: relative; top: 2px"
-                        @click="reset('current')"
-                        plain
-                        >重置
-                      </el-button>
-                      <el-button
-                        style="
-                          float: right;
-                          position: relative;
-                          top: 2px;
-                          margin-left: 3px;
-                        "
-                        plain
-                        type="default"
-                        v-if="role != 'ADN_EP'"
-                        @click="getPointRecord"
-                        >更改记录
-                      </el-button>
-                      <el-button
-                        plain
-                        type="default"
-                        icon="el-icon-download"
-                        @click="export2Excel(orderDetail.apName)"
-                        :disabled="isDown"
-                        style="
-                          position: relative;
-                          top: 2px;
-                          float: right;
-                          margin-right: 3px;
-                        "
-                        >导出
-                      </el-button>
-                    </el-col>
-                  </el-row>
-                  <div class="table_wrap">
-                    <el-table
-                      border
-                      :data="currentPointArr"
-                      style="width: 100%"
-                      :default-sort="{ prop: 'recName', order: 'descending' }"
-                      v-loading="currPointloading"
-                      element-loading-text="玩命加载中.."
-                      element-loading-spinner="el-icon-loading"
+              <schedule-alter-country
+                v-if="orderDetail.apID && currentCompanyId"
+                :detailData="orderDetail"
+                :companyId="currentCompanyId"
+              />
+              <div class="first-wrap box-wrap">
+                <el-row class="search-row">
+                  <el-col>
+                    <span style="font-size: 14px; color: rgba(0, 0, 0, 0.85)"
+                      >资源名称：</span
                     >
-                      <el-table-column type="expand">
-                        <template slot-scope="props">
-                          <el-form
-                            label-position="left"
-                            inline
-                            class="demo-table-expand"
-                          >
-                            <el-form-item label="商圈：">
-                              <span>{{ props.row.tradingArea }}</span>
-                            </el-form-item>
-                            <el-form-item label="楼栋数量：">
-                              <span>{{ props.row.fNum }}</span>
-                            </el-form-item>
-                            <el-form-item label="资产编号：">
-                              <span>{{ props.row.assetTag }}</span>
-                            </el-form-item>
-                            <el-form-item label="入住年份：">
-                              <span>{{ props.row.chDay }}</span>
-                            </el-form-item>
-                            <el-form-item label="广告限制：">
-                              <span>{{ props.row.notPush || "--" }}</span>
-                            </el-form-item>
-                            <el-form-item
-                              v-if="
-                                sessionData.uType == 'ADN_MD_COUNTRY' ||
-                                sessionData.uType == 'ADN_BD_KA'
-                              "
-                              label="归属公司："
-                            >
-                              <span class="ellipsis-td">{{
-                                props.row.asName || ""
-                              }}</span>
-                            </el-form-item>
-                          </el-form>
-                          <el-form
-                            v-if="customPermission.patrolPermission"
-                            label-position="left"
-                            inline
-                            class="demo-table-expand"
-                          >
-                            <el-form-item label="巡点问题：">
-                              <span class="ellipsis-td">{{
-                                props.row.remark || "--"
-                              }}</span>
-                            </el-form-item>
-                            <el-form-item label="通行情况：">
-                              <span class="ellipsis-td">{{
-                                props.row.trafficState || "--"
-                              }}</span>
-                            </el-form-item>
-                            <el-form-item label="通电情况：">
-                              <span class="ellipsis-td">{{
-                                props.row.electrifyState || "--"
-                              }}</span>
-                            </el-form-item>
-                          </el-form>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        label="资源名称"
-                        min-width="16.1%"
-                        class-name="resName-wrap"
-                        show-overflow-tooltip
-                      >
-                        <template slot-scope="scope">
-                          <div
-                            style="
-                              float: left;
-                              position: absolute;
-                              left: 0;
-                              top: 0;
-                            "
-                          >
-                            <div
-                              v-if="scope.row.lState == 2"
-                              slot="reference"
-                              class="color-line"
-                              style="background-color: #ff763b"
-                            ></div>
-                            <div
-                              v-if="scope.row.isNew == 1"
-                              slot="reference"
-                              class="color-line"
-                            ></div>
-                            <div
-                              v-if="scope.row.isChange == 1"
-                              slot="reference"
-                              class="color-line"
-                              style="background-color: #26d8bb"
-                            ></div>
-                          </div>
-                          <span>{{ scope.row.resName || "--" }}</span>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        prop="mTitle"
-                        label="媒体名称"
-                        min-width="10.3%"
-                      >
-                      </el-table-column>
-                      <el-table-column
-                        prop="mediaTypeName"
-                        label="媒体类型"
-                        min-width="10.3%"
-                      >
-                      </el-table-column>
-                      <el-table-column
-                        prop="asLab"
-                        label="投放面"
-                        min-width="8.8%"
-                      >
-                      </el-table-column>
-                      <el-table-column
-                        prop="city"
-                        label="城市"
-                        min-width="6%"
-                        :filters="filterCityData"
-                        :filter-method="filterCity"
-                      >
-                      </el-table-column>
-                      <el-table-column
-                        prop="rName"
-                        label="区域"
-                        min-width="7.4%"
-                        :filters="filtersArea"
-                        :filter-method="filterRName"
-                      >
-                      </el-table-column>
-                      <el-table-column
-                        prop="cType"
-                        label="楼盘类型"
-                        min-width="8.8%"
-                      >
-                        <template slot-scope="scope">
-                          <span>{{ scope.row.cType || "--" }}</span>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        prop="hNum"
-                        label="小区户数"
-                        min-width="7.3%"
-                        align="right"
-                      >
-                        <template slot-scope="scope">
-                          <span>{{
-                            scope.row.hNum ? priceToFormat(scope.row.hNum) : 0
-                          }}</span>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        label="楼盘价格"
-                        min-width="7.3%"
-                        align="right"
-                      >
-                        <template slot-scope="scope">
-                          <span
-                            >&yen;{{
-                              scope.row.hPrice
-                                ? priceFormat(scope.row.hPrice / 100)
-                                : 0
-                            }}</span
-                          >
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        prop="timeRange"
-                        label="排期"
-                        min-width="14.2%"
-                        :filters="scheduleList"
-                        :filter-method="filterTimeRange"
-                        show-overflow-tooltip
-                      >
-                        <template slot-scope="scope">
-                          <template v-if="scope.row.lState == 2">
-                            <span>{{ scope.row.finishTimeRange }}</span>
-                          </template>
-                          <span v-else>{{ scope.row.timeRange }}</span>
-                        </template>
-                      </el-table-column>
-
-                      <div slot="empty">
-                        <no-search-result></no-search-result>
-                      </div>
-                    </el-table>
-                    <div class="table-bottom-tip">
-                      <div style="display: flex">
-                        <p>
-                          <span
-                            style="background-color: #1890ff"
-                            class="color-line"
-                          ></span
-                          >新增点位
-                        </p>
-                        <p>
-                          <span
-                            style="background-color: #ff763b"
-                            class="color-line"
-                          ></span
-                          >终止点位
-                        </p>
-                        <p>
-                          <span
-                            style="background-color: #26d8bb"
-                            class="color-line"
-                          ></span
-                          >更改排期
-                        </p>
-                      </div>
-                      <div class="ad_pagination" v-if="total">
-                        <el-pagination
-                          background
-                          layout="total, sizes, prev, pager, next, jumper"
-                          @current-change="changePage"
-                          @size-change="sizeChange"
-                          :page-sizes="[10, 20, 50, 100]"
-                          :current-page.sync="currPage"
-                          :page-size="pageSize"
-                          :total="total"
+                    <el-input
+                      placeholder="请输入资源名称进行搜索"
+                      v-model="keyword"
+                      class="input-with-select"
+                      style="width: 260px"
+                    ></el-input>
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="search('current')"
+                      style="position: relative; top: 2px; margin-left: 3px"
+                    >
+                      搜索
+                    </el-button>
+                    <el-button
+                      style="position: relative; top: 2px"
+                      @click="reset('current')"
+                      plain
+                      >重置
+                    </el-button>
+                    <el-button
+                      style="
+                        float: right;
+                        position: relative;
+                        top: 2px;
+                        margin-left: 3px;
+                      "
+                      plain
+                      type="default"
+                      v-if="role != 'ADN_EP'"
+                      @click="getPointRecord"
+                      >更改记录
+                    </el-button>
+                    <el-button
+                      plain
+                      type="default"
+                      icon="el-icon-download"
+                      @click="export2Excel(orderDetail.apName)"
+                      :disabled="isDown"
+                      style="
+                        position: relative;
+                        top: 2px;
+                        float: right;
+                        margin-right: 3px;
+                      "
+                      >导出
+                    </el-button>
+                  </el-col>
+                </el-row>
+                <div class="table_wrap">
+                  <el-table
+                    border
+                    :data="currentPointArr"
+                    style="width: 100%"
+                    :default-sort="{ prop: 'recName', order: 'descending' }"
+                    v-loading="currPointloading"
+                    element-loading-text="玩命加载中.."
+                    element-loading-spinner="el-icon-loading"
+                  >
+                    <el-table-column type="expand">
+                      <template slot-scope="props">
+                        <el-form
+                          label-position="left"
+                          inline
+                          class="demo-table-expand"
                         >
-                        </el-pagination>
-                      </div>
+                          <el-form-item label="商圈：">
+                            <span>{{ props.row.tradingArea }}</span>
+                          </el-form-item>
+                          <el-form-item label="楼栋数量：">
+                            <span>{{ props.row.fNum }}</span>
+                          </el-form-item>
+                          <el-form-item label="资产编号：">
+                            <span>{{ props.row.assetTag }}</span>
+                          </el-form-item>
+                          <el-form-item label="入住年份：">
+                            <span>{{ props.row.chDay }}</span>
+                          </el-form-item>
+                          <el-form-item label="广告限制：">
+                            <span>{{ props.row.notPush || "--" }}</span>
+                          </el-form-item>
+                          <el-form-item
+                            v-if="
+                              sessionData.uType == 'ADN_MD_COUNTRY' ||
+                              sessionData.uType == 'ADN_BD_KA'
+                            "
+                            label="归属公司："
+                          >
+                            <span class="ellipsis-td">{{
+                              props.row.asName || ""
+                            }}</span>
+                          </el-form-item>
+                        </el-form>
+                        <el-form
+                          v-if="customPermission.patrolPermission"
+                          label-position="left"
+                          inline
+                          class="demo-table-expand"
+                        >
+                          <el-form-item label="巡点问题：">
+                            <span class="ellipsis-td">{{
+                              props.row.remark || "--"
+                            }}</span>
+                          </el-form-item>
+                          <el-form-item label="通行情况：">
+                            <span class="ellipsis-td">{{
+                              props.row.trafficState || "--"
+                            }}</span>
+                          </el-form-item>
+                          <el-form-item label="通电情况：">
+                            <span class="ellipsis-td">{{
+                              props.row.electrifyState || "--"
+                            }}</span>
+                          </el-form-item>
+                        </el-form>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="资源名称"
+                      min-width="16.1%"
+                      class-name="resName-wrap"
+                      show-overflow-tooltip
+                    >
+                      <template slot-scope="scope">
+                        <div
+                          style="
+                            float: left;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                          "
+                        >
+                          <div
+                            v-if="scope.row.lState == 2"
+                            slot="reference"
+                            class="color-line"
+                            style="background-color: #ff763b"
+                          ></div>
+                          <div
+                            v-if="scope.row.isNew == 1"
+                            slot="reference"
+                            class="color-line"
+                          ></div>
+                          <div
+                            v-if="scope.row.isChange == 1"
+                            slot="reference"
+                            class="color-line"
+                            style="background-color: #26d8bb"
+                          ></div>
+                        </div>
+                        <span>{{ scope.row.resName || "--" }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="mTitle"
+                      label="媒体名称"
+                      min-width="10.3%"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                      prop="mediaTypeName"
+                      label="媒体类型"
+                      min-width="10.3%"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                      prop="asLab"
+                      label="投放面"
+                      min-width="8.8%"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                      prop="city"
+                      label="城市"
+                      min-width="6%"
+                      :filters="filterCityData"
+                      :filter-method="filterCity"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                      prop="rName"
+                      label="区域"
+                      min-width="7.4%"
+                      :filters="filtersArea"
+                      :filter-method="filterRName"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                      prop="cType"
+                      label="楼盘类型"
+                      min-width="8.8%"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.cType || "--" }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="hNum"
+                      label="小区户数"
+                      min-width="7.3%"
+                      align="right"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{
+                          scope.row.hNum ? priceToFormat(scope.row.hNum) : 0
+                        }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="楼盘价格"
+                      min-width="7.3%"
+                      align="right"
+                    >
+                      <template slot-scope="scope">
+                        <span
+                          >&yen;{{
+                            scope.row.hPrice
+                              ? priceFormat(scope.row.hPrice / 100)
+                              : 0
+                          }}</span
+                        >
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="timeRange"
+                      label="排期"
+                      min-width="14.2%"
+                      :filters="scheduleList"
+                      :filter-method="filterTimeRange"
+                      show-overflow-tooltip
+                    >
+                      <template slot-scope="scope">
+                        <template v-if="scope.row.lState == 2">
+                          <span>{{ scope.row.finishTimeRange }}</span>
+                        </template>
+                        <span v-else>{{ scope.row.timeRange }}</span>
+                      </template>
+                    </el-table-column>
+
+                    <div slot="empty">
+                      <no-search-result></no-search-result>
+                    </div>
+                  </el-table>
+                  <div class="table-bottom-tip">
+                    <div style="display: flex">
+                      <p>
+                        <span
+                          style="background-color: #1890ff"
+                          class="color-line"
+                        ></span
+                        >新增点位
+                      </p>
+                      <p>
+                        <span
+                          style="background-color: #ff763b"
+                          class="color-line"
+                        ></span
+                        >终止点位
+                      </p>
+                      <p>
+                        <span
+                          style="background-color: #26d8bb"
+                          class="color-line"
+                        ></span
+                        >更改排期
+                      </p>
+                    </div>
+                    <div class="ad_pagination" v-if="total">
+                      <el-pagination
+                        background
+                        layout="total, sizes, prev, pager, next, jumper"
+                        @current-change="changePage"
+                        @size-change="sizeChange"
+                        :page-sizes="[10, 20, 50, 100]"
+                        :current-page.sync="currPage"
+                        :page-size="pageSize"
+                        :total="total"
+                      >
+                      </el-pagination>
                     </div>
                   </div>
                 </div>
-              </template>
+              </div>
             </el-tab-pane>
             <el-tab-pane label="物料信息" name="third">
-              <!-- <material
-                v-if="planPanel == 'third'"
-                :materialInfoData="materialInfoJson"
-                :loading="maLoading"
-                :isOrder="true"
-              ></material> -->
+              <div style="min-height: 300px"></div>
             </el-tab-pane>
             <el-tab-pane
               label="上刊报告"
@@ -975,7 +973,7 @@
         </span>
       </el-dialog>
 
-      <changeProposalOrderPrice
+      <ChangeCountryOrderPrice
         :apID="orderDetail.apID"
         :requesInfo="{ mark: this.handleTime, opType: 1 }"
         :settlementFormVisible="changePriceModal"
@@ -984,7 +982,7 @@
           changePriceModal = false;
           getInitData();
         "
-      ></changeProposalOrderPrice>
+      ></ChangeCountryOrderPrice>
     </div>
     <!-- 返回框 -->
     <div class="content_bottom_btn">
@@ -1012,7 +1010,7 @@ import ImportPointByExcelCountry from "./components/importPointByExcelCountry";
 import ChangePointPlayDateRangeCountry from "./components/changePointPlayDateRangeCountry";
 import noSearchResult from "./components/noSearchResult.vue";
 import ChangePicCountry from "./components/changePicCountry.vue";
-import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
+import ChangeCountryOrderPrice from "./components/changeCountryOrderPrice.vue";
 import ScheduleAlterCountry from "@/components/common/components/Alter/ScheduleAlterCountry";
 
 export default {
@@ -1026,7 +1024,7 @@ export default {
     ChangePointPlayDateRangeCountry,
     ChangePicCountry,
     noSearchResult,
-    changeProposalOrderPrice,
+    ChangeCountryOrderPrice,
     ScheduleAlterCountry,
   },
   data() {

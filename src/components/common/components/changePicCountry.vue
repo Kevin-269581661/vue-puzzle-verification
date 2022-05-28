@@ -2708,16 +2708,17 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apId: this.apId,
+        companyId: this.companyId,
         type: "",
         apName: this.orderDetail.apName,
         downtype: 1,
       };
       info.type = this.type;
-      info.replaceRecordId = this.painList[this.activePainIndex].id;
+      this.type === 2 && (info.replaceRecordId = this.painList[this.activePainIndex].id);
       this.downLoading = true;
       const tempPage = window.open("", "_blank");
       api
-        .getApi(this.apiVar.image + "/downloadImgPackage", info)
+        .getApi("/image/downloadNationalImgPackage", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let routeUrl = this.$router.resolve({

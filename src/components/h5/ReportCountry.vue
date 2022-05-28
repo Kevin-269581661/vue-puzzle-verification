@@ -683,7 +683,7 @@ export default {
         this.pptxFilter = this.pptxFilter.filter((item) => {
           return item * 1 === 0;
         });
-        return ["剔除被终止点位", "拆分多报告导出"];
+        return ["剔除被终止点位"];
       } else {
         return ["剔除被终止点位", "推荐理由", "楼盘信息"];
       }
@@ -838,7 +838,11 @@ export default {
     },
     // 获取pdf
     getPDF() {
-      this.getApiFun("/national/api/v1/powerPoint/getPPTXReport", this.pdfLoading, "pdf");
+      this.getApiFun(
+        "/national/api/v1/powerPoint/getPPTXReport",
+        this.pdfLoading,
+        "pdf"
+      );
     },
     // 接口Fun  0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx下刊，5-pptx下刊，6-pptx换画，7-pdf换画
     getApiFun(apiName, loading, type) {
@@ -847,14 +851,17 @@ export default {
         apID,
         companyId,
         imgType,
-        replaceRecordId,
       };
+      if (imgType === 2) {
+        info.replaceRecordId = replaceRecordId;
+      }
       if (type == "pptx") {
         if (this.checkPeriodArr.length > 0) {
           info.periods = this.checkPeriodArr.join(",");
         }
-        info.exportType = 1,
-        info.customizeCode = this.templateType == 1 ? this.customizeCode : 0;
+        (info.exportType = 1),
+          (info.customizeCode =
+            this.templateType == 1 ? this.customizeCode : 0);
         info.exportAllPoint = this.pptxFilter.indexOf(0) != -1 ? 0 : 1;
         // customizeCode: 2 亲粤邻定制模板
         this.customizeCode == "2" &&
@@ -883,7 +890,7 @@ export default {
       const tempPage = window.open("", "_blank");
       loading = true;
       api.getApi(apiName, info).then((res) => {
-        if (res.data.SysCode === 200200) {
+        if (typeof res.data.data === "string") {
           let downloadElement = document.createElement("a");
           let href = res.data.data;
           downloadElement.href = href;
@@ -897,9 +904,11 @@ export default {
             downtype: 2,
             apID,
             companyId,
-            imgType,
-            replaceRecordId,
+            imgType
           };
+          if (imgType === 2) {
+            fileInfo.replaceRecordId = replaceRecordId;
+          }
           if (type == "pptx") {
             if (this.checkPeriodArr.length > 0) {
               fileInfo.periods = this.checkPeriodArr.join(",");
@@ -1072,7 +1081,7 @@ export default {
             this.reportArr = dataInfo.list;
 
             if (dataInfo.total == 0) {
-              sessFun.messageFun("warning", "暂无数据");
+              sessFun.messageFun("warning", "暂无换画数据");
             }
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -1246,7 +1255,7 @@ export default {
             }
             this.reportArr = dataInfo.list;
             if (dataInfo.total == 0) {
-              Message.warning("暂无数据");
+              Message.warning("暂无上下刊数据");
             }
           } else {
             Message.warning(res.data.MSG);

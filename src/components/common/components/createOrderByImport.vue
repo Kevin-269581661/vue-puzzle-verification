@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="导入小区"
+      title="导入点位"
       :visible.sync="isDialogImport"
       width="448px"
       top="23vh"
@@ -353,21 +353,6 @@ export default {
       //执行上传小区excel文件
       this.$emit("submitBtn", this.importFileData);
       this.importFileRemove();
-    },
-    //加入购物车,emit一个函数并且传递要加入购物车的数据，父组件触发加入购物车
-    addShoppingCart(errorList) {
-      if(errorList=='errorList') {
-        if(this.lessPlanCntList.length) {
-          this.dialogErrorPoint = false;
-          this.successList = this.successList.concat(this.lessPlanCntList);
-          this.lessPlanCntList = [];
-        } else {
-          this.$message.warning('可投数不足的意向小区为空！');
-        }
-      } else {
-        this.dialogResult = false;
-        this.$emit("skipAndAddShopping", this.successList);
-      }
     },
     // 导出失败excel
     export2Excel() {

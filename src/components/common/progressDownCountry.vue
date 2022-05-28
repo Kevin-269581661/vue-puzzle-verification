@@ -51,7 +51,7 @@ export default {
     // 导出订单图片包
     getProcess() {
       api
-        .getApi(this.apiVar.image + "/downloadImgPackage", this.$route.query)
+        .getApi("/image/downloadNationalImgPackage", this.$route.query)
         .then((res) => {
           console.log(res.data);
           if (res.data.SysCode == 200200) {

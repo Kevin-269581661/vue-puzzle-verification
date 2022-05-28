@@ -421,7 +421,7 @@ export default {
         adcID: "", // 所属联系人
         planRemark: "",
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
-        customerBudget: "",
+        customerBudget: 0,
         customerDemand: "",
       },
       pointOfAsrIDs: [],
@@ -758,7 +758,7 @@ export default {
         formData.append("adcID", this.planForm.adcID);
         formData.append("bID", this.planForm.companyBrand);
         formData.append("companyIds", this.planForm.pointOfAsrIDs);
-        formData.append("price", this.planForm.customerBudget);
+        formData.append("price", this.planForm.customerBudget || 0);
         formData.append("suID", this.BDData.uid);
         formData.append("file", importFileData[0].raw);
         this.resImport(formData);

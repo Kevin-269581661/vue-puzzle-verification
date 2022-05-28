@@ -1009,7 +1009,7 @@ import material from "./components/materialInfo.vue";
 import detailInfo from "./components/detailInfo.vue";
 import AddAdsCountry from "./components/addAdsCountry";
 import ImportPointByExcelCountry from "./components/importPointByExcelCountry";
-import ChangePointPlayDateRangeCountry from "./components/ChangePointPlayDateRangeCountry";
+import ChangePointPlayDateRangeCountry from "./components/changePointPlayDateRangeCountry";
 import noSearchResult from "./components/noSearchResult.vue";
 import ChangePicCountry from "./components/changePicCountry.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";

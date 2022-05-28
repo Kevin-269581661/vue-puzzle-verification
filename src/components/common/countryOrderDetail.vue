@@ -23,16 +23,22 @@
             <p>
               {{ orderDetail.apQC }}
               <i
-                class="el-icon-edit"
+                class="el-icon-edit changeCID"
                 v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
                 @click="changeCID = true"
-                :class="{ changeCID: !usableBtn }"
               ></i>
             </p>
           </h4>
           <!--修改合同号对话框-->
-          <el-dialog title="修改合同编号" :visible.sync="changeCID" width="30%">
-            <el-input v-model="apQC"></el-input>
+          <el-dialog
+            title="修改合同编号"
+            :visible.sync="changeCID"
+            width="320px"
+          >
+            <el-input
+              style="width: 100%; margin-bottom: 16px"
+              v-model="apQC"
+            ></el-input>
             <span slot="footer" class="dialog-footer">
               <el-button plain @click="cancelChangeID">取 消</el-button>
               <el-button type="primary" @click="confirmChangeID"
@@ -160,17 +166,6 @@
                         "
                         >导出
                       </el-button>
-                      <el-button
-                        v-if="customPermission.pptPermission.gzqylPermission"
-                        style="
-                          position: relative;
-                          top: 2px;
-                          float: right;
-                          margin-right: 3px;
-                        "
-                        @click="showRecommendation"
-                        >推荐理由</el-button
-                      >
                     </el-col>
                   </el-row>
                   <div class="table_wrap">
@@ -409,24 +404,24 @@
                 </div>
               </template>
             </el-tab-pane>
-            <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
-              <material
+            <el-tab-pane label="物料信息" name="third">
+              <!-- <material
                 v-if="planPanel == 'third'"
                 :materialInfoData="materialInfoJson"
                 :loading="maLoading"
                 :isOrder="true"
-              ></material>
+              ></material> -->
             </el-tab-pane>
             <el-tab-pane
               label="上刊报告"
               name="forth"
-              :disabled="usableBtn || role == 'ADN_OP'"
+              :disabled="role == 'ADN_OP'"
             >
               <div class="changepic_box" v-if="planPanel == 'forth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
-                  :type="1"
+                  :type="0"
                   :order-detail="orderDetail"
                   :scheduleList="scheduleList"
                   :adMaterialRemarkList="adMaterialRemarkList"
@@ -436,13 +431,13 @@
             <el-tab-pane
               label="下刊报告"
               name="fifth"
-              :disabled="usableBtn || role == 'ADN_OP'"
+              :disabled="role == 'ADN_OP'"
             >
               <div class="changepic_box" v-if="planPanel == 'fifth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
-                  :type="2"
+                  :type="1"
                   :order-detail="orderDetail"
                   :scheduleList="scheduleList"
                   :adMaterialRemarkList="adMaterialRemarkList"
@@ -454,10 +449,10 @@
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
-                  :type="3"
+                  :type="2"
                   :firstTime="false"
-                  :scheduleList="scheduleList"
                   :from-type="fromType"
+                  :scheduleList="scheduleList"
                   :order-detail="orderDetail"
                 ></Change-Pic-Country>
               </div>
@@ -472,7 +467,7 @@
           :companyId="currentCompanyId"
           :scheduleList="scheduleList"
           :firstTime="showPainModal"
-          :type="3"
+          :type="2"
           :planPanel="planPanel"
           :from-type="fromType"
           :order-detail="orderDetail"
@@ -489,11 +484,11 @@
         :close-on-press-escape="false"
         :show-close="true"
       >
-        <add-ads
+        <Add-Ads-Country
           :IsAddAds="IsAddPoint"
           :MediaTypeData="mediaTypeList"
           @ievent="ievent"
-        ></add-ads>
+        ></Add-Ads-Country>
         <span slot="footer" class="dialog-footer">
           <el-button plain @click="cancelAddPoint">取 消</el-button>
           <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
@@ -835,114 +830,6 @@
           >
         </div>
       </el-dialog>
-      <!-- 推荐理由弹框 -->
-      <el-dialog
-        title="推荐理由"
-        width="768px"
-        top="20vh"
-        :visible.sync="recommendationModal"
-      >
-        <el-dialog
-          width="448px"
-          title="批量修改推荐理由"
-          :visible.sync="recommendationInnerModal"
-          append-to-body
-          :show-close="false"
-          class="export-dialog"
-        >
-          <div class="step-text">第一步：下载模板并按要求完善推荐理由</div>
-          <div class="export_step_box">
-            <img src="../../assets/images/export.png" alt="" />
-            《QADN-数据导入-模板》
-            <a
-              :href="apiVar.qadnUrl + '/importTemplate/手动录入推荐理由.xlsx'"
-              download="数据导入模板.xlsx"
-              class="downloag_btn"
-              @click="dowmLoadFun"
-              >点击下载<i class="el-icon-download"></i
-            ></a>
-          </div>
-          <div class="step-text">第二步：上传编辑好的Excle表格</div>
-          <div>
-            <el-upload
-              ref="exportRes"
-              drag
-              :action="exportAction"
-              :show-file-list="true"
-              :on-change="exportUploadFile"
-              :on-remove="exportFileRemove"
-              :auto-upload="false"
-              :limit="1"
-              :multiple="false"
-            >
-              <img src="../../assets/images/export.png" alt="" />
-              <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
-            </el-upload>
-          </div>
-          <div slot="footer" class="export-footer">
-            <el-button
-              size="small"
-              plain
-              @click="recommendationInnerModal = false"
-              >取 消</el-button
-            >
-            <el-button
-              class="export-btn"
-              size="small"
-              type="primary"
-              @click="commitFile"
-              :loading="uploadLoading"
-            >
-              提 交
-            </el-button>
-          </div>
-        </el-dialog>
-        <el-table
-          :data="currentPagination"
-          border
-          v-loading="tableLoading"
-          max-height="500"
-          style="width: 100%"
-        >
-          <el-table-column prop="resName" label="小区名称" min-width="6%">
-          </el-table-column>
-          <el-table-column prop="city" label="城市" min-width="6%">
-          </el-table-column>
-          <el-table-column prop="district" label="区域" min-width="6%">
-          </el-table-column>
-          <el-table-column
-            prop="recommendReason"
-            label="推荐理由"
-            show-overflow-tooltip
-            min-width="6%"
-          >
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="recommendationCurrentPage"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="recommendationPageSize"
-          :pager-count="5"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="recommendationTotalNum"
-          style="text-align: right; margin-top: 16px"
-        >
-        </el-pagination>
-        <div slot="footer" class="dialog-footer">
-          <el-button plain @click="recommendationModal = false"
-            >关 闭</el-button
-          >
-          <el-button
-            type="primary"
-            @click="recommendationInnerModal = true"
-            style="width: 102px; height: 32px"
-            >更改推荐理由</el-button
-          >
-        </div>
-      </el-dialog>
       <!--点位更改记录对话框-->
       <el-dialog
         title="点位更改记录"
@@ -1132,7 +1019,7 @@ import sessFun from "../../commonFun/sessFun.js";
 import apQuotation from "./components/apQuotation.vue";
 import material from "./components/materialInfo.vue";
 import detailInfo from "./components/detailInfo.vue";
-import addAds from "./components/addAds";
+import AddAdsCountry from "./components/addAdsCountry";
 import importPointByExcel from "./components/importPointByExcel";
 import changePointPlayDateRange from "./components/changePointPlayDateRange";
 import noSearchResult from "./components/noSearchResult.vue";
@@ -1146,7 +1033,7 @@ export default {
     apQuotation,
     material,
     detailInfo,
-    addAds,
+    AddAdsCountry,
     importPointByExcel,
     changePointPlayDateRange,
     ChangePicCountry,
@@ -1163,7 +1050,7 @@ export default {
       // 媒体类型
       mediaTypeList: [],
       // 物料信息数据
-      materialInfoJson: {},
+      // materialInfoJson: {},
       // session信息
       sessionData: {},
       isDown: false,
@@ -1195,7 +1082,7 @@ export default {
       changePointArr: [], //更换点位列表
       changePointloading: true,
       currentPointArr: [], //选点排期列表
-      exportArr: [],
+      // exportArr: [],
       currPointloading: true,
       // addNewAdsNum: 0,    // 添加点位数
       // 报价单详情
@@ -1261,8 +1148,6 @@ export default {
       planSelect: "",
       //添加点位列表
       planList: [],
-      //按钮
-      usableBtn: false,
       //发送报告
       sendReportchecked: false,
       //上传照片
@@ -1303,14 +1188,6 @@ export default {
       showPainModal: false,
       // 换画列表
       painlist: [],
-      // 推荐理由弹框
-      recommendationModal: false,
-      recommendationInnerModal: false,
-      uploadLoading: false,
-      recommendationList: [],
-      tableLoading: false,
-      exportAction: "/advertisement/RecommendReasonImport",
-      exportFileData: [],
       //点位更改记录
       dialogChangePointRecord: false,
       recordList: {
@@ -1337,10 +1214,6 @@ export default {
       },
       isHandleChange: false,
       handleTime: "", //换点操作和修改订单的时间戳
-      // 推荐理由分页时页面条目数量
-      recommendationPageSize: 10,
-      recommendationCurrentPage: 1,
-      recommendationTotalNum: 0,
       handleType: 1,
     };
   },
@@ -1358,10 +1231,10 @@ export default {
     this.getScheduleList();
     // 获取订单详情的上面公司的信息
     this.getInitData();
-    this.getMaterInfo();
+    // this.getMaterInfo();
 
     //获取物料信息
-    this.getMaterialInfo();
+    // this.getMaterialInfo();
 
     if (
       ["ADN_BD_KA", "ADN_BD"].includes(this.role) ||
@@ -1371,15 +1244,6 @@ export default {
       this.getPainlist();
     }
     this.getOrderPriceDetail();
-  },
-  computed: {
-    currentPagination() {
-      this.recommendationTotalNum = this.recommendationList.length;
-      return this.recommendationList.slice(
-        (this.recommendationCurrentPage - 1) * this.recommendationPageSize,
-        this.recommendationCurrentPage * this.recommendationPageSize
-      );
-    },
   },
   methods: {
     //初始化各项数据
@@ -1486,7 +1350,7 @@ export default {
       this.pageSize = 10;
       this.dialogChangePoint = false;
       this.getSetPoint();
-      this.getMaterInfo();
+      // this.getMaterInfo();
     },
     //更换点位对话框-完成
     doneChangePoint() {
@@ -1545,7 +1409,6 @@ export default {
                 JSON.stringify(info)
               )
               .then((res) => {
-                console.log(res.data);
                 if (res.data.SysCode == 200200) {
                   Message.success(res.data.MSG);
                   this.changePointInfo.lIDArr =
@@ -1839,7 +1702,7 @@ export default {
         });
     },
     // 获取物料
-    getMaterInfo() {
+    /* getMaterInfo() {
       let loginData = this.sessionData;
       let info = {
         uid: loginData.uID,
@@ -1880,10 +1743,10 @@ export default {
           this.maLoading = false;
           console.log(res);
         });
-    },
+    }, */
 
     // 获取物料新接口
-    getMaterialInfo() {
+    /* getMaterialInfo() {
       let info = {
         apID: this.apId,
       };
@@ -1912,7 +1775,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-    },
+    }, */
 
     // 获取当前用户所有的排期区间列表
     getScheduleList() {
@@ -1923,7 +1786,6 @@ export default {
       api
         .getApi("/national/api/v1/nationalAdPlan/getScheduleByApID", info)
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 200200) {
             this.scheduleList = (res.data.data || []).map((item) => {
               return { text: item, value: item };
@@ -1942,7 +1804,6 @@ export default {
       api
         .getApi("/addsp/material/getAdMaterial", info)
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 200200) {
             this.adMaterialRemarkList = (res.data.data || []).map((item) => {
               return { text: item, value: item };
@@ -2231,89 +2092,15 @@ export default {
         this.getSetPoint();
       }
     },
-    // 导入模版下载
-    dowmLoadFun(event) {
-      // 阻止冒泡事件
-      event.stopPropagation();
-    },
-    exportUploadFile(file, fileList) {
-      this.exportFileData = [file];
-    },
-    commitFile() {
-      if (
-        Array.isArray(this.exportFileData) &&
-        this.exportFileData.length == 0
-      ) {
-        sessFun.messageFun("warning", "请先上传excel文件哦~");
-        return;
-      }
-      let formData = new FormData();
-      formData.append("file", this.exportFileData[0].raw);
-      // 上传文件
-      this.uploadLoading = true;
-      api
-        .postUpload_file(
-          this.exportAction + "?apID=" + this.orderDetail.apID,
-          formData
-        )
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.recommendationInnerModal = false;
-            this.showRecommendation();
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        })
-        .catch((res) => {
-          console.log(res);
-        })
-        .finally((_) => {
-          this.uploadLoading = false;
-        });
-    },
-    // 推荐理由表格分页
-    handleSizeChange(val) {
-      this.recommendationPageSize = val;
-    },
-    handleCurrentChange(val) {
-      this.recommendationCurrentPage = val;
-    },
-    exportFileRemove(file, fileList) {
-      console.log(file, fileList);
-      this.exportFileData = fileList;
-    },
-    // 获取该订单小区推荐理由
-    showRecommendation() {
-      this.recommendationModal = true;
-      this.tableLoading = true;
-      api
-        .getApi(
-          this.apiVar.Advertisement +
-            "/GetResRecommendReason?apID=" +
-            this.orderDetail.apID
-        )
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.recommendationList = res.data.data || [];
-          } else {
-            Message.warning(res.data.MSG);
-          }
-        })
-        .finally((_) => {
-          this.tableLoading = false;
-        });
-    },
     //查询点位更新记录
     getPointRecord() {
       this.dialogChangePointRecord = true;
       api
-        .getApi(
-          this.apiVar.Advertisement +
-            "/GetOrderHistory?apID=" +
-            this.orderDetail.apID
-        )
+        .getApi("/national/api/v1/nationalAdPlan/getOrderHistory", {
+          apID: this.orderDetail.apID,
+          companyId: this.currentCompanyId,
+        })
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 200200) {
             this.recordList.info = {
               allPoint: res.data.data.totalAdsCount,
@@ -2363,31 +2150,19 @@ export default {
         Message.warning("只能输入字母、数字、符号");
         return;
       }
-      let qc = this.apQC;
-      let apid = this.orderDetail.apID;
-      let session = this.sessionData;
-      // uid         int【必填】     当前账户UserID
-      // apid        int【必填】     方案apID
-      // qc          String【必填】  方案合同编号
       let info = {
-        uid: session.uID,
-        token: session.token,
-        apid: apid,
-        qc: qc,
+        apid: this.orderDetail.apID,
+        apQC: this.apQC,
       };
       api
-        .postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
+        .postApi_json("/national/api/v1/nationalAdPlan/editAdPlan", info)
         .then((res) => {
-          console.log(res);
-          if (res.data.SysCode == 300200) {
-            this.$set(this.orderDetail, "apQC", qc);
+          if (res.data.SysCode == 200200) {
+            this.$set(this.orderDetail, "apQC", this.apQC);
             Message.success(res.data.MSG);
           } else {
             Message.warning(res.data.MSG);
           }
-        })
-        .catch((res) => {
-          console.log(res);
         });
       this.changeCID = false;
     },
@@ -2545,10 +2320,10 @@ export default {
     // 获取换画列表
     getPainlist() {
       let info = {
-        apId: this.apId,
+        apID: this.apId,
+        companyId: this.currentCompanyId,
       };
-      api.getApi(this.apiVar.replace + "/report/list", info).then((res) => {
-        console.log("换画列表", res.data);
+      api.getApi("/national/api/v1/replace/list", info).then((res) => {
         if (res.data.SysCode == 200200) {
           this.painlist = res.data.data;
           if (this.painlist.length) {
@@ -3201,58 +2976,6 @@ export default {
   min-height: 40px;
 }
 
-/* 推荐理由弹框 */
-.export_step_box {
-  border: 1px dashed rgba(218, 218, 218, 1);
-  padding: 12px 18px;
-  color: rgba(102, 102, 102, 1);
-  font-size: 15px;
-  position: relative;
-}
-.export_step_box:hover {
-  cursor: pointer;
-  border-color: #409eff;
-}
-.export-dialog /deep/ .el-dialog__header {
-  padding: 12px 24px 0;
-}
-.export-dialog /deep/ .el-dialog__title {
-  font-size: 16px;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
-  line-height: 24px;
-}
-.export-dialog /deep/ .el-dialog__body {
-  padding: 0px 24px 24px;
-}
-.step-text {
-  margin: 16px 0;
-  font-size: 14px;
-  font-family: PingFangSC-Medium, PingFang SC;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
-  line-height: 24px;
-}
-.export-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-.export-footer .export-btn {
-  margin-left: 8px;
-}
-.export_step_box img {
-  width: 24px;
-  height: 27px;
-  vertical-align: middle;
-}
-.downloag_btn {
-  position: absolute;
-  right: 18px;
-  top: 14px;
-  cursor: pointer;
-  color: rgba(102, 102, 102, 1);
-}
 /deep/ .el-upload--text {
   width: 100%;
 }
@@ -3270,32 +2993,5 @@ export default {
 /deep/ .el-upload--text .el-upload-dragger img {
   width: 28px;
   height: 30px;
-}
-</style>
-
-<style lang="scss">
-.price-dialog {
-  .el-dialog__header {
-    border-bottom: 1px solid #e9e9e9;
-    padding: 15px 24px;
-  }
-  .el-dialog__title {
-    font-size: 16px;
-    font-family: PingFangSC-Semibold, PingFang SC;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
-  }
-  .el-dialog__body {
-    padding: 24px 0 11px 0;
-  }
-  .price-dialog-footer {
-    padding: 15px 25px 0;
-    border-top: 1px solid #e9e9e9;
-    margin-bottom: 0;
-  }
-  .city-tab,
-  .change-price-table-wrap {
-    padding: 0 25px;
-  }
 }
 </style>

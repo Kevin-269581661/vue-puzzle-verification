@@ -130,8 +130,10 @@ const nextContract = () => import(/* webpackChunkName: "nextContract" */ '../com
 const contractDetail = () => import(/* webpackChunkName: "contractDetail" */ '../components/develop/contractDetail.vue')
 const contractList = () => import(/* webpackChunkName: "contractList" */ '../components/develop/contractList.vue')
 
-//亲邻科技上刊报告
+// 亲邻科技上刊报告
 const Report = () => import(/* webpackChunkName: "Report" */ '../components/h5/Report.vue')
+// 全国单上下刊报告
+const ReportCountry = () => import(/* webpackChunkName: "Report" */ '../components/h5/ReportCountry.vue')
 
 Vue.use(Router);
 const staticRoutes = [{path: '/', redirect: '/login'},
@@ -150,6 +152,7 @@ const staticRoutes = [{path: '/', redirect: '/login'},
     //消息列表
     //上下刊报告h5页面
     {path: '/Report', name: 'Report', component: Report},
+    {path: '/ReportCountry', name: 'ReportCountry', component: ReportCountry},
     //404
     {path: '*', component: NotFountPage}];
 let router = new Router({

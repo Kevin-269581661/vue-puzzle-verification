@@ -791,8 +791,8 @@ export default {
     changePoint(row) {
       sessionStorage.setItem("change_point_country", "yes");
       sessionStorage.setItem("country_order_apid", row.apID);
-      sessionStorage.setItem("order_citylist", JSON.stringify(row.companyList));
-      this.$router.push("./orderDetail");
+      sessionStorage.setItem("country_order_citylist", JSON.stringify(row.companyList));
+      this.$router.push("./countryOrderDetail");
     },
     // 状态转换成文本
     stateToText(val) {
@@ -1218,12 +1218,6 @@ export default {
 a {
   color: #108ee9;
 }
-
-/deep/ .price-dialog-list .el-textarea__inner {
-  height: 134px !important;
-  resize: none;
-}
-
 /*筛选*/
 .el-checkbox + .el-checkbox {
   margin-left: 0;
@@ -1376,16 +1370,6 @@ a {
 }
 </style>
 <style lang="scss">
-.price-dialog /deep/ .el-dialog__body {
-  padding: 10px 20px;
-}
-
-.price-dialog /deep/ .el-dialog__body p {
-  margin-bottom: 8px;
-}
-.price-dialog-list .price-dialog .num-input-wrap span {
-  top: 2px !important;
-}
 .u-bk-btn {
   padding: 0 3px;
   width: 30px;

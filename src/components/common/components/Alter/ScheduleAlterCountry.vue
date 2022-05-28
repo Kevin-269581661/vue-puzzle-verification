@@ -1,10 +1,3 @@
-<!--
- * @Author: penglei
- * @Date: 2022-05-26 21:00:12
- * @LastEditors: penglei
- * @LastEditTime: 2022-05-26 21:06:10
- * @FilePath: /frontend/src/components/common/components/Alter/ScheduleAlterCountry.vue
--->
 <template>
   <div>
     <el-tooltip class="item" effect="dark" placement="top">
@@ -92,7 +85,7 @@ export default {
         .getApi("/national/api/v1/nationalAdPlan/getScheduleInfo", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
-            this.scheduleData = res.data.data;
+            this.scheduleData = res.data.data || [];
           } else {
             Message.warning(res.data.MSG);
           }

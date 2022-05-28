@@ -5,7 +5,7 @@
         <div class="content_top_wrap">
           <div class="title">
             <h1>
-              {{ report.apName }}{{ stateToText(Info.name) }}报告
+              {{ report.apName }}{{ stateToText(routeParams.imgType) }}报告
               <span class="button_box">
                 <el-button
                   plain
@@ -34,9 +34,9 @@
               <em>投放城市：</em>
               <i>{{ report.rIDs }}</i>
               <em>{{
-                Info.name == 'SK' || Info.name == 'XK'
-                  ? '投放面数：'
-                  : '换画面数：'
+                Info.name == "SK" || Info.name == "XK"
+                  ? "投放面数："
+                  : "换画面数："
               }}</em>
               <i>{{ report.asSpaceSum }}</i>
             </p>
@@ -158,10 +158,10 @@
                   >
                     <template slot-scope="scope">
                       <span>{{
-                        typeof scope.row.hPrice === 'undefined' ||
+                        typeof scope.row.hPrice === "undefined" ||
                         scope.row.hPrice === null ||
-                        scope.row.hPrice === ''
-                          ? ''
+                        scope.row.hPrice === ""
+                          ? ""
                           : priceFormat(scope.row.hPrice / 100)
                       }}</span>
                     </template>
@@ -267,13 +267,13 @@
                           {{
                             wordlimit(
                               up.city +
-                                '-' +
+                                "-" +
                                 up.rName +
-                                '-' +
+                                "-" +
                                 up.resName +
-                                '-' +
+                                "-" +
                                 up.mTitle +
-                                '-' +
+                                "-" +
                                 up.asLab,
                               24
                             )
@@ -282,13 +282,13 @@
                       </el-tooltip>
                       <span v-else class="header_title">{{
                         up.city +
-                        '-' +
+                        "-" +
                         up.rName +
-                        '-' +
+                        "-" +
                         up.resName +
-                        '-' +
+                        "-" +
                         up.mTitle +
-                        '-' +
+                        "-" +
                         up.asLab
                       }}</span>
 
@@ -304,7 +304,7 @@
                             <span>{{ up.assetTag }}</span>
                             <b>广告排期</b>
                             <span>{{
-                              formatTime(up.lStar) + '-' + formatTime(up.lEnd)
+                              formatTime(up.lStar) + "-" + formatTime(up.lEnd)
                             }}</span>
                           </p>
                         </div>
@@ -554,7 +554,7 @@ import commaFormat from "../../commonFun/commaFormat.js";
 import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
-import sessFun from '../../commonFun/sessFun.js';
+import sessFun from "../../commonFun/sessFun.js";
 
 import noSearchResult from "../common/components/noSearchResult.vue";
 
@@ -579,7 +579,7 @@ import {
   Form,
   FormItem,
   Carousel,
-  CarouselItem
+  CarouselItem,
 } from "element-ui";
 
 export default {
@@ -604,26 +604,27 @@ export default {
     elForm: Form,
     elFormItem: FormItem,
     elCarousel: Carousel,
-    elCarouselItem: CarouselItem
+    elCarouselItem: CarouselItem,
   },
-  data () {
+  data() {
     return {
-      mediaTypeList: [],  //媒体类型
-      isCustomize: false,//是否开通自定义模板，
-      customizeCode: 0,//为0时为普通模板，大于0自定义模板
-      templateType: null,//模板类型
-      pptxType: '2',//导出pptx排版类型
-      pptxFilter: [],//导出pptx条件
-      checkAllDate: true,//全部档期
-      checkPeriodArr: [],//导出pptx档期
+      routeParams: {},
+      mediaTypeList: [], //媒体类型
+      isCustomize: false, //是否开通自定义模板，
+      customizeCode: 0, //为0时为普通模板，大于0自定义模板
+      templateType: null, //模板类型
+      pptxType: "2", //导出pptx排版类型
+      pptxFilter: [], //导出pptx条件
+      checkAllDate: true, //全部档期
+      checkPeriodArr: [], //导出pptx档期
       periodArr: [],
       pptxdialogVisible: false,
       newDate: new Date().getFullYear(),
       // 原数据存储
       dataFanganInfo: {},
-      dataAPD: '',
-      dataAdL: '',
-      dataImg: '',
+      dataAPD: "",
+      dataAdL: "",
+      dataImg: "",
       loading: true,
       Info: {},
       // 当前页
@@ -643,7 +644,7 @@ export default {
       //搜索类型
       typeSelect: [
         { value: 1, label: "资源名称" },
-        { value: 2, label: "商圈" }
+        { value: 2, label: "商圈" },
       ],
       //搜索框
       keyword: "",
@@ -673,73 +674,67 @@ export default {
     };
   },
   computed: {
-    conditionArr () {
-      if (this.pptxType == '2pointPerPage' || !this.isCustomize || this.templateType < 1) {
-        this.pptxFilter = this.pptxFilter.filter(item => {
-          return item * 1 === 0
+    conditionArr() {
+      if (
+        this.pptxType == "2pointPerPage" ||
+        !this.isCustomize ||
+        this.templateType < 1
+      ) {
+        this.pptxFilter = this.pptxFilter.filter((item) => {
+          return item * 1 === 0;
         });
-        return ['剔除被终止点位', '拆分多报告导出'];
+        return ["剔除被终止点位", "拆分多报告导出"];
       } else {
-        return ['剔除被终止点位', '推荐理由', '楼盘信息'];
+        return ["剔除被终止点位", "推荐理由", "楼盘信息"];
       }
-    }
+    },
   },
-  created () {
+  created() {
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();
     this.getTemplateOptions();
     this.getMediaType();
   },
-  mounted () {
+  mounted() {
     // 缓存不存在时为null
-    this.templateType = localStorage.getItem('templateType');
+    this.templateType = localStorage.getItem("templateType");
   },
   methods: {
     //获取媒体类型
-    getMediaType () {
-      let apID = sessionStorage.getItem("order_apid");
-      let info = {
-        apID
-      }
-      api.getApi("/addsp/api/v1/mediaTypes/getPlanMediaTypes", info).then(res => {
-        if (res.data.SysCode == 200200) {
-          this.mediaTypeList = res.data.data;
-          if (this.mediaTypeList.length > 0) {
-            this.mediaType = this.mediaTypeList[0].id;
-            this.changeMedia();
+    getMediaType() {
+      const { apID, companyId, replaceRecordId } = this.routeParams;
+      api
+        .getApi("/national/api/v1/nationalAdPlan/mediaTypeList", {
+          apID,
+          companyId,
+          replaceRecordId,
+        })
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.mediaTypeList = res.data.data || [];
+            if (this.mediaTypeList.length > 0) {
+              this.mediaType = this.mediaTypeList[0].id;
+              this.changeMedia();
+            }
           }
-        }
-      }).catch((err) => {
-        console.log(err);
-      })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     // 状态变中文
-    stateToText (type) {
-      let arr = [
-        {
-          name: 'SK',
-          text: '上刊',
-        },
-        {
-          name: 'XK',
-          text: '下刊',
-        },
-        {
-          name: 'HH',
-          text: '换画'
-        }
-      ];
-      for (let data of arr) {
-        if (data.name == type) {
-          return data.text;
-        }
-      }
+    stateToText(type) {
+      return {
+        0: "上刊",
+        1: "下刊",
+        2: "换画",
+      }[type];
     },
     // 获取图片列表
-    getReportInfo () {
-      let type = this.Info.name;
-      if (type == 'SK' || type == "XK") {
+    getReportInfo() {
+      const { imgType } = this.routeParams;
+      if (imgType === "0" || imgType === "1") {
         // 上下刊报告
         this.getData();
       } else {
@@ -748,137 +743,148 @@ export default {
       }
     },
     // tab点击
-    handleClick () {
-    },
-    showPptxDialog () {
-      this.pptxdialogVisible = true
-      this.pptxFilter = []
+    handleClick() {},
+    showPptxDialog() {
+      this.pptxdialogVisible = true;
+      this.pptxFilter = [];
     },
     // 缓存模板选项
-    templateChange (value) {
-      localStorage.setItem('templateType', value);
+    templateChange(value) {
+      localStorage.setItem("templateType", value);
     },
     //获取排期
-    getPeriod () {
-      api.getApi(this.apiVar.Advertisement + '/GetAdLaunchPeriod', { key: this.Info.val }).then(res => {
-        if (res.data.SysCode == '200200') {
-          this.periodArr = res.data.data
-        }
-      })
+    getPeriod() {
+      const { apID, companyId } = this.routeParams;
+      api
+        .getApi("/national/api/v1/nationalAdPlan/getScheduleByApID", {
+          apID,
+          companyId,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.periodArr = res.data.data || [];
+          }
+        });
     },
     //选择全部排期
-    chooseAllDate () {
+    chooseAllDate() {
       if (this.checkAllDate) {
-        this.checkPeriodArr = []
+        this.checkPeriodArr = [];
       }
     },
     // 选择排版
-    changeCondition (val) {
-      console.log(val)
+    changeCondition(val) {
+      console.log(val);
     },
     //选择排期
-    chooseDate () {
-      // console.log(this.checkPeriodArr);
+    chooseDate() {
       if (this.checkPeriodArr.length > 0) {
-        this.checkAllDate = false
+        this.checkAllDate = false;
       } else {
-        this.checkAllDate = true
+        this.checkAllDate = true;
       }
     },
     // 获取模板种类
-    getTemplateOptions () {
+    getTemplateOptions() {
       // 目前当前公司自定义模板只有一个，前端设计也是如此
-      let _this = this
-      let name = this.Info.name.toString().toLowerCase();
-      let val = this.Info.val;
-      let info = {
-        [name]: val
-      };
-      api.getApi(this.apiVar.Advertisement + "/GetCustomizeReports", info).then(res => {
-        if (!res.data.SysCode) {
-          if (!!res.data.customList && Array.isArray(res.data.customList)) {
-            // 公司下面有不同的定制模板，通过code来区分,
-            if (res.data.customList.length == 0 || res.data.customList[0].code < 1) {
-              _this.isCustomize = false
-            } else {
-              // type： 0pdf, 1pptx
-              _this.isCustomize = true
-              _this.customizeCode = res.data.customList[0].code
+      api
+        .getApi("/national/api/v1/powerPoint/getCustomizeReports")
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            if (!!res.data.customList && Array.isArray(res.data.customList)) {
+              // 公司下面有不同的定制模板，通过code来区分,
+              if (
+                res.data.customList.length == 0 ||
+                res.data.customList[0].code < 1
+              ) {
+                _this.isCustomize = false;
+              } else {
+                _this.isCustomize = true;
+                _this.customizeCode = res.data.customList[0].code;
+              }
             }
+          } else {
+            Message.warning(res.data.MSG);
           }
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     // 获取pptx
-    getPTTx () {
+    getPTTx() {
       // 定制模板导出时未开通提示
       if (this.templateType > 0 && this.isCustomize == false) {
         this.$message({
           showClose: true,
-          message: '贵司尚未定制专属模板，不能导出',
-          type: 'error'
+          message: "贵司尚未定制专属模板，不能导出",
+          type: "error",
         });
-        return
+        return;
       } else if (this.templateType === null) {
-        this.$message.error('请选择模板!')
-        return
+        this.$message.error("请选择模板!");
+        return;
       }
 
       if (!this.checkAllDate && this.checkPeriodArr.length == 0) {
-        this.$message.error('请选择一个排期选项!')
+        this.$message.error("请选择一个排期选项!");
       } else {
-        console.log(this.pptxType, this.checkAllDate, this.checkPeriodArr, this.pptxFilter);
-        this.getApiFun('/GetPPTXReport', this.pptLoading, 'pptx');
+        this.getApiFun(
+          "/national/api/v1/powerPoint/getPPTXReport",
+          this.pptLoading,
+          "pptx"
+        );
       }
-
-    },
-    // 获取ppt
-    getPTT () {
-      this.getApiFun('/GetPPTReport', this.pptLoading, 'ppt');
     },
     // 获取pdf
-    getPDF () {
-      this.getApiFun('/GetPdfReport', this.pdfLoading, 'pdf');
+    getPDF() {
+      this.getApiFun("/national/api/v1/powerPoint/getPPTXReport", this.pdfLoading, "pdf");
     },
     // 接口Fun  0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx下刊，5-pptx下刊，6-pptx换画，7-pdf换画
-    getApiFun (apiName, loading, type) {
-      let name = this.Info.name.toString().toLowerCase();
-      let val = this.Info.val;
+    getApiFun(apiName, loading, type) {
+      const { apID, companyId, imgType, replaceRecordId } = this.routeParams;
       let info = {
-        [name]: val
+        apID,
+        companyId,
+        imgType,
+        replaceRecordId,
       };
-      if (type == 'pptx') {
+      if (type == "pptx") {
         if (this.checkPeriodArr.length > 0) {
-          info.periods = this.checkPeriodArr.join(',')
+          info.periods = this.checkPeriodArr.join(",");
         }
-        info.customizeCode = this.templateType == 1 ? this.customizeCode : 0
-        info.exportAllPoint = (this.pptxFilter.indexOf(0) != -1) ? 0 : 1
+        info.exportType = 1,
+        info.customizeCode = this.templateType == 1 ? this.customizeCode : 0;
+        info.exportAllPoint = this.pptxFilter.indexOf(0) != -1 ? 0 : 1;
         // customizeCode: 2 亲粤邻定制模板
-        this.customizeCode == '2' && (info.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
-          if (currentValue > 0) {
-            return accumulator !== '' ? (accumulator + ',' + currentValue) : currentValue
-          } else {
-            return accumulator
-          }
-        }, ''))
-        console.log('定制---', info.customCondition)
-        if (this.pptxType == '2pointPerPage') {
+        this.customizeCode == "2" &&
+          (info.customCondition = this.pptxFilter.reduce(
+            (accumulator, currentValue) => {
+              if (currentValue > 0) {
+                return accumulator !== ""
+                  ? accumulator + "," + currentValue
+                  : currentValue;
+              } else {
+                return accumulator;
+              }
+            },
+            ""
+          ));
+        if (this.pptxType == "2pointPerPage") {
           // 定制2点位/页
           info.pagePointCnt = 2;
           info.photoCountPerPage = 4;
         } else {
-          info.photoCountPerPage = this.pptxType * 1
+          info.photoCountPerPage = this.pptxType * 1;
         }
+      } else {
+        info.exportType = 2;
       }
-      const tempPage = window.open('', '_blank');
+      const tempPage = window.open("", "_blank");
       loading = true;
-      api.getApi(this.apiVar.Advertisement + apiName, info).then(res => {
-        if (res.data.SysCode == 300200) {
-          let downloadElement = document.createElement('a');
+      api.getApi(apiName, info).then((res) => {
+        if (res.data.SysCode === 200200) {
+          let downloadElement = document.createElement("a");
           let href = res.data.data;
           downloadElement.href = href;
           document.body.appendChild(downloadElement);
@@ -889,78 +895,91 @@ export default {
         } else {
           let fileInfo = {
             downtype: 2,
-            key: val,
+            apID,
+            companyId,
+            imgType,
+            replaceRecordId,
           };
-          if (type == 'pptx') {
+          if (type == "pptx") {
             if (this.checkPeriodArr.length > 0) {
-              fileInfo.periods = this.checkPeriodArr.join(',')
+              fileInfo.periods = this.checkPeriodArr.join(",");
             }
-            fileInfo.customizeCode = this.templateType == 1 ? this.customizeCode : 0
+            fileInfo.exportType = 1;
+            fileInfo.customizeCode =
+              this.templateType == 1 ? this.customizeCode : 0;
 
-            if (this.pptxType == '2pointPerPage') {
+            if (this.pptxType == "2pointPerPage") {
               // 定制2点位/页
               fileInfo.pagePointCnt = 2;
               fileInfo.photoCountPerPage = 4;
             } else {
-              fileInfo.photoCountPerPage = this.pptxType * 1
+              fileInfo.photoCountPerPage = this.pptxType * 1;
             }
-            fileInfo.exportAllPoint = (this.pptxFilter.indexOf(0) != -1) ? 0 : 1
-            this.customizeCode == '2' && (fileInfo.customCondition = this.pptxFilter.reduce((accumulator, currentValue) => {
-              if (currentValue > 0) {
-                return accumulator !== '' ? (accumulator + ',' + currentValue) : currentValue
-              } else {
-                return accumulator
-              }
-            }, ''))
+            fileInfo.exportAllPoint = this.pptxFilter.indexOf(0) != -1 ? 0 : 1;
+            this.customizeCode == "2" &&
+              (fileInfo.customCondition = this.pptxFilter.reduce(
+                (accumulator, currentValue) => {
+                  if (currentValue > 0) {
+                    return accumulator !== ""
+                      ? accumulator + "," + currentValue
+                      : currentValue;
+                  } else {
+                    return accumulator;
+                  }
+                },
+                ""
+              ));
+          } else {
+            fileInfo.exportType = 2;
           }
-          fileInfo.type = this.stateToNum(type, name);
+          // fileInfo.type = this.stateToNum(type, name);
           this.getFileProcessFun(tempPage, fileInfo);
           loading = false;
         }
       });
     },
     // 0-ppt上刊，1-ppt下刊，2-pdf上刊，3-pdf下刊，4-pptx上刊，5-pptx下刊，6-pptx换画，7-pdf换画
-    stateToNum (type, name) {
+    stateToNum(type, name) {
       let arr = [
         {
-          type: 'ppt',
-          name: 'sk',
-          num: 0
+          type: "ppt",
+          name: "sk",
+          num: 0,
         },
         {
-          type: 'ppt',
-          name: 'xk',
-          num: 1
+          type: "ppt",
+          name: "xk",
+          num: 1,
         },
         {
-          type: 'pdf',
-          name: 'sk',
-          num: 2
+          type: "pdf",
+          name: "sk",
+          num: 2,
         },
         {
-          type: 'pdf',
-          name: 'xk',
-          num: 3
+          type: "pdf",
+          name: "xk",
+          num: 3,
         },
         {
-          type: 'pptx',
-          name: 'sk',
-          num: 4
+          type: "pptx",
+          name: "sk",
+          num: 4,
         },
         {
-          type: 'pptx',
-          name: 'xk',
-          num: 5
+          type: "pptx",
+          name: "xk",
+          num: 5,
         },
         {
-          type: 'pptx',
-          name: 'hh',
-          num: 6
+          type: "pptx",
+          name: "hh",
+          num: 6,
         },
         {
-          type: 'pdf',
-          name: 'hh',
-          num: 7
+          type: "pdf",
+          name: "hh",
+          num: 7,
         },
       ];
       for (let data of arr) {
@@ -970,155 +989,150 @@ export default {
       }
     },
     // 获取pptx
-    getFileProcessFun (tempPage, info) {
-      console.log(tempPage, 'tempage---', info);
+    getFileProcessFun(tempPage, info) {
       let routeUrl = this.$router.resolve({
-        path: "/progressDown",
+        path: "/progressDownCountry",
         query: info,
       });
       tempPage.location = routeUrl.href;
     },
     // 页数大小改变
-    sizeChange (pageVal) {
+    sizeChange(pageVal) {
       console.log("pageVal", pageVal);
       this.currUpPage = 1;
       this.pageUpSize = pageVal;
-      // this.searchFun();
       this.getDataFromType();
     },
     // 分页功能
-    changePage (page) {
-      console.log('page----', page);
+    changePage(page) {
+      console.log("page----", page);
       this.currUpPage = page;
-      // this.searchFun();
       this.getDataFromType();
     },
     // 根据type来获取数据
-    getDataFromType () {
-      let type = this.Info.name;
-      if (type == 'SK' || type == "XK") {
+    getDataFromType() {
+      if (
+        this.routeParams.imgType === "0" ||
+        this.routeParams.imgType === "1"
+      ) {
         this.searchFun();
       } else {
         this.searchPain();
       }
     },
     // 获取上下刊
-    searchFun () {
+    searchFun() {
       let info = this.searchFormat();
       this.getImgData(info);
     },
     // 获取换画
-    searchPain () {
+    searchPain() {
       let info = this.searchPainFormat();
       this.getPainImg(info);
     },
-    changeMedia () {
+    changeMedia() {
       this.currUpPage = 1;
       this.getDataFromType();
     },
     // 换画搜索数据格式化
-    searchPainFormat () {
-      let val = this.Info.val;
+    searchPainFormat() {
       let info = {
-        replaceRecordIdEncypt: val,
+        replaceRecordId: this.routeParams.replaceRecordId,
+        mediaTypeId: this.mediaType,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,
-        mType: this.mediaType == '广告门' ? 0 : 1,
       };
-      console.log('type---', info);
       return info;
     },
     // 获取换画图片数据
-    getPainImg (params) {
-      api.postApi_json(this.apiVar.replace + "/report/detailInfo", params).then(res => {
-        console.log(res);
-        if (res.data.SysCode == 200200) {
-          let dataInfo = res.data.data;
-          this.totalUpNum = dataInfo.totalSize;
-          for (let data of dataInfo.dataList) {
-            data.city = data.cityName;
-            data.rName = data.districtName;
-            data.lStar = data.beginDate;
-            data.lEnd = data.endDate;
-            if (data.adPlanPics) {
-              for (let item of data.adPlanPics) {
-                item.url = item.pURL;
+    getPainImg(params) {
+      api
+        .postApi_json("/national/api/v1/replace/detailInfo", params)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            let dataInfo = res.data.data;
+            this.totalUpNum = dataInfo.total;
+            for (let data of dataInfo.list) {
+              data.city = data.cityName;
+              data.rName = data.districtName;
+              data.lStar = data.beginDate;
+              data.lEnd = data.endDate;
+              if (data.adPlanPics) {
+                for (let item of data.adPlanPics) {
+                  item.url = item.pURL;
+                }
+              } else {
+                data.adPlanPics = [];
               }
-            } else {
-              data.adPlanPics = [];
+              let time =
+                this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+              data.timeRange = time;
+              data.upImgArr = data.adPlanPics;
             }
-            let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
-            data.timeRange = time;
-            data.upImgArr = data.adPlanPics;
-          }
-          this.reportArr = dataInfo.dataList;
+            this.reportArr = dataInfo.list;
 
-          if (dataInfo.totalSize == 0) {
-            sessFun.messageFun('warning', '暂无数据');
+            if (dataInfo.total == 0) {
+              sessFun.messageFun("warning", "暂无数据");
+            }
+          } else {
+            sessFun.messageFun("warning", res.data.MSG);
           }
-        } else {
-          sessFun.messageFun('warning', res.data.MSG);
-        }
-      });
+        });
     },
     // 获取换画数据
-    getPainData () {
-      let info = {
-        replaceRecordId: this.Info.val,
-      };
-      api.getApi(this.apiVar.replace + "/report/h5Detail", info).then(res => {
-        console.log(res.data);
-        let data = res.data.data;
-        // 换画抬头信息
-        this.report = this.getFangInfo(data.adPlanInfo);
-        // 投放详情
-        let result = this.getResInfo(data.resInfo);
-        this.putDetail = result;
-        this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
-        this.filterCityData = filterFormat(result, "city");
-        this.filtersArea = filterFormat(result, "rName");
-        // 发布情况
-        this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
-        this.loading = false;
-      });
+    getPainData() {
+      const { replaceRecordId } = this.routeParams;
+      api
+        .getApi("/national/api/v1/powerPoint/getReplaceDetailInfo", {
+          replaceRecordId,
+        })
+        .then((res) => {
+          let data = res.data.data;
+          // 换画抬头信息
+          this.report = this.getFangInfo(data.adPlanInfo);
+          // 投放详情
+          let result = this.getResInfo(data.resInfo);
+          this.putDetail = result;
+          this.currPutDetail = JSON.parse(JSON.stringify(this.putDetail));
+          this.filterCityData = filterFormat(result, "city");
+          this.filtersArea = filterFormat(result, "rName");
+          // 发布情况
+          this.postDetail = this.getCityAdSpaceCount(data.cityAdSpaceCount);
+          this.loading = false;
+        });
     },
     // 搜索数据格式化
-    searchFormat () {
-      let name = this.Info.name.toString().toLowerCase();
-      let val = this.Info.val;
+    searchFormat() {
       let info = {
-        [name]: val,
-        pType: this.Info.name,
+        imgType: this.routeParams.imgType,
+        mediaTypeId: this.mediaType,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,
-        mVehicle: this.mediaType,
       };
-      console.log('type---', info);
       return info;
     },
     // 获取路由数据
-    getRouter () {
+    getRouter() {
       let route = this.$route.query;
-      console.log(route);
-      this.Info.name = Object.keys(route);
-      this.Info.val = route[this.Info.name];
+      const { apID, companyId, imgType, replaceRecordId } = route;
+      this.routeParams = {
+        apID,
+        companyId,
+        imgType,
+        replaceRecordId,
+      };
     },
     // 获取原始数据
-    getData () {
-      // 真实数据
-      let name = this.Info.name.toString().toLowerCase();
-      let val = this.Info.val;
-      let info = {
-        [name]: val
-      };
-      api.getApi(this.apiVar.Advertisement + "/GetReportBatch", info)
-        .then(res => {
-          console.log(res.data);
+    getData() {
+      const { apID, companyId } = this.routeParams;
+      api
+        .getApi("/national/api/v1/powerPoint/getDetailInfo", {
+          apID,
+          companyId,
+        })
+        .then((res) => {
           if (res.data.SysCode == 200200) {
-            let data = res.data;
-
-            // 上下刊抬头信息
-            // this.report = this.getFangInfo(data.adPlanInfo);
+            let data = res.data.data;
             this.report = data.adPlanInfo;
             // 投放详情
             let result = data.resInfo;
@@ -1134,35 +1148,26 @@ export default {
             Message.warning(res.data.MSG);
           }
         })
-        .catch(res => {
+        .catch((res) => {
           this.loading = false;
           console.log(res);
         });
     },
     // 头部信息
-    getFangInfo (data) {
-      console.log(data, 'data---');
+    getFangInfo(data) {
       let info = {
         apID: data.apId,
         apName: data.apName,
-        // apQC: data.apQC,
-        // apState: data.apState,
-        // apTotal: data.apTotal,
-        apcTime: dateFormat.toDate(data.apCreateTime, '/'),
+        apcTime: dateFormat.toDate(data.apCreateTime, "/"),
         bTitle: data.btitle,
         cName: data.companyName,
-        // cuName: data.cuName,
-        // pdEnd: data.pdEnd,
-        // pdStar: data.pdStar,
-        // rID: data.rID,
         rIDs: data.rIDs,
-        // realName: data.realName,
         asSpaceSum: data.asSpaceSum,
       };
       return info;
     },
     // 投放详情
-    getResInfo (arr) {
+    getResInfo(arr) {
       let result = [];
       for (let item of arr) {
         let obj = {
@@ -1192,18 +1197,18 @@ export default {
           resID: item.resID,
           resName: item.resName,
           tradingArea: item.tradingArea,
-          notPush: item.notPush
+          notPush: item.notPush,
         };
         result.push(obj);
       }
       return result;
     },
     // 发布情况
-    getCityAdSpaceCount (arr) {
+    getCityAdSpaceCount(arr) {
       let result = [];
       let info = {
         citys: [],
-        totalNum: 0
+        totalNum: 0,
       };
       for (let data of arr) {
         let obj = {
@@ -1212,105 +1217,76 @@ export default {
           realNum: data.adSpaceCount,
           wrongNum: 0,
           resolveNum: 0,
-        }
+        };
         info.citys.push(data.cityName);
         info.totalNum += data.adSpaceCount;
         result.push(obj);
       }
-      this.report.rIDs = info.citys.join(',');
+      this.report.rIDs = info.citys.join(",");
       this.report.asSpaceSum = info.totalNum;
       return result;
     },
 
     // 获取图片信息(广告门)
-    getImgData (params) {
-      api.postApi(this.apiVar.Advertisement + "/GetImg", params)
-        .then(res => {
-          if (!res.data.SysCode) {
-            console.log(res.data);
-            let dataInfo = res.data;
-            this.totalUpNum = dataInfo.totalCount;
-            for (let data of dataInfo.dataList) {
-              for (let item of data.photoList) {
+    getImgData(params) {
+      api
+        .getApi("/national/api/v1/nationalAdPlan/pageAdsUploadInfo", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            let dataInfo = res.data.data;
+            this.totalUpNum = dataInfo.total;
+            for (let data of dataInfo.list) {
+              for (let item of data.photoList || []) {
                 item.url = item.pURL;
               }
-              let time = this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
+              let time =
+                this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
               data.timeRange = time;
               data.upImgArr = data.photoList;
             }
-            this.reportArr = dataInfo.dataList;
-            if (dataInfo.totalCount == 0) {
-              Message.warning('暂无数据');
+            this.reportArr = dataInfo.list;
+            if (dataInfo.total == 0) {
+              Message.warning("暂无数据");
             }
-            console.log(this.reportArr);
           } else {
             Message.warning(res.data.MSG);
           }
         })
-        .catch(res => {
+        .catch((res) => {
           console.log(res);
         });
     },
     // 查看监播
-    showImg (row) {
-      let name = this.Info.name.toString().toLowerCase();
-      let val = this.Info.val;
-      let info = {};
-      if (this.Info.name == 'HH') {
-        info = {
-          replaceRecordId: val,
+    showImg(row) {
+      const { apID, companyId, imgType } = this.routeParams;
+      api
+        .getApi("/national/api/v1/powerPoint/listImgByResId", {
+          apID,
+          companyId,
+          imgType,
           resID: row.resID,
-        };
-        api.getApi(this.apiVar.replace + '/report/picByRes', info).then(res => {
-          console.log(res.data);
+        })
+        .then((res) => {
           if (res.data.SysCode == 200200) {
-            if (res.data.data.length) {
-              this.ImgBoxArr = res.data.data && res.data.data.map(item => {
-                return item.pURL;
-              });
+            if (Array.isArray(res.data.data) && res.data.data.length) {
+              this.ImgBoxArr = res.data.data;
               this.isShowImgArr = true;
             } else {
-              Message.warning("暂无数据！");
+              Message.warning("暂无数据");
             }
           } else {
             Message.warning(res.data.MSG);
           }
         });
-      } else {
-        info = {
-          resId: row.resID,
-          pType: this.Info.name,
-          [name]: val
-        };
-        this.showImgApi(info);
-      }
-    },
-    showImgApi (info) {
-      api.postApi(this.apiVar.Advertisement + '/GetImgByResId', info).then(res => {
-        console.log(res.data);
-        if (res.data.SysCode == 200200) {
-          if (res.data.data.length) {
-            this.ImgBoxArr = res.data.data;
-            this.isShowImgArr = true;
-          } else {
-            Message.warning("暂无数据");
-          }
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      });
     },
     // 当搜索框为空的时候进行重置显示
-    initData () {
+    initData() {
       if (!this.keyword) {
         this.currPutDetail = this.putDetail;
       }
     },
     // 搜索
-    search () {
-      // 账号，姓名
-      console.log(this.select);
-      console.log(this.keyword);
+    search() {
       let select = this.select;
       let keyword = this.keyword;
       if (this.keyword) {
@@ -1322,10 +1298,7 @@ export default {
             }
           }
           if (data.tradingArea) {
-            if (
-              select == "2" &&
-              data.tradingArea.includes(keyword)
-            ) {
+            if (select == "2" && data.tradingArea.includes(keyword)) {
               arr.push(data);
             }
           }
@@ -1336,19 +1309,19 @@ export default {
       this.currPutDetail = this.putDetail;
     },
     // 时间格式规范
-    formatTime (val) {
+    formatTime(val) {
       return dateFormat.toDate(val, "/");
     },
     // 价格加上逗号
-    priceFormat (price) {
+    priceFormat(price) {
       // console.log('price', price);
       return commaFormat.init(price);
     },
     // 字段截取
-    wordlimit (word, num) {
+    wordlimit(word, num) {
       if (document.body.clientWidth <= 1366) {
-        if (word && (word.length > num)) {
-          return word = word.substr(0, num) + '...';
+        if (word && word.length > num) {
+          return (word = word.substr(0, num) + "...");
         }
         return word;
       } else {
@@ -1356,24 +1329,24 @@ export default {
       }
     },
     //缩略图
-    handlePictureCardPreview (url) {
+    handlePictureCardPreview(url) {
       console.log("item", url);
       this.dialogImageUrl = url;
       this.dialogVisible = true;
     },
-    filterCity (value, row) {
+    filterCity(value, row) {
       return row.city === value;
     },
-    filterRName (value, row) {
+    filterRName(value, row) {
       return row.rName === value;
     },
-    changeImgType () {
+    changeImgType() {
       this.isActive = !this.isActive;
     },
-    loginTimeout () {
+    loginTimeout() {
       Message.warning("登录超时,请重新登录");
       this.$router.push("/login");
-    }
+    },
   },
 };
 </script>
@@ -1388,7 +1361,7 @@ export default {
 .mediaMana_content_top {
   padding: 24px;
   margin: 0 64px;
-  background: #fff url('../../assets/images/upReportBg.png') right no-repeat;
+  background: #fff url("../../assets/images/upReportBg.png") right no-repeat;
 }
 
 .title {
@@ -1450,7 +1423,7 @@ export default {
 
 /*投放详情*/
 
-/deep/ .el-button [class*='el-icon-'] + span {
+/deep/ .el-button [class*="el-icon-"] + span {
   position: relative;
   top: 0px;
   left: 2px;
@@ -1732,7 +1705,7 @@ export default {
 }
 
 /deep/ .el-pagination button,
-.el-pagination span:not([class*='suffix']) {
+.el-pagination span:not([class*="suffix"]) {
   position: relative;
   top: 0px !important;
   background-color: transparent !important;
@@ -1759,12 +1732,12 @@ export default {
   color: rgb(102, 102, 102);
 }
 
-/deep/ .el-table__expanded-cell[class*='cell'] .el-form {
+/deep/ .el-table__expanded-cell[class*="cell"] .el-form {
   height: 44px;
   line-height: 44px;
 }
 
-/deep/ .el-table__expanded-cell[class*='cell'] {
+/deep/ .el-table__expanded-cell[class*="cell"] {
   padding: 0 46px;
   background-color: #f7f7f7;
 }

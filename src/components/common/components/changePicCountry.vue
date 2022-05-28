@@ -2721,7 +2721,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let routeUrl = this.$router.resolve({
-              path: "/progressDown",
+              path: "/progressDownCountry",
               query: info,
             });
             tempPage.location = routeUrl.href;
@@ -2739,7 +2739,7 @@ export default {
       let info = {
         apId: this.apId,
         type: this.type,
-        companyId: this.companyId
+        companyId: this.companyId,
       };
       if (this.type === 2) {
         info.replaceRecordId = this.painList[this.activePainIndex].id;
@@ -2760,27 +2760,20 @@ export default {
           this.updateLoading = false;
         });
     },
-    // 查看h5上下刊刊报告按钮
+
+    /**
+     *  查看h5上下刊刊报告
+     *  0: "SK"
+        1: "XK"
+        2: "HH"
+     */
     showH5() {
-      let id = this.apId;
       let tempwindow = window.open();
-      if (this.type === 2) {
-        id = this.painList[this.activePainIndex].id;
+      let replaceRecordId = "";
+      if (this.painList && this.painList[this.activePainIndex]) {
+        replaceRecordId = this.painList[this.activePainIndex].id;
       }
-      const typeMap = {
-        0: "SK",
-        1: "XK",
-        2: "HH",
-      };
-      api
-        .getApi(this.apiVar.UCAPI + "/EncryptNo", { num: id })
-        .then((res) => {
-          tempwindow.location =
-            "/Report?" + typeMap[this.type] + "=" + res.data.EncryptCode;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      tempwindow.location = `/ReportCountry?apID=${this.apId}&&companyId=${this.companyId}&&imgType=${this.type}&&replaceRecordId=${replaceRecordId}`;
     },
     //获取换画区域
     getRegionAreaList() {

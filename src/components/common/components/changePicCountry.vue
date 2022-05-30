@@ -327,7 +327,7 @@
                 item.asLab
               }}
             </span>
-            <el-tooltip v-if="item.prStatus" class="item" effect="dark">
+            <!-- <el-tooltip v-if="item.prStatus" class="item" effect="dark">
               <ul slot="content">
                 <li style="line-height: 20px">
                   拍照人：{{ item.prRealName || "" }}
@@ -337,7 +337,7 @@
                 </li>
               </ul>
               <span class="photo-record-sign">已拍照</span>
-            </el-tooltip>
+            </el-tooltip> -->
             <p class="car_header">
               <el-tooltip
                 class="item"
@@ -965,7 +965,7 @@ export default {
         dateRange: ["全部"],
         // 物料备注
         materialRemark: ["全部"],
-        prStatus: "全部",
+        // prStatus: "全部",
       },
       // 资源列表
       allResource: [],
@@ -1005,7 +1005,7 @@ export default {
         city: ["全部"],
         resName: "全部",
         status: "全部",
-        prStatus: "全部",
+        // prStatus: "全部",
         // 搜索列表数据
         // 媒体类型
         mediaTypeArr: [
@@ -1403,7 +1403,7 @@ export default {
         lState,
         dateRange,
         materialRemark,
-        prStatus,
+        // prStatus,
       } = this.publishSearchInfo;
       let info = {
         uid: uID,
@@ -1416,7 +1416,7 @@ export default {
         mediaTypeId: mediaType,
         time: dateRange.includes("全部") ? "" : dateRange.join(","),
         materialRemark: materialRemark.includes("全部") ? "" : materialRemark,
-        prStatus: prStatus == "全部" ? "" : prStatus,
+        // prStatus: prStatus == "全部" ? "" : prStatus,
       };
 
       if (allPic == "2") {
@@ -1456,7 +1456,7 @@ export default {
           dateRange: ["全部"],
           // 物料备注
           materialRemark: ["全部"],
-          prStatus: "全部",
+          // prStatus: "全部",
         };
       } else {
         this.searchInfo = {
@@ -1465,7 +1465,7 @@ export default {
           city: ["全部"],
           resName: "全部",
           status: "全部",
-          prStatus: "全部",
+          // prStatus: "全部",
         };
       }
       this.getImgArr();
@@ -1654,14 +1654,14 @@ export default {
     },
     // 搜索换画列表条件
     searchPointFormat() {
-      let { mediaType, city, resName, status, prStatus } = this.searchInfo;
+      let { mediaType, city, resName, status } = this.searchInfo;
       let { currPage, pageSize } = this.pageInfo;
       let info = {
         apId: this.apId,
         replaceRecordId: this.painList.length
           ? this.painList[this.activePainIndex].id
           : "",
-        prStatus: prStatus == "全部" ? "" : prStatus,
+        // prStatus: prStatus == "全部" ? "" : prStatus,
         pageNum: currPage,
         pageSize: pageSize,
         mediaTypeId: mediaType,

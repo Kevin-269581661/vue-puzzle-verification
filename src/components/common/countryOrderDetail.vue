@@ -1648,7 +1648,7 @@ export default {
     },
     //返回列表
     goBack() {
-      this.$router.push("./orderList");
+      this.$router.push("./countryOrderList");
     },
     // 获取订单内公司列表
     getCompaniesOfOrder() {

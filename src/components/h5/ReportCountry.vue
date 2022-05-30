@@ -12,7 +12,7 @@
                   @click="showPptxDialog()"
                   size="small"
                   :loading="pptxLoading"
-                  >导出PPTx</el-button
+                  >导出PPTX</el-button
                 >
                 <el-button
                   plain

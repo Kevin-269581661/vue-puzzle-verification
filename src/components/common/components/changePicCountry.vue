@@ -124,7 +124,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="拍照状态:">
+        <!-- <el-form-item label="拍照状态:">
           <el-select
             placeholder="请选择拍照状态"
             v-model="publishSearchInfo.prStatus"
@@ -133,7 +133,7 @@
             <el-option label="已拍照" value="1"></el-option>
             <el-option label="未拍照" value="0"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" @click="searchImg()">搜 索</el-button>
           <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -241,7 +241,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="拍照状态:">
+          <!-- <el-form-item label="拍照状态:">
             <el-select
               placeholder="请选择拍照状态"
               v-model="searchInfo.prStatus"
@@ -250,7 +250,7 @@
               <el-option label="已拍照" value="1"></el-option>
               <el-option label="未拍照" value="0"></el-option>
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="primary" @click="search()">搜 索</el-button>
             <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>

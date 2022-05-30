@@ -327,7 +327,7 @@
                         (
                           scope.row.apState !== 0 &&
                           scope.row.apState !== 5 &&
-                          role === 'ADN_SM'
+                          role === 'ADN_MD_COUNTRY'
                         )
                       "
                       @click.native.prevent="finishOrder(scope.row)"

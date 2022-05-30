@@ -34,7 +34,7 @@
               <em>投放城市：</em>
               <i>{{ report.rIDs }}</i>
               <em>{{
-                Info.name == "SK" || Info.name == "XK"
+                routeParams.imgType === "0" || routeParams.imgType === "1"
                   ? "投放面数："
                   : "换画面数："
               }}</em>
@@ -481,7 +481,7 @@
             <!--存在多个档期时显示-->
             <li
               v-if="
-                (Info.name == 'SK' || Info.name == 'XK') && periodArr.length > 1
+                (routeParams.imgType == '0' || routeParams.imgType == '1') && periodArr.length > 1
               "
             >
               <span class="form-label">选择档期：</span>
@@ -1114,7 +1114,7 @@ export default {
     searchFormat() {
       const { apID, companyId, imgType } = this.routeParams;
       let info = {
-        apID,
+        apId: apID,
         companyId,
         imgType,
         mediaTypeId: this.mediaType,

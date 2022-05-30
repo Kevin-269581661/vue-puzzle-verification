@@ -1231,17 +1231,9 @@ export default {
     // 获取订单详情的上面公司的信息
     this.getInitData();
     // this.getMaterInfo();
-
     //获取物料信息
     // this.getMaterialInfo();
-
-    if (
-      ["ADN_BD_KA", "ADN_BD"].includes(this.role) ||
-      ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
-    ) {
-      // 获取换画列表
-      this.getPainlist();
-    }
+    this.getPainlist();
     this.getOrderPriceDetail();
   },
   methods: {
@@ -1726,7 +1718,6 @@ export default {
         token: loginData.token,
         pageNum: this.currPage,
         pageSize: this.pageSize,
-        companyId: this.currentCompanyId,
       };
       if (type) {
         if (type == "change") {
@@ -1738,6 +1729,8 @@ export default {
         } else {
           info.resName = this.keyword;
         }
+      } else {
+        info.companyId = this.currentCompanyId;
       }
       api
         .getApi("/national/api/v1/nationalAdPlan/pageCompanyAdlInfo", info)

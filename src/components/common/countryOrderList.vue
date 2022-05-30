@@ -242,7 +242,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
               prop="realName"
               label="所有人"
               min-width="6.1%"
@@ -252,15 +252,15 @@
               :filter-multiple="true"
               v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
             >
-            </el-table-column>
-            <el-table-column
+            </el-table-column> -->
+            <!-- <el-table-column
               prop="realName"
               label="所有人"
               min-width="6.1%"
               show-overflow-tooltip
               v-if="role === 'ADN_EP'"
             >
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
               prop="skProgress"
               label="上刊进度"
@@ -422,7 +422,7 @@ export default {
   data() {
     return {
       //过滤所有人
-      filterRealName: [],
+      // filterRealName: [],
       // 搜索数据
       searchInfo: {
         // 搜索的select框
@@ -506,15 +506,15 @@ export default {
     if (this.isAll) {
       this.getCompany();
     }
-    if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+    /* if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
       this.getSubSaleList();
-    }
+    } */
     // 获得初始数据
     this.searchFun();
   },
   methods: {
     //获取下级销售列表
-    getSubSaleList() {
+    /* getSubSaleList() {
       api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
         console.log(res.data);
         if (res.data.SysCode == 200200) {
@@ -523,10 +523,10 @@ export default {
           this.messageFun("warning", res.data.MSG);
         }
       });
-    },
-    filterRealNameFun(value, row) {
+    }, */
+    /* filterRealNameFun(value, row) {
       return row.realName === value;
-    },
+    }, */
     // 切换页码
     changePage(page) {
       this.currPage = page;
@@ -746,7 +746,7 @@ export default {
         appTime: item.appTime || "",
         bTitle: item.bTitle || "--",
         cName: item.cName || "",
-        realName: item.realName || "",
+        // realName: item.realName || "",
         companyList: [],
         skProgress: item.skProgress || "",
         xkProgress: item.xkProgress || "",

@@ -1,9 +1,9 @@
 <template>
     <div class="third-wrap box-wrap">
         <div class="table_wrap">
-            <p v-if="openStatus" class="search-row" style="float: right;">
+            <p class="search-row" style="float: right;">
                 <el-button v-if="orderApType==1" type="" size="small" @click="uploadMaterial()">下载物料素材</el-button>
-                <el-button type="primary" size="small" @click="uploadMater()" v-show="isOrder"
+                <el-button :disabled="openStatus === false" type="primary" size="small" @click="uploadMater()" v-show="isOrder"
                            >添加物料信息
                 </el-button>
             </p>

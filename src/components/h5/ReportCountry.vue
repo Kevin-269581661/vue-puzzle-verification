@@ -1258,7 +1258,7 @@ export default {
             }
             this.reportArr = dataInfo.list;
             if (dataInfo.total == 0) {
-              Message.warning("暂无上下刊数据");
+              Message.warning("暂无监播数据！");
             }
           } else {
             Message.warning(res.data.MSG);

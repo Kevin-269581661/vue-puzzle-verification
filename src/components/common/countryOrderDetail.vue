@@ -129,6 +129,7 @@
                       v-model="keyword"
                       class="input-with-select"
                       style="width: 260px"
+                      @change="search('current')"
                     ></el-input>
                     <el-button
                       type="primary"
@@ -533,6 +534,7 @@
                 v-model="changeKeyword"
                 class="input-with-select"
                 style="width: 200px"
+                @change="search('change')"
               ></el-input>
               <el-button
                 type="primary"
@@ -1719,17 +1721,14 @@ export default {
         pageNum: this.currPage,
         pageSize: this.pageSize,
       };
-      if (type) {
-        if (type == "change") {
-          info.resName == this.changeKeyword;
-          info.pageNum = this.pointCurrPage;
-          info.pageSize = this.pointPageSize;
-          this.handleType === 2 && (info.enableStop = true);
-          info.lState = 1;
-        } else {
-          info.resName = this.keyword;
-        }
+      if (type && type === "change") {
+        info.resName == this.changeKeyword;
+        info.pageNum = this.pointCurrPage;
+        info.pageSize = this.pointPageSize;
+        this.handleType === 2 && (info.enableStop = true);
+        info.lState = 1;
       } else {
+        info.resName = this.keyword;
         info.companyId = this.currentCompanyId;
       }
       api
@@ -1957,20 +1956,13 @@ export default {
     search(type) {
       if (type == "change") {
         //更换点位
-        let t = [...this.setpointArr];
-        let arr = [];
-        if (this.changeKeyword !== "") {
-          for (let data of t) {
-            if (data.resName.indexOf(this.changeKeyword) != -1) {
-              arr.push(data);
-            }
-          }
-        }
-
-        this.setpointArr = arr;
+        let t = [...this.tempSetPointArr];
+        this.setpointArr = t.filter(
+          (item) => item.resName.indexOf(this.changeKeyword) != -1
+        );
         this.changePointPageFn();
       } else {
-        this.getSetPoint("type");
+        this.getSetPoint();
       }
     },
     //重置

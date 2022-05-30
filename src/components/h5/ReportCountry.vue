@@ -904,7 +904,7 @@ export default {
             downtype: 2,
             apID,
             companyId,
-            imgType
+            imgType,
           };
           if (imgType === 2) {
             fileInfo.replaceRecordId = replaceRecordId;
@@ -1112,8 +1112,11 @@ export default {
     },
     // 搜索数据格式化
     searchFormat() {
+      const { apID, companyId, imgType } = this.routeParams;
       let info = {
-        imgType: this.routeParams.imgType,
+        apID,
+        companyId,
+        imgType,
         mediaTypeId: this.mediaType,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,

@@ -953,6 +953,7 @@ export default {
         let params = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
+          kaFlag: true,
           keyword: query,
         };
         api

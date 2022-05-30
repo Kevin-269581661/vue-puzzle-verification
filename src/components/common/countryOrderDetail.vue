@@ -206,8 +206,7 @@
                           </el-form-item>
                           <el-form-item
                             v-if="
-                              sessionData.uType == 'ADN_MD_COUNTRY' ||
-                              sessionData.uType == 'ADN_BD_KA'
+                              sessionData.uType == 'ADN_MD_COUNTRY'
                             "
                             label="归属公司："
                           >
@@ -702,6 +701,13 @@
               <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
               </el-table-column>
               <el-table-column prop="asLab" label="投放面" min-width="5.8%">
+              </el-table-column>
+              <el-table-column
+                prop="asName"
+                label="所属公司"
+                width="120"
+                show-overflow-tooltip
+              >
               </el-table-column>
               <el-table-column
                 prop="city"
@@ -1487,132 +1493,6 @@ export default {
         .finally(() => {
           this.isDown = false;
         });
-      return;
-      this.isDown = false;
-      let resultArr = [];
-      for (let data of this.exportArr) {
-        let obj = {
-          resName: data.resName,
-          province: data.province,
-          city: data.city,
-          rName: data.rName,
-          asName: data.asName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          assetTag: data.assetTag,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == "0" ? "&" : data.hNum,
-          fNum: data.fNum,
-          chDay: data.chDay,
-          adSize: data.adSize,
-          adViewSize: data.adViewSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          electrifyState: data.electrifyState,
-          mapCenter: data.mapCenterName || "",
-          parkSpaceNum: data.parkSpaceNum || "",
-          carFlow: data.carFlow || "",
-          peopleFlow: data.peopleFlow || "",
-          mType: data.mType || "",
-        };
-        resultArr.push(obj);
-      }
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("../../vendorExcel/Export2Excel");
-        let tHeader = [
-          "资源名称",
-          "省份",
-          "城市",
-          "区域",
-          "详细地址",
-          "媒介载体",
-          "媒体名称",
-          "资产编号",
-          "投放面",
-          "投放排期",
-          "门体类型",
-          "商圈",
-          "楼栋数量",
-          "住户数量/办公室数量",
-          "楼盘价格",
-          "楼盘类型/写字楼类型",
-          "入住年份/建成年份",
-          "广告限制",
-          "车位数",
-          "车流量",
-          "人流量",
-          "素材尺寸",
-          "可视尺寸",
-          "媒体备注",
-          "地图中心点",
-          "终止日期",
-        ];
-        let filterVal = [
-          "resName",
-          "province",
-          "city",
-          "rName",
-          "resAddress",
-          "mVehicle",
-          "mTitle",
-          "assetTag",
-          "asLab",
-          "timeRange",
-          "mType",
-          "tradingArea",
-          "fNum",
-          "hNum",
-          "hPrice",
-          "cType",
-          "chDay",
-          "notPush",
-          "parkSpaceNum",
-          "carFlow",
-          "peopleFlow",
-          "adSize",
-          "adViewSize",
-          "mRemark",
-          "mapCenter",
-          "finishTimeRange",
-        ];
-
-        switch (this.customPermission.patrolPermission) {
-          case 1:
-            tHeader.push("巡点问题", "通行情况");
-            filterVal.push("remark", "trafficState");
-            break;
-          case 2:
-            tHeader.push("巡点问题", "通行情况", "通电情况");
-            filterVal.push("remark", "trafficState", "electrifyState");
-            break;
-        }
-
-        if (
-          this.sessionData.uType == "ADN_MD_COUNTRY" ||
-          this.sessionData.uType == "ADN_BD_KA"
-        ) {
-          tHeader.push("归属公司");
-          filterVal.push("asName");
-        }
-
-        const list = resultArr;
-        const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, name);
-        this.isDown = false;
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     // 判断是否是有换点跳转过来的？
     isChangePoint() {
@@ -2042,7 +1922,6 @@ export default {
       for (let i = 0; i < total; i += pageSize) {
         result.push(this.setpointArr.slice(i, i + pageSize));
       }
-      console.log(result);
       //当前页
       this.changePointArr = result[pageNum - 1];
       //切换页数时勾选

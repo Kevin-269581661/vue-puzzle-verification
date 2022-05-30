@@ -643,21 +643,12 @@
           </el-table-column>
           <el-table-column prop="asLab" label="面" width="50">
           </el-table-column>
+          <el-table-column prop="asName" label="所属公司" width="120" show-overflow-tooltip>
+          </el-table-column>
           <el-table-column prop="cityName" label="城市" width="90">
           </el-table-column>
           <el-table-column prop="districtName" label="区域" width="90">
           </el-table-column>
-          <!-- <el-table-column
-            prop="mapCenterInfo"
-            label="地图中心点"
-            align="center"
-            width="100"
-            show-overflow-tooltip
-          >
-            <template slot-scope="scope">
-              <span>{{ scope.row.mapCenterInfo || "--" }}</span>
-            </template>
-          </el-table-column> -->
           <el-table-column prop="timeRange" label="排期" min-width="140">
           </el-table-column>
           <el-table-column prop="replaceDate" label="换画日期">
@@ -1765,6 +1756,7 @@ export default {
         pageNum: currInfoPage,
         pageSize: pageSize,
         apId: this.apId,
+        companyId: this.companyId,
         ...(resName.length && { resIds: resName }),
         ...(mapName && { mapCenterInfo: mapName }),
         ...(picState >= 0 && { replaceStatus: picState == 2 ? "" : picState }),
@@ -1970,31 +1962,6 @@ export default {
         clearTimeout(timer);
       }, 0);
     },
-    // 获取地图中心点
-    /* getMapArr() {
-      let info = {
-        apId: this.apId,
-      };
-      api
-        .getApi(this.apiVar.replace + "/plan/mapCenterInfo", info)
-        .then((res) => {
-          console.log(res);
-          if (res.data.SysCode == 200200) {
-            this.dialogInfo.mapArr =
-              res.data.data &&
-              res.data.data.map((item) => {
-                return {
-                  ...item,
-                  label: item.mapCenterName,
-                  value: item.mapCenterName,
-                };
-              });
-            console.log(this.dialogInfo.mapArr);
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
-    }, */
     // 获取弹出框资源下拉列表
     getDialogInfoResArr() {
       let info = {

@@ -859,7 +859,6 @@ export default {
           api
             .postApi("/national/api/v1/nationalAdPlan/stopAdPlan", info)
             .then((res) => {
-              // console.log(res.data);
               if (res.data.SysCode == 200200) {
                 //结束订单成功
                 loading.close();
@@ -884,7 +883,6 @@ export default {
                     this.changePriceModal = true;
                   })
                   .catch(() => {
-                    // Message.info("已取消操作");
                   });
                 this.$set(row, "apState", 5);
               } else {

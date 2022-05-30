@@ -96,6 +96,7 @@
     </div>
     <div class="mediaList_wrap margin_16_64">
       <el-tabs
+        class="company-tabs"
         v-if="companiesOfOrder.length"
         v-model="currentCompanyId"
         @tab-click="getSetPoint"
@@ -205,9 +206,7 @@
                             <span>{{ props.row.notPush || "--" }}</span>
                           </el-form-item>
                           <el-form-item
-                            v-if="
-                              sessionData.uType == 'ADN_MD_COUNTRY'
-                            "
+                            v-if="sessionData.uType == 'ADN_MD_COUNTRY'"
                             label="归属公司："
                           >
                             <span class="ellipsis-td">{{
@@ -407,7 +406,12 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="物料信息" name="third">
-              <div style="min-height: 300px"></div>
+              <material
+                :materialInfoData="materialInfoJson"
+                :loading="false"
+                :isOrder="true"
+                :openStatus="false"
+              ></material>
             </el-tab-pane>
             <el-tab-pane
               label="上刊报告"
@@ -1042,7 +1046,10 @@ export default {
       // 媒体类型
       mediaTypeList: [],
       // 物料信息数据
-      // materialInfoJson: {},
+      materialInfoJson: {
+        mediaTypeName: "",
+        materialCntInfoList: [],
+      },
       // session信息
       sessionData: {},
       isDown: false,
@@ -1056,7 +1063,7 @@ export default {
       pointPageSize: 500,
       //加载中
       loading: true,
-      maLoading: true,
+      // maLoading: true,
       // 判断
       role: "",
       customPermission: {},
@@ -1810,7 +1817,7 @@ export default {
             this.changePointloading = false;
             this.currPointloading = false;
             this.loading = false;
-            this.maLoading = false;
+            // this.maLoading = false;
             this.changePointloading = false;
           } else {
             Message.warning(res.data.MSG);
@@ -1818,7 +1825,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.maLoading = false;
+          // this.maLoading = false;
           this.changePointloading = false;
           this.currPointloading = false;
           console.log(res);
@@ -2682,11 +2689,10 @@ export default {
   width: 50px;
 }
 
-/deep/ .mediaList_wrap .el-tabs__header {
+/deep/ .company-tabs > .el-tabs__header {
   border-bottom: 1px solid #e6e7e9;
   height: 53px;
   line-height: 54px;
-  /*margin: 0;*/
 }
 
 /*1920*/

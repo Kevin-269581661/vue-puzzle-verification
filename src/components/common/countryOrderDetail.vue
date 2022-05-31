@@ -974,9 +974,11 @@
       </el-dialog>
 
       <ChangeCountryOrderPrice
+        v-if="changePriceModal"
         :apID="orderDetail.apID"
         :requesInfo="{ mark: this.handleTime, opType: 1 }"
-        :settlementFormVisible="changePriceModal"
+        :settlementFormVisible="true"
+        :tabsActiveCompany="currentCompanyId"
         @cancel="changePriceModal = false"
         @planMoneyUpdated="
           changePriceModal = false;
@@ -1201,6 +1203,10 @@ export default {
       isHandleChange: false,
       handleTime: "", //换点操作和修改订单的时间戳
       handleType: 1,
+
+
+      activeCompany: '0'
+
     };
   },
   async created() {

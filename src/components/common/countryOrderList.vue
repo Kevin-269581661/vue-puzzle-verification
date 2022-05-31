@@ -383,16 +383,17 @@
     </el-dialog>
     <!-- 画像申请的弹出框结束 -->
     <!--修改金额弹框-->
-    <changeProposalOrderPrice
+    <changeCountryOrderPrice
+      v-if="changePriceModal"
       :apID="currApid"
-      :requesInfo="{ mark: this.handleTime, opType: 2 }"
-      :settlementFormVisible="changePriceModal"
+      :requesInfo="{ mark: this.handleTime, opType: 1 }"
+      :settlementFormVisible="true"
       @cancel="changePriceModal = false"
       @planMoneyUpdated="
         changePriceModal = false;
         searchFun();
       "
-    ></changeProposalOrderPrice>
+    ></changeCountryOrderPrice>
   </div>
 </template>
 
@@ -408,7 +409,7 @@ import sessFun from "../../commonFun/sessFun.js";
 import applyphoto from "./components/applyPhoto.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
-import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
+import changeCountryOrderPrice from "./components/changeCountryOrderPrice.vue";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 export default {
@@ -417,7 +418,7 @@ export default {
     applyphoto,
     noSearchResult,
     pointState,
-    changeProposalOrderPrice,
+    changeCountryOrderPrice
   },
   data() {
     return {

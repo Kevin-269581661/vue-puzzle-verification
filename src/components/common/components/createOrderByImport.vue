@@ -165,11 +165,17 @@
           :index="errorPageSize * errorCurrentPage - errorPageSize + 1"
         >
         </el-table-column>
-        <el-table-column prop="resName" label="资源" width="120" show-overflow-tooltip>
+        <el-table-column prop="resName" label="资源名称" width="120" show-overflow-tooltip>
         </el-table-column>
         <el-table-column prop="mediaName" label="媒体名称" width="120" show-overflow-tooltip>
         </el-table-column>
         <el-table-column prop="mediaTypeName" label="媒体类型" width="120" show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column prop="asLab" label="投放面" width="90">
+        </el-table-column>
+        <el-table-column prop="assetTag" label="资产编号" width="90">
+        </el-table-column>
+        <el-table-column prop="companyName" label="所属公司" width="100" show-overflow-tooltip>
         </el-table-column>
         <el-table-column prop="city" label="城市" width="100">
         </el-table-column>
@@ -365,6 +371,9 @@ export default {
           "资源名称",
           "媒体名称",
           "媒体类型",
+          "投放面",
+          "资产编号",
+          "所属公司",
           '省份',
           "城市", 
           "区域", 
@@ -375,6 +384,9 @@ export default {
           "resName",
           "mediaName",
           "mediaTypeName",
+          "asLab",
+          "assetTag",
+          "companyName",
           'province',
           "city",
           "district",

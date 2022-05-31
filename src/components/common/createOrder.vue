@@ -89,7 +89,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item
+              <!-- <el-form-item
                 label="投放城市："
                 prop="throwCity"
                 ref="planThrowCity"
@@ -110,8 +110,8 @@
                   >
                   </el-option>
                 </el-select>
-              </el-form-item>
-              <el-form-item
+              </el-form-item> -->
+              <!-- <el-form-item
                 v-if="BDData.uType == 'ADN_BD_KA'"
                 label="投放公司："
                 prop="pointOfAsrIDs"
@@ -132,8 +132,8 @@
                   >
                   </el-option>
                 </el-select>
-              </el-form-item>
-              <el-form-item
+              </el-form-item> -->
+              <!-- <el-form-item
                 label="订单金额："
                 prop="customerBudget"
                 ref="customerBudgetRef"
@@ -144,7 +144,7 @@
                 >
                 </el-input>
                 <i class="unit">元</i>
-              </el-form-item>
+              </el-form-item> -->
               <!-- <el-form-item
                 v-if="isBD"
                 label="客户要求："
@@ -242,7 +242,7 @@ export default {
   },
   data () {
     //客户预算自定义校验
-    let validateBudget = (rule, value, callback) => {
+    /* let validateBudget = (rule, value, callback) => {
       if (value) {
         // 数字/货币金额 (只支持正数、不支持校验千分位分隔符)
         // let reg = /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0){1}$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/;
@@ -260,7 +260,7 @@ export default {
         callback();
         // this.$refs["customerBudgetRef"].clearValidate()
       }
-    };
+    }; */
     let validateSales = (rule, value, callback) => {
       if (value) {
         if (this.BDData.uid === "0") {
@@ -358,7 +358,7 @@ export default {
       cBand: "", // 选中的品牌
       adcID: [], //step1联系人
       //step1投放城市
-      throwCity: [],
+      // throwCity: [],
       //购物车
       dialogTableVisible: false,
       //选中
@@ -417,14 +417,14 @@ export default {
         ownerSales: "", // 所属销售
         companyName: "",
         companyBrand: "",
-        throwCity: [],
+        // throwCity: [],
         adcID: "", // 所属联系人
         planRemark: "",
-        pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
-        customerBudget: 0,
+        // pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
+        // customerBudget: 0,
         customerDemand: "",
       },
-      pointOfAsrIDs: [],
+      // pointOfAsrIDs: [],
       // 媒介选择所属销售列表
       salerList: [],
       // 获取销售选项loading
@@ -453,22 +453,22 @@ export default {
         companyBrand: [
           { required: true, message: "请选择公司品牌", trigger: "change" },
         ],
-        throwCity: [
+        /* throwCity: [
           {
             required: true,
             message: "请选择投放城市(可多选)",
             trigger: "change",
           },
-        ],
-        pointOfAsrIDs: [
+        ], */
+        /* pointOfAsrIDs: [
           {
             required: true,
             message: "请选择归属公司(可多选)",
             trigger: "blur",
           },
-        ],
+        ], */
         //客户预算
-        customerBudget: [{ validator: validateBudget, trigger: "blur" }],
+        // customerBudget: [{ validator: validateBudget, trigger: "blur" }],
         //客户要求
         customerDemand: [
           // {validator: validateRequst, trigger: 'blur'},
@@ -602,14 +602,14 @@ export default {
     this.routePath = this.$route.fullPath;
   },
   watch: {
-    "planForm.throwCity": {
+    /* "planForm.throwCity": {
       handler: function () {
         this.planForm.pointOfAsrIDs = [];
         this.pointOfAsrIDs = [];
         if (this.planForm.throwCity.length == 0) return;
         this.getPointOfAsr();
       },
-    },
+    }, */
   },
   computed: {
   },
@@ -651,7 +651,7 @@ export default {
                 };
                 cityList.push(cityObj);
               }
-              this.throwCity = cityList;
+              // this.throwCity = cityList;
               this.cityOptions = areaArr.province();
             } else {
               sessFun.messageFun("warning", "城市数据获取异常");
@@ -660,7 +660,7 @@ export default {
         });
     },
     // 获取所选权限城市下的点位所属公司
-    getPointOfAsr () {
+    /* getPointOfAsr () {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -676,7 +676,7 @@ export default {
             sessFun.messageFun("warning", res.data.MSG);
           }
         });
-    },
+    }, */
     // 下一步
     // TODO:下一步创建订单
     next () {
@@ -719,7 +719,7 @@ export default {
       this.$router.push("./countryOrderList");
     },
     // 获取城市中文名称
-    getCityName (rid) {
+    /* getCityName (rid) {
       let str = "";
       for (let data of this.throwCity) {
         if (data.value == rid) {
@@ -728,7 +728,7 @@ export default {
         }
       }
       return str;
-    },
+    }, */
     // 自定义上传
     uploadFile (params) {
       this.fileData = [];
@@ -757,8 +757,8 @@ export default {
         formData.append("apName", this.planForm.planName);
         formData.append("adcID", this.planForm.adcID);
         formData.append("bID", this.planForm.companyBrand);
-        formData.append("companyIds", this.planForm.pointOfAsrIDs);
-        formData.append("price", this.planForm.customerBudget || 0);
+        // formData.append("companyIds", this.planForm.pointOfAsrIDs);
+        // formData.append("price", this.planForm.customerBudget || 0);
         formData.append("suID", this.BDData.uid);
         formData.append("file", importFileData[0].raw);
         this.resImport(formData);
@@ -917,9 +917,9 @@ export default {
       return dateArr;
     },
     // 移除城市
-    removeCity (val) {
+    /* removeCity (val) {
       console.log("移除城市val", val, this.planForm.throwCity);
-    },
+    }, */
     // 选择所属销售
     changeSaler (val) {
       console.log("选择所属销售", val);
@@ -927,9 +927,9 @@ export default {
       this.planForm.companyName = "";
       this.planForm.companyBrand = "";
       this.planForm.adcID = "";
-      this.planForm.throwCity = [];
+      // this.planForm.throwCity = [];
       this.dynamicTags = [];
-      this.throwCity = [];
+      // this.throwCity = [];
       this.$refs["planForm"].clearValidate();
       if (val) {
         for (let key of this.salerList) {
@@ -953,6 +953,7 @@ export default {
         let params = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
+          kaFlag: true,
           keyword: query,
         };
         api
@@ -2230,7 +2231,7 @@ export default {
   background: rgba(0, 0, 0, 0.06);
 }
 
-.unit {
+/* .unit {
   position: absolute;
   top: 5px;
   right: 17px;
@@ -2244,7 +2245,7 @@ export default {
   border-radius: 0 4px 4px 0;
   border-left: 1px solid #e6e7e9;
   // border:1px solid #E6E7E9;
-}
+} */
 /deep/ .planAdsCntClass.el-input {
   width: 200px;
   .el-input__inner {

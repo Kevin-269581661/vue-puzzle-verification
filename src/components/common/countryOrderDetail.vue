@@ -47,15 +47,9 @@
             </span>
           </el-dialog>
           <div class="handleBtn">
-            <el-button
-              type="plain"
-              @click="changePain()"
-              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-              >换 画
-            </el-button>
             <el-select
               v-if="
-                ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
+                ['ADN_MD_COUNTRY'].includes(role) &&
                 planPanel == 'first' &&
                 orderDetail.apState != 5 &&
                 orderDetail.apState != 0
@@ -84,7 +78,7 @@
             <el-button
               type="plain"
               @click="changePrice"
-              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+              v-if="['ADN_MD_COUNTRY'].includes(role)"
               >修改金额
             </el-button>
           </div>
@@ -96,6 +90,7 @@
     </div>
     <div class="mediaList_wrap margin_16_64">
       <el-tabs
+        class="company-tabs"
         v-if="companiesOfOrder.length"
         v-model="currentCompanyId"
         @tab-click="getSetPoint"
@@ -128,6 +123,7 @@
                       v-model="keyword"
                       class="input-with-select"
                       style="width: 260px"
+                      @change="search('current')"
                     ></el-input>
                     <el-button
                       type="primary"
@@ -205,10 +201,7 @@
                             <span>{{ props.row.notPush || "--" }}</span>
                           </el-form-item>
                           <el-form-item
-                            v-if="
-                              sessionData.uType == 'ADN_MD_COUNTRY' ||
-                              sessionData.uType == 'ADN_BD_KA'
-                            "
+                            v-if="sessionData.uType == 'ADN_MD_COUNTRY'"
                             label="归属公司："
                           >
                             <span class="ellipsis-td">{{
@@ -408,7 +401,12 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="物料信息" name="third">
-              <div style="min-height: 300px"></div>
+              <material
+                :materialInfoData="materialInfoJson"
+                :loading="false"
+                :isOrder="true"
+                :openStatus="false"
+              ></material>
             </el-tab-pane>
             <el-tab-pane
               label="上刊报告"
@@ -442,7 +440,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
+            <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country
                   :apId="apId"
@@ -452,6 +450,9 @@
                   :from-type="fromType"
                   :scheduleList="scheduleList"
                   :order-detail="orderDetail"
+                  :painList="painList"
+                  @changePain="changePain"
+                  @getPainlist="getPainlist"
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
@@ -459,7 +460,7 @@
         </el-tab-pane>
       </el-tabs>
       <!--换画弹框-->
-      <div class="changepic_box FIRSTTIME" v-if="showPainModal">
+      <!-- <div class="changepic_box FIRSTTIME" v-if="showPainModal">
         <Change-Pic-Country
           :apId="apId"
           :companyId="currentCompanyId"
@@ -469,10 +470,9 @@
           :planPanel="planPanel"
           :from-type="fromType"
           :order-detail="orderDetail"
-          @toSixthTab="toSixthTab()"
           @hidePainModal="hidePainModal()"
         ></Change-Pic-Country>
-      </div>
+      </div> -->
       <!--添加点位对话框-->
       <el-dialog
         title="添加点位"
@@ -530,6 +530,7 @@
                 v-model="changeKeyword"
                 class="input-with-select"
                 style="width: 200px"
+                @change="search('change')"
               ></el-input>
               <el-button
                 type="primary"
@@ -702,6 +703,13 @@
               <el-table-column prop="mTitle" label="媒体名称" min-width="10.3%">
               </el-table-column>
               <el-table-column prop="asLab" label="投放面" min-width="5.8%">
+              </el-table-column>
+              <el-table-column
+                prop="asName"
+                label="所属公司"
+                width="120"
+                show-overflow-tooltip
+              >
               </el-table-column>
               <el-table-column
                 prop="city"
@@ -1038,7 +1046,10 @@ export default {
       // 媒体类型
       mediaTypeList: [],
       // 物料信息数据
-      // materialInfoJson: {},
+      materialInfoJson: {
+        mediaTypeName: "",
+        materialCntInfoList: [],
+      },
       // session信息
       sessionData: {},
       isDown: false,
@@ -1052,7 +1063,7 @@ export default {
       pointPageSize: 500,
       //加载中
       loading: true,
-      maLoading: true,
+      // maLoading: true,
       // 判断
       role: "",
       customPermission: {},
@@ -1170,12 +1181,12 @@ export default {
       //显示预览图蒙版
       showPreImg: null,
       // 换画
-      showPain: false,
+      // showPain: false,
       fromType: false,
       //第一次增加换画
-      showPainModal: false,
+      // showPainModal: false,
       // 换画列表
-      painlist: [],
+      painList: [],
       //点位更改记录
       dialogChangePointRecord: false,
       recordList: {
@@ -1224,18 +1235,17 @@ export default {
     // 获取订单详情的上面公司的信息
     this.getInitData();
     // this.getMaterInfo();
-
     //获取物料信息
     // this.getMaterialInfo();
-
-    if (
-      ["ADN_BD_KA", "ADN_BD"].includes(this.role) ||
-      ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
-    ) {
-      // 获取换画列表
-      this.getPainlist();
-    }
     this.getOrderPriceDetail();
+  },
+  watch: {
+    currentCompanyId: {
+      // immediate: true,
+      handler(newVal, oldVal) {
+        newVal && this.getPainlist();
+      },
+    },
   },
   methods: {
     //初始化各项数据
@@ -1493,132 +1503,6 @@ export default {
         .finally(() => {
           this.isDown = false;
         });
-      return;
-      this.isDown = false;
-      let resultArr = [];
-      for (let data of this.exportArr) {
-        let obj = {
-          resName: data.resName,
-          province: data.province,
-          city: data.city,
-          rName: data.rName,
-          asName: data.asName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          assetTag: data.assetTag,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == "0" ? "&" : data.hNum,
-          fNum: data.fNum,
-          chDay: data.chDay,
-          adSize: data.adSize,
-          adViewSize: data.adViewSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          electrifyState: data.electrifyState,
-          mapCenter: data.mapCenterName || "",
-          parkSpaceNum: data.parkSpaceNum || "",
-          carFlow: data.carFlow || "",
-          peopleFlow: data.peopleFlow || "",
-          mType: data.mType || "",
-        };
-        resultArr.push(obj);
-      }
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("../../vendorExcel/Export2Excel");
-        let tHeader = [
-          "资源名称",
-          "省份",
-          "城市",
-          "区域",
-          "详细地址",
-          "媒介载体",
-          "媒体名称",
-          "资产编号",
-          "投放面",
-          "投放排期",
-          "门体类型",
-          "商圈",
-          "楼栋数量",
-          "住户数量/办公室数量",
-          "楼盘价格",
-          "楼盘类型/写字楼类型",
-          "入住年份/建成年份",
-          "广告限制",
-          "车位数",
-          "车流量",
-          "人流量",
-          "素材尺寸",
-          "可视尺寸",
-          "媒体备注",
-          "地图中心点",
-          "终止日期",
-        ];
-        let filterVal = [
-          "resName",
-          "province",
-          "city",
-          "rName",
-          "resAddress",
-          "mVehicle",
-          "mTitle",
-          "assetTag",
-          "asLab",
-          "timeRange",
-          "mType",
-          "tradingArea",
-          "fNum",
-          "hNum",
-          "hPrice",
-          "cType",
-          "chDay",
-          "notPush",
-          "parkSpaceNum",
-          "carFlow",
-          "peopleFlow",
-          "adSize",
-          "adViewSize",
-          "mRemark",
-          "mapCenter",
-          "finishTimeRange",
-        ];
-
-        switch (this.customPermission.patrolPermission) {
-          case 1:
-            tHeader.push("巡点问题", "通行情况");
-            filterVal.push("remark", "trafficState");
-            break;
-          case 2:
-            tHeader.push("巡点问题", "通行情况", "通电情况");
-            filterVal.push("remark", "trafficState", "electrifyState");
-            break;
-        }
-
-        if (
-          this.sessionData.uType == "ADN_MD_COUNTRY" ||
-          this.sessionData.uType == "ADN_BD_KA"
-        ) {
-          tHeader.push("归属公司");
-          filterVal.push("asName");
-        }
-
-        const list = resultArr;
-        const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, name);
-        this.isDown = false;
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     // 判断是否是有换点跳转过来的？
     isChangePoint() {
@@ -1845,18 +1729,16 @@ export default {
         token: loginData.token,
         pageNum: this.currPage,
         pageSize: this.pageSize,
-        companyId: this.currentCompanyId,
       };
-      if (type) {
-        if (type == "change") {
-          info.resName == this.changeKeyword;
-          info.pageNum = this.pointCurrPage;
-          info.pageSize = this.pointPageSize;
-          this.handleType === 2 && (info.enableStop = true);
-          info.lState = 1;
-        } else {
-          info.resName = this.keyword;
-        }
+      if (type && type === "change") {
+        info.resName == this.changeKeyword;
+        info.pageNum = this.pointCurrPage;
+        info.pageSize = this.pointPageSize;
+        this.handleType === 2 && (info.enableStop = true);
+        info.lState = 1;
+      } else {
+        info.resName = this.keyword;
+        info.companyId = this.currentCompanyId;
       }
       api
         .getApi("/national/api/v1/nationalAdPlan/pageCompanyAdlInfo", info)
@@ -1936,7 +1818,7 @@ export default {
             this.changePointloading = false;
             this.currPointloading = false;
             this.loading = false;
-            this.maLoading = false;
+            // this.maLoading = false;
             this.changePointloading = false;
           } else {
             Message.warning(res.data.MSG);
@@ -1944,7 +1826,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.maLoading = false;
+          // this.maLoading = false;
           this.changePointloading = false;
           this.currPointloading = false;
           console.log(res);
@@ -2048,7 +1930,6 @@ export default {
       for (let i = 0; i < total; i += pageSize) {
         result.push(this.setpointArr.slice(i, i + pageSize));
       }
-      console.log(result);
       //当前页
       this.changePointArr = result[pageNum - 1];
       //切换页数时勾选
@@ -2084,20 +1965,13 @@ export default {
     search(type) {
       if (type == "change") {
         //更换点位
-        let t = [...this.setpointArr];
-        let arr = [];
-        if (this.changeKeyword !== "") {
-          for (let data of t) {
-            if (data.resName.indexOf(this.changeKeyword) != -1) {
-              arr.push(data);
-            }
-          }
-        }
-
-        this.setpointArr = arr;
+        let t = [...this.tempSetPointArr];
+        this.setpointArr = t.filter(
+          (item) => item.resName.indexOf(this.changeKeyword) != -1
+        );
         this.changePointPageFn();
       } else {
-        this.getSetPoint("type");
+        this.getSetPoint();
       }
     },
     //重置
@@ -2342,36 +2216,39 @@ export default {
         apID: this.apId,
         companyId: this.currentCompanyId,
       };
-      api.getApi("/national/api/v1/replace/list", info).then((res) => {
-        if (res.data.SysCode == 200200) {
-          this.painlist = res.data.data;
-          if (this.painlist.length) {
-            this.showPain = true;
+      api
+        .getApi("/national/api/v1/replace/list", info)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.painList = res.data.data || [];
+          } else {
+            this.painList = [];
+            sessFun.messageFun("warning", res.data.msg);
           }
-        } else {
-          sessFun.messageFun("warning", res.data.msg);
-        }
-      });
+        })
+        .catch(() => {
+          this.painList = [];
+        });
     },
     //跳到换画tab
-    toSixthTab() {
+    /* toSixthTab() {
       this.planPanel = "sixth";
-    },
+    }, */
     //隐藏
     hidePainModal() {
-      this.showPainModal = false;
+      // this.showPainModal = false;
     },
     //点击换画
     changePain() {
-      if (this.painlist.length > 0) {
-        this.showPainModal = false;
+      if (this.painList.length > 0) {
+        // this.showPainModal = false;
         //跳到换画报告tab
-        this.showPain = true;
-        this.planPanel = "sixth";
+        // this.showPain = true;
+        // this.planPanel = "sixth";
       } else {
-        this.showPain = false;
+        // this.showPain = false;
         //第一次
-        this.showPainModal = true;
+        // this.showPainModal = true;
       }
       setTimeout(() => {
         this.fromType = !this.fromType;
@@ -2809,11 +2686,10 @@ export default {
   width: 50px;
 }
 
-/deep/ .mediaList_wrap .el-tabs__header {
+/deep/ .company-tabs > .el-tabs__header {
   border-bottom: 1px solid #e6e7e9;
   height: 53px;
   line-height: 54px;
-  /*margin: 0;*/
 }
 
 /*1920*/

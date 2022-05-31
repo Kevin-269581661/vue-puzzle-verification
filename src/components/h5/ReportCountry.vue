@@ -34,7 +34,7 @@
               <em>投放城市：</em>
               <i>{{ report.rIDs }}</i>
               <em>{{
-                Info.name == "SK" || Info.name == "XK"
+                routeParams.imgType === "0" || routeParams.imgType === "1"
                   ? "投放面数："
                   : "换画面数："
               }}</em>
@@ -481,7 +481,7 @@
             <!--存在多个档期时显示-->
             <li
               v-if="
-                (Info.name == 'SK' || Info.name == 'XK') && periodArr.length > 1
+                (routeParams.imgType == '0' || routeParams.imgType == '1') && periodArr.length > 1
               "
             >
               <span class="form-label">选择档期：</span>
@@ -904,7 +904,7 @@ export default {
             downtype: 2,
             apID,
             companyId,
-            imgType
+            imgType,
           };
           if (imgType === 2) {
             fileInfo.replaceRecordId = replaceRecordId;
@@ -1112,8 +1112,11 @@ export default {
     },
     // 搜索数据格式化
     searchFormat() {
+      const { apID, companyId, imgType } = this.routeParams;
       let info = {
-        imgType: this.routeParams.imgType,
+        apId: apID,
+        companyId,
+        imgType,
         mediaTypeId: this.mediaType,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,
@@ -1255,7 +1258,7 @@ export default {
             }
             this.reportArr = dataInfo.list;
             if (dataInfo.total == 0) {
-              Message.warning("暂无上下刊数据");
+              Message.warning("暂无监播数据！");
             }
           } else {
             Message.warning(res.data.MSG);

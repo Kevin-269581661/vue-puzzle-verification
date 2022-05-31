@@ -142,7 +142,7 @@
     </template>
 
     <!-- 换画报告 -->
-    <template v-else>
+    <template v-if="type === 2">
       <div class="list_pic" v-if="painList.length">
         <div class="pic_left">
           <el-button
@@ -158,7 +158,7 @@
               v-for="(item, index) of painList"
               :key="item.id"
               @click="changePain(index)"
-              >{{ item.name }}</span
+              >{{ item.replaceRecordName }}</span
             >
           </div>
           <el-button
@@ -185,7 +185,7 @@
         </div>
       </div>
       <!-- 搜索 -->
-      <div class="search_pic" v-if="!firstTime">
+      <div class="search_pic" v-if="!firstTime && painList.length">
         <el-form :inline="true" size="small">
           <el-form-item label="媒体类型:">
             <el-select
@@ -327,7 +327,7 @@
                 item.asLab
               }}
             </span>
-            <el-tooltip v-if="item.prStatus" class="item" effect="dark">
+            <!-- <el-tooltip v-if="item.prStatus" class="item" effect="dark">
               <ul slot="content">
                 <li style="line-height: 20px">
                   拍照人：{{ item.prRealName || "" }}
@@ -337,7 +337,7 @@
                 </li>
               </ul>
               <span class="photo-record-sign">已拍照</span>
-            </el-tooltip>
+            </el-tooltip> -->
             <p class="car_header">
               <el-tooltip
                 class="item"
@@ -433,22 +433,26 @@
     <!-- 分页 -->
     <div class="pager">
       <el-pagination
-        v-if="pageInfo.paginationShow && !firstTime"
+        v-if="pageInfo.paginationShow"
         background
         :current-page.sync="pageInfo.currPage"
         :page-sizes="[6, 12]"
         :page-size="pageInfo.pageSize"
         layout="sizes, prev, pager, next, jumper"
         :total="pageInfo.totalNum"
+        hide-on-single-page
         @size-change="sizeChange"
         @current-change="changePage"
       >
       </el-pagination>
     </div>
 
-    <div class="up-report-bottom" v-if="!firstTime">
+    <div class="up-report-bottom">
       <el-button plain @click="downloadImg()" :loading="downLoading">
         导出图片
+      </el-button>
+      <el-button v-if="type === 2" type="plain" @click="$emit('changePain')"
+        >换 画
       </el-button>
       <el-button type="primary" @click="submitUpload()"> 保存 </el-button>
       <el-button plain @click="showH5()"> 查看H5 </el-button>
@@ -459,6 +463,7 @@
 
     <!-- 换画弹出框 -->
     <el-dialog
+      v-if="isShowPic"
       title="选择换画点位"
       :visible.sync="isShowPic"
       :show-close="false"
@@ -643,21 +648,17 @@
           </el-table-column>
           <el-table-column prop="asLab" label="面" width="50">
           </el-table-column>
+          <el-table-column
+            prop="asName"
+            label="所属公司"
+            width="120"
+            show-overflow-tooltip
+          >
+          </el-table-column>
           <el-table-column prop="cityName" label="城市" width="90">
           </el-table-column>
           <el-table-column prop="districtName" label="区域" width="90">
           </el-table-column>
-          <!-- <el-table-column
-            prop="mapCenterInfo"
-            label="地图中心点"
-            align="center"
-            width="100"
-            show-overflow-tooltip
-          >
-            <template slot-scope="scope">
-              <span>{{ scope.row.mapCenterInfo || "--" }}</span>
-            </template>
-          </el-table-column> -->
           <el-table-column prop="timeRange" label="排期" min-width="140">
           </el-table-column>
           <el-table-column prop="replaceDate" label="换画日期">
@@ -941,6 +942,10 @@ export default {
     firstTime: {
       type: Boolean,
     },
+    painList: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -965,7 +970,7 @@ export default {
         dateRange: ["全部"],
         // 物料备注
         materialRemark: ["全部"],
-        prStatus: "全部",
+        // prStatus: "全部",
       },
       // 资源列表
       allResource: [],
@@ -995,8 +1000,6 @@ export default {
           totalNum: 0,
         },
       },
-      // 换画名称列表
-      painList: [],
       // 换画当前点击
       activePainIndex: 0,
       // 搜索信息
@@ -1005,7 +1008,7 @@ export default {
         city: ["全部"],
         resName: "全部",
         status: "全部",
-        prStatus: "全部",
+        // prStatus: "全部",
         // 搜索列表数据
         // 媒体类型
         mediaTypeArr: [
@@ -1103,8 +1106,8 @@ export default {
       // 上传图片以及换画日期弹出框
       isShowEdit: false,
       // 上传图片地址
-      doUpload: "http://192.168.1.177:8040/national/api/v1/photo/upload",
-      // doUpload: "http://192.168.1.239/advertisement/UpLoad",
+      // doUpload: "http://192.168.1.177:8040/national/api/v1/photo/upload",
+      doUpload: `${process.env.API_ROOT}/national/api/v1/photo/upload`,
       imgUrl: [],
       allEditInfo: {
         date: "",
@@ -1162,10 +1165,9 @@ export default {
   },
   watch: {
     fromType() {
-      this.getPainList().then((res) => {
-        this.isShowPic = true;
-        this.editReport(false);
-      });
+      // 新增换画组
+      this.isShowPic = true;
+      this.editReport(false);
     },
   },
 
@@ -1262,12 +1264,12 @@ export default {
         this.searchFun();
       } else if (this.type == 2) {
         // 获取换画名称列表
-        this.getPainList().then((res) => {
-          // 换画报告列表
-          if (this.painList.length > 0) {
-            this.search();
-          }
-        });
+        // this.getPainList().then((res) => {
+        // 换画报告列表
+        if (this.painList.length > 0) {
+          this.search();
+        }
+        // });
       }
     },
     // 获取城市区域
@@ -1403,7 +1405,7 @@ export default {
         lState,
         dateRange,
         materialRemark,
-        prStatus,
+        // prStatus,
       } = this.publishSearchInfo;
       let info = {
         uid: uID,
@@ -1416,7 +1418,7 @@ export default {
         mediaTypeId: mediaType,
         time: dateRange.includes("全部") ? "" : dateRange.join(","),
         materialRemark: materialRemark.includes("全部") ? "" : materialRemark,
-        prStatus: prStatus == "全部" ? "" : prStatus,
+        // prStatus: prStatus == "全部" ? "" : prStatus,
       };
 
       if (allPic == "2") {
@@ -1456,7 +1458,7 @@ export default {
           dateRange: ["全部"],
           // 物料备注
           materialRemark: ["全部"],
-          prStatus: "全部",
+          // prStatus: "全部",
         };
       } else {
         this.searchInfo = {
@@ -1465,7 +1467,7 @@ export default {
           city: ["全部"],
           resName: "全部",
           status: "全部",
-          prStatus: "全部",
+          // prStatus: "全部",
         };
       }
       this.getImgArr();
@@ -1508,45 +1510,8 @@ export default {
           this.pageInfo.loading = false;
         });
     },
-    // 检查图片是否已收藏
-    /* checkImgStatus() {
-      let pIDList = this.returnPIDList();
-      if (!pIDList.length) {
-        return;
-      }
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        pids: pIDList.join(","),
-      };
-      console.log("params", params);
-      api
-        .getApi(this.apiVar.Advertisement + "/GetUserStatusByPid", params)
-        .then((res) => {
-          console.log("检测图片收藏状态res", res);
-          if (res.data.SysCode === 200200) {
-            this.setImgStatus(res.data.data);
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
-    }, */
-    // 返回PIDList
-    /* returnPIDList() {
-      let reportList = this.imageArr;
-      let pIDList = [];
-      for (let key of reportList) {
-        let imgArr = key.photoList;
-        for (let imgKey of imgArr) {
-          if (imgKey.pID) {
-            pIDList.push(imgKey.pID);
-          }
-        }
-      }
-      return pIDList;
-    }, */
     // 获取全部换画列表(换画名称以及id)
-    getPainList() {
+    /* getPainList() {
       let promise = new Promise((resolve, reject) => {
         let info = {
           apID: this.apId,
@@ -1568,7 +1533,7 @@ export default {
         });
       });
       return promise;
-    },
+    }, */
     // 获取换画报告列表
     getData(params) {
       this.pageInfo.loading = true;
@@ -1654,14 +1619,14 @@ export default {
     },
     // 搜索换画列表条件
     searchPointFormat() {
-      let { mediaType, city, resName, status, prStatus } = this.searchInfo;
+      let { mediaType, city, resName, status } = this.searchInfo;
       let { currPage, pageSize } = this.pageInfo;
       let info = {
         apId: this.apId,
         replaceRecordId: this.painList.length
           ? this.painList[this.activePainIndex].id
           : "",
-        prStatus: prStatus == "全部" ? "" : prStatus,
+        // prStatus: prStatus == "全部" ? "" : prStatus,
         pageNum: currPage,
         pageSize: pageSize,
         mediaTypeId: mediaType,
@@ -1765,6 +1730,7 @@ export default {
         pageNum: currInfoPage,
         pageSize: pageSize,
         apId: this.apId,
+        companyId: this.companyId * 1,
         ...(resName.length && { resIds: resName }),
         ...(mapName && { mapCenterInfo: mapName }),
         ...(picState >= 0 && { replaceStatus: picState == 2 ? "" : picState }),
@@ -1775,7 +1741,7 @@ export default {
         ...(schDateList[0] != "全部" && schDateList.length && { schDateList }),
       };
       info.replaceRecordId = !this.isEdit
-        ? null
+        ? "-1"
         : this.painList[this.activePainIndex].id;
       return info;
     },
@@ -1970,31 +1936,6 @@ export default {
         clearTimeout(timer);
       }, 0);
     },
-    // 获取地图中心点
-    /* getMapArr() {
-      let info = {
-        apId: this.apId,
-      };
-      api
-        .getApi(this.apiVar.replace + "/plan/mapCenterInfo", info)
-        .then((res) => {
-          console.log(res);
-          if (res.data.SysCode == 200200) {
-            this.dialogInfo.mapArr =
-              res.data.data &&
-              res.data.data.map((item) => {
-                return {
-                  ...item,
-                  label: item.mapCenterName,
-                  value: item.mapCenterName,
-                };
-              });
-            console.log(this.dialogInfo.mapArr);
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
-    }, */
     // 获取弹出框资源下拉列表
     getDialogInfoResArr() {
       let info = {
@@ -2055,7 +1996,6 @@ export default {
       };
       this.pointArr = [];
       this.searchInfoFun();
-      console.log(this.dialogInfo, this.dialogPage);
     },
     // 查看图片
     previewImg(file) {
@@ -2251,20 +2191,15 @@ export default {
               .then((res) => {
                 if (res.data.SysCode == 200200) {
                   that.isShowPic = false;
-                  if (len == 0) {
-                    //创建第一个换画报告，在父组件添加tab
-                    console.log("that.$parent", that.$parent);
-                    that.$parent.getPainlist();
-                    that.$emit("toSixthTab", "sixth");
-                  }
-                  setTimeout(() => {
+                  that.$emit("getPainlist");
+                  this.$emit("hidePainModal", "false");
+                  /* setTimeout(() => {
                     that.getPainList().then((res) => {
                       that.activePainIndex = that.painList.length - 1;
                       let info = that.searchPointFormat();
                       that.getData(info);
-                      this.$emit("hidePainModal", "false");
                     });
-                  }, 100);
+                  }, 100); */
                   sessFun.messageFun("success", "新增换画报告成功！");
                 } else {
                   sessFun.messageFun("warning", res.data.MSG);
@@ -2291,6 +2226,8 @@ export default {
           .then((res) => {
             if (res.data.SysCode == 200200) {
               this.isShowPic = false;
+              let info = this.searchPointFormat();
+              this.getData(info);
               sessFun.messageFun("success", res.data.MSG);
             } else {
               sessFun.messageFun("warning", res.data.MSG);
@@ -2318,7 +2255,6 @@ export default {
             }
           )
             .then(() => {
-              // this.changePicDetailModal = false
               this.removePain(type);
             })
             .catch(() => {
@@ -2714,7 +2650,8 @@ export default {
         downtype: 1,
       };
       info.type = this.type;
-      this.type === 2 && (info.replaceRecordId = this.painList[this.activePainIndex].id);
+      this.type === 2 &&
+        (info.replaceRecordId = this.painList[this.activePainIndex].id);
       this.downLoading = true;
       const tempPage = window.open("", "_blank");
       api
@@ -2735,6 +2672,7 @@ export default {
           this.downLoading = false;
         });
     },
+
     // 更新报告
     updateReport() {
       let info = {

@@ -47,15 +47,9 @@
             </span>
           </el-dialog>
           <div class="handleBtn">
-            <el-button
-              type="plain"
-              @click="changePain()"
-              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-              >换 画
-            </el-button>
             <el-select
               v-if="
-                ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
+                ['ADN_MD_COUNTRY'].includes(role) &&
                 planPanel == 'first' &&
                 orderDetail.apState != 5 &&
                 orderDetail.apState != 0
@@ -84,7 +78,7 @@
             <el-button
               type="plain"
               @click="changePrice"
-              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+              v-if="['ADN_MD_COUNTRY'].includes(role)"
               >修改金额
             </el-button>
           </div>
@@ -446,7 +440,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
+            <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country
                   :apId="apId"
@@ -456,6 +450,9 @@
                   :from-type="fromType"
                   :scheduleList="scheduleList"
                   :order-detail="orderDetail"
+                  :painList="painList"
+                  @changePain="changePain"
+                  @getPainlist="getPainlist"
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
@@ -463,7 +460,7 @@
         </el-tab-pane>
       </el-tabs>
       <!--换画弹框-->
-      <div class="changepic_box FIRSTTIME" v-if="showPainModal">
+      <!-- <div class="changepic_box FIRSTTIME" v-if="showPainModal">
         <Change-Pic-Country
           :apId="apId"
           :companyId="currentCompanyId"
@@ -473,10 +470,9 @@
           :planPanel="planPanel"
           :from-type="fromType"
           :order-detail="orderDetail"
-          @toSixthTab="toSixthTab()"
           @hidePainModal="hidePainModal()"
         ></Change-Pic-Country>
-      </div>
+      </div> -->
       <!--添加点位对话框-->
       <el-dialog
         title="添加点位"
@@ -1183,12 +1179,12 @@ export default {
       //显示预览图蒙版
       showPreImg: null,
       // 换画
-      showPain: false,
+      // showPain: false,
       fromType: false,
       //第一次增加换画
-      showPainModal: false,
+      // showPainModal: false,
       // 换画列表
-      painlist: [],
+      painList: [],
       //点位更改记录
       dialogChangePointRecord: false,
       recordList: {
@@ -1235,8 +1231,15 @@ export default {
     // this.getMaterInfo();
     //获取物料信息
     // this.getMaterialInfo();
-    this.getPainlist();
     this.getOrderPriceDetail();
+  },
+  watch: {
+    currentCompanyId: {
+      // immediate: true,
+      handler(newVal, oldVal) {
+        newVal && this.getPainlist();
+      },
+    },
   },
   methods: {
     //初始化各项数据
@@ -2207,36 +2210,39 @@ export default {
         apID: this.apId,
         companyId: this.currentCompanyId,
       };
-      api.getApi("/national/api/v1/replace/list", info).then((res) => {
-        if (res.data.SysCode == 200200) {
-          this.painlist = res.data.data;
-          if (this.painlist.length) {
-            this.showPain = true;
+      api
+        .getApi("/national/api/v1/replace/list", info)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.painList = res.data.data || [];
+          } else {
+            this.painList = [];
+            sessFun.messageFun("warning", res.data.msg);
           }
-        } else {
-          sessFun.messageFun("warning", res.data.msg);
-        }
-      });
+        })
+        .catch(() => {
+          this.painList = [];
+        });
     },
     //跳到换画tab
-    toSixthTab() {
+    /* toSixthTab() {
       this.planPanel = "sixth";
-    },
+    }, */
     //隐藏
     hidePainModal() {
-      this.showPainModal = false;
+      // this.showPainModal = false;
     },
     //点击换画
     changePain() {
-      if (this.painlist.length > 0) {
-        this.showPainModal = false;
+      if (this.painList.length > 0) {
+        // this.showPainModal = false;
         //跳到换画报告tab
-        this.showPain = true;
-        this.planPanel = "sixth";
+        // this.showPain = true;
+        // this.planPanel = "sixth";
       } else {
-        this.showPain = false;
+        // this.showPain = false;
         //第一次
-        this.showPainModal = true;
+        // this.showPainModal = true;
       }
       setTimeout(() => {
         this.fromType = !this.fromType;

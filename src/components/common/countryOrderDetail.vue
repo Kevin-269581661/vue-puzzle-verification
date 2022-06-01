@@ -84,7 +84,7 @@
           </div>
         </div>
         <div>
-          <detailInfo :detail="orderDetail" :isorder="true"></detailInfo>
+          <detailInfo :detail="orderDetail" :isorder="true" :companyList="companyList"></detailInfo>
         </div>
       </div>
     </div>
@@ -1186,22 +1186,16 @@ export default {
       //修改订单金额数据
       changePriceModal: false,
       changePriceInfo: "",
-      changePriceData: {
-        AdDoorAdPrice: 0,
-        AdDoorMakePrice: 0,
-        BreakAdPrice: 0,
-        BreakMakePrice: 0,
-        orderOldPrice: 0,
-        orderCompanyList: [],
-        priceCurrCompany: 0,
-        handleTime: "",
-      },
+
       isHandleChange: false,
       handleTime: "", //换点操作和修改订单的时间戳
       handleType: 1,
 
 
-      activeCompany: '0'
+      activeCompany: '',
+
+      // 每个公司的金额信息
+      companyList: []
 
     };
   },
@@ -1217,6 +1211,7 @@ export default {
       this.getSetPoint();
     }
     this.getScheduleList();
+    this.getListCompanyFee()
     // 获取订单详情的上面公司的信息
     this.getInitData();
     // this.getMaterInfo();
@@ -1252,69 +1247,6 @@ export default {
         .then((res) => {
           if (!res.data.SysCode) {
             this.pdidList = res.data || [];
-            let priceData = res.data;
-            let obj = {
-              AdDoorAdPrice: 0,
-              AdDoorMakePrice: 0,
-              BreakAdPrice: 0,
-              BreakMakePrice: 0,
-              orderOldPrice: 0,
-              orderCompanyList: [],
-              priceCurrCompany: 0,
-              handleTime: this.handleTime,
-              apID: this.apId,
-              opType: 1,
-            };
-            for (let item of priceData) {
-              let isHave = obj.orderCompanyList.some((key) => {
-                if (item.asrID == key.asrID && item.rID == key.rID) {
-                  //obj.orderCompanyList里是否已有相同的公司和城市
-                  return true;
-                }
-              });
-              if (isHave) {
-                for (let data of obj.orderCompanyList) {
-                  if (item.asrID == data.asrID && item.rID == data.rID) {
-                    let totalPrice =
-                      (data.pdAdFee +
-                        data.pdAdMake +
-                        item.pdAdFee +
-                        item.pdAdMake) /
-                      100;
-                    data.BreakAdPrice = item.pdAdFee / 100;
-                    data.BreakMakePrice = item.pdAdMake / 100;
-                    data.AdDoorAdPrice = data.pdAdFee / 100;
-                    data.AdDoorMakePrice = data.pdAdMake / 100;
-                    data.orderOldPrice = this.priceFormat(totalPrice);
-                  }
-                }
-              } else {
-                let a = {
-                  ...item,
-                  company: item.asName,
-                };
-                obj.orderCompanyList.push(a);
-              }
-            }
-            let result = 0;
-            for (let data of obj.orderCompanyList) {
-              result +=
-                data.AdDoorAdPrice +
-                data.AdDoorMakePrice +
-                data.BreakAdPrice +
-                data.BreakMakePrice;
-            }
-            obj.orderOldPrice = this.priceFormat(result);
-            obj.AdDoorAdPrice =
-              obj.orderCompanyList[obj.priceCurrCompany].AdDoorAdPrice;
-            obj.AdDoorMakePrice =
-              obj.orderCompanyList[obj.priceCurrCompany].AdDoorMakePrice;
-            obj.BreakAdPrice =
-              obj.orderCompanyList[obj.priceCurrCompany].BreakAdPrice;
-            obj.BreakMakePrice =
-              obj.orderCompanyList[obj.priceCurrCompany].BreakMakePrice;
-
-            this.changePriceData = obj;
           } else if (res.data.SysCode == 100302) {
             this.loginTimeout();
           } else {
@@ -2229,6 +2161,7 @@ export default {
     doneChangePrice() {
       this.changePriceModal = false;
       this.getOrderPriceDetail();
+      this.getListCompanyFee()
       this.getInitData();
       sessFun.messageFun("success", "修改订单金额成功");
     },
@@ -2236,8 +2169,25 @@ export default {
     changePrice() {
       this.changePriceModal = true;
       this.handleTime = new Date().getTime();
-      this.changePriceData.handleTime = this.handleTime;
     },
+
+    // 获取公司订单金额
+    getListCompanyFee () {
+      const params = {
+        apID: this.apId
+      }
+      api.getApi('/national/api/v1/nationalAdPlan/listCompanyFee', params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          console.log(res.data.data, 'res.data.data')
+          this.companyList = res.data.data
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '获取公司金额失败！'
+          });
+        }
+      });
+    }
   },
 };
 </script>

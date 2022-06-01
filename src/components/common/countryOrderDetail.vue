@@ -1212,7 +1212,6 @@ export default {
       this.getSetPoint();
     }
     this.getScheduleList();
-    this.getListCompanyFee()
     // 获取订单详情的上面公司的信息
     this.getInitData();
     // this.getMaterInfo();
@@ -1509,6 +1508,7 @@ export default {
               Total: this.priceFormat((info.apTotal || 0) / 100),
             };
             this.apQC = this.orderDetail.apQC || "";
+            this.getListCompanyFee()
           } else {
             Message.warning(res.data.MSG);
           }
@@ -2162,7 +2162,6 @@ export default {
     doneChangePrice() {
       this.changePriceModal = false;
       this.getOrderPriceDetail();
-      this.getListCompanyFee()
       this.getInitData();
       sessFun.messageFun("success", "修改订单金额成功");
     },
@@ -2179,7 +2178,6 @@ export default {
       }
       api.getApi('/national/api/v1/nationalAdPlan/listCompanyFee', params).then((res) => {
         if (res.data.SysCode === 200200) {
-          console.log(res.data.data, 'res.data.data')
           this.companyList = res.data.data
         } else {
           this.$message({

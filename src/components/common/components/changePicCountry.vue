@@ -1209,10 +1209,11 @@ export default {
           if (res.data.SysCode == 200200) {
             let _data = res.data.data;
             this.mediaTypeList = _data;
-            this.publishSearchInfo.mediaType = _data[0]
+            if(this.publishSearchInfo.mediaType === null) {
+              this.publishSearchInfo.mediaType = _data[0]
               ? _data[0].mediaTypeId
               : null;
-
+            }
             // 获取报告列表
             this.getImgArr();
           }
@@ -2400,57 +2401,6 @@ export default {
       });
       return promise;
     },
-    // 收藏
-    /* saveImgFun(item, index) {
-      console.log("保存图片", item, index);
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        lId: item.lID,
-        pId: item.photoList[index].pID,
-        picUrl: item.photoList[index].pURL,
-        type: this.type,
-      };
-      if (!params.lId) {
-        sessFun.messageFun("warning", "图片信息异常无法保存！");
-        return;
-      }
-      if (params.type === "") {
-        delete params.type;
-      }
-      console.log("params", params);
-      api
-        .postApi(this.apiVar.Advertisement + "/imageCollection/add", params)
-        .then((res) => {
-          console.log("图片收藏res", res);
-          if (res.data.SysCode === 200200) {
-            item.photoList[index].isCollection = true;
-            sessFun.messageFun("success", "收藏成功");
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
-    }, */
-    // 取消收藏
-    /* cancelImgFun(item, index) {
-      console.log("取消收藏", item, index);
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        pId: item.photoList[index].pID,
-      };
-      api
-        .postApi(this.apiVar.Advertisement + "/imageCollection/remove", params)
-        .then((res) => {
-          console.log("取消收藏res", res);
-          if (res.data.SysCode === 200200) {
-            item.photoList[index].isCollection = false;
-            sessFun.messageFun("success", "取消成功");
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
-    }, */
     // 删除已上传的图片
     deleteImg(item) {
       console.log("删除item", item);

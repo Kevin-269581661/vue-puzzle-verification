@@ -2093,7 +2093,7 @@ export default {
   margin: 0px 32px;
 }
 
-/deep/ .company-tabs .el-tabs__nav-scroll {
+/deep/ .company-tabs > .el-tabs__header .el-tabs__nav-scroll {
   padding-left: 28px;
 }
 

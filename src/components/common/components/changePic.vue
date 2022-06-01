@@ -411,7 +411,7 @@
             <div class="change-pic-detail-info">
                 <div>
                     <h5>
-                        {{changePicDetailInfo.resName}}-{{changePicDetailInfo.mTitle}}-{{changePicDetailInfo.asLab}}面
+                        {{changePicDetailInfo.resName}}-{{changePicDetailInfo.mTitle}}-{{changePicDetailInfo.asLab}}
                         <span v-if="changePicDetailInfo.replaceDate" class="a">已换画</span>
                         <span v-else class="b">未换画</span>
                     </h5>

@@ -1185,7 +1185,7 @@ export default {
         let obj = {
           IsLock: item.IsLock,
           adSize: item.adSize,
-          adSpaceCount: item.mediaCount,
+          adSpaceCount: item.adSpaceCount,
           adViewSize: item.adViewSize,
           asID: item.asID,
           asLab: item.asLab,

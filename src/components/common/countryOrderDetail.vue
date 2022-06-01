@@ -414,7 +414,7 @@
               name="forth"
               :disabled="role == 'ADN_OP'"
             >
-              <div class="changepic_box">
+              <div class="changepic_box" v-if="planPanel == 'forth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
@@ -430,7 +430,7 @@
               name="fifth"
               :disabled="role == 'ADN_OP'"
             >
-              <div class="changepic_box">
+              <div class="changepic_box" v-if="planPanel == 'fifth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"

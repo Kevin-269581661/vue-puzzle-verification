@@ -82,10 +82,10 @@ export default {
                             <span>联系人：</span>
                             <em>{{detail.cuName}}</em>
                         </li>
-                        <!-- <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdTotal !== undefined">
                             <span>现金结算：</span>
                             <em>¥{{detail.pdTotal}}</em>
-                        </li> -->
+                        </li>
                         <li>
                             <span>公司品牌：</span>
                             <em>{{detail.bTitle || '--'}}</em>
@@ -98,10 +98,10 @@ export default {
                             <span>投放城市：</span>
                             <em>{{filter2(detail.rIDs)}}</em>
                         </li>
-                        <!-- <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdSendFee !== undefined">
                             <span>资源置换：</span>
                             <em>¥{{detail.pdSendFee}}</em>
-                        </li> -->
+                        </li>
                         <li>
                             <span>所属销售：</span>
                             <em>{{detail.realName}}</em>
@@ -110,10 +110,10 @@ export default {
                             <span>客户要求：</span>
                             <em>{{detail.customerDemand||'无'}}</em>
                         </li>
-                        <!-- <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdOtherFee !== undefined">
                             <span>其他费用：</span>
                             <em>¥{{detail.pdOtherFee}}</em>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
                 <div class="plan-detail-right">
@@ -126,7 +126,18 @@ export default {
                     </dl>
                     <dl v-if="role != 'ADN_EP'">
                         <dt>
-                            <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
+                            <el-tooltip v-if="detail.remark !== undefined" placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
+                                <div slot="content">
+                                    <div class="tooltip-box">
+                                        <p class="tooltip-box__p">
+                                            <b>金额备注:</b>
+                                            <span>{{detail.remark||'--'}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            </el-tooltip>
+                            <el-tooltip v-else placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">
                                     <div class="tooltip-box">
                                         <div class="tooltip-box__p">

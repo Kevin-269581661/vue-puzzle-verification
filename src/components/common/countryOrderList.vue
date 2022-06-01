@@ -97,7 +97,7 @@
               ></el-option>
             </el-select>
           </el-col>
-          <!-- <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6"> -->
+          <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <el-button
               style="margin-left: 18px"
               type="primary"
@@ -117,7 +117,7 @@
               @click="navigateCreate()"
               >新建
             </el-button>
-          <!-- </el-col> -->
+          </el-col>
         </el-row>
         <div class="table_wrap">
           <el-table

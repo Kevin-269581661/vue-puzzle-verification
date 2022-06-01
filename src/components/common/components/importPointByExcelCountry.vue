@@ -2,13 +2,14 @@
   <div>
     <el-dialog
       title="导入点位"
-      :visible.sync="dialogImport"
-      width="448px"
       top="23vh"
+      width="448px"
+      custom-class="import-dialog"
+      :visible.sync="dialogImportPoint"
       :close-on-press-escape="false"
       :show-close="false"
       :center="false"
-      custom-class="import-dialog"
+      :before-close="cancelImport"
     >
       <div class="first-step">
         <span class="step-title">第一步：下载模板并按要求完善表格</span>
@@ -129,7 +130,7 @@ export default {
   data() {
     return {
       fileList: [],
-      dialogImport: false,
+      // dialogImport: false,
       dialogErrorPoint: false,
       errorPointList: [],
       // 登录信息
@@ -148,21 +149,21 @@ export default {
   computed: {},
   created() {},
   watch: {
-    dialogImportPoint(val) {
+    /* dialogImportPoint(val) {
       val && (this.dialogImport = true) && this.resetDialogImportPoint();
-    },
-    dialogImport(val) {
+    }, */
+    dialogImportPoint(val) {
       !val && (this.fileList = []);
     },
   },
   methods: {
     // 重置dialogImportPoint
-    resetDialogImportPoint() {
+    /* resetDialogImportPoint() {
       this.$emit("resetDialogImportPoint");
-    },
+    }, */
     // 取消导入
     cancelImport() {
-      this.dialogImport = false;
+      this.$emit('update:dialogImportPoint', false);
       this.uploadLoading = false;
     },
     // 导入模版下载, 阻止冒泡事件
@@ -254,6 +255,7 @@ export default {
               } else {
                 // 刷新换点表格
                 this.refreshChangePointList();
+                this.$emit("refreshParent");
                 const h = this.$createElement;
                 this.$msgbox({
                   title: "",
@@ -287,7 +289,7 @@ export default {
                   showClose: false,
                   confirmButtonText: "好 的",
                 }).then((action) => {
-                  this.dialogImport = false;
+                  this.$emit('update:dialogImportPoint', false);
                 });
               }
             }

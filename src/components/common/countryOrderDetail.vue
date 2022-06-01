@@ -414,7 +414,7 @@
               name="forth"
               :disabled="role == 'ADN_OP'"
             >
-              <div class="changepic_box">
+              <div class="changepic_box" v-if="planPanel == 'forth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
@@ -430,7 +430,7 @@
               name="fifth"
               :disabled="role == 'ADN_OP'"
             >
-              <div class="changepic_box">
+              <div class="changepic_box" v-if="planPanel == 'fifth'">
                 <Change-Pic-Country
                   :apId="apId"
                   :companyId="currentCompanyId"
@@ -480,9 +480,9 @@
       </el-dialog> -->
       <!--excel导入点位对话框-->
       <ImportPointByExcelCountry
-        :dialogImportPoint="dialogImportPoint"
+        :dialogImportPoint.sync="dialogImportPoint"
         :handleTime="handleTime"
-        @resetDialogImportPoint="resetDialogImportPoint"
+        @refreshParent="getCompaniesOfOrder"
         @refreshCurrentTable="refreshCurrentTable"
       ></ImportPointByExcelCountry>
       <!-- 更改排期对话框 -->
@@ -1054,10 +1054,7 @@ export default {
       role: "",
       customPermission: {},
       // 订单详情头部
-      orderDetail: {
-        AdDoor: {},
-        barrier: {},
-      },
+      orderDetail: {},
       //修改合同号
       changeCID: false,
       planPanel: "first",
@@ -1200,6 +1197,11 @@ export default {
 
     };
   },
+  watch: {
+    currentCompanyId() {
+      this.getScheduleList();
+    },
+  },
   async created() {
     this.apId = sessionStorage.getItem("country_order_apid");
     // 根据角色判断是否有修改合同编号的权限
@@ -1211,7 +1213,7 @@ export default {
     } else {
       this.getSetPoint();
     }
-    this.getScheduleList();
+    // this.getScheduleList();
     // 获取订单详情的上面公司的信息
     this.getInitData();
     // this.getMaterInfo();
@@ -1461,7 +1463,7 @@ export default {
               this.companiesOfOrder = res.data.data || [];
               if (
                 Array.isArray(this.companiesOfOrder) &&
-                this.companiesOfOrder.length
+                this.companiesOfOrder.length && this.currentCompanyId == '-1'
               ) {
                 this.currentCompanyId = this.companiesOfOrder[0].asrID + "";
               }
@@ -1498,13 +1500,6 @@ export default {
               rID: info.rID,
               rIDs: info.rIDs,
               realName: info.realName,
-              remark: info.remark,
-              pdTotal: this.priceFormat(
-                (info.apTotal || 0 - info.otherFee || 0 - info.sendFee || 0) /
-                  100
-              ),
-              pdSendFee: this.priceFormat(info.sendFee || 0),
-              pdOtherFee: this.priceFormat(info.otherFee || 0),
               Total: this.priceFormat((info.apTotal || 0) / 100),
             };
             this.apQC = this.orderDetail.apQC || "";
@@ -1936,9 +1931,6 @@ export default {
     excelAddPointDialog() {
       this.dialogImportPoint = true;
     },
-    resetDialogImportPoint() {
-      this.dialogImportPoint = false;
-    },
     refreshCurrentTable(lIDs) {
       this.currPointloading = true;
       if (lIDs) {
@@ -1959,95 +1951,6 @@ export default {
     ievent(...data) {
       this.addAdsArr = data[0]; //this.encodeHtml(data[0])
     },
-    //添加点位对话框确认按钮
-    /* confirmAddPoint() {
-      let addload = this.$loading({
-        lock: true,
-        text: "加急添加中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      let arr = [];
-      for (let key of this.addAdsArr) {
-        let adsInfo = {
-          resName: key.resName,
-          city: key.city,
-          tradingArea: key.tradingArea,
-          asrID: key.asrID,
-          cityId: key.rid,
-          mediaTypeId: key.mediaTypeId,
-          asID: Number(key.asID),
-          pdID: null,
-          pbStar: key.schedules.split("-")[0].split("/").join("-"), // 开始投放时间
-          pbEnd: key.schedules.split("-")[1].split("/").join("-"), // 开始投放时间添加点位对话框确认按钮
-          uID: this.sessionData.uID,
-          mTitle: key.mediaName,
-          asLab: key.asLab,
-          rName: key.origin,
-          cType: key.buildType,
-          timeRange: key.schedules,
-          hNum: key.houseNum,
-          hPrice: key.buildPrice * 100,
-          fNum: key.buildNum,
-          chDay: key.liveYear,
-          notPush: key.adLimit,
-          isNew: 1,
-        };
-        for (let pKey of this.pdidList) {
-          if (
-            key.city == pKey.city &&
-            key.asrID == pKey.asrID &&
-            pKey.mediaTypeId == key.mediaTypeId
-          ) {
-            adsInfo.pdID = pKey.pdID;
-            break;
-          }
-        }
-        arr.push(adsInfo);
-      }
-      let postData = {
-        apID: this.orderDetail.apID,
-        mark: this.handleTime,
-        orderNewAdsInfos: arr,
-        orderStoppedAdsInfos: [],
-      };
-      api
-        .postApi_json(
-          this.apiVar.Advertisement + "/UpdateOrder",
-          JSON.stringify(postData)
-        )
-        .then((res) => {
-          addload.close();
-          if (res.data.SysCode === 300500) {
-            Message.warning(res.data.MSG);
-          } else {
-            if (res.data.SysCode != 200200) {
-              this.$message({
-                message: "新增点位失败",
-                type: "warning",
-              });
-            } else {
-              Message.success("添加点位成功");
-              for (let data of arr) {
-                this.changePointInfo.addPointlist.push(data);
-              }
-              this.dialogAddPoint = false;
-              this.IsAddPoint = true;
-              this.changePointInfo.addPointNum =
-                this.changePointInfo.addPointlist.length;
-              this.refreshCurrentTable();
-            }
-          }
-        });
-    }, */
-    //添加点位对话框取消按钮
-    /* cancelAddPoint() {
-      this.dialogAddPoint = false;
-    }, */
-    //跳到换画tab
-    /* toSixthTab() {
-      this.planPanel = "sixth";
-    }, */
     //隐藏
     hidePainModal() {
       // this.showPainModal = false;
@@ -2185,7 +2088,7 @@ export default {
   margin: 0px 32px;
 }
 
-/deep/ .company-tabs .el-tabs__nav-scroll {
+/deep/ .company-tabs > .el-tabs__header .el-tabs__nav-scroll {
   padding-left: 28px;
 }
 

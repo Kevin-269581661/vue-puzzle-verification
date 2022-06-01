@@ -1162,7 +1162,7 @@ export default {
     if (this.type == 0 || this.type == 1) {
       this.getAdsUploadImgCnt();
     } else if (this.type === 2) {
-      this.getImgArr();
+      this.getPainList();
     }
   },
   watch: {
@@ -1341,10 +1341,9 @@ export default {
     // 修改媒体类型
     changeMedia() {
       this.pageInfo.currPage = 1;
-      this.resetSearch("sxk");
       this.uploadImgArr = [];
       this.constractArr = [];
-      this.searchFun();
+      this.resetSearch("sxk");
     },
     searchImgChange() {
       let { citySelect } = this.publishSearchInfo;
@@ -1459,6 +1458,7 @@ export default {
           materialRemark: ["全部"],
           // prStatus: "全部",
         };
+        this.searchFun();
       } else {
         this.searchInfo = {
           ...this.searchInfo,
@@ -1468,8 +1468,8 @@ export default {
           status: "全部",
           // prStatus: "全部",
         };
+        this.getPainList();
       }
-      this.getImgArr();
     },
     // 上下刊报告列表
     getImgInfo(params) {
@@ -1580,7 +1580,7 @@ export default {
             let percent = 0;
             if (resData && resData.totalCnt && resData.finishCnt) {
               percent = Number(
-                ((resData.finishCnt / resData.totalCn) * 100).toFixed(2)
+                ((resData.finishCnt / resData.totalCnt) * 100).toFixed(2)
               );
             }
             this.publishNumInfo.changePic = {

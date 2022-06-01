@@ -555,11 +555,10 @@ export default {
         uid: sess.uID,
         token: sess.token,
       };
-      if (sess.ascType == 0) {
+      if (sess.ascType == 0 && sess.uType !== 'ADN_MD_COUNTRY') {
         api
           .getApi(this.apiVar.UCAPI + "/GetDirectAscr", info)
           .then((res) => {
-            console.log(res);
             if (!res.data.SysCode) {
               let result = [];
               for (let data of res.data) {

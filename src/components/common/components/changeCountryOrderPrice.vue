@@ -132,11 +132,9 @@ export default {
 
   computed: {
     orderTotal () {
-      let total = 0
-      this.settlementFormList.forEach(item => {
-        total += item.cashFee
-      })
-      return total
+      return this.settlementFormList.reduce((pre, cur) => {
+        return pre + cur.cashFee * 1
+      }, 0)
     }
   },
 

@@ -460,7 +460,7 @@
         </el-tab-pane>
       </el-tabs>
       <!--添加点位对话框-->
-      <el-dialog
+      <!-- <el-dialog
         title="添加点位"
         :visible.sync="dialogAddPoint"
         width="82%"
@@ -477,7 +477,7 @@
           <el-button plain @click="cancelAddPoint">取 消</el-button>
           <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
         </span>
-      </el-dialog>
+      </el-dialog> -->
       <!--excel导入点位对话框-->
       <ImportPointByExcelCountry
         :dialogImportPoint="dialogImportPoint"
@@ -1030,7 +1030,7 @@ export default {
       // 当前tab展示的公司
       currentCompanyId: "-1",
       // 媒体类型
-      mediaTypeList: [],
+      // mediaTypeList: [],
       // 物料信息数据
       materialInfoJson: {
         mediaTypeName: "",
@@ -1116,15 +1116,15 @@ export default {
       },
 
       // 手动添加点位
-      dialogAddPoint: false,
+      // dialogAddPoint: false,
       // 导入点位
       dialogImportPoint: false,
       // 更换点位排期
       changeRangeDialog: false,
-      IsAddPoint: true,
+      // IsAddPoint: true,
       addAdsArr: [],
       dateInput: "",
-      pdidList: [],
+      // pdidList: [],
       //默认
       value: "资源名称",
       buildValue: "",
@@ -1217,7 +1217,7 @@ export default {
     // this.getMaterInfo();
     //获取物料信息
     // this.getMaterialInfo();
-    this.getOrderPriceDetail();
+    // this.getOrderPriceDetail();
   },
   methods: {
     //初始化各项数据
@@ -1239,7 +1239,7 @@ export default {
       };
     },
     //获取订单金额详情
-    getOrderPriceDetail() {
+    /* getOrderPriceDetail() {
       api
         .getApi(this.apiVar.Advertisement + "/GetAPD", {
           apid: this.apId,
@@ -1253,7 +1253,7 @@ export default {
             Message.warning(res.data.MSG);
           }
         });
-    },
+    }, */
     //更换点位对话框关闭
     closeDialogChangePoint() {
       //重置页数页码
@@ -1275,7 +1275,7 @@ export default {
       })
         .then(() => {
           this.changePriceModal = true;
-          this.getOrderPriceDetail();
+          // this.getOrderPriceDetail();
         })
         .catch(() => {
           // Message.info("已取消操作");
@@ -1517,82 +1517,6 @@ export default {
           console.log(res);
         });
     },
-    // 获取物料
-    /* getMaterInfo() {
-      let loginData = this.sessionData;
-      let info = {
-        uid: loginData.uID,
-        apid: this.apId,
-        token: loginData.token,
-      };
-      // uid         int【必填】     当前账户UserID
-      // apid        int             公司对应方案apID
-      api
-        .getApi(this.apiVar.Advertisement + "/GetAdLaunch", info)
-        .then((res) => {
-          if (!res.data.SysCode) {
-            let initData = res.data;
-            let result = initData.adSpaceInfo;
-            for (let data of result) {
-              let time =
-                this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
-              data.timeRange = time;
-              let finishTimeRange = "";
-              if (data.lState == 2) {
-                finishTimeRange =
-                  this.formatTime(data.lStar) +
-                  "-" +
-                  this.formatTime(data.lSetTime);
-              }
-              data.finishTimeRange = finishTimeRange;
-            }
-            // 选点排期
-            this.exportArr = result;
-            this.loading = false;
-            this.maLoading = false;
-          } else {
-            Message.warning(res.data.MSG);
-          }
-        })
-        .catch((res) => {
-          this.loading = false;
-          this.maLoading = false;
-          console.log(res);
-        });
-    }, */
-
-    // 获取物料新接口
-    /* getMaterialInfo() {
-      let info = {
-        apID: this.apId,
-      };
-      api
-        .getApi("/addsp/material/getMaterialCntByPlan", info)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            let _data = res.data.data;
-            let _materialCntInfoList = [];
-            let _mediaTypeName = [];
-            _data.forEach((item) => {
-              _mediaTypeName.push(item.mediaTypeName);
-              _materialCntInfoList.push(item.materialCntInfoList);
-            });
-            this.materialInfoJson = {
-              mediaTypeName: _mediaTypeName,
-              materialCntInfoList: _materialCntInfoList,
-            };
-          } else {
-            this.$message({
-              message: res.data.MSG,
-              type: "error",
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }, */
-
     // 获取当前用户所有的排期区间列表
     getScheduleList() {
       let info = {
@@ -1981,13 +1905,13 @@ export default {
       this.getSetPoint("change");
     },
     //显示添加点位的模态框
-    showAddPointDialog() {
+    /* showAddPointDialog() {
       this.getMediaTypes();
       this.dialogAddPoint = true;
       this.IsAddPoint = !this.IsAddPoint;
-    },
+    }, */
     //请求媒体类型列表
-    getMediaTypes() {
+    /* getMediaTypes() {
       let info = {
         companyIds: this.companiesOfOrder.asrID,
       };
@@ -2006,7 +1930,7 @@ export default {
         .catch((err) => {
           console.log("err:", err);
         });
-    },
+    }, */
 
     // excel 导入点位弹框
     excelAddPointDialog() {
@@ -2036,7 +1960,7 @@ export default {
       this.addAdsArr = data[0]; //this.encodeHtml(data[0])
     },
     //添加点位对话框确认按钮
-    confirmAddPoint() {
+    /* confirmAddPoint() {
       let addload = this.$loading({
         lock: true,
         text: "加急添加中...",
@@ -2115,11 +2039,11 @@ export default {
             }
           }
         });
-    },
+    }, */
     //添加点位对话框取消按钮
-    cancelAddPoint() {
+    /* cancelAddPoint() {
       this.dialogAddPoint = false;
-    },
+    }, */
     //跳到换画tab
     /* toSixthTab() {
       this.planPanel = "sixth";
@@ -2155,13 +2079,13 @@ export default {
     //修改订单金额-取消
     cancelChangePrice() {
       this.changePriceModal = false;
-      this.getOrderPriceDetail();
+      // this.getOrderPriceDetail();
       Message.info("已取消操作");
     },
     //修改金额-成功
     doneChangePrice() {
       this.changePriceModal = false;
-      this.getOrderPriceDetail();
+      // this.getOrderPriceDetail();
       this.getInitData();
       sessFun.messageFun("success", "修改订单金额成功");
     },

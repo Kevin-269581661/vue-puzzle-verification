@@ -1260,8 +1260,9 @@ export default {
     getCitys() {
       let info = {
         apId: this.apId,
+        companyId: this.companyId
       };
-      api.getApi(this.apiVar.replace + "/plan/region", info).then((res) => {
+      api.getApi("/national/api/v1/replace/region", info).then((res) => {
         if (res.data.SysCode == 200200) {
           let resArr = res.data.data;
           let result = this.formatCitys(resArr);
@@ -2650,9 +2651,10 @@ export default {
     getRegionAreaList() {
       let info = {
         apId: this.apId,
+        companyId: this.companyId
       };
       api
-        .getApi(this.apiVar.replace + "/plan/regionAreaList", info)
+        .getApi("/national/api/v1/replace/regionAreaList", info)
         .then((res) => {
           if (res.data.SysCode == 200200) {
             let resArr = res.data.data;

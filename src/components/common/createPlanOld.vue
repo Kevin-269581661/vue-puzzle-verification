@@ -3027,7 +3027,6 @@ export default {
         api
           .postApi(this.apiVar.UCAPI + "/findBDUserByKeyword", params)
           .then((res) => {
-            console.log("findBDUserByKeyword", res);
             if (res.data.SysCode === 200200) {
               let arr = [];
               for (let key of res.data.data) {

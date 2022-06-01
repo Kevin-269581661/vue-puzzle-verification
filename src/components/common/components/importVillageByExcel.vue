@@ -358,7 +358,6 @@ export default {
       if(errorList=='errorList') {
         if(this.lessPlanCntList.length) {
           this.dialogErrorPoint = false;
-          // this.$emit("skipAndAddShopping", this.lessPlanCntList);
           this.successList = this.successList.concat(this.lessPlanCntList);
           this.lessPlanCntList = [];
         } else {

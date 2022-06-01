@@ -448,17 +448,31 @@
     </div>
 
     <div class="up-report-bottom">
-      <el-button plain @click="downloadImg()" :loading="downLoading">
-        导出图片
-      </el-button>
-      <el-button v-if="type === 2" type="plain" @click="$emit('changePain')"
-        >换 画
-      </el-button>
-      <el-button type="primary" @click="submitUpload()"> 保存 </el-button>
-      <el-button plain @click="showH5()"> 查看H5 </el-button>
-      <el-button plain @click="updateReport()" :loading="updateLoading">
-        更新报告
-      </el-button>
+      <template v-if="type === 2">
+        <el-button v-if="painList.length" plain @click="downloadImg()" :loading="downLoading">
+          导出图片
+        </el-button>
+        <el-button type="plain" @click="$emit('changePain')"
+          >换 画
+        </el-button>
+        <template v-if="painList.length">
+          <el-button type="primary" @click="submitUpload()"> 保存 </el-button>
+          <el-button plain @click="showH5()"> 查看H5 </el-button>
+          <el-button plain @click="updateReport()" :loading="updateLoading">
+            更新报告
+          </el-button>
+        </template>
+      </template>
+      <template v-else>
+        <el-button plain @click="downloadImg()" :loading="downLoading">
+          导出图片
+        </el-button>
+        <el-button type="primary" @click="submitUpload()"> 保存 </el-button>
+        <el-button plain @click="showH5()"> 查看H5 </el-button>
+        <el-button plain @click="updateReport()" :loading="updateLoading">
+          更新报告
+        </el-button>
+      </template>
     </div>
 
     <!-- 换画弹出框 -->

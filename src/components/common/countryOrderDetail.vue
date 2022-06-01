@@ -102,6 +102,7 @@
           :name="companyItem.asrID + ''"
         >
           <el-tabs
+            class="detail-tabs"
             v-if="currentCompanyId == companyItem.asrID"
             v-model="planPanel"
             type="card"
@@ -2262,7 +2263,7 @@ export default {
   margin: 0px 32px;
 }
 
-/deep/ .el-tabs__nav-scroll {
+/deep/ .company-tabs .el-tabs__nav-scroll {
   padding-left: 28px;
 }
 
@@ -2597,6 +2598,10 @@ export default {
   border-bottom: 1px solid #e6e7e9;
   height: 53px;
   line-height: 54px;
+}
+/deep/ .detail-tabs > .el-tabs__header {
+  margin-left: 28px;
+  margin-right: 28px;
 }
 
 /*1920*/

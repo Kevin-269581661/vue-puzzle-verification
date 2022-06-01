@@ -1094,7 +1094,7 @@ export default {
       isShowEdit: false,
       // 上传图片地址
       // doUpload: "http://192.168.1.177:8040/national/api/v1/photo/upload",
-      doUpload: `${process.env.API_ROOT}/national/api/v1/photo/upload`,
+      doUpload: `${process.env.API_ROOT}national/api/v1/photo/upload`,
       imgUrl: [],
       allEditInfo: {
         date: "",
@@ -2061,7 +2061,6 @@ export default {
       this.imgUrl = [];
       let resImg = { name: "图片1", url: data.pURL };
       this.imgUrl = [resImg];
-      console.log(this.imgUrl);
     },
     //删除图片
     delectImg(res, file) {
@@ -2175,7 +2174,7 @@ export default {
               .then((res) => {
                 if (res.data.SysCode == 200200) {
                   that.isShowPic = false;
-                  this.getPainlist();
+                  that.getPainList();
                   // this.$emit("hidePainModal", "false");
                   /* setTimeout(() => {
                     that.getPainList().then((res) => {

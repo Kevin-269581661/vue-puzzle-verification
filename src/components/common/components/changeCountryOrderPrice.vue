@@ -147,16 +147,16 @@ export default {
 
   methods: {
     setPlanPrice (formName) {
-      if (this.settlementFormVisible) {
+      if (this.$refs.settlementForm && this.settlementFormVisible) {
         let validate = true
         for (let index = 0; index < this.$refs.settlementForm.length; index++) {
-           this.$refs.settlementForm[index].validate(valid => {
+          this.$refs.settlementForm[index].validate(valid => {
             if (!valid) {
               console.log(valid)
               validate = false
               this.activeCompany = this.settlementFormList[index].asrID.toString()
             }
-          })  
+          })
 
           if (!validate) break
         }
@@ -188,16 +188,24 @@ export default {
           return false
         }
 
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '金额设置失败！'
+        })
       }
 
     },
 
     resetSettlement (done) {
-      this.$refs.settlementForm.forEach(item => {
-        item.resetFields()
+      if (this.$refs.settlementForm && this.$refs.settlementForm.length) {
+        this.$refs.settlementForm.forEach(item => {
+          item.resetFields()
+          done()
+        })
+      } else {
         done()
-      })
-
+      }
     },
 
     cancelDialog () {

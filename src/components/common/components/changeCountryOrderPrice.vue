@@ -9,7 +9,7 @@
     :close-on-press-escap="false"
     :before-close="resetSettlement"
   >
-    <template v-loading="loading">
+    <div v-loading="loading">
       <el-tabs class="tabs" v-model="activeCompany">
         <el-tab-pane
           :label="item.asName"
@@ -59,14 +59,14 @@
       </el-tabs>
 
       <el-form>
-        <el-form-item label="方案总价：" :label-width="formLabelWidth">
+        <el-form-item label="订单总价：" :label-width="formLabelWidth">
           <span class="form-item__price">
             {{ (isNaN(orderTotal) ? 0 : orderTotal * 1).toFixed(2) }}
             元
           </span>
         </el-form-item>
       </el-form>
-    </template>
+    </div>
 
     <div slot="footer" class="dialog-footer">
       <el-button @click="resetSettlement(cancelDialog)">取 消</el-button>
@@ -160,7 +160,7 @@ export default {
 
           if (!validate) break
         }
-        
+
         if (validate) {
           const settlementFormList = JSON.parse(JSON.stringify(this.settlementFormList))
           settlementFormList.forEach(item => {
@@ -209,6 +209,9 @@ export default {
         apID: this.apID
       }
       api.getApi('/national/api/v1/nationalAdPlan/listCompanyFee', params).then((res) => {
+        setTimeout(() => {
+          this.loading = false
+        }, 300)
         if (res.data.SysCode === 200200) {
           this.settlementFormList = res.data.data.map(item => {
             return {
@@ -228,6 +231,7 @@ export default {
           });
         }
       }).catch(e => {
+        this.loading = false
         this.$message({
           type: 'warning',
           message: '获取公司金额失败！'

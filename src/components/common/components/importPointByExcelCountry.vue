@@ -286,7 +286,9 @@ export default {
                   type: "success",
                   showClose: false,
                   confirmButtonText: "好 的",
-                }).then((action) => {});
+                }).then((action) => {
+                  this.dialogImport = false;
+                });
               }
             }
           } else {

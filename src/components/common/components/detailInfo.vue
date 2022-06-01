@@ -142,7 +142,7 @@ export default {
                                     <div class="tooltip-box">
                                         <div class="tooltip-box__p">
                                             <b>金额：</b>
-                                            <div v-for="item in companyList" :key="item.asrID">
+                                            <div v-for="item in companyList" :key="item.asrID" style="white-space: nowrap">
                                                 {{item.asName}}: ¥ {{item.cashFee}}
                                             </div>
                                         </div>

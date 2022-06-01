@@ -1580,7 +1580,7 @@ export default {
             let percent = 0;
             if (resData && resData.totalCnt && resData.finishCnt) {
               percent = Number(
-                ((resData.finishCnt / resData.totalCn) * 100).toFixed(2)
+                ((resData.finishCnt / resData.totalCnt) * 100).toFixed(2)
               );
             }
             this.publishNumInfo.changePic = {

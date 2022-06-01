@@ -185,7 +185,7 @@
         </div>
       </div>
       <!-- 搜索 -->
-      <div class="search_pic" v-if="!firstTime && painList.length">
+      <div class="search_pic" v-if="painList.length">
         <el-form :inline="true" size="small">
           <el-form-item label="媒体类型:">
             <el-select
@@ -252,7 +252,7 @@
             </el-select>
           </el-form-item> -->
           <el-form-item>
-            <el-button type="primary" @click="search()">搜 索</el-button>
+            <el-button type="primary" @click="searchReplaceDetail()">搜 索</el-button>
             <el-button type="plain" @click="resetSearch('hh')">重 置</el-button>
           </el-form-item>
         </el-form>
@@ -260,7 +260,7 @@
     </template>
 
     <!-- 图片列表 -->
-    <div class="imgs_box" v-if="!firstTime">
+    <div class="imgs_box">
       <div class="imgs_point">
         <div
           class="point_item"
@@ -941,11 +941,7 @@ export default {
     },
     firstTime: {
       type: Boolean,
-    },
-    painList: {
-      type: Array,
-      default: () => [],
-    },
+    }
   },
   data() {
     return {
@@ -986,14 +982,6 @@ export default {
 
       // 上下刊以及换画百分比数量等
       publishNumInfo: {
-        // "door": {
-        //     "totalCount": 0,
-        //     "hasPhotoCount": 0
-        // },
-        // "barrier": {
-        //     "totalCount": 0,
-        //     "hasPhotoCount": 0
-        // },
         changePic: {
           percent: 0,
           currNum: 0,
@@ -1009,7 +997,6 @@ export default {
         resName: "全部",
         status: "全部",
         // prStatus: "全部",
-        // 搜索列表数据
         // 媒体类型
         mediaTypeArr: [
           {
@@ -1146,6 +1133,7 @@ export default {
       isEdit: false, //是编辑或新增换画
       regionAreaList: [], //换画区域城市
       launchDateList: [], //换画排期筛选列表launchDateList
+      painList: []
     };
   },
   mounted() {
@@ -1264,12 +1252,7 @@ export default {
         this.searchFun();
       } else if (this.type == 2) {
         // 获取换画名称列表
-        // this.getPainList().then((res) => {
-        // 换画报告列表
-        if (this.painList.length > 0) {
-          this.search();
-        }
-        // });
+        this.getPainList();
       }
     },
     // 获取城市区域
@@ -1511,7 +1494,7 @@ export default {
         });
     },
     // 获取全部换画列表(换画名称以及id)
-    /* getPainList() {
+    getPainList() {
       let promise = new Promise((resolve, reject) => {
         let info = {
           apID: this.apId,
@@ -1519,21 +1502,22 @@ export default {
         };
         api.getApi("/national/api/v1/replace/list", info).then((res) => {
           if (res.data.SysCode == 200200) {
-            this.painList = res.data.data.map((item) => {
-              return {
-                ...item,
-                name: item.replaceRecordName,
-              };
-            });
-            this.getMediaTypes();
+            this.painList = res.data.data || [];
+            if(this.painList.length) {
+              this.getMediaTypes();
+              this.searchReplaceDetail();
+            } else {
+              this.imageArr = [];
+            }
           } else {
+            this.imageArr = [];
             sessFun.messageFun("warning", res.data.MSG);
           }
           resolve();
         });
       });
       return promise;
-    }, */
+    },
     // 获取换画报告列表
     getData(params) {
       this.pageInfo.loading = true;
@@ -1562,7 +1546,7 @@ export default {
               }
               data.photoList = data.adPlanPics;
             }
-            this.imageArr = dataInfo.list;
+            this.imageArr = dataInfo.list || [];
             // this.checkImgStatus();
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -1608,7 +1592,7 @@ export default {
       }
     },
     // 搜索
-    search() {
+    searchReplaceDetail() {
       this.pageInfo.paginationShow = false;
       this.pageInfo.loading = true;
       let info = this.searchPointFormat();
@@ -1675,8 +1659,7 @@ export default {
       };
       this.activePainIndex = index;
       // 去获取换画列表
-      this.search();
-
+      this.searchReplaceDetail();
       //去获取媒体类型
       this.getMediaTypes();
     },
@@ -2148,7 +2131,7 @@ export default {
       this.isShowPic = false;
       this.shoplist = [];
       this.selectList = [];
-      this.$emit("hidePainModal", "false");
+      // this.$emit("hidePainModal", "false");
     },
     // 确认-生成换画任务
     saveAll() {
@@ -2191,8 +2174,8 @@ export default {
               .then((res) => {
                 if (res.data.SysCode == 200200) {
                   that.isShowPic = false;
-                  that.$emit("getPainlist");
-                  this.$emit("hidePainModal", "false");
+                  this.getPainlist();
+                  // this.$emit("hidePainModal", "false");
                   /* setTimeout(() => {
                     that.getPainList().then((res) => {
                       that.activePainIndex = that.painList.length - 1;
@@ -2232,7 +2215,7 @@ export default {
             } else {
               sessFun.messageFun("warning", res.data.MSG);
             }
-            this.search();
+            this.searchReplaceDetail();
           });
       } else {
         sessFun.messageFun(
@@ -2394,7 +2377,7 @@ export default {
             this.getAdsUploadImgCnt();
           } else if (this.type === 2) {
             // 换画报告列表
-            this.search();
+            this.searchReplaceDetail();
           }
           this.addload.close();
         })
@@ -2600,7 +2583,7 @@ export default {
                 this.getAdsUploadImgCnt();
               } else if (this.type === 2) {
                 // 换画报告列表
-                this.search();
+                this.searchReplaceDetail();
               }
             } else {
               sessFun.messageFun("warning", res.data.MSG);

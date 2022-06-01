@@ -452,27 +452,12 @@
                   :order-detail="orderDetail"
                   :painList="painList"
                   @changePain="changePain"
-                  @getPainlist="getPainlist"
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
           </el-tabs>
         </el-tab-pane>
       </el-tabs>
-      <!--换画弹框-->
-      <!-- <div class="changepic_box FIRSTTIME" v-if="showPainModal">
-        <Change-Pic-Country
-          :apId="apId"
-          :companyId="currentCompanyId"
-          :scheduleList="scheduleList"
-          :firstTime="showPainModal"
-          :type="2"
-          :planPanel="planPanel"
-          :from-type="fromType"
-          :order-detail="orderDetail"
-          @hidePainModal="hidePainModal()"
-        ></Change-Pic-Country>
-      </div> -->
       <!--添加点位对话框-->
       <el-dialog
         title="添加点位"
@@ -1238,14 +1223,6 @@ export default {
     //获取物料信息
     // this.getMaterialInfo();
     this.getOrderPriceDetail();
-  },
-  watch: {
-    currentCompanyId: {
-      // immediate: true,
-      handler(newVal, oldVal) {
-        newVal && this.getPainlist();
-      },
-    },
   },
   methods: {
     //初始化各项数据
@@ -2209,26 +2186,6 @@ export default {
     //添加点位对话框取消按钮
     cancelAddPoint() {
       this.dialogAddPoint = false;
-    },
-    // 获取换画列表
-    getPainlist() {
-      let info = {
-        apID: this.apId,
-        companyId: this.currentCompanyId,
-      };
-      api
-        .getApi("/national/api/v1/replace/list", info)
-        .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.painList = res.data.data || [];
-          } else {
-            this.painList = [];
-            sessFun.messageFun("warning", res.data.msg);
-          }
-        })
-        .catch(() => {
-          this.painList = [];
-        });
     },
     //跳到换画tab
     /* toSixthTab() {

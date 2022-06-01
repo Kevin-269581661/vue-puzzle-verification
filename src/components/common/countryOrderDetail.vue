@@ -480,9 +480,9 @@
       </el-dialog> -->
       <!--excel导入点位对话框-->
       <ImportPointByExcelCountry
-        :dialogImportPoint="dialogImportPoint"
+        :dialogImportPoint.sync="dialogImportPoint"
         :handleTime="handleTime"
-        @resetDialogImportPoint="resetDialogImportPoint"
+        @refreshParent="getCompaniesOfOrder"
         @refreshCurrentTable="refreshCurrentTable"
       ></ImportPointByExcelCountry>
       <!-- 更改排期对话框 -->
@@ -1930,11 +1930,6 @@ export default {
     // excel 导入点位弹框
     excelAddPointDialog() {
       this.dialogImportPoint = true;
-    },
-    resetDialogImportPoint() {
-      this.dialogImportPoint = false;
-      // 刷新公司列表
-      this.getCompaniesOfOrder();
     },
     refreshCurrentTable(lIDs) {
       this.currPointloading = true;

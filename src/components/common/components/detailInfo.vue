@@ -129,12 +129,12 @@ export default {
                             <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">
                                     <div class="tooltip-box">
-                                        <p class="tooltip-box__p">
+                                        <div class="tooltip-box__p">
                                             <b>金额：</b>
-                                            <span v-for="item in companyList" :key="item.asrID">
+                                            <div v-for="item in companyList" :key="item.asrID">
                                                 {{item.asName}}: ¥ {{item.cashFee}}
-                                            </span>
-                                        </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <i class="fa fa-info-circle" aria-hidden="true"></i>
@@ -183,17 +183,17 @@ export default {
     color: #666666;
 }
 .tooltip-box {
-    display: flex;
+    // display: flex;
     .tooltip-box__p {
         max-width: 200px;
         b {
             font-size: 14px;
         }
-        span {
+        div {
             font-size: 12px;
         }
         & > * {
-            display: inline-block;
+            // display: inline-block;
             line-height: 22px;
             min-width: 75px;
         }

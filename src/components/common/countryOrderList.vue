@@ -547,31 +547,6 @@ export default {
         uid: sess.uID,
         token: sess.token,
       };
-      if (sess.ascType == 0) {
-        api
-          .getApi(this.apiVar.UCAPI + "/GetDirectAscr", info)
-          .then((res) => {
-            console.log(res);
-            if (!res.data.SysCode) {
-              let result = [];
-              for (let data of res.data) {
-                let obj = {
-                  label: data.asName,
-                  value: data.asrID,
-                };
-                result.push(obj);
-              }
-              this.companyData = result;
-            } else if (res.data.SysCode == 100403) {
-              console.error("获取公司", res.data.MSG);
-            } else {
-              Message.warning(res.data.MSG);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
         api
           .getApi(this.apiVar.UCAPI + "/ShowAscr", info)
           .then((res) => {
@@ -593,7 +568,6 @@ export default {
           .catch((err) => {
             console.log(err);
           });
-      }
     },
     // 获取城市
     getFanCity() {

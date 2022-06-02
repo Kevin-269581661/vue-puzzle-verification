@@ -914,7 +914,7 @@ export default {
               }
             }, ''))
           }
-          // fileInfo.type = this.stateToNum(type, name);
+          fileInfo.type = this.stateToNum(type, name);
           this.getFileProcessFun(tempPage, fileInfo);
           loading = false;
         }

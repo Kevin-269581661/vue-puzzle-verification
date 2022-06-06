@@ -386,7 +386,7 @@
     <changeCountryOrderPrice
       v-if="changePriceModal"
       :apID="currApid"
-      :requesInfo="{ mark: this.handleTime, opType: 1 }"
+      :requesInfo="{ mark: handleTime, opType: 1 }"
       :settlementFormVisible="true"
       @cancel="changePriceModal = false"
       @planMoneyUpdated="

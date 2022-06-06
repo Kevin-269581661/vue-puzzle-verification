@@ -394,7 +394,7 @@
     <!--修改金额弹框-->
     <changeProposalOrderPrice
       :apID="currApid"
-      :requesInfo="{ mark: this.handleTime, opType: 2 }"
+      :requesInfo="{ mark: handleTime, opType: 2 }"
       :settlementFormVisible="changePriceModal"
       @cancel="changePriceModal = false"
       @planMoneyUpdated="

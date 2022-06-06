@@ -243,9 +243,9 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'ADN_MD_COUNTRY':
+        case 'ADN_MD_COUNTRY': {
             //媒介
-            let tempMDp = null
+            let tempMD = null
             if(proposal) {
                 // 直营媒介
                 tempMD = [
@@ -303,7 +303,8 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
-        case 'ADN_MD':
+        }
+        case 'ADN_MD': {
             //媒介
             let tempMD = null
             if(proposal) {
@@ -362,6 +363,7 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
+        }
         case 'ADN_BD_KA':
         case 'ADN_BD':
             let tempBD = null

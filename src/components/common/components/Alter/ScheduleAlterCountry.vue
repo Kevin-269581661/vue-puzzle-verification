@@ -77,7 +77,10 @@ export default {
           if (res.data.SysCode == 200200) {
             this.scheduleData = res.data.data || [];
           } else {
-            Message.warning(res.data.MSG);
+            this.$message({
+              type: 'warning',
+              message: res.data.MSG || ''
+            });
           }
         })
         .catch((res) => {});

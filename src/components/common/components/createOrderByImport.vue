@@ -59,86 +59,6 @@
         >
       </span>
     </el-dialog>
-    <!-- 导入结果页面 -->
-    <!-- <el-dialog
-      title="导入结果"
-      :visible.sync="dialogResult"
-      top="5vh"
-      :close-on-press-escape="false"
-      :close-on-click-modal="false"
-      :center="false"
-      custom-class="error-point-dialog"
-      width="1134px"
-    >
-      <div class="table-top-tip">
-        <h4 class="container">
-          <div>
-            <i class="el-icon-info" style="color: #1890ff"></i>
-            <span><em>{{ successSize }}</em>个导入成功，
-            <em class="orange">{{ errorSize }}</em>个导入失败
-            </span>
-          </div>
-          <div>
-            <span style="color:#1890ff;cursor: pointer;" @click="openUnsuccessful">查看失败小区</span>
-          </div>
-        </h4>
-      </div>
-      <el-table
-        ref="successSTableRef"
-        :data="successShowList"
-        border
-        max-height="500"
-        style="width: 100%"
-      >
-        <el-table-column
-          type="index"
-          label="序号"
-          min-width="6%"
-          width="50"
-          align="center"
-          :index="successPageSize * successCurrentPage - successPageSize + 1"
-        >
-        </el-table-column>
-        <el-table-column prop="resName" label="资源名称" min-width="10%">
-        </el-table-column>
-        <el-table-column prop="cityName" label="城市" min-width="6%">
-        </el-table-column>
-        <el-table-column prop="districtName" label="区域" min-width="6%">
-        </el-table-column>
-        <el-table-column prop="schedule" label="排期" min-width="10%">
-        </el-table-column>
-        <el-table-column
-          prop="actualMediaCnt"
-          label="媒体数量（门）"
-          min-width="6%"
-          align="right"
-        >
-        </el-table-column>
-        <el-table-column align="right" prop="planAdsCnt" label="计划投放数量(面)" min-width="7%">
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        @size-change="handleSuccessSizeChange"
-        @current-change="handleSuccessCurrentChange"
-        :current-page="successCurrentPage"
-        :page-sizes="[10, 20, 30, 40]"
-        :page-size="successPageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="successSize"
-        style="text-align: right"
-      >
-      </el-pagination>
-      <span slot="footer">
-        <el-button
-          type="primary"
-          size="medium "
-          @click="addShoppingCart"
-          :disabled="isDown"
-          style="padding: 0 4px;width:146px"
-          >确定并添加到购物车</el-button
-        >
-      </span>
-    </el-dialog> -->
     <!-- 失败小区 -->
     <el-dialog
       title="导入失败的点位"
@@ -299,17 +219,6 @@ export default {
     };
   },
   computed: {
-    successShowList() {
-      if (this.successList) {
-        if (this.$refs.successSTableRef) {
-          this.$refs.successSTableRef.bodyWrapper.scrollTop = 0;
-        }
-        return this.successList.slice(
-          (this.successCurrentPage - 1) * this.successPageSize,
-          this.successCurrentPage * this.successPageSize
-        );
-      }
-    },
     errorShowList() {
       if (this.errorList) {
         if (this.$refs.errorTableRef) {
@@ -319,6 +228,8 @@ export default {
           (this.errorCurrentPage - 1) * this.errorPageSize,
           this.errorCurrentPage * this.errorPageSize
         );
+      } else {
+        return [];
       }
     },
   },

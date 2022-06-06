@@ -1098,7 +1098,7 @@
 
         <changeProposalOrderPrice
           :apID="orderDetail.apID"
-          :requesInfo="{ mark: this.handleTime, opType: 1 }"
+          :requesInfo="{ mark: handleTime, opType: 1 }"
           :settlementFormVisible="changePriceModal"
           @cancel="changePriceModal = false"
           @planMoneyUpdated="

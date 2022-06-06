@@ -245,6 +245,7 @@ export default {
         }
       });
     },
+    // 提交小区拆分信息
     postDivideData() {
       let params = {
         originResID: this.resID,

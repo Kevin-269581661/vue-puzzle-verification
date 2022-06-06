@@ -268,6 +268,7 @@ function addRoutes(role, proposal, retain) {
                     children: [
                         ...tempMD,
                         {path: '/media', component: mediaIndex},
+                        {path: '/media/workplace', component: mediaWorkplace},
                         {path: '/media/mediaList', component: mediaList},
                         {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
                         {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},

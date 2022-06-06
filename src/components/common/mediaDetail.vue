@@ -24,7 +24,7 @@
             <el-button plain size="mini" @click="divideMedia()" v-if="haveEdit"
               >小区拆分</el-button
             >
-            <el-button plain size="mini" @click="edit('add')" v-if="haveEdit"
+            <el-button plain size="mini" @click="edit('add')" v-if="haveEdit && isPay"
               >添加媒体</el-button
             >
             <el-button
@@ -525,6 +525,7 @@ export default {
   },
   data() {
     return {
+      isPay: 0,
       haveEdit: false,
       mediaLoading: true,
       resID: "",
@@ -618,8 +619,20 @@ export default {
       this.haveEdit = false;
     }
     this.getDataFun();
+    this.requestIsPay();
   },
   methods: {
+    requestIsPay() {
+      api
+        .getApi("/addsp/api/v1/company/isPay", {
+          asrID: this.sessionData.asrID,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200 && res.data.data === true) {
+            this.isPay = 1;
+          }
+        });
+    },
     // 返回
     goBack() {
       this.$router.push("./mediaList");

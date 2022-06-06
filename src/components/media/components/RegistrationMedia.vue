@@ -18,7 +18,7 @@
               class="item-content ellipsis"
               :title="registrationData.contractName || '--'"
             >
-              {{ registrationData.contractName || "--" }} 个
+              {{ registrationData.contractName || "--" }}
             </span>
           </li>
           <li class="info-item">
@@ -199,7 +199,7 @@ export default {
       api
         .getApi("/addsp/api/v1/resInfo/pageOwn", {
           pageNum: 1,
-          pageSize: 10,
+          pageSize: 100,
           resName: ''
         })
         .then((res) => {
@@ -512,6 +512,9 @@ export default {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+      }
+      .item-label {
+        white-space: nowrap;
       }
     }
   }

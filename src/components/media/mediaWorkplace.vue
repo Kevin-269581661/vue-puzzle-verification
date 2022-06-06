@@ -16,7 +16,7 @@
           ></el-button>
         </el-input>
       </div>
-      <table style="width: 100%">
+      <table v-if="tableData.length" style="width: 100%">
         <tbody>
           <tr
             v-for="(trItem, trIndex) in tableData"
@@ -59,11 +59,12 @@
           </tr>
         </tbody>
       </table>
+      <el-empty v-else :image-size="200"></el-empty>
       <el-pagination
         background
         @size-change="sizeChange"
         @current-change="changePage"
-        :hide-on-single-page="false"
+        :hide-on-single-page="true"
         :current-page.sync="currentPage"
         :page-sizes="pageSizes"
         :page-size.sync="pageSize"

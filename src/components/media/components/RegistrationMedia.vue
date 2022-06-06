@@ -200,7 +200,7 @@ export default {
         .getApi("/addsp/api/v1/resInfo/pageOwn", {
           pageNum: 1,
           pageSize: 100,
-          resName: ''
+          resName: "",
         })
         .then((res) => {
           if (
@@ -227,6 +227,8 @@ export default {
           })
           .then((res) => {
             if (res.data.SysCode == 200200) {
+              this.batchDialogVisible = false;
+              this.$emit("refreshWorkplace");
               sessFun.messageFun(
                 "success",
                 res.data.MSG || "批量登记媒体成功！"
@@ -240,6 +242,10 @@ export default {
           })
           .catch((err) => {
             console.log(err);
+          })
+          .finally(() => {
+            this.registerIDs = [];
+            this.singleRegisterResID = null;
           });
       } else {
         sessFun.messageFun("warning", "请先选择需要登记的媒体！");
@@ -273,7 +279,12 @@ export default {
           .then((res) => {
             if (res.data.SysCode == 200200) {
               sessFun.messageFun("success", res.data.MSG || "媒体登记成功！");
-              this.getUnregisteredMedia(res.data.data, this.addResFlag?params.newResName:this.selectedExistedRes.resName);
+              this.getUnregisteredMedia(
+                res.data.data,
+                this.addResFlag
+                  ? params.newResName
+                  : this.selectedExistedRes.resName
+              );
             } else {
               sessFun.messageFun("warning", res.data.MSG || "媒体登记失败！");
             }
@@ -301,7 +312,7 @@ export default {
         .then((res) => {
           if (res.data.SysCode == 200200 && res.data.data) {
             this.batchRegisterMedias = res.data.data || [];
-            if(this.batchRegisterMedias.length === 0) {
+            if (this.batchRegisterMedias.length === 0) {
               this.handleClose();
               return;
             }
@@ -323,9 +334,13 @@ export default {
                 showClose: false,
                 customClass: "messageBoxCustom",
               }
-            ).then(() => {
-              this.batchDialogVisible = true;
-            });
+            )
+              .then(() => {
+                this.batchDialogVisible = true;
+              })
+              .catch(() => {
+                this.$emit("refreshWorkplace");
+              });
             // 关闭单个媒体登记弹框
             this.handleClose();
           } else {

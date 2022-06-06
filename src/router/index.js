@@ -33,7 +33,10 @@ const publishPriceList = () => import(/* webpackChunkName: "publishPriceList" */
 const createAccount = () => import(/* webpackChunkName: "createAccount" */ '../components/common/createAccount.vue')
 const accountList = () => import(/* webpackChunkName: "accountList" */ '../components/common/accountList.vue')
 const orderList = () => import(/* webpackChunkName: "orderList" */ '../components/common/orderList.vue')
+const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */ '../components/common/countryOrderList.vue')
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
+// 创建非系统全国单
+const createOrder = () => import(/* webpackChunkName: "createOrder" */ '../components/common/createOrder.vue')
 // 直营销售创建意向方案
 const createPlan = () => import(/* webpackChunkName: "createPlan" */ '../components/common/createPlan.vue')
 // 加盟销售和媒介或直营媒介创建方案（保持原逻辑）
@@ -47,6 +50,7 @@ const editEmptyPointPlan = () => import(/* webpackChunkName: "editEmptyPointPlan
 const planDetail = () => import(/* webpackChunkName: "planDetail" */ '../components/common/planDetail.vue')
 const planEmptyPointDetail = () => import(/* webpackChunkName: "planEmptyPointDetail" */ '../components/common/planEmptyPointDetail.vue')
 const orderDetail = () => import(/* webpackChunkName: "orderDetail" */ '../components/common/orderDetail.vue')
+const countryOrderDetail = () => import(/* webpackChunkName: "countryOrderDetail" */ '../components/common/countryOrderDetail.vue')
 const photoGallery = () => import(/* webpackChunkName: "photoGallery" */ '../components/common/photoGallery.vue')
 const advertTV = () => import(/* webpackChunkName: "advertTV" */ '../components/common/advertTV.vue')
 const tvOrderList = () => import(/* webpackChunkName: "tvOrderList" */ '../components/common/tvOrderList.vue')
@@ -65,6 +69,7 @@ const resContrastMap = () => import(/* webpackChunkName: "resContrastMap" */ '..
 
 // 下载进度页面
 const progressDown = () => import(/* webpackChunkName: "progressDown" */ '../components/common/progressDown.vue')
+const progressDownCountry = () => import(/* webpackChunkName: "progressDownCountry" */ '../components/common/progressDownCountry.vue')
 
 //地图选点中转页面
 // const mapMessage = () => import('../components/common/mapMessage.vue')
@@ -113,18 +118,20 @@ const ADorderDetail = () => import(/* webpackChunkName: "ADorderDetail" */ '../c
 const visitFrequency = () => import(/* webpackChunkName: "visitFrequency" */ '../components/adOwner/visitFrequency.vue')
 const hotSource = () => import(/* webpackChunkName: "hotSource" */ '../components/adOwner/hotSource.vue')
 
-
 //工程
 const engineerCommon = () => import(/* webpackChunkName: "engineerCommon" */ '../components/engineer/engineerCommon.vue')
 
 //亲邻科技上刊报告
 const Report = () => import(/* webpackChunkName: "Report" */ '../components/h5/Report.vue')
+// 全国单上下刊报告
+const ReportCountry = () => import(/* webpackChunkName: "Report" */ '../components/h5/ReportCountry.vue')
 
 Vue.use(Router);
 const staticRoutes = [{path: '/', redirect: '/login'},
     {path: '/login', name: 'login', component: login},
     // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
     {path: '/progressDown', name: 'progressDown', component: progressDown},
+    {path: '/progressDownCountry', name: 'progressDownCountry', component: progressDownCountry},
     {path: '/shareADList', name: 'shareADList', component: shareADList},
     {path: '/shareADListProposal', name: 'shareADListProposal', component: shareADListProposal},
     {path: '/emptyPoint', name: 'emptyPoint', component: emptyPoint},
@@ -137,6 +144,7 @@ const staticRoutes = [{path: '/', redirect: '/login'},
     //消息列表
     //上下刊报告h5页面
     {path: '/Report', name: 'Report', component: Report},
+    {path: '/ReportCountry', name: 'ReportCountry', component: ReportCountry},
     //404
     {path: '*', component: NotFountPage}];
 let router = new Router({
@@ -236,6 +244,65 @@ function addRoutes(role, proposal, retain) {
                 }]
             break;
         case 'ADN_MD_COUNTRY':
+            //媒介
+            let tempMDp = null
+            if(proposal) {
+                // 直营媒介
+                tempMD = [
+                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}},
+                    {path: '/media/editPlan', component: editPlan, meta:{title: '编辑方案'}},
+                    {path: '/media/editEmptyPointPlan', component: editEmptyPointPlan, meta:{title: '编辑方案'}}
+                ]
+            } else {
+                // 加盟媒介和直营媒介
+                tempMD = [
+                    {path: '/media/createPlanOld', component: createPlanOld, meta:{title: '创建方案'}},
+                    {path: '/media/editPlanOld', component: editPlanOld, meta:{title: '编辑方案'}}
+                ]
+            }
+            roleRoutes = [
+                {
+                    path: '/',
+                    component: mediaCommon,
+                    children: [
+                        ...tempMD,
+                        {path: '/media', component: mediaIndex},
+                        {path: '/media/mediaList', component: mediaList},
+                        {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
+                        {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
+                        {path: '/media/mediaDetail', component: mediaDetail},
+                        {path: '/media/planList', component: planList},
+                        {path: '/media/publishPriceList', component: publishPriceList},
+                        {path: '/media/orderList', component: orderList},
+                        {path: '/media/createOrder', component: createOrder},
+                        {path: '/media/countryOrderList', component: countryOrderList},
+                        {path: '/media/planDetail', component: planDetail},
+                        {path: '/media/planEmptyPointDetail', component: planEmptyPointDetail},
+                        {path: '/media/orderDetail', component: orderDetail},
+                        {path: '/media/countryOrderDetail', component: countryOrderDetail},
+                        {path: '/media/photoGallery', component: photoGallery},
+                        {path: '/media/changePwd', component: changePwd},
+                        {path: '/media/questionAndAnswer', component: questionAndAnswer},
+                        {path: '/media/advertTV', component: advertTV},
+                        {path: '/media/tvOrderList', component: tvOrderList},
+                        {path: '/media/tvOrderDetail', component: tvOrderDetail},
+                        {path: '/media/maintainList', component: maintainList},
+                        {path: '/media/myInfo', component: myInfo},
+                        {path: '/media/compact', component: compact},
+                        {path: '/media/paintedPath', component: paintedPath},
+                        {path: '/media/adsDialPlate', component: adsDialPlate},
+                        {path: '/media/projectList', component: projectList},
+                        {path: '/media/projectDetail', component: projectDetail},
+                        {path: '/media/paintedCount', component: paintedCount},
+                        {path: '/media/messageList', component: messageList},
+                        {path: '/media/communityPortrait',component: communityPortrait},
+                        {path: '/media/communityRank',component: communityRank},
+                        {path: '/media/portraitDetail',component: portraitDetail},
+                    ]
+                }
+            ]
+            break;
         case 'ADN_MD':
             //媒介
             let tempMD = null
@@ -269,6 +336,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/planList', component: planList},
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
+                        {path: '/media/countryOrderList', component: countryOrderList},
                         {path: '/media/planDetail', component: planDetail},
                         {path: '/media/planEmptyPointDetail', component: planEmptyPointDetail},
                         {path: '/media/orderDetail', component: orderDetail},
@@ -278,7 +346,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/advertTV', component: advertTV},
                         {path: '/media/tvOrderList', component: tvOrderList},
                         {path: '/media/tvOrderDetail', component: tvOrderDetail},
-                        // {path: '/media/mapMessage', component: mapMessage},
                         {path: '/media/maintainList', component: maintainList},
                         {path: '/media/myInfo', component: myInfo},
                         {path: '/media/compact', component: compact},

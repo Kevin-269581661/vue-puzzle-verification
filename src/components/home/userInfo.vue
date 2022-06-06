@@ -3,7 +3,7 @@
 		<h4>基本资料</h4>
 		<div class="userInfo_box">
             <div class="info_left">
-                <img :src="userInfo.data.url" alt="" class="img_box">
+                <img :src="userInfo.data.url" alt="亲邻" class="img_box">
                 <!-- <el-button size="small" style="margin-top: 5px;">更换头像</el-button> -->
                 <el-upload
                     :action="uploadUrl"
@@ -93,16 +93,16 @@ export default {
                     url: '头像链接:',
                 },
                 data:{
-                    account: 'xiongpeisha',
-                    dep: '销售部',
-                    company: '亲邻科技有限公司',
-                    username: '熊佩莎',
-                    super: '曾俊超',
-                    phone: '13631275100',
-                    role: '销售',
-                    duty: '销售总监',
-                    email: 'xiongpeisha@qinlinkeji.com',
-                    url: require('../../assets/images/alreadyLock.png'),
+                    account: '--',
+                    dep: '--',
+                    company: '--',
+                    username: '--',
+                    super: '--',
+                    phone: '--',
+                    role: '--',
+                    duty: '--',
+                    email: '--',
+                    url: require('../../assets/images/index/niu.png')
                 }
             },
         };
@@ -225,7 +225,7 @@ h4 {
 }
 .img_box{
     display: block;
-    margin: 0 auto;
+    margin: 0 auto 16px 0;
     width: 72px;
     height: 72px;
     border-radius: 50%;

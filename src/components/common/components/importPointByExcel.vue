@@ -97,19 +97,6 @@
         >
         </el-table-column>
       </el-table>
-      <!-- <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="recommendationCurrentPage"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="recommendationPageSize"
-        :pager-count="5"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="recommendationTotalNum"
-        style="text-align: right; margin-top: 16px"
-      >
-      </el-pagination> -->
       <span slot="footer">
         <el-button plain @click="export2Excel" :disabled="isDown">下载表格</el-button>
         <el-button plain @click="dialogErrorPoint = false">关闭</el-button>

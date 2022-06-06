@@ -10,6 +10,11 @@ export default {
             type: Boolean,
             default: false
         },
+
+        companyList: {
+            type: Array,
+            default: () => []
+        }
     },
     data(){
         return{
@@ -77,7 +82,7 @@ export default {
                             <span>联系人：</span>
                             <em>{{detail.cuName}}</em>
                         </li>
-                        <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdTotal !== undefined">
                             <span>现金结算：</span>
                             <em>¥{{detail.pdTotal}}</em>
                         </li>
@@ -93,7 +98,7 @@ export default {
                             <span>投放城市：</span>
                             <em>{{filter2(detail.rIDs)}}</em>
                         </li>
-                        <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdSendFee !== undefined">
                             <span>资源置换：</span>
                             <em>¥{{detail.pdSendFee}}</em>
                         </li>
@@ -105,7 +110,7 @@ export default {
                             <span>客户要求：</span>
                             <em>{{detail.customerDemand||'无'}}</em>
                         </li>
-                        <li v-if="role != 'ADN_EP'">
+                        <li v-if="role != 'ADN_EP' && detail.pdOtherFee !== undefined">
                             <span>其他费用：</span>
                             <em>¥{{detail.pdOtherFee}}</em>
                         </li>
@@ -121,27 +126,26 @@ export default {
                     </dl>
                     <dl v-if="role != 'ADN_EP'">
                         <dt>
-                            <el-tooltip placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
+                            <el-tooltip v-if="detail.remark !== undefined" placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">
-                                    <!-- <div v-if="detail.planMode!=1" class="tooltip-box">
-                                        <p class="tooltip-box__p">
-                                            <b>广告门</b>
-                                            <span>现金结算: <span>¥ {{detail.AdDoor.pdTotal}}</span></span>
-                                            <span>资源置换: <span>¥ {{detail.AdDoor.pdSendFee}}</span></span>
-                                            <span>其他费用: <span>¥ {{detail.AdDoor.pdOtherFee}}</span></span>
-                                        </p>
-                                        <p class="tooltip-box__p">
-                                            <b>道闸</b>
-                                            <span>现金结算: <span>¥ {{detail.barrier.pdTotal}}</span></span>
-                                            <span>资源置换: <span>¥ {{detail.barrier.pdSendFee}}</span></span>
-                                            <span>其他费用: <span>¥ {{detail.barrier.pdOtherFee}}</span></span>
-                                        </p>
-                                    </div> -->
                                     <div class="tooltip-box">
                                         <p class="tooltip-box__p">
-                                            <b>金额备注</b>
+                                            <b>金额备注:</b>
                                             <span>{{detail.remark||'--'}}</span>
                                         </p>
+                                    </div>
+                                </div>
+                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            </el-tooltip>
+                            <el-tooltip v-else placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
+                                <div slot="content">
+                                    <div class="tooltip-box">
+                                        <div class="tooltip-box__p">
+                                            <b>金额：</b>
+                                            <div v-for="item in companyList" :key="item.asrID" style="white-space: nowrap">
+                                                {{item.asName}}: ¥ {{item.cashFee}}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <i class="fa fa-info-circle" aria-hidden="true"></i>
@@ -190,17 +194,17 @@ export default {
     color: #666666;
 }
 .tooltip-box {
-    display: flex;
+    // display: flex;
     .tooltip-box__p {
-        max-width: 150px;
+        max-width: 200px;
         b {
             font-size: 14px;
         }
-        span {
+        div {
             font-size: 12px;
         }
         & > * {
-            display: inline-block;
+            // display: inline-block;
             line-height: 22px;
             min-width: 75px;
         }

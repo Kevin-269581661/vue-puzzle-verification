@@ -70,7 +70,9 @@
               v-model="selectedExistedRes"
               placeholder="请选择现有小区"
               filterable
+              remote
               :clearable="true"
+              :remote-method="getOwnRes"
             >
               <el-option
                 v-for="item in existedRes"
@@ -195,12 +197,12 @@ export default {
   mounted() {},
   methods: {
     // 分页获取当前登录用户的所属公司旗下管理的小区
-    getOwnRes() {
+    getOwnRes(query) {
       api
         .getApi("/addsp/api/v1/resInfo/pageOwn", {
           pageNum: 1,
           pageSize: 100,
-          resName: "",
+          resName: query || "",
         })
         .then((res) => {
           if (
@@ -313,6 +315,7 @@ export default {
           if (res.data.SysCode == 200200 && res.data.data) {
             this.batchRegisterMedias = res.data.data || [];
             if (this.batchRegisterMedias.length === 0) {
+              this.$emit("refreshWorkplace");
               this.handleClose();
               return;
             }

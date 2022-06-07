@@ -10,69 +10,92 @@
           placeholder="输入关键字搜索"
           @change="getRegistrationList"
         >
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-          ></el-button>
+          <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
-      <table v-if="tableData.length" style="width: 100%">
-        <tbody>
-          <tr
-            v-for="(trItem, trIndex) in tableData"
-            :key="trIndex"
-            class="table-tr"
+      <el-skeleton :loading="loading" animated>
+        <template slot="template">
+          <div style="padding: 14px">
+            <div
+              v-for="i in 6"
+              :key="i"
+              style="
+                display: flex;
+                align-items: center;
+                justify-items: space-between;
+                margin-top: 8px;
+                height: 32px;
+              "
+            >
+              <el-skeleton-item variant="rect" style="margin-right: 16px" />
+              <el-skeleton-item variant="rect" style="margin-right: 16px" />
+              <el-skeleton-item variant="rect" style="margin-right: 16px" />
+              <el-skeleton-item variant="rect" style="margin-right: 16px" />
+              <el-skeleton-item variant="rect" style="margin-right: 16px" />
+              <el-skeleton-item variant="rect" style="width: 30%" />
+            </div>
+          </div>
+        </template>
+        <template>
+          <table v-if="tableData.length" style="width: 100%">
+            <tbody>
+              <tr
+                v-for="(trItem, trIndex) in tableData"
+                :key="trIndex"
+                class="table-tr"
+              >
+                <td class="table-td" style="width: 60px">
+                  <div class="font-base font-bold" style="font-size: 16px">
+                    {{ trItem.projectName || "--" }}
+                  </div>
+                  <div class="font-base">
+                    {{ `${trItem.mediaTitle || "--"}·${trItem.assetTag}` }}
+                  </div>
+                </td>
+                <td class="table-td" style="width: 60px">
+                  <div class="font-base">媒体类型</div>
+                  <div class="font-base font-bold">
+                    {{ `${trItem.mediaTypeName || "--"}` }}
+                  </div>
+                </td>
+                <td class="table-td" style="width: 60px">
+                  <div class="font-base">登记类型</div>
+                  <div class="font-base font-bold">
+                    {{ trItem.registerTypeName || "--" }}
+                  </div>
+                </td>
+                <td class="table-td" style="width: 60px">
+                  <div class="font-base">合同编号</div>
+                  <div class="font-base font-bold">
+                    {{ trItem.contractCode || "--" }}
+                  </div>
+                </td>
+                <td class="table-td">
+                  <div class="font-base">更新时间</div>
+                  <div class="font-base font-bold">
+                    {{ trItem.updateTime || "--" }}
+                  </div>
+                </td>
+                <td class="operate-text" @click="dealRegister(trItem)">处理</td>
+              </tr>
+            </tbody>
+          </table>
+          <el-empty v-else :image-size="200"></el-empty>
+          <el-pagination
+            background
+            @size-change="sizeChange"
+            @current-change="changePage"
+            :hide-on-single-page="true"
+            :current-page.sync="currentPage"
+            :page-sizes="pageSizes"
+            :page-size.sync="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="paginationTotal"
+            style="margin-top: 14px; text-align: right"
           >
-            <td class="table-td" style="width: 60px">
-              <div class="font-base font-bold" style="font-size: 16px">
-                {{ trItem.projectName || "--" }}
-              </div>
-              <div class="font-base">
-                {{ `${trItem.mediaTitle || "--"}·${trItem.assetTag}` }}
-              </div>
-            </td>
-            <td class="table-td" style="width: 60px">
-              <div class="font-base">媒体类型</div>
-              <div class="font-base font-bold">
-                {{ `${trItem.mediaTypeName || "--"}` }}
-              </div>
-            </td>
-            <td class="table-td" style="width: 60px">
-              <div class="font-base">登记类型</div>
-              <div class="font-base font-bold">
-                {{ trItem.registerTypeName || "--" }}
-              </div>
-            </td>
-            <td class="table-td" style="width: 60px">
-              <div class="font-base">合同编号</div>
-              <div class="font-base font-bold">
-                {{ trItem.contractCode || "--" }}
-              </div>
-            </td>
-            <td class="table-td">
-              <div class="font-base">更新时间</div>
-              <div class="font-base font-bold">
-                {{ trItem.updateTime || "--" }}
-              </div>
-            </td>
-            <td class="operate-text" @click="dealRegister(trItem)">处理</td>
-          </tr>
-        </tbody>
-      </table>
-      <el-empty v-else :image-size="200"></el-empty>
-      <el-pagination
-        background
-        @size-change="sizeChange"
-        @current-change="changePage"
-        :hide-on-single-page="true"
-        :current-page.sync="currentPage"
-        :page-sizes="pageSizes"
-        :page-size.sync="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="paginationTotal"
-        style="margin-top: 14px; text-align: right"
-      >
-      </el-pagination>
+          </el-pagination>
+        </template>
+      </el-skeleton>
     </el-card>
     <Registration-Media
       :dialogVisible.sync="registrationMediaVisible"
@@ -92,6 +115,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       registrationMediaVisible: false,
       currentRegistration: {},
       tableData: [],
@@ -111,6 +135,7 @@ export default {
     },
     // 获取待登记列表
     getRegistrationList() {
+      this.loading = true;
       api
         .getApi("/addsp/api/v1/register/page", {
           keyword: this.searchKeyword || "",
@@ -131,6 +156,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     sizeChange(val) {

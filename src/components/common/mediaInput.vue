@@ -825,7 +825,7 @@
                   </el-form>
                 </div>
               </div>
-              <div v-if="isPay && (!pathHaveEdit || mediaTypeIdsOfCompany.includes(mediaTypeItem.id))" class="add_media_btn" @click="mediaAddFun(mediaTypeItem)">+ 新增媒体</div>
+              <div v-if="!isPay && (!pathHaveEdit || mediaTypeIdsOfCompany.includes(mediaTypeItem.id))" class="add_media_btn" @click="mediaAddFun(mediaTypeItem)">+ 新增媒体</div>
             </div>
           </el-tab-pane>
         </el-tabs>

@@ -77,7 +77,7 @@
               >搜索</el-button
             >
             <el-button plain @click="clearSearch">重置</el-button>
-            <el-button plain @click="newMedia" v-if="showNewBtn && isPay === 1"
+            <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
               >新建</el-button
             >
             <el-button plain @click="importMedia" v-if="showImportBtn"

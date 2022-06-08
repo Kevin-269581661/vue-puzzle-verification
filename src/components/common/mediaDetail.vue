@@ -24,7 +24,7 @@
             <el-button plain size="mini" @click="divideMedia()" v-if="haveEdit"
               >小区拆分</el-button
             >
-            <el-button plain size="mini" @click="edit('add')" v-if="haveEdit && isPay"
+            <el-button plain size="mini" @click="edit('add')" v-if="haveEdit && !isPay"
               >添加媒体</el-button
             >
             <el-button

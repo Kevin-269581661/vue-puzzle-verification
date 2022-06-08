@@ -51,9 +51,7 @@
               validator: validateSpecialString,
               trigger: ['blur', 'change'],
             },
-            resIndex > 0
-              ? { validator: isHaveCommenName, trigger: 'blur' }
-              : {},
+            { validator: (rule, value, callback) => isHaveCommenName(rule, value, callback, resIndex), trigger: 'blur' },
             { max: 40, message: '最多只能输入40个字节', trigger: 'change' },
           ]"
         >
@@ -61,7 +59,6 @@
             placeholder="请输入小区名称"
             v-model="resItem.resName"
             size="small"
-            :disabled="resIndex === 0"
           >
           </el-input>
         </el-form-item>
@@ -208,7 +205,11 @@ export default {
       }
     },
     // 按所属公司的城市区域检查是否有重复的资源名称
-    async isHaveCommenName(rule, value, callback) {
+    async isHaveCommenName(rule, value, callback, resIndex) {
+      if(this.resName === value && resIndex === 0) {
+        callback();
+        return;
+      }
       const sameResNameCount = this.divideMediaForm.divideResArr.reduce(
         (count, item) => {
           if (value === item.resName) {
@@ -222,7 +223,7 @@ export default {
         callback(new Error("小区名称不能重复哦～"));
         return;
       }
-      let params = {
+      /* let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         service: "GetResInfoByName",
@@ -243,7 +244,7 @@ export default {
         } else {
           this.$message.warning(res.data.MSG || "小区查询失败！");
         }
-      });
+      }); */
     },
     // 提交小区拆分信息
     postDivideData() {

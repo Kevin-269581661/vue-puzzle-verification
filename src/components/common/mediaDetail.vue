@@ -503,6 +503,7 @@
       </div>
     </el-dialog>
     <DivideMediaDialog
+      v-if="divideMediaDialogVisible"
       :dialogVisible.sync="divideMediaDialogVisible"
       :mediasOfRes="mediasOfRes"
       :resID="resData.resID"

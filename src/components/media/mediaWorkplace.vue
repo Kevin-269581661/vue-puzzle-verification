@@ -7,7 +7,7 @@
           style="float: right; width: 240px; padding: 3px 0"
           v-model="searchKeyword"
           size="mini"
-          placeholder="输入关键字搜索"
+          placeholder="项目名称/资产编号/合同编号"
           @change="getRegistrationList"
         >
           <el-button slot="append" icon="el-icon-search"></el-button>

@@ -56,7 +56,7 @@
             <el-radio v-model="addResFlag" :label="true">新建小区</el-radio>
           </li>
           <li class="info-item">
-            <span class="item-label">归属小区：</span>
+            <span class="item-label" style="line-height: 32px">归属小区：</span>
             <el-input
               v-if="addResFlag"
               size="small"
@@ -78,7 +78,7 @@
                 v-for="item in existedRes"
                 :key="item.resID"
                 :label="item.resName"
-                :value="item"
+                :value="JSON.stringify(item)"
               >
               </el-option>
             </el-select>
@@ -87,7 +87,7 @@
       </div>
       <span slot="footer">
         <el-button @click="handleClose">取 消</el-button>
-        <el-button :disabled="loading" type="primary" @click="singleRegister"
+        <el-button :loading="loading" type="primary" @click="singleRegister"
           >确 定</el-button
         >
       </span>
@@ -269,7 +269,7 @@ export default {
         }
         if (this.addResFlag === false) {
           if (this.selectedExistedRes) {
-            params.resID = this.selectedExistedRes.resID;
+            params.resID = JSON.parse(this.selectedExistedRes).resID;
           } else {
             sessFun.messageFun("warning", "请选择现有小区！");
             return;
@@ -285,7 +285,7 @@ export default {
                 res.data.data,
                 this.addResFlag
                   ? params.newResName
-                  : this.selectedExistedRes.resName
+                  : JSON.parse(this.selectedExistedRes).resName
               );
             } else {
               sessFun.messageFun("warning", res.data.MSG || "媒体登记失败！");

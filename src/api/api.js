@@ -29,6 +29,7 @@ export const api = {
         }).then(res => res);
     },
     postApi_new(u, postParams) {
+        // 'Content-Type'默认： application/x-www-form-urlencoded
         return axios({
             method: 'post',
             url: u,

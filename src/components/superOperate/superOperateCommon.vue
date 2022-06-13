@@ -193,8 +193,7 @@
             }
         },
         computed:{
-            isActive(val) {
-                console.log(val, 'isActive', this.$route.path)
+            isActive() {
                 let path = this.$route.path
                 let routePath = ''
                 if (path.includes('/mediaDetail')) {

@@ -825,7 +825,7 @@
                   </el-form>
                 </div>
               </div>
-              <div v-if="!pathHaveEdit || mediaTypeIdsOfCompany.includes(mediaTypeItem.id)" class="add_media_btn" @click="mediaAddFun(mediaTypeItem)">+ 新增媒体</div>
+              <div v-if="!isPay && (!pathHaveEdit || mediaTypeIdsOfCompany.includes(mediaTypeItem.id))" class="add_media_btn" @click="mediaAddFun(mediaTypeItem)">+ 新增媒体</div>
             </div>
           </el-tab-pane>
         </el-tabs>
@@ -1037,6 +1037,7 @@ export default {
       }
     };
     return {
+      isPay: 0,
       isUpload: true,
       assetIdBolean: false,
       dialogImageUrl: "", //缩略图
@@ -1384,8 +1385,21 @@ export default {
     this.resUpdata = [];
     this.ShowRegion();
     this.getADLimit(); // 获取广告限制列表
+    this.requestIsPay();
   },
   methods: {
+    // TODO: vuex持有isPay
+    requestIsPay() {
+      api
+        .getApi("/addsp/api/v1/company/isPay", {
+          asrID: this.sessionData.asrID,
+        })
+        .then((res) => {
+          if (res.data.SysCode === 200200 && res.data.data === true) {
+            this.isPay = 1;
+          }
+        });
+    },
     validateSpace(rule, value, callback) {
       this.isResError = false;
       if (value) {

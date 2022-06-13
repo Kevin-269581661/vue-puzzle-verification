@@ -77,7 +77,7 @@
               >搜索</el-button
             >
             <el-button plain @click="clearSearch">重置</el-button>
-            <el-button plain @click="newMedia" v-if="showNewBtn"
+            <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
               >新建</el-button
             >
             <el-button plain @click="importMedia" v-if="showImportBtn"
@@ -687,12 +687,17 @@ export default {
       // 不可售卖原因
       unSaleableReason: [],
       // 媒体名称
-      mTitle: ''
+      mTitle: '',
+      // 是否开通数字化权限
+      isPay: 0
     }
   },
-  mounted: function () {
+  created() {
     // 判断角色确定是否有操作这一列
     this.sessionData = sessFun.getSess();
+    this.requestIsPay();
+  },
+  mounted: function () {
     ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) ? this.showNewBtn = true : this.showNewBtn = false
     this.sessionData.uType === 'ADN_SA' ? this.showImportBtn = true : this.showImportBtn = false
     this.getData();
@@ -702,7 +707,16 @@ export default {
   },
   
   methods: {
-    // 媒体状态转换
+    requestIsPay() {
+      api.getApi('/addsp/api/v1/company/isPay', {
+          asrID: this.sessionData.asrID
+      }).then(res => {
+          if (res.data.SysCode === 200200 && res.data.data === true) {
+            this.isPay = 1;
+          }
+      })
+  },
+// 媒体状态转换
     stateToText (state) {
       let mediaArr = [
         {
@@ -861,7 +875,6 @@ export default {
         }
       }
       api.postApi_new(this.apiVar.Media, params).then(res => {
-        console.log('资源媒体列表：', res)
         this.pageData.totalSize = res.data.data.total
         let RMList = res.data.data.list;
         if (res.data.SysCode == 200200) {

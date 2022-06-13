@@ -10,6 +10,9 @@
   }
   .el-dialog__footer {
     padding: 11px 20px;
+    .el-button + .el-button {
+      margin-left: 10px;
+    }
   }
   .el-pagination__sizes .el-input--mini .el-input__inner{
     height: 28px;

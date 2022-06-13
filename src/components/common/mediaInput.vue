@@ -1037,7 +1037,7 @@ export default {
       }
     };
     return {
-      isPay: 0,
+      isPay: 1,
       isUpload: true,
       assetIdBolean: false,
       dialogImageUrl: "", //缩略图
@@ -1395,8 +1395,8 @@ export default {
           asrID: this.sessionData.asrID,
         })
         .then((res) => {
-          if (res.data.SysCode === 200200 && res.data.data === true) {
-            this.isPay = 1;
+          if (res.data.SysCode === 200200 && res.data.data === false) {
+            this.isPay = 0;
           }
         });
     },

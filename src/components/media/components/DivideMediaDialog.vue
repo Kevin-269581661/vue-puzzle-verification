@@ -2,6 +2,7 @@
   <el-dialog
     width="368px"
     custom-class="divide-media-dialog"
+    @submit.native.prevent
     :visible.sync="dialogVisible"
     :show-close="false"
     :close-on-click-modal="false"

@@ -773,7 +773,6 @@
             this.getResArr();
             //得到换画排期筛选列表
             this.getAdChangeLaunchDateList()
-            console.log('scheduleList', this.scheduleList)
             this.getAdsUploadImgCnt();
         },
         watch: {
@@ -2093,13 +2092,12 @@
                     funs.push(this.uploadFun(formData));
                 }
                 Promise.all(funs).then((values) => {
-                    console.log(values);
                     this.constractArr = [];
                     this.uploadImgArr = [];
                     let type = this.type;
                     if (type == 1 || type == 2) {
                         // 上下刊报告列表
-                        this.searchFun();
+                        // this.searchFun();
                         this.getAdsUploadImgCnt();
                     } else if (type == 3) {
                         // 换画报告列表
@@ -2300,7 +2298,7 @@
                             let type = this.type;
                             if (type == 1 || type == 2) {
                                 // 上下刊报告列表
-                                this.searchFun();
+                                // this.searchFun();
                                 this.getAdsUploadImgCnt();
                             } else if (type == 3) {
                                 // 换画报告列表

@@ -205,7 +205,7 @@
         </el-col>
       </el-row>
 
-      <el-row :gutter="24" class="index-row">
+      <!-- <el-row :gutter="24" class="index-row">
         <el-col :span="12">
           <index-custom-card :height="'unset'">
             <template slot="head">
@@ -298,7 +298,7 @@
             </template>
           </index-custom-card>
         </el-col>
-      </el-row>
+      </el-row> -->
 
       <el-tabs
         class="index-tab-group"
@@ -462,7 +462,7 @@
       </p>
     </div>
     <!-- 安装信息 -->
-    <el-dialog
+    <!-- <el-dialog
       title="请完成安装信息"
       :visible.sync="installVisible"
       width="388px"
@@ -510,9 +510,9 @@
           >确 定</el-button
         >
       </template>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 安装信息 -->
-    <el-dialog
+    <!-- <el-dialog
       title="请完成拆除信息"
       :visible.sync="uninstallVisible"
       width="388px"
@@ -552,7 +552,7 @@
           >确 定</el-button
         >
       </template>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -758,28 +758,28 @@ export default {
       ],
       // 媒介预锁概况表格
       preLockArr: [],
-      pendingMediaLoading: false,
+      // pendingMediaLoading: false,
       // 待拆除和待安装媒体
-      pendingMedia: {
+      /* pendingMedia: {
         currentPageNum: 0,
         currentPageTotal: 1,
         installList: [],
         demolishList: [],
-      },
+      }, */
       // 安装或拆除媒体切换
-      installOrDemolish: "installList",
-      installVisible: false,
-      uninstallVisible: false,
-      currentInstallInfo: {
+      // installOrDemolish: "installList",
+      // installVisible: false,
+      // uninstallVisible: false,
+      /* currentInstallInfo: {
         assetTag: "",
         operater: "",
         operateDate: "",
-      },
+      }, */
 
       role: "",
     };
   },
-  directives: {
+  /* directives: {
     loadmore: {
       bind: function (el, binding) {
         const selectWrap = el.querySelector(".el-table__body-wrapper");
@@ -793,7 +793,7 @@ export default {
         });
       },
     },
-  },
+  }, */
   beforeCreate() {
     var glSript = document.createElement("script");
     glSript.type = "text/javascript";
@@ -1246,7 +1246,7 @@ export default {
         .finally((_) => {});
     },
     // 获取新安装或已拆除媒体
-    getPendingMedia(reload) {
+    /* getPendingMedia(reload) {
       if(reload) {
         this.pendingMedia.currentPageNum = 0;
         this.pendingMedia.currentPageTotal = 1;
@@ -1286,13 +1286,13 @@ export default {
         .catch((err) => {
           console.log("err", err);
         });
-    },
+    }, */
     // 跳转到媒体列表页面
     navigateMediaList() {
       this.$router.push("./media/mediaList");
     },
     // 确认安装或拆除
-    confirmMediaStatus(install) {
+    /* confirmMediaStatus(install) {
       let _this = this,
         params = null;
 
@@ -1361,9 +1361,9 @@ export default {
           this.$message.warning(res.data.MSG || "状态更改失败");
         }
       });
-    },
+    }, */
     // 媒体状态同步至合同状态
-    syncDcState(state, currentInstallInfo) {
+    /* syncDcState(state, currentInstallInfo) {
       api
         .postApi_json("/addsp/devContract/synDcState", {
           dcID: this.currentInstallInfo.dcID,
@@ -1384,7 +1384,7 @@ export default {
             this.$message.warning(res.data.MSG || "状态更改失败");
           }
         });
-    },
+    }, */
 
     // 重新预锁
     resetPreLock(row) {
@@ -1442,7 +1442,7 @@ export default {
     this.appCenter = appCenter;
     this.uploadEvent(1);
     this.allReportApi();
-    this.getPendingMedia();
+    // this.getPendingMedia();
   },
 };
 </script>
@@ -1472,71 +1472,6 @@ export default {
 /deep/ .custom-card-content .el-table__body-wrapper,
 .el-table__empty-block {
   min-height: 160px !important;
-}
-/deep/ .custom-confirm-dialog {
-  border-radius: 4px;
-  .el-dialog__header {
-    padding: 16px 24px 24px !important;
-    border: none !important;
-    .el-dialog__title {
-      font-size: 16px;
-      color: rgba($color: #000, $alpha: 0.85);
-    }
-    .el-icon-question {
-      margin-right: 16px;
-      color: #fa8c16;
-      &:before {
-        font-size: 21px;
-      }
-    }
-  }
-  .el-dialog__body {
-    border: none !important;
-    .content-form {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.45);
-      line-height: 24px;
-      .el-form-item {
-        &:last-child {
-          margin-bottom: 0;
-        }
-        .el-form-item__label {
-          padding: 0;
-          line-height: 32px;
-        }
-        .el-form-item__content {
-          line-height: 32px;
-        }
-        .el-date-editor {
-          width: 100%;
-        }
-      }
-    }
-    /* 重新提交和删除合同 */
-    .message-content {
-      padding-left: 40px;
-      line-height: 22px;
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.65);
-      & .active {
-        color: #1890ff;
-        font-weight: 600;
-      }
-    }
-
-    .el-select {
-      width: 100%;
-    }
-  }
-  .el-dialog__footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 24px;
-    .el-button + .el-button {
-      margin-left: 16px;
-    }
-  }
 }
 /** 新增*/
 .td-btn {

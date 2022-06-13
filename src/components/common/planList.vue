@@ -1737,7 +1737,7 @@ export default {
               resolve(false);
             }
           });
-      }).catch(() => resolve(false));
+      });
     },
     // KA方案拆分
     splitAdPlan(row) {

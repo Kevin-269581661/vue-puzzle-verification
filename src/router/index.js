@@ -87,6 +87,7 @@ const operateCommon = () => import(/* webpackChunkName: "operateCommon" */ '../c
 //媒介
 const mediaIndex = () => import(/* webpackChunkName: "mediaIndex" */  '../components/media/media_index.vue')
 const mediaCommon = () => import(/* webpackChunkName: "mediaCommon" */  '../components/media/mediaCommon.vue')
+const mediaWorkplace = () => import(/* webpackChunkName: "mediaWorkplace" */  '../components/media/mediaWorkplace.vue')
 const projectList = () => import(/* webpackChunkName: "projectList" */  '../components/common/projectList.vue')
 const projectDetail = () => import(/* webpackChunkName: "projectDetail" */  '../components/common/projectDetail.vue')
 const paintedCount = () => import(/* webpackChunkName: "paintedCount" */  '../components/common/paintedCount.vue')
@@ -117,21 +118,10 @@ const ADorderDetail = () => import(/* webpackChunkName: "ADorderDetail" */ '../c
 const visitFrequency = () => import(/* webpackChunkName: "visitFrequency" */ '../components/adOwner/visitFrequency.vue')
 const hotSource = () => import(/* webpackChunkName: "hotSource" */ '../components/adOwner/hotSource.vue')
 
-
 //工程
 const engineerCommon = () => import(/* webpackChunkName: "engineerCommon" */ '../components/engineer/engineerCommon.vue')
 
-// 楼盘开发
-const developCommon = () => import(/* webpackChunkName: "developCommon" */ '../components/develop/developCommon.vue')
-const developIndex = () => import(/* webpackChunkName: "developIndex" */ '../components/develop/developIndex.vue')
-const contractCfg = () => import(/* webpackChunkName: "contractCfg" */ '../components/develop/contractCfg.vue')
-const newContract = () => import(/* webpackChunkName: "newContract" */ '../components/develop/newContract.vue')
-const editContract = () => import(/* webpackChunkName: "editContract" */ '../components/develop/editContract.vue')
-const nextContract = () => import(/* webpackChunkName: "nextContract" */ '../components/develop/nextContract.vue')
-const contractDetail = () => import(/* webpackChunkName: "contractDetail" */ '../components/develop/contractDetail.vue')
-const contractList = () => import(/* webpackChunkName: "contractList" */ '../components/develop/contractList.vue')
-
-// 亲邻科技上刊报告
+//亲邻科技上刊报告
 const Report = () => import(/* webpackChunkName: "Report" */ '../components/h5/Report.vue')
 // 全国单上下刊报告
 const ReportCountry = () => import(/* webpackChunkName: "Report" */ '../components/h5/ReportCountry.vue')
@@ -253,9 +243,9 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
-        case 'ADN_MD_COUNTRY':
+        case 'ADN_MD_COUNTRY': {
             //媒介
-            let tempMDp = null
+            let tempMD = null
             if(proposal) {
                 // 直营媒介
                 tempMD = [
@@ -278,6 +268,7 @@ function addRoutes(role, proposal, retain) {
                     children: [
                         ...tempMD,
                         {path: '/media', component: mediaIndex},
+                        {path: '/media/workplace', component: mediaWorkplace},
                         {path: '/media/mediaList', component: mediaList},
                         {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
                         {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
@@ -313,7 +304,8 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
-        case 'ADN_MD':
+        }
+        case 'ADN_MD': {
             //媒介
             let tempMD = null
             if(proposal) {
@@ -338,6 +330,7 @@ function addRoutes(role, proposal, retain) {
                     children: [
                         ...tempMD,
                         {path: '/media', component: mediaIndex},
+                        {path: '/media/workplace', component: mediaWorkplace},
                         {path: '/media/mediaList', component: mediaList},
                         {path: '/media/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
                         {path: '/media/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
@@ -371,6 +364,7 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
+        }
         case 'ADN_BD_KA':
         case 'ADN_BD':
             let tempBD = null
@@ -472,34 +466,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/f_engineer/messageList', component: messageList},
                         {path: '/f_engineer/questionAndAnswer', component: questionAndAnswer},
                         {path: '/f_engineer/maintainList', component: maintainList},
-                    ]
-                }]
-            break;
-        case 'ADN_DEV':
-        case 'ADN_DEV_ASSET':
-        case 'ADN_DEV_LEADER':
-            roleRoutes = [
-                //楼盘开发
-                {
-                    path: '/',
-                    component: developCommon,
-                    children: [
-                        {path: '/f_develop', name:'developIndex', component: developIndex },
-                        {path: '/f_develop/mediaList', component: mediaList},
-                        {path: '/f_develop/mediaInput', component: mediaInput, meta:{title: '创建媒体'}},
-                        {path: '/f_develop/mediaEdit', component: mediaInput, meta:{title: '编辑媒体'}},
-                        {path: '/f_develop/mediaDetail', component: mediaDetail},
-                        {path: '/f_develop/myInfo', component: myInfo},
-                        {path: '/f_develop/messageList', component: messageList},
-                        {path: '/f_develop/questionAndAnswer', component: questionAndAnswer},
-                        {path: '/f_develop/maintainList', component: maintainList},
-                        {path: '/f_develop/messageList', component: messageList},
-                        {path: '/f_develop/contractCfg', component: contractCfg},
-                        {path: '/f_develop/newContract', component: newContract},
-                        {path: '/f_develop/editContract', component: editContract},
-                        {path: '/f_develop/nextContract', component: nextContract},
-                        {path: '/f_develop/contractDetail', component: contractDetail},
-                        {path: '/f_develop/contractList', component: contractList}
                     ]
                 }]
             break;

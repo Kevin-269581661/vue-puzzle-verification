@@ -787,6 +787,7 @@ export default {
     // 获取模板种类
     getTemplateOptions() {
       // 目前当前公司自定义模板只有一个，前端设计也是如此
+      let _this = this;
       api
         .getApi("/national/api/v1/powerPoint/getCustomizeReports")
         .then((res) => {

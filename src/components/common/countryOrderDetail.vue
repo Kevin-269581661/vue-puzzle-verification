@@ -459,25 +459,6 @@
           </el-tabs>
         </el-tab-pane>
       </el-tabs>
-      <!--添加点位对话框-->
-      <!-- <el-dialog
-        title="添加点位"
-        :visible.sync="dialogAddPoint"
-        width="82%"
-        top="6vh"
-        :close-on-press-escape="false"
-        :show-close="true"
-      >
-        <Add-Ads-Country
-          :IsAddAds="IsAddPoint"
-          :MediaTypeData="mediaTypeList"
-          @ievent="ievent"
-        ></Add-Ads-Country>
-        <span slot="footer" class="dialog-footer">
-          <el-button plain @click="cancelAddPoint">取 消</el-button>
-          <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
-        </span>
-      </el-dialog> -->
       <!--excel导入点位对话框-->
       <ImportPointByExcelCountry
         :dialogImportPoint.sync="dialogImportPoint"
@@ -970,7 +951,7 @@
       <ChangeCountryOrderPrice
         v-if="changePriceModal"
         :apID="orderDetail.apID"
-        :requesInfo="{ mark: this.handleTime, opType: 1 }"
+        :requesInfo="{ mark: handleTime, opType: 1 }"
         :settlementFormVisible="true"
         :tabsActiveCompany="currentCompanyId"
         @cancel="changePriceModal = false"
@@ -1001,7 +982,6 @@ import sessFun from "../../commonFun/sessFun.js";
 import apQuotation from "./components/apQuotation.vue";
 import material from "./components/materialInfo.vue";
 import detailInfo from "./components/detailInfo.vue";
-import AddAdsCountry from "./components/addAdsCountry";
 import ImportPointByExcelCountry from "./components/importPointByExcelCountry";
 import ChangePointPlayDateRangeCountry from "./components/changePointPlayDateRangeCountry";
 import noSearchResult from "./components/noSearchResult.vue";
@@ -1015,7 +995,6 @@ export default {
     apQuotation,
     material,
     detailInfo,
-    AddAdsCountry,
     ImportPointByExcelCountry,
     ChangePointPlayDateRangeCountry,
     ChangePicCountry,

@@ -2709,7 +2709,7 @@ export default {
               return { text: item, value: item };
             });
           } else {
-            Message.warning(res.data.MSG);
+            sessFun.messageFun("warning", res.data.MSG || '');
           }
         })
         .catch((res) => {});

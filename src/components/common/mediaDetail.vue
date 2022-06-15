@@ -503,6 +503,7 @@
       </div>
     </el-dialog>
     <DivideMediaDialog
+      v-if="divideMediaDialogVisible"
       :dialogVisible.sync="divideMediaDialogVisible"
       :mediasOfRes="mediasOfRes"
       :resID="resData.resID"
@@ -525,7 +526,7 @@ export default {
   },
   data() {
     return {
-      isPay: 0,
+      isPay: 1,
       haveEdit: false,
       mediaLoading: true,
       resID: "",
@@ -628,8 +629,8 @@ export default {
           asrID: this.sessionData.asrID,
         })
         .then((res) => {
-          if (res.data.SysCode === 200200 && res.data.data === true) {
-            this.isPay = 1;
+          if (res.data.SysCode === 200200 && res.data.data === false) {
+            this.isPay = 0;
           }
         });
     },

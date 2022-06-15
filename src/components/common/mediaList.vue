@@ -689,7 +689,7 @@ export default {
       // 媒体名称
       mTitle: '',
       // 是否开通数字化权限
-      isPay: 0
+      isPay: 1
     }
   },
   created() {
@@ -711,8 +711,8 @@ export default {
       api.getApi('/addsp/api/v1/company/isPay', {
           asrID: this.sessionData.asrID
       }).then(res => {
-          if (res.data.SysCode === 200200 && res.data.data === true) {
-            this.isPay = 1;
+          if (res.data.SysCode === 200200 && res.data.data === false) {
+            this.isPay = 0;
           }
       })
   },

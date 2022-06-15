@@ -2,6 +2,7 @@
   <el-dialog
     width="368px"
     custom-class="divide-media-dialog"
+    @submit.native.prevent
     :visible.sync="dialogVisible"
     :show-close="false"
     :close-on-click-modal="false"
@@ -82,7 +83,7 @@
             :multiple-limit="
               mediasOfRes.length - divideMediaForm.divideResCount + 1
             "
-            @change="mediasOfResChange"
+            @visible-change="(visible) => mediasOfResChange(resItem.value, visible)"
           >
             <el-option
               v-for="item in mediasOfRes"
@@ -284,7 +285,7 @@ export default {
         this.currentStep = 1;
         this.divideMediaForm.divideResCount = 0;
         this.divideMediaForm.divideResArr.length = 0;
-        this.mediasOfResChange();
+        // this.mediasOfResChange();
         this.$emit("update:dialogVisible", false);
       }
     },
@@ -311,15 +312,20 @@ export default {
       }
     },
     // 禁用已选媒体选项
-    mediasOfResChange() {
+    mediasOfResChange(values = [], visible) {
+      // 打开下拉时触发
       let allSelectedMedias = this.divideMediaForm.divideResArr.reduce(
         (group, item) => {
+          if(visible && values == item.value) {
+            // 打开下拉时不禁用当前所选
+            return group;
+          }
           return group.concat(item.value);
         },
         []
       );
       this.mediasOfRes.forEach((item) => {
-        item.selected = allSelectedMedias.includes(item.mID);
+        this.$set(item, 'selected', allSelectedMedias.includes(item.mID));
       });
     },
   },

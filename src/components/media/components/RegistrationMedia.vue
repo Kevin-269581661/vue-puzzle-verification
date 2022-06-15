@@ -20,6 +20,7 @@
             >
               {{ registrationData.contractName || "--" }}
             </span>
+            <span class="copy-btn" @click="copyText">复制</span>
           </li>
           <li class="info-item">
             <span class="item-label">媒体类型：</span>
@@ -196,6 +197,15 @@ export default {
   },
   mounted() {},
   methods: {
+    copyText() {
+      let oInput = document.createElement("input");
+      oInput.value = this.registrationData.contractName || "--";
+      document.body.appendChild(oInput);
+      oInput.select(); // 选择对象
+      document.execCommand("Copy"); // 执行浏览器复制命令
+      oInput.style.display = "none";
+      sessFun.messageFun("success", "项目名称已复制");
+    },
     // 分页获取当前登录用户的所属公司旗下管理的小区
     getOwnRes(query) {
       api
@@ -426,6 +436,11 @@ export default {
 @import "../../../assets/component.scss";
 /deep/ .registration-media {
   border-radius: 4px;
+  .copy-btn {
+    margin-left: 16px;
+    color: #1890ff;
+    cursor: pointer;
+  }
   .el-dialog__header {
     padding-bottom: 0;
     border: none !important;
@@ -536,12 +551,5 @@ export default {
       }
     }
   }
-}
-.cell-ellipsis {
-  min-width: 30px;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

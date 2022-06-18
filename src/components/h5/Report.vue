@@ -1052,7 +1052,7 @@ export default {
         replaceRecordIdEncypt: val,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,
-        mType: this.mediaType == '广告门' ? 0 : 1,
+        mediaTypeId: this.mediaType,
       };
       console.log('type---', info);
       return info;
@@ -1120,7 +1120,7 @@ export default {
         pType: this.Info.name,
         pageNum: this.currUpPage,
         pageSize: this.pageUpSize,
-        mVehicle: this.mediaType,
+        mediaTypeId: this.mediaType,
       };
       console.log('type---', info);
       return info;

@@ -832,8 +832,9 @@
                     if (res.data.SysCode == 200200) {
                         let _data=res.data.data;
                         this.mediaTypeList=_data;
-                        this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: null;
-                        
+                        if(this.publishSearchInfo.mediaType === null) {
+                            this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: null;
+                        }
                         // 获取报告列表
                         this.getImgArr();
                     }

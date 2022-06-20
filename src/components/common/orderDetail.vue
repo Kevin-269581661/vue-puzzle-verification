@@ -1916,6 +1916,7 @@ export default {
         info.pageNum = this.pointCurrPage
         info.pageSize = this.pointPageSize
         info.lState = 1
+        info.enableStop = this.handleType === 2
       } else {
         info.resName = this.keyword
       }

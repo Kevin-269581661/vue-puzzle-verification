@@ -515,8 +515,8 @@
                 <el-option
                   v-for="(item, index) in conditionArr"
                   :key="index"
-                  :value="index"
-                  :label="item"
+                  :value="item.value"
+                  :label="item.label"
                 ></el-option>
               </el-select>
             </li>
@@ -681,11 +681,37 @@ export default {
         this.templateType < 1
       ) {
         this.pptxFilter = this.pptxFilter.filter((item) => {
-          return item * 1 === 0;
+          return item === '0' || item === 'splitFlag';
         });
-        return ["剔除被终止点位"];
+        return [
+          {
+            label: '剔除被终止点位',
+            value: '0',
+          },
+          /* {
+            label: '拆分多报告导出',
+            value: 'splitFlag',
+          } */
+        ]
       } else {
-        return ["剔除被终止点位", "推荐理由", "楼盘信息"];
+        return [
+          {
+            label: '剔除被终止点位',
+            value: '0',
+          },
+          /* {
+            label: '拆分多报告导出',
+            value: 'splitFlag',
+          }, */
+          {
+            label: '推荐理由',
+            value: '1',
+          },
+          {
+            label: '楼盘信息',
+            value: '2',
+          },
+        ]
       }
     },
   },
@@ -863,12 +889,13 @@ export default {
         (info.exportType = 1),
           (info.customizeCode =
             this.templateType == 1 ? this.customizeCode : 0);
-        info.exportAllPoint = this.pptxFilter.indexOf(0) != -1 ? 0 : 1;
+        info.exportAllPoint = this.pptxFilter.indexOf('0') !== -1 ? 0 : 1;
+        info.splitFlag = this.pptxFilter.indexOf('splitFlag') !== -1 ? 1 : 0;
         // customizeCode: 2 亲粤邻定制模板
         this.customizeCode == "2" &&
           (info.customCondition = this.pptxFilter.reduce(
             (accumulator, currentValue) => {
-              if (currentValue > 0) {
+              if (currentValue*1 > 0) {
                 return accumulator !== ""
                   ? accumulator + "," + currentValue
                   : currentValue;
@@ -925,11 +952,12 @@ export default {
             } else {
               fileInfo.photoCountPerPage = this.pptxType * 1;
             }
-            fileInfo.exportAllPoint = this.pptxFilter.indexOf(0) != -1 ? 0 : 1;
+            fileInfo.exportAllPoint = this.pptxFilter.indexOf('0') !== -1 ? 0 : 1;
+            fileInfo.splitFlag = this.pptxFilter.indexOf('splitFlag') !== -1 ? 1 : 0;
             this.customizeCode == "2" &&
               (fileInfo.customCondition = this.pptxFilter.reduce(
                 (accumulator, currentValue) => {
-                  if (currentValue > 0) {
+                  if (currentValue*1 > 0) {
                     return accumulator !== ""
                       ? accumulator + "," + currentValue
                       : currentValue;

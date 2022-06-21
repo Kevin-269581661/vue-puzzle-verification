@@ -684,10 +684,10 @@ export default {
             label: '剔除被终止点位',
             value: '0',
           },
-          /* {
+          {
             label: '拆分多报告导出',
             value: 'splitFlag',
-          } */
+          }
         ]
       } else {
         return [
@@ -695,10 +695,10 @@ export default {
             label: '剔除被终止点位',
             value: '0',
           },
-          /* {
+          {
             label: '拆分多报告导出',
             value: 'splitFlag',
-          }, */
+          },
           {
             label: '推荐理由',
             value: '1',

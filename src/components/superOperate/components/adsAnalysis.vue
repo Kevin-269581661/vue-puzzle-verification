@@ -214,6 +214,16 @@
                                         <el-option value="社区名称" label="社区名称"></el-option>
                                     </el-select>
                                 </el-input>
+                                <el-select
+                                    v-model="mediaTypeIds"
+                                    placeholder="请选择媒体类型"
+                                    size="small"
+                                    multiple
+                                    collapse-tags
+                                    clearable
+                                    >
+                                    <el-option v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypes" :key="mediaTypeIndex" :label="mediaTypeItem.name" :value="mediaTypeItem.id"></el-option>
+                                </el-select>
                                 <el-button type="primary" icon="el-icon-search" @click="searchFun('ads')">搜索</el-button>
                                 <el-button plain @click="exportExcel_ads">导出</el-button>
                             </div>
@@ -377,6 +387,7 @@
                 pointDate: [],
                 pointDateDay:[],
                 adsSelectVal: '社区名称',
+                mediaTypeIds: [],
                 adsInputVal: '',
                 cUpMin: '',
                 cUpMax: '',
@@ -419,7 +430,9 @@
                     }
                 },
                 // 直营公司
-                directCompany: ""
+                directCompany: "",
+                // 媒体类型搜索项
+                mediaTypes: [],
             }
         },
         props:{
@@ -477,10 +490,21 @@
             }
         },
         mounted(){
-            this.setTime()
-            this.getDirectAscr()
+            this.setTime();
+            this.getDirectAscr();
+            this.getSystemMediaTypes();
         },
         methods:{
+            //获取系统所有媒体类型列表
+            getSystemMediaTypes(){
+                api.getApi("/addsp/api/v1/mediaTypes").then((res)=>{
+                    if(res.data.SysCode === 200200) {
+                    this.mediaTypes = res.data.data || [];
+                    }
+                }).catch((err)=>{
+                    console.error(err);
+                })
+            },
             // 获取直营公司
             getDirectAscr() {
                 api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', {
@@ -639,6 +663,7 @@
             },
             // 点位社区列表 - 接口
             getAdsRateFun(){
+                console.log('mediaTypeIds',this.mediaTypeIds)
                 let params = {
                     uid: this.sessionData.uID,
                     token: this.sessionData.token,
@@ -650,6 +675,7 @@
                     asrIDs: this.returnAsrID(),
                     maxPercent: isNaN(Number(this.cUpMax)) ? '' : this.cUpMax,//this.cUpMax,
                     minPercent: isNaN(Number(this.cUpMin)) ? '' : this.cUpMin,//this.cUpMin,
+                    mediaTypeIds: this.mediaTypeIds.join(','),
                     pageSize: this.adsPageSize,
                     pageNum: this.adsPageNum,
                 }
@@ -780,12 +806,8 @@
                     }
                 }else if(val === 'ads'){
                     if(this.adsSelectVal === '社区名称'){
-                        if(this.adsInputVal === ''){
-                            sessFun.messageFun('warning','搜索内容为空!')
-                        }else{
-                            this.setPageNoAndTableDataAds()
-                            this.getAdsRateFun()
-                        }
+                        this.setPageNoAndTableDataAds()
+                        this.getAdsRateFun()
                     }
                 }
             },

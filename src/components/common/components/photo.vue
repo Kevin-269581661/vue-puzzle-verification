@@ -263,36 +263,6 @@
                                 </p>
                             </div>
                         </div>
-                  <!--      <div class="imgBox" @mouseenter="mouseenterFun(img,index)" @mouseleave="mouseleaveFun(index)">
-                            <img :src="img.pUrl" alt=""  class="smallImg">
-                            &lt;!&ndash;查看缩略图和下载&ndash;&gt;
-                            <div class="mask-btn" v-if="showPreImg == index">
-                                <p class="mask_icon">
-                                    <span v-if="isShowCollect">
-                                        <i v-if="!img.isCollection" class="el-icon-star-off" @click="saveImgFun(img)" ></i>
-                                        <i v-else="img.isCollection" class="el-icon-star-on icon_save" @click="cancelImgFun(img)" ></i>
-                                    </span>
-                                    <i class="el-icon-search" @click="handlePictureCardPreview(img)"></i>
-                                </p>
-                                <p class="mask_a">
-                                    <el-dropdown @visible-change="visibleChange" @command="selectMark" placement="bottom-start">
-                                        <el-button type="primary" size="small">
-                                            下载图片<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-                                        </el-button>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item  command="a">
-                                                <a v-if="tabType === 'first'" class="dropdown_a"
-                                                   :href= "galleryImgUrl + img.pUrl">无水印</a>
-                                                <a v-else class="dropdown_a" :href= "collectImgUrl + img.id" >无水印</a>
-                                            </el-dropdown-item>
-                                            <el-dropdown-item  command="b">
-                                                标签水印
-                                            </el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
-                                </p>
-                            </div>
-                        </div>-->
                         <div class="detailBox">
                             <p>{{img.pRemarks.plan || '--'}}</p>
                             <!-- <span>华南碧桂园二期-东门</span> -->

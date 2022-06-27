@@ -116,6 +116,23 @@
                   <el-option label="换画" value="HH"></el-option>
                 </el-select>
               </el-col>
+              <el-col :span="6">
+                <span
+                  style="display: inline-block; width: 70px; text-align: right"
+                  >媒体类型：</span
+                >
+                <el-select
+                  v-model="searchInfo.mediaTypeIds"
+                  placeholder="请选择"
+                  class="plan-select"
+                  size="small"
+                  multiple
+                  collapse-tags
+                  clearable
+                >
+                  <el-option v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypes" :key="mediaTypeIndex" :label="mediaTypeItem.name" :value="mediaTypeItem.id"></el-option>
+                </el-select>
+              </el-col>
             </el-row>
 
             <el-row>
@@ -271,6 +288,8 @@ export default {
       pageUpImgArr: [],
       //地区搜索
       citys: [],
+      // 媒体类型搜索项
+      mediaTypes: [],
       //上刊搜索行
       select: "3",
       bussiness: [],
@@ -288,6 +307,7 @@ export default {
         // labSelect: '',          // A/B面
         date: '',               // 搜索日期
         citySelect: [],         // 地区搜索
+        mediaTypeIds: [],        // 媒体类型搜索
         industryIdArr: [],      // 搜索行业
         publish: 'SK',          // 上下刊
         assetNumber: ''         // 资产编号
@@ -307,6 +327,7 @@ export default {
         // LabSelect: '',
         date: '',
         citySelect: [],
+        mediaTypeIds: [],
         industryIdArr: [],
         showPic: 1,
         apName: '',
@@ -327,6 +348,7 @@ export default {
         // LabSelect: '',
         date: '',
         citySelect: [],
+        mediaTypeIds: [],
         industryIdArr: [],
         showPic: 1,
         apName: '',
@@ -361,6 +383,7 @@ export default {
     this.getIndustry();
     this.getAllCity();
     this.searchFun();
+    this.getSystemMediaTypes();
   },
   methods: {
     getSessionData () {
@@ -394,6 +417,16 @@ export default {
     getIndustry () {
       let arr = JSON.parse(sessionStorage.getItem("industry"));
       this.bussiness = industryToText.cascader(arr);
+    },
+    //获取系统所有媒体类型列表
+    getSystemMediaTypes(){
+      api.getApi("/addsp/api/v1/mediaTypes").then((res)=>{
+        if(res.data.SysCode === 200200) {
+          this.mediaTypes = res.data.data || [];
+        }
+      }).catch((err)=>{
+        console.error(err);
+      })
     },
     //tab切换
     handleClick () {
@@ -446,7 +479,7 @@ export default {
     // 数据初始化
     resetData (selectInfo) {
       for (let key in selectInfo) {
-        if (key === 'citySelect' || key === 'industryIdArr') {
+        if (key === 'citySelect' || key === 'industryIdArr' || key === 'mediaTypeIds') {
           selectInfo[key] = []
         } else if (key === 'publish') {
           selectInfo[key] = 'SK'
@@ -480,6 +513,7 @@ export default {
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
           assetNumber: this.searchInfo.assetNumber,
+          mediaTypeIds: this.searchInfo.mediaTypeIds.join(','),
           // asLab: this.searchInfo.LabSelect,
           prid: '',
           pageNum: this.galleryPageData.pageNum,
@@ -498,7 +532,6 @@ export default {
         if (this.searchInfo.industryIdArr) {
           info.iId = this.searchInfo.industryIdArr[1];
         }
-        console.log(this.activeName, 'type---', info);
         return info;
       } else if (this.activeName == "second") {
         let info = {
@@ -508,6 +541,7 @@ export default {
           orderName: this.searchInfo.apName,
           resourceName: this.searchInfo.resName,
           assetNumber: this.searchInfo.assetNumber,
+          mediaTypeIds: this.searchInfo.mediaTypeIds.join(','),
           // asLabel: this.searchInfo.LabSelect,
           pageNo: this.collectPageData.pageNum,
           pageSize: this.collectPageData.pageSize,

@@ -452,27 +452,28 @@
                 this.initCitySelect()
             },
             selectCity(newVal, oldVal) {
-                this.initCitySelect()
-                let selectCityArr=newVal.split(',')
-                if(selectCityArr.length>1){
+                this.initCitySelect();
+                let selectCityArr=newVal.split(',');
+                if(this.activeName === 'fouth' && selectCityArr.length>1){
                     //全国
-                    console.log('请求数据了')
-                    this.getCityContrastData()
+                    console.log('请求数据了');
+                    this.getMediaType();
+                    this.getCityContrastData();
                 }            
-                this.getMediaType()
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
                 // 关键数据总量/增量趋势 - 社区接口
                 if (this.activeName === 'fouth') {
+                    this.getMediaType();
                     if (this.isGetData) {
-                        this.chinaMap()
-                        this.cityBattleLine()
-                        this.cityPercentBattleBar()
-                        this.keyDataPie()
+                        this.chinaMap();
+                        this.cityBattleLine();
+                        this.cityPercentBattleBar();
+                        this.keyDataPie();
                     } else {
                         // 统一调用接口
-                        this.getCityContrastData()
+                        this.getCityContrastData();
                     }
                 }
             }
@@ -484,6 +485,8 @@
         methods:{
             //获取媒体类型
             getMediaType(){
+                this.showMediaTypeValue = null;
+                this.contrastMediaTypeValue = null;
                 api.getApi("/addsp/api/v1/company/mediaTypes", {
                     companyIds:this.returnAsrID()
                 })

@@ -559,7 +559,6 @@ export default {
   },
   watch: {
     sessionData(newVal, oldVal) {
-      console.log("newVal", newVal, "oldVal", oldVal);
       this.sessionData = newVal;
     },
     selectCity(newVal, oldVal) {
@@ -569,6 +568,7 @@ export default {
       this.setPageNoAndTableDataRes();
       this.setPageNoAndTableDataAds();
       if (this.activeName === "fifth") {
+        this.getMediaTypesByAsrID();
         this.getAdsAnalysisData();
       }
     },
@@ -577,6 +577,7 @@ export default {
       // 关键数据总量/增量趋势 - 社区接口
       if (this.activeName === "fifth") {
         if (!this.adsRateList.length || !this.resRateList.length) {
+          this.getMediaTypesByAsrID();
           this.getAdsAnalysisData();
         } else {
           console.log("已获取过数据");
@@ -601,14 +602,14 @@ export default {
   mounted() {
     this.setTime();
     this.getDirectAscr();
-    this.getSystemMediaTypes();
   },
   methods: {
-    //获取系统所有媒体类型列表
-    getSystemMediaTypes() {
+    //获取公司下媒体类型列表
+    getMediaTypesByAsrID() {
+      this.mediaTypeIds = [];
       api
         .getApi("/addsp/api/v1/company/mediaTypes", {
-          companyIds: this.sessionData.asrID + "",
+          companyIds: this.returnAsrID(),
         })
         .then((res) => {
           if (res.data.SysCode === 200200) {

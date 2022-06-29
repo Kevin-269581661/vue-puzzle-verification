@@ -145,6 +145,21 @@
                     <el-option value="社区名称" label="社区名称"></el-option>
                   </el-select>
                 </el-input>
+                <el-select
+                  v-model="mediaTypeIds"
+                  placeholder="请选择媒体类型"
+                  size="small"
+                  multiple
+                  collapse-tags
+                  clearable
+                >
+                  <el-option
+                    v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypes"
+                    :key="mediaTypeIndex"
+                    :label="mediaTypeItem.name"
+                    :value="mediaTypeItem.id"
+                  ></el-option>
+                </el-select>
                 <el-button
                   type="primary"
                   icon="el-icon-search"
@@ -385,13 +400,13 @@
                   </el-table-column>
                   <el-table-column
                     prop="adDoorName"
-                    label="广告门名称"
+                    label="媒体名称"
                     min-width="10%"
                   >
                   </el-table-column>
                   <el-table-column
                     prop="adNo"
-                    label="广告编号"
+                    label="投放面"
                     :filters="[
                       { text: 'A', value: 'A' },
                       { text: 'B', value: 'B' },
@@ -761,6 +776,7 @@ export default {
         asrIDs: this.returnAsrID(), //this.currCity,
         maxPercent: isNaN(Number(this.pUpMax)) ? "" : this.pUpMax,
         minPercent: isNaN(Number(this.pUpMin)) ? "" : this.pUpMin,
+        mediaTypeIds: this.mediaTypeIds.join(","),
         pageSize: this.resPageSize,
         pageNum: this.resPageNum,
       };
@@ -936,21 +952,14 @@ export default {
     },
     // 点位分析-搜索
     searchFun(val) {
-      console.log("点位分析-搜索", val, this.adsInputVal);
-      if (val === "res") {
-        if (this.resSelectVal === "社区名称") {
-          if (this.resInputVal === "") {
-            sessFun.messageFun("warning", "搜索内容为空!");
-          } else {
-            this.setPageNoAndTableDataRes();
-            this.getResRateFun();
-          }
-        }
-      } else if (val === "ads") {
-        if (this.adsSelectVal === "社区名称") {
-          this.setPageNoAndTableDataAds();
-          this.getAdsRateFun();
-        }
+      if (val === "res" && this.resSelectVal === "社区名称") {
+        // if(this.resInputVal === '') return sessFun.messageFun('warning','搜索内容为空!');
+        this.setPageNoAndTableDataRes();
+        this.getResRateFun();
+      } else if (val === "ads" && this.adsSelectVal === "社区名称") {
+        // if(this.adsInputVal === '') return sessFun.messageFun('warning','搜索内容为空!');
+        this.setPageNoAndTableDataAds();
+        this.getAdsRateFun();
       }
     },
     handleClick() {
@@ -1071,6 +1080,7 @@ export default {
         wd: this.resInputVal,
         maxPercent: isNaN(Number(this.pUpMax)) ? "" : this.pUpMax,
         minPercent: isNaN(Number(this.pUpMin)) ? "" : this.pUpMin,
+        mediaTypeIds: this.mediaTypeIds.join(","),
       };
       for (let i in params) {
         if (params[i] === "" || params[i] === undefined) {
@@ -1113,6 +1123,7 @@ export default {
         wd: this.adsInputVal,
         maxPercent: isNaN(Number(this.cUpMax)) ? "" : this.cUpMax,
         minPercent: isNaN(Number(this.cUpMin)) ? "" : this.cUpMin,
+        mediaTypeIds: this.mediaTypeIds.join(","),
       };
       for (let i in params) {
         if (params[i] === "" || params[i] === undefined) {

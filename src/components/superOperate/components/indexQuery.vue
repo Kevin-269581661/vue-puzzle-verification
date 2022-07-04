@@ -805,8 +805,8 @@
             },
             selectCity(newVal, oldVal) {
                 this.selectCity = newVal
-                this.getMediaType();
                 if (this.activeName === 'third') {
+                    this.getMediaType();
                     this.getIndexQueryData()
                 } else {
                     this.isGetData = false
@@ -819,6 +819,7 @@
                 if (this.activeName === 'third') {
                     if (!this.isGetData) {
                         // 统一调用接口
+                        this.getMediaType();
                         this.getIndexQueryData()
                     } else {
                         // 总量/增量 - 社区
@@ -851,7 +852,9 @@
         },
         methods:{
             //获取媒体类型
-            getMediaType(){
+            getMediaType() {
+                this.allMediaTypeValue = null;
+                this.addMediaTypeValue = null;
                 api.getApi("/addsp/api/v1/company/mediaTypes", {
                     companyIds:this.returnAsrID()
                 })

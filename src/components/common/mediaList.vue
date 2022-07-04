@@ -116,10 +116,13 @@
             </el-table-column>
 
             <el-table-column
+              column-key="mVehicle"
               prop="mVehicle"
               label="媒体类型"
               width="127"
               :show-overflow-tooltip="true"
+              :filters="mediaTypes"
+              :filter-multiple="false"
             >
             </el-table-column>
 
@@ -223,7 +226,6 @@
               :filter-multiple="false"
               fixed="right"
             >
-              <!-- { text: '待安装', value: '2' }, -->
               <template slot-scope="scope">
                 <point-state
                   :state-text="stateToText(scope.row.asState).text"
@@ -605,6 +607,7 @@ export default {
           label: '商圈'
         }
       ],
+      filterMediaType: '',                   // 表头媒体类型搜索状态
       resType: '',                    // 搜索的资源类型
       asState: '',                     // 搜索的媒体状态
       asSaleState: '',                //  搜索的售卖状态
@@ -689,13 +692,15 @@ export default {
       // 媒体名称
       mTitle: '',
       // 是否开通数字化权限
-      isPay: 1
+      isPay: 1,
+      mediaTypes: []
     }
   },
   created() {
     // 判断角色确定是否有操作这一列
     this.sessionData = sessFun.getSess();
     this.requestIsPay();
+    this.getMediaTypes();
   },
   mounted: function () {
     ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) ? this.showNewBtn = true : this.showNewBtn = false
@@ -707,6 +712,32 @@ export default {
   },
   
   methods: {
+    getMediaTypes() {
+      let _this = this;
+      function requestMediaType() {
+        const { ascType, uType } = _this.sessionData;
+        if(ascType == 0 && (uType == 'ADN_SA' || uType == 'ADN_SM')) {
+          return api.getApi("/addsp/api/v1/mediaTypes");
+        }
+        return api.getApi("/addsp/api/v1/company/mediaTypes", {
+          companyIds: _this.sessionData.asrID
+        });
+      }
+      requestMediaType().then(res => {
+        if(res.data.SysCode == 200200){
+          this.mediaTypes = (res.data.data || []).map(item => {
+            return {
+              text: item.name,
+              value: item.id
+            }
+          });
+        } else {
+          sessFun.messageFun('warning', res.data.MSG || '媒体类型获取失败！')
+        }
+      }).catch((err)=>{
+        console.error(err);
+      })
+    },
     requestIsPay() {
       api.getApi('/addsp/api/v1/company/isPay', {
           asrID: this.sessionData.asrID
@@ -806,7 +837,6 @@ export default {
     },
 
     filterChange (filters) {
-      console.log('filters', filters)
       for (let key in filters) {
         if (key === 'rtName') {
           if (filters[key].length) {
@@ -825,6 +855,12 @@ export default {
             this.asSaleState = filters[key][0]
           } else {
             this.asSaleState = ''
+          }
+        } else if (key === 'mVehicle') {
+          if (filters[key].length) {
+            this.filterMediaType = filters[key][0]
+          } else {
+            this.filterMediaType = ''
           }
         }
       }
@@ -861,7 +897,8 @@ export default {
           regionName: this.cityArea.rName,
           resType: this.resType,
           asState: this.asState,
-          asSaleState: this.asSaleState
+          asSaleState: this.asSaleState,
+          mediaTypeIds: this.filterMediaType + ''
         }
       }
       if (this.selectInfo === '1') {
@@ -950,8 +987,6 @@ export default {
 
     // 下拉选择状态
     changeState (selectState, index, rows) {
-      console.log('选择的状态', selectState)
-      console.log('行内容', rows)
       this.rowIndex = index
       this.rowData = rows
       this.selectState = selectState
@@ -1144,6 +1179,7 @@ export default {
       this.pageData.pageNum = 1
       this.pageData.pageSize = 10
       this.cityArea = { cName: '', rName: '' }
+      this.filterMediaType = ''
       this.asSaleState = ''
       this.asState = ''
       this.resType = ''

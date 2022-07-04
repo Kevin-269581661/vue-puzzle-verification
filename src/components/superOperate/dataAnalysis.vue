@@ -157,7 +157,6 @@
                     })
                     cityStr=cityStr.substring(0, cityStr.length -1)
                     this.newSelectCity=cityStr
-                    console.log('this.newSelectCity',this.newSelectCity)
                 }
             },
             //获取皓邻，亲邻公司列表
@@ -218,9 +217,7 @@
                 }else{
                     //非全国
                     this.newSelectCity=companyType[1].toString()
-                    console.log(this.newSelectCity)
                 }
-                console.log('companyType[0]',companyType[0])
                 let directNameList=[]
                 let headerCityList=[]
                 companyList.forEach((element)=>{

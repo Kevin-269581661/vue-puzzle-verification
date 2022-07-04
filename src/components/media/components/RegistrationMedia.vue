@@ -111,7 +111,8 @@
         </p>
       </div>
       <div class="board">
-        <el-checkbox-group v-model="registerIDs">
+        <el-checkbox style="margin-bottom: 2px; font-weight: 600; color: #000;" :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+        <el-checkbox-group v-model="registerIDs" @change="handleCheckedChange">
           <el-checkbox
             class="checkbox-item"
             v-for="(item, index) in batchRegisterMedias"
@@ -179,6 +180,8 @@ export default {
       batchRegisterMedias: [],
       // 批量登记的媒体注册ID
       registerIDs: [],
+      checkAll: false,
+      isIndeterminate: false
     };
   },
   watch: {
@@ -195,7 +198,6 @@ export default {
   created() {
     this.sessionData = sessFun.getSess();
   },
-  mounted() {},
   methods: {
     copyText() {
       let oInput = document.createElement("input");
@@ -205,6 +207,15 @@ export default {
       document.execCommand("Copy"); // 执行浏览器复制命令
       oInput.style.display = "none";
       sessFun.messageFun("success", "项目名称已复制");
+    },
+    handleCheckAllChange(val) {
+      this.registerIDs = val ? this.batchRegisterMedias.map(item =>item.registerId) : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.batchRegisterMedias.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.batchRegisterMedias.length;
     },
     // 分页获取当前登录用户的所属公司旗下管理的小区
     getOwnRes(query) {
@@ -258,6 +269,8 @@ export default {
           .finally(() => {
             this.registerIDs = [];
             this.singleRegisterResID = null;
+            this.checkAll = false;
+            this.isIndeterminate = false;
           });
       } else {
         sessFun.messageFun("warning", "请先选择需要登记的媒体！");

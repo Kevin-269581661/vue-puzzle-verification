@@ -155,3 +155,21 @@ body::-webkit-scrollbar-track {
     border-radius: 0;
     background: #fafafa;
 }
+
+.el-table-filter .el-table-filter__list {
+    max-height: 176px;
+    overflow-y: auto;
+}
+
+.el-table-filter__list::-webkit-scrollbar {
+    width: 4px;
+    background: #fafafa;
+}
+
+.el-table-filter__list::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #c1c1c1;
+    border-radius: 4px;
+}

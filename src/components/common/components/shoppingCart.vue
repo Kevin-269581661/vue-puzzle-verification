@@ -431,7 +431,7 @@ export default {
   width: 100%;
 }
 /deep/ .el-input__inner {
-  width: 100%;
+  width: 100% !important;
 }
 /deep/ .el-dialog__footer {
   text-align: center;

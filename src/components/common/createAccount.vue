@@ -185,7 +185,7 @@
               </el-form-item>
             </template>
             <template v-if="accountForm.role == 'BD'">
-              <el-form-item label="上级：" prop="boss" v-if="!isEdit">
+              <el-form-item label="上级：" prop="boss">
                 <el-autocomplete
                   v-model="accountForm.boss"
                   :fetch-suggestions="querySearchAsync"
@@ -195,13 +195,13 @@
                 >
                 </el-autocomplete>
               </el-form-item>
-              <el-form-item label="上级：" v-if="isEdit">
+              <!-- <el-form-item label="上级：" v-if="isEdit">
                 <el-input
                   disabled="disabled"
                   :value="accountForm.boss"
                   size="small"
                 ></el-input>
-              </el-form-item>
+              </el-form-item> -->
             </template>
             <template
               v-if="sessionData.uType == 'ADN_SA' && accountForm.role == 'MD'"
@@ -770,18 +770,15 @@ export default {
         position: actFrom.position,
         engineerLevel: actFrom.engineerLevel,
         // devManageLevel: actFrom.devManageLevel,
-        mediaPermission:
-          actFrom.mediaPermission.length > 1
-            ? -1
-            : actFrom.mediaPermission[0] == undefined
-            ? ""
-            : actFrom.mediaPermission[0],
         phone: actFrom.phone,
         email: actFrom.email,
         puid: "",
         asrID: actFrom.company,
         authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
       };
+      if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
+        account.mediaPermission = actFrom.mediaPermission.join(',');
+      }
       if (actFrom.puID) {
         account.puid = actFrom.puID;
       }
@@ -906,10 +903,8 @@ export default {
                   engineerLevel: result.engineerLevel,
                   // devManageLevel:
                   //   result.devManageLevel >= 0 ? result.devManageLevel : "",
-                  mediaPermission:
-                    result.mediaPermission == -1
-                      ? [0, 1]
-                      : [result.mediaPermission],
+                  // 广告门:0， 道闸:1 目前是固定的
+                  mediaPermission: result.mediaPermission ? result.mediaPermission.split(',') : [],
                   phone: result.phone ? result.phone : "",
                   division: result.division ? result.division : "",
                   email: result.email ? result.email : "",

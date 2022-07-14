@@ -1060,7 +1060,7 @@ export default {
       api.getApi('/addsp/api/v1/company/isPay', {
           asrID: this.sessionData.asrID
       }).then(res => {
-          if (res.data.SysCode === 200200 && res.data.data === true) {
+          if (res.data.SysCode === 200200 && res.data.data === false) {
             // 没有开通时显示新建媒体
             const linkIndex = this.linkArrNew.findIndex((item) => item.title==='新建方案')
             this.linkArrNew.splice(linkIndex, 0, {

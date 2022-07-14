@@ -904,7 +904,7 @@ export default {
                   // devManageLevel:
                   //   result.devManageLevel >= 0 ? result.devManageLevel : "",
                   // 广告门:0， 道闸:1 目前是固定的
-                  mediaPermission: result.mediaPermission ? result.mediaPermission.split(',') : [],
+                  mediaPermission: result.mediaPermission ? result.mediaPermission.split(',').map(optionItem => optionItem * 1) : [],
                   phone: result.phone ? result.phone : "",
                   division: result.division ? result.division : "",
                   email: result.email ? result.email : "",

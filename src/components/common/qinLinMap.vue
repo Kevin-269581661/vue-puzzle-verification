@@ -1982,8 +1982,6 @@ export default {
         tradingArea: this.selectTradingArea,
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
-        // mType: this.selectDoorType,
-        // mVehicle: this.selectMediaType,
         mediaTypeId: this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
@@ -4093,6 +4091,7 @@ export default {
             resName: data.resName,
             rName: data.districtName,
             resAddress: data.resAddress,
+            mVehicle: data.mVehicle,
             tradingArea: data.tradingArea,
             fNum: data.fNum == "0" ? "#" : data.fNum,
             hNum: data.hNum == "0" ? "#" : data.hNum,

@@ -205,101 +205,6 @@
         </el-col>
       </el-row>
 
-      <!-- <el-row :gutter="24" class="index-row">
-        <el-col :span="12">
-          <index-custom-card :height="'unset'">
-            <template slot="head">
-              媒体动态
-              <el-radio-group
-                @change="getPendingMedia('reload')"
-                v-model="installOrDemolish"
-                size="small"
-                class="achievement-radio-group"
-              >
-                <el-radio-button label="installList">新安装</el-radio-button>
-                <el-radio-button label="demolishList">已拆除</el-radio-button>
-              </el-radio-group>
-            </template>
-            <template slot="content">
-              <div style="padding: 20px 25px 32px">
-                <el-table
-                  v-loadmore="getPendingMedia"
-                  v-loading="pendingMediaLoading"
-                  :data="pendingMedia[installOrDemolish]"
-                  border
-                  max-height="320"
-                >
-                  <el-table-column
-                    label="序号"
-                    width="150"
-                    type="index"
-                  ></el-table-column>
-                  <el-table-column
-                    prop="resName"
-                    label="资源名称"
-                    min-width="200"
-                    show-overflow-tooltip
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="mType"
-                    label="设备类型"
-                    min-width="200"
-                    show-overflow-tooltip
-                  >
-                   <template slot-scope="scope">
-                      {{ scope.row.mType || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="mTitle"
-                    label="媒体名称"
-                    min-width="200"
-                    show-overflow-tooltip
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="assetTag"
-                    label="资产编号"
-                    min-width="120"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.assetTag || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="contractTypeName"
-                    label="合同类型"
-                    min-width="120"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.contractTypeName || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="updateTime"
-                    label="更新日期"
-                    min-width="120"
-                    show-overflow-tooltip
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.updateTime || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="操作">
-                    <template slot-scope="scope">
-                      <span class="td-btn" @click="navigateMediaList"
-                        >查看</span
-                      >
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </template>
-          </index-custom-card>
-        </el-col>
-      </el-row> -->
-
       <el-tabs
         class="index-tab-group"
         style="height: 643px; border: 1px solid #e5e6e9"
@@ -461,98 +366,6 @@
         >
       </p>
     </div>
-    <!-- 安装信息 -->
-    <!-- <el-dialog
-      title="请完成安装信息"
-      :visible.sync="installVisible"
-      width="388px"
-      top="22vh"
-      :show-close="false"
-      :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper custom-confirm-dialog"
-    >
-      <el-form
-        v-model="currentInstallInfo"
-        label-width="100px"
-        class="content-form"
-      >
-        <el-form-item label="资产编号：" prop="assetTag">
-          <el-input
-            placeholder="请填写资产编号"
-            v-model.trim="currentInstallInfo.assetTag"
-            size="small"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="安装负责人：" prop="operater">
-          <el-input
-            placeholder="请填写安装负责人"
-            v-model.trim="currentInstallInfo.operater"
-            size="small"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="安装完成日期：" prop="operateDate">
-          <el-date-picker
-            v-model="currentInstallInfo.operateDate"
-            size="small"
-            align="right"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择安装完成日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-
-      <template slot="footer">
-        <el-button @click="installVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmMediaStatus('install')"
-          >确 定</el-button
-        >
-      </template>
-    </el-dialog> -->
-    <!-- 安装信息 -->
-    <!-- <el-dialog
-      title="请完成拆除信息"
-      :visible.sync="uninstallVisible"
-      width="388px"
-      top="22vh"
-      :show-close="false"
-      :close-on-click-modal="false"
-      custom-class="custom-dialog-wrapper custom-confirm-dialog"
-    >
-      <el-form
-        v-model="currentInstallInfo"
-        label-width="100px"
-        class="content-form"
-      >
-        <el-form-item label="拆除负责人：" prop="operater">
-          <el-input
-            placeholder="请填写拆除负责人"
-            v-model.trim="currentInstallInfo.operater"
-            size="small"
-          >
-          </el-input>
-        </el-form-item>
-        <el-form-item label="拆除完成日期：" prop="operateDate">
-          <el-date-picker
-            v-model="currentInstallInfo.operateDate"
-            size="small"
-            align="right"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择拆除完成日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-
-      <template slot="footer">
-        <el-button @click="uninstallVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmMediaStatus()"
-          >确 定</el-button
-        >
-      </template>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -606,11 +419,6 @@ export default {
           imgurl: require("../../assets/images/fangan.png"),
           title: "新建方案",
           link: "./media/createPlanOld",
-        },
-        {
-          imgurl: require("../../assets/images/addMedia.png"),
-          title: "新建媒体",
-          link: "./media/mediaInput",
         },
         {
           imgurl: require("../../assets/images/gua.png"),
@@ -758,42 +566,9 @@ export default {
       ],
       // 媒介预锁概况表格
       preLockArr: [],
-      // pendingMediaLoading: false,
-      // 待拆除和待安装媒体
-      /* pendingMedia: {
-        currentPageNum: 0,
-        currentPageTotal: 1,
-        installList: [],
-        demolishList: [],
-      }, */
-      // 安装或拆除媒体切换
-      // installOrDemolish: "installList",
-      // installVisible: false,
-      // uninstallVisible: false,
-      /* currentInstallInfo: {
-        assetTag: "",
-        operater: "",
-        operateDate: "",
-      }, */
-
       role: "",
     };
   },
-  /* directives: {
-    loadmore: {
-      bind: function (el, binding) {
-        const selectWrap = el.querySelector(".el-table__body-wrapper");
-        selectWrap.addEventListener("scroll", function (e) {
-          // console.log('loadmore', this.scrollHeight, window.scrollTop, window.clientHeight);
-          const scrollDistance =
-            this.scrollHeight - this.scrollTop - this.clientHeight;
-          if (scrollDistance <= 100) {
-            binding.value();
-          }
-        });
-      },
-    },
-  }, */
   beforeCreate() {
     var glSript = document.createElement("script");
     glSript.type = "text/javascript";
@@ -1245,147 +1020,10 @@ export default {
         })
         .finally((_) => {});
     },
-    // 获取新安装或已拆除媒体
-    /* getPendingMedia(reload) {
-      if(reload) {
-        this.pendingMedia.currentPageNum = 0;
-        this.pendingMedia.currentPageTotal = 1;
-        this.pendingMedia.installList = [];
-        this.pendingMedia.demolishList = [];
-        this.pendingMediaLoading = false;
-      }
-      if(this.pendingMedia.currentPageNum >= this.pendingMedia.currentPageTotal || this.pendingMediaLoading) return;
-      let tempApi = "";
-      if (this.installOrDemolish === "installList") {
-        tempApi = "/addsp/api/v1/media/getRecentAddMediaList";
-      } else if (this.installOrDemolish === "demolishList") {
-        tempApi = "/addsp/api/v1/media/getRecentDemolishMediaList";
-      }
-      this.pendingMediaLoading = true;
-      api
-        .getApi(tempApi, {
-          pageNum: this.pendingMedia.currentPageNum + 1,
-          pageSize: 10,
-        })
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            if (this.installOrDemolish === "installList") {
-              this.pendingMedia.installList.push(...(res.data.data.list || []));
-            } else if (this.installOrDemolish === "demolishList") {
-              this.pendingMedia.demolishList.push(...(res.data.data.list || []));
-            }
-            this.pendingMedia.currentPageNum = res.data.data.pageNum;
-            this.pendingMedia.currentPageTotal = res.data.data.pages;
-          } else {
-            this.$message.warning(res.data.MSG || "媒体动态获取失败！");
-          }
-        })
-        .finally(() => {
-          this.pendingMediaLoading = false;
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-    }, */
     // 跳转到媒体列表页面
     navigateMediaList() {
       this.$router.push("./media/mediaList");
     },
-    // 确认安装或拆除
-    /* confirmMediaStatus(install) {
-      let _this = this,
-        params = null;
-
-      if (
-        install &&
-        !(
-          this.currentInstallInfo.operateDate &&
-          this.currentInstallInfo.operater &&
-          this.currentInstallInfo.assetTag
-        )
-      ) {
-        this.$message.warning("请完善安装信息！");
-        return;
-      }
-      if (
-        !install &&
-        !(
-          this.currentInstallInfo.operateDate &&
-          this.currentInstallInfo.operater
-        )
-      ) {
-        this.$message.warning("请完善拆除信息！");
-        return;
-      }
-      if (install) {
-        params = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token,
-          service: "CtrlMedia",
-          data: {
-            uid: this.sessionData.uID,
-            mid: this.currentInstallInfo.mID,
-            mstate: 1,
-            // 区分该操作的位置，判断是否校验被合同占用
-            source: 0,
-            assetTag: this.currentInstallInfo.assetTag,
-          },
-        };
-      } else {
-        // 拆除
-        params = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token,
-          service: "AddDismantleRecord",
-          data: {
-            mID: this.currentInstallInfo.mID,
-            resName: this.currentInstallInfo.resName,
-            rId: this.currentInstallInfo.districtId,
-            source: 0,
-          },
-        };
-      }
-      api.postApi_new(this.apiVar.Media, params).then((res) => {
-        if (res.data.SysCode === 200200) {
-          if (install) {
-            _this.syncDcState(1, this.currentInstallInfo);
-          } else {
-            _this.syncDcState(0, this.currentInstallInfo);
-          }
-        } else if (
-          res.data.SysCode === 200302 ||
-          res.data.MSG === "广告位已被占用"
-        ) {
-          this.$message.warning(res.data.MSG || "");
-        } else {
-          this.$message.warning(res.data.MSG || "状态更改失败");
-        }
-      });
-    }, */
-    // 媒体状态同步至合同状态
-    /* syncDcState(state, currentInstallInfo) {
-      api
-        .postApi_json("/addsp/devContract/synDcState", {
-          dcID: this.currentInstallInfo.dcID,
-          state,
-          updateMediaData: {
-            mID: currentInstallInfo.mID,
-            operateDate: currentInstallInfo.operateDate,
-            operater: currentInstallInfo.operater,
-          },
-        })
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            this.installVisible && (this.installVisible = false);
-            this.uninstallVisible && (this.uninstallVisible = false);
-            this.getPendingMedia();
-            this.$message.success(res.data.MSG || "更改成功！");
-          } else {
-            this.$message.warning(res.data.MSG || "状态更改失败");
-          }
-        });
-    }, */
-
     // 重新预锁
     resetPreLock(row) {
       console.log(row, "rowrowrowrow");
@@ -1417,6 +1055,22 @@ export default {
           }
         });
     },
+    // 是否开通数字化
+    requestIsPay() {
+      api.getApi('/addsp/api/v1/company/isPay', {
+          asrID: this.sessionData.asrID
+      }).then(res => {
+          if (res.data.SysCode === 200200 && res.data.data === false) {
+            // 没有开通时显示新建媒体
+            const linkIndex = this.linkArrNew.findIndex((item) => item.title==='新建方案')
+            this.linkArrNew.splice(linkIndex, 0, {
+              imgurl: require("../../assets/images/addMedia.png"),
+              title: "新建媒体",
+              link: "./media/mediaInput",
+            });
+          }
+      })
+    }
   },
   beforeRouteEnter(to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用
@@ -1430,6 +1084,7 @@ export default {
   },
   mounted() {
     this.getSession();
+    this.requestIsPay();
     this.getContributeBox();
     this.getContribute();
     let nowDate = timeFormat.toDate(new Date(), "/");
@@ -1442,7 +1097,6 @@ export default {
     this.appCenter = appCenter;
     this.uploadEvent(1);
     this.allReportApi();
-    // this.getPendingMedia();
   },
 };
 </script>

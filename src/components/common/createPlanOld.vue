@@ -4664,6 +4664,8 @@ export default {
     getShowList() {
       if (this.typeShopList[this.activeName]) {
         this.shopShowList = this.typeShopList[this.activeName].asidList || [];
+      } else {
+        this.shopShowList = [];
       }
     },
     // 获取事件
@@ -5081,7 +5083,6 @@ export default {
         [h("span", "清空")]
       );
     },
-    // 购物车删除行
     // 购物车删除行
     deleteRow(adSpaceRow) {
       if (

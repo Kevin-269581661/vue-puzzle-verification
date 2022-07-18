@@ -1073,7 +1073,7 @@
                 }else{
                     this.searchInfo = {
                         ...this.searchInfo,
-                        mediaType: "全部",
+                        mediaType: null,
                         city: ['全部'],
                         resName: "全部",
                         status: "全部",

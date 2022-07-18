@@ -5,7 +5,7 @@
 		"regionEntitys": [
 			{
 				"code": "110100",
-				"region": "北京市",
+				"region": "北京市市辖区",
 				"regionEntitys": [
 					{
 						"code": "110101",
@@ -81,7 +81,7 @@
 		"regionEntitys": [
 			{
 				"code": "120100",
-				"region": "天津市",
+				"region": "天津市市辖区",
 				"regionEntitys": [
 					{
 						"code": "120101",
@@ -3635,7 +3635,7 @@
 		"regionEntitys": [
 			{
 				"code": "310100",
-				"region": "上海市",
+				"region": "上海市市辖区",
 				"regionEntitys": [
 					{
 						"code": "310101",
@@ -10513,7 +10513,7 @@
 		"regionEntitys": [
 			{
 				"code": "500100",
-				"region": "重庆市",
+				"region": "重庆市市辖区",
 				"regionEntitys": [
 					{
 						"code": "500101",

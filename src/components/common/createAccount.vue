@@ -188,7 +188,7 @@
               <el-form-item label="上级：" prop="boss">
                 <el-autocomplete
                   v-model="accountForm.boss"
-                  :fetch-suggestions="querySearchAsync"
+                  :fetch-suggestions="(queryString, callback) => lazyFunction(querySearchAsync(queryString, callback), 200)"
                   placeholder="请输入账号"
                   @select="handleSelect"
                   size="small"
@@ -305,7 +305,6 @@ export default {
       }
     };
     return {
-      timeout: null,
       isEdit: false, //新建/修改
       // 角色列表
       roleArr: [
@@ -594,7 +593,6 @@ export default {
       api
         .getApi(this.apiVar.UCAPI + "/getCompany", info)
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 200200) {
             let result = [];
             if (sess.ascType == 0) {
@@ -687,6 +685,17 @@ export default {
       }
       this.getMediaPermission();
     },
+    lazyFunction(fn, timeout) {
+      var timer = 0;
+      return function(){
+          if(timer) window.clearTimeout(timer);
+          var args = arguments, that = this;
+          timer = window.setTimeout(function(){
+              fn.apply(that, args)
+          }, timeout);
+      };
+    },
+
     // 输入账号获取上级信息(远程搜索)
     querySearchAsync(queryString, callback) {
       let sessionData = this.sessionData;
@@ -706,6 +715,7 @@ export default {
             uType: "ADN_BD,ADN_BD_COUNTRY,ADN_BD_KA",
             sname: queryString,
           };
+          this.accountForm.puID = "";
           api
             .postApi(this.apiVar.UCAPI + "/CheckUserName", info)
             .then((res) => {
@@ -716,10 +726,7 @@ export default {
                   this.accountForm.boss = data.realName;
                   this.accountForm.puID = data.uID;
                   var results = [data];
-                  clearTimeout(this.timeout);
-                  this.timeout = setTimeout(() => {
-                    callback(results);
-                  }, 3000 * Math.random());
+                  callback(results);
                 } else {
                   this.$message.warning("该公司下没有此销售");
                 }
@@ -803,7 +810,6 @@ export default {
       api
         .postApi(this.apiVar.UCAPI + "/RegUser", account)
         .then((res) => {
-          console.log(res);
           let data = res.data;
           if (data.SysCode == 200200) {
             this.$alert(data.MSG + "<br>", "修改用户", {
@@ -828,7 +834,6 @@ export default {
       api
         .postApi(this.apiVar.UCAPI + "/RegUser", account)
         .then((res) => {
-          console.log(res);
           let data = res.data;
           if (
             data.SysCode === 100300 ||
@@ -888,7 +893,6 @@ export default {
           api
             .postApi(this.apiVar.UCAPI + "/GetUser", info)
             .then((res) => {
-              console.log(res.data);
               if (res.data.SysCode == 200200) {
                 this.isEdit = true;
                 let result = res.data.data;
@@ -952,7 +956,6 @@ export default {
         uid: this.sessionData.uID,
       };
       api.postApi_new(this.apiVar.Media, info).then((res) => {
-        console.log(res.data);
         if (res.data.SysCode == 200200) {
           let resinfo = res.data.data;
           let result = [];

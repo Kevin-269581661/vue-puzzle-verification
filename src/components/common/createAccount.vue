@@ -698,6 +698,7 @@ export default {
 
     // 输入账号获取上级信息(远程搜索)
     querySearchAsync(queryString, callback) {
+      this.accountForm.puID = 0;
       let sessionData = this.sessionData;
       if (queryString) {
         let isOnlyID = false;
@@ -715,7 +716,6 @@ export default {
             uType: "ADN_BD,ADN_BD_COUNTRY,ADN_BD_KA",
             sname: queryString,
           };
-          this.accountForm.puID = "";
           api
             .postApi(this.apiVar.UCAPI + "/CheckUserName", info)
             .then((res) => {
@@ -779,7 +779,7 @@ export default {
         // devManageLevel: actFrom.devManageLevel,
         phone: actFrom.phone,
         email: actFrom.email,
-        puid: "",
+        puid: 0,
         asrID: actFrom.company,
         authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
       };

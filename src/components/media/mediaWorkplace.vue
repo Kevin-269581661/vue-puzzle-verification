@@ -13,7 +13,7 @@
           @click="handleClick"
         ></el-button>
       </el-input>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <el-tab-pane label="媒体登记" name="register">
           <el-skeleton :loading="loading" animated>
             <template slot="template">
@@ -440,6 +440,11 @@ export default {
       this.paginationTotal = 0
       this.currentPage = 1;
       this.getData();
+    },
+
+    handleTabClick () {
+      this.searchKeyword = ''
+      this.handleClick()
     }
   },
   mounted () {

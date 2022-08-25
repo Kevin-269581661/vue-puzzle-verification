@@ -62,6 +62,7 @@ export default {
 
   created () {
     this.sessionData = sessFun.getSess();
+    console.log(this.sessionData, 'this.sessionDatathis.sessionData')
   },
 
   computed: {

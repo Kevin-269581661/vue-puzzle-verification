@@ -102,7 +102,7 @@
           </el-skeleton>
         </el-tab-pane>
 
-        <el-tab-pane label="全国单投放确认" name="launch">
+        <el-tab-pane label="全国单投放确认" name="launch" v-if="!['ADN_MD'].includes(sessionData.uType)">
           <template>
             <table v-if="tableData.length" style="width: 100%">
               <tbody>
@@ -173,7 +173,7 @@
           </template>
         </el-tab-pane>
 
-        <el-tab-pane label="下刊日期调整" name="updateOrderEndTimeList">
+        <el-tab-pane label="下刊日期调整" name="updateOrderEndTimeList" v-if="!['ADN_MD'].includes(sessionData.uType)">
           <template>
             <table v-if="tableData.length" style="width: 100%">
               <tbody>
@@ -266,6 +266,8 @@
 
 <script>
 import api from "../../api/api.js";
+import sessFun from "../../commonFun/sessFun.js";
+
 import RegistrationMedia from "../../components/media/components/RegistrationMedia.vue";
 import LaunchMedia from '../../components/media/components/LaunchMedia.vue'
 import UpdateOrderEndTime from '../../components/media/components/UpdateOrderEndTime.vue'
@@ -278,6 +280,8 @@ export default {
   },
   data () {
     return {
+      sessionData: {},
+
       loading: false,
       registrationMediaVisible: false,
       currentRegistration: {},
@@ -448,6 +452,9 @@ export default {
     }
   },
   mounted () {
+    this.sessionData = sessFun.getSess()
+    console.log(this.sessionData, 'this.sessionDatathis.sessionData')
+
     this.getData();
   },
 };

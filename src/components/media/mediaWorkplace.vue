@@ -102,7 +102,11 @@
           </el-skeleton>
         </el-tab-pane>
 
-        <el-tab-pane label="全国单投放确认" name="launch" v-if="!['ADN_MD'].includes(sessionData.uType)">
+        <el-tab-pane
+          label="全国单投放确认"
+          name="launch"
+          v-if="!['ADN_MD'].includes(sessionData.uType)"
+        >
           <template>
             <table v-if="tableData.length" style="width: 100%">
               <tbody>
@@ -173,7 +177,11 @@
           </template>
         </el-tab-pane>
 
-        <el-tab-pane label="下刊日期调整" name="updateOrderEndTimeList" v-if="!['ADN_MD'].includes(sessionData.uType)">
+        <el-tab-pane
+          label="下刊日期调整"
+          name="updateOrderEndTimeList"
+          v-if="!['ADN_MD'].includes(sessionData.uType)"
+        >
           <template>
             <table v-if="tableData.length" style="width: 100%">
               <tbody>

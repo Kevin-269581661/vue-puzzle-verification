@@ -120,6 +120,7 @@
                 :remote-method="remoteCityList"
                 filterable
                 size="small"
+                @change="handleCityChange"
               >
                 <el-option
                   v-for="item in cityList"
@@ -391,6 +392,12 @@ export default {
         })
     },
 
+    handleCityChange (arr) {
+        if(arr.length){
+            this.$refs.ruleForm.clearValidate('launchCity')
+        }
+    },
+
     remoteCityList (query) {
       if (query !== '') {
         this.getNationalOrderList(1)
@@ -451,7 +458,6 @@ export default {
       let validArr = this.form.isRelevancy === 1 ? ['sourceId'] : ['orderName', 'amount', 'orderStartTime', 'orderEndTime', 'planAdsCnt', 'launchCity']
       let isValid = true
       this.$refs.ruleForm.validateField(validArr, (valid) => {
-        console.log(valid, 'validvalidvalid')
         if (valid) {
           isValid = false
         }

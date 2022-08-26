@@ -680,6 +680,7 @@ export default {
                 EntryExitNum: resData.dNum,
                 buildingNum: resData.fNum,
                 rid: resData.rID,
+                houseType: resData.cType,
                 pmc: resData.resPMC, // 物业公司
                 peopleFlowrate: resData.peopleFlow || 0, // 人流量
                 carNumber: resData.parkSpaceNum || 0, // 车位数

@@ -1070,7 +1070,7 @@ export default {
               // rid: "440100",
               act: 1,
               dateTimeBegin: this.dateInput[0],
-              dateTimeEnd: this.dateInput[1]
+              dateTimeEnd: this.dateInput[1],
               mVehicle: this.mediaType,
               pageNo: this.pageNo,
               pageSize: this.pageSize,

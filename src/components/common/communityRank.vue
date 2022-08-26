@@ -188,21 +188,6 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                prop="resType"
-                                label="资源类型"
-                                min-width="100"
-                                :show-overflow-tooltip="true">
-                                <template slot-scope="scope">
-                                    <span v-if="scope.row.resType==1">社区</span>
-                                    <span v-if="scope.row.resType==2">写字楼</span>
-                                    <span v-if="scope.row.resType==3">街道</span>
-                                    <span v-if="scope.row.resType==4">地铁</span>
-                                    <span v-if="scope.row.resType==5">学校</span>
-                                    <span v-if="scope.row.resType==6">寺庙</span>
-                                    <span v-if="scope.row.resType==7">户外路牌</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
                                 prop="ctype"
                                 label="楼盘类型"
                                 min-width="100"

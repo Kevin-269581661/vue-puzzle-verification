@@ -70,9 +70,6 @@
                         <h4 class="community_info_h4">社区类型</h4>
                         <el-row>
                             <el-col :span="6">
-                                <label class="community_info_label">资源类型：</label><span>{{resData.resType == 1 ? '社区' : '写字楼'}}</span>
-                            </el-col>
-                            <el-col :span="6">
                                 <label class="community_info_label">楼盘类型：</label><span>{{resData.houseType || '--'}}</span>
                             </el-col>
                             <el-col :span="6">

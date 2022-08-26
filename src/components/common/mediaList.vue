@@ -157,19 +157,6 @@
             </el-table-column>
 
             <el-table-column
-              column-key="rtName"
-              prop="rtName"
-              label="资源类型"
-              width="130"
-              :filters="[
-                { text: '社区', value: '1' },
-                { text: '写字楼', value: '2' }
-              ]"
-              :filter-multiple="false"
-            >
-            </el-table-column>
-
-            <el-table-column
               prop="city"
               label="城市"
               width="120"
@@ -608,7 +595,6 @@ export default {
         }
       ],
       filterMediaType: '',                   // 表头媒体类型搜索状态
-      resType: '',                    // 搜索的资源类型
       asState: '',                     // 搜索的媒体状态
       asSaleState: '',                //  搜索的售卖状态
       planList: [],                   //  table的所有数据
@@ -838,13 +824,7 @@ export default {
 
     filterChange (filters) {
       for (let key in filters) {
-        if (key === 'rtName') {
-          if (filters[key].length) {
-            this.resType = filters[key][0]
-          } else {
-            this.resType = ''
-          }
-        } else if (key === 'asState') {
+        if (key === 'asState') {
           if (filters[key].length) {
             this.asState = filters[key][0]
           } else {
@@ -895,7 +875,6 @@ export default {
           pageSize: this.pageData.pageSize,
           cityName: this.cityArea.cName,
           regionName: this.cityArea.rName,
-          resType: this.resType,
           asState: this.asState,
           asSaleState: this.asSaleState,
           mediaTypeIds: this.filterMediaType + ''
@@ -1182,7 +1161,6 @@ export default {
       this.filterMediaType = ''
       this.asSaleState = ''
       this.asState = ''
-      this.resType = ''
       this.$refs.tableEl.clearFilter()
       this.getData()
     },

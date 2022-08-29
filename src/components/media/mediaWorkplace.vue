@@ -216,9 +216,18 @@
                   </td>
 
                   <td class="table-td" style="width: 60px">
-                    <div class="font-base">投放排期</div>
+                    <div class="font-base">原投放排期</div>
                     <div class="font-base font-bold">
-                      {{ trItem.startTime }} - {{ trItem.endTime }}
+                      {{
+                        `${trItem.startTime} - ${trItem.endTime}`
+                      }}
+                    </div>
+                  </td>
+
+                  <td class="table-td">
+                    <div class="font-base">调整后下刊日期</div>
+                    <div class="font-base font-bold">
+                      {{ trItem.newEndTime || '--' }}
                     </div>
                   </td>
 

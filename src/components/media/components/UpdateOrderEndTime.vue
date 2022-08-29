@@ -12,11 +12,11 @@
         <i class="el-icon-question"></i> 是否确认调整该订单下刊日期？
       </h2>
       <div class="content">
-        原排期：{{ oldStartTime }}{{ oldStartTime ? '-' : ''
-        }}{{ oldStartTime }}
+        原排期：{{ oldStartTime }}{{ oldEndTime ? '-' : ''
+        }}{{ oldEndTime }}
       </div>
       <div class="content">
-        调整为：{{ newStartTime }}{{ newStartTime ? '-' : '' }}{{ newEndTime }}
+        调整为：{{ newTime }}
       </div>
       <span slot="footer">
         <el-button @click="handleClose">取 消</el-button>
@@ -73,11 +73,7 @@ export default {
       return timeFormat.toDate(this.updateOrderData.endTime, '-', 'zh-cn')
     },
 
-    newStartTime () {
-      return timeFormat.toDate(this.updateOrderData.newStartTime, '-', 'zh-cn')
-    },
-
-    newEndTime () {
+    newTime () {
       return timeFormat.toDate(this.updateOrderData.newEndTime, '-', 'zh-cn')
     }
   },

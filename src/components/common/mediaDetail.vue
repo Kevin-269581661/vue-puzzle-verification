@@ -44,10 +44,6 @@
             <h3>基本信息</h3>
             <el-row type="flex" class="row-bg row_box">
               <el-col :span="6">
-                <label class="ad_mediaInfoPanel_row_title">资源类型：</label
-                ><span>{{ resData.cType }}</span>
-              </el-col>
-              <el-col :span="6">
                 <span class="ad_mediaInfoPanel_row_title">所属城市：</span
                 ><span>{{ resData.city }}</span>
               </el-col>
@@ -532,7 +528,6 @@ export default {
       resID: "",
       resData: {
         resName: "",
-        cType: "",
         city: "",
         cityArea: "",
         tradingArea: "",
@@ -679,7 +674,6 @@ export default {
               let resData = res.data.data;
               this.resData = {
                 resID: this.resID,
-                cType: "",
                 tradingArea: resData.tradingArea,
                 resName: resData.resName,
                 HouseNum: resData.hNum,
@@ -725,21 +719,13 @@ export default {
                 salesPhoneNumber: resData.salesPhoneNumber, // 售楼电话
                 discount: resData.discount, // 折扣信息
               };
-              if (resData.resType == "1") {
-                this.resData.cType = "社区";
+              // if (resData.resType == "1") {
                 this.res_village = {
                   hType: "楼盘类型",
                   hNum: "住户数量",
                   joinTime: "入住年份",
                 };
-              } else if (resData.resType == "2") {
-                this.resData.cType = "写字楼";
-                this.res_village = {
-                  hType: "写字楼楼盘类型",
-                  hNum: "办公室数量",
-                  joinTime: "建成年份",
-                };
-              }
+              // }
               if (resData.latLng.includes(",")) {
                 this.resData.latLng = resData.latLng.replace(/\,/g, ";");
               } else {

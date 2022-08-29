@@ -22,20 +22,6 @@
               ></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="6">
-                  <el-form-item label="资源类型" prop="rt">
-                    <el-select
-                      v-model="recForm.rt"
-                      placeholder="请选择资源类型"
-                      :disabled="pathHaveEdit"
-                      @change="selectRec"
-                      @blur="blurFun('rt')"
-                    >
-                      <el-option label="写字楼" value="2"></el-option>
-                      <el-option label="社区" value="1"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">
                   <el-form-item label="所属城市" prop="city">
                     <el-cascader
                       v-if="cityOther"
@@ -223,9 +209,8 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item
-                    :label="rt_village ? '楼盘类型' : '写字楼类型'"
+                    label="楼盘类型"
                     prop="floorType"
-                    :class="rt_village ? '' : 'floor_house_item'"
                   >
                     <el-select
                       v-model="recForm.floorType"
@@ -244,9 +229,8 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item
-                    :label="rt_village ? '小区户数' : '办公室数量'"
+                    label="小区户数"
                     prop="households"
-                    :class="rt_village ? '' : 'floor_house_item'"
                   >
                     <el-input
                       v-model="recForm.households"
@@ -276,7 +260,7 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item
-                    :label="rt_village ? '入住年份' : '建成年份'"
+                    label="入住年份"
                     prop="liveTime"
                   >
                     <el-date-picker
@@ -671,7 +655,7 @@
                             clearable
                           >
                             <el-option
-                              v-for="(siteName, siteIndex) in ['小区大门', '侧门', '停车场', '单元门', '楼栋门']"
+                              v-for="(siteName, siteIndex) in ['小区大门', '侧门', '楼栋门', '单元门', '室外停车场', '地下停车库', '其他位置']"
                               :key="siteIndex"
                               :label="siteName"
                               :value="siteName"
@@ -1057,7 +1041,6 @@ export default {
       },
       //资源表单
       recForm: {
-        rt: "", //资源类型
         resname: "", // 资源名称
         city: [],
         region: "", // 所属区域
@@ -1098,13 +1081,6 @@ export default {
       // 市区域地址获取经纬度
       resAddres: { city: "", area: "" },
       recRules: {
-        rt: [
-          {
-            required: true,
-            message: "请选择资源类型!",
-            trigger: ["blur", "change"],
-          },
-        ],
         resname: [
           {
             required: true,
@@ -1267,34 +1243,16 @@ export default {
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片
       cityOptions: [], //城市数组
-      rt_village: true, // 资源类型是否是社区
       regionOpt: [], // 地区
       floorType: [
         // 显示-楼盘类型或写字楼类型  普通住宅  别墅 商住
-        { label: "高端住宅", value: "高端住宅" },
-        { label: "普通住宅", value: "普通住宅" },
-        { label: "单体楼", value: "单体楼" },
+        { label: "住宅", value: "住宅" },
+        { label: "写字楼", value: "写字楼" },
         { label: "别墅", value: "别墅" },
-        { label: "洋房", value: "洋房" },
-        { label: "商住或商用", value: "商住或商用" },
+        { label: "商住楼", value: "商住楼" },
         { label: "公共场所", value: "公共场所" },
       ],
-      officeBuilding: [
-        // 写字楼类型
-        { lable: "单纯性写字楼", value: "单纯性写字楼" },
-        { lable: "商住型写字楼", value: "商住型写字楼" },
-        { lable: "综合型写字楼", value: "综合型写字楼" },
-      ],
-      village: [
-        // 社区
-        { label: "高端住宅", value: "高端住宅" },
-        { label: "普通住宅", value: "普通住宅" },
-        { label: "单体楼", value: "单体楼" },
-        { label: "别墅", value: "别墅" },
-        { label: "洋房", value: "洋房" },
-        { label: "商住或商用", value: "商住或商用" },
-        { label: "公共场所", value: "公共场所" },
-      ],
+      
       selectedOptions: [], // 城市默认选项
       pathHaveEdit: false, // 新建/编辑
       mediaImg_title: "", // 媒体图片对应的媒体信息
@@ -2076,19 +2034,6 @@ export default {
         }
       });
     },
-    // 选择资源类型时的修改资源字段显示
-    selectRec(val) {
-      this.recForm.floorType = "";
-      if (val === "1") {
-        // 社区
-        this.rt_village = true;
-        this.floorType = this.village;
-      } else if (val === "2") {
-        // 写字楼
-        this.rt_village = false;
-        this.floorType = this.officeBuilding;
-      }
-    },
     //添加资源媒体
     createRes() {
       this.recForm.uid = this.sessionData.uID;
@@ -2097,7 +2042,6 @@ export default {
         uid: this.recForm.uid,
         rid: Number(this.recForm.region),
         ta: this.recForm.business, // 所属商圈
-        rt: this.recForm.rt, // 资源类型
         resname: this.recForm.resname, // 资源名称
         resaddr: this.recForm.resaddr, // 资源地址
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
@@ -2366,41 +2310,9 @@ export default {
     },
     //广告门图片放大
     handlePictureCardPreview(file) {
-      /* console.log("媒体图片放大", this.arrMedia);
-      let timer = setTimeout(() => {
-        for (let key of this.arrMedia) {
-          if (this.mediaImg_title === key.text) {
-            this.mediaImgTitle = key.mediaForm.mediaName;
-            if (key.mediaForm.mImg.includes(";")) {
-              this.mediaImgSrc = key.mediaForm.mImg.split(";");
-            } else {
-              this.mediaImgSrc = key.mediaForm.mImg.split(",");
-            }
-
-            this.mediaImgDialogVisible = true;
-            break;
-          }
-        }
-        clearTimeout(timer);
-      }, 50); */
     },
     //删除广告门图片
     adHandleRemove(file, fileList) {
-      /* console.log("删除媒体图片", file, fileList);
-      let timer = setTimeout(() => {
-        for (let key of this.arrMedia) {
-          if (this.mediaImg_title === key.text) {
-            if (this.pathHaveEdit) {
-              key.mediaForm.mImg = fileList[0].url;
-            } else {
-              key.mediaForm.mImg = fileList[0].response[0].pURL;
-            }
-            break;
-          }
-        }
-        console.log(this.updataMedia, "删除媒体图片", this.arrMedia);
-        clearTimeout(timer);
-      }, 100); */
     },
     // 表单验证: 资源表单、媒体表单
     submitForm() {
@@ -2544,7 +2456,6 @@ export default {
         // 获取设置资源信息
         let tempObj = {
           resID: recObj.resID,
-          rt: recObj.cType,
           resname: recObj.resName,
           city: this.recForm.city,
           region: recObj.rid.toString(),
@@ -2594,9 +2505,6 @@ export default {
           tempObj.lng = Number(recObj.latLng.split(";")[1]); // 纬度
         } else {
           console.log("暂无经纬度！！");
-        }
-        if (tempObj.rt === "写字楼") {
-          this.selectRec("2");
         }
         this.recForm = tempObj;
         //设置媒体信息

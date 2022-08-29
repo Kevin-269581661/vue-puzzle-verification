@@ -33,16 +33,6 @@
                     <h6 class="community_info_h6">社区类型</h6>
                     <el-row>
                         <el-col :span="6">
-                            <label class="community_info_label">资源类型：</label>
-                            <span v-if="resData.resType == 1">社区</span>
-                            <span v-if="resData.resType == 2">写字楼</span>
-                            <span v-if="resData.resType == 3">街道</span>
-                            <span v-if="resData.resType == 4">地铁</span>
-                            <span v-if="resData.resType == 5">学校</span>
-                            <span v-if="resData.resType == 6">寺庙</span>
-                            <span v-if="resData.resType == 7">户外路牌</span>
-                        </el-col>
-                        <el-col :span="6">
                             <label class="community_info_label">楼盘类型：</label><span>{{resData.ctype || '--'}}</span>
                         </el-col>
                         <el-col :span="6">

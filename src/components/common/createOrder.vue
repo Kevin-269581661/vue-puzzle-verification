@@ -334,7 +334,6 @@ export default {
       inputValue: "",
       selectedOptions: [],
       cityOptions: [],
-      recType: 1, // step2  1:社区 2:写字楼
       mediaType: "广告门", // 媒体类型 广告门、道闸
       shopXY: { x: "", y: "" }, // 动画起始坐标
       shoppingShow: false, //动画效果的显示隐藏
@@ -378,12 +377,10 @@ export default {
       selectValue: "资源名称",
       //楼盘类型
       buildType: [
-        { buildlabel: "高端住宅", buildValue: "高端住宅" },
-        { buildlabel: "普通住宅", buildValue: "普通住宅" },
-        { buildlabel: "单体楼", buildValue: "单体楼" },
+        { buildlabel: "住宅", buildValue: "住宅" },
+        { buildlabel: "写字楼", buildValue: "写字楼" },
         { buildlabel: "别墅", buildValue: "别墅" },
-        { buildlabel: "洋房", buildValue: "洋房" },
-        { buildlabel: "商住或商用", buildValue: "商住或商用" },
+        { buildlabel: "商住楼", buildValue: "商住楼" },
         { buildlabel: "公共场所", buildValue: "公共场所" },
       ],
       village: [

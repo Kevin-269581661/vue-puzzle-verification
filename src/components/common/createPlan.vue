@@ -333,21 +333,6 @@
             <!--类型区域选择面板-->
             <div class="dw-panel" v-show="isOccupied">
               <dl>
-                <dt>资源类型：</dt>
-                <dd
-                  :class="recType === 1 ? 'active' : ''"
-                  @click="activeRecType(1)"
-                >
-                  社区
-                </dd>
-                <dd
-                  :class="recType === 2 ? 'active' : ''"
-                  @click="activeRecType(2)"
-                >
-                  写字楼
-                </dd>
-              </dl>
-              <dl>
                 <dt>媒体类型：</dt>
                 <dd
                   :class="mediaType === '广告门' ? 'active' : ''"
@@ -405,7 +390,7 @@
                   </el-select>
                   <el-select
                     v-model="buildValue"
-                    :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
+                    placeholder="楼盘类型"
                     :class="buildValue !== '' ? 'otherSelectActive' : ''"
                     size="small"
                     class="otherSelect"
@@ -749,7 +734,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  :label="recType == '1' ? '楼盘类型' : '写字楼类型'"
+                  label="楼盘类型"
                   min-width="100"
                   prop="cType"
                   :show-overflow-tooltip="true"
@@ -773,14 +758,14 @@
                 <el-table-column
                   prop="chDay"
                   align="right"
-                  :label="recType === 1 ? '入住年份' : '建成年份'"
+                  label="入住年份"
                   min-width="90"
                 >
                 </el-table-column>
                 <el-table-column
                   prop="hNum"
                   align="right"
-                  :label="recType === 1 ? '小区户数' : '办公室数量'"
+                  label="小区户数"
                   min-width="90"
                 >
                 </el-table-column>
@@ -1061,7 +1046,6 @@ export default {
       cityOptions: [],
       cityOther: false, // 判断是否可选择全国城市
       isBD: true, // 判断登录用户是否为销售
-      recType: 1, // step2  1:社区 2:写字楼
       mediaType: "广告门", // 媒体类型 广告门、道闸
       shopXY: { x: "", y: "" }, // 动画起始坐标
       shoppingShow: false, //动画效果的显示隐藏
@@ -1105,12 +1089,10 @@ export default {
       selectValue: "资源名称",
       //楼盘类型
       buildType: [
-        { buildlabel: "高端住宅", buildValue: "高端住宅" },
-        { buildlabel: "普通住宅", buildValue: "普通住宅" },
-        { buildlabel: "单体楼", buildValue: "单体楼" },
+        { buildlabel: "住宅", buildValue: "住宅" },
+        { buildlabel: "写字楼", buildValue: "写字楼" },
         { buildlabel: "别墅", buildValue: "别墅" },
-        { buildlabel: "洋房", buildValue: "洋房" },
-        { buildlabel: "商住或商用", buildValue: "商住或商用" },
+        { buildlabel: "商住楼", buildValue: "商住楼" },
         { buildlabel: "公共场所", buildValue: "公共场所" },
       ],
       village: [
@@ -1520,7 +1502,6 @@ export default {
       this.getAdsParamsData = {
         prID: this.city[0].rid,
         riD: this.city[0].rid,
-        resType: this.recType,
         mVehicle: this.mediaType,
         pageNum: this.pageNum,
         pageSize: this.pageSize, //
@@ -2311,7 +2292,6 @@ export default {
     // 初始化step2的数据
     initStep2Data () {
       this.loadScroll = true;
-      this.recType = 1;
       this.pageNum = 1;
       this.planList = [];
       this.activeIndex = 0;
@@ -2647,21 +2627,6 @@ export default {
       this.mapBtn = false;
       this.dialogVisible();
     },
-
-    // step2, 资源类型切换
-    activeRecType (num) {
-      this.buildValue = "";
-      this.getAdsParamsData.buildType = "";
-      if (num == "1") {
-        this.buildType = this.village;
-      } else if (num == "2") {
-        this.buildType = this.officeBuilding;
-      }
-      this.setpageNumAndTableData();
-      this.recType = num;
-      this.getAdsParamsData.resType = num;
-      this.getAdList();
-    },
     //媒体类型切换
     activeMediaType (mType) {
       console.log("媒体类型", mType);
@@ -2677,7 +2642,6 @@ export default {
       this.activeRName = item.rName;
       this.activeCityData = item;
       this.areaName = "全市";
-      // this.getAdsParamsData.area = "";
       this.getAdsParamsData.rID = "";
       this.getAdsParamsData.prID = this.city[index].rid;
       this.setpageNumAndTableData();
@@ -3451,7 +3415,6 @@ export default {
           riD: this.city[0].rid,
           dateTimeBegin: this.dateInput[0],
           dateTimeEnd: this.dateInput[1],
-          resType: this.recType,
           mVehicle: this.mediaType,
           pageNum: this.pageNum,
           pageSize: this.pageSize,

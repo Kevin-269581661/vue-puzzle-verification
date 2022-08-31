@@ -548,13 +548,11 @@
                 bType:[],
                 // 楼盘类型下拉
                 buildTypeList: [
-                    {buildlabel: '高端住宅', buildValue: '高端住宅'},
-                    {buildlabel: '普通住宅', buildValue: '普通住宅'},
-                    {buildlabel: '单体楼', buildValue: '单体楼'},
-                    {buildlabel: '别墅', buildValue: '别墅'},
-                    {buildlabel: '洋房', buildValue: '洋房'},
-                    {buildlabel: '商住或商用', buildValue: '商住或商用'},
-                    {buildlabel: '公共场所', buildValue: '公共场所'}
+                    { buildlabel: "住宅", buildValue: "住宅" },
+                    { buildlabel: "写字楼", buildValue: "写字楼" },
+                    { buildlabel: "别墅", buildValue: "别墅" },
+                    { buildlabel: "商住楼", buildValue: "商住楼" },
+                    { buildlabel: "公共场所", buildValue: "公共场所" },
                 ],
                 // 广告限制
                 ADLimit: [],
@@ -1589,7 +1587,6 @@
             },
             // 楼盘类型
             filterBuildType() {
-                console.log('楼盘类型---',this.bType)
                 this.filterResFun()
             },
             // 广告限制

@@ -337,21 +337,6 @@
             <!--类型区域选择面板-->
             <div class="dw-panel" v-show="isOccupied">
               <dl>
-                <dt>资源类型：</dt>
-                <dd
-                  :class="recType === 1 ? 'active' : ''"
-                  @click="activeRecType(1)"
-                >
-                  社区
-                </dd>
-                <dd
-                  :class="recType === 2 ? 'active' : ''"
-                  @click="activeRecType(2)"
-                >
-                  写字楼
-                </dd>
-              </dl>
-              <dl>
                 <dt>媒体类型：</dt>
                 <dd
                   v-for="(item, index) in mediaTypeObjectArr"
@@ -411,7 +396,7 @@
                   </el-select>
                   <el-select
                     v-model="buildValue"
-                    :placeholder="recType == '1' ? '楼盘类型' : '写字楼类型'"
+                    placeholder="楼盘类型"
                     :class="buildValue !== '' ? 'otherSelectActive' : ''"
                     size="small"
                     class="otherSelect"
@@ -897,7 +882,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  :label="recType == 1 ? '楼盘类型' : '写字楼类型'"
+                  label="楼盘类型"
                   min-width="100"
                   prop="buildType"
                   :show-overflow-tooltip="true"
@@ -928,14 +913,14 @@
                 <el-table-column
                   prop="liveYear"
                   align="right"
-                  :label="recType === 1 ? '入住年份' : '建成年份'"
+                  label="入住年份"
                   min-width="90"
                 >
                 </el-table-column>
                 <el-table-column
                   prop="houseNum"
                   align="right"
-                  :label="recType === 1 ? '小区户数' : '办公室数量'"
+                  label="小区户数"
                   min-width="90"
                 >
                 </el-table-column>
@@ -1747,8 +1732,6 @@ export default {
       cityOther: false,
       // 判断登录用户是否为销售
       isBD: true,
-      // step2  1:社区 2:写字楼
-      recType: 1,
       // 媒体类型 广告门、道闸
       currentMediaType: "",
       // 动画起始坐标
@@ -1804,12 +1787,10 @@ export default {
       selectValue: "资源名称",
       //楼盘类型
       buildType: [
-        { buildlabel: "高端住宅", buildValue: "高端住宅" },
-        { buildlabel: "普通住宅", buildValue: "普通住宅" },
-        { buildlabel: "单体楼", buildValue: "单体楼" },
+        { buildlabel: "住宅", buildValue: "住宅" },
+        { buildlabel: "写字楼", buildValue: "写字楼" },
         { buildlabel: "别墅", buildValue: "别墅" },
-        { buildlabel: "洋房", buildValue: "洋房" },
-        { buildlabel: "商住或商用", buildValue: "商住或商用" },
+        { buildlabel: "商住楼", buildValue: "商住楼" },
         { buildlabel: "公共场所", buildValue: "公共场所" },
       ],
       village: [
@@ -3280,7 +3261,6 @@ export default {
     },
     // 初始化step2的数据
     initStep2Data() {
-      this.recType = 1;
       this.pageNo = 1;
       this.planList = [];
       this.activeIndex = 0;
@@ -3468,7 +3448,6 @@ export default {
       this.loading = true;
       (this.getAdsParamsData.prID = this.city[this.activeIndex].rid),
         (this.getAdsParamsData.act = 1),
-        (this.getAdsParamsData.resType = this.recType),
         (this.getAdsParamsData.mediaTypeId = this.currentMediaType),
         (this.getAdsParamsData.dateTimeBegin = this.dateInput[0]);
       this.getAdsParamsData.dateTimeEnd = this.dateInput[1];
@@ -3860,7 +3839,6 @@ export default {
         total: this.oneKeyPointData.TotalPoint,
         everyResNumber: this.oneKeyPointData.pointNumByRes,
         labAPercent: this.oneKeyPointData.A_cale,
-        rt: this.recType,
         rhn: this.houseNum[0],
         shn: this.houseNum[1],
         shp: this.buildPrice[0] * 100,
@@ -3986,19 +3964,6 @@ export default {
         }
         clearTimeout(timer);
       }, 1000 * 65);
-    },
-    // step2, 资源类型切换
-    activeRecType(num) {
-      this.buildValue = "";
-      this.getAdsParamsData.buildType = "";
-      if (num == "1") {
-        this.buildType = this.village;
-      } else if (num == "2") {
-        this.buildType = this.officeBuilding;
-      }
-      this.setPageNoAndTableData();
-      this.recType = num;
-      this.getAdList();
     },
     //媒体类型切换
     activeMediaType(mType) {

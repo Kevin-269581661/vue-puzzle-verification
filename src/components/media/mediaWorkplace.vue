@@ -120,9 +120,22 @@
                       {{ trItem.opportunityName || '--' }}
                     </div>
                     <div class="font-base">
-                      {{
-                        `${trItem.companyName || '--'}·${trItem.customerName}`
-                      }}
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        :content="`${trItem.companyName || '--'}·${
+                          trItem.customerName
+                        }`"
+                        placement="top-start"
+                      >
+                        <div class="ellipsis">
+                          {{
+                            `${trItem.companyName || '--'}·${
+                              trItem.customerName
+                            }`
+                          }}
+                        </div>
+                      </el-tooltip>
                     </div>
                   </td>
 
@@ -195,9 +208,22 @@
                       {{ trItem.opportunityName || '--' }}
                     </div>
                     <div class="font-base">
-                      {{
-                        `${trItem.companyName || '--'}·${trItem.customerName}`
-                      }}
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        :content="`${trItem.companyName || '--'}·${
+                          trItem.customerName
+                        }`"
+                        placement="top-start"
+                      >
+                        <div class="ellipsis">
+                          {{
+                            `${trItem.companyName || '--'}·${
+                              trItem.customerName
+                            }`
+                          }}
+                        </div>
+                      </el-tooltip>
                     </div>
                   </td>
 
@@ -557,5 +583,12 @@ export default {
       cursor: pointer;
     }
   }
+}
+
+.ellipsis {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

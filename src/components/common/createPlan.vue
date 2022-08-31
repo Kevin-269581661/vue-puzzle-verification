@@ -150,6 +150,46 @@
                 </el-select>
               </el-form-item>
               <el-form-item
+                v-if="isPay && BDData.uType === 'ADN_BD'"
+                label="关联商机："
+                prop="opportunityId"
+              >
+                <el-select
+                  v-model="planForm.opportunityId"
+                  size="small"
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in opportunityList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                v-if="isPay && BDData.uType === 'ADN_BD'"
+                label="媒体类型："
+                prop="customerMediaType"
+              >
+                <el-select
+                  v-model="planForm.customerMediaType"
+                  size="small"
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in customerMediaTypeList"
+                    :key="item.customerMediaType"
+                    :label="item.customerMediaTypeName"
+                    :value="item.customerMediaType"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
                 v-if="BDData.uType == 'ADN_BD_KA'"
                 label="归属公司："
                 prop="pointOfAsrIDs"
@@ -976,6 +1016,7 @@ export default {
       }
     };
     return {
+      isPay: 0,
       //继续编辑cName
       cacheCName: "",
       cacheBTitle: "",
@@ -1089,10 +1130,16 @@ export default {
         adcID: "", // 所属联系人
         planRemark: "",
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
+        opportunityId: undefined, // 关联商机
+        customerMediaType: undefined, // 关联商机
         customerBudget: "",
         customerDemand: "",
       },
       pointOfAsrIDs: [],
+      // 本地客户商机列表
+      opportunityList: [],
+      // 销售crm的媒体类型列表
+      customerMediaTypeList: [],
       // 媒介选择所属销售列表
       salerList: [],
       // 获取销售选项loading
@@ -1132,6 +1179,20 @@ export default {
           {
             required: true,
             message: "请选择归属公司(可多选)",
+            trigger: "blur",
+          },
+        ],
+        opportunityId: [
+          {
+            required: true,
+            message: "请选择关联商机",
+            trigger: "blur",
+          },
+        ],
+        customerMediaType: [
+          {
+            required: true,
+            message: "请选择媒体类型",
             trigger: "blur",
           },
         ],
@@ -1263,8 +1324,12 @@ export default {
       customPermission: {},
     };
   },
-  mounted () {
+  created() {
     this.getsessionData(); // 获取session中的数据
+    this.requestIsPay()
+    this.getCustomerMediaTypeList()
+  },
+  mounted () {
     this.areaCity = areaArr.cityArea();
     this.getADLimit(); // 获取广告限制列表
     // 设置购物车动画起点位置
@@ -1286,10 +1351,27 @@ export default {
         this.getPointOfAsr();
       },
     },
+    "planForm.companyBrand": {
+      handler: function () {
+        this.planForm.opportunityId = undefined;
+        this.opportunityList = [];
+        if (!this.planForm.companyBrand &&  typeof this.planForm.companyBrand !== 'number') return;
+        this.getOpportunityList();
+      },
+    },
   },
   computed: {
   },
   methods: {
+    requestIsPay() {
+      api.getApi('/addsp/api/v1/company/isPay', {
+          asrID: this.sessionData.asrID
+      }).then(res => {
+          if (res.data.SysCode === 200200 && res.data.data === true) {
+            this.isPay = 1;
+          }
+      })
+    },
     //投放面数限制
     planAdsCntChange (value) {
       let reg = /^\d{1,}$/;
@@ -1573,8 +1655,35 @@ export default {
           }
         });
     },
-    // 下一步
-    // TODO:下一步创建方案
+    // 获取本地客户商机列表
+    getOpportunityList() {
+      let params = {
+        brandId: this.planForm.companyBrand,
+        saleId: this.BDData.uid,
+      };
+      api
+        .getApi("/addsp/api/v1/adPlan/listLocalOpportunity", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.opportunityList = res.data.data || [];
+          } else {
+            sessFun.messageFun("warning", res.data.MSG);
+          }
+        });
+    },
+    // 获取销售crm的媒体类型列表
+    getCustomerMediaTypeList() {
+      api
+        .getApi("/addsp/api/v1/adPlan/listCustomerMediaType")
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.customerMediaTypeList = res.data.data || [];
+          } else {
+            sessFun.messageFun("warning", res.data.MSG);
+          }
+        });
+    },
+    // 下一步创建方案
     next () {
       if (this.active === 0) {
         console.log("planForm--", this.planForm);
@@ -3243,6 +3352,14 @@ export default {
         token: this.sessionData.token,
         ...this.importDraftsConfig,
       };
+      if(this.isPay && this.BDData.uType === 'ADN_BD') {
+        const tempOpportunity = this.opportunityList.find(opportunity => 
+          opportunity.opportunityId === this.planForm.opportunityId
+        );
+        params.opportunityId = this.planForm.opportunityId;
+        params.opportunityName = tempOpportunity && tempOpportunity.opportunityName;
+        params.customerMediaType = this.planForm.customerMediaType;
+      }
       api.postApi(this.apiVar.CreateAdBackUp, params).then((res) => {
         console.log("res创建方案缓存", res);
         if (res.data.SysCode == 200200) {

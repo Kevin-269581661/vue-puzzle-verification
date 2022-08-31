@@ -243,6 +243,7 @@ export default {
     // 批量登记媒体至小区
     batchRegister() {
       if (Array.isArray(this.registerIDs) && this.registerIDs.length) {
+        this.loading = true;
         api
           .postApi_json("/addsp/api/v1/register/batch", {
             registerIDs: this.registerIDs,
@@ -267,6 +268,7 @@ export default {
             console.log(err);
           })
           .finally(() => {
+            this.loading = false;
             this.registerIDs = [];
             this.singleRegisterResID = null;
             this.checkAll = false;

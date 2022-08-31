@@ -343,7 +343,6 @@
                       class="finish"
                       >结束订单
                     </el-dropdown-item>
-                    <!-- <el-dropdown-item :disabled="(role!='SM')" @click.native.prevent="applyPhoto(scope.row)" class="finish">申请画像</el-dropdown-item> -->
                     <el-dropdown-item
                       :disabled="
                         scope.row.apState == 0 ||
@@ -381,15 +380,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 画像申请的弹出框开始 -->
-    <el-dialog :visible.sync="showPhoto" title="协助客户开通受众画像" center>
-      <applyphoto
-        @cancel="cancelApply"
-        @apply="confirmApply"
-        :data="houselist"
-      ></applyphoto>
-    </el-dialog>
     <!-- 画像申请的弹出框结束 -->
     <!--修改金额弹框-->
     <changeProposalOrderPrice
@@ -413,8 +403,6 @@ import dateFormat from "../../commonFun/timeFormat.js";
 // 价格格式化
 import commaFormat from "../../commonFun/commaFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
-// 画像申请
-import applyphoto from "./components/applyPhoto.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
@@ -423,7 +411,6 @@ import filterFormat from "../../commonFun/filterTableData.js";
 export default {
   name: "projectList",
   components: {
-    applyphoto,
     noSearchResult,
     pointState,
     changeProposalOrderPrice,
@@ -485,11 +472,6 @@ export default {
       orderListIndex: 0,
       isSearch: true,
       isReset: true,
-      // 开通画像需要使用的数据
-      showPhoto: false,
-      houselist: [],
-      // 保留点击申请画像当前行
-      orderRow: {},
       //修改订单金额数据
       changePriceModal: false,
       changePriceData: {
@@ -868,7 +850,6 @@ export default {
         }
       )
         .then(() => {
-          this.orderRow = row;
           this.currApid = row.apID;
           const loading = this.$loading({
             lock: true,
@@ -1057,58 +1038,6 @@ export default {
       }, 1000);
       this.searchFun();
     },
-    // 申请画像
-    applyPhoto(row) {
-      console.log("row---------", row);
-      // this.showPhoto = true;
-      this.orderRow = row;
-      this.getSetPoint();
-    },
-    // 获取选点排期
-    getSetPoint() {
-      // 真实数据
-      let uid = this.sessionData.uID;
-      let apid = this.orderRow.apID;
-      let info = {
-        uid: uid,
-        token: this.sessionData.token,
-        apid: apid,
-      };
-      // uid         int【必填】     当前账户UserID
-      // apid        int             公司对应方案apID
-      api
-        .getApi(this.apiVar.Advertisement + "/GetAdLaunch", info)
-        .then((res) => {
-          console.log(res.data);
-          if (!res.data.SysCode) {
-            let result = res.data.adSpaceInfo;
-            for (let data of result) {
-              let time =
-                this.formatTime(data.lStar) + "-" + this.formatTime(data.lEnd);
-              data.timeRange = time;
-              let finishTimeRange = "";
-              if (data.lState == 2) {
-                finishTimeRange =
-                  this.formatTime(data.lStar) +
-                  "-" +
-                  this.formatTime(data.lSetTime);
-              }
-              data.finishTimeRange = finishTimeRange;
-            }
-            console.log("initData-----------", result);
-            let resultArr = this.filterRes(result);
-            console.log("resultaRR---------", resultArr);
-            this.getIsOpenRes(resultArr);
-            // this.loading = false;
-          } else {
-            Message.warning(res.data.MSG);
-          }
-        })
-        .catch((res) => {
-          // this.loading = false;
-          console.log(res);
-        });
-    },
     // 过滤资源
     filterRes(arr) {
       let result_ = [];
@@ -1126,95 +1055,6 @@ export default {
       }
       console.log("RESULT---------", result_);
       return result_;
-    },
-    // 获取是否开通社区
-    getIsOpenRes(arr) {
-      // SelectByApID
-      // apId[必填]     关联订单ID
-      // uid[必填]      用户ID
-      // tooken[必填]   登陆凭证
-      let info = {
-        apid: this.orderRow.apID,
-        uid: this.sessionData.uID,
-        tooken: this.sessionData.token,
-        apname: this.orderRow.apName,
-      };
-      api.getApi(this.apiVar.QZhike + "/SelectByApID", info).then((res) => {
-        console.log(res.data);
-        if (res.data) {
-          let result = res.data;
-          // 过滤后已经申请的社区
-          for (let i = 0; i < arr.length; i++) {
-            for (let j = 0; j < result.length; j++) {
-              if (
-                arr[i].resID == result[j].resID &&
-                (result[j].aiState == 1 || result[j].aiState == 0)
-              ) {
-                arr.splice(i, 1);
-                i--;
-                break;
-              }
-            }
-          }
-          this.houselist = arr;
-          this.houselist.push();
-          if (this.houselist.length) {
-            this.showPhoto = true;
-          } else {
-            sessFun.messageFun("info", "部分社区审核中");
-          }
-        } else {
-          sessFun.messageFun("warning", res.data.MSG);
-        }
-      });
-    },
-    cancelApply() {
-      sessFun.messageFun("info", "取消画像申请");
-      this.showPhoto = !this.showPhoto;
-    },
-    confirmApply(data) {
-      console.log("data------", data);
-      this.showPhoto = !this.showPhoto;
-      for (let obj of data.resData) {
-        let info = {
-          uname: this.sessionData.realName,
-          apid: this.orderRow.apID,
-          resid: obj.resID,
-          uid: this.sessionData.uID,
-          tooken: this.sessionData.token,
-          gsday: obj.schedules[0],
-          geday: obj.schedules[1],
-          apname: this.orderRow.apName,
-          gid: this.orderRow.adcID,
-          ctlist: data.hoppyType.join(","),
-        };
-        this.downApi(info);
-      }
-    },
-    // 超管申请画像
-    downApi(info) {
-      // apid[必填]    关联订单ID
-      // resid[必填]   社区唯一标识
-      // uid[必填]     申请人ID
-      // tooken[必填]  登陆凭证
-      // gsday[必填]   申请开通的开始时间
-      // geday[必填]   申请开通的结束时间
-      // ctlist[必填]  消费偏好
-      api.getApi(this.apiVar.QZhike + "/AdminSetApply", info).then((res) => {
-        console.log(res.data);
-        if (res.data.SysCode == 700200) {
-          Message.success(res.data.MSG);
-          for (let resData of this.houselist) {
-            if (resData.resID == this.resid) {
-              this.$set(resData, "aiState", 0);
-              break;
-            }
-          }
-          this.houselist.push();
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      });
     },
     //表头筛选投放状态
     filterChange(filters){

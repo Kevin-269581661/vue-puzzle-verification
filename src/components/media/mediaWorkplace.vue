@@ -154,7 +154,7 @@
                   </td>
 
                   <td class="table-td" style="width: 60px">
-                    <div class="font-base">投放排期</div>
+                    <div class="font-base">预计投放节点</div>
                     <div class="font-base font-bold">
                       {{ trItem.launchTime || '--' }}
                     </div>

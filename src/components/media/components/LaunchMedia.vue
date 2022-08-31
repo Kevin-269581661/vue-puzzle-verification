@@ -412,10 +412,11 @@ export default {
       let bodyData = {}
 
       if (isRelevancy === 1) {
+        const endTime = this.nationalOrderList.filter(item => item.sourceId === sourceId)[0].orderEndTime
         bodyData = {
           sourceId,
           recordId: this.orderData.recordId,
-          orderEndTime
+          orderEndTime: endTime
         }
       } else {
         bodyData = {

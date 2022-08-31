@@ -5,7 +5,7 @@
         class="u-input"
         v-model="searchKeyword"
         size="mini"
-        placeholder="项目名称/资产编号/合同编号"
+        :placeholder="searchPlaceholder"
       >
         <el-button
           slot="append"
@@ -218,9 +218,7 @@
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">原投放排期</div>
                     <div class="font-base font-bold">
-                      {{
-                        `${trItem.startTime} - ${trItem.endTime}`
-                      }}
+                      {{ `${trItem.startTime} - ${trItem.endTime}` }}
                     </div>
                   </td>
 
@@ -314,7 +312,9 @@ export default {
       orderData: {},
 
       updateOderVisible: false,
-      updateOrderData: {}
+      updateOrderData: {},
+
+      searchPlaceholder: '项目名称/资产编号/合同编号'
     };
   },
   methods: {
@@ -441,14 +441,17 @@ export default {
     getData () {
       switch (this.activeName) {
         case 'register':
+          this.searchPlaceholder = '项目名称/资产编号/合同编号'
           this.getRegistrationList();
           break;
 
         case 'launch':
+          this.searchPlaceholder = '公司名称/品牌名称/所属销售'
           this.getConfirmLaunchList();
           break;
 
         case 'updateOrderEndTimeList':
+          this.searchPlaceholder = '公司名称/品牌名称/所属销售'
           this.getUpdateOrderEndTimeList()
           break
         default:

@@ -94,6 +94,7 @@ export default {
               type: "success",
               message: '调整下刊时间成功',
             })
+            this.$parent.handleTabClick()
             this.handleClose()
           } else {
             this.loading = false

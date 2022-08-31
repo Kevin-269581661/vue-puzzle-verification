@@ -439,6 +439,7 @@ export default {
               type: "success",
               message: '投放成功',
             })
+            this.$parent.handleTabClick()
             this.handleClose()
           } else {
             this.loading = false

@@ -1190,14 +1190,14 @@ export default {
             message: "请选择关联商机",
             trigger: "blur",
           },
-        ],
+        ], */
         customerMediaType: [
           {
             required: true,
             message: "请选择媒体类型",
             trigger: "blur",
           },
-        ], */
+        ],
         //客户预算
         customerBudget: [{ validator: validateBudget, trigger: "blur" }],
         //客户要求
@@ -3354,12 +3354,14 @@ export default {
         token: this.sessionData.token,
         ...this.importDraftsConfig,
       };
-      if(this.isPay && this.BDData.uType === 'ADN_BD' && this.planForm.opportunityId) {
-        const tempOpportunity = this.opportunityList.find(opportunity => 
-          opportunity.opportunityId === this.planForm.opportunityId
-        );
-        params.opportunityId = this.planForm.opportunityId;
-        params.opportunityName = (tempOpportunity && tempOpportunity.opportunityName) || '';
+      if(this.isPay && this.BDData.uType === 'ADN_BD') {
+        if(this.planForm.opportunityId) {
+          const tempOpportunity = this.opportunityList.find(opportunity => 
+            opportunity.opportunityId === this.planForm.opportunityId
+          );
+          params.opportunityId = this.planForm.opportunityId;
+          params.opportunityName = (tempOpportunity && tempOpportunity.opportunityName) || '';
+        }
         params.customerMediaType = this.planForm.customerMediaType || null;
       }
       api.postApi(this.apiVar.CreateAdBackUp, params).then((res) => {

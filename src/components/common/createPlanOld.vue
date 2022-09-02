@@ -159,6 +159,7 @@
                   size="small"
                   filterable
                   placeholder="请选择"
+                  clearable
                 >
                   <el-option
                     v-for="item in opportunityList"
@@ -178,6 +179,7 @@
                   v-model="planForm.customerMediaType"
                   size="small"
                   filterable
+                  clearable
                   placeholder="请选择"
                 >
                   <el-option
@@ -1884,13 +1886,13 @@ export default {
             trigger: "blur",
           },
         ],
-        opportunityId: [
+        /* opportunityId: [
           {
             required: true,
             message: "请选择关联商机",
             trigger: "blur",
           },
-        ],
+        ], */
         customerMediaType: [
           {
             required: true,
@@ -5345,12 +5347,14 @@ export default {
         delete params.suid;
       }
       if(this.isPay && this.BDData.uType === 'ADN_BD') {
-        const tempOpportunity = this.opportunityList.find(opportunity => 
-          opportunity.opportunityId === this.planForm.opportunityId
-        );
-        params.opportunityId = this.planForm.opportunityId;
-        params.opportunityName = tempOpportunity && tempOpportunity.opportunityName;
-        params.customerMediaType = this.planForm.customerMediaType;
+        if(this.planForm.opportunityId) {
+          const tempOpportunity = this.opportunityList.find(opportunity => 
+            opportunity.opportunityId === this.planForm.opportunityId
+          );
+          params.opportunityId = this.planForm.opportunityId;
+          params.opportunityName = (tempOpportunity && tempOpportunity.opportunityName) || '';
+        }
+        params.customerMediaType = this.planForm.customerMediaType || null;
       }
       api
         .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)

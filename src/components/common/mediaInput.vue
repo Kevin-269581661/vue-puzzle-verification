@@ -563,7 +563,7 @@
                           :rules="[{
                             validator: validateMediaName, 
                             trigger: ['blur', 'change'],
-                            options: {checkMediaTypeIndex: mediaTypeIndex}
+                            options: {checkMediaTypeIndex: mediaTypeIndex, mediaIndexOfMediaType: mediaIndex}
                           },
                           {
                             required: true,
@@ -2002,14 +2002,18 @@ export default {
     // 媒体名称校验去重
     validateMediaName(rule, value, callback, source, options) {
       const checkMediaTypeIndex = rule.options.checkMediaTypeIndex;
+      const mediaIndexOfMediaType = rule.options.mediaIndexOfMediaType;
       const mediaTypeLength = this.mediaTypeList.length;
       if (checkMediaTypeIndex >= 0 && checkMediaTypeIndex < mediaTypeLength) {
         let result = 0;
         let tempMediaList = this.mediaTypeList[checkMediaTypeIndex].mediaList;
         let mediaLength = tempMediaList.length;
+        const currentMediaItem = tempMediaList[mediaIndexOfMediaType]
+        const { mediaForm: currentMediaForm = {} } = currentMediaItem
+        const { doorType: currentDoorType = '', mediaName } = currentMediaForm
         for (let mediaIndex = 0; mediaIndex < mediaLength; mediaIndex++) {
           let mediaItem = tempMediaList[mediaIndex];
-          if (mediaItem.mediaForm.mediaName === value) {
+          if (mediaItem.mediaForm.mediaName === mediaName && currentDoorType !== ''  && mediaItem.mediaForm.doorType === currentDoorType) {
             result += 1;
           }
         }

@@ -284,6 +284,160 @@
             </el-pagination>
           </template>
         </el-tab-pane>
+
+        <el-tab-pane
+          label="订单图片审核"
+          name="orderImgCheck"
+          v-if="!['ADN_MD'].includes(sessionData.uType)"
+        >
+          <template>
+            <div class="handel_ul">
+                <li class="handel_ul_li">
+                    <span class="li-label">订单名称：</span>
+                    <el-input
+                        v-model="searchParams.orderTitle"
+                        style="width: 236px;"
+                        placeholder="请输入订单名称"
+                        class="input-with-select u-key"
+                        size="small"
+                    >
+                    </el-input>
+                </li>
+                <li class="handel_ul_li">
+                    <span class="li-label">监播类型：</span>
+                    <el-select
+                        v-model="searchParams.reportType"
+                        placeholder="请选择监播类型"
+                        :clearable="true"
+                        style="width: 236px"
+                        size="small"
+                    >
+                        <el-option label="上刊报告" value="上刊报告"></el-option>
+                        <el-option label="下刊报告" value="下刊报告"></el-option>
+                    </el-select>
+                </li>
+                <li class="handel_ul_li">
+                    <span class="li-label">审核状态：</span>
+                    <el-select
+                        v-model="searchParams.auditStatus"
+                        placeholder="请选择审核状态"
+                        :clearable="true"
+                        style="width: 236px"
+                        size="small"
+                    >
+                        <el-option label="已审核" :value="0"></el-option>
+                        <el-option label="未审核" :value="1"></el-option>
+                    </el-select>
+                </li>
+                <li class="handel_ul_li">
+                    <span class="li-label">图片更新：</span>
+                    <el-select
+                        v-model="searchParams.updateDate"
+                        placeholder="请选择图片更新状态"
+                        :clearable="true"
+                        style="width: 236px"
+                        size="small"
+                    >
+                        <el-option label="已更新" :value="0"></el-option>
+                        <el-option label="未更新" :value="1"></el-option>
+                    </el-select>
+                </li>
+                <li class="handel_ul_li">
+                    <span class="li-label">监播日期：</span>
+                    <el-date-picker
+                        v-model="searchParams.launchDate"
+                        size="small"
+                        type="daterange"
+                        range-separator="-"
+                        value-format="yyyy-MM-dd"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
+                    </el-date-picker>
+                </li>
+                <li class="handel_ul_li handel_ul_li_btn">
+                    <el-button
+                        type="primary"
+                        icon="el-icon-search"
+                        @click="toSearchParams()"
+                    >
+                        搜索</el-button>
+                    <el-button plain @click="toResetParams()">重置</el-button>
+                </li>
+            </div>
+            <table v-if="tableData.length" style="width: 100%">
+              <tbody>
+                <tr
+                  v-for="(trItem, trIndex) in tableData"
+                  :key="trIndex"
+                  class="table-tr"
+                >
+                  <td class="table-td" style="width: 60px">
+                    <div class="primary-title">
+                        <div class="is-new" v-if="trItem.isNew==0">新</div>
+                        <div class="font-base font-bold" style="font-size: 16px">
+                      {{ trItem.orderTitle || '--' }}
+                        </div>
+                    </div>
+                    <div class="font-base">
+                        <div class="ellipsis">
+                          {{ trItem.reportType || '--' }}
+                        </div>
+                    </div>
+                  </td>
+
+                  <td class="table-td" style="width: 60px">
+                    <div class="font-base">投放日期</div>
+                    <div class="font-base font-bold">
+                      {{ `${trItem.launchDateBegin} - ${trItem.launchDateEnd}` || '--'}}
+                    </div>
+                  </td>
+
+                  <td class="table-td" style="width: 60px">
+                    <div class="font-base">监播点位</div>
+                    <div class="font-base font-bold">
+                      {{ `${ trItem.underMoint }/${ trItem.monitPoint }` || '--' }}
+                    </div>
+                  </td>
+
+                  <td class="table-td" style="width: 60px">
+                    <div class="font-base">最近图片更新时间</div>
+                    <div class="font-base font-bold">
+                      {{ trItem.updateTime || '--' }}
+                    </div>
+                  </td>
+
+                  <td class="table-td">
+                    <div class="font-base">审核状态</div>
+
+                    <div class="font-base font-bold">
+                        <span class="point" :class="trItem.auditStatus==0? 'success':'warning'"></span>
+                      {{ trItem.auditStatus==0?'已审核':'未审核' || '--' }}
+
+                    </div>
+                  </td>
+
+                  <td class="operate-text" @click="checkOrderImg(trItem)">
+                    查看
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <el-empty v-else :image-size="200"></el-empty>
+            <!-- :hide-on-single-page="true" -->
+            <el-pagination
+              background
+              @size-change="sizeChange"
+              @current-change="changePage"
+              :current-page.sync="currentPage"
+              :page-sizes="pageSizes"
+              :page-size.sync="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="paginationTotal"
+              style="margin-top: 14px; text-align: right"
+            >
+            </el-pagination>
+          </template>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
 
@@ -302,25 +456,35 @@
       :dialogVisible.sync="updateOderVisible"
       :updateOrderData="updateOrderData"
     ></UpdateOrderEndTime>
+
+    <ReportImage
+      :dialogVisible.sync="reportImageVisible"
+      :reportImageData="reportImageData"
+    ></ReportImage>
   </div>
 </template>
 
 <script>
+import { dataList } from "./data.js";
 import api from "../../api/api.js";
 import sessFun from "../../commonFun/sessFun.js";
 
 import RegistrationMedia from "../../components/media/components/RegistrationMedia.vue";
 import LaunchMedia from '../../components/media/components/LaunchMedia.vue'
 import UpdateOrderEndTime from '../../components/media/components/UpdateOrderEndTime.vue'
+import ReportImage from '../../components/media/components/ReportImage.vue'
+
 export default {
   name: "mediaWorkplace",
   components: {
     RegistrationMedia,
     LaunchMedia,
-    UpdateOrderEndTime
+    UpdateOrderEndTime,
+    ReportImage
   },
   data () {
     return {
+      searchParams: {},
       sessionData: {},
 
       loading: false,
@@ -339,6 +503,9 @@ export default {
 
       updateOderVisible: false,
       updateOrderData: {},
+
+      reportImageVisible: false,
+      reportImageData: [],
 
       searchPlaceholder: '项目名称/资产编号/合同编号'
     };
@@ -464,6 +631,31 @@ export default {
         });
     },
 
+    // 获取订单图片审核列表
+    getOrderImgCheck() {
+        // console.log('获取订单图片审核列表');
+        this.tableData = dataList
+        this.paginationTotal = this.tableData.length
+        this.currentPage = 1
+        this.pageNum = 1
+        this.pageSizes = [10, 20, 30, 40]
+        this.pageSize = 10
+    },
+
+    // 查看订单图片审核
+    checkOrderImg(item) {
+        this.reportImageData = item.reportDataList
+        this.reportImageVisible = true
+        // console.log('查看订单图片审核', item.reportDataList);
+    },
+    toSearchParams() {
+        if(Object.keys(this.searchParams).length === 0) return;
+		console.log(this.searchParams);
+    },
+    toResetParams() {
+        this.searchParams = {}
+    },
+
     getData () {
       switch (this.activeName) {
         case 'register':
@@ -478,8 +670,13 @@ export default {
 
         case 'updateOrderEndTimeList':
           this.searchPlaceholder = '公司名称/品牌名称/所属销售'
-          this.getUpdateOrderEndTimeList()
-          break
+          this.getUpdateOrderEndTimeList();
+          break;
+
+        case 'orderImgCheck':
+					this.searchPlaceholder = '公司名称/品牌名称/所属销售'
+					this.getOrderImgCheck();
+
         default:
           break;
       }
@@ -554,6 +751,62 @@ export default {
   font-weight: 600;
   opacity: 0.85;
 }
+.point {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    &.success {
+        background: rgb(82, 196, 26);
+    }
+
+    &.warning {
+        background-color:rgb(250, 173, 20);
+    }
+}
+.primary-title {
+    display: flex;
+    align-items: center;
+    .is-new {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: #1890FF;
+        border-radius: 2px;
+        color: #fff;
+        padding: 2px;
+        margin-right: 4px;
+        font-size: 14px;
+        line-height: 16px;
+        text-align: center;
+    }
+}
+.handel_ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.handel_ul_li {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  width: 306px;
+  margin: 8px 32px 8px 0px;
+  .li-label {
+    font-size: 14px;
+    white-space: nowrap;
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.handel_ul_li_btn {
+  .el-button + .el-button {
+    margin-left: 8px;
+  }
+}
 .workplace-card {
   margin: 24px 64px;
   position: relative;
@@ -566,9 +819,11 @@ export default {
     display: flex;
     align-items: center;
     margin: 0 0 0 -12px;
-    // & + .table-tr {
     border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
-    // }
+    &:first-child {
+        border-top: 1px solid rgba($color: #000000, $alpha: 0.06);
+        margin-top: 24px;
+    }
     .table-td {
       flex-grow: 1;
       padding: 10px 12px;

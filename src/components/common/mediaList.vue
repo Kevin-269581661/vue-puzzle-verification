@@ -696,7 +696,7 @@ export default {
     let startTime = timeFormat.returnDayCount(-180, '/');
     this.canSelectDayTime = [startTime, endTime]
   },
-  
+
   methods: {
     getMediaTypes() {
       let _this = this;

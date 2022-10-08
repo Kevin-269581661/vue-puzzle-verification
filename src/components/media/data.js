@@ -18,17 +18,21 @@ export const dataList = [
                 mediaName: '兴盛路西门',
                 launchFace: 'A面',
                 assetNumber: 'GZ0930285203',
-                imageNumber: '2张',
+                imageNumber: 2,
                 auditStatus: 0, // 0已审核 1未审核
                 auditResult: 0, // 0合格 1不合格
                 imageList: [
                     {
                         id: 0,
                         imgUrl: '',
+                        uploadTime: '2022年8月20日 20:48',
+                        uploader: '许炯书'
                     },
                     {
                         id: 1,
-                        imgUrl: ''
+                        imgUrl: '',
+                        uploadTime: '2022年8月20日 20:48',
+                        uploader: '许炯书'
                     }
                 ]
             },
@@ -39,7 +43,7 @@ export const dataList = [
                 mediaName: '兴盛路西门',
                 launchFace: 'B面',
                 assetNumber: 'GZ0930285203',
-                imageNumber: '2张',
+                imageNumber: 2,
                 auditStatus: 0, // 0已审核 1未审核
                 auditResult: 1, // 0合格 1不合格
                 imageList: [
@@ -60,9 +64,156 @@ export const dataList = [
                 mediaName: '兴盛路西门',
                 launchFace: 'B面',
                 assetNumber: 'GZ0930285203',
-                imageNumber: '2张',
+                imageNumber: 2,
                 auditStatus: 1, // 0已审核 1未审核
                 auditResult: 1, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 3,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 4,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 5,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 6,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 7,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 8,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
+                imageList: [
+                    {
+                        id: 0,
+                        imgUrl: '',
+                    },
+                    {
+                        id: 1,
+                        imgUrl: ''
+                    }
+                ]
+            },
+            {
+                id: 9,
+                reportArea: '天河区',
+                reportCommunity: '保利心语花园',
+                mediaName: '兴盛路西门',
+                launchFace: 'A面',
+                assetNumber: 'GZ0930285203',
+                imageNumber: 2,
+                auditStatus: 0, // 0已审核 1未审核
+                auditResult: 0, // 0合格 1不合格
                 imageList: [
                     {
                         id: 0,

@@ -312,8 +312,9 @@
                         style="width: 236px"
                         size="small"
                     >
-                        <el-option label="上刊报告" value="上刊报告"></el-option>
-                        <el-option label="下刊报告" value="下刊报告"></el-option>
+                        <el-option label="上刊" value="上刊"></el-option>
+                        <el-option label="下刊" value="下刊"></el-option>
+                        <el-option label="换刊" value="换刊"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -338,8 +339,8 @@
                         style="width: 236px"
                         size="small"
                     >
-                        <el-option label="已更新" :value="0"></el-option>
-                        <el-option label="未更新" :value="1"></el-option>
+                        <el-option label="有更新" :value="0"></el-option>
+                        <el-option label="无更新" :value="1"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -412,7 +413,6 @@
                     <div class="font-base font-bold">
                         <span class="point" :class="trItem.auditStatus==0? 'success':'warning'"></span>
                       {{ trItem.auditStatus==0?'已审核':'未审核' || '--' }}
-
                     </div>
                   </td>
 
@@ -646,7 +646,7 @@ export default {
     checkOrderImg(item) {
         this.reportImageData = item.reportDataList
         this.reportImageVisible = true
-        // console.log('查看订单图片审核', item.reportDataList);
+        console.log('查看订单图片审核', item.reportDataList);
     },
     toSearchParams() {
         if(Object.keys(this.searchParams).length === 0) return;
@@ -674,8 +674,8 @@ export default {
           break;
 
         case 'orderImgCheck':
-					this.searchPlaceholder = '公司名称/品牌名称/所属销售'
-					this.getOrderImgCheck();
+            this.searchPlaceholder = '公司名称/品牌名称/所属销售'
+            this.getOrderImgCheck();
 
         default:
           break;
@@ -846,5 +846,10 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/deep/ .el-dialog__title {
+    font-weight: 600;
+    color: #000;
 }
 </style>

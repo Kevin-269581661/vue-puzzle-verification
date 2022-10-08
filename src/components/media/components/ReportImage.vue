@@ -122,6 +122,7 @@
                     :header-cell-style="{ background: '#FAFAFA' }"
                     :data="reportImageData"
                     border
+
                     style="width: 100%">
                         <el-table-column
                             prop="reportArea"
@@ -193,7 +194,7 @@
                                 ></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" fixed="right" width="100">
+                        <el-table-column label="操作" fixed="right" width="108">
                             <template slot-scope="scope">
                                 <div class="operate-text" @click="toAudit(scope.row)">审核</div>
                             </template>

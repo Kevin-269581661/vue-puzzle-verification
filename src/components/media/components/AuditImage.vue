@@ -3,7 +3,7 @@
         <el-dialog
             title="监播图片详情"
             :visible.sync="dialogVisible"
-            :show-close="false"
+            :show-close="true"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
             :width="832+'px'">
@@ -24,18 +24,15 @@
 
             <div class="audit-images" ref="imgRef">
                 <div class="audit-img" v-for="(item, index) in auditImageData.imageList" :key="index">
-                    <div style="width:384px; height:512px; background-color:skyblue;"></div>
+                    <div @click="toOpenImage()" style="width:384px; height:512px; background-color:skyblue;"></div>
                     <div class="audit-box">
                         <div class="left">
-                            <div class="tag" v-if="item.uploadTime">
-                                <el-tooltip effect="dark" :content="item.uploadTime" placement="top-end">
-                                    <i class="el-icon-date"></i>
-                                    <span>上传时间：{{item.uploadTime}}</span>
-                                </el-tooltip>
-                            </div>
-                            <div class="tag" v-else>
+                            <div class="tag" >
                                 <i class="el-icon-date"></i>
-                                <span>上传时间：--</span>
+                                <el-tooltip v-if="item.uploadTime" effect="dark" :content="item.uploadTime" placement="top-end" :open-delay="1500">
+                                    <span style="cursor: default;">上传时间：{{item.uploadTime}}</span>
+                                </el-tooltip>
+                                <span v-else>上传时间：--</span>
                             </div>
                             <div class="tag">
                                 <i class="el-icon-user"></i>
@@ -96,6 +93,16 @@
                 <el-button type="primary" @click="addDialogVisible = false">提 交</el-button>
             </span>
         </el-dialog>
+
+        <div class="image-box">
+            <el-dialog
+                :visible.sync="imageVisible"
+                :close-on-click-modal="true"
+                :show-close="false"
+                width="605px">
+                <div style="width:564px; height:752px; background-color:orange;"></div>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -118,6 +125,7 @@ export default {
             textarea: '',
             isClose: true,
             dialogWidth: 0,
+            imageVisible: false,
             addDialogVisible: false
         }
     },
@@ -141,7 +149,11 @@ export default {
             console.log('下一个');
         },
         handleClose () {
+            console.log('close');
             this.$emit("update:dialogVisible", false)
+        },
+        toOpenImage() {
+            this.imageVisible = true
         },
     }
 }
@@ -229,7 +241,7 @@ export default {
 
 
 /deep/ .el-tag {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: normal;
     margin-right: 8px;
     line-height: 25px;
@@ -240,5 +252,9 @@ export default {
     font-weight: 600;
     color: #000;
     font-size: 16px;
+}
+
+.image-box /deep/ .el-dialog__header {
+    display: none;
 }
 </style>

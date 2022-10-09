@@ -3,10 +3,10 @@
         <el-dialog
             title="监播图片详情"
             :visible.sync="dialogVisible"
-            :show-close="true"
+            :show-close="false"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
-            :width="832+'px'">
+            :width="imgsWidth">
             <div class="audit-title">
                 <span>{{`${auditImageData.reportCommunity} （${auditImageData.mediaName}）`}}</span>
                 <el-tag :hit="true" :type="auditImageData.auditStatus === 0 ? 'success' : 'warning' ">
@@ -22,29 +22,40 @@
                 <el-tag type="info" style="color: #000">{{auditImageData.assetNumber || '--'}}</el-tag>
             </div>
 
-            <div class="audit-images" ref="imgRef">
+            <div class="audit-box">
                 <div class="audit-img" v-for="(item, index) in auditImageData.imageList" :key="index">
-                    <div @click="toOpenImage()" style="width:384px; height:512px; background-color:skyblue;"></div>
-                    <div class="audit-box">
+                    <img @click="toOpenImage(item.imgUrl)" :src="item.imgUrl" alt="">
+                    <div class="audit-detail">
                         <div class="left">
                             <div class="tag" >
                                 <i class="el-icon-date"></i>
+                                <span>上传时间:&nbsp;</span>
                                 <el-tooltip v-if="item.uploadTime" effect="dark" :content="item.uploadTime" placement="top-end" :open-delay="1500">
-                                    <span style="cursor: default;">上传时间：{{item.uploadTime}}</span>
+                                    <span>{{item.uploadTime}}</span>
                                 </el-tooltip>
-                                <span v-else>上传时间：--</span>
+                                <span v-else>--</span>
                             </div>
                             <div class="tag">
                                 <i class="el-icon-user"></i>
-                                <span>上传人员：{{item.uploader || '--'}}</span>
+                                <span>上传人员:&nbsp;</span>
+                                <span>{{item.uploader || '--'}}</span>
                             </div>
                         </div>
                         <div class="right">
-                            <el-button type="primary" @click="addDialogVisible = true">添加问题</el-button>
+                            <el-button type="primary" @click="addProblem(item.imgUrl)">添加问题</el-button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <el-pagination
+                background
+                layout="prev, pager, next"
+                :page-size="4"
+                :hide-on-single-page="imgListLength > 4 ? false : true"
+                :total="imgListLength"
+                style="text-align: right">
+            </el-pagination>
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose()">关 闭</el-button>
@@ -55,7 +66,7 @@
 
         <el-dialog
             title="添加问题"
-            :visible.sync="addDialogVisible"
+            :visible.sync="addProblemVisible"
             width="751px">
             <div class="add-box">
                 <div class="add-left">
@@ -81,16 +92,17 @@
                             type="textarea"
                             :rows="2"
                             placeholder="请输入内容"
+                            :autosize="{ minRows: 2, maxRows: 6}"
                             v-model="textarea"
                             :disabled="isClose">
                         </el-input>
                     </div>
                 </div>
-                <div class="add-right"></div>
+                <img class="add-right" :src="imgUrl">
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="addDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addDialogVisible = false">提 交</el-button>
+                <el-button @click="toResetProblem()">取 消</el-button>
+                <el-button type="primary" @click="toSubmitProblem()">提 交</el-button>
             </span>
         </el-dialog>
 
@@ -100,7 +112,7 @@
                 :close-on-click-modal="true"
                 :show-close="false"
                 width="605px">
-                <div style="width:564px; height:752px; background-color:orange;"></div>
+                <img :src="imgUrl">
             </el-dialog>
         </div>
     </div>
@@ -124,15 +136,67 @@ export default {
             radio: '',
             textarea: '',
             isClose: true,
+            isHide: true,
             dialogWidth: 0,
             imageVisible: false,
-            addDialogVisible: false
+            addProblemVisible: false,
+            imgUrl: ''
         }
     },
     mounted() {
         console.log('auditImage', this.auditImageData);
     },
+    computed: {
+        imgListLength() {
+            return this.auditImageData.imageList.length || 0
+        },
+        imgsWidth() {
+            const length = this.auditImageData.imageList.length
+            if(length && length > 4) {
+                return '1664px'
+            } else {
+                return length *416 + 'px'
+            }
+        }
+    },
     methods:{
+        // 点击提交问题
+        toSubmitProblem() {
+            if(this.radio === '') {
+                this.$confirm('未选择问题类型，请选择后重新提交', '提交失败', {
+                    showCancelButton: false,
+                    showClose: false,
+                    confirmButtonText: '好 的',
+                    type: 'error'
+                })
+            } else if(this.radio === '5' && this.textarea === '') {
+                this.$confirm('未描述具体问题，请填写后重新提交', '提交失败', {
+                    showCancelButton: false,
+                    showClose: false,
+                    confirmButtonText: '好 的',
+                    type: 'error'
+                })
+            } else {
+                this.$message({
+                    showClose: false,
+                    message: '添加问题成功',
+                    type: 'success'
+                });
+                this.toResetProblem()
+            }
+        },
+        // 重置添加问题
+        toResetProblem() {
+            this.addProblemVisible = false
+            this.radio = ''
+            this.textarea = ''
+        },
+        // 点击添加问题
+        addProblem(imgUrl) {
+            this.imgUrl = imgUrl
+            this.addProblemVisible = true
+        },
+        // 控制文本框是否禁用
         radioChange() {
             if(this.radio === '5') {
                 this.isClose = false
@@ -140,19 +204,21 @@ export default {
                 this.isClose = true
             }
         },
+
         // 根据传过来的id加减1发送请求
         toLastOne() {
-            // const cilentWidth = this.$refs.imgRef.children[0].clientWidth
+            // this.$emit('toLastId', this.auditImageData.id)
             console.log('上一个');
         },
         toNextOne() {
+            // this.$emit('toNextId', this.auditImageData.id)
             console.log('下一个');
         },
         handleClose () {
-            console.log('close');
             this.$emit("update:dialogVisible", false)
         },
-        toOpenImage() {
+        toOpenImage(imgUrl) {
+            this.imgUrl = imgUrl
             this.imageVisible = true
         },
     }
@@ -170,15 +236,22 @@ export default {
     margin-bottom: 12px;
 }
 
-.audit-images {
+.audit-box {
     display: flex;
-    margin-top: 26px;
+    margin: 24px 0;
 
     .audit-img {
-        margin-right: 24px;
+        &:not(:last-child) {
+            margin-right: 24px;
+        }
+
+        > img {
+            width:384px;
+            height:512px;
+        }
     }
 
-    .audit-box {
+    .audit-detail {
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -235,7 +308,7 @@ export default {
     .add-right {
         width:384px;
         height:512px;
-        background-color:skyblue;
+        margin-left: 23px;
     }
 }
 
@@ -250,11 +323,24 @@ export default {
 
 /deep/ .el-dialog__title {
     font-weight: 600;
-    color: #000;
+    color: rgba(0, 0, 0, 0.85);
     font-size: 16px;
 }
 
-.image-box /deep/ .el-dialog__header {
-    display: none;
+/deep/ .el-dialog__body {
+    padding: 30px 28px;
+}
+
+.image-box {
+    img {
+        width:564px;
+        height:752px;
+    }
+    /deep/ .el-dialog__header {
+        display: none;
+    }
+    /deep/ .el-dialog__body {
+        padding: 30px 20px;
+    }
 }
 </style>

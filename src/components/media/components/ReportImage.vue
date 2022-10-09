@@ -127,7 +127,7 @@
                         <el-table-column
                             prop="reportArea"
                             label="所属区域"
-                            width="108">
+                            min-width="108">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.reportArea || '--' }}</span>
                             </template>
@@ -135,7 +135,7 @@
                         <el-table-column
                             prop="reportCommunity"
                             label="所属小区"
-                            width="180">
+                            min-width="180">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.reportCommunity || '--' }}</span>
                             </template>
@@ -143,7 +143,7 @@
                         <el-table-column
                             prop="mediaName"
                             label="媒体名称"
-                            width="160">
+                            min-width="160">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.mediaName || '--' }}</span>
                             </template>
@@ -151,7 +151,7 @@
                         <el-table-column
                             prop="launchFace"
                             label="投放面"
-                            width="108">
+                            min-width="108">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.launchFace || '--' }}</span>
                             </template>
@@ -159,7 +159,7 @@
                         <el-table-column
                             prop="assetNumber"
                             label="资产编号"
-                            width="180">
+                            min-width="180">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.assetNumber || '--' }}</span>
                             </template>
@@ -167,7 +167,7 @@
                         <el-table-column
                             prop="imageNumber"
                             label="图片数量"
-                            width="108">
+                            min-width="108">
                             <template slot-scope="scope">
                                 <span>{{ `${scope.row.imageNumber}张` || '--' }}</span>
                             </template>
@@ -175,7 +175,7 @@
                         <el-table-column
                             prop="auditStatus"
                             label="审核状态"
-                            width="118">
+                            min-width="118">
                             <template slot-scope="scope">
                                 <point-state
                                 :state-text="auditStatusToText(scope.row.auditStatus).text"
@@ -186,7 +186,7 @@
                         <el-table-column
                             prop="auditResult"
                             label="审核结果"
-                            width="118">
+                            min-width="118">
                             <template slot-scope="scope">
                                 <point-state
                                 :state-text="auditResultToText(scope.row.auditResult).text"
@@ -194,7 +194,7 @@
                                 ></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" fixed="right" width="108">
+                        <el-table-column label="操作" fixed="right" min-width="108">
                             <template slot-scope="scope">
                                 <div class="operate-text" @click="toAudit(scope.row)">审核</div>
                             </template>
@@ -218,6 +218,9 @@
             </span>
         </el-dialog>
         <AuditImage
+            ref="auditImageRef"
+            @toLastId="toLastId"
+            @toNextId="toNextId"
             :dialogVisible.sync="auditImageVisible"
             :auditImageData="auditImageData">
         </AuditImage>
@@ -264,6 +267,17 @@ export default {
         }
     },
     methods:{
+        toLastId(id) {
+            console.log('当前id'+id);
+            // if(id <= 0) return;
+            // this.auditImageData = this.reportImageData[--id]
+        },
+        toNextId(id) {
+            console.log('当前id'+id);
+            // if(id < this.reportImageData.length) {
+                // this.auditImageData = this.reportImageData[++id]
+            // }
+        },
         sizeChange (val) {
             this.pageSize = val
             this.currentPage = 1
@@ -391,6 +405,12 @@ export default {
 
 /deep/ .el-dialog__title {
     font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
     color: #000;
 }
+
+/deep/ .el-table__fixed-right::before {
+    z-index: -1;
+}
+
 </style>

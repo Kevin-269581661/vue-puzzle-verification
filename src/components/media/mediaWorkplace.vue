@@ -376,7 +376,7 @@
                     <div class="primary-title">
                         <div class="is-new" v-if="trItem.isNew==0">新</div>
                         <div class="font-base font-bold" style="font-size: 16px">
-                      {{ trItem.orderTitle || '--' }}
+                        {{ trItem.orderTitle || '--' }}
                         </div>
                     </div>
                     <div class="font-base">

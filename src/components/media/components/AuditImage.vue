@@ -3,42 +3,43 @@
         <el-dialog
             title="监播图片详情"
             :visible.sync="dialogVisible"
+            @open="getImageDetails()"
             :show-close="false"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
             :width="imgsWidth">
             <div class="audit-title">
-                <span>{{`${auditImageData.reportCommunity} （${auditImageData.mediaName}）`}}</span>
+                <span>{{`${auditImageData.resName} （${auditImageData.mediaName}）`}}</span>
                 <el-tag :hit="true" :type="auditImageData.auditStatus === 0 ? 'success' : 'warning' ">
-                    {{auditImageData.auditStatus === 0 ? '已审核' : '未审核'}}
+                    {{auditImageData.auditStatus === 0 ? '未审核' : '已审核'}}
                 </el-tag>
                 <el-tag :hit="true" :type="auditImageData.auditResult === 0 ? 'success' : 'danger' ">
-                    {{auditImageData.auditResult === 0 ? '合格' : '不合格'}}
+                    {{auditImageData.auditResult === 0 ? '不合格' : '合格'}}
                 </el-tag>
             </div>
             <div class="audit-info">
-                <el-tag type="info" style="color: #000">{{auditImageData.reportArea || '--'}}</el-tag>
-                <el-tag type="info" style="color: #000">{{auditImageData.launchFace || '--'}}</el-tag>
-                <el-tag type="info" style="color: #000">{{auditImageData.assetNumber || '--'}}</el-tag>
+                <el-tag type="info" style="color: #000">{{auditImageData.districtName || '--'}}</el-tag>
+                <el-tag type="info" style="color: #000">{{`${auditImageData.asLab}面` || '--'}}</el-tag>
+                <el-tag type="info" style="color: #000">{{auditImageData.assetTag || '--'}}</el-tag>
             </div>
 
             <div class="audit-box">
-                <div class="audit-img" v-for="(item, index) in auditImageData.imageList" :key="index">
-                    <img @click="toOpenImage(item.imgUrl)" :src="item.imgUrl" alt="">
+                <div class="audit-img" v-for="(item, index) in imageDetails.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
+                    <img style="" @click="toOpenImage(item.pURL)" :src="item.thumbnailURL">
                     <div class="audit-detail">
                         <div class="left">
                             <div class="tag" >
                                 <i class="el-icon-date"></i>
                                 <span>上传时间:&nbsp;</span>
-                                <el-tooltip v-if="item.uploadTime" effect="dark" :content="item.uploadTime" placement="top-end" :open-delay="1500">
-                                    <span>{{item.uploadTime}}</span>
+                                <el-tooltip v-if="item.pUTime" effect="dark" :content="item.pUTime" placement="top-end" :open-delay="1500">
+                                    <span>{{item.pUTime}}</span>
                                 </el-tooltip>
                                 <span v-else>--</span>
                             </div>
                             <div class="tag">
                                 <i class="el-icon-user"></i>
                                 <span>上传人员:&nbsp;</span>
-                                <span>{{item.uploader || '--'}}</span>
+                                <span>{{item.realname || '--'}}</span>
                             </div>
                         </div>
                         <div class="right">
@@ -51,7 +52,8 @@
             <el-pagination
                 background
                 layout="prev, pager, next"
-                :page-size="4"
+                :current-page.sync="currentPage"
+                :page-size.sync="pageSize"
                 :hide-on-single-page="imgListLength > 4 ? false : true"
                 :total="imgListLength"
                 style="text-align: right">
@@ -119,6 +121,7 @@
 </template>
 
 <script>
+import api from '../../../api/api.js'
 export default {
     name:'auditImage',
     props: {
@@ -133,6 +136,9 @@ export default {
     },
     data(){
         return {
+            currentPage: 1,
+            pageSize: 4,
+
             radio: '',
             textarea: '',
             isClose: true,
@@ -140,26 +146,46 @@ export default {
             dialogWidth: 0,
             imageVisible: false,
             addProblemVisible: false,
-            imgUrl: ''
+            imgUrl: '',
+            imageDetails: []
         }
-    },
-    mounted() {
-        console.log('auditImage', this.auditImageData);
     },
     computed: {
         imgListLength() {
-            return this.auditImageData.imageList.length || 0
+            console.log(this.imageDetails.length);
+            return this.imageDetails.length || 0
         },
         imgsWidth() {
-            const length = this.auditImageData.imageList.length
+            const length = this.imageDetails.length
             if(length && length > 4) {
-                return '1664px'
+                return '1560px'
             } else {
-                return length *416 + 'px'
+                return (length*384+24) + 'px'
             }
         }
     },
     methods:{
+        getImageDetails() {
+            // console.log('auditImageData', this.auditImageData);
+            api.getApi('/addsp/api/v1/audit/imageDetails', {
+                lID: this.auditImageData.lID
+            })
+            .then((res) => {
+                if(res.data.SysCode === 200200) {
+                    const resData = res.data.data
+                    this.imageDetails  = resData || []
+                    console.log('imageDetails', this.imageDetails);
+                } else {
+                    this.$message({
+                        type: "warning",
+                        message: res.data.MSG || "监播照片详情数据获取异常！",
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        },
         // 点击提交问题
         toSubmitProblem() {
             if(this.radio === '') {
@@ -238,16 +264,13 @@ export default {
 
 .audit-box {
     display: flex;
+    justify-content: space-between;
     margin: 24px 0;
 
     .audit-img {
-        &:not(:last-child) {
-            margin-right: 24px;
-        }
-
         > img {
-            width:384px;
-            height:512px;
+            width: 360px;
+            height: 480px;
         }
     }
 
@@ -256,9 +279,9 @@ export default {
         justify-content: space-around;
         align-items: center;
         box-sizing: border-box;
-        width: 384px;
+        width: 360px;
         height: 72px;
-        margin-top: 16px;
+        margin-top: 8px;
         background: rgba(0, 0, 0, 0.05);
         border-radius: 4px;
         padding: 6px;
@@ -275,7 +298,7 @@ export default {
 
 .add-box {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     .add-left {
         width: 296px;
         height: 512px;
@@ -328,13 +351,13 @@ export default {
 }
 
 /deep/ .el-dialog__body {
-    padding: 30px 28px;
+    padding: 30px 24px;
 }
 
 .image-box {
     img {
-        width:564px;
-        height:752px;
+        width: 564px;
+        height: 752px;
     }
     /deep/ .el-dialog__header {
         display: none;

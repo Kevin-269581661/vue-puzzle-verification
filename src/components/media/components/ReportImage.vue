@@ -2,16 +2,17 @@
     <div>
         <el-dialog
             title="监播图片"
+            @open="getAdPlanDetailsList()"
             :visible.sync="dialogVisible"
             :show-close="false"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
-            width="65%">
+            width="75%">
             <div class="handel_ul">
                 <li class="handel_ul_li">
                     <span class="li-label">所属区域：</span>
                     <el-select
-                        v-model="searchParams.reportArea"
+                        v-model="searchParams.districtName"
                         placeholder="请选择所属区域"
                         :clearable="true"
                         style="width: 270px"
@@ -23,7 +24,7 @@
                 <li class="handel_ul_li">
                     <span class="li-label">所属小区：</span>
                     <el-select
-                        v-model="searchParams.reportCommunity"
+                        v-model="searchParams.resName"
                         placeholder="请选择所属小区"
                         :clearable="true"
                         style="width: 270px"
@@ -47,20 +48,20 @@
                 <li class="handel_ul_li">
                     <span class="li-label" style="width: 70px; text-align: right;">投放面：</span>
                     <el-select
-                        v-model="searchParams.launchFace"
+                        v-model="searchParams.asLab"
                         placeholder="请选择投放面"
                         :clearable="true"
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="A面" value="A面"></el-option>
-                        <el-option label="B面" value="B面"></el-option>
+                        <el-option label="A" value="A"></el-option>
+                        <el-option label="B" value="B"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
                     <span class="li-label">资产编号：</span>
                     <el-select
-                        v-model="searchParams.assetNumber"
+                        v-model="searchParams.assetTag"
                         placeholder="请选择资产编号"
                         :clearable="true"
                         style="width: 270px"
@@ -72,13 +73,13 @@
                 <li class="handel_ul_li">
                     <span class="li-label">图片数量：</span>
                     <el-select
-                        v-model="searchParams.imageNumber"
+                        v-model="searchParams.imgNum"
                         placeholder="请选择图片数量"
                         :clearable="true"
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="2张" value="2张"></el-option>
+                        <el-option label="2" :value="2"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -120,24 +121,23 @@
             <div class="table-area">
                 <el-table
                     :header-cell-style="{ background: '#FAFAFA' }"
-                    :data="reportImageData"
+                    :data="tableData"
                     border
-
                     style="width: 100%">
                         <el-table-column
-                            prop="reportArea"
+                            prop="districtName"
                             label="所属区域"
                             min-width="108">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.reportArea || '--' }}</span>
+                                <span>{{ scope.row.districtName || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="reportCommunity"
+                            prop="resName"
                             label="所属小区"
                             min-width="180">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.reportCommunity || '--' }}</span>
+                                <span>{{ scope.row.resName || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -149,32 +149,32 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="launchFace"
+                            prop="asLab"
                             label="投放面"
                             min-width="108">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.launchFace || '--' }}</span>
+                                <span>{{ `${scope.row.asLab}面` || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="assetNumber"
+                            prop="assetTag"
                             label="资产编号"
                             min-width="180">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.assetNumber || '--' }}</span>
+                                <span>{{ scope.row.assetTag || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
-                            prop="imageNumber"
+                            prop="imgNum"
                             label="图片数量"
                             min-width="108">
                             <template slot-scope="scope">
-                                <span>{{ `${scope.row.imageNumber}张` || '--' }}</span>
+                                <span>{{ `${scope.row.imgNum}张` || '--' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
                             prop="auditStatus"
-                            label="审核状态"
+                            label="人工审核状态"
                             min-width="118">
                             <template slot-scope="scope">
                                 <point-state
@@ -228,6 +228,8 @@
 </template>
 
 <script>
+import api from "../../../api/api.js";
+
 import AuditImage from '../components/AuditImage.vue'
 import pointState from '../../common/components/pointState.vue'
 
@@ -242,31 +244,42 @@ export default {
             type: Boolean,
             default: () => false,
         },
-        reportImageData: {
-            type: Array,
-            default: () => []
+        reportImageApID: {
+            type: Number,
+            default: () => 0
         }
     },
     data(){
         return {
             auditImageVisible: false,
+            tableData: [],
             auditImageData: {},
             searchParams: {},
             pageSizes: [10, 20, 30],
             pageSize: 10,
             currentPage: 1,
+            paginationTotal: 0
         }
     },
     mounted() {
-        console.log(this.reportImageData);
         this.auditDialogWidth = 1000
     },
-    computed: {
-        paginationTotal() {
-            return this.reportImageData.length
-        }
-    },
     methods:{
+        getAdPlanDetailsList() {
+            this.searchParams.apID = this.reportImageApID
+            api.postApi('/addsp/api/v1/audit/adPlanDetails', this.searchParams).then((res)=>{
+                if(res.data.SysCode) {
+                const resData = res.data.data
+                this.tableData = resData.list || []
+                this.paginationTotal = resData.total || 0
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: res.data.MSG || "订单审核明细获取异常！"
+                });
+            }
+            })
+        },
         toLastId(id) {
             console.log('当前id'+id);
             // if(id <= 0) return;
@@ -292,14 +305,14 @@ export default {
         auditStatusToText (state) {
             let mediaArr = [
                 {
-                    text: '已审核',
+                    text: '未审核',
                     value: 0,
-                    color: '#52C41A',
+                    color: '#FAAD14',
                 },
                 {
-                    text: '未审核',
+                    text: '已审核',
                     value: 1,
-                    color: '#FAAD14',
+                    color: '#52C41A',
                 }
             ];
             return mediaArr.filter(item => {
@@ -310,14 +323,14 @@ export default {
         auditResultToText (state) {
             let mediaArr = [
                 {
-                    text: '合格',
+                    text: '不合格',
                     value: 0,
-                    color: '#52C41A',
+                    color: '#FF4949',
                 },
                 {
-                    text: '不合格',
+                    text: '合格',
                     value: 1,
-                    color: '#FF4949',
+                    color: '#52C41A',
                 }
             ];
             return mediaArr.filter(item => {
@@ -327,7 +340,6 @@ export default {
         toAudit(row) {
             this.auditImageVisible = true
             this.auditImageData = row
-            // console.log(row);
         },
         handleClose () {
             this.$emit("update:dialogVisible", false)
@@ -349,7 +361,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-around;
 }
 
 .handel_ul_li {
@@ -357,10 +369,7 @@ export default {
   align-items: center;
   flex-flow: row nowrap;
   width: 350px;
-  margin: 8px 32px 8px 0px;
-  &:nth-child(3n) {
-    margin-right: 0px;
-  }
+  margin: 8px 0px;
   .li-label {
     font-size: 14px;
     white-space: nowrap;

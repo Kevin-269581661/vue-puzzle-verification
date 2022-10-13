@@ -290,12 +290,34 @@
           name="orderImgCheck"
           v-if="!['ADN_MD'].includes(sessionData.uType)"
         >
-          <template>
+        <el-skeleton :loading="loading" animated>
+            <template slot="template">
+              <div style="padding: 14px">
+                <div
+                  v-for="i in 6"
+                  :key="i"
+                  style="display: flex;
+                    align-items: center;
+                    justify-items: space-between;
+                    margin-top: 8px;
+                    height: 32px;
+                  "
+                >
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="width: 30%" />
+                </div>
+              </div>
+            </template>
+            <template>
             <div class="handel_ul">
                 <li class="handel_ul_li">
                     <span class="li-label">订单名称：</span>
                     <el-input
-                        v-model="searchParams.orderTitle"
+                        v-model="searchParams.apName"
                         style="width: 236px;"
                         placeholder="请输入订单名称"
                         class="input-with-select u-key"
@@ -306,7 +328,7 @@
                 <li class="handel_ul_li">
                     <span class="li-label">监播类型：</span>
                     <el-select
-                        v-model="searchParams.reportType"
+                        v-model="searchParams.type"
                         placeholder="请选择监播类型"
                         :clearable="true"
                         style="width: 236px"
@@ -339,14 +361,14 @@
                         style="width: 236px"
                         size="small"
                     >
-                        <el-option label="有更新" :value="0"></el-option>
-                        <el-option label="无更新" :value="1"></el-option>
+                        <el-option label="有更新" :value="true"></el-option>
+                        <el-option label="无更新" :value="false"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
                     <span class="li-label">监播日期：</span>
                     <el-date-picker
-                        v-model="searchParams.launchDate"
+                        v-model="aduitDate"
                         size="small"
                         type="daterange"
                         range-separator="-"
@@ -363,6 +385,7 @@
                     >
                         搜索</el-button>
                     <el-button plain @click="toResetParams()">重置</el-button>
+                    <el-button plain @click="toResetParams()">导出</el-button>
                 </li>
             </div>
             <table v-if="tableData.length" style="width: 100%">
@@ -374,14 +397,13 @@
                 >
                   <td class="table-td" style="width: 60px">
                     <div class="primary-title">
-                        <div class="is-new" v-if="trItem.isNew==0">新</div>
                         <div class="font-base font-bold" style="font-size: 16px">
-                        {{ trItem.orderTitle || '--' }}
+                        {{ trItem.apName || '--' }}
                         </div>
                     </div>
                     <div class="font-base">
                         <div class="ellipsis">
-                          {{ trItem.reportType || '--' }}
+                          {{ trItem.type===0?'上刊': trItem.type===1? '下刊' : '换刊' || '--' }}
                         </div>
                     </div>
                   </td>
@@ -389,21 +411,14 @@
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">投放日期</div>
                     <div class="font-base font-bold">
-                      {{ `${trItem.launchDateBegin} - ${trItem.launchDateEnd}` || '--'}}
+                      {{ `${trItem.startDate.replace(/-/g, '.')} - ${trItem.endDate.replace(/-/g, '.')}` || '--'}}
                     </div>
                   </td>
 
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">监播点位</div>
                     <div class="font-base font-bold">
-                      {{ `${ trItem.underMoint }/${ trItem.monitPoint }` || '--' }}
-                    </div>
-                  </td>
-
-                  <td class="table-td" style="width: 60px">
-                    <div class="font-base">最近图片更新时间</div>
-                    <div class="font-base font-bold">
-                      {{ trItem.updateTime || '--' }}
+                      {{ `${ trItem.asDoneCount }/${ trItem.asCount }` || '--' }}
                     </div>
                   </td>
 
@@ -411,8 +426,8 @@
                     <div class="font-base">审核状态</div>
 
                     <div class="font-base font-bold">
-                        <span class="point" :class="trItem.auditStatus==0? 'success':'warning'"></span>
-                      {{ trItem.auditStatus==0?'已审核':'未审核' || '--' }}
+                        <span class="point" :class="trItem.auditStatus===0? 'warning':'success'"></span>
+                      {{ trItem.auditStatus===0?'未审核':'已审核' || '--' }}
                     </div>
                   </td>
 
@@ -437,6 +452,8 @@
             >
             </el-pagination>
           </template>
+        </el-skeleton>
+
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -459,7 +476,7 @@
 
     <ReportImage
       :dialogVisible.sync="reportImageVisible"
-      :reportImageData="reportImageData"
+      :reportImageApID="reportImageApID"
     ></ReportImage>
   </div>
 </template>
@@ -485,6 +502,7 @@ export default {
   data () {
     return {
       searchParams: {},
+      aduitDate: "",
       sessionData: {},
 
       loading: false,
@@ -505,7 +523,7 @@ export default {
       updateOrderData: {},
 
       reportImageVisible: false,
-      reportImageData: [],
+      reportImageApID: 0,
 
       searchPlaceholder: '项目名称/资产编号/合同编号'
     };
@@ -632,26 +650,48 @@ export default {
     },
 
     // 获取订单图片审核列表
-    getOrderImgCheck() {
-        // console.log('获取订单图片审核列表');
-        this.tableData = dataList
-        this.paginationTotal = this.tableData.length
-        this.currentPage = 1
-        this.pageNum = 1
-        this.pageSizes = [10, 20, 30, 40]
-        this.pageSize = 10
+    getOrderImgCheckList() {
+        this.loading = true;
+        let params = {
+            keyword: this.searchParams || "",
+            uid: this.sessionData.uID,
+            token: this.sessionData.token
+        };
+        api.postApi("/addsp/api/v1/audit/adPlans", params).then((res)=>{
+            console.log(res.data.data.list);
+            if(res.data.SysCode) {
+                const resData = res.data.data
+                this.tableData = resData.list || []
+                this.paginationTotal = resData.total || 0
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: res.data.MSG || "图片审核列表获取异常！"
+                });
+            }
+        })
+        .catch((err)=> {
+            console.log(err);
+        })
+        .finally(()=>{
+            this.loading = false
+        });
     },
 
     // 查看订单图片审核
     checkOrderImg(item) {
-        this.reportImageData = item.reportDataList
+        this.reportImageApID = item.apID
         this.reportImageVisible = true
-        console.log('查看订单图片审核', item.reportDataList);
+        console.log('查看订单图片审核', item.apID);
     },
+
     toSearchParams() {
-        if(Object.keys(this.searchParams).length === 0) return;
-		console.log(this.searchParams);
+        this.searchParams.startDate = this.aduitDate[0]
+        this.searchParams.endDate = this.aduitDate[1]
+        console.log(this.searchParams);
+        this.getData()
     },
+
     toResetParams() {
         this.searchParams = {}
     },
@@ -675,7 +715,7 @@ export default {
 
         case 'orderImgCheck':
             this.searchPlaceholder = '公司名称/品牌名称/所属销售'
-            this.getOrderImgCheck();
+            this.getOrderImgCheckList();
 
         default:
           break;
@@ -768,19 +808,6 @@ export default {
 .primary-title {
     display: flex;
     align-items: center;
-    .is-new {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        background: #1890FF;
-        border-radius: 2px;
-        color: #fff;
-        padding: 2px;
-        margin-right: 4px;
-        font-size: 14px;
-        line-height: 16px;
-        text-align: center;
-    }
 }
 .handel_ul {
   list-style: none;

@@ -222,7 +222,7 @@
             @toLastId="toLastId"
             @toNextId="toNextId"
             :dialogVisible.sync="auditImageVisible"
-            :auditImageData="auditImageData">
+            :auditImageID="auditImageID">
         </AuditImage>
     </div>
 </template>
@@ -253,7 +253,7 @@ export default {
         return {
             auditImageVisible: false,
             tableData: [],
-            auditImageData: {},
+            auditImageID: 0,
             searchParams: {},
             pageSizes: [10, 20, 30],
             pageSize: 10,
@@ -338,8 +338,8 @@ export default {
             })[0] || {}
         },
         toAudit(row) {
+            this.auditImageID = row.lID
             this.auditImageVisible = true
-            this.auditImageData = row
         },
         handleClose () {
             this.$emit("update:dialogVisible", false)
@@ -361,7 +361,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-start;
 }
 
 .handel_ul_li {
@@ -369,7 +369,7 @@ export default {
   align-items: center;
   flex-flow: row nowrap;
   width: 350px;
-  margin: 8px 0px;
+  margin: 0px 24px 16px 0px;
   .li-label {
     font-size: 14px;
     white-space: nowrap;

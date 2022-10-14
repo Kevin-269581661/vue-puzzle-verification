@@ -8,24 +8,36 @@
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
             :width="imgsWidth">
-            <div class="audit-title">
-                <span>{{`${auditImageData.resName} （${auditImageData.mediaName}）`}}</span>
-                <el-tag :hit="true" :type="auditImageData.auditStatus === 0 ? 'success' : 'warning' ">
-                    {{auditImageData.auditStatus === 0 ? '未审核' : '已审核'}}
-                </el-tag>
-                <el-tag :hit="true" :type="auditImageData.auditResult === 0 ? 'success' : 'danger' ">
-                    {{auditImageData.auditResult === 0 ? '不合格' : '合格'}}
-                </el-tag>
+            <div class="top-box">
+                <div class="top-left">
+                    <div class="audit-title">
+                        <span>{{`${imageData.resName} (${imageData.mTitle})`}}&nbsp;</span>
+                        <el-tag :hit="true" :type="imageData.auditStatus === 0 ? 'warning' : 'success' ">
+                            {{imageData.auditStatus === 0 ? '未审核' : '已审核'}}
+                        </el-tag>
+                        <el-tag :hit="true" :type="imageData.auditResult === 0 ? 'danger' : 'success' ">
+                            {{imageData.auditResult === 0 ? '不合格' : '合格'}}
+                        </el-tag>
+                    </div>
+                    <div class="audit-info">
+                        <el-tag type="info" style="color: #000">{{imageData.districtName || '--'}}</el-tag>
+                        <el-tag type="info" style="color: #000">{{`${imageData.asLab}面` || '--'}}</el-tag>
+                        <el-tag type="info" style="color: #000">{{imageData.assetTag || '--'}}</el-tag>
+                    </div>
+                </div>
+                <div class="top-right">
+                    <el-button icon="el-icon-picture-outline" @click="toOpenImage(imageData.materialUrl)">素材</el-button>
+                </div>
             </div>
-            <div class="audit-info">
-                <el-tag type="info" style="color: #000">{{auditImageData.districtName || '--'}}</el-tag>
-                <el-tag type="info" style="color: #000">{{`${auditImageData.asLab}面` || '--'}}</el-tag>
-                <el-tag type="info" style="color: #000">{{auditImageData.assetTag || '--'}}</el-tag>
+            <div class="audit-top">
             </div>
 
             <div class="audit-box">
-                <div class="audit-img" v-for="(item, index) in imageDetails.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
-                    <img style="" @click="toOpenImage(item.pURL)" :src="item.thumbnailURL">
+                <div class="audit-img" v-for="(item, index) in imageList.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
+                    <div class="img-box">
+                        <i slot="reference" class="el-icon-zoom-in" @click="toOpenImage(item.pURL)" @close="closeTag()"></i>
+                        <img :src="item.thumbnailURL">
+                    </div>
                     <div class="audit-detail">
                         <div class="left">
                             <div class="tag" >
@@ -43,11 +55,33 @@
                             </div>
                         </div>
                         <div class="right">
-                            <el-button type="primary" @click="addProblem(item.imgUrl)">添加问题</el-button>
+                            <el-button type="primary" @click="addProblem(item.pUTime)">添加问题</el-button>
                         </div>
+                    </div>
+                    <div class="err-box">
+                        <el-popover
+                            v-for="tag in item.errlist"
+                            :key="tag.errMsg"
+                            placement="top-end"
+                            width="160"
+                            v-model="tag.closeVisible">
+                            <p style="margin-bottom:10px">
+                                <i class="el-icon-warning" style="color:#FAAD14;"></i>
+                                确定要删除该问题吗？
+                            </p>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="tag.closeVisible = false">是的</el-button>
+                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" size="mini" @click="tag.closeVisible = false">取消</el-button>
+                            </div>
+                            <el-tag slot="reference" closable @close="closeTag(tag)">
+                                {{tag.errMsg}}
+                            </el-tag>
+                        </el-popover>
+
                     </div>
                 </div>
             </div>
+
 
             <el-pagination
                 background
@@ -129,16 +163,18 @@ export default {
             type: Boolean,
             default: () => false,
         },
-        auditImageData: {
-            type: Object,
-            default: () => {}
+        auditImageID: {
+            type: Number,
+            default: () => 0
         }
     },
     data(){
         return {
             currentPage: 1,
             pageSize: 4,
-
+            imageDataList: [],
+            imageData: {},
+            imageList: [],
             radio: '',
             textarea: '',
             isClose: true,
@@ -146,17 +182,16 @@ export default {
             dialogWidth: 0,
             imageVisible: false,
             addProblemVisible: false,
+            closeHintVisible: false,
             imgUrl: '',
-            imageDetails: []
         }
     },
     computed: {
         imgListLength() {
-            console.log(this.imageDetails.length);
-            return this.imageDetails.length || 0
+            return this.imageList.length || 0
         },
         imgsWidth() {
-            const length = this.imageDetails.length
+            const length = this.imageList.length
             if(length && length > 4) {
                 return '1560px'
             } else {
@@ -166,15 +201,19 @@ export default {
     },
     methods:{
         getImageDetails() {
-            // console.log('auditImageData', this.auditImageData);
+            console.log('auditImageID', this.auditImageID);
             api.getApi('/addsp/api/v1/audit/imageDetails', {
-                lID: this.auditImageData.lID
+                lID: this.auditImageID
             })
             .then((res) => {
                 if(res.data.SysCode === 200200) {
                     const resData = res.data.data
-                    this.imageDetails  = resData || []
-                    console.log('imageDetails', this.imageDetails);
+                    console.log(resData);
+                    this.imageDataList  = resData || []
+                    this.imageData = this.imageDataList[0]
+                    this.imageList = this.imageData.imgList || []
+                    this.imageList.map(v => this.$set(v.errlist, 'closeVisible', false))
+                    console.log('imageList', imageList);
                 } else {
                     this.$message({
                         type: "warning",
@@ -185,6 +224,10 @@ export default {
             .catch((err) => {
                 console.log(err);
             });
+        },
+        closeTag(tag) {
+            console.log(tag);
+            tag.closeVisible = true
         },
         // 点击提交问题
         toSubmitProblem() {
@@ -252,25 +295,53 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.audit-title {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 22px;
-    letter-spacing: 0px;
-    text-align: left;
-    color: #000;
-    margin-bottom: 12px;
+.top-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .audit-title {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 22px;
+        letter-spacing: 0px;
+        text-align: left;
+        color: #000;
+        margin-bottom: 12px;
+    }
 }
+
 
 .audit-box {
     display: flex;
+    position: relative;
     justify-content: space-between;
-    margin: 24px 0;
+    margin-top: 24px;
+    width: 360px;
+
 
     .audit-img {
-        > img {
-            width: 360px;
-            height: 480px;
+        padding-right: 24px;
+        .img-box {
+            position: relative;
+            i {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 24px;
+                height: 24px;
+                background-color: rgba(0, 0, 0, 0.65);
+                border-radius: 4px;
+                color: #fff;
+                font-size: 14px;
+                line-height: 24px;
+                text-align: center;
+            }
+            img {
+                width: 100%;
+                height: 480px;
+                border-radius: 4px;
+            }
         }
     }
 
@@ -292,6 +363,23 @@ export default {
                 color: #000;
                 margin: 2px 8px 2px 0px;
             }
+        }
+    }
+
+    .err-box {
+        margin-top: 8px;
+        /deep/ .el-tag {
+            color: #FF7F3C;
+            border-color: #FF7F3C;
+            background: rgba(255, 127, 60, 0.2);
+            margin-bottom: 8px;
+
+            .el-icon-close::before {
+                color: #FF7F3C;
+            }
+        }
+        /deep/ .el-tag__close:hover {
+             background: rgba(255, 127, 60, 0.2);
         }
     }
 }

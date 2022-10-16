@@ -116,6 +116,7 @@
                     >
                         搜索</el-button>
                     <el-button plain @click="toResetParams()">重置</el-button>
+                    <el-button plain @click="export2Excel()">导出</el-button>
                 </li>
             </div>
             <div class="table-area">
@@ -222,7 +223,7 @@
             @toLastId="toLastId"
             @toNextId="toNextId"
             :dialogVisible.sync="auditImageVisible"
-            :auditImageID="auditImageID">
+            :auditSearchParams="auditSearchParams">
         </AuditImage>
     </div>
 </template>
@@ -255,29 +256,49 @@ export default {
             tableData: [],
             auditImageID: 0,
             searchParams: {},
+            auditSearchParams: {},
             pageSizes: [10, 20, 30],
             pageSize: 10,
             currentPage: 1,
-            paginationTotal: 0
+            paginationTotal: 0,
         }
     },
     mounted() {
         this.auditDialogWidth = 1000
     },
     methods:{
+        export2Excel() {
+            let name = '监播图片详情';
+            require.ensure([], () => {
+                const { export_json_to_excel } = require('../../../vendorExcel/Export2Excel');
+                const tHeader = ['所属区域', '所属小区', '媒体名称', '投放面', '资产编号', '图片数量', '人工审核状态(0:未审核,1:已审核)', '审核结果(0:不合格,1:合格)'];
+                const filterVal = ['districtName', 'resName', 'mediaName', 'asLab', 'assetTag', 'imgNum', 'auditStatus', 'auditResult'];
+                const list = this.tableData;
+                const data = this.formatJson(filterVal, list);
+                export_json_to_excel(tHeader, data, name);
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map((v) => filterVal.map((j) => v[j]));
+        },
         getAdPlanDetailsList() {
-            this.searchParams.apID = this.reportImageApID
-            api.postApi('/addsp/api/v1/audit/adPlanDetails', this.searchParams).then((res)=>{
-                if(res.data.SysCode) {
+            let params = {
+                ...this.searchParams,
+                apID: this.reportImageApID,
+                pageNum: this.currentPage,
+                pageSize: this.pageSize,
+            }
+            api.postApi('/addsp/api/v1/audit/adPlanDetails', params).then((res)=>{
+                if (res.data.SysCode) {
                 const resData = res.data.data
                 this.tableData = resData.list || []
                 this.paginationTotal = resData.total || 0
-            } else {
-                this.$message({
-                    type: 'warning',
-                    message: res.data.MSG || "订单审核明细获取异常！"
-                });
-            }
+                } else {
+                    this.$message({
+                        type: 'warning',
+                        message: res.data.MSG || "订单审核明细获取异常！"
+                    });
+                }
             })
         },
         toLastId(id) {
@@ -294,12 +315,12 @@ export default {
         sizeChange (val) {
             this.pageSize = val
             this.currentPage = 1
-            // this.getData()
+            this.getAdPlanDetailsList()
         },
 
         changePage (page) {
             this.currentPage = page
-            // this.getData()
+            this.getAdPlanDetailsList()
         },
         // 审核状态
         auditStatusToText (state) {
@@ -338,7 +359,8 @@ export default {
             })[0] || {}
         },
         toAudit(row) {
-            this.auditImageID = row.lID
+            this.auditSearchParams = {...this.searchParams, lID: row.lID}
+            console.log('审核图片参数 lID', this.auditSearchParams);
             this.auditImageVisible = true
         },
         handleClose () {

@@ -3,11 +3,11 @@
         <el-dialog
             title="监播图片详情"
             :visible.sync="dialogVisible"
-            @open="getImageDetails()"
+            @open="getImageDetailsList"
             :show-close="false"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
-            :width="imgsWidth">
+            :width="imgsWidth || '408px'">
             <div class="top-box">
                 <div class="top-left">
                     <div class="audit-title">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <el-button type="primary" @click="addProblem(item.pUTime)">添加问题</el-button>
+                            <el-button type="primary" @click="addProblem(item)">添加问题</el-button>
                         </div>
                     </div>
                     <div class="err-box">
@@ -116,11 +116,11 @@
                     <div class="radio-box">
                         <span>请选择问题类型</span>
                         <el-radio-group v-model="radio" @change="radioChange()">
-                            <el-radio label="1">图片/素材不匹配</el-radio>
-                            <el-radio label="2">夜景图亮度不满足要求</el-radio>
-                            <el-radio label="3">报头日期不匹配</el-radio>
-                            <el-radio label="4">绑门/锁门</el-radio>
-                            <el-radio label="5">其他</el-radio>
+                            <el-radio label="0">图片/素材不匹配</el-radio>
+                            <el-radio label="1">夜景图亮度不满足要求</el-radio>
+                            <el-radio label="2">报头日期不匹配</el-radio>
+                            <el-radio label="3">绑门/锁门</el-radio>
+                            <el-radio label="4">其他</el-radio>
                         </el-radio-group>
 
                         <span>请简单描述下问题</span>
@@ -163,27 +163,33 @@ export default {
             type: Boolean,
             default: () => false,
         },
-        auditImageID: {
-            type: Number,
-            default: () => 0
+        auditSearchParams: {
+            type: Object,
+            default: () => {}
         }
     },
     data(){
         return {
             currentPage: 1,
             pageSize: 4,
+
             imageDataList: [],
             imageData: {},
             imageList: [],
-            radio: '',
-            textarea: '',
+
             isClose: true,
             isHide: true,
-            dialogWidth: 0,
+
             imageVisible: false,
             addProblemVisible: false,
             closeHintVisible: false,
+
             imgUrl: '',
+            picID: '',
+            radio: '',
+            textarea: '',
+
+            dialogWidth: 0,
         }
     },
     computed: {
@@ -200,20 +206,16 @@ export default {
         }
     },
     methods:{
-        getImageDetails() {
-            console.log('auditImageID', this.auditImageID);
-            api.getApi('/addsp/api/v1/audit/imageDetails', {
-                lID: this.auditImageID
-            })
+        getImageDetailsList() {
+            api.postApi('/addsp/api/v1/audit/imageDetails', this.auditSearchParams)
             .then((res) => {
                 if(res.data.SysCode === 200200) {
                     const resData = res.data.data
-                    console.log(resData);
                     this.imageDataList  = resData || []
                     this.imageData = this.imageDataList[0]
                     this.imageList = this.imageData.imgList || []
                     this.imageList.map(v => this.$set(v.errlist, 'closeVisible', false))
-                    console.log('imageList', imageList);
+                    console.log('imageDataList', this.imageDataList);
                 } else {
                     this.$message({
                         type: "warning",
@@ -226,7 +228,6 @@ export default {
             });
         },
         closeTag(tag) {
-            console.log(tag);
             tag.closeVisible = true
         },
         // 点击提交问题
@@ -246,12 +247,35 @@ export default {
                     type: 'error'
                 })
             } else {
-                this.$message({
-                    showClose: false,
-                    message: '添加问题成功',
-                    type: 'success'
-                });
-                this.toResetProblem()
+                let params = {
+                    lID: this.auditImageID,
+                    auditStatus: '1',
+                    errlist: {
+                        errType: this.radio,
+                        errMsg: this.textarea,
+                        pID: this.picID,
+                    }
+                }
+                api.postApi('/addsp/api/v1/audit/imgAudit', params)
+                    .then((res) => {
+                        console.log(res);
+                        if(res.data.SysCode) {
+                            this.$message({
+                                showClose: false,
+                                message: '添加问题成功',
+                                type: 'success'
+                            });
+                            this.toResetProblem()
+                        }
+                        else {
+                            this.$message({
+                                type: "warning",
+                                message: res.data.MSG || "提交问题异常！",
+                            });
+                        }
+                    })
+
+
             }
         },
         // 重置添加问题
@@ -259,15 +283,17 @@ export default {
             this.addProblemVisible = false
             this.radio = ''
             this.textarea = ''
+            this.isClose = true
         },
         // 点击添加问题
-        addProblem(imgUrl) {
-            this.imgUrl = imgUrl
+        addProblem(item) {
+            this.imgUrl = item.pURL
+            this.picID = item.pID
             this.addProblemVisible = true
         },
         // 控制文本框是否禁用
         radioChange() {
-            if(this.radio === '5') {
+            if(this.radio === '4') {
                 this.isClose = false
             } else {
                 this.isClose = true

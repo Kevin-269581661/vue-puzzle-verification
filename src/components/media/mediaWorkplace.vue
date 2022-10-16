@@ -296,12 +296,7 @@
                 <div
                   v-for="i in 6"
                   :key="i"
-                  style="display: flex;
-                    align-items: center;
-                    justify-items: space-between;
-                    margin-top: 8px;
-                    height: 32px;
-                  "
+                  style="display: flex; align-items: center; justify-items:  space-between; margin-top: 8px; height: 32px;"
                 >
                   <el-skeleton-item variant="rect" style="margin-right: 16px" />
                   <el-skeleton-item variant="rect" style="margin-right: 16px" />
@@ -336,7 +331,6 @@
                     >
                         <el-option label="上刊" value="上刊"></el-option>
                         <el-option label="下刊" value="下刊"></el-option>
-                        <el-option label="换刊" value="换刊"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -385,7 +379,6 @@
                     >
                         搜索</el-button>
                     <el-button plain @click="toResetParams()">重置</el-button>
-                    <el-button plain @click="toResetParams()">导出</el-button>
                 </li>
             </div>
             <table v-if="tableData.length" style="width: 100%">
@@ -403,7 +396,7 @@
                     </div>
                     <div class="font-base">
                         <div class="ellipsis">
-                          {{ trItem.type===0?'上刊': trItem.type===1? '下刊' : '换刊' || '--' }}
+                          {{ trItem.type===0?'上刊': '下刊' || '--' }}
                         </div>
                     </div>
                   </td>
@@ -427,7 +420,7 @@
 
                     <div class="font-base font-bold">
                         <span class="point" :class="trItem.auditStatus===0? 'warning':'success'"></span>
-                      {{ trItem.auditStatus===0?'未审核':'已审核' || '--' }}
+                      {{ trItem.auditStatus===0?`未审核(${trItem.asAuditCount}/${trItem.asDoneCount})`:'已审核' || '--' }}
                     </div>
                   </td>
 
@@ -482,7 +475,6 @@
 </template>
 
 <script>
-import { dataList } from "./data.js";
 import api from "../../api/api.js";
 import sessFun from "../../commonFun/sessFun.js";
 
@@ -682,7 +674,7 @@ export default {
     checkOrderImg(item) {
         this.reportImageApID = item.apID
         this.reportImageVisible = true
-        console.log('查看订单图片审核', item.apID);
+        console.log('查看订单图片审核 apID', item.apID);
     },
 
     toSearchParams() {

@@ -4,14 +4,15 @@
             title="监播图片详情"
             :visible.sync="dialogVisible"
             @open="getImageDetailsList"
-            :show-close="false"
+            :show-close="true"
+            :before-close="handleClose"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
-            :width="imgsWidth || '408px'">
+            :width="imgsWidth">
             <div class="top-box">
                 <div class="top-left">
                     <div class="audit-title">
-                        <span>{{`${imageData.resName} (${imageData.mTitle})`}}&nbsp;</span>
+                        <span>{{`${imageData.resName} (${imageData.mediaName})`}}&nbsp;</span>
                         <el-tag :hit="true" :type="imageData.auditStatus === 0 ? 'warning' : 'success' ">
                             {{imageData.auditStatus === 0 ? '未审核' : '已审核'}}
                         </el-tag>
@@ -20,31 +21,32 @@
                         </el-tag>
                     </div>
                     <div class="audit-info">
-                        <el-tag type="info" style="color: #000">{{imageData.districtName || '--'}}</el-tag>
-                        <el-tag type="info" style="color: #000">{{`${imageData.asLab}面` || '--'}}</el-tag>
-                        <el-tag type="info" style="color: #000">{{imageData.assetTag || '--'}}</el-tag>
+                        <el-tag type="info" style="color: #000">{{imageData.districtName}}</el-tag>
+                        <el-tag type="info" style="color: #000">{{`${imageData.asLab}面`}}</el-tag>
+                        <el-tag type="info" style="color: #000">{{imageData.assetTag}}</el-tag>
                     </div>
                 </div>
                 <div class="top-right">
                     <el-button icon="el-icon-picture-outline" @click="toOpenImage(imageData.materialUrl)">素材</el-button>
                 </div>
             </div>
-            <div class="audit-top">
-            </div>
 
-            <div class="audit-box">
+            <div class="hint-box" v-if="!imageList">
+                <span>- 暂无数据 -</span>
+            </div>
+            <div class="audit-box" v-else>
                 <div class="audit-img" v-for="(item, index) in imageList.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
                     <div class="img-box">
-                        <i slot="reference" class="el-icon-zoom-in" @click="toOpenImage(item.pURL)" @close="closeTag()"></i>
-                        <img :src="item.thumbnailURL">
+                        <i v-if="item.pURL" slot="reference" class="el-icon-zoom-in" @click="toOpenImage(item.pURL)"></i>
+                        <img :src="item.pURL">
                     </div>
                     <div class="audit-detail">
                         <div class="left">
                             <div class="tag" >
                                 <i class="el-icon-date"></i>
                                 <span>上传时间:&nbsp;</span>
-                                <el-tooltip v-if="item.pUTime" effect="dark" :content="item.pUTime" placement="top-end" :open-delay="1500">
-                                    <span>{{item.pUTime}}</span>
+                                <el-tooltip v-if="item.pUTime" effect="dark" :content="item.pUTime.replace(/(\d{4})-(\d{2})-(\d{2})\s(\d+):(\d+):(\d+)/, '$1年$2月$3日 $4:$5')" placement="top-end" :open-delay="1500">
+                                    <span>{{`${item.pUTime.replace(/(\d{4})-(\d{2})-(\d{2})\s(\d+):(\d+):(\d+)/, '$1年$2月$3日 $4:$5')}`}}</span>
                                 </el-tooltip>
                                 <span v-else>--</span>
                             </div>
@@ -55,7 +57,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <el-button type="primary" @click="addProblem(item)">添加问题</el-button>
+                            <el-button type="primary" @click="toOpenProblemDialog(item)">添加问题</el-button>
                         </div>
                     </div>
                     <div class="err-box">
@@ -70,10 +72,10 @@
                                 确定要删除该问题吗？
                             </p>
                             <div style="display:flex; justify-content:flex-end;">
-                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="tag.closeVisible = false">是的</el-button>
+                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="toCloseTag(tag.id)">是的</el-button>
                                 <el-button style="min-width: 45px; height: 25px; line-height: 25px;" size="mini" @click="tag.closeVisible = false">取消</el-button>
                             </div>
-                            <el-tag slot="reference" closable @close="closeTag(tag)">
+                            <el-tag slot="reference" closable @close="tag.closeVisible = true">
                                 {{tag.errMsg}}
                             </el-tag>
                         </el-popover>
@@ -81,7 +83,6 @@
                     </div>
                 </div>
             </div>
-
 
             <el-pagination
                 background
@@ -94,8 +95,8 @@
             </el-pagination>
 
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose()">关 闭</el-button>
-                <el-button @click="toLastOne()">上一个</el-button>
+                <el-button @click="handleClose">关 闭</el-button>
+                <el-button @click="toLastOne">上一个</el-button>
                 <el-button @click="toNextOne()" type="primary">下一个</el-button>
             </span>
         </el-dialog>
@@ -115,12 +116,12 @@
                     </el-alert>
                     <div class="radio-box">
                         <span>请选择问题类型</span>
-                        <el-radio-group v-model="radio" @change="radioChange()">
-                            <el-radio label="0">图片/素材不匹配</el-radio>
-                            <el-radio label="1">夜景图亮度不满足要求</el-radio>
-                            <el-radio label="2">报头日期不匹配</el-radio>
-                            <el-radio label="3">绑门/锁门</el-radio>
-                            <el-radio label="4">其他</el-radio>
+                        <el-radio-group v-model="errType" @change="radioChange()">
+                            <el-radio :label="0">图片/素材不匹配</el-radio>
+                            <el-radio :label="1">夜景图亮度不满足要求</el-radio>
+                            <el-radio :label="2">报头日期不匹配</el-radio>
+                            <el-radio :label="3">绑门/锁门</el-radio>
+                            <el-radio :label="4">其他</el-radio>
                         </el-radio-group>
 
                         <span>请简单描述下问题</span>
@@ -129,7 +130,7 @@
                             :rows="2"
                             placeholder="请输入内容"
                             :autosize="{ minRows: 2, maxRows: 6}"
-                            v-model="textarea"
+                            v-model="errMsg"
                             :disabled="isClose">
                         </el-input>
                     </div>
@@ -137,8 +138,8 @@
                 <img class="add-right" :src="imgUrl">
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="toResetProblem()">取 消</el-button>
-                <el-button type="primary" @click="toSubmitProblem()">提 交</el-button>
+                <el-button @click="toResetProblemDialog">取 消</el-button>
+                <el-button type="primary" @click="toSubmitProblem">提 交</el-button>
             </span>
         </el-dialog>
 
@@ -176,6 +177,7 @@ export default {
             imageDataList: [],
             imageData: {},
             imageList: [],
+            errlist: [],
 
             isClose: true,
             isHide: true,
@@ -186,10 +188,19 @@ export default {
 
             imgUrl: '',
             picID: '',
-            radio: '',
-            textarea: '',
+            errType: -1,
+            errMsg: '',
 
             dialogWidth: 0,
+
+            errTypeList: {
+                0: '图片/素材不匹配',
+                1: '夜景图亮度不满足要求',
+                2: '报头日期不匹配',
+                3: '绑门/锁门',
+                4: '其他'
+            },
+            errlistParams: {}
         }
     },
     computed: {
@@ -198,8 +209,10 @@ export default {
         },
         imgsWidth() {
             const length = this.imageList.length
-            if(length && length > 4) {
+            if(length > 4) {
                 return '1560px'
+            } else if(length <= 0) {
+                return '408px'
             } else {
                 return (length*384+24) + 'px'
             }
@@ -207,15 +220,18 @@ export default {
     },
     methods:{
         getImageDetailsList() {
-            api.postApi('/addsp/api/v1/audit/imageDetails', this.auditSearchParams)
+            api.postApi_json('/addsp/api/v1/audit/imageDetails', this.auditSearchParams)
             .then((res) => {
                 if(res.data.SysCode === 200200) {
                     const resData = res.data.data
+                    const item = resData.filter(item => item.itemIndex === 0)
                     this.imageDataList  = resData || []
-                    this.imageData = this.imageDataList[0]
+                    this.imageData = item[0] || []
                     this.imageList = this.imageData.imgList || []
-                    this.imageList.map(v => this.$set(v.errlist, 'closeVisible', false))
-                    console.log('imageDataList', this.imageDataList);
+                    this.imageList.errlist = this.imageList.errlist  || []
+                    if(this.imageList.errlist) {
+                        this.imageList.map(v => this.$set(v.errlist, 'closeVisible', false))
+                    }
                 } else {
                     this.$message({
                         type: "warning",
@@ -227,19 +243,19 @@ export default {
                 console.log(err);
             });
         },
-        closeTag(tag) {
-            tag.closeVisible = true
+        toCloseTag(id) {
+
         },
         // 点击提交问题
         toSubmitProblem() {
-            if(this.radio === '') {
+            if(this.errType < 0) {
                 this.$confirm('未选择问题类型，请选择后重新提交', '提交失败', {
                     showCancelButton: false,
                     showClose: false,
                     confirmButtonText: '好 的',
                     type: 'error'
                 })
-            } else if(this.radio === '5' && this.textarea === '') {
+            } else if(this.errType === 4 && this.errMsg === '') {
                 this.$confirm('未描述具体问题，请填写后重新提交', '提交失败', {
                     showCancelButton: false,
                     showClose: false,
@@ -247,67 +263,100 @@ export default {
                     type: 'error'
                 })
             } else {
-                let params = {
+                this.errlistParams = {
                     lID: this.auditImageID,
                     auditStatus: '1',
-                    errlist: {
-                        errType: this.radio,
-                        errMsg: this.textarea,
+                    errlist: []
+                }
+                if(this.errType === -1 && this.errMsg === '') {
+                   this.errlistParams.errlist = []
+                } else {
+                    const errData = {
+                        errType: this.errType,
+                        errMsg: this.errType === 4 ? this.errMsg : '',
                         pID: this.picID,
                     }
+                    const obj = {}
+                    this.$set(obj, 'closeVisible', false)
+                    this.$set(obj, 'errMsg', this.errTypeList[this.errType] === '其他' ? this.errMsg : this.errTypeList[this.errType])
+                    this.imageList.errlist.push(obj)
+                    console.log('obj', obj);
+                    this.errlistParams.errlist.push(errData)
+                    this.$message({
+                        showClose: false,
+                        message: '添加问题成功',
+                        type: 'success'
+                    });
+                    this.toResetProblemDialog()
                 }
-                api.postApi('/addsp/api/v1/audit/imgAudit', params)
-                    .then((res) => {
-                        console.log(res);
-                        if(res.data.SysCode) {
-                            this.$message({
-                                showClose: false,
-                                message: '添加问题成功',
-                                type: 'success'
-                            });
-                            this.toResetProblem()
-                        }
-                        else {
-                            this.$message({
-                                type: "warning",
-                                message: res.data.MSG || "提交问题异常！",
-                            });
-                        }
-                    })
-
-
+                console.log(this.imageList);
             }
         },
-        // 重置添加问题
-        toResetProblem() {
+        // 重置添加问题对话框
+        toResetProblemDialog() {
             this.addProblemVisible = false
-            this.radio = ''
-            this.textarea = ''
+            this.errType = ''
+            this.errMsg = ''
             this.isClose = true
         },
-        // 点击添加问题
-        addProblem(item) {
+        // 打开添加问题对话框
+        toOpenProblemDialog(item) {
             this.imgUrl = item.pURL
             this.picID = item.pID
             this.addProblemVisible = true
         },
         // 控制文本框是否禁用
         radioChange() {
-            if(this.radio === '4') {
+            if(this.errType === 4) {
                 this.isClose = false
             } else {
                 this.isClose = true
             }
         },
 
-        // 根据传过来的id加减1发送请求
+        // 上一页
         toLastOne() {
-            // this.$emit('toLastId', this.auditImageData.id)
-            console.log('上一个');
+            const item = this.imageDataList.filter(item => item.itemIndex === -1)
+            if(item.length) {
+                this.auditSearchParams.lID = item[0].lID
+                this.getImageDetailsList()
+            }
+            else {
+                this.$message({
+                    showClose: false,
+                    message: '已经到头了',
+                    type: 'warning'
+                });
+            }
         },
+        // 下一页
         toNextOne() {
-            // this.$emit('toNextId', this.auditImageData.id)
-            console.log('下一个');
+            // 提交问题
+            api.postApi_json('/addsp/api/v1/audit/imgAudit', this.errlistParams)
+                .then((res) => {
+                    console.log('imgAudit', res);
+                    if(res.data.SysCode === 200200) {
+                        console.log("问题上传成功");
+                    }
+                    else {
+                        this.$message({
+                            type: "warning",
+                            message: res.data.MSG || "问题上传异常！",
+                        });
+                    }
+                })
+            const item = this.imageDataList.filter(item => item.itemIndex === 1)
+            if(item.length) {
+                this.auditSearchParams.lID = item[0].lID
+                this.getImageDetailsList()
+            }
+            else {
+                this.$message({
+                    showClose: false,
+                    message: '已经到尾了',
+                    type: 'warning'
+                });
+            }
         },
         handleClose () {
             this.$emit("update:dialogVisible", false)
@@ -408,6 +457,13 @@ export default {
              background: rgba(255, 127, 60, 0.2);
         }
     }
+}
+
+.hint-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 480px;
 }
 
 .add-box {

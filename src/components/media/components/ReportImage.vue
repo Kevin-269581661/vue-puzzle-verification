@@ -2,12 +2,13 @@
     <div>
         <el-dialog
             title="监播图片"
-            @open="getAdPlanDetailsList()"
+            @open="getAdPlanDetailsList"
             :visible.sync="dialogVisible"
-            :show-close="false"
+            :show-close="true"
+            :before-close="handleClose"
             :close-on-click-modal="false"
             custom-class="custom-dialog-wrapper registration-media"
-            width="75%">
+            width="55%">
             <div class="handel_ul">
                 <li class="handel_ul_li">
                     <span class="li-label">所属区域：</span>
@@ -18,6 +19,7 @@
                         style="width: 270px"
                         size="small"
                     >
+                        <el-option label="荔湾区" value="荔湾区"></el-option>
                         <el-option label="天河区" value="天河区"></el-option>
                     </el-select>
                 </li>
@@ -30,6 +32,7 @@
                         style="width: 270px"
                         size="small"
                     >
+                        <el-option label="芳信轩" value="芳信轩"></el-option>
                         <el-option label="保利心语花园" value="保利心语花园"></el-option>
                     </el-select>
                 </li>
@@ -42,7 +45,7 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="兴盛路西门" value="兴盛路西门"></el-option>
+                        <el-option label="后门" value="后门"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -54,8 +57,8 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="A" value="A"></el-option>
-                        <el-option label="B" value="B"></el-option>
+                        <el-option label="A面" value="A"></el-option>
+                        <el-option label="B面" value="B"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -67,7 +70,8 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="GZ0930285203" value="GZ0930285203"></el-option>
+                        <el-option label="201608GZ-0323" value="201608GZ-0323"></el-option>
+                        <el-option label="202209GZ-1017" value="202209GZ-1017"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -79,7 +83,12 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="2" :value="2"></el-option>
+                        <el-option label="1张" :value="1"></el-option>
+                        <el-option label="2张" :value="2"></el-option>
+                        <el-option label="3张" :value="3"></el-option>
+                        <el-option label="4张" :value="4"></el-option>
+                        <el-option label="5张" :value="5"></el-option>
+                        <el-option label="6张" :value="6"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -91,8 +100,8 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="已审核" :value="0"></el-option>
-                        <el-option label="未审核" :value="1"></el-option>
+                        <el-option label="未审核" :value="0"></el-option>
+                        <el-option label="已审核" :value="1"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -104,8 +113,8 @@
                         style="width: 270px"
                         size="small"
                     >
-                        <el-option label="合格" :value="0"></el-option>
-                        <el-option label="不合格" :value="1"></el-option>
+                        <el-option label="不合格" :value="0"></el-option>
+                        <el-option label="合格" :value="1"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li handel_ul_li_btn">
@@ -115,8 +124,8 @@
                         @click="toSearchParams()"
                     >
                         搜索</el-button>
-                    <el-button plain @click="toResetParams()">重置</el-button>
-                    <el-button plain @click="export2Excel()">导出</el-button>
+                    <el-button plain @click="toResetParams">重置</el-button>
+                    <el-button plain @click="export2Excel">导出</el-button>
                 </li>
             </div>
             <div class="table-area">
@@ -136,7 +145,7 @@
                         <el-table-column
                             prop="resName"
                             label="所属小区"
-                            min-width="180">
+                            min-width="160">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.resName || '--' }}</span>
                             </template>
@@ -160,7 +169,7 @@
                         <el-table-column
                             prop="assetTag"
                             label="资产编号"
-                            min-width="180">
+                            min-width="160">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.assetTag || '--' }}</span>
                             </template>
@@ -176,7 +185,7 @@
                         <el-table-column
                             prop="auditStatus"
                             label="人工审核状态"
-                            min-width="118">
+                            min-width="108">
                             <template slot-scope="scope">
                                 <point-state
                                 :state-text="auditStatusToText(scope.row.auditStatus).text"
@@ -187,7 +196,7 @@
                         <el-table-column
                             prop="auditResult"
                             label="审核结果"
-                            min-width="118">
+                            min-width="108">
                             <template slot-scope="scope">
                                 <point-state
                                 :state-text="auditResultToText(scope.row.auditResult).text"
@@ -195,7 +204,7 @@
                                 ></point-state>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作" fixed="right" min-width="108">
+                        <el-table-column label="操作" fixed="right" min-width="65">
                             <template slot-scope="scope">
                                 <div class="operate-text" @click="toAudit(scope.row)">审核</div>
                             </template>
@@ -215,13 +224,11 @@
                 </el-pagination>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose()">关 闭</el-button>
+                <el-button @click="handleClose">关 闭</el-button>
             </span>
         </el-dialog>
         <AuditImage
             ref="auditImageRef"
-            @toLastId="toLastId"
-            @toNextId="toNextId"
             :dialogVisible.sync="auditImageVisible"
             :auditSearchParams="auditSearchParams">
         </AuditImage>
@@ -271,9 +278,15 @@ export default {
             let name = '监播图片详情';
             require.ensure([], () => {
                 const { export_json_to_excel } = require('../../../vendorExcel/Export2Excel');
-                const tHeader = ['所属区域', '所属小区', '媒体名称', '投放面', '资产编号', '图片数量', '人工审核状态(0:未审核,1:已审核)', '审核结果(0:不合格,1:合格)'];
+                const tHeader = ['所属区域', '所属小区', '媒体名称', '投放面', '资产编号', '图片数量', '人工审核状态', '审核结果'];
                 const filterVal = ['districtName', 'resName', 'mediaName', 'asLab', 'assetTag', 'imgNum', 'auditStatus', 'auditResult'];
-                const list = this.tableData;
+                const list = JSON.parse(JSON.stringify(this.tableData))
+                for (const key in list) {
+                    list[key].asLab += '面'
+                    list[key].imgNum += '张'
+                    list[key].auditStatus = list[key].auditStatus === 0 ? '未审核' : '已审核'
+                    list[key].auditResult = list[key].auditResult === 0 ? '不合格' : '合格'
+                }
                 const data = this.formatJson(filterVal, list);
                 export_json_to_excel(tHeader, data, name);
             })
@@ -284,11 +297,11 @@ export default {
         getAdPlanDetailsList() {
             let params = {
                 ...this.searchParams,
-                apID: this.reportImageApID,
+                apId: this.reportImageApID,
                 pageNum: this.currentPage,
                 pageSize: this.pageSize,
             }
-            api.postApi('/addsp/api/v1/audit/adPlanDetails', params).then((res)=>{
+            api.postApi_json('/addsp/api/v1/audit/adPlanDetails', params).then((res)=>{
                 if (res.data.SysCode) {
                 const resData = res.data.data
                 this.tableData = resData.list || []
@@ -300,17 +313,6 @@ export default {
                     });
                 }
             })
-        },
-        toLastId(id) {
-            console.log('当前id'+id);
-            // if(id <= 0) return;
-            // this.auditImageData = this.reportImageData[--id]
-        },
-        toNextId(id) {
-            console.log('当前id'+id);
-            // if(id < this.reportImageData.length) {
-                // this.auditImageData = this.reportImageData[++id]
-            // }
         },
         sizeChange (val) {
             this.pageSize = val
@@ -360,18 +362,20 @@ export default {
         },
         toAudit(row) {
             this.auditSearchParams = {...this.searchParams, lID: row.lID}
-            console.log('审核图片参数 lID', this.auditSearchParams);
             this.auditImageVisible = true
         },
         handleClose () {
             this.$emit("update:dialogVisible", false)
         },
         toSearchParams() {
-            if(Object.keys(this.searchParams).length === 0) return;
             console.log(this.searchParams);
+            this.getAdPlanDetailsList()
         },
         toResetParams() {
-            this.searchParams = {}
+            for(let key in this.searchParams){
+                delete this.searchParams[key];
+            }
+            this.getAdPlanDetailsList()
         },
     }
 }
@@ -391,7 +395,7 @@ export default {
   align-items: center;
   flex-flow: row nowrap;
   width: 350px;
-  margin: 0px 24px 16px 0px;
+  margin: 0px 12px 16px 12px;
   .li-label {
     font-size: 14px;
     white-space: nowrap;

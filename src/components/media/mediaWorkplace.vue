@@ -329,8 +329,9 @@
                         style="width: 236px"
                         size="small"
                     >
-                        <el-option label="上刊" value="上刊"></el-option>
-                        <el-option label="下刊" value="下刊"></el-option>
+                        <el-option label="上刊" :value="0"></el-option>
+                        <el-option label="下刊" :value="1"></el-option>
+                        <el-option label="换刊" :value="2"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -342,21 +343,8 @@
                         style="width: 236px"
                         size="small"
                     >
-                        <el-option label="已审核" :value="0"></el-option>
-                        <el-option label="未审核" :value="1"></el-option>
-                    </el-select>
-                </li>
-                <li class="handel_ul_li">
-                    <span class="li-label">图片更新：</span>
-                    <el-select
-                        v-model="searchParams.updateDate"
-                        placeholder="请选择图片更新状态"
-                        :clearable="true"
-                        style="width: 236px"
-                        size="small"
-                    >
-                        <el-option label="有更新" :value="true"></el-option>
-                        <el-option label="无更新" :value="false"></el-option>
+                        <el-option label="未审核" :value="0"></el-option>
+                        <el-option label="已审核" :value="1"></el-option>
                     </el-select>
                 </li>
                 <li class="handel_ul_li">
@@ -396,14 +384,14 @@
                     </div>
                     <div class="font-base">
                         <div class="ellipsis">
-                          {{ trItem.type===0?'上刊': '下刊' || '--' }}
+                          {{ trItem.type===0?'上刊报告': '下刊报告' || '--' }}
                         </div>
                     </div>
                   </td>
 
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">投放日期</div>
-                    <div class="font-base font-bold">
+                    <div class="font-base font-bold" v-if="trItem.startDate">
                       {{ `${trItem.startDate.replace(/-/g, '.')} - ${trItem.endDate.replace(/-/g, '.')}` || '--'}}
                     </div>
                   </td>
@@ -596,6 +584,7 @@ export default {
         .then((res) => {
           if (res.data.code === 200) {
             const resData = res.data.data;
+            console.log(resData);
             this.tableData = resData.list || [];
             this.paginationTotal = resData.total || 0;
           } else {
@@ -645,12 +634,11 @@ export default {
     getOrderImgCheckList() {
         this.loading = true;
         let params = {
-            keyword: this.searchParams || "",
-            uid: this.sessionData.uID,
-            token: this.sessionData.token
+            ...this.searchParams,
+            pageNum: this.currentPage,
+            pageSize: this.pageSize,
         };
-        api.postApi("/addsp/api/v1/audit/adPlans", params).then((res)=>{
-            console.log(res.data.data.list);
+        api.postApi_json("/addsp/api/v1/audit/adPlans", params).then((res)=>{
             if(res.data.SysCode) {
                 const resData = res.data.data
                 this.tableData = resData.list || []
@@ -674,18 +662,27 @@ export default {
     checkOrderImg(item) {
         this.reportImageApID = item.apID
         this.reportImageVisible = true
-        console.log('查看订单图片审核 apID', item.apID);
     },
 
     toSearchParams() {
-        this.searchParams.startDate = this.aduitDate[0]
-        this.searchParams.endDate = this.aduitDate[1]
+        if(this.aduitDate) {
+            this.searchParams.startDate = this.aduitDate[0]
+            this.searchParams.endDate = this.aduitDate[1]
+        }
+        else if(this.searchParams.startDate && this.searchParams.endDate) {
+            delete this.searchParams.startDate
+            delete this.searchParams.endDate
+        }
         console.log(this.searchParams);
         this.getData()
     },
 
     toResetParams() {
-        this.searchParams = {}
+        for(let key in this.searchParams){
+            delete this.searchParams[key];
+        }
+        this.aduitDate = ""
+        this.getData()
     },
 
     getData () {

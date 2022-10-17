@@ -178,6 +178,7 @@ export default {
             imageData: {},
             imageList: [],
             errlist: [],
+            tempObj: {},
 
             isClose: true,
             isHide: true,
@@ -228,10 +229,13 @@ export default {
                     this.imageDataList  = resData || []
                     this.imageData = item[0] || []
                     this.imageList = this.imageData.imgList || []
-                    this.imageList.errlist = this.imageList.errlist  || []
-                    if(this.imageList.errlist) {
-                        this.imageList.map(v => this.$set(v.errlist, 'closeVisible', false))
-                    }
+                    this.imageList.map(v => {
+                        if(v.errlist) {
+                            v.errlist.map(v => {
+                                this.$set(v, 'closeVisible', false)
+                            })
+                        }
+                    })
                 } else {
                     this.$message({
                         type: "warning",
@@ -271,17 +275,18 @@ export default {
                 if(this.errType === -1 && this.errMsg === '') {
                    this.errlistParams.errlist = []
                 } else {
+                    //////////////////////////////////////////////////////////////////////
                     const errData = {
                         errType: this.errType,
                         errMsg: this.errType === 4 ? this.errMsg : '',
                         pID: this.picID,
                     }
-                    const obj = {}
-                    this.$set(obj, 'closeVisible', false)
-                    this.$set(obj, 'errMsg', this.errTypeList[this.errType] === '其他' ? this.errMsg : this.errTypeList[this.errType])
-                    this.imageList.errlist.push(obj)
-                    console.log('obj', obj);
+                    this.$set(this.tempObj, 'closeVisible', false)
+                    this.$set(this.tempObj, 'errMsg', this.errTypeList[this.errType] === '其他' ? this.errMsg : this.errTypeList[this.errType])
+                    const index = this.imageList.findIndex(item => item.pID === this.picID)
+                    this.imageList[index].errlist.push(this.tempObj)
                     this.errlistParams.errlist.push(errData)
+                    //////////////////////////////////////////////////////////////////////
                     this.$message({
                         showClose: false,
                         message: '添加问题成功',
@@ -303,6 +308,7 @@ export default {
         toOpenProblemDialog(item) {
             this.imgUrl = item.pURL
             this.picID = item.pID
+            this.currentErr = item
             this.addProblemVisible = true
         },
         // 控制文本框是否禁用
@@ -414,7 +420,7 @@ export default {
             }
             img {
                 width: 100%;
-                height: 480px;
+                height: 460px;
                 border-radius: 4px;
             }
         }

@@ -390,7 +390,7 @@
                   </td>
 
                   <td class="table-td" style="width: 60px">
-                    <div class="font-base">投放日期</div>
+                    <div class="font-base">投放排期</div>
                     <div class="font-base font-bold" v-if="trItem.startDate">
                       {{ `${trItem.startDate.replace(/-/g, '.')} - ${trItem.endDate.replace(/-/g, '.')}` || '--'}}
                     </div>

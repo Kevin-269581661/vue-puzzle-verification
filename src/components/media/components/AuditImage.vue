@@ -62,8 +62,8 @@
                     </div>
                     <div class="err-box">
                         <el-popover
-                            v-for="tag in item.errlist"
-                            :key="tag.errMsg"
+                            v-for="(tag, index) in item.errList"
+                            :key="index"
                             placement="top-end"
                             width="160"
                             v-model="tag.closeVisible">
@@ -72,10 +72,10 @@
                                 确定要删除该问题吗？
                             </p>
                             <div style="display:flex; justify-content:flex-end;">
-                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="toCloseTag(tag.id)">是的</el-button>
+                                <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="toCloseTag(tag)">是的</el-button>
                                 <el-button style="min-width: 45px; height: 25px; line-height: 25px;" size="mini" @click="tag.closeVisible = false">取消</el-button>
                             </div>
-                            <el-tag slot="reference" closable @close="toOpenCloseVisible(tag.id)">
+                            <el-tag slot="reference" :disable-transitions="true" closable @close="toOpenCloseVisible(item, tag)">
                                 {{tag.errMsg}}
                             </el-tag>
                         </el-popover>
@@ -96,7 +96,7 @@
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">关 闭</el-button>
                 <el-button @click="toLastOne">上一个</el-button>
-                <el-button @click="toNextOne()" type="primary">下一个</el-button>
+                <el-button @click="toNextOne" type="primary">下一个</el-button>
             </span>
         </el-dialog>
 
@@ -176,8 +176,8 @@ export default {
             imageDataList: [],
             imageData: {},
             imageList: [],
-            errlist: [],
-            tempObj: {},
+            errList: [],
+            currentItem: {},
 
             isClose: true,
             isHide: true,
@@ -199,8 +199,7 @@ export default {
                 2: '报头日期不匹配',
                 3: '绑门/锁门',
                 4: '其他'
-            },
-            errlistParams: {}
+            }
         }
     },
     computed: {
@@ -227,10 +226,11 @@ export default {
                     this.imageDataList = resData || []
                     const item = resData.filter(item => item.itemIndex === 0)
                     this.imageData = item[0] || []
+                    // console.log('图片参数', this.imageData);
                     this.imageList = this.imageData.imgList || []
                     this.imageList.map(v => {
-                        if(v.errlist) {
-                            v.errlist.map(v => {
+                        if(v.errList) {
+                            v.errList.map(v => {
                                 this.$set(v, 'closeVisible', false)
                             })
                         }
@@ -238,7 +238,7 @@ export default {
                 } else {
                     this.$message({
                         type: "warning",
-                        message: res.data.MSG || "监播照片详情数据获取异常！",
+                        message: "监播照片详情数据获取异常！",
                     });
                 }
             })
@@ -246,20 +246,52 @@ export default {
                 console.log(err);
             });
         },
-        toOpenCloseVisible(id) {
-            this.imageList.map(v => v.errlist.map(v => v.closeVisible = false))
-            console.log(this.imageData);
-            // this.imageData.imglist.errlist.map(v => {
-            //     if(v.id === id) {
-            //         v.closeVisible = true
-            //     }
-            // })
+        // 显示tag删除提示
+        toOpenCloseVisible(item, tag) {
+            item.errList.map(v => v.closeVisible = false)
+            const index = item.errList.indexOf(tag)
+            item.errList[index].closeVisible = true
+            this.currentItem = item
         },
-        toCloseTag(id) {
-            console.log(id);
+        toCloseTag(tag) {
+            this.currentItem.errList.splice(this.currentItem.errList.indexOf(tag), 1)
+            if(this.errList) {
+                this.errList.splice(this.errList.indexOf(tag), 1)
+                this.$message({
+                    type: "success",
+                    message: "删除问题成功",
+                });
+            }
+            if(tag.id) {
+                api.getApi('/addsp/api/v1/audit/imgAuditDelete', { id: tag.id })
+                    .then((res) => {
+                        if(res.data.SysCode === 200200) {
+                            console.log('删除问题成功');
+                        } else {
+                            this.$message({
+                                type: "warning",
+                                message: "删除问题异常",
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
         },
         // 点击提交问题
         toSubmitProblem() {
+            console.log(this.currentItem);
+            if(this.errType !== 4) {
+                const index = this.currentItem.errList.findIndex(v => v.errMsg === this.errTypeList[this.errType])
+                if(index !== -1) {
+                    return this.$message({
+                        showClose: false,
+                        message: '请勿添加相同问题类型',
+                        type: 'warning'
+                    });
+                }
+            }
             if(this.errType < 0) {
                 this.$confirm('未选择问题类型，请选择后重新提交', '提交失败', {
                     showCancelButton: false,
@@ -274,22 +306,20 @@ export default {
                     confirmButtonText: '好 的',
                     type: 'error'
                 })
-            } else {
-                this.errlistParams = {
-                    lID: this.imageData.lID,
-                    auditStatus: 1,
-                    errlist: []
-                }
+            }
+            else {
                 const errData = {
-                    errType: this.errType,
                     errMsg: this.errType === 4 ? this.errMsg : this.errTypeList[this.errType],
+                    errType: this.errType,
                     pID: this.picID,
                 }
-                this.$set(this.tempObj, 'closeVisible', false)
-                this.$set(this.tempObj, 'errMsg', errData.errMsg)
+                const tempObj = {
+                    closeVisible:false,
+                    errMsg: errData.errMsg
+                }
                 const index = this.imageList.findIndex(item => item.pID === this.picID)
-                this.imageList[index].errlist.push(this.tempObj)
-                this.errlistParams.errlist.push(errData)
+                this.imageList[index].errList.push(tempObj)
+                this.errList.push(errData)
                 this.$message({
                     showClose: false,
                     message: '添加问题成功',
@@ -299,40 +329,20 @@ export default {
             }
         },
         toAuditImg() {
-            if(!this.errlistParams.errlist) {
-                this.errlistParams = {
-                    lID: this.imageData.lID,
-                    auditStatus: 1,
-                    errlist: []
-                }
+            let params = {
+                lID: this.imageData.lID,
+                auditStatus: 1,
+                errList: JSON.parse(JSON.stringify(this.errList)) || []
             }
-            const params = JSON.parse(JSON.stringify(this.errlistParams))
-            console.log('errlistParams',this.errlistParams);
             api.postApi_json('/addsp/api/v1/audit/imgAudit', params)
-            // api.postApi_json('/addsp/api/v1/audit/imgAudit', {
-            //     "lID": 16937452,
-            //     "auditStatus": 1,
-            //     "errList": [
-            //         {
-            //             "errType": 4,
-            //             "errMsg": "测试11111",
-            //             "pID": 7688290
-            //         }
-            //     ]
-            // })
                 .then((res) => {
-                    console.log('imgAudit', res);
                     if(res.data.SysCode === 200200) {
-                        console.log('res', res);
-                        // this.$message({
-                        //     type: "success",
-                        //     message: res.data.MSG || "问题上传成功",
-                        // });
+                        this.errList = []
                     }
                     else {
                         this.$message({
                             type: "warning",
-                            message: res.data.MSG || "问题上传异常！",
+                            message: "问题上传异常！",
                         });
                     }
                 })
@@ -348,6 +358,7 @@ export default {
         toOpenProblemDialog(item) {
             this.imgUrl = item.pURL
             this.picID = item.pID
+            this.currentItem = item
             this.addProblemVisible = true
         },
         // 控制文本框是否禁用
@@ -361,7 +372,7 @@ export default {
 
         // 上一页
         toLastOne() {
-            // console.log('上一页', this.imageDataList);
+            this.toAuditImg()
             const item = this.imageDataList.filter(item => item.itemIndex === -1)
             if(item.length) {
                 this.auditSearchParams.lID = item[0].lID
@@ -377,10 +388,8 @@ export default {
         },
         // 下一页
         toNextOne() {
-            // 提交问题
             this.toAuditImg()
             const item = this.imageDataList.filter(item => item.itemIndex === 1)
-            // console.log('item', item);
             if(item.length) {
                 this.auditSearchParams.lID = item[0].lID
                 this.getImageDetailsList()
@@ -394,6 +403,7 @@ export default {
             }
         },
         handleClose () {
+            this.toAuditImg()
             this.$emit("update:dialogVisible", false)
         },
         toOpenImage(imgUrl) {

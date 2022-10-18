@@ -75,11 +75,10 @@
                                 <el-button style="min-width: 45px; height: 25px; line-height: 25px;" type="primary" size="mini" @click="toCloseTag(tag.id)">是的</el-button>
                                 <el-button style="min-width: 45px; height: 25px; line-height: 25px;" size="mini" @click="tag.closeVisible = false">取消</el-button>
                             </div>
-                            <el-tag slot="reference" closable @close="tag.closeVisible = true">
+                            <el-tag slot="reference" closable @close="toOpenCloseVisible(tag.id)">
                                 {{tag.errMsg}}
                             </el-tag>
                         </el-popover>
-
                     </div>
                 </div>
             </div>
@@ -225,8 +224,8 @@ export default {
             .then((res) => {
                 if(res.data.SysCode === 200200) {
                     const resData = res.data.data
+                    this.imageDataList = resData || []
                     const item = resData.filter(item => item.itemIndex === 0)
-                    this.imageDataList  = resData || []
                     this.imageData = item[0] || []
                     this.imageList = this.imageData.imgList || []
                     this.imageList.map(v => {
@@ -247,8 +246,17 @@ export default {
                 console.log(err);
             });
         },
+        toOpenCloseVisible(id) {
+            this.imageList.map(v => v.errlist.map(v => v.closeVisible = false))
+            console.log(this.imageData);
+            // this.imageData.imglist.errlist.map(v => {
+            //     if(v.id === id) {
+            //         v.closeVisible = true
+            //     }
+            // })
+        },
         toCloseTag(id) {
-
+            console.log(id);
         },
         // 点击提交问题
         toSubmitProblem() {
@@ -268,34 +276,66 @@ export default {
                 })
             } else {
                 this.errlistParams = {
-                    lID: this.auditImageID,
-                    auditStatus: '1',
+                    lID: this.imageData.lID,
+                    auditStatus: 1,
                     errlist: []
                 }
-                if(this.errType === -1 && this.errMsg === '') {
-                   this.errlistParams.errlist = []
-                } else {
-                    //////////////////////////////////////////////////////////////////////
-                    const errData = {
-                        errType: this.errType,
-                        errMsg: this.errType === 4 ? this.errMsg : '',
-                        pID: this.picID,
-                    }
-                    this.$set(this.tempObj, 'closeVisible', false)
-                    this.$set(this.tempObj, 'errMsg', this.errTypeList[this.errType] === '其他' ? this.errMsg : this.errTypeList[this.errType])
-                    const index = this.imageList.findIndex(item => item.pID === this.picID)
-                    this.imageList[index].errlist.push(this.tempObj)
-                    this.errlistParams.errlist.push(errData)
-                    //////////////////////////////////////////////////////////////////////
-                    this.$message({
-                        showClose: false,
-                        message: '添加问题成功',
-                        type: 'success'
-                    });
-                    this.toResetProblemDialog()
+                const errData = {
+                    errType: this.errType,
+                    errMsg: this.errType === 4 ? this.errMsg : this.errTypeList[this.errType],
+                    pID: this.picID,
                 }
-                console.log(this.imageList);
+                this.$set(this.tempObj, 'closeVisible', false)
+                this.$set(this.tempObj, 'errMsg', errData.errMsg)
+                const index = this.imageList.findIndex(item => item.pID === this.picID)
+                this.imageList[index].errlist.push(this.tempObj)
+                this.errlistParams.errlist.push(errData)
+                this.$message({
+                    showClose: false,
+                    message: '添加问题成功',
+                    type: 'success'
+                });
+                this.toResetProblemDialog()
             }
+        },
+        toAuditImg() {
+            if(!this.errlistParams.errlist) {
+                this.errlistParams = {
+                    lID: this.imageData.lID,
+                    auditStatus: 1,
+                    errlist: []
+                }
+            }
+            const params = JSON.parse(JSON.stringify(this.errlistParams))
+            console.log('errlistParams',this.errlistParams);
+            api.postApi_json('/addsp/api/v1/audit/imgAudit', params)
+            // api.postApi_json('/addsp/api/v1/audit/imgAudit', {
+            //     "lID": 16937452,
+            //     "auditStatus": 1,
+            //     "errList": [
+            //         {
+            //             "errType": 4,
+            //             "errMsg": "测试11111",
+            //             "pID": 7688290
+            //         }
+            //     ]
+            // })
+                .then((res) => {
+                    console.log('imgAudit', res);
+                    if(res.data.SysCode === 200200) {
+                        console.log('res', res);
+                        // this.$message({
+                        //     type: "success",
+                        //     message: res.data.MSG || "问题上传成功",
+                        // });
+                    }
+                    else {
+                        this.$message({
+                            type: "warning",
+                            message: res.data.MSG || "问题上传异常！",
+                        });
+                    }
+                })
         },
         // 重置添加问题对话框
         toResetProblemDialog() {
@@ -308,7 +348,6 @@ export default {
         toOpenProblemDialog(item) {
             this.imgUrl = item.pURL
             this.picID = item.pID
-            this.currentErr = item
             this.addProblemVisible = true
         },
         // 控制文本框是否禁用
@@ -322,6 +361,7 @@ export default {
 
         // 上一页
         toLastOne() {
+            // console.log('上一页', this.imageDataList);
             const item = this.imageDataList.filter(item => item.itemIndex === -1)
             if(item.length) {
                 this.auditSearchParams.lID = item[0].lID
@@ -338,20 +378,9 @@ export default {
         // 下一页
         toNextOne() {
             // 提交问题
-            api.postApi_json('/addsp/api/v1/audit/imgAudit', this.errlistParams)
-                .then((res) => {
-                    console.log('imgAudit', res);
-                    if(res.data.SysCode === 200200) {
-                        console.log("问题上传成功");
-                    }
-                    else {
-                        this.$message({
-                            type: "warning",
-                            message: res.data.MSG || "问题上传异常！",
-                        });
-                    }
-                })
+            this.toAuditImg()
             const item = this.imageDataList.filter(item => item.itemIndex === 1)
+            // console.log('item', item);
             if(item.length) {
                 this.auditSearchParams.lID = item[0].lID
                 this.getImageDetailsList()

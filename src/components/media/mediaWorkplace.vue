@@ -48,34 +48,34 @@
                   >
                     <td class="table-td" style="width: 60px">
                       <div class="font-base font-bold" style="font-size: 16px">
-                        {{ trItem.projectName || '--' }}
+                        {{ trItem.projectName || "--" }}
                       </div>
                       <div class="font-base">
-                        {{ `${trItem.mediaTitle || '--'}·${trItem.assetTag}` }}
+                        {{ `${trItem.mTitle || "--"}·${trItem.assetTag}` }}
                       </div>
                     </td>
                     <td class="table-td" style="width: 60px">
                       <div class="font-base">媒体类型</div>
                       <div class="font-base font-bold">
-                        {{ `${trItem.mediaTypeName || '--'}` }}
+                        {{ `${trItem.mediaTypeName || "--"}` }}
                       </div>
                     </td>
                     <td class="table-td" style="width: 60px">
                       <div class="font-base">登记类型</div>
                       <div class="font-base font-bold">
-                        {{ trItem.registerTypeName || '--' }}
+                        {{ trItem.registerTypeName || "--" }}
                       </div>
                     </td>
                     <td class="table-td" style="width: 60px">
                       <div class="font-base">合同编号</div>
                       <div class="font-base font-bold">
-                        {{ trItem.contractCode || '--' }}
+                        {{ trItem.contractCode || "--" }}
                       </div>
                     </td>
                     <td class="table-td">
                       <div class="font-base">更新时间</div>
                       <div class="font-base font-bold">
-                        {{ trItem.updateTime || '--' }}
+                        {{ trItem.updateTime || "--" }}
                       </div>
                     </td>
                     <td class="operate-text" @click="dealRegister(trItem)">
@@ -117,7 +117,7 @@
                 >
                   <td class="table-td" style="width: 60px">
                     <div class="font-base font-bold" style="font-size: 16px">
-                      {{ trItem.opportunityName || '--' }}
+                      {{ trItem.opportunityName || "--" }}
                     </div>
                     <div class="font-base">
                       <el-tooltip
@@ -130,7 +130,7 @@
                       >
                         <div class="ellipsis">
                           {{
-                            `${trItem.companyName || '--'}·${
+                            `${trItem.companyName || "--"}·${
                               trItem.customerName
                             }`
                           }}
@@ -142,28 +142,28 @@
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">所属销售</div>
                     <div class="font-base font-bold">
-                      {{ `${trItem.saleName || '--'}` }}
+                      {{ `${trItem.saleName || "--"}` }}
                     </div>
                   </td>
 
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">投放城市</div>
                     <div class="font-base font-bold">
-                      {{ trItem.cities || '--' }}
+                      {{ trItem.cities || "--" }}
                     </div>
                   </td>
 
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">预计投放节点</div>
                     <div class="font-base font-bold">
-                      {{ trItem.launchTime || '--' }}
+                      {{ trItem.launchTime || "--" }}
                     </div>
                   </td>
 
                   <td class="table-td">
                     <div class="font-base">更新时间</div>
                     <div class="font-base font-bold">
-                      {{ trItem.updateTime || '--' }}
+                      {{ trItem.updateTime || "--" }}
                     </div>
                   </td>
 
@@ -205,7 +205,7 @@
                 >
                   <td class="table-td" style="width: 60px">
                     <div class="font-base font-bold" style="font-size: 16px">
-                      {{ trItem.opportunityName || '--' }}
+                      {{ trItem.opportunityName || "--" }}
                     </div>
                     <div class="font-base">
                       <el-tooltip
@@ -218,7 +218,7 @@
                       >
                         <div class="ellipsis">
                           {{
-                            `${trItem.companyName || '--'}·${
+                            `${trItem.companyName || "--"}·${
                               trItem.customerName
                             }`
                           }}
@@ -230,14 +230,14 @@
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">所属销售</div>
                     <div class="font-base font-bold">
-                      {{ `${trItem.saleName || '--'}` }}
+                      {{ `${trItem.saleName || "--"}` }}
                     </div>
                   </td>
 
                   <td class="table-td" style="width: 60px">
                     <div class="font-base">投放城市</div>
                     <div class="font-base font-bold">
-                      {{ trItem.cities || '--' }}
+                      {{ trItem.cities || "--" }}
                     </div>
                   </td>
 
@@ -251,14 +251,14 @@
                   <td class="table-td">
                     <div class="font-base">调整后下刊日期</div>
                     <div class="font-base font-bold">
-                      {{ trItem.newEndTime || '--' }}
+                      {{ trItem.newEndTime || "--" }}
                     </div>
                   </td>
 
                   <td class="table-td">
                     <div class="font-base">更新时间</div>
                     <div class="font-base font-bold">
-                      {{ trItem.updateTime || '--' }}
+                      {{ trItem.updateTime || "--" }}
                     </div>
                   </td>
 
@@ -290,13 +290,19 @@
           name="orderImgCheck"
           v-if="!['ADN_MD'].includes(sessionData.uType)"
         >
-        <el-skeleton :loading="loading" animated>
+          <el-skeleton :loading="loading" animated>
             <template slot="template">
               <div style="padding: 14px">
                 <div
                   v-for="i in 6"
                   :key="i"
-                  style="display: flex; align-items: center; justify-items:  space-between; margin-top: 8px; height: 32px;"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-items: space-between;
+                    margin-top: 8px;
+                    height: 32px;
+                  "
                 >
                   <el-skeleton-item variant="rect" style="margin-right: 16px" />
                   <el-skeleton-item variant="rect" style="margin-right: 16px" />
@@ -308,133 +314,147 @@
               </div>
             </template>
             <template>
-            <div class="handel_ul">
+              <div class="handel_ul">
                 <li class="handel_ul_li">
-                    <span class="li-label">订单名称：</span>
-                    <el-input
-                        v-model="searchParams.apName"
-                        style="width: 236px;"
-                        placeholder="请输入订单名称"
-                        class="input-with-select u-key"
-                        size="small"
-                    >
-                    </el-input>
+                  <span class="li-label">订单名称：</span>
+                  <el-input
+                    v-model="searchParams.apName"
+                    style="width: 236px"
+                    placeholder="请输入订单名称"
+                    class="input-with-select u-key"
+                    size="small"
+                  >
+                  </el-input>
                 </li>
                 <li class="handel_ul_li">
-                    <span class="li-label">监播类型：</span>
-                    <el-select
-                        v-model="searchParams.type"
-                        placeholder="请选择监播类型"
-                        :clearable="true"
-                        style="width: 236px"
-                        size="small"
-                    >
-                        <el-option label="上刊" :value="0"></el-option>
-                        <el-option label="下刊" :value="1"></el-option>
-                        <el-option label="换刊" :value="2"></el-option>
-                    </el-select>
+                  <span class="li-label">监播类型：</span>
+                  <el-select
+                    v-model="searchParams.type"
+                    placeholder="请选择监播类型"
+                    :clearable="true"
+                    style="width: 236px"
+                    size="small"
+                  >
+                    <el-option label="上刊" :value="0"></el-option>
+                    <el-option label="下刊" :value="1"></el-option>
+                    <el-option label="换刊" :value="2"></el-option>
+                  </el-select>
                 </li>
                 <li class="handel_ul_li">
-                    <span class="li-label">审核状态：</span>
-                    <el-select
-                        v-model="searchParams.auditStatus"
-                        placeholder="请选择审核状态"
-                        :clearable="true"
-                        style="width: 236px"
-                        size="small"
-                    >
-                        <el-option label="未审核" :value="0"></el-option>
-                        <el-option label="已审核" :value="1"></el-option>
-                    </el-select>
+                  <span class="li-label">审核状态：</span>
+                  <el-select
+                    v-model="searchParams.auditStatus"
+                    placeholder="请选择审核状态"
+                    :clearable="true"
+                    style="width: 236px"
+                    size="small"
+                  >
+                    <el-option label="未审核" :value="0"></el-option>
+                    <el-option label="已审核" :value="1"></el-option>
+                  </el-select>
                 </li>
                 <li class="handel_ul_li">
-                    <span class="li-label">监播日期：</span>
-                    <el-date-picker
-                        v-model="aduitDate"
-                        size="small"
-                        type="daterange"
-                        range-separator="-"
-                        value-format="yyyy-MM-dd"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
-                    </el-date-picker>
+                  <span class="li-label">监播日期：</span>
+                  <el-date-picker
+                    v-model="aduitDate"
+                    size="small"
+                    type="daterange"
+                    range-separator="-"
+                    value-format="yyyy-MM-dd"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                  >
+                  </el-date-picker>
                 </li>
                 <li class="handel_ul_li handel_ul_li_btn">
-                    <el-button
-                        type="primary"
-                        icon="el-icon-search"
-                        @click="toSearchParams()"
-                    >
-                        搜索</el-button>
-                    <el-button plain @click="toResetParams()">重置</el-button>
+                  <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="toSearchParams()"
+                  >
+                    搜索</el-button
+                  >
+                  <el-button plain @click="toResetParams()">重置</el-button>
                 </li>
-            </div>
-            <table v-if="tableData.length" style="width: 100%">
-              <tbody>
-                <tr
-                  v-for="(trItem, trIndex) in tableData"
-                  :key="trIndex"
-                  class="table-tr"
-                >
-                  <td class="table-td" style="width: 60px">
-                    <div class="primary-title">
-                        <div class="font-base font-bold" style="font-size: 16px">
-                        {{ trItem.apName || '--' }}
-                        </div>
-                    </div>
-                    <div class="font-base">
+              </div>
+              <table v-if="tableData.length" style="width: 100%">
+                <tbody>
+                  <tr
+                    v-for="(trItem, trIndex) in tableData"
+                    :key="trIndex"
+                    class="table-tr"
+                  >
+                    <td class="table-td" style="width: 60px">
+                      <div class="font-base font-bold" style="font-size: 16px">
+                        {{ trItem.apName || "--" }}
+                      </div>
+                      <div class="font-base">
                         <div class="ellipsis">
-                          {{ trItem.type===0?'上刊报告': '下刊报告' || '--' }}
+                          {{
+                            trItem.type === 0 ? "上刊报告" : "下刊报告" || "--"
+                          }}
                         </div>
-                    </div>
-                  </td>
+                      </div>
+                    </td>
 
-                  <td class="table-td" style="width: 60px">
-                    <div class="font-base">投放排期</div>
-                    <div class="font-base font-bold" v-if="trItem.startDate">
-                      {{ `${trItem.startDate.replace(/-/g, '.')} - ${trItem.endDate.replace(/-/g, '.')}` || '--'}}
-                    </div>
-                  </td>
+                    <td class="table-td" style="width: 60px">
+                      <div class="font-base">投放排期</div>
+                      <div class="font-base font-bold" v-if="trItem.startDate">
+                        {{
+                          `${trItem.startDate.replace(
+                            /-/g,
+                            "."
+                          )} - ${trItem.endDate.replace(/-/g, ".")}` || "--"
+                        }}
+                      </div>
+                    </td>
 
-                  <td class="table-td" style="width: 60px">
-                    <div class="font-base">监播点位</div>
-                    <div class="font-base font-bold">
-                      {{ `${ trItem.asDoneCount }/${ trItem.asCount }` || '--' }}
-                    </div>
-                  </td>
+                    <td class="table-td" style="width: 60px">
+                      <div class="font-base">监播点位</div>
+                      <div class="font-base font-bold">
+                        {{ `${trItem.asDoneCount}/${trItem.asCount}` || "--" }}
+                      </div>
+                    </td>
 
-                  <td class="table-td">
-                    <div class="font-base">审核状态</div>
+                    <td class="table-td" style="width: 60px">
+                      <div class="font-base">审核状态</div>
+                      <div class="font-base font-bold">
+                        <span
+                          class="point"
+                          :class="
+                            trItem.auditStatus === 0 ? 'warning' : 'success'
+                          "
+                        ></span>
+                        {{
+                          trItem.auditStatus === 0
+                            ? `未审核 (${trItem.asAuditCount}/${trItem.asDoneCount})`
+                            : " 已审核" || "--"
+                        }}
+                      </div>
+                    </td>
 
-                    <div class="font-base font-bold">
-                        <span class="point" :class="trItem.auditStatus===0? 'warning':'success'"></span>
-                      {{ trItem.auditStatus===0?`未审核(${trItem.asAuditCount}/${trItem.asDoneCount})`:'已审核' || '--' }}
-                    </div>
-                  </td>
-
-                  <td class="operate-text" @click="checkOrderImg(trItem)">
-                    查看
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <el-empty v-else :image-size="200"></el-empty>
-            <!-- :hide-on-single-page="true" -->
-            <el-pagination
-              background
-              @size-change="sizeChange"
-              @current-change="changePage"
-              :current-page.sync="currentPage"
-              :page-sizes="pageSizes"
-              :page-size.sync="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="paginationTotal"
-              style="margin-top: 14px; text-align: right"
-            >
-            </el-pagination>
-          </template>
-        </el-skeleton>
-
+                    <td class="operate-text" @click="checkOrderImg(trItem)">
+                      查看
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <el-empty v-else :image-size="200"></el-empty>
+              <!-- :hide-on-single-page="true" -->
+              <el-pagination
+                background
+                @size-change="sizeChange"
+                @current-change="changePage"
+                :current-page.sync="currentPage"
+                :page-sizes="pageSizes"
+                :page-size.sync="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="paginationTotal"
+                style="margin-top: 14px; text-align: right"
+              >
+              </el-pagination>
+            </template>
+          </el-skeleton>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -458,6 +478,7 @@
     <ReportImage
       :dialogVisible.sync="reportImageVisible"
       :reportImageApID="reportImageApID"
+      @refresh="getData"
     ></ReportImage>
   </div>
 </template>
@@ -467,9 +488,9 @@ import api from "../../api/api.js";
 import sessFun from "../../commonFun/sessFun.js";
 
 import RegistrationMedia from "../../components/media/components/RegistrationMedia.vue";
-import LaunchMedia from '../../components/media/components/LaunchMedia.vue'
-import UpdateOrderEndTime from '../../components/media/components/UpdateOrderEndTime.vue'
-import ReportImage from '../../components/media/components/ReportImage.vue'
+import LaunchMedia from "../../components/media/components/LaunchMedia.vue";
+import UpdateOrderEndTime from "../../components/media/components/UpdateOrderEndTime.vue";
+import ReportImage from "../../components/media/components/ReportImage.vue";
 
 export default {
   name: "mediaWorkplace",
@@ -477,9 +498,9 @@ export default {
     RegistrationMedia,
     LaunchMedia,
     UpdateOrderEndTime,
-    ReportImage
+    ReportImage,
   },
-  data () {
+  data() {
     return {
       searchParams: {},
       aduitDate: "",
@@ -494,7 +515,7 @@ export default {
       currentPage: 1,
       paginationTotal: 0,
       searchKeyword: "",
-      activeName: 'register',
+      activeName: "register",
 
       launchMediaVisible: false,
       orderData: {},
@@ -505,20 +526,20 @@ export default {
       reportImageVisible: false,
       reportImageApID: 0,
 
-      searchPlaceholder: '项目名称/资产编号/合同编号'
+      searchPlaceholder: "项目名称/资产编号/合同编号",
     };
   },
   methods: {
-    handleEdit (index, row) {
+    handleEdit(index, row) {
       console.log(index, row);
     },
 
-    handleDelete (index, row) {
+    handleDelete(index, row) {
       console.log(index, row);
     },
 
     // 获取待登记列表
-    getRegistrationList () {
+    getRegistrationList() {
       this.loading = true;
       api
         .getApi("/addsp/api/v1/register/page", {
@@ -546,34 +567,34 @@ export default {
         });
     },
 
-    sizeChange (val) {
-      this.pageSize = val
-      this.currentPage = 1
-      this.getData()
+    sizeChange(val) {
+      this.pageSize = val;
+      this.currentPage = 1;
+      this.getData();
     },
 
-    changePage (page) {
-      this.currentPage = page
-      this.getData()
+    changePage(page) {
+      this.currentPage = page;
+      this.getData();
     },
 
     // 点击处理
-    dealRegister (rowData) {
-      this.registrationMediaVisible = true
+    dealRegister(rowData) {
+      this.registrationMediaVisible = true;
       this.currentRegistration = rowData;
     },
 
-    dealLaunchMedia (rowData) {
-      this.orderData = rowData
-      this.launchMediaVisible = true
+    dealLaunchMedia(rowData) {
+      this.orderData = rowData;
+      this.launchMediaVisible = true;
     },
 
-    dealOrderEndTime (rowData) {
-      this.updateOrderData = rowData
-      this.updateOderVisible = true
+    dealOrderEndTime(rowData) {
+      this.updateOrderData = rowData;
+      this.updateOderVisible = true;
     },
 
-    getConfirmLaunchList () {
+    getConfirmLaunchList() {
       this.loading = true;
       api
         .getApi("/addsp/api/v1/sale/confirmLaunchList", {
@@ -602,7 +623,7 @@ export default {
         });
     },
 
-    getUpdateOrderEndTimeList () {
+    getUpdateOrderEndTimeList() {
       this.loading = true;
       api
         .getApi("/addsp/api/v1/sale/updateOrderEndTimeList", {
@@ -632,100 +653,105 @@ export default {
 
     // 获取订单图片审核列表
     getOrderImgCheckList() {
-        this.loading = true;
-        let params = {
-            ...this.searchParams,
-            pageNum: this.currentPage,
-            pageSize: this.pageSize,
-        };
-        api.postApi_json("/addsp/api/v1/audit/adPlans", params).then((res)=>{
-            if(res.data.SysCode) {
-                const resData = res.data.data
-                this.tableData = resData.list || []
-                this.paginationTotal = resData.total || 0
-            } else {
-                this.$message({
-                    type: 'warning',
-                    message: res.data.MSG || "图片审核列表获取异常！"
-                });
-            }
+      this.loading = true;
+      for (let key in this.searchParams) {
+        if (this.searchParams[key] === "") {
+          delete this.searchParams[key];
+        }
+      }
+      let params = {
+        ...this.searchParams,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+      };
+      api
+        .postApi_json("/addsp/api/v1/audit/adPlans", params)
+        .then((res) => {
+          if (res.data.SysCode) {
+            const resData = res.data.data;
+            this.tableData = resData.list || [];
+            this.paginationTotal = resData.total || 0;
+          } else {
+            this.$message({
+              type: "warning",
+              message: res.data.MSG || "图片审核列表获取异常！",
+            });
+          }
         })
-        .catch((err)=> {
-            console.log(err);
+        .catch((err) => {
+          console.log(err);
         })
-        .finally(()=>{
-            this.loading = false
+        .finally(() => {
+          this.loading = false;
         });
     },
 
     // 查看订单图片审核
     checkOrderImg(item) {
-        this.reportImageApID = item.apID
-        this.reportImageVisible = true
+      this.reportImageApID = item.apID;
+      this.reportImageVisible = true;
     },
 
     toSearchParams() {
-        if(this.aduitDate) {
-            this.searchParams.startDate = this.aduitDate[0]
-            this.searchParams.endDate = this.aduitDate[1]
-        }
-        else if(this.searchParams.startDate && this.searchParams.endDate) {
-            delete this.searchParams.startDate
-            delete this.searchParams.endDate
-        }
-        console.log(this.searchParams);
-        this.getData()
+      if (this.aduitDate) {
+        this.searchParams.startDate = this.aduitDate[0];
+        this.searchParams.endDate = this.aduitDate[1];
+      } else if (this.searchParams.startDate && this.searchParams.endDate) {
+        delete this.searchParams.startDate;
+        delete this.searchParams.endDate;
+      }
+      this.getData();
     },
 
     toResetParams() {
-        for(let key in this.searchParams){
-            delete this.searchParams[key];
-        }
-        this.aduitDate = ""
-        this.getData()
+      for (let key in this.searchParams) {
+        delete this.searchParams[key];
+      }
+      this.aduitDate = "";
+      this.getData();
     },
 
-    getData () {
+    getData() {
       switch (this.activeName) {
-        case 'register':
-          this.searchPlaceholder = '项目名称/资产编号/合同编号'
+        case "register":
+          this.searchPlaceholder = "项目名称/资产编号/合同编号";
           this.getRegistrationList();
           break;
 
-        case 'launch':
-          this.searchPlaceholder = '公司名称/品牌名称/所属销售'
+        case "launch":
+          this.searchPlaceholder = "公司名称/品牌名称/所属销售";
           this.getConfirmLaunchList();
           break;
 
-        case 'updateOrderEndTimeList':
-          this.searchPlaceholder = '公司名称/品牌名称/所属销售'
+        case "updateOrderEndTimeList":
+          this.searchPlaceholder = "公司名称/品牌名称/所属销售";
           this.getUpdateOrderEndTimeList();
           break;
 
-        case 'orderImgCheck':
-            this.searchPlaceholder = '公司名称/品牌名称/所属销售'
-            this.getOrderImgCheckList();
+        case "orderImgCheck":
+          this.searchPlaceholder = "公司名称/品牌名称/所属销售";
+          this.getOrderImgCheckList();
 
         default:
           break;
       }
     },
 
-    handleClick () {
-      this.tableData = []
-      this.paginationTotal = 0
+    handleClick() {
+      this.tableData = [];
+      this.paginationTotal = 0;
       this.currentPage = 1;
       this.getData();
     },
 
-    handleTabClick () {
-      this.searchKeyword = ''
-      this.handleClick()
-    }
+    handleTabClick() {
+      this.searchKeyword = "";
+      this.handleClick();
+    },
   },
-  mounted () {
-    this.sessionData = sessFun.getSess()
-    console.log(this.sessionData, 'this.sessionDatathis.sessionData')
+  mounted() {
+    this.sessionData = sessFun.getSess();
+    console.log(this.sessionData, "this.sessionDatathis.sessionData");
 
     this.getData();
   },
@@ -737,7 +763,7 @@ export default {
   background: none;
 }
 /deep/ .el-tabs__item {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
@@ -781,22 +807,22 @@ export default {
   opacity: 0.85;
 }
 .point {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 
-    &.success {
-        background: rgb(82, 196, 26);
-    }
+  &.success {
+    background: rgb(82, 196, 26);
+  }
 
-    &.warning {
-        background-color:rgb(250, 173, 20);
-    }
+  &.warning {
+    background-color: rgb(250, 173, 20);
+  }
 }
 .primary-title {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .handel_ul {
   list-style: none;
@@ -837,8 +863,8 @@ export default {
     margin: 0 0 0 -12px;
     border-bottom: 1px solid rgba($color: #000000, $alpha: 0.06);
     &:first-child {
-        border-top: 1px solid rgba($color: #000000, $alpha: 0.06);
-        margin-top: 24px;
+      border-top: 1px solid rgba($color: #000000, $alpha: 0.06);
+      margin-top: 24px;
     }
     .table-td {
       flex-grow: 1;
@@ -865,7 +891,7 @@ export default {
 }
 
 /deep/ .el-dialog__title {
-    font-weight: 600;
-    color: #000;
+  font-weight: 600;
+  color: #000;
 }
 </style>

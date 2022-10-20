@@ -89,12 +89,6 @@
           </li>
         </div>
 
-        <!-- 列设置 -->
-        <TableSetting
-          @refreshTable="refreshTable"
-          @spaceSetting="spaceSetting"
-        />
-
         <div class="table_wrap">
           <el-table
             :size="rowSpace"
@@ -538,7 +532,6 @@ import pointState from "./components/pointState.vue";
 import timeFormat from "../../commonFun/timeFormat";
 import unvailableSellDialog from "./components/unvailableSellDialog.vue";
 import vailableSellDialog from "./components/vailableSellDialog.vue";
-import TableSetting from "./components/TableSetting";
 
 import {
   Form,
@@ -577,12 +570,9 @@ export default {
     elOption: Option,
     unvailableSellDialog,
     vailableSellDialog,
-    TableSetting,
   },
   data() {
     return {
-      // 行距
-      rowSpace: "small",
       //加载中
       loading: true,
       loadSign: true,
@@ -718,14 +708,6 @@ export default {
   },
 
   methods: {
-    // 刷新列表
-    refreshTable() {
-      this.getData();
-    },
-    // 更改列表行距
-    spaceSetting(size) {
-      this.rowSpace = size;
-    },
     getMediaTypes() {
       let _this = this;
       function requestMediaType() {

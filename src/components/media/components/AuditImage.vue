@@ -189,6 +189,8 @@
               :rows="2"
               placeholder="请输入内容"
               :autosize="{ minRows: 2, maxRows: 6 }"
+              maxlength="20"
+              show-word-limit
               v-model="errMsg"
               :disabled="isClose"
             >

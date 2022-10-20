@@ -444,6 +444,7 @@ export default {
     },
     handleClose() {
       this.toResetParams();
+      this.getAdPlanDetailsList();
       this.$emit("refresh");
       this.$emit("update:dialogVisible", false);
     },

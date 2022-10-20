@@ -88,8 +88,16 @@
             >
           </li>
         </div>
+
+        <!-- 列设置 -->
+        <TableSetting
+          @refreshTable="refreshTable"
+          @spaceSetting="spaceSetting"
+        />
+
         <div class="table_wrap">
           <el-table
+            :size="rowSpace"
             v-loading="loading"
             element-loading-text="拼命加载中..."
             element-loading-spinner="el-icon-loading"
@@ -133,7 +141,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.mTitle || '--' }}</span>
+                <span>{{ scope.row.mTitle || "--" }}</span>
               </template>
             </el-table-column>
 
@@ -152,7 +160,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                {{ scope.row.assetTag || '--' }}
+                {{ scope.row.assetTag || "--" }}
               </template>
             </el-table-column>
 
@@ -163,7 +171,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.city || '--' }}</span>
+                <span>{{ scope.row.city || "--" }}</span>
               </template>
             </el-table-column>
 
@@ -174,7 +182,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.rName || '--' }}</span>
+                <span>{{ scope.row.rName || "--" }}</span>
               </template>
             </el-table-column>
 
@@ -185,7 +193,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.tradingArea || '--' }}</span>
+                <span>{{ scope.row.tradingArea || "--" }}</span>
               </template>
             </el-table-column>
 
@@ -196,7 +204,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.createTime || '--' }}</span>
+                <span>{{ scope.row.createTime || "--" }}</span>
               </template>
             </el-table-column>
 
@@ -208,7 +216,7 @@
               :filters="[
                 { text: '正常', value: 1 },
                 { text: '待安装', value: '2' },
-                { text: '已拆除', value: 4 }
+                { text: '已拆除', value: 4 },
               ]"
               :filter-multiple="false"
               fixed="right"
@@ -228,7 +236,7 @@
               width="112"
               :filters="[
                 { text: '可售卖', value: 1 },
-                { text: '不可售卖', value: 2 }
+                { text: '不可售卖', value: 2 },
               ]"
               :filter-multiple="false"
               fixed="right"
@@ -449,7 +457,7 @@
                 :content="scope.row.errorMsg"
                 placement="bottom-start"
               >
-                <span>{{ scope.row.errorMsg || '--' }}</span>
+                <span>{{ scope.row.errorMsg || "--" }}</span>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -521,15 +529,18 @@
 </template>
 
 <script>
-import api from '../../api/api'
-import areaPackageNew from '../../commonFun/areaPackage_new'
-import areaToTextNew from '../../commonFun/areaToText_new'
+import api from "../../api/api";
+import areaPackageNew from "../../commonFun/areaPackage_new";
+import areaToTextNew from "../../commonFun/areaToText_new";
 import sessFun from "../../commonFun/sessFun.js";
 import noSearchResult from "./components/noSearchResult.vue";
-import pointState from './components/pointState.vue';
-import timeFormat from '../../commonFun/timeFormat';
-import unvailableSellDialog from './components/unvailableSellDialog.vue';
-import vailableSellDialog from './components/vailableSellDialog.vue';
+import pointState from "./components/pointState.vue";
+import timeFormat from "../../commonFun/timeFormat";
+import unvailableSellDialog from "./components/unvailableSellDialog.vue";
+import vailableSellDialog from "./components/vailableSellDialog.vue";
+import TableSetting from "./components/TableSetting";
+
+import { getLocalCache } from "@/utils/user.js";
 
 import {
   Form,
@@ -545,8 +556,8 @@ import {
   Tooltip,
   Message,
   Select,
-  Option
-} from 'element-ui';
+  Option,
+} from "element-ui";
 
 export default {
   name: "mediaList",
@@ -567,10 +578,13 @@ export default {
     elSelect: Select,
     elOption: Option,
     unvailableSellDialog,
-    vailableSellDialog
+    vailableSellDialog,
+    TableSetting,
   },
-  data () {
+  data() {
     return {
+      // 行距
+      rowSpace: "",
       //加载中
       loading: true,
       loadSign: true,
@@ -580,69 +594,73 @@ export default {
         pageSize: 10,
         totalSize: 0,
       },
-      showNewBtn: false,   // 新建按钮
+      showNewBtn: false, // 新建按钮
       haveDetail: true,
       //搜索框和下拉列表
-      keyword: '',
-      selectInfo: '1',
+      keyword: "",
+      selectInfo: "1",
       SelOptions: [
         {
-          value: '1',
-          label: '资源名称'
-        }, {
-          value: '2',
-          label: '商圈'
-        }
+          value: "1",
+          label: "资源名称",
+        },
+        {
+          value: "2",
+          label: "商圈",
+        },
       ],
-      filterMediaType: '',                   // 表头媒体类型搜索状态
-      asState: '',                     // 搜索的媒体状态
-      asSaleState: '',                //  搜索的售卖状态
-      planList: [],                   //  table的所有数据
-      currentPlan: [],                // 显示在table中的数据
-      cityOptions: [],                //城市数组
-      selectedOptions: [],            // 当前选择的城市rid数组
-      regionOpt: [],                  // 地区
-      selectRName: '',                // 当前选择的区域rid
-      cityArea: { cName: '', rName: '' },   // 当前选择的城市名称和区域名称
+      filterMediaType: "", // 表头媒体类型搜索状态
+      asState: "", // 搜索的媒体状态
+      asSaleState: "", //  搜索的售卖状态
+      planList: [], //  table的所有数据
+      currentPlan: [], // 显示在table中的数据
+      cityOptions: [], //城市数组
+      selectedOptions: [], // 当前选择的城市rid数组
+      regionOpt: [], // 地区
+      selectRName: "", // 当前选择的区域rid
+      cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
       loadScroll: true,
-      provinceCity: [],               //省份及其地级市
-      timeID: '',                     // 计时器
-      cityRid: '',                    // 搜索前置条件为城市时,转换成rid
-      sessionData: '',
-      pageNo: 1,                      // 页数
-      totalPage: 1,                   // 总页数
-      searchBtnAbled: false,           // 搜索按钮禁止
-      mStatusDialogVisible: false,    // 媒体状态修改模态框
-      normalToDisabled: true,         //  是否为正常转禁用
-      doorState: { asState: false, adState: '' },  // 广告门单面禁用：媒体状态、点位状态
+      provinceCity: [], //省份及其地级市
+      timeID: "", // 计时器
+      cityRid: "", // 搜索前置条件为城市时,转换成rid
+      sessionData: "",
+      pageNo: 1, // 页数
+      totalPage: 1, // 总页数
+      searchBtnAbled: false, // 搜索按钮禁止
+      mStatusDialogVisible: false, // 媒体状态修改模态框
+      normalToDisabled: true, //  是否为正常转禁用
+      doorState: { asState: false, adState: "" }, // 广告门单面禁用：媒体状态、点位状态
       // 修改媒体状态时的行数据
       rowData: {
         asState: {
           A: false,
-          B: false
-        }
+          B: false,
+        },
       },
-      rowIndex: '',                   // 修改媒体状态时的行下标
-      selectState: '',                // 修改到媒体状态
-      ImportDialogVisible: false,     // 媒体导入弹出框
-      importAsrID: '',                // 导入媒体时所选择的公司id
-      importSelectLoading: true,      // 公司下拉选项
-      companyList: [],                // SA媒体导入时获取的公司列表
-      doUpload: this.apiVar.qadnUrl + '/addsp/api/v1/media/batchImport',
-      fileData: [],                            // 当前上传文件的数据- 表格
-      excelDataUpload: [],                     // 导入excel之后返回的数组
-      showUploadFail: false,                  // 导入失败的媒体弹出框
-      excelObj: { successNum: 0, failNum: 0 },   // 导入excel之后返回的失败成功点数
-      ImportLoading: '',                      // 导入excel提交loading
-      showImportBtn: false,                   // SA才显示导入媒体按钮
-      pushMapDialogVisible: false,            // 推送地图弹出框
+      rowIndex: "", // 修改媒体状态时的行下标
+      selectState: "", // 修改到媒体状态
+      ImportDialogVisible: false, // 媒体导入弹出框
+      importAsrID: "", // 导入媒体时所选择的公司id
+      importSelectLoading: true, // 公司下拉选项
+      companyList: [], // SA媒体导入时获取的公司列表
+      doUpload: this.apiVar.qadnUrl + "/addsp/api/v1/media/batchImport",
+      fileData: [], // 当前上传文件的数据- 表格
+      excelDataUpload: [], // 导入excel之后返回的数组
+      showUploadFail: false, // 导入失败的媒体弹出框
+      excelObj: { successNum: 0, failNum: 0 }, // 导入excel之后返回的失败成功点数
+      ImportLoading: "", // 导入excel提交loading
+      showImportBtn: false, // SA才显示导入媒体按钮
+      pushMapDialogVisible: false, // 推送地图弹出框
       isShowTag: true,
-      selectDay: [],                          // 选择的时间
-      canSelectDayTime: [],                    // 限制选择区间
+      selectDay: [], // 选择的时间
+      canSelectDayTime: [], // 限制选择区间
       dayOptionsSelect: {
         disabledDate: (time) => {
-          return time.getTime() < Date.parse(this.canSelectDayTime[0]) || time.getTime() > Date.parse(this.canSelectDayTime[1])
-        }
+          return (
+            time.getTime() < Date.parse(this.canSelectDayTime[0]) ||
+            time.getTime() > Date.parse(this.canSelectDayTime[1])
+          );
+        },
       },
       // 媒体状态禁用、启用弹出框
       mStateDialogVisible: false,
@@ -659,7 +677,7 @@ export default {
       // 拆除
       dismantleVisible: false,
       // 拆除信息
-      dismantleInfo: '',
+      dismantleInfo: "",
 
       // 不可售卖弹窗
       isUnvailableSell: false,
@@ -668,19 +686,19 @@ export default {
       // 更改售卖状态时 媒体的所有广告位的状态
       mediaAdsStateAction: [],
       // 更改售卖状态时 资源名称
-      resourceName: '',
+      resourceName: "",
       // 更改售卖状态时 选择的投放面
-      activeAsLab: '',
+      activeAsLab: "",
       // 投放门id
-      mID: '',
+      mID: "",
       // 不可售卖原因
       unSaleableReason: [],
       // 媒体名称
-      mTitle: '',
+      mTitle: "",
       // 是否开通数字化权限
       isPay: 1,
-      mediaTypes: []
-    }
+      mediaTypes: [],
+    };
   },
   created() {
     // 判断角色确定是否有操作这一列
@@ -689,111 +707,133 @@ export default {
     this.getMediaTypes();
   },
   mounted: function () {
-    ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) ? this.showNewBtn = true : this.showNewBtn = false
-    this.sessionData.uType === 'ADN_SA' ? this.showImportBtn = true : this.showImportBtn = false
+    ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)
+      ? (this.showNewBtn = true)
+      : (this.showNewBtn = false);
+    this.sessionData.uType === "ADN_SA"
+      ? (this.showImportBtn = true)
+      : (this.showImportBtn = false);
     this.getData();
-    let endTime = timeFormat.returnDayCount(0, '/');
-    let startTime = timeFormat.returnDayCount(-180, '/');
-    this.canSelectDayTime = [startTime, endTime]
+    let endTime = timeFormat.returnDayCount(0, "/");
+    let startTime = timeFormat.returnDayCount(-180, "/");
+    this.canSelectDayTime = [startTime, endTime];
+
+    // 获取列表设置缓存
+    const rowSpace = getLocalCache("rowSpace");
+    this.rowSpace = rowSpace || "medium";
   },
-  
+
   methods: {
+    // 刷新列表
+    refreshTable() {
+      this.getData();
+    },
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
     getMediaTypes() {
       let _this = this;
       function requestMediaType() {
         const { ascType, uType } = _this.sessionData;
-        if(ascType == 0 && (uType == 'ADN_SA' || uType == 'ADN_SM')) {
+        if (ascType == 0 && (uType == "ADN_SA" || uType == "ADN_SM")) {
           return api.getApi("/addsp/api/v1/mediaTypes");
         }
         return api.getApi("/addsp/api/v1/company/mediaTypes", {
-          companyIds: _this.sessionData.asrID
+          companyIds: _this.sessionData.asrID,
         });
       }
-      requestMediaType().then(res => {
-        if(res.data.SysCode == 200200){
-          this.mediaTypes = (res.data.data || []).map(item => {
-            return {
-              text: item.name,
-              value: item.id
-            }
-          });
-        } else {
-          sessFun.messageFun('warning', res.data.MSG || '媒体类型获取失败！')
-        }
-      }).catch((err)=>{
-        console.error(err);
-      })
+      requestMediaType()
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.mediaTypes = (res.data.data || []).map((item) => {
+              return {
+                text: item.name,
+                value: item.id,
+              };
+            });
+          } else {
+            sessFun.messageFun("warning", res.data.MSG || "媒体类型获取失败！");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     requestIsPay() {
-      api.getApi('/addsp/api/v1/company/isPay', {
-          asrID: this.sessionData.asrID
-      }).then(res => {
+      api
+        .getApi("/addsp/api/v1/company/isPay", {
+          asrID: this.sessionData.asrID,
+        })
+        .then((res) => {
           if (res.data.SysCode === 200200 && res.data.data === false) {
             this.isPay = 0;
           }
-      })
-  },
-// 媒体状态转换
-    stateToText (state) {
+        });
+    },
+    // 媒体状态转换
+    stateToText(state) {
       let mediaArr = [
         {
-          text: '正常',
+          text: "正常",
           value: 1,
-          color: 'rgba(82,196,26,1)',
+          color: "rgba(82,196,26,1)",
         },
         {
-          text: '待安装',
+          text: "待安装",
           value: 2,
-          color: 'rgba(196,203,211,1)',
+          color: "rgba(196,203,211,1)",
         },
         {
-          text: '已拆除',
+          text: "已拆除",
           value: 4,
-          color: 'rgba(199, 203, 206, 1)',
-        }
+          color: "rgba(199, 203, 206, 1)",
+        },
       ];
 
-      return mediaArr.filter(item => {
-        return item.value === state
-      })[0] || {}
+      return (
+        mediaArr.filter((item) => {
+          return item.value === state;
+        })[0] || {}
+      );
     },
 
     // 售卖状态转换
-    stateToSellText (state) {
+    stateToSellText(state) {
       let mediaArr = [
         {
-          text: '可售卖',
+          text: "可售卖",
           value: 1,
-          color: 'rgba(82,196,26,1)',
+          color: "rgba(82,196,26,1)",
         },
         {
-          text: '不可售卖',
+          text: "不可售卖",
           value: 2,
-          color: 'rgba(199, 203, 206, 1)',
-        }
+          color: "rgba(199, 203, 206, 1)",
+        },
       ];
 
       return state === 2 ? mediaArr[1] : mediaArr[0];
     },
 
     //新建跳转
-    newMedia () {
-      this.$router.push('./mediaInput');
+    newMedia() {
+      this.$router.push("./mediaInput");
     },
 
     // 维护管理
-    maintain () {
-      this.$router.push('./maintainList');
+    maintain() {
+      this.$router.push("./maintainList");
     },
 
     // 推送地图
-    showPushMap () {
-      this.pushMapDialogVisible = true
+    showPushMap() {
+      this.pushMapDialogVisible = true;
     },
 
     // 确认推送
-    submitPushMap () {
-      this.pushMapDialogVisible = true
+    submitPushMap() {
+      this.pushMapDialogVisible = true;
       if (this.selectDay.length && this.selectDay.length >= 2) {
         let params = {
           uid: this.sessionData.uID,
@@ -802,70 +842,70 @@ export default {
           data: {
             startDate: this.selectDay[0],
             endDate: this.selectDay[1],
-          }
-        }
-        console.log('params', params)
-        api.postApi_new(this.apiVar.Media, params).then(res => {
-          console.log('确认推送接口', res)
+          },
+        };
+        console.log("params", params);
+        api.postApi_new(this.apiVar.Media, params).then((res) => {
+          console.log("确认推送接口", res);
           if (res.data.SysCode === 200200) {
-            sessFun.messageFun('success', '推送成功')
+            sessFun.messageFun("success", "推送成功");
           } else {
-            sessFun.messageFun('warning', '推送失败')
+            sessFun.messageFun("warning", "推送失败");
           }
-        })
+        });
       } else {
-        sessFun.messageFun('warning', '请选择日期')
+        sessFun.messageFun("warning", "请选择日期");
       }
     },
 
-    hideTag () {
+    hideTag() {
       this.isShowTag = false;
     },
 
-    filterChange (filters) {
+    filterChange(filters) {
       for (let key in filters) {
-        if (key === 'asState') {
+        if (key === "asState") {
           if (filters[key].length) {
-            this.asState = filters[key][0]
+            this.asState = filters[key][0];
           } else {
-            this.asState = ''
+            this.asState = "";
           }
-        } else if (key === 'asSaleState') {
+        } else if (key === "asSaleState") {
           if (filters[key].length) {
-            this.asSaleState = filters[key][0]
+            this.asSaleState = filters[key][0];
           } else {
-            this.asSaleState = ''
+            this.asSaleState = "";
           }
-        } else if (key === 'mVehicle') {
+        } else if (key === "mVehicle") {
           if (filters[key].length) {
-            this.filterMediaType = filters[key][0]
+            this.filterMediaType = filters[key][0];
           } else {
-            this.filterMediaType = ''
+            this.filterMediaType = "";
           }
         }
       }
-      this.pageData.pageNum = 1
-      this.getData()
+      this.pageData.pageNum = 1;
+      this.getData();
     },
 
     // 分页
-    changePage (val) {
-      console.log('当前页', val)
-      this.pageData.pageNum = val
-      this.getData()
+    changePage(val) {
+      console.log("当前页", val);
+      this.pageData.pageNum = val;
+      this.getData();
     },
 
     // 每页的条数
-    changeSize (val) {
-      console.log('每页的条数', val)
-      this.pageData.pageNum = 1
-      this.pageData.pageSize = val
-      this.getData()
+    changeSize(val) {
+      console.log("每页的条数", val);
+      this.pageData.pageNum = 1;
+      this.pageData.pageSize = val;
+      this.getData();
     },
 
     // 获取媒体列表
-    getData () {
-      this.loading = true
+    getData() {
+      this.loading = true;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -877,397 +917,433 @@ export default {
           regionName: this.cityArea.rName,
           asState: this.asState,
           asSaleState: this.asSaleState,
-          mediaTypeIds: this.filterMediaType + ''
-        }
-      }
-      if (this.selectInfo === '1') {
-        params.data.resName = this.keyword
-      } else if (this.selectInfo === '2') {
-        params.data.tradeArea = this.keyword
+          mediaTypeIds: this.filterMediaType + "",
+        },
+      };
+      if (this.selectInfo === "1") {
+        params.data.resName = this.keyword;
+      } else if (this.selectInfo === "2") {
+        params.data.tradeArea = this.keyword;
       }
       for (let i in params.data) {
-        if (params.data[i] === '') {
-          delete params.data[i]
+        if (params.data[i] === "") {
+          delete params.data[i];
         }
       }
-      api.postApi_new(this.apiVar.Media, params).then(res => {
-        this.pageData.totalSize = res.data.data.total
+      api.postApi_new(this.apiVar.Media, params).then((res) => {
+        this.pageData.totalSize = res.data.data.total;
         let RMList = res.data.data.list;
         if (res.data.SysCode == 200200) {
           if (RMList) {
-            let mediaList = []
+            let mediaList = [];
             for (let key of RMList) {
-              mediaList.push(key)
+              mediaList.push(key);
             }
-            this.currentPlan = mediaList
+            this.currentPlan = mediaList;
             //正在加载
             this.loading = false;
           } else {
             Message.warning({
-              message: '数据为空',
-              duration: 1500
+              message: "数据为空",
+              duration: 1500,
             });
           }
         } else {
           Message({
-            type: 'warning',
-            message: res.data.MSG
-          })
+            type: "warning",
+            message: res.data.MSG,
+          });
         }
-        this.searchBtnAbled = false
-      })
-      this.setCityAreaByUWho()
+        this.searchBtnAbled = false;
+      });
+      this.setCityAreaByUWho();
     },
 
     // 设置可搜索的区域
-    setCityAreaByUWho () {
-      this.cityOptions = areaPackageNew.province()
+    setCityAreaByUWho() {
+      this.cityOptions = areaPackageNew.province();
     },
 
     // 根据市级城市rid，获取它的下属区、县
-    handleChange (value) {
-      console.log('handleChange', value)
-      this.regionOpt = []
-      this.selectRName = ''
-      this.cityArea.rName = ''
+    handleChange(value) {
+      console.log("handleChange", value);
+      this.regionOpt = [];
+      this.selectRName = "";
+      this.cityArea.rName = "";
       if (value.length) {
-        let cityRID = value[1]
-        let regionArr = areaPackageNew.findArea(cityRID)
-        this.cityArea.cName = areaToTextNew.toTextCity(value[1])
-        console.log('获取选中城市的区域', regionArr, 'this.cityArea', this.cityArea)
-        let region = []
+        let cityRID = value[1];
+        let regionArr = areaPackageNew.findArea(cityRID);
+        this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
+        console.log(
+          "获取选中城市的区域",
+          regionArr,
+          "this.cityArea",
+          this.cityArea
+        );
+        let region = [];
         for (let key of regionArr) {
           region.push({
             label: key.rName,
-            value: key.rID
-          })
+            value: key.rID,
+          });
         }
-        this.regionOpt = region
-        console.log('this.regionOpt', this.regionOpt, 'selectedOptions', this.selectedOptions)
+        this.regionOpt = region;
+        console.log(
+          "this.regionOpt",
+          this.regionOpt,
+          "selectedOptions",
+          this.selectedOptions
+        );
       } else {
-        this.cityArea.cName = ''
+        this.cityArea.cName = "";
       }
     },
 
     //获取区域
-    getRegion (val) {
-      console.log('获取区域val', val, this.regionOpt)
+    getRegion(val) {
+      console.log("获取区域val", val, this.regionOpt);
       if (val) {
         for (let key of this.regionOpt) {
           if (key.value == val) {
-            this.cityArea.rName = key.label
+            this.cityArea.rName = key.label;
           }
         }
       } else {
-        this.cityArea.rName = ''
+        this.cityArea.rName = "";
       }
-      console.log('选择的区域为', this.cityArea)
+      console.log("选择的区域为", this.cityArea);
     },
 
     // 下拉选择状态
-    changeState (selectState, index, rows) {
-      this.rowIndex = index
-      this.rowData = rows
-      this.selectState = selectState
+    changeState(selectState, index, rows) {
+      this.rowIndex = index;
+      this.rowData = rows;
+      this.selectState = selectState;
       // 初始化
       for (let i in this.mediaState) {
-        this.mediaState[i] = false
+        this.mediaState[i] = false;
       }
 
-      if (selectState === '6' || selectState === '7') {
+      if (selectState === "6" || selectState === "7") {
         this.resourceName = rows.resName;
-        this.activeAsLab = rows.asID
-        this.mID = rows.mID
-        this.unSaleableReason = JSON.parse(rows.unSaleableReason || '[]')
-        this.mTitle = rows.mTitle
+        this.activeAsLab = rows.asID;
+        this.mID = rows.mID;
+        this.unSaleableReason = JSON.parse(rows.unSaleableReason || "[]");
+        this.mTitle = rows.mTitle;
       }
 
-      if (selectState === '4') {
+      if (selectState === "4") {
         // 拆除
-        this.dismantleInfo = ''
-        this.isShowTag = true
-        this.dismantleVisible = true
-      } else if (selectState === '5') {
+        this.dismantleInfo = "";
+        this.isShowTag = true;
+        this.dismantleVisible = true;
+      } else if (selectState === "5") {
         // 删除
-        this.judgeResHaveMediaNum()
-      } else if (selectState === '6') {
-        console.log('可售卖')
+        this.judgeResHaveMediaNum();
+      } else if (selectState === "6") {
+        console.log("可售卖");
         if (!rows.assetTag && rows.asState == 2) {
-          return sessFun.messageFun('warning', '该媒体尚未填写资产编号，请在详情页中点击【编辑】修改媒体状态并补全资产编号')
+          return sessFun.messageFun(
+            "warning",
+            "该媒体尚未填写资产编号，请在详情页中点击【编辑】修改媒体状态并补全资产编号"
+          );
         }
         this.isVailableSell = true;
-      } else if (selectState === '7') {
-        console.log('不可售卖')
-        this.isUnvailableSell = true
+      } else if (selectState === "7") {
+        console.log("不可售卖");
+        this.isUnvailableSell = true;
       }
     },
 
     // 判断当前删除的媒体所在小区是否只有一个媒体
-    judgeResHaveMediaNum () {
+    judgeResHaveMediaNum() {
       let judgeLoading = this.$loading({
         lock: true,
-        text: '',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
+        text: "",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
       });
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        "service": "CountMediaByResinfoIdAction",
-        "data": {
-          "resId": this.rowData.resID
-        }
-      }
-      api.postApi_new(this.apiVar.Media, params).then(res => {
-        if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-          let isOneMore = false
-          if (res.data.data && res.data.data == 1) {
-            isOneMore = true
+        service: "CountMediaByResinfoIdAction",
+        data: {
+          resId: this.rowData.resID,
+        },
+      };
+      api
+        .postApi_new(this.apiVar.Media, params)
+        .then((res) => {
+          if (res.data.SysCode === 200200 || res.data.MSG === "操作成功") {
+            let isOneMore = false;
+            if (res.data.data && res.data.data == 1) {
+              isOneMore = true;
+            } else {
+              isOneMore = false;
+            }
+            // 删除
+            this.deleteMedia(isOneMore);
           } else {
-            isOneMore = false
+            sessFun.messageFun("warning", res.data.MSG);
           }
-          // 删除
-          this.deleteMedia(isOneMore)
-        } else {
-          sessFun.messageFun('warning', res.data.MSG)
-        }
-        judgeLoading.close()
-      }).catch(err => {
-        judgeLoading.close()
-      })
+          judgeLoading.close();
+        })
+        .catch((err) => {
+          judgeLoading.close();
+        });
     },
 
     // 删除媒体
-    deleteMedia (flag) {
-      let text = '媒体被删除后将不可恢复!'
+    deleteMedia(flag) {
+      let text = "媒体被删除后将不可恢复!";
       if (flag) {
-        text = '媒体和资源连同被删除，不可恢复!'
+        text = "媒体和资源连同被删除，不可恢复!";
       }
-      this.$confirm(text, '确定要删除该媒体吗?', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        customClass: 'delete_media_confirm'
-      }).then(() => {
-        let submitLoading = this.$loading({
-          lock: true,
-          text: '删除中...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        });
-        let params = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token,
-          "service": "DelMediaAction",
-          "data": {
-            "mId": this.rowData.mID,
-            "resId": this.rowData.resID
-          }
-        }
-        console.log('删除params', params)
-        api.postApi_new(this.apiVar.Media, params).then(res => {
-          console.log('res', res)
-          if (res.data.SysCode === 200200 || res.data.MSG === '操作成功') {
-            sessFun.messageFun('success', '删除成功！')
-            this.getData()
-          } else {
-            sessFun.messageFun('warning', res.data.MSG)
-          }
-          submitLoading.close()
-        }).catch(err => {
-          sessFun.messageFun('warning', '删除异常！')
-          submitLoading.close()
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
+      this.$confirm(text, "确定要删除该媒体吗?", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        customClass: "delete_media_confirm",
       })
+        .then(() => {
+          let submitLoading = this.$loading({
+            lock: true,
+            text: "删除中...",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          let params = {
+            uid: this.sessionData.uID,
+            token: this.sessionData.token,
+            service: "DelMediaAction",
+            data: {
+              mId: this.rowData.mID,
+              resId: this.rowData.resID,
+            },
+          };
+          console.log("删除params", params);
+          api
+            .postApi_new(this.apiVar.Media, params)
+            .then((res) => {
+              console.log("res", res);
+              if (res.data.SysCode === 200200 || res.data.MSG === "操作成功") {
+                sessFun.messageFun("success", "删除成功！");
+                this.getData();
+              } else {
+                sessFun.messageFun("warning", res.data.MSG);
+              }
+              submitLoading.close();
+            })
+            .catch((err) => {
+              sessFun.messageFun("warning", "删除异常！");
+              submitLoading.close();
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
+        });
     },
 
     // 拆除媒体
-    dismantleMedia () {
+    dismantleMedia() {
       if (!this.dismantleInfo) {
-        sessFun.messageFun('warning', '请填写拆除备注信息!')
-        return
+        sessFun.messageFun("warning", "请填写拆除备注信息!");
+        return;
       }
       let params = {
-        "uid": this.sessionData.uID,
-        "token": this.sessionData.token,
-        "service": "AddDismantleRecord",
-        "data": {
-          "mID": this.rowData.mID,
-          "remark": this.dismantleInfo,
-          "resName": this.rowData.resName,
-          "rId": this.rowData.rID
-        }
-      }
-      console.log('拆除媒体params', params)
-      api.postApi_new(this.apiVar.Media, params).then(res => {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "AddDismantleRecord",
+        data: {
+          mID: this.rowData.mID,
+          remark: this.dismantleInfo,
+          resName: this.rowData.resName,
+          rId: this.rowData.rID,
+        },
+      };
+      console.log("拆除媒体params", params);
+      api.postApi_new(this.apiVar.Media, params).then((res) => {
         if (res.data.SysCode === 200200) {
-          this.dismantleVisible = false
-          sessFun.messageFun('success', '拆除成功!')
-          this.rowData.asState = '4'
-          this.clearSearch()
+          this.dismantleVisible = false;
+          sessFun.messageFun("success", "拆除成功!");
+          this.rowData.asState = "4";
+          this.clearSearch();
           // this.rowData.asState.A = '4'
           // this.rowData.asState.B = '4'
         } else {
-          sessFun.messageFun('warning', res.data.MSG)
+          sessFun.messageFun("warning", res.data.MSG);
         }
-      })
+      });
     },
 
     // 跳转到媒体详情界面
-    mediaDetail (data) {
-      this.$router.push('./mediaDetail');
+    mediaDetail(data) {
+      this.$router.push("./mediaDetail");
       sessionStorage.setItem("resID", data.resID);
     },
 
     // 当搜索框为空的时候进行重置显示
-    initData (val) {
-      console.log('搜索框变化的值', val)
+    initData(val) {
+      console.log("搜索框变化的值", val);
       if (!this.keyword) {
-        this.setPageNoAndTableData()
-        this.getData({ "pageNo": this.pageNo, "pageSize": 50 })
+        this.setPageNoAndTableData();
+        this.getData({ pageNo: this.pageNo, pageSize: 50 });
       }
     },
 
     // 搜索按钮
-    searchFun () {
-      this.searchBtnAbled = true
-      if ((this.keyword === '' || this.keyword === null) && this.cityArea.cName === '') {
+    searchFun() {
+      this.searchBtnAbled = true;
+      if (
+        (this.keyword === "" || this.keyword === null) &&
+        this.cityArea.cName === ""
+      ) {
         Message.warning({
-          message: '请先输入搜索条件',
-          duration: 1000
-        })
-        this.searchBtnAbled = false
+          message: "请先输入搜索条件",
+          duration: 1000,
+        });
+        this.searchBtnAbled = false;
       } else {
-        this.pageData.pageNum = 1
-        this.getData()
-
+        this.pageData.pageNum = 1;
+        this.getData();
       }
     },
 
     // 重置搜索
-    clearSearch () {
-      this.keyword = ''
-      this.selectedOptions = []
-      this.selectRName = ''
+    clearSearch() {
+      this.keyword = "";
+      this.selectedOptions = [];
+      this.selectRName = "";
       this.regionOpt = [];
-      this.pageData.pageNum = 1
-      this.pageData.pageSize = 10
-      this.cityArea = { cName: '', rName: '' }
-      this.filterMediaType = ''
-      this.asSaleState = ''
-      this.asState = ''
-      this.$refs.tableEl.clearFilter()
-      this.getData()
+      this.pageData.pageNum = 1;
+      this.pageData.pageSize = 10;
+      this.cityArea = { cName: "", rName: "" };
+      this.filterMediaType = "";
+      this.asSaleState = "";
+      this.asState = "";
+      this.$refs.tableEl.clearFilter();
+      this.getData();
     },
 
     // 导入媒体
-    importMedia () {
+    importMedia() {
       if (!this.companyList.length) {
         let params = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
-        }
-        api.getApi(this.apiVar.UCAPI + '/getCompany', params).then(res => {
-          console.log('公司列表', res)
+        };
+        api.getApi(this.apiVar.UCAPI + "/getCompany", params).then((res) => {
+          console.log("公司列表", res);
           if (res.data.SysCode == 200200) {
-            let tempList = []
+            let tempList = [];
             for (let key of res.data.data) {
               if (key.ascType > 0) {
                 tempList.push({
                   value: key.asrID,
-                  label: key.asName
-                })
+                  label: key.asName,
+                });
               }
             }
-            this.companyList = tempList.concat()
-            this.importSelectLoading = false
+            this.companyList = tempList.concat();
+            this.importSelectLoading = false;
           } else {
             this.$message.warning(res.data.MSG);
           }
-        })
+        });
       }
-      this.ImportDialogVisible = true
+      this.ImportDialogVisible = true;
     },
 
     // 自定义上传
-    uploadFile (params) {
-      this.fileData = []
-      console.log(params)
-      let fileObj = params.file
-      this.fileData.push(fileObj)
+    uploadFile(params) {
+      this.fileData = [];
+      console.log(params);
+      let fileObj = params.file;
+      this.fileData.push(fileObj);
     },
 
     // 文件删除
-    fileRemove (file, fileList) {
+    fileRemove(file, fileList) {
       console.log(file, fileList);
-      this.fileData = fileList
+      this.fileData = fileList;
     },
 
     // 导入模版下载
-    dowmLoadFun (event) {
+    dowmLoadFun(event) {
       // 阻止冒泡事件
       event.stopPropagation();
     },
 
     // 确认上传
-    submitUpload () {
-      console.log('this.importAsrID', this.importAsrID, this.fileData)
+    submitUpload() {
+      console.log("this.importAsrID", this.importAsrID, this.fileData);
       if (!this.importAsrID) {
-        this.$message.warning('请选择所属企业')
-        return
+        this.$message.warning("请选择所属企业");
+        return;
       }
       if (this.fileData.length) {
         this.ImportLoading = this.$loading({
           lock: true,
-          text: '上传中...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+          text: "上传中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
         let formData = new FormData();
-        formData.append('file', this.fileData[0]);
+        formData.append("file", this.fileData[0]);
         // 上传文件
-        api.postUpload_file(this.doUpload + '?uid=' + this.sessionData.uID + '&token=' +
-          this.sessionData.token + '&asrID=' + this.importAsrID, formData).then(res => {
-            console.log('导入媒体', res)
+        api
+          .postUpload_file(
+            this.doUpload +
+              "?uid=" +
+              this.sessionData.uID +
+              "&token=" +
+              this.sessionData.token +
+              "&asrID=" +
+              this.importAsrID,
+            formData
+          )
+          .then((res) => {
+            console.log("导入媒体", res);
             if (res.data.SysCode === 200200) {
-              let resData = res.data.data
+              let resData = res.data.data;
               if (resData.errorList.length) {
-                console.log('导入失败媒体', resData.errorList)
-                this.setErrorMediaTable(resData.errorList)
+                console.log("导入失败媒体", resData.errorList);
+                this.setErrorMediaTable(resData.errorList);
                 this.excelObj = {
                   successNum: resData.mediaCount,
-                  failNum: resData.errorList.length
-                }
+                  failNum: resData.errorList.length,
+                };
               }
               if (resData.mediaCount > 0) {
-                this.$message.success('成功导入' + resData.mediaCount + '条数据') // mediaCount resCount
+                this.$message.success(
+                  "成功导入" + resData.mediaCount + "条数据"
+                ); // mediaCount resCount
                 // this.setPageNoAndTableData()
-                this.pageData.pageNum = 1
-                this.getData()
+                this.pageData.pageNum = 1;
+                this.getData();
               }
-              this.ImportDialogVisible = false
-              this.fileData = []
-              this.importAsrID = ''
+              this.ImportDialogVisible = false;
+              this.fileData = [];
+              this.importAsrID = "";
             } else {
-              this.$message.warning(res.data.MSG)
+              this.$message.warning(res.data.MSG);
             }
-            this.ImportLoading.close()
-          }).catch(res => {
-            console.log(res)
+            this.ImportLoading.close();
           })
+          .catch((res) => {
+            console.log(res);
+          });
       } else {
-        this.$message.warning('请上传文件！')
+        this.$message.warning("请上传文件！");
       }
     },
 
     // 导入失败的媒体
-    setErrorMediaTable (errorList) {
-      let resultarr = []
+    setErrorMediaTable(errorList) {
+      let resultarr = [];
       for (let data of errorList) {
         resultarr.push({
           errorMsg: data.msg,
@@ -1276,15 +1352,15 @@ export default {
           area: data.resInfo.area,
           mTitle: data.resInfo.mTitle,
           mVehicle: data.resInfo.mVehicle,
-          assetTag: data.resInfo.assetTag
-        })
+          assetTag: data.resInfo.assetTag,
+        });
       }
-      this.excelDataUpload = resultarr
-      this.showUploadFail = true
+      this.excelDataUpload = resultarr;
+      this.showUploadFail = true;
     },
 
     // 导出有问题的点
-    downLoadExcel () {
+    downLoadExcel() {
       let resultarr = [];
       for (let data of this.excelDataUpload) {
         let obj = {
@@ -1293,25 +1369,41 @@ export default {
           city: data.city,
           area: data.area,
           mTitle: data.mTitle,
-          assetTag: data.assetTag
+          assetTag: data.assetTag,
         };
         resultarr.push(obj);
       }
       require.ensure([], () => {
-        const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        const tHeader = ['资源名称', '城市', '区域', '媒体名称', '资产编号', '失败信息'];
-        const filterVal = ['resName', 'city', 'area', 'mTitle', 'assetTag', 'errorMsg'];
+        const {
+          export_json_to_excel,
+        } = require("../../vendorExcel/Export2Excel");
+        const tHeader = [
+          "资源名称",
+          "城市",
+          "区域",
+          "媒体名称",
+          "资产编号",
+          "失败信息",
+        ];
+        const filterVal = [
+          "resName",
+          "city",
+          "area",
+          "mTitle",
+          "assetTag",
+          "errorMsg",
+        ];
         const list = resultarr;
         const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, '问题媒体表');
-      })
+        export_json_to_excel(tHeader, data, "问题媒体表");
+      });
     },
 
-    formatJson (filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>

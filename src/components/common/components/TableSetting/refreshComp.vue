@@ -1,15 +1,7 @@
 <template>
-  <el-tooltip
-    class="item"
-    effect="dark"
-    content="刷新"
-    placement="top"
-    style="cursor: pointer"
-  >
-    <span @click="refreshTable">
-      <i style="font-size:22px;" class="el-icon-refresh-left"></i>
-    </span>
-  </el-tooltip>
+  <span style="cursor: pointer" @click="refreshTable">
+    <i style="font-size: 22px" class="el-icon-refresh-left"></i>
+  </span>
 </template>
 
 <script>

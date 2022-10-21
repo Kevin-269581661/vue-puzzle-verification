@@ -5,17 +5,9 @@
     trigger="click"
     @command="handleCommand"
   >
-    <el-tooltip
-      class="item"
-      effect="dark"
-      content="密度"
-      placement="top"
-      style="cursor: pointer"
-    >
-      <span class="el-dropdown-link">
-        <i style="font-size: 22px" class="el-icon-d-caret"></i>
-      </span>
-    </el-tooltip>
+    <span class="el-dropdown-link" style="cursor: pointer">
+      <i style="font-size: 22px" class="el-icon-d-caret"></i>
+    </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
         command="medium"

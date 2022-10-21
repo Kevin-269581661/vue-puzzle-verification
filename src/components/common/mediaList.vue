@@ -3,92 +3,105 @@
     <div class="ad_mediaDetail_nav">
       <p><a href="#">媒体管理</a><em> / </em><a href="#">媒体列表</a></p>
     </div>
+    <el-card class="box-card">
+      <div class="handel_ul">
+        <li class="handel_ul_li">
+          <span class="li-label">资源名称：</span>
+          <el-input
+            placeholder="请输入资源名称"
+            v-model="resName"
+            class="input-with-select u-key"
+            size="small"
+            clearable
+          >
+          </el-input>
+        </li>
+        <li class="handel_ul_li">
+          <span class="li-label">媒体名称：</span>
+          <el-input
+            placeholder="请输入资源名称"
+            v-model="mTitle"
+            class="input-with-select u-key"
+            size="small"
+            style="width: 236px"
+            clearable
+          >
+          </el-input>
+        </li>
+        <li class="handel_ul_li handel_ul_li_city">
+          <span class="li-label">城市区域：</span>
+          <el-cascader
+            :options="cityOptions"
+            :props="cityProps"
+            collapse-tags
+            v-model="selectedOptions"
+            separator="-"
+            :show-all-levels="false"
+            placeholder="请选择城市"
+            filterable
+            size="small"
+            style="width: 236px"
+            clearable
+            @change="handleChange"
+          >
+          </el-cascader>
+        </li>
+        <li class="handel_ul_li">
+          <span class="li-label">商圈：</span>
+          <el-input
+            placeholder="请输入商圈"
+            v-model="tradingArea"
+            class="input-with-select u-key"
+            size="small"
+            style="width: 236px"
+          >
+          </el-input>
+        </li>
+        <!-- <li class="handel_ul_li handel_ul_li_area">
+          <span class="li-label">城市区域：</span>
+          <el-select
+            v-model="selectRName"
+            placeholder="请选择区域"
+            :clearable="true"
+            style="width: 236px"
+            size="small"
+            @change="getRegion"
+          >
+            <el-option
+              v-for="item in regionOpt"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </li> -->
+        <li class="handel_ul_li handel_ul_li_btn">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            @click="searchFun"
+            :disabled="searchBtnAbled"
+            >搜索</el-button
+          >
+          <el-button plain @click="clearSearch">重置</el-button>
+          <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
+            >新建</el-button
+          >
+          <el-button plain @click="importMedia" v-if="showImportBtn"
+            >导入媒体</el-button
+          >
+          <el-button v-if="showImportBtn" plain @click="showPushMap"
+            >推送地图</el-button
+          >
+        </li>
+      </div>
+    </el-card>
     <div class="mediaList_wrap">
       <div class="mediaList_head">
         <h2>媒体列表</h2>
       </div>
       <div class="mediaList_container">
-        <div class="handel_ul">
-          <li class="handel_ul_li handel_ul_li_select">
-            <span class="li-label">关键词：</span>
-            <el-input
-              placeholder="请输入内容"
-              v-model="keyword"
-              class="input-with-select u-key"
-              size="small"
-              @change="initData"
-            >
-              <el-select
-                v-model="selectInfo"
-                slot="prepend"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in SelOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </el-input>
-          </li>
-          <li class="handel_ul_li handel_ul_li_city">
-            <span class="li-label">城市：</span>
-            <el-cascader
-              :options="cityOptions"
-              v-model="selectedOptions"
-              separator="-"
-              :show-all-levels="false"
-              placeholder="请选择城市"
-              filterable
-              size="small"
-              style="width: 236px"
-              clearable
-              @change="handleChange"
-            >
-            </el-cascader>
-          </li>
-          <li class="handel_ul_li handel_ul_li_area">
-            <span class="li-label">区域：</span>
-            <el-select
-              v-model="selectRName"
-              placeholder="请选择区域"
-              :clearable="true"
-              style="width: 236px"
-              size="small"
-              @change="getRegion"
-            >
-              <el-option
-                v-for="item in regionOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </li>
-          <li class="handel_ul_li handel_ul_li_btn">
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              @click="searchFun"
-              :disabled="searchBtnAbled"
-              >搜索</el-button
-            >
-            <el-button plain @click="clearSearch">重置</el-button>
-            <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
-              >新建</el-button
-            >
-            <el-button plain @click="importMedia" v-if="showImportBtn"
-              >导入媒体</el-button
-            >
-            <el-button v-if="showImportBtn" plain @click="showPushMap"
-              >推送地图</el-button
-            >
-          </li>
-        </div>
-
         <!-- 列设置 -->
         <TableSetting
           @refreshTable="refreshTable"
@@ -161,6 +174,24 @@
             >
               <template slot-scope="scope">
                 {{ scope.row.assetTag || "--" }}
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              column-key="rtName"
+              prop="rtName"
+              label="资源类型"
+              min-width="120"
+              :show-overflow-tooltip="true"
+              :filters="[
+                { text: '社区', value: '社区' },
+                { text: '写字楼', value: '写字楼' },
+                { text: '别墅', value: '别墅' },
+              ]"
+              filter-placement="bottom"
+            >
+              <template slot-scope="scope">
+                {{ scope.row.rtName || "--" }}
               </template>
             </el-table-column>
 
@@ -596,29 +627,22 @@ export default {
       },
       showNewBtn: false, // 新建按钮
       haveDetail: true,
-      //搜索框和下拉列表
-      keyword: "",
-      selectInfo: "1",
-      SelOptions: [
-        {
-          value: "1",
-          label: "资源名称",
-        },
-        {
-          value: "2",
-          label: "商圈",
-        },
-      ],
+      resName: "", // 搜索的资源名称
+      mTitle: "", // 搜索的媒体名称
+      selectedOptions: [], // 搜索的城市区域
+      tradingArea: "", // 搜索的商圈
       filterMediaType: "", // 表头媒体类型搜索状态
       asState: "", // 搜索的媒体状态
       asSaleState: "", //  搜索的售卖状态
+      rtNameList: [], // 搜索的资源类型
       planList: [], //  table的所有数据
       currentPlan: [], // 显示在table中的数据
       cityOptions: [], //城市数组
-      selectedOptions: [], // 当前选择的城市rid数组
-      regionOpt: [], // 地区
-      selectRName: "", // 当前选择的区域rid
-      cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
+      cityProps: { multiple: true }, // 城市设置
+
+      //   regionOpt: [], // 地区
+      //   selectRName: "", // 当前选择的区域rid
+      //   cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
       loadScroll: true,
       provinceCity: [], //省份及其地级市
       timeID: "", // 计时器
@@ -732,6 +756,7 @@ export default {
     spaceSetting(size) {
       this.rowSpace = size;
     },
+
     getMediaTypes() {
       let _this = this;
       function requestMediaType() {
@@ -882,6 +907,14 @@ export default {
           } else {
             this.filterMediaType = "";
           }
+        } else if (key === "rtName") {
+          if (filters[key].length) {
+            for (const i in filters[key]) {
+              this.rtNameList.push(filters[key][i]);
+            }
+          } else {
+            this.rtNameList = [];
+          }
         }
       }
       this.pageData.pageNum = 1;
@@ -913,18 +946,17 @@ export default {
         data: {
           pageNo: this.pageData.pageNum,
           pageSize: this.pageData.pageSize,
-          cityName: this.cityArea.cName,
-          regionName: this.cityArea.rName,
+          resName: this.resName,
+          mTitle: this.mTitle,
+          tradeArea: this.tradeArea,
+          //   cityName: this.cityArea.cName,
+          //   regionName: this.cityArea.rName,
           asState: this.asState,
           asSaleState: this.asSaleState,
           mediaTypeIds: this.filterMediaType + "",
+          rtNameList: this.rtNameList,
         },
       };
-      if (this.selectInfo === "1") {
-        params.data.resName = this.keyword;
-      } else if (this.selectInfo === "2") {
-        params.data.tradeArea = this.keyword;
-      }
       for (let i in params.data) {
         if (params.data[i] === "") {
           delete params.data[i];
@@ -961,58 +993,58 @@ export default {
 
     // 设置可搜索的区域
     setCityAreaByUWho() {
-      this.cityOptions = areaPackageNew.province();
+      this.cityOptions = areaPackageNew.cityArea();
     },
 
     // 根据市级城市rid，获取它的下属区、县
     handleChange(value) {
       console.log("handleChange", value);
-      this.regionOpt = [];
-      this.selectRName = "";
-      this.cityArea.rName = "";
-      if (value.length) {
-        let cityRID = value[1];
-        let regionArr = areaPackageNew.findArea(cityRID);
-        this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
-        console.log(
-          "获取选中城市的区域",
-          regionArr,
-          "this.cityArea",
-          this.cityArea
-        );
-        let region = [];
-        for (let key of regionArr) {
-          region.push({
-            label: key.rName,
-            value: key.rID,
-          });
-        }
-        this.regionOpt = region;
-        console.log(
-          "this.regionOpt",
-          this.regionOpt,
-          "selectedOptions",
-          this.selectedOptions
-        );
-      } else {
-        this.cityArea.cName = "";
-      }
+      //   this.regionOpt = [];
+      //   this.selectRName = "";
+      //   this.cityArea.rName = "";
+      //   if (value.length) {
+      //     let cityRID = value[1];
+      //     let regionArr = areaPackageNew.findArea(cityRID);
+      //     this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
+      //     console.log(
+      //       "获取选中城市的区域",
+      //       regionArr,
+      //       "this.cityArea",
+      //       this.cityArea
+      //     );
+      //     let region = [];
+      //     for (let key of regionArr) {
+      //       region.push({
+      //         label: key.rName,
+      //         value: key.rID,
+      //       });
+      //     }
+      //     this.regionOpt = region;
+      //     console.log(
+      //       "this.regionOpt",
+      //       this.regionOpt,
+      //       "selectedOptions",
+      //       this.selectedOptions
+      //     );
+      //   } else {
+      //     this.cityArea.cName = "";
+      //   }
     },
 
     //获取区域
-    getRegion(val) {
-      console.log("获取区域val", val, this.regionOpt);
-      if (val) {
-        for (let key of this.regionOpt) {
-          if (key.value == val) {
-            this.cityArea.rName = key.label;
-          }
-        }
-      } else {
-        this.cityArea.rName = "";
-      }
-      console.log("选择的区域为", this.cityArea);
-    },
+    // getRegion(val) {
+    //   console.log("获取区域val", val, this.regionOpt);
+    //   if (val) {
+    //     for (let key of this.regionOpt) {
+    //       if (key.value == val) {
+    //         this.cityArea.rName = key.label;
+    //       }
+    //     }
+    //   } else {
+    //     this.cityArea.rName = "";
+    //   }
+    //   console.log("选择的区域为", this.cityArea);
+    // },
 
     // 下拉选择状态
     changeState(selectState, index, rows) {
@@ -1185,22 +1217,14 @@ export default {
       sessionStorage.setItem("resID", data.resID);
     },
 
-    // 当搜索框为空的时候进行重置显示
-    initData(val) {
-      console.log("搜索框变化的值", val);
-      if (!this.keyword) {
-        this.setPageNoAndTableData();
-        this.getData({ pageNo: this.pageNo, pageSize: 50 });
-      }
-    },
-
     // 搜索按钮
     searchFun() {
       this.searchBtnAbled = true;
-      if (
-        (this.keyword === "" || this.keyword === null) &&
-        this.cityArea.cName === ""
-      ) {
+      //   if (
+      //     (this.keyword === "" || this.keyword === null) &&
+      //     this.cityArea.cName === ""
+      //   ) {
+      if (this.keyword === "" || this.keyword === null) {
         Message.warning({
           message: "请先输入搜索条件",
           duration: 1000,
@@ -1216,14 +1240,15 @@ export default {
     clearSearch() {
       this.keyword = "";
       this.selectedOptions = [];
-      this.selectRName = "";
-      this.regionOpt = [];
+      //   this.selectRName = "";
+      //   this.regionOpt = [];
       this.pageData.pageNum = 1;
       this.pageData.pageSize = 10;
-      this.cityArea = { cName: "", rName: "" };
+      //   this.cityArea = { cName: "", rName: "" };
       this.filterMediaType = "";
       this.asSaleState = "";
       this.asState = "";
+      this.rtNameList = [];
       this.$refs.tableEl.clearFilter();
       this.getData();
     },
@@ -1439,6 +1464,7 @@ a {
   list-style: none;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .handel_ul_li {
@@ -1449,11 +1475,18 @@ a {
   flex-flow: row nowrap;
   width: 306px;
   margin-right: 32px;
+  padding: 12px 0;
   .li-label {
     font-size: 14px;
     white-space: nowrap;
+    width: 70px;
+    text-align: right;
     color: rgba(0, 0, 0, 0.65);
   }
+}
+
+/deep/ .u-key > .el-input__inner {
+  width: 236px !important;
 }
 
 .handel_ul_li_btn {
@@ -1704,6 +1737,10 @@ a {
 /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
   background-color: #ddd;
   border-radius: 3px;
+}
+
+.box-card {
+  margin: 0 64px 16px 64px;
 }
 </style>
 

@@ -85,9 +85,6 @@
             >搜索</el-button
           >
           <el-button plain @click="clearSearch">重置</el-button>
-          <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
-            >新建</el-button
-          >
           <el-button plain @click="importMedia" v-if="showImportBtn"
             >导入媒体</el-button
           >
@@ -101,11 +98,21 @@
       <div class="mediaList_container">
         <div class="table-title">
           <h2>媒体列表</h2>
-          <!-- 列设置 -->
-          <TableSetting
-            @refreshTable="refreshTable"
-            @spaceSetting="spaceSetting"
-          />
+          <div style="display: flex; align-items: center">
+            <el-button
+              style="margin-right: 16px"
+              class="el-icon-plus"
+              type="primary"
+              @click="newMedia"
+              v-if="showNewBtn && isPay"
+              >新建</el-button
+            >
+            <!-- 列设置 -->
+            <TableSetting
+              @refreshTable="refreshTable"
+              @spaceSetting="spaceSetting"
+            />
+          </div>
         </div>
         <div class="table_wrap">
           <el-table

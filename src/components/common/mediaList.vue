@@ -1239,7 +1239,10 @@ export default {
     // 重置搜索
     clearSearch() {
       this.keyword = "";
+      this.resName = "";
+      this.mTitle = "";
       this.selectedOptions = [];
+      this.tradingArea = "";
       //   this.selectRName = "";
       //   this.regionOpt = [];
       this.pageData.pageNum = 1;

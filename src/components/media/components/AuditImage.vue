@@ -318,7 +318,7 @@ export default {
     },
     // 显示tag删除提示
     toOpenCloseVisible(item, tag) {
-      item.errList.map((v) => (v.closeVisible = false));
+      this.imageList.map((m) => m.errList.map((v) => (v.closeVisible = false)));
       const index = item.errList.indexOf(tag);
       item.errList[index].closeVisible = true;
       this.currentItem = item;

@@ -98,16 +98,15 @@
       </div>
     </el-card>
     <div class="mediaList_wrap">
-      <div class="mediaList_head">
-        <h2>媒体列表</h2>
-      </div>
       <div class="mediaList_container">
-        <!-- 列设置 -->
-        <TableSetting
-          @refreshTable="refreshTable"
-          @spaceSetting="spaceSetting"
-        />
-
+        <div class="table-title">
+          <h2>媒体列表</h2>
+          <!-- 列设置 -->
+          <TableSetting
+            @refreshTable="refreshTable"
+            @spaceSetting="spaceSetting"
+          />
+        </div>
         <div class="table_wrap">
           <el-table
             :size="rowSpace"
@@ -1224,21 +1223,23 @@ export default {
       //     (this.keyword === "" || this.keyword === null) &&
       //     this.cityArea.cName === ""
       //   ) {
-      if (this.keyword === "" || this.keyword === null) {
-        Message.warning({
-          message: "请先输入搜索条件",
-          duration: 1000,
-        });
-        this.searchBtnAbled = false;
-      } else {
-        this.pageData.pageNum = 1;
-        this.getData();
-      }
+      //   if (this.keyword === "" || this.keyword === null) {
+      //     Message.warning({
+      //       message: "请先输入搜索条件",
+      //       duration: 1000,
+      //     });
+      //     this.searchBtnAbled = false;
+      //   } else {
+      //     this.pageData.pageNum = 1;
+      //     this.getData();
+      //   }
+      this.pageData.pageNum = 1;
+      this.getData();
     },
 
     // 重置搜索
     clearSearch() {
-      this.keyword = "";
+      //   this.keyword = "";
       this.resName = "";
       this.mTitle = "";
       this.selectedOptions = [];
@@ -1744,6 +1745,16 @@ a {
 
 .box-card {
   margin: 0 64px 16px 64px;
+}
+
+.table-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
 </style>
 

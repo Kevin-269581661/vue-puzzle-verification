@@ -35,10 +35,6 @@ export default {
 
 <style lang="scss" scoped>
 .setting-container {
-  margin-top: 24px;
-  padding: 12px 0px;
-  height: 8px;
-  width: 100%;
   .setting-box {
     float: right;
     display: flex;

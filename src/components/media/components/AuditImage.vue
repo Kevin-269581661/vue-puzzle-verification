@@ -56,6 +56,7 @@
       <div class="hint-box" v-if="!imageList">
         <span>暂无数据</span>
       </div>
+
       <div class="audit-box" v-else>
         <div
           class="audit-img"
@@ -113,41 +114,42 @@
             </div>
           </div>
           <div class="err-box">
-            <el-popover
+            <el-tag
+              style="position: relative"
               v-for="(tag, index) in item.errList"
               :key="index"
-              placement="top-end"
-              width="160"
-              v-model="tag.closeVisible"
+              :disable-transitions="true"
+              closable
+              @close="toOpenCloseVisible(item, tag)"
             >
-              <p style="margin-bottom: 10px">
-                <i class="el-icon-warning" style="color: #faad14"></i>
-                确定要删除该问题吗？
-              </p>
-              <div style="display: flex; justify-content: flex-end">
-                <el-button
-                  style="min-width: 45px; height: 25px; line-height: 25px"
-                  type="primary"
-                  size="mini"
-                  @click="toCloseTag(tag)"
-                  >是的</el-button
-                >
-                <el-button
-                  style="min-width: 45px; height: 25px; line-height: 25px"
-                  size="mini"
-                  @click="tag.closeVisible = false"
-                  >取消</el-button
-                >
-              </div>
-              <el-tag
-                slot="reference"
-                :disable-transitions="true"
-                closable
-                @close="toOpenCloseVisible(item, tag)"
+              {{ tag.errMsg }}
+              <el-popover
+                placement="top-end"
+                width="160"
+                v-model="tag.closeVisible"
               >
-                {{ tag.errMsg }}
-              </el-tag>
-            </el-popover>
+                <p style="margin-bottom: 10px">
+                  <i class="el-icon-warning" style="color: #faad14"></i>
+                  确定要删除该问题吗？
+                </p>
+                <div style="display: flex; justify-content: flex-end">
+                  <el-button
+                    style="min-width: 45px; height: 25px; line-height: 25px"
+                    type="primary"
+                    size="mini"
+                    @click="toCloseTag(tag)"
+                    >是的</el-button
+                  >
+                  <el-button
+                    style="min-width: 45px; height: 25px; line-height: 25px"
+                    size="mini"
+                    @click="tag.closeVisible = false"
+                    >取消</el-button
+                  >
+                </div>
+                <i style="position: absolute; right: 12px" slot="reference"></i>
+              </el-popover>
+            </el-tag>
           </div>
         </div>
       </div>

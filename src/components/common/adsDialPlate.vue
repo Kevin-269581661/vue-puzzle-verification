@@ -6,33 +6,30 @@
                 <span class="ad_breadcrumb_time">数据统计截止至{{checkDate}}</span>
             </p>
         </div>
-        <div class="mediaList_wrap">
-            <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
-                <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
-            </el-tabs>
-            <div class="tab_conten">
-                <div :gutter="32" class="tab_conten_row">
-                    <div class="row-unit">
-                        <span class="search_label">关键词：</span>
+        <el-card style="margin: 0 64px 16px 64px;">
+            <el-row class="handel_ul" :gutter="36">
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">关键词：</span>
                         <el-input
                             placeholder="请输入关键词"
                             v-model="searchInfo[searchInfo.keywordType]"
                             size="small"
-                            class="search-row-item"
+                            class="input-with-select"
                             >
                             <el-select
                                 v-model="searchInfo.keywordType"
                                 slot="prepend"
                                 size="small"
                                 placeholder="请输入关键词"
+                                style="width: 98px"
                             >
                                 <el-option label="资源名称" value="resName"></el-option>
                                 <el-option label="资产编号" value="assetTag"></el-option>
                             </el-select>
-                            </el-input>
-                    </div>
-                    <div class="row-unit">
-                        <span class="search_label">城市区域：</span>
+                        </el-input>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">城市区域：</span>
                         <el-cascader
                             :options="areaList"
                             v-model="areaRid"
@@ -43,11 +40,11 @@
                             :clearable="true"
                             size="small"
                             @change="changeArea"
-                            class="search-row-item">
+                        >
                         </el-cascader>
-                    </div>
-                    <div class="row-unit">
-                        <span class="search_label">查询范围：</span>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">查询范围：</span>
                         <el-date-picker
                             v-model="dateInput"
                             size="small"
@@ -57,16 +54,45 @@
                             end-placeholder="结束日期"
                             value-format="yyyy/MM/dd"
                             format="yyyy/MM/dd"
-                            class="date-select search-row-item"
                             @change="dateChange"
                             :picker-options="pickerOptions">
                         </el-date-picker>
-                    </div>
-                    <div class="btn-group">
-                        <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
-                    </div>
-                </div>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">楼栋：</span>
+                    <el-input
+                        placeholder="请输入"
+                        v-model="resName"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">单元：</span>
+                    <el-input
+                        placeholder="请输入"
+                        v-model="resName"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+                </el-col>
+                <el-col class="handel_ul_li handel_ul_li_btn" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun" class="el-icon-search">&nbsp;搜索</el-button>
+                    <el-button @click="clearSearch">重置</el-button>
+                </el-col>
+            </el-row>
+        </el-card>
+        <div class="mediaList_wrap">
+            <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
+                    <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
+            </el-tabs>
+            <TableSetting>
+                <template slot="refresh"></template>
+                <template slot="filter"></template>
+            </TableSetting>
+            <div class="tab_conten">
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
                     <el-table
                         v-loading="tableLoading"
@@ -183,8 +209,12 @@
     import timeFormat from '../../commonFun/timeFormat'
     import areaArr from '../../commonFun/areaPackage_new'
 
+    import TableSetting from '../common/components/TableSetting'
     export default {
         name: "adsDialPlate",
+        components: {
+            TableSetting
+        },
         data() {
             return {
                 mediaTypeId: '', //当前选择的媒体类型id
@@ -535,6 +565,51 @@
 </script>
 
 <style lang="scss" scoped>
+.handel_ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/deep/ .handel_ul_li {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  padding: 12px 0;
+  margin: 0;
+    .u-key > .el-input__inner {
+        width: 100%;
+    }
+
+    .el-select--small {
+        width: 100%;
+    }
+    .el-cascader--small {
+        width: 100%;
+    }
+  .li-label {
+    display: inline-block;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+.handel_ul_li_btn {
+  .el-button + .el-button {
+    margin-left: 8px;
+  }
+
+  .collapse-box {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1890FF;
+    cursor: pointer;
+  }
+}
     /*面包屑*/
     .ad_breadcrumb{
         height: 42px;
@@ -601,6 +676,7 @@
     /*搜索块*/
     .tab_conten_row {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         .row-unit {
             width: 280px;
@@ -621,18 +697,6 @@
             /deep/ .el-date-editor .el-range-separator {
                 font-size: 14px;
                 color: rgba(0, 0, 0, 0.25);
-            }
-            .search-row-item {
-                width: 100%;
-                /deep/ .el-input-group__prepend .el-input__inner {
-                    width: 100px;
-                }
-                .el-cascader .el-input{
-                    width: 100%;
-                }
-                ::placeholder {
-                    font-size: 14px;
-                }
             }
         }
         .btn-group {
@@ -745,6 +809,7 @@
     .table_bottom{
         padding: 0 32px 16px;
     }
+
     .ad_footer{
         text-align: center;
         margin-top: 24px;

@@ -1,9 +1,21 @@
 <template>
   <div class="setting-container">
     <div class="setting-box">
-      <refreshComp @refreshTable="refreshTable"></refreshComp>
-      <spaceComp @spaceSetting="spaceSetting"></spaceComp>
-      <filterComp></filterComp>
+
+        <slot name="refresh">
+            <refreshComp @refreshTable="refreshTable"></refreshComp>
+        </slot>
+
+
+        <slot name="space">
+            <spaceComp @spaceSetting="spaceSetting"></spaceComp>
+        </slot>
+
+
+        <slot name="filter">
+            <filterComp></filterComp>
+        </slot>
+
     </div>
   </div>
 </template>

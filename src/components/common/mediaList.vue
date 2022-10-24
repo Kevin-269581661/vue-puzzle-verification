@@ -4,95 +4,110 @@
       <p><a href="#">媒体管理</a><em> / </em><a href="#">媒体列表</a></p>
     </div>
     <el-card class="box-card">
-      <div class="handel_ul">
-        <li class="handel_ul_li">
-          <span class="li-label">资源名称：</span>
-          <el-input
-            placeholder="请输入资源名称"
-            v-model="resName"
-            class="input-with-select u-key"
-            size="small"
-            clearable
-          >
-          </el-input>
-        </li>
-        <li class="handel_ul_li">
-          <span class="li-label">媒体名称：</span>
-          <el-input
-            placeholder="请输入资源名称"
-            v-model="mTitle"
-            class="input-with-select u-key"
-            size="small"
-            style="width: 236px"
-            clearable
-          >
-          </el-input>
-        </li>
-        <li class="handel_ul_li handel_ul_li_city">
-          <span class="li-label">城市区域：</span>
-          <el-cascader
-            :options="cityOptions"
-            :props="cityProps"
-            collapse-tags
-            v-model="selectedOptions"
-            separator="-"
-            :show-all-levels="false"
-            placeholder="请选择城市"
-            filterable
-            size="small"
-            style="width: 236px"
-            clearable
-            @change="handleChange"
-          >
-          </el-cascader>
-        </li>
-        <li class="handel_ul_li">
-          <span class="li-label">商圈：</span>
-          <el-input
-            placeholder="请输入商圈"
-            v-model="tradingArea"
-            class="input-with-select u-key"
-            size="small"
-            style="width: 236px"
-          >
-          </el-input>
-        </li>
-        <!-- <li class="handel_ul_li handel_ul_li_area">
-          <span class="li-label">城市区域：</span>
-          <el-select
-            v-model="selectRName"
-            placeholder="请选择区域"
-            :clearable="true"
-            style="width: 236px"
-            size="small"
-            @change="getRegion"
-          >
-            <el-option
-              v-for="item in regionOpt"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </li> -->
-        <li class="handel_ul_li handel_ul_li_btn">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            @click="searchFun"
-            :disabled="searchBtnAbled"
-            >搜索</el-button
-          >
-          <el-button plain @click="clearSearch">重置</el-button>
-          <el-button plain @click="importMedia" v-if="showImportBtn"
-            >导入媒体</el-button
-          >
-          <el-button v-if="showImportBtn" plain @click="showPushMap"
-            >推送地图</el-button
-          >
-        </li>
-      </div>
+        <el-row class="handel_ul" :gutter="36">
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">资源名称：</span>
+                    <el-input
+                        placeholder="请输入资源名称"
+                        v-model="resName"
+                        class="input-with-select u-key"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">媒体名称：</span>
+                    <el-input
+                        placeholder="请输入媒体名称"
+                        v-model="mTitle"
+                        class="input-with-select u-key"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">城市区域：</span>
+                    <el-cascader
+                        :options="cityOptions"
+                        :props="cityProps"
+                        collapse-tags
+                        v-model="selectedOptions"
+                        separator="-"
+                        :show-all-levels="true"
+                        placeholder="请选择城市"
+                        filterable
+                        size="small"
+                        clearable
+                        @change="handleChange"
+                    >
+                    </el-cascader>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">商圈：</span>
+                    <el-input
+                        placeholder="请输入商圈"
+                        v-model="tradingArea"
+                        class="input-with-select u-key"
+                        size="small"
+                    >
+                    </el-input>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">楼栋：</span>
+                <el-input
+                    placeholder="请输入"
+                    v-model="resName"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+                >
+                </el-input>
+            </el-col>
+            <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">单元：</span>
+                <el-input
+                    placeholder="请输入"
+                    v-model="resName"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+                >
+                </el-input>
+            </el-col>
+            <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">媒体ID：</span>
+                <el-input
+                    placeholder="请输入"
+                    v-model="resName"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+                >
+                </el-input>
+            </el-col>
+            <el-col class="handel_ul_li handel_ul_li_btn" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="searchFun"
+                    :disabled="searchBtnAbled"
+                    >搜索</el-button
+                >
+                <el-button plain @click="clearSearch">重置</el-button>
+                <el-button plain @click="importMedia" v-if="showImportBtn"
+                    >导入媒体</el-button
+                >
+                <el-button v-if="showImportBtn" plain @click="showPushMap"
+                    >推送地图</el-button
+                >
+                <div class="collapse-box" @click="isCollapse = !isCollapse">
+                    <span>展开</span>
+                    <i :class="isCollapse === false ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
+                </div>
+            </el-col>
+        </el-row>
     </el-card>
     <div class="mediaList_wrap">
       <div class="mediaList_container">
@@ -108,10 +123,11 @@
               >新建</el-button
             >
             <!-- 列设置 -->
-            <TableSetting
-              @refreshTable="refreshTable"
-              @spaceSetting="spaceSetting"
-            />
+            <TableSetting @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+                <template slot="refresh"></template>
+                <template slot="space"></template>
+                <template slot="filter"></template>
+            </TableSetting>
           </div>
         </div>
         <div class="table_wrap">
@@ -620,6 +636,8 @@ export default {
   },
   data() {
     return {
+        // 是否展开
+        isCollapse: false,
       // 行距
       rowSpace: "",
       //加载中
@@ -1478,31 +1496,43 @@ a {
   flex-wrap: wrap;
 }
 
-.handel_ul_li {
-  // float: left;
-  // flex-grow: 1;
+/deep/ .handel_ul_li {
   display: flex;
   align-items: center;
   flex-flow: row nowrap;
-  width: 306px;
-  margin-right: 32px;
   padding: 12px 0;
-  .li-label {
-    font-size: 14px;
-    white-space: nowrap;
-    width: 70px;
-    text-align: right;
-    color: rgba(0, 0, 0, 0.65);
-  }
-}
+  margin: 0;
+    .u-key > .el-input__inner {
+        width: 100%;
+    }
 
-/deep/ .u-key > .el-input__inner {
-  width: 236px !important;
+    .el-select--small {
+        width: 100%;
+    }
+    .el-cascader--small {
+        width: 100%;
+    }
+  .li-label {
+    display: inline-block;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
 }
 
 .handel_ul_li_btn {
   .el-button + .el-button {
     margin-left: 8px;
+  }
+
+  .collapse-box {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1890FF;
+    cursor: pointer;
   }
 }
 /*下拉搜索框*/

@@ -269,8 +269,12 @@ export default {
     },
     reportImageApID: {
       type: Number,
-      default: () => 0,
+      default: () => -1,
     },
+    reportImageType: {
+        type: Number,
+        default: () => -1,
+    }
   },
   data() {
     return {
@@ -342,6 +346,7 @@ export default {
       let params = {
         ...this.searchParams,
         apID: this.reportImageApID,
+        type: this.reportImageType,
         pageNum: this.currentPage,
         pageSize: this.pageSize,
       };

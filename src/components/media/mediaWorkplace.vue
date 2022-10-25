@@ -478,6 +478,7 @@
     <ReportImage
       :dialogVisible.sync="reportImageVisible"
       :reportImageApID="reportImageApID"
+      :reportImageType="reportImageType"
       @refresh="getData"
     ></ReportImage>
   </div>
@@ -524,7 +525,8 @@ export default {
       updateOrderData: {},
 
       reportImageVisible: false,
-      reportImageApID: 0,
+      reportImageApID: -1,
+      reportImageType: -1,
 
       searchPlaceholder: "项目名称/资产编号/合同编号",
     };
@@ -689,6 +691,7 @@ export default {
     // 查看订单图片审核
     checkOrderImg(item) {
       this.reportImageApID = item.apID;
+      this.reportImageType = item.type
       this.reportImageVisible = true;
     },
 

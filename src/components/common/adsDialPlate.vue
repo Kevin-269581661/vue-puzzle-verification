@@ -62,7 +62,6 @@
                     <span class="li-label">楼栋：</span>
                     <el-input
                         placeholder="请输入"
-                        v-model="resName"
                         size="small"
                         clearable
                     >
@@ -72,7 +71,6 @@
                     <span class="li-label">单元：</span>
                     <el-input
                         placeholder="请输入"
-                        v-model="resName"
                         size="small"
                         clearable
                     >
@@ -85,13 +83,14 @@
             </el-row>
         </el-card>
         <div class="mediaList_wrap">
-            <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
-                    <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
-            </el-tabs>
-            <TableSetting>
-                <template slot="refresh"></template>
-                <template slot="filter"></template>
-            </TableSetting>
+            <div class="tab-box">
+                <div style="width: 90%;">
+                    <el-tabs type="card" v-model="mediaTypeId" @tab-click="handleClick">
+                        <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
+                    </el-tabs>
+                </div>
+                <TableSetting class="tab-setting" refresh filter />
+            </div>
             <div class="tab_conten">
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
                     <el-table
@@ -632,19 +631,32 @@
         float: right;
     }
     /*tag颜色覆盖*/
+    .mediaList_wrap .tab-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e4e7ed;
+        .tab-setting {
+            margin-right: 38px;
+        }
+    }
     /deep/ .mediaList_wrap .el-tabs__header{
         padding: 0 20px;
         margin: 0;
-        border-bottom: 1px solid #e4e7ed;
-    }
+        width: 100%;
+        border: 0;
 
+        .el-tabs__nav-next, .el-tabs__nav-prev {
+            line-height: 52px;
+        }
+    }
     /deep/ .mediaList_wrap .el-tabs__nav-wrap::after{
         width: 0;
     }
 
     /deep/ .mediaList_wrap .el-tabs__item{
         min-width: 68px;
-        padding-right: 4px;
+        // padding-right: 4px;
         box-sizing: border-box;
         height: 54px;
         line-height: 54px;

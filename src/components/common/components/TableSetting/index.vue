@@ -1,21 +1,9 @@
 <template>
   <div class="setting-container">
     <div class="setting-box">
-
-        <slot name="refresh">
-            <refreshComp @refreshTable="refreshTable"></refreshComp>
-        </slot>
-
-
-        <slot name="space">
-            <spaceComp @spaceSetting="spaceSetting"></spaceComp>
-        </slot>
-
-
-        <slot name="filter">
-            <filterComp></filterComp>
-        </slot>
-
+        <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
+        <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
+        <filterComp v-if="filter"></filterComp>
     </div>
   </div>
 </template>
@@ -26,32 +14,43 @@ import spaceComp from "./spaceComp.vue";
 import filterComp from "./filterComp.vue";
 
 export default {
-  components: {
-    refreshComp,
-    spaceComp,
-    filterComp,
-  },
-  data() {
-    return {};
-  },
-  methods: {
-    refreshTable() {
-      this.$emit("refreshTable");
+    props: {
+        refresh: {
+            type: Boolean,
+            default: () => false
+        },
+        space: {
+            type: Boolean,
+            default: () => false
+        },
+        filter: {
+            type: Boolean,
+            default: () => false
+        },
     },
-    spaceSetting(size) {
-      this.$emit("spaceSetting", size);
+    components: {
+        refreshComp,
+        spaceComp,
+        filterComp,
     },
-  },
+    data() {
+        return {};
+    },
+    methods: {
+        refreshTable() {
+        this.$emit("refreshTable");
+        },
+        spaceSetting(size) {
+        this.$emit("spaceSetting", size);
+        },
+    },
 };
 </script>
 
 <style lang="scss" scoped>
 .setting-container {
   .setting-box {
-    float: right;
     display: flex;
-    width: 90px;
-    justify-content: space-between;
   }
 }
 </style>>

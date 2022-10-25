@@ -123,10 +123,12 @@
               >新建</el-button
             >
             <!-- 列设置 -->
-            <TableSetting @refreshTable="refreshTable" @spaceSetting="spaceSetting">
-                <template slot="refresh"></template>
-                <template slot="space"></template>
-                <template slot="filter"></template>
+            <TableSetting
+                refresh
+                space
+                filter
+                @refreshTable="refreshTable"
+                @spaceSetting="spaceSetting">
             </TableSetting>
           </div>
         </div>

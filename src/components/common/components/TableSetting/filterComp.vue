@@ -1,58 +1,60 @@
 <template>
-    <el-popover popper-class="filter-popover" placement="bottom" :width="200" trigger="click">
-        <div class="filter-box">
-            <div class="filter-box-title">
-                <el-checkbox>列展示</el-checkbox>
-                <span>重置</span>
+    <div style="margin-left: 8px;">
+        <el-popover popper-class="filter-popover" placement="bottom" :width="200" trigger="click">
+            <div class="filter-box">
+                <div class="filter-box-title">
+                    <el-checkbox>列展示</el-checkbox>
+                    <span>重置</span>
+                </div>
             </div>
-        </div>
-        <div class="filter-box-outer">
-            <div class="filter-box-inner">
-                <span class="inner-fix">固定在左侧</span>
-                <el-tree
-                    :data="fixLeftList"
-                    node-key="id"
-                    show-checkbox
-                    default-expand-all
-                    draggable
-                    :allow-drop="allowDrop"
-                    :allow-drag="allowDrag"
-                >
-                </el-tree>
-                <span class="inner-fix">不固定</span>
-                <el-tree
-                    :data="notFixList"
-                    node-key="id"
-                    show-checkbox
-                    default-expand-all
-                    draggable
-                    :allow-drop="allowDrop"
-                    :allow-drag="allowDrag"
-                >
-                    <span class="custom-tree-node inner-column-item" slot-scope="{ node, data }">
-                        <span>{{ node.label }}</span>
-                        <span>
-                            <i v-if="isFixed" class="el-icon-minus"></i>
-                            <i v-else class="el-icon-upload2"></i>
+            <div class="filter-box-outer">
+                <div class="filter-box-inner">
+                    <span class="inner-fix">固定在左侧</span>
+                    <el-tree
+                        :data="fixLeftList"
+                        node-key="id"
+                        show-checkbox
+                        default-expand-all
+                        draggable
+                        :allow-drop="allowDrop"
+                        :allow-drag="allowDrag"
+                    >
+                    </el-tree>
+                    <span class="inner-fix">不固定</span>
+                    <el-tree
+                        :data="notFixList"
+                        node-key="id"
+                        show-checkbox
+                        default-expand-all
+                        draggable
+                        :allow-drop="allowDrop"
+                        :allow-drag="allowDrag"
+                    >
+                        <span class="custom-tree-node inner-column-item" slot-scope="{ node, data }">
+                            <span>{{ node.label }}</span>
+                            <span>
+                                <i v-if="isFixed" class="el-icon-minus"></i>
+                                <i v-else class="el-icon-upload2"></i>
 
+                            </span>
                         </span>
-                    </span>
-                </el-tree>
-                <span class="inner-fix">固定在右侧</span>
-                <el-tree
-                    :data="fixRightList"
-                    node-key="id"
-                    show-checkbox
-                    default-expand-all
-                    :default-checked-keys="[1, 2, 3]"
-                >
-                </el-tree>
+                    </el-tree>
+                    <span class="inner-fix">固定在右侧</span>
+                    <el-tree
+                        :data="fixRightList"
+                        node-key="id"
+                        show-checkbox
+                        default-expand-all
+                        :default-checked-keys="[1, 2, 3]"
+                    >
+                    </el-tree>
+                </div>
             </div>
-        </div>
-        <span slot="reference" style="cursor: pointer">
-            <i style="font-size: 22px" class="el-icon-setting"></i>
-        </span>
-    </el-popover>
+            <span slot="reference" style="cursor: pointer">
+                <i style="font-size: 22px; color: rgba(0, 0, 0, 0.85);" class="el-icon-setting"></i>
+            </span>
+        </el-popover>
+    </div>
 </template>
 
 <script>

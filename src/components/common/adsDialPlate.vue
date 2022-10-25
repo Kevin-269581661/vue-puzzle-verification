@@ -147,13 +147,19 @@
                                     width="310"
                                     trigger="hover">
                                     <div>
-                                        <p class="propmt_message_p">
+                                        <div v-if="mediaTypesArr[mediaTypeId].name == '道闸' && scope.row[item.dayOfMonth].status !== 0">
+                                            <p>{{mediaTypesArr[mediaTypeId].name}}</p>
+                                            <p class="propmt_message_p">全国单预锁/全国单占用</p>
+                                        </div>
+                                        <div v-else>
+                                            <p class="propmt_message_p">
                                             占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}
-                                        </p>
-                                        <p class="propmt_message_p">
-                                            占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
-                                            + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
-                                        </p>
+                                            </p>
+                                            <p class="propmt_message_p">
+                                                占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
+                                                + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div slot="reference" class="color_chunk"
                                          :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && (scope.row[item.dayOfMonth].status == 1 || scope.row[item.dayOfMonth].status == 2) ? 'color_chunk_1' : 'color_chunk_2'">

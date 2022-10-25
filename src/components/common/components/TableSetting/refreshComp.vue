@@ -1,7 +1,7 @@
 <template>
     <div style="margin-left: 8px;">
         <span style="cursor: pointer" @click="refreshTable">
-            <i style="font-size: 22px; color: rgba(0, 0, 0, 0.85);" class="el-icon-refresh-left"></i>
+            <i style="font-size: 22px; color: rgba(0, 0, 0, 0.85);" class="el-icon-refresh-right"></i>
         </span>
     </div>
 </template>

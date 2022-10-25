@@ -390,9 +390,7 @@
                       </div>
                       <div class="font-base">
                         <div class="ellipsis">
-                          {{
-                            trItem.type === 0 ? "上刊报告" : "下刊报告" || "--"
-                          }}
+                          {{ trItem.type === 0 ? "上刊报告" : trItem.type === 1 ? "下刊报告" : trItem.type === 2 ? "换刊报告" : "--"}}
                         </div>
                       </div>
                     </td>

@@ -161,6 +161,7 @@ export default {
 
             // 修改左侧固定选中状态
             this.leftTreeKeys.push(data.id);
+            console.log('leftTreeKeys',this.leftTreeKeys);
             this.$refs.leftTree.setCheckedKeys(this.leftTreeKeys);
             console.log(this.$refs.leftTree.getCheckedKeys());
         },

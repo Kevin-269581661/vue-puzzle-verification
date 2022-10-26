@@ -57,8 +57,8 @@
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <span class="li-label">楼栋：</span>
                 <el-input
-                    placeholder="请输入"
-                    v-model="resName"
+                    placeholder="请输入楼栋"
+                    v-model="buildingName"
                     class="input-with-select u-key"
                     size="small"
                     clearable
@@ -68,8 +68,8 @@
             <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <span class="li-label">单元：</span>
                 <el-input
-                    placeholder="请输入"
-                    v-model="resName"
+                    placeholder="请输入单元"
+                    v-model="unitName"
                     class="input-with-select u-key"
                     size="small"
                     clearable
@@ -77,10 +77,10 @@
                 </el-input>
             </el-col>
             <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <span class="li-label">媒体ID：</span>
+                <span class="li-label">资产编号：</span>
                 <el-input
-                    placeholder="请输入"
-                    v-model="resName"
+                    placeholder="请输入资产编号"
+                    v-model="assetTag"
                     class="input-with-select u-key"
                     size="small"
                     clearable
@@ -654,9 +654,12 @@ export default {
       showNewBtn: false, // 新建按钮
       haveDetail: true,
       resName: "", // 搜索的资源名称
+      assetTag: "", // 资产编号（媒体ID）
       mTitle: "", // 搜索的媒体名称
       selectedOptions: [], // 搜索的城市区域
       tradingArea: "", // 搜索的商圈
+      buildingName: "", // 楼栋
+      unitName: "", // 单元
       filterMediaType: "", // 表头媒体类型搜索状态
       asState: "", // 搜索的媒体状态
       asSaleState: "", //  搜索的售卖状态
@@ -970,17 +973,20 @@ export default {
         token: this.sessionData.token,
         service: "GetRMListV2",
         data: {
-          pageNo: this.pageData.pageNum,
-          pageSize: this.pageData.pageSize,
-          resName: this.resName,
-          mTitle: this.mTitle,
-          tradeArea: this.tradeArea,
-          //   cityName: this.cityArea.cName,
-          //   regionName: this.cityArea.rName,
-          asState: this.asState,
-          asSaleState: this.asSaleState,
-          mediaTypeIds: this.filterMediaType + "",
-          rtNameList: this.rtNameList,
+            pageNo: this.pageData.pageNum,
+            pageSize: this.pageData.pageSize,
+            resName: this.resName, // 资源名称
+            assetTag: this.assetTag, // 资产编号（媒体ID）
+            mTitle: this.mTitle, // 媒体名称
+            tradeArea: this.tradeArea, // 商圈
+            //   cityName: this.cityArea.cName,
+            //   regionName: this.cityArea.rName,
+            asState: this.asState, // 媒体状态
+            asSaleState: this.asSaleState, // 售卖状态
+            mediaTypeIds: this.filterMediaType + "", // 媒体类型
+            rtNameList: this.rtNameList, // 资源类型
+            buildingName: this.buildingName, // 楼栋
+		    unitName: this.unitName, // 单元
         },
       };
       for (let i in params.data) {
@@ -1268,9 +1274,12 @@ export default {
     clearSearch() {
       //   this.keyword = "";
       this.resName = "";
+      this.assetTag = "";
       this.mTitle = "";
       this.selectedOptions = [];
       this.tradingArea = "";
+      this.buildingName = "";
+      this.unitName = "";
       //   this.selectRName = "";
       //   this.regionOpt = [];
       this.pageData.pageNum = 1;

@@ -3,7 +3,8 @@
     <div class="setting-box">
         <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
         <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
-        <filterComp v-if="filter"></filterComp>
+        <!-- <filterComp v-if="filter"></filterComp> -->
+        <dragComp></dragComp>
     </div>
   </div>
 </template>
@@ -12,6 +13,7 @@
 import refreshComp from "./refreshComp.vue";
 import spaceComp from "./spaceComp.vue";
 import filterComp from "./filterComp.vue";
+import dragComp from "./dragComp.vue";
 
 export default {
     props: {
@@ -32,6 +34,7 @@ export default {
         refreshComp,
         spaceComp,
         filterComp,
+        dragComp
     },
     data() {
         return {};

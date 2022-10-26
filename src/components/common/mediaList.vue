@@ -667,7 +667,7 @@ export default {
       planList: [], //  table的所有数据
       currentPlan: [], // 显示在table中的数据
       cityOptions: [], //城市数组
-      cityProps: { multiple: true }, // 城市设置
+      cityProps: { multiple: false }, // 城市设置
 
       //   regionOpt: [], // 地区
       //   selectRName: "", // 当前选择的区域rid

@@ -19,8 +19,9 @@
                         draggable
                         :allow-drop="allowDrop"
                         :allow-drag="allowDrag"
-                        :default-checked-keys="leftTreeKeys"
                         :check-on-click-node="true"
+                        :props="defaultProps"
+                        @check-change="handleCheckChange"
                     >
                         <span class="custom-tree-node inner-column-item" slot-scope="{ node, data }">
                             <span>{{ node.label }}</span>
@@ -39,8 +40,8 @@
                         draggable
                         :allow-drop="allowDrop"
                         :allow-drag="allowDrag"
-                        :default-checked-keys="treeKeys"
-                        :check-on-click-node="true"
+                        :check-on-click-node="false"
+                        @check-change="handleCheckChange"
                     >
                         <span class="custom-tree-node inner-column-item" slot-scope="{ node, data }">
                             <span>{{ node.label }}</span>
@@ -71,6 +72,9 @@
 export default {
     data() {
         return {
+            defaultProps: {
+                label: 'label'
+            },
             // 左侧固定数组
             fixLeftList: [],
             // 右侧固定数组
@@ -130,6 +134,7 @@ export default {
                 { id: 47, label: "位置朝向", isFixed: false, isChecked: false },
 
             ],
+            // 固定左侧选中项id的数组
             leftTreeKeys: [],
             // 不固定选中项id的数组
             treeKeys: [],
@@ -141,6 +146,19 @@ export default {
         this.$refs.tree.setCheckedKeys(this.treeKeys)
     },
     methods: {
+        handleCheckChange(data, checked) {
+            console.log(data, checked);
+            if(!checked && this.treeKeys.length) {
+                this.treeKeys.splice(this.treeKeys.findIndex(id => id === data.id), 1)
+            }
+            else if (!checked && this.leftTreeKeys.length) {
+                this.leftTreeKeys.splice(this.leftTreeKeys.findIndex(id => id === data.id), 1)
+            }
+            this.$nextTick(() => {
+                this.$refs.tree.setCheckedKeys(this.treeKeys)
+                this.$refs.leftTree.setCheckedKeys(this.leftTreeKeys)
+            })
+        },
         // 取消固定
         notToFix(node, data) {
             // 获取点击项的下标
@@ -149,6 +167,13 @@ export default {
             this.notFixList.splice(index, 0, this.fixLeftList[index])
             // 左侧固定数组中删除该项
             this.fixLeftList.splice(index, 1)
+
+            this.treeKeys.push(data.id);
+            this.leftTreeKeys.splice(this.leftTreeKeys.findIndex(id => id === data.id), 1)
+            this.$nextTick(() => {
+                this.$refs.tree.setCheckedKeys(this.treeKeys)
+                this.$refs.leftTree.setCheckedKeys(this.leftTreeKeys)
+            })
         },
         // 固定到左侧
         toFixLeft(node, data) {
@@ -161,22 +186,27 @@ export default {
 
             // 修改左侧固定选中状态
             this.leftTreeKeys.push(data.id);
-            console.log('leftTreeKeys',this.leftTreeKeys);
-            this.$refs.leftTree.setCheckedKeys(this.leftTreeKeys);
-            console.log(this.$refs.leftTree.getCheckedKeys());
+            this.treeKeys.splice(this.treeKeys.findIndex(id => id === data.id), 1)
+            this.$nextTick(() => {
+                this.$refs.tree.setCheckedKeys(this.treeKeys)
+                this.$refs.leftTree.setCheckedKeys(this.leftTreeKeys)
+            })
+            // console.log(this.$refs.leftTree.getCheckedKeys());
         },
 
-        // 拖拽相关
+
+        // 判断节点能否被拖拽
+        allowDrag(draggingNode) {
+            console.log(draggingNode);
+            return true;
+        },
+        //拖拽时判定目标节点能否被放置
         allowDrop(draggingNode, dropNode, type) {
             if (type !== "inner") {
                 return true;
             } else {
                 return false;
             }
-        },
-        allowDrag(draggingNode) {
-            console.log(draggingNode);
-            return true;
         },
     },
 };

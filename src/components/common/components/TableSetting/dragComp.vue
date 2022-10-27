@@ -4,11 +4,12 @@
             <div class="filter-box">
                 <div class="filter-box-title">
                     <el-checkbox v-model="allChecked" @change="checkAll">列展示</el-checkbox>
-                    <span>重置</span>
+                    <span @click="toReset">重置</span>
                 </div>
             </div>
             <div class="filter-box-outer">
                 <div class="filter-box-inner">
+                    <!-- 左侧 -->
                     <span class="inner-fix" v-if="fixLeftList.length">固定在左侧</span>
                     <draggable
                         v-model="fixLeftList"
@@ -30,7 +31,7 @@
                             </span>
                         </span>
                     </draggable>
-
+                    <!-- 不固定 -->
                     <span class="inner-fix">不固定</span>
                     <draggable
                         v-model="notFixList"
@@ -52,7 +53,7 @@
                             </span>
                         </span>
                     </draggable>
-
+                    <!-- 右侧 -->
                     <span class="inner-fix">固定在右侧</span>
                     <span class="inner-column-item" v-for="item in fixRightList" :key="item.id">
                         <i class="el-icon-menu"></i>
@@ -86,18 +87,17 @@ export default {
                 { fix: "not", id: 1, label: "资源名称", isChecked: true },
                 { fix: "not", id: 2, label: "城市", isChecked: true },
                 { fix: "not", id: 3, label: "区域", isChecked: true },
-                { fix: "not", id: 4, label: "街道", isChecked: true },
-                { fix: "not", id: 5, label: "地址", isChecked: true },
-                { fix: "not", id: 6, label: "商圈", isChecked: true },
-                { fix: "not", id: 7, label: "媒体名称", isChecked: true },
-                { fix: "not", id: 8, label: "媒体位ID", isChecked: false},
-                { fix: "not", id: 9, label: "设备类型", isChecked: true },
-                { fix: "not", id: 10, label: "位置类型", isChecked: true },
-                { fix: "not", id: 11, label: "楼栋", isChecked: false },
-                { fix: "not", id: 12, label: "单元", isChecked: false },
-                { fix: "not", id: 13, label: "位置朝向", isChecked: false },
-                { fix: "not", id: 14, label: "投放面", isChecked: false },
-                { fix: "not", id: 15, label: "创建日期", isChecked: false },
+                { fix: "not", id: 4, label: "街道", isChecked: false },
+                { fix: "not", id: 5, label: "商圈", isChecked: true },
+                { fix: "not", id: 6, label: "媒体名称", isChecked: true },
+                { fix: "not", id: 7, label: "媒体位ID", isChecked: true},
+                { fix: "not", id: 8, label: "设备类型", isChecked: false },
+                { fix: "not", id: 9, label: "位置类型", isChecked: false },
+                { fix: "not", id: 10, label: "楼栋", isChecked: false },
+                { fix: "not", id: 11, label: "单元", isChecked: false },
+                { fix: "not", id: 12, label: "位置朝向", isChecked: false },
+                { fix: "not", id: 13, label: "投放面", isChecked: true },
+                { fix: "not", id: 14, label: "创建日期", isChecked: true },
             ],
             // 右侧固定数组
             fixRightList: [
@@ -105,7 +105,24 @@ export default {
                 { fix:'right', id: 2, label: "售卖状态", disabled: true },
                 { fix:'right', id: 3, label: "操作", disabled: true },
             ],
-        };
+            // 重置
+            defaultList: [
+                { fix: "not", id: 1, label: "资源名称", isChecked: true },
+                { fix: "not", id: 2, label: "城市", isChecked: true },
+                { fix: "not", id: 3, label: "区域", isChecked: true },
+                { fix: "not", id: 4, label: "街道", isChecked: false },
+                { fix: "not", id: 5, label: "商圈", isChecked: true },
+                { fix: "not", id: 6, label: "媒体名称", isChecked: true },
+                { fix: "not", id: 7, label: "媒体位ID", isChecked: true},
+                { fix: "not", id: 8, label: "设备类型", isChecked: false },
+                { fix: "not", id: 9, label: "位置类型", isChecked: false },
+                { fix: "not", id: 10, label: "楼栋", isChecked: false },
+                { fix: "not", id: 11, label: "单元", isChecked: false },
+                { fix: "not", id: 12, label: "位置朝向", isChecked: false },
+                { fix: "not", id: 13, label: "投放面", isChecked: true },
+                { fix: "not", id: 14, label: "创建日期", isChecked: true },
+            ],
+        }
     },
     computed: {
         // 选中数组
@@ -120,6 +137,8 @@ export default {
         }
     },
     methods: {
+        // 重置
+        toReset() {},
         // 全选
         checkAll() {
             this.fixLeftList.forEach(v => v.isChecked = this.allChecked)

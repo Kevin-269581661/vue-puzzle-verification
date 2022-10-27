@@ -174,20 +174,89 @@
             <el-table-column
               prop="mTitle"
               label="媒体名称"
-              width="127"
+              width="120"
               :show-overflow-tooltip="true"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.mTitle || "--" }}</span>
               </template>
             </el-table-column>
+<!--  -->
+            <el-table-column
+              prop="buildingName"
+              label="楼栋"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.buildingName || "--" }}</span>
+              </template>
+            </el-table-column>
 
+            <el-table-column
+              prop="unitName"
+              label="单元"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.unitName || "--" }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="street"
+              label="街道"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.street || "--" }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="mediaModel"
+              label="设备类型"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.mediaModel || "--" }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="siteType"
+              label="位置类型"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.siteType || "--" }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="siteOrientation"
+              label="位置朝向"
+              width="127"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.siteOrientation || "--" }}</span>
+              </template>
+            </el-table-column>
+<!--  -->
             <el-table-column
               label="投放面"
               width="130"
               prop="asLab"
               :show-overflow-tooltip="true"
             >
+                <template slot-scope="scope">
+                    <span>{{ scope.row.asLab || "--" }}</span>
+                </template>
             </el-table-column>
 
             <el-table-column
@@ -263,6 +332,7 @@
               </template>
             </el-table-column>
 
+            <!-- 右侧固定三列 -->
             <el-table-column
               column-key="asState"
               prop="asState"
@@ -668,10 +738,7 @@ export default {
       currentPlan: [], // 显示在table中的数据
       cityOptions: [], //城市数组
       cityProps: { multiple: false }, // 城市设置
-
-      //   regionOpt: [], // 地区
-      //   selectRName: "", // 当前选择的区域rid
-      //   cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
+        cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
       loadScroll: true,
       provinceCity: [], //省份及其地级市
       timeID: "", // 计时器
@@ -917,83 +984,86 @@ export default {
     },
 
     filterChange(filters) {
-      for (let key in filters) {
-        if (key === "asState") {
-          if (filters[key].length) {
-            this.asState = filters[key][0];
-          } else {
-            this.asState = "";
-          }
-        } else if (key === "asSaleState") {
-          if (filters[key].length) {
-            this.asSaleState = filters[key][0];
-          } else {
-            this.asSaleState = "";
-          }
-        } else if (key === "mVehicle") {
-          if (filters[key].length) {
-            this.filterMediaType = filters[key][0];
-          } else {
-            this.filterMediaType = "";
-          }
-        } else if (key === "rtName") {
-          if (filters[key].length) {
-            for (const i in filters[key]) {
-              this.rtNameList.push(filters[key][i]);
+        for (let key in filters) {
+            if (key === "asState") {
+                if (filters[key].length) {
+                    this.asState = filters[key][0];
+                } else {
+                    this.asState = "";
+                }
             }
-          } else {
-            this.rtNameList = [];
-          }
+            else if (key === "asSaleState") {
+                if (filters[key].length) {
+                    this.asSaleState = filters[key][0];
+                } else {
+                    this.asSaleState = "";
+                }
+            }
+            else if (key === "mVehicle") {
+                if (filters[key].length) {
+                    this.filterMediaType = filters[key][0];
+                } else {
+                    this.filterMediaType = "";
+                }
+            }
+            else if (key === "rtName") {
+                if (filters[key].length) {
+                    for (const i in filters[key]) {
+                        this.rtNameList.push(filters[key][i]);
+                    }
+                } else {
+                    this.rtNameList = [];
+                }
+            }
         }
-      }
-      this.pageData.pageNum = 1;
-      this.getData();
+        this.pageData.pageNum = 1;
+        this.getData();
     },
 
     // 分页
     changePage(val) {
-      console.log("当前页", val);
-      this.pageData.pageNum = val;
-      this.getData();
+        console.log("当前页", val);
+        this.pageData.pageNum = val;
+        this.getData();
     },
 
     // 每页的条数
     changeSize(val) {
-      console.log("每页的条数", val);
-      this.pageData.pageNum = 1;
-      this.pageData.pageSize = val;
-      this.getData();
+        console.log("每页的条数", val);
+        this.pageData.pageNum = 1;
+        this.pageData.pageSize = val;
+        this.getData();
     },
 
     // 获取媒体列表
     getData() {
-      this.loading = true;
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "GetRMListV2",
-        data: {
-            pageNo: this.pageData.pageNum,
-            pageSize: this.pageData.pageSize,
-            resName: this.resName, // 资源名称
-            assetTag: this.assetTag, // 资产编号（媒体ID）
-            mTitle: this.mTitle, // 媒体名称
-            tradeArea: this.tradeArea, // 商圈
-            //   cityName: this.cityArea.cName,
-            //   regionName: this.cityArea.rName,
-            asState: this.asState, // 媒体状态
-            asSaleState: this.asSaleState, // 售卖状态
-            mediaTypeIds: this.filterMediaType + "", // 媒体类型
-            rtNameList: this.rtNameList, // 资源类型
-            buildingName: this.buildingName, // 楼栋
-		    unitName: this.unitName, // 单元
-        },
-      };
-      for (let i in params.data) {
-        if (params.data[i] === "") {
-          delete params.data[i];
+        this.loading = true;
+        let params = {
+            uid: this.sessionData.uID,
+            token: this.sessionData.token,
+            service: "GetRMListV2",
+            data: {
+                pageNo: this.pageData.pageNum,
+                pageSize: this.pageData.pageSize,
+                resName: this.resName, // 资源名称
+                assetTag: this.assetTag, // 资产编号（媒体ID）
+                mTitle: this.mTitle, // 媒体名称
+                tradeArea: this.tradeArea, // 商圈
+                cityName: this.cityArea.cName,
+                regionName: this.cityArea.rName,
+                asState: this.asState, // 媒体状态
+                asSaleState: this.asSaleState, // 售卖状态
+                mediaTypeIds: this.filterMediaType + "", // 媒体类型
+                rtNameList: this.rtNameList, // 资源类型
+                buildingName: this.buildingName, // 楼栋
+                unitName: this.unitName, // 单元
+            },
+        };
+        for (let i in params.data) {
+            if (params.data[i] === "") {
+                delete params.data[i];
+            }
         }
-      }
       api.postApi_new(this.apiVar.Media, params).then((res) => {
         this.pageData.totalSize = res.data.data.total;
         let RMList = res.data.data.list;
@@ -1004,6 +1074,7 @@ export default {
               mediaList.push(key);
             }
             this.currentPlan = mediaList;
+            console.log('currentPlan', this.currentPlan);
             //正在加载
             this.loading = false;
           } else {
@@ -1025,58 +1096,29 @@ export default {
 
     // 设置可搜索的区域
     setCityAreaByUWho() {
-      this.cityOptions = areaPackageNew.cityArea();
+        this.cityOptions = areaPackageNew.cityArea();
+        // console.log(this.cityOptions);
     },
 
-    // 根据市级城市rid，获取它的下属区、县
+    // 根据id，获取具体市、区/县
     handleChange(value) {
-      console.log("handleChange", value);
-      //   this.regionOpt = [];
-      //   this.selectRName = "";
-      //   this.cityArea.rName = "";
-      //   if (value.length) {
-      //     let cityRID = value[1];
-      //     let regionArr = areaPackageNew.findArea(cityRID);
-      //     this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
-      //     console.log(
-      //       "获取选中城市的区域",
-      //       regionArr,
-      //       "this.cityArea",
-      //       this.cityArea
-      //     );
-      //     let region = [];
-      //     for (let key of regionArr) {
-      //       region.push({
-      //         label: key.rName,
-      //         value: key.rID,
-      //       });
-      //     }
-      //     this.regionOpt = region;
-      //     console.log(
-      //       "this.regionOpt",
-      //       this.regionOpt,
-      //       "selectedOptions",
-      //       this.selectedOptions
-      //     );
-      //   } else {
-      //     this.cityArea.cName = "";
-      //   }
+        // console.log("selectedOptions", this.selectedOptions);
+        if (value.length) {
+            let cityRID = value[1];
+            let regionID = value[2];
+            let regionArr = areaPackageNew.findArea(cityRID);
+            this.cityArea.cName = areaToTextNew.toTextCity(cityRID);
+            for (let key of regionArr) {
+                if (key.rID == regionID) {
+                    this.cityArea.rName = key.rName;
+                }
+            }
+        } else {
+          this.cityArea.cName = "";
+          this.cityArea.rName = "";
+        }
+        // console.log("选择的区域为", this.cityArea);
     },
-
-    //获取区域
-    // getRegion(val) {
-    //   console.log("获取区域val", val, this.regionOpt);
-    //   if (val) {
-    //     for (let key of this.regionOpt) {
-    //       if (key.value == val) {
-    //         this.cityArea.rName = key.label;
-    //       }
-    //     }
-    //   } else {
-    //     this.cityArea.rName = "";
-    //   }
-    //   console.log("选择的区域为", this.cityArea);
-    // },
 
     // 下拉选择状态
     changeState(selectState, index, rows) {
@@ -1272,25 +1314,22 @@ export default {
 
     // 重置搜索
     clearSearch() {
-      //   this.keyword = "";
-      this.resName = "";
-      this.assetTag = "";
-      this.mTitle = "";
-      this.selectedOptions = [];
-      this.tradingArea = "";
-      this.buildingName = "";
-      this.unitName = "";
-      //   this.selectRName = "";
-      //   this.regionOpt = [];
-      this.pageData.pageNum = 1;
-      this.pageData.pageSize = 10;
-      //   this.cityArea = { cName: "", rName: "" };
-      this.filterMediaType = "";
-      this.asSaleState = "";
-      this.asState = "";
-      this.rtNameList = [];
-      this.$refs.tableEl.clearFilter();
-      this.getData();
+        this.resName = "";
+        this.assetTag = "";
+        this.mTitle = "";
+        this.selectedOptions = [];
+        this.tradingArea = "";
+        this.buildingName = "";
+        this.unitName = "";
+        this.pageData.pageNum = 1;
+        this.pageData.pageSize = 10;
+        this.cityArea = { cName: "", rName: "" };
+        this.filterMediaType = "";
+        this.asSaleState = "";
+        this.asState = "";
+        this.rtNameList = [];
+        this.$refs.tableEl.clearFilter();
+        this.getData();
     },
 
     // 导入媒体

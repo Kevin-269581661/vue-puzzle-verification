@@ -26,7 +26,7 @@
                             :key="item.id"
                         >
                             <i class="el-icon-menu"></i>
-                            <el-checkbox v-model="item.isChecked">{{ item.label }}</el-checkbox>
+                            <el-checkbox v-model="item.isChecked" @change="toInit">{{ item.label }}</el-checkbox>
                             <span class="fix-icon" @click="notToFix(item)">
                                 <i class="el-icon-minus" style="font-size: 14px;"></i>
                             </span>
@@ -49,7 +49,7 @@
                             :key="item.id"
                         >
                             <i class="el-icon-menu"></i>
-                            <el-checkbox v-model="item.isChecked">{{ item.label }}</el-checkbox>
+                            <el-checkbox v-model="item.isChecked" @change="toInit">{{ item.label }}</el-checkbox>
                             <span class="fix-icon" @click="toFixLeft(item)">
                                 <i class="el-icon-upload2" style="font-size: 16px;"></i>
                             </span>
@@ -98,6 +98,10 @@ export default {
             // 默认设置
             defaultLeftList: [],
             defaultList: [],
+            // 重置设置
+            initList: [],
+            initLeftList: [],
+            initRightList: [],
 
             // 拖拽
             currList: [], // 目标数组
@@ -107,16 +111,36 @@ export default {
         }
     },
     mounted() {
-        this.initList()
-        // 默认配置备份
-        this.defaultLeftList = JSON.parse(JSON.stringify(this.fixLeftList))
-        this.defaultList = JSON.parse(JSON.stringify(this.notFixList))
-        // const notFilter = getLocalCache("notFilter")
-        // if(notFilter) {
-        //     this.notFixList = notFilter
-        // }
-        // addLocalCache("leftFilter", this.defaultLeftList)
-        // addLocalCache("notFilter", this.defaultList)
+        const initList = this.columns.filter(v => v.fix === 'not')
+        const initLeftList = this.columns.filter(v => v.fix === 'left')
+        const initRightList = this.columns.filter( v => v.fix === 'right')
+        // 重置数据备份
+        this.initList = JSON.parse(JSON.stringify(initList))
+        this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
+        this.initRightList = JSON.parse(JSON.stringify(initRightList))
+
+        // 本地是否存在默认配置，有直接拿，没有则保存
+        const notFixList = getLocalCache("notFixList")
+        if(notFixList) {
+            this.notFixList = notFixList
+        } else {
+            this.notFixList = JSON.parse(JSON.stringify(initList))
+            addLocalCache("notFixList", this.notFixList)
+        }
+        const fixLeftList = getLocalCache("fixLeftList")
+        if(fixLeftList) {
+            this.fixLeftList = fixLeftList
+        } else {
+            this.fixLeftList = JSON.parse(JSON.stringify(initLeftList))
+            addLocalCache("fixLeftList", this.fixLeftList)
+        }
+        const fixRightList = getLocalCache("fixRightList")
+        if(fixRightList) {
+            this.fixRightList = fixRightList
+        } else {
+            this.fixRightList = JSON.parse(JSON.stringify(initRightList))
+            addLocalCache("fixRightList", this.fixRightList)
+        }
     },
     computed: {
         // 选中数组
@@ -131,19 +155,22 @@ export default {
         }
     },
     methods: {
-        // 初始化
-        initList() {
-            this.notFixList = this.columns.filter(v => v.fix === 'not')
-            this.fixLeftList = this.columns.filter(v => v.fix === 'left')
-            this.fixRightList = this.columns.filter(v => v.fix === 'right')
+        // 刷新列表
+        toInit() {
+            addLocalCache("notFixList", this.notFixList)
+            addLocalCache("fixLeftList", this.fixLeftList)
+            this.$emit('filterColumn', [...this.fixLeftList, ...this.notFixList, ...this.fixRightList])
             this.isCheckAll()
         },
         // 重置
         toReset() {
             this.allChecked = false
-            this.$emit('filterColumn', [...this.defaultLeftList, ...this.defaultList, ...this.fixRightList])
+            this.$emit('filterColumn', [...this.initLeftList, ...this.initList, ...this.initRightList])
             this.$nextTick(() => {
-                this.initList()
+                // 初始化列展示弹窗
+                this.notFixList = JSON.parse(JSON.stringify(this.initList))
+                this.fixLeftList = JSON.parse(JSON.stringify(this.initLeftList))
+                this.fixRightList = JSON.parse(JSON.stringify(this.initRightList))
                 this.isCheckAll()
             })
         },
@@ -170,7 +197,7 @@ export default {
             this.notFixList.splice(index, 0, this.fixLeftList[index])
             // 左侧固定数组中删除该项
             this.fixLeftList.splice(index, 1)
-            this.initList()
+            this.toInit()
         },
         // 固定左侧
         toFixLeft(item) {
@@ -178,7 +205,7 @@ export default {
             this.notFixList[index].fix = 'left'
             this.fixLeftList.splice(index, 0, this.notFixList[index])
             this.notFixList.splice(index, 1)
-            this.initList()
+            this.toInit()
             // console.log('fixLeftList', this.fixLeftList);
         },
         //开始拖拽事件
@@ -187,7 +214,7 @@ export default {
             // console.log(e);
         },
         //拖拽结束事件
-            onEnd(e) {
+        onEnd(e) {
             this.drag = false;
             this.currList.splice(this.oldIndex, 1)
             this.currList.splice(this.newIndex, 0, this.currObj)

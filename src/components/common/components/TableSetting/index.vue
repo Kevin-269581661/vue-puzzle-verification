@@ -4,7 +4,7 @@
         <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
         <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
         <!-- <filterComp v-if="filter"></filterComp> -->
-        <dragComp :columns="columns" v-if="filter"></dragComp>
+        <dragComp :columns="columns" @filterColumn="filterColumn" v-if="filter"></dragComp>
     </div>
   </div>
 </template>
@@ -45,11 +45,14 @@ export default {
     },
     methods: {
         refreshTable() {
-        this.$emit("refreshTable");
+            this.$emit("refreshTable");
         },
         spaceSetting(size) {
-        this.$emit("spaceSetting", size);
+            this.$emit("spaceSetting", size);
         },
+        filterColumn(columns) {
+            this.$emit("filterColumn", columns)
+        }
     },
 };
 </script>

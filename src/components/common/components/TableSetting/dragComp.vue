@@ -106,11 +106,7 @@ export default {
         }
     },
     mounted() {
-        // 初始化
-        this.notFixList = this.columns.filter(v => v.fix === 'not')
-        this.fixLeftList = this.columns.filter(v => v.fix === 'left')
-        this.fixRightList = this.columns.filter(v => v.fix === 'right')
-        this.isCheckAll()
+        this.initList()
         // 默认配置备份
         this.defaultLeftList = this.columns.filter(v => v.fix === 'left')
         this.defaultList = this.columns.filter(v => v.fix === 'not')
@@ -128,12 +124,21 @@ export default {
         }
     },
     methods: {
+        // 初始化
+        initList() {
+            this.notFixList = this.columns.filter(v => v.fix === 'not')
+            this.fixLeftList = this.columns.filter(v => v.fix === 'left')
+            this.fixRightList = this.columns.filter(v => v.fix === 'right')
+            this.isCheckAll()
+        },
         // 重置
         toReset() {
             this.allChecked = false
-            this.fixLeftList = JSON.parse(JSON.stringify(this.defaultLeftList))
-            this.notFixList = JSON.parse(JSON.stringify(this.defaultList))
-            this.isCheckAll()
+            this.$emit('filterColumn', [...this.defaultLeftList, ...this.defaultList, ...this.fixRightList])
+            this.$nextTick(() => {
+                this.initList()
+                this.isCheckAll()
+            })
         },
         // 全选
         checkAll() {
@@ -158,6 +163,7 @@ export default {
             this.notFixList.splice(index, 0, this.fixLeftList[index])
             // 左侧固定数组中删除该项
             this.fixLeftList.splice(index, 1)
+            this.initList()
         },
         // 固定左侧
         toFixLeft(item) {
@@ -165,20 +171,20 @@ export default {
             this.notFixList[index].fix = 'left'
             this.fixLeftList.splice(index, 0, this.notFixList[index])
             this.notFixList.splice(index, 1)
-            console.log('fixLeftList', this.fixLeftList);
+            this.initList()
+            // console.log('fixLeftList', this.fixLeftList);
         },
         //开始拖拽事件
         onStart(e){
             this.drag = true;
-            console.log(e);
+            // console.log(e);
         },
         //拖拽结束事件
             onEnd(e) {
             this.drag = false;
-            console.log(this.currList);
-            console.log(this.currObj);
-            console.log(this.oldIndex);
-            console.log(this.newIndex);
+            this.currList.splice(this.oldIndex, 1)
+            this.currList.splice(this.newIndex, 0, this.currObj)
+            this.$emit('filterColumn', [...this.fixLeftList, ...this.notFixList, ...this.fixRightList])
         },
         onMove(e){
             this.currList = e.relatedContext.list // 当前数组

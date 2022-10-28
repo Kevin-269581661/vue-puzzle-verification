@@ -65,11 +65,35 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">经纬度：</span
-                  ><span>{{ resData.latLng }}</span>
+                  ><span>{{ resData.latLng || "--" }}</span>
                 </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">楼盘介绍：</span
-                  ><span>{{ resData.description || "--" }}</span>
+                <el-col :span="6" style="position: relative">
+                    <div
+                    class="ad_mediaInfoPanel_row_box"
+                    style="cursor: pointer"
+                    :class="showAllDetail.des ? 'show_all_aetail' : ''"
+                    @click="showDetailFun('des')"
+                    >
+                    <div class="ad_mediaInfoPanel_row_title">
+                        楼盘介绍：
+                        <div
+                        class="showAllText showAllTextDes"
+                        v-show="judgeShowBtn.des"
+                        >
+                        <span style="color: #1890ff"
+                            >{{ showAllDetail.des ? "收起" : "... 展开" }}
+                        </span>
+                        </div>
+                    </div>
+                    <div
+                        class="
+                        ad_mediaInfoPanel_row_content
+                        ad_mediaInfoPanel_row_content_des
+                        "
+                    >
+                        {{ resData.description || "--" }}
+                    </div>
+                    </div>
                 </el-col>
               </el-row>
               <el-row  class="row-bg row_box" style="margin-bottom: 0">

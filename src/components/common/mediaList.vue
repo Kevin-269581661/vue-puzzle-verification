@@ -128,6 +128,7 @@
                 space
                 filter
                 :columns="currentPlanColumn"
+                @filterColumn="filterColumn"
                 @refreshTable="refreshTable"
                 @spaceSetting="spaceSetting">
             </TableSetting>
@@ -751,6 +752,11 @@ export default {
   },
 
   methods: {
+    // 列展示
+    filterColumn(columns) {
+        this.currentPlanColumn = columns
+        console.log(this.currentPlanColumn);
+    },
     // 刷新列表
     refreshTable() {
       this.getData();

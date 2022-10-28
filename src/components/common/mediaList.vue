@@ -147,171 +147,174 @@
             :default-sort="{ prop: 'resName', order: 'descending' }"
             ref="tableEl"
           >
-            <template v-for="item in currentPlanColumn">
-                <template v-if="item.label === '资源名称'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        :label="item.label"
-                        :min-width="item.width"
-                        :show-overflow-tooltip="true"
-                        :fixed="item.fix === 'left' ? true : false"
-                    >
-                    <template slot-scope="scope">
-                        <span
-                        @click="mediaDetail(scope.row)"
-                        style="color: #108ee9; cursor: pointer"
+            <template v-if="isShowColumn">
+                <template v-for="item in currentPlanColumn">
+                    <template v-if="item.label === '资源名称'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :show-overflow-tooltip="true"
+                            :fixed="item.fix === 'left' ? true : false"
                         >
-                        {{ scope.row.resName }}
-                        </span>
-                    </template>
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '媒体类型'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        column-key="mVehicle"
-                        prop="mVehicle"
-                        :label="item.label"
-                        :width="item.width"
-                        :show-overflow-tooltip="true"
-                        :filters="mediaTypes"
-                        :filter-multiple="false"
-                        :fixed="item.fix === 'left' ? true : false"
-                    >
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '资源类型'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        column-key="rtName"
-                        :prop="item.prop"
-                        :label="item.label"
-                        :min-width="item.width"
-                        :show-overflow-tooltip="true"
-                        :filters="[
-                            { text: '社区', value: '社区' },
-                            { text: '写字楼', value: '写字楼' },
-                            { text: '别墅', value: '别墅' },
-                        ]"
-                        filter-placement="bottom"
-                        :fixed="item.fix === 'left' ? true : false"
-                    >
                         <template slot-scope="scope">
-                            {{ scope.row.rtName || "--" }}
+                            <span
+                            @click="mediaDetail(scope.row)"
+                            style="color: #108ee9; cursor: pointer"
+                            >
+                            {{ scope.row.resName }}
+                            </span>
                         </template>
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '媒体状态'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        column-key="asState"
-                        :prop="item.prop"
-                        :label="item.label"
-                        :width="item.width"
-                        :filters="[
-                            { text: '正常', value: 1 },
-                            { text: '待安装', value: 2 },
-                            { text: '已拆除', value: 4 },
-                        ]"
-                        :filter-multiple="false"
-                        fixed="right"
-                    >
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '媒体类型'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            column-key="mVehicle"
+                            prop="mVehicle"
+                            :label="item.label"
+                            :width="item.width"
+                            :show-overflow-tooltip="true"
+                            :filters="mediaTypes"
+                            :filter-multiple="false"
+                            :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '资源类型'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            column-key="rtName"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :show-overflow-tooltip="true"
+                            :filters="[
+                                { text: '社区', value: '社区' },
+                                { text: '写字楼', value: '写字楼' },
+                                { text: '别墅', value: '别墅' },
+                            ]"
+                            filter-placement="bottom"
+                            :fixed="item.fix === 'left' ? true : false"
+                        >
+                            <template slot-scope="scope">
+                                {{ scope.row.rtName || "--" }}
+                            </template>
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '媒体状态'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            column-key="asState"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :width="item.width"
+                            :filters="[
+                                { text: '正常', value: 1 },
+                                { text: '待安装', value: 2 },
+                                { text: '已拆除', value: 4 },
+                            ]"
+                            :filter-multiple="false"
+                            fixed="right"
+                        >
+                            <template slot-scope="scope">
+                                <point-state
+                                :state-text="stateToText(scope.row.asState).text"
+                                :color="stateToText(scope.row.asState).color"
+                                ></point-state>
+                            </template>
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '售卖状态'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            column-key="asSaleState"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :width="item.width"
+                            :filters="[
+                                { text: '可售卖', value: 1 },
+                                { text: '不可售卖', value: 2 },
+                            ]"
+                            :filter-multiple="false"
+                            fixed="right"
+                        >
                         <template slot-scope="scope">
                             <point-state
-                            :state-text="stateToText(scope.row.asState).text"
-                            :color="stateToText(scope.row.asState).color"
+                            :state-text="stateToSellText(scope.row.asSaleState).text"
+                            :color="stateToSellText(scope.row.asSaleState).color"
                             ></point-state>
                         </template>
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '售卖状态'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        column-key="asSaleState"
-                        :prop="item.prop"
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '操作'">
+                        <el-table-column
+                        v-if="showNewBtn"
                         :label="item.label"
                         :width="item.width"
-                        :filters="[
-                            { text: '可售卖', value: 1 },
-                            { text: '不可售卖', value: 2 },
-                        ]"
-                        :filter-multiple="false"
-                        fixed="right"
-                    >
-                    <template slot-scope="scope">
-                        <point-state
-                        :state-text="stateToSellText(scope.row.asSaleState).text"
-                        :color="stateToSellText(scope.row.asSaleState).color"
-                        ></point-state>
-                    </template>
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '操作'">
-                    <el-table-column
-                    v-if="showNewBtn"
-                    :label="item.label"
-                    :width="item.width"
-                    :fixed="item.fix"
-                    >
-                    <template slot-scope="scope">
-                        <el-dropdown
-                        size="small"
-                        trigger="click"
-                        placement="bottom-start"
-                        :hide-on-click="true"
+                        :fixed="item.fix"
                         >
-                        <span class="el-dropdown-link">
-                            操作<i class="el-icon-arrow-down el-icon--right"></i>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item
-                            @click.native.prevent="
-                                changeState('6', scope.$index, scope.row)
-                            "
-                            :disabled="
-                                scope.row.asSaleState === 1 || scope.row.asState == 4
-                            "
-                            >可售卖</el-dropdown-item
+                        <template slot-scope="scope">
+                            <el-dropdown
+                            size="small"
+                            trigger="click"
+                            placement="bottom-start"
+                            :hide-on-click="true"
                             >
-                            <el-dropdown-item
-                            @click.native.prevent="
-                                changeState('7', scope.$index, scope.row)
-                            "
-                            :disabled="scope.row.asSaleState === 2"
-                            >不可售卖</el-dropdown-item
-                            >
+                            <span class="el-dropdown-link">
+                                操作<i class="el-icon-arrow-down el-icon--right"></i>
+                            </span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item
+                                @click.native.prevent="
+                                    changeState('6', scope.$index, scope.row)
+                                "
+                                :disabled="
+                                    scope.row.asSaleState === 1 || scope.row.asState == 4
+                                "
+                                >可售卖</el-dropdown-item
+                                >
+                                <el-dropdown-item
+                                @click.native.prevent="
+                                    changeState('7', scope.$index, scope.row)
+                                "
+                                :disabled="scope.row.asSaleState === 2"
+                                >不可售卖</el-dropdown-item
+                                >
 
-                            <el-dropdown-item
-                            @click.native.prevent="
-                                changeState('5', scope.$index, scope.row)
-                            "
-                            :disabled="scope.row.asState == 5"
-                            >删除</el-dropdown-item
-                            >
-                            <el-dropdown-item
-                            @click.native.prevent="
-                                changeState('4', scope.$index, scope.row)
-                            "
-                            :disabled="scope.row.asState == 4"
-                            >拆除</el-dropdown-item
-                            >
-                        </el-dropdown-menu>
-                        </el-dropdown>
+                                <el-dropdown-item
+                                @click.native.prevent="
+                                    changeState('5', scope.$index, scope.row)
+                                "
+                                :disabled="scope.row.asState == 5"
+                                >删除</el-dropdown-item
+                                >
+                                <el-dropdown-item
+                                @click.native.prevent="
+                                    changeState('4', scope.$index, scope.row)
+                                "
+                                :disabled="scope.row.asState == 4"
+                                >拆除</el-dropdown-item
+                                >
+                            </el-dropdown-menu>
+                            </el-dropdown>
+                        </template>
+                        </el-table-column>
                     </template>
-                    </el-table-column>
-                </template>
-                <template v-else>
-                    <el-table-column
-                        v-if="item.isChecked"
-                        :prop="item.prop"
-                        :label="item.label"
-                        :width="item.width"
-                        :show-overflow-tooltip="true"
-                        :fixed="item.fix === 'left' ? true : false"
-                    >
-                    </el-table-column>
+                    <template v-else>
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :width="item.width"
+                            :show-overflow-tooltip="true"
+                            :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
+                    </template>
                 </template>
             </template>
+
 
 
             <div slot="empty">
@@ -728,6 +731,7 @@ export default {
         // 是否开通数字化权限
         isPay: 1,
         mediaTypes: [],
+        isShowColumn: true,
     };
   },
   created() {
@@ -756,8 +760,11 @@ export default {
   methods: {
     // 列展示
     filterColumn(columns) {
+        this.isShowColumn = false
         this.currentPlanColumn = columns
-        console.log(this.currentPlanColumn);
+        setTimeout(() => {
+            this.isShowColumn = true
+        }, 0);
     },
     // 刷新列表
     refreshTable() {

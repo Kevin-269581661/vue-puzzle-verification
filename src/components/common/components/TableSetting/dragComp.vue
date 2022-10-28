@@ -70,6 +70,7 @@
     </div>
 </template>
 <script>
+import { addLocalCache, getLocalCache } from "@/utils/user.js";
 //导入draggable组件
 import draggable from 'vuedraggable'
 export default {
@@ -108,8 +109,14 @@ export default {
     mounted() {
         this.initList()
         // 默认配置备份
-        this.defaultLeftList = this.columns.filter(v => v.fix === 'left')
-        this.defaultList = this.columns.filter(v => v.fix === 'not')
+        this.defaultLeftList = JSON.parse(JSON.stringify(this.fixLeftList))
+        this.defaultList = JSON.parse(JSON.stringify(this.notFixList))
+        // const notFilter = getLocalCache("notFilter")
+        // if(notFilter) {
+        //     this.notFixList = notFilter
+        // }
+        // addLocalCache("leftFilter", this.defaultLeftList)
+        // addLocalCache("notFilter", this.defaultList)
     },
     computed: {
         // 选中数组

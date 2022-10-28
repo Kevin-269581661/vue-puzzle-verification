@@ -246,6 +246,60 @@
                     </template>
                     </el-table-column>
                 </template>
+                <template v-else-if="item.label === '操作'">
+                    <el-table-column
+                    v-if="showNewBtn"
+                    :label="item.label"
+                    :width="item.width"
+                    :fixed="item.fix"
+                    >
+                    <template slot-scope="scope">
+                        <el-dropdown
+                        size="small"
+                        trigger="click"
+                        placement="bottom-start"
+                        :hide-on-click="true"
+                        >
+                        <span class="el-dropdown-link">
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('6', scope.$index, scope.row)
+                            "
+                            :disabled="
+                                scope.row.asSaleState === 1 || scope.row.asState == 4
+                            "
+                            >可售卖</el-dropdown-item
+                            >
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('7', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asSaleState === 2"
+                            >不可售卖</el-dropdown-item
+                            >
+
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('5', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asState == 5"
+                            >删除</el-dropdown-item
+                            >
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('4', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asState == 4"
+                            >拆除</el-dropdown-item
+                            >
+                        </el-dropdown-menu>
+                        </el-dropdown>
+                    </template>
+                    </el-table-column>
+                </template>
                 <template v-else>
                     <el-table-column
                         v-if="item.isChecked"
@@ -258,59 +312,7 @@
                     </el-table-column>
                 </template>
             </template>
-            <!-- 操作列 -->
-            <el-table-column
-              v-if="showNewBtn"
-              label="操作"
-              width="80"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <el-dropdown
-                  size="small"
-                  trigger="click"
-                  placement="bottom-start"
-                  :hide-on-click="true"
-                >
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('6', scope.$index, scope.row)
-                      "
-                      :disabled="
-                        scope.row.asSaleState === 1 || scope.row.asState == 4
-                      "
-                      >可售卖</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('7', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asSaleState === 2"
-                      >不可售卖</el-dropdown-item
-                    >
 
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('5', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asState == 5"
-                      >删除</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('4', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asState == 4"
-                      >拆除</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
 
             <div slot="empty">
               <no-search-result></no-search-result>
@@ -961,6 +963,7 @@ export default {
                 resName: this.resName, // 资源名称
                 assetTag: this.assetTag, // 资产编号（媒体ID）
                 mTitle: this.mTitle, // 媒体名称
+                rtName: ['社区', '写字楼'],
                 tradeArea: this.tradeArea, // 商圈
                 cityName: this.cityArea.cName,
                 regionName: this.cityArea.rName,
@@ -1234,20 +1237,20 @@ export default {
     // 搜索按钮
     searchFun() {
       this.searchBtnAbled = true;
-      //   if (
-      //     (this.keyword === "" || this.keyword === null) &&
-      //     this.cityArea.cName === ""
-      //   ) {
-      //   if (this.keyword === "" || this.keyword === null) {
-      //     Message.warning({
-      //       message: "请先输入搜索条件",
-      //       duration: 1000,
-      //     });
-      //     this.searchBtnAbled = false;
-      //   } else {
-      //     this.pageData.pageNum = 1;
-      //     this.getData();
-      //   }
+        // if (
+        //   (this.keyword === "" || this.keyword === null) &&
+        //   this.cityArea.cName === ""
+        // ) {
+        // if (this.keyword === "" || this.keyword === null) {
+        //   Message.warning({
+        //     message: "请先输入搜索条件",
+        //     duration: 1000,
+        //   });
+        //   this.searchBtnAbled = false;
+        // } else {
+        //   this.pageData.pageNum = 1;
+        //   this.getData();
+        // }
       this.pageData.pageNum = 1;
       this.getData();
     },

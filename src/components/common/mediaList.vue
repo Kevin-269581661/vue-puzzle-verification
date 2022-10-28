@@ -127,6 +127,7 @@
                 refresh
                 space
                 filter
+                :columns="currentPlanColumn"
                 @refreshTable="refreshTable"
                 @spaceSetting="spaceSetting">
             </TableSetting>
@@ -145,235 +146,118 @@
             :default-sort="{ prop: 'resName', order: 'descending' }"
             ref="tableEl"
           >
-            <el-table-column
-              label="资源名称"
-              min-width="210"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span
-                  @click="mediaDetail(scope.row)"
-                  style="color: #108ee9; cursor: pointer"
-                >
-                  {{ scope.row.resName }}
-                </span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="mVehicle"
-              prop="mVehicle"
-              label="媒体类型"
-              width="127"
-              :show-overflow-tooltip="true"
-              :filters="mediaTypes"
-              :filter-multiple="false"
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="mTitle"
-              label="媒体名称"
-              width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mTitle || "--" }}</span>
-              </template>
-            </el-table-column>
-<!--  -->
-            <el-table-column
-              prop="buildingName"
-              label="楼栋"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.buildingName || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="unitName"
-              label="单元"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.unitName || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="street"
-              label="街道"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.street || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="mediaModel"
-              label="设备类型"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mediaModel || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="siteType"
-              label="位置类型"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.siteType || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="siteOrientation"
-              label="位置朝向"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.siteOrientation || "--" }}</span>
-              </template>
-            </el-table-column>
-<!--  -->
-            <el-table-column
-              label="投放面"
-              width="130"
-              prop="asLab"
-              :show-overflow-tooltip="true"
-            >
-                <template slot-scope="scope">
-                    <span>{{ scope.row.asLab || "--" }}</span>
+            <template v-for="item in currentPlanColumn">
+                <template v-if="item.label === '资源名称'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        :label="item.label"
+                        :min-width="item.width"
+                        :show-overflow-tooltip="true"
+                        :fixed="item.fix === 'left' ? true : false"
+                    >
+                    <template slot-scope="scope">
+                        <span
+                        @click="mediaDetail(scope.row)"
+                        style="color: #108ee9; cursor: pointer"
+                        >
+                        {{ scope.row.resName }}
+                        </span>
+                    </template>
+                    </el-table-column>
                 </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="assetTag"
-              label="资产编号"
-              min-width="215"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.assetTag || "--" }}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="rtName"
-              prop="rtName"
-              label="资源类型"
-              min-width="120"
-              :show-overflow-tooltip="true"
-              :filters="[
-                { text: '社区', value: '社区' },
-                { text: '写字楼', value: '写字楼' },
-                { text: '别墅', value: '别墅' },
-              ]"
-              filter-placement="bottom"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.rtName || "--" }}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="city"
-              label="城市"
-              width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.city || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="rName"
-              label="区域"
-              width="113"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.rName || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="tradingArea"
-              label="商圈"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.tradingArea || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createTime"
-              label="创建日期"
-              width="130"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createTime || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <!-- 右侧固定三列 -->
-            <el-table-column
-              column-key="asState"
-              prop="asState"
-              label="媒体状态"
-              width="112"
-              :filters="[
-                { text: '正常', value: 1 },
-                { text: '待安装', value: '2' },
-                { text: '已拆除', value: 4 },
-              ]"
-              :filter-multiple="false"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="stateToText(scope.row.asState).text"
-                  :color="stateToText(scope.row.asState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="asSaleState"
-              prop="asSaleState"
-              label="售卖状态"
-              width="112"
-              :filters="[
-                { text: '可售卖', value: 1 },
-                { text: '不可售卖', value: 2 },
-              ]"
-              :filter-multiple="false"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="stateToSellText(scope.row.asSaleState).text"
-                  :color="stateToSellText(scope.row.asSaleState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-
+                <template v-else-if="item.label === '媒体类型'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="mVehicle"
+                        prop="mVehicle"
+                        :label="item.label"
+                        :width="item.width"
+                        :show-overflow-tooltip="true"
+                        :filters="mediaTypes"
+                        :filter-multiple="false"
+                        :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '资源类型'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="rtName"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :min-width="item.width"
+                        :show-overflow-tooltip="true"
+                        :filters="[
+                            { text: '社区', value: '社区' },
+                            { text: '写字楼', value: '写字楼' },
+                            { text: '别墅', value: '别墅' },
+                        ]"
+                        filter-placement="bottom"
+                        :fixed="item.fix === 'left' ? true : false"
+                    >
+                        <template slot-scope="scope">
+                            {{ scope.row.rtName || "--" }}
+                        </template>
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '媒体状态'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="asState"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :filters="[
+                            { text: '正常', value: 1 },
+                            { text: '待安装', value: 2 },
+                            { text: '已拆除', value: 4 },
+                        ]"
+                        :filter-multiple="false"
+                        fixed="right"
+                    >
+                        <template slot-scope="scope">
+                            <point-state
+                            :state-text="stateToText(scope.row.asState).text"
+                            :color="stateToText(scope.row.asState).color"
+                            ></point-state>
+                        </template>
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '售卖状态'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="asSaleState"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :filters="[
+                            { text: '可售卖', value: 1 },
+                            { text: '不可售卖', value: 2 },
+                        ]"
+                        :filter-multiple="false"
+                        fixed="right"
+                    >
+                    <template slot-scope="scope">
+                        <point-state
+                        :state-text="stateToSellText(scope.row.asSaleState).text"
+                        :color="stateToSellText(scope.row.asSaleState).color"
+                        ></point-state>
+                    </template>
+                    </el-table-column>
+                </template>
+                <template v-else>
+                    <el-table-column
+                        v-if="item.isChecked"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :show-overflow-tooltip="true"
+                        :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                </template>
+            </template>
+            <!-- 操作列 -->
             <el-table-column
               v-if="showNewBtn"
               label="操作"
@@ -708,116 +592,139 @@ export default {
   },
   data() {
     return {
+        // 表头数据
+        currentPlanColumn: [
+            { id: 0, label: "资源名称", prop: "resName", width: "210", isChecked: true, fix:"not" },
+            { id: 1,label: "媒体类型", prop: "mVehicle", width: "180", isChecked: true, fix:"not" },
+            { id: 2,label: "媒体名称", prop: "mTitle", width: "180", isChecked: true, fix:"not" },
+            { id: 3,label: "投放面", prop: "asLab", width: "120", isChecked: true, fix:"not" },
+            { id: 4,label: "资产编号", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
+            { id: 5,label: "资源类型", prop: "rtName", width: "120", isChecked: true, fix:"not" },
+            { id: 6,label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
+            { id: 7,label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
+            { id: 8,label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
+            { id: 9,label: "创建日期", prop: "createTime", width: "140", isChecked: true, fix:"not" },
+            { id: 10,label: "楼栋", prop: "buildingName", width: "120", isChecked: false, fix:"not" },
+            { id: 11,label: "单元", prop: "unitName", width: "120", isChecked: false, fix:"not" },
+            { id: 12,label: "街道", prop: "street", width: "180", isChecked: false, fix:"not" },
+            { id: 13,label: "设备类型", prop: "mediaModel", width: "120", isChecked: false, fix:"not" },
+            { id: 14,label: "位置类型", prop: "siteType", width: "120", isChecked: false, fix:"not" },
+            { id: 15,label: "位置朝向", prop: "siteOrientation", width: "120", isChecked: false, fix:"not" },
+            { id: 16,label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },
+            { id: 17,label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
+            { id: 18,label: "操作", width: "80", isChecked: true, fix:"right" },
+        ],
+        // 表体数据
+        currentPlan: [],
         // 是否展开
         isCollapse: false,
-      // 行距
-      rowSpace: "",
-      //加载中
-      loading: true,
-      loadSign: true,
-      // 页码及条数
-      pageData: {
-        pageNum: 1,
-        pageSize: 10,
-        totalSize: 0,
-      },
-      showNewBtn: false, // 新建按钮
-      haveDetail: true,
-      resName: "", // 搜索的资源名称
-      assetTag: "", // 资产编号（媒体ID）
-      mTitle: "", // 搜索的媒体名称
-      selectedOptions: [], // 搜索的城市区域
-      tradingArea: "", // 搜索的商圈
-      buildingName: "", // 楼栋
-      unitName: "", // 单元
-      filterMediaType: "", // 表头媒体类型搜索状态
-      asState: "", // 搜索的媒体状态
-      asSaleState: "", //  搜索的售卖状态
-      rtNameList: [], // 搜索的资源类型
-      planList: [], //  table的所有数据
-      currentPlan: [], // 显示在table中的数据
-      cityOptions: [], //城市数组
-      cityProps: { multiple: false }, // 城市设置
+        // 行距
+        rowSpace: "",
+        //加载中
+        loading: true,
+        loadSign: true,
+        // 页码及条数
+        pageData: {
+            pageNum: 1,
+            pageSize: 10,
+            totalSize: 0,
+        },
+        showNewBtn: false, // 新建按钮
+        haveDetail: true,
+        resName: "", // 搜索的资源名称
+        assetTag: "", // 资产编号（媒体ID）
+        mTitle: "", // 搜索的媒体名称
+        selectedOptions: [], // 搜索的城市区域
+        tradingArea: "", // 搜索的商圈
+        buildingName: "", // 楼栋
+        unitName: "", // 单元
+        filterMediaType: "", // 表头媒体类型搜索状态
+        asState: "", // 搜索的媒体状态
+        asSaleState: "", //  搜索的售卖状态
+        rtNameList: [], // 搜索的资源类型
+        planList: [], //  table的所有数据
+        cityOptions: [], //城市数组
+        cityProps: { multiple: false }, // 城市设置
         cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
-      loadScroll: true,
-      provinceCity: [], //省份及其地级市
-      timeID: "", // 计时器
-      cityRid: "", // 搜索前置条件为城市时,转换成rid
-      sessionData: "",
-      pageNo: 1, // 页数
-      totalPage: 1, // 总页数
-      searchBtnAbled: false, // 搜索按钮禁止
-      mStatusDialogVisible: false, // 媒体状态修改模态框
-      normalToDisabled: true, //  是否为正常转禁用
-      doorState: { asState: false, adState: "" }, // 广告门单面禁用：媒体状态、点位状态
-      // 修改媒体状态时的行数据
-      rowData: {
-        asState: {
-          A: false,
-          B: false,
+        loadScroll: true,
+        provinceCity: [], //省份及其地级市
+        timeID: "", // 计时器
+        cityRid: "", // 搜索前置条件为城市时,转换成rid
+        sessionData: "",
+        pageNo: 1, // 页数
+        totalPage: 1, // 总页数
+        searchBtnAbled: false, // 搜索按钮禁止
+        mStatusDialogVisible: false, // 媒体状态修改模态框
+        normalToDisabled: true, //  是否为正常转禁用
+        doorState: { asState: false, adState: "" }, // 广告门单面禁用：媒体状态、点位状态
+        // 修改媒体状态时的行数据
+        rowData: {
+            asState: {
+            A: false,
+            B: false,
+            },
         },
-      },
-      rowIndex: "", // 修改媒体状态时的行下标
-      selectState: "", // 修改到媒体状态
-      ImportDialogVisible: false, // 媒体导入弹出框
-      importAsrID: "", // 导入媒体时所选择的公司id
-      importSelectLoading: true, // 公司下拉选项
-      companyList: [], // SA媒体导入时获取的公司列表
-      doUpload: this.apiVar.qadnUrl + "/addsp/api/v1/media/batchImport",
-      fileData: [], // 当前上传文件的数据- 表格
-      excelDataUpload: [], // 导入excel之后返回的数组
-      showUploadFail: false, // 导入失败的媒体弹出框
-      excelObj: { successNum: 0, failNum: 0 }, // 导入excel之后返回的失败成功点数
-      ImportLoading: "", // 导入excel提交loading
-      showImportBtn: false, // SA才显示导入媒体按钮
-      pushMapDialogVisible: false, // 推送地图弹出框
-      isShowTag: true,
-      selectDay: [], // 选择的时间
-      canSelectDayTime: [], // 限制选择区间
-      dayOptionsSelect: {
-        disabledDate: (time) => {
-          return (
-            time.getTime() < Date.parse(this.canSelectDayTime[0]) ||
-            time.getTime() > Date.parse(this.canSelectDayTime[1])
-          );
+        rowIndex: "", // 修改媒体状态时的行下标
+        selectState: "", // 修改到媒体状态
+        ImportDialogVisible: false, // 媒体导入弹出框
+        importAsrID: "", // 导入媒体时所选择的公司id
+        importSelectLoading: true, // 公司下拉选项
+        companyList: [], // SA媒体导入时获取的公司列表
+        doUpload: this.apiVar.qadnUrl + "/addsp/api/v1/media/batchImport",
+        fileData: [], // 当前上传文件的数据- 表格
+        excelDataUpload: [], // 导入excel之后返回的数组
+        showUploadFail: false, // 导入失败的媒体弹出框
+        excelObj: { successNum: 0, failNum: 0 }, // 导入excel之后返回的失败成功点数
+        ImportLoading: "", // 导入excel提交loading
+        showImportBtn: false, // SA才显示导入媒体按钮
+        pushMapDialogVisible: false, // 推送地图弹出框
+        isShowTag: true,
+        selectDay: [], // 选择的时间
+        canSelectDayTime: [], // 限制选择区间
+        dayOptionsSelect: {
+            disabledDate: (time) => {
+            return (
+                time.getTime() < Date.parse(this.canSelectDayTime[0]) ||
+                time.getTime() > Date.parse(this.canSelectDayTime[1])
+            );
+            },
         },
-      },
-      // 媒体状态禁用、启用弹出框
-      mStateDialogVisible: false,
-      // 媒体状态
-      mediaState: {
-        allState: false,
-        AState: false,
-        BState: false,
-        ADisable: false,
-        BDisable: false,
-      },
-      // 标识启用（true）还是禁用(false)
-      isDisabled: false,
-      // 拆除
-      dismantleVisible: false,
-      // 拆除信息
-      dismantleInfo: "",
+        // 媒体状态禁用、启用弹出框
+        mStateDialogVisible: false,
+        // 媒体状态
+        mediaState: {
+            allState: false,
+            AState: false,
+            BState: false,
+            ADisable: false,
+            BDisable: false,
+        },
+        // 标识启用（true）还是禁用(false)
+        isDisabled: false,
+        // 拆除
+        dismantleVisible: false,
+        // 拆除信息
+        dismantleInfo: "",
 
-      // 不可售卖弹窗
-      isUnvailableSell: false,
-      // 可售卖弹窗
-      isVailableSell: false,
-      // 更改售卖状态时 媒体的所有广告位的状态
-      mediaAdsStateAction: [],
-      // 更改售卖状态时 资源名称
-      resourceName: "",
-      // 更改售卖状态时 选择的投放面
-      activeAsLab: "",
-      // 投放门id
-      mID: "",
-      // 不可售卖原因
-      unSaleableReason: [],
-      // 媒体名称
-      mTitle: "",
-      // 是否开通数字化权限
-      isPay: 1,
-      mediaTypes: [],
+        // 不可售卖弹窗
+        isUnvailableSell: false,
+        // 可售卖弹窗
+        isVailableSell: false,
+        // 更改售卖状态时 媒体的所有广告位的状态
+        mediaAdsStateAction: [],
+        // 更改售卖状态时 资源名称
+        resourceName: "",
+        // 更改售卖状态时 选择的投放面
+        activeAsLab: "",
+        // 投放门id
+        mID: "",
+        // 不可售卖原因
+        unSaleableReason: [],
+        // 媒体名称
+        mTitle: "",
+        // 是否开通数字化权限
+        isPay: 1,
+        mediaTypes: [],
     };
   },
   created() {
@@ -1069,9 +976,36 @@ export default {
         let RMList = res.data.data.list;
         if (res.data.SysCode == 200200) {
           if (RMList) {
+            // 过滤列表数据
             let mediaList = [];
-            for (let key of RMList) {
-              mediaList.push(key);
+            // for (let key of RMList) {
+            //   mediaList.push(key);
+            // }
+            for (const key of RMList) {
+                let obj = {
+                    resName: key.resName || '--', // 资源名称
+                    mVehicle: key.mVehicle || '--', // 媒体类型
+                    mTitle: key.mTitle || '--', // 媒体名称
+                    asLab: key.asLab || '--', // 投放面
+                    assetTag: key.assetTag || '--', // 资产编号
+                    rtName: key.rtName || '--', // 资源类型
+                    city: key.city || '--', // 城市
+                    rName: key.rName, // 区域
+                    tradingArea: key.tradingArea || '--', // 商圈
+                    createTime: key.createTime || '--', // 创建日期
+                    tradingArea: key.tradingArea || '--', // 商圈
+                    buildingName: key.buildingName || '--', // 楼栋
+                    unitName: key.unitName || '--', // 单元
+                    street: key.street || '--', // 街道
+                    mediaModel: key.mediaModel || '--', // 设备类型
+                    siteType: key.siteType || '--', // 位置类型
+                    siteOrientation: key.siteOrientation || '--', // 位置朝向
+
+                    asState: key.asState || '--', // 媒体状态
+                    asSaleState: key.asSaleState || '--', // 售卖状态
+
+                }
+                mediaList.push(obj)
             }
             this.currentPlan = mediaList;
             console.log('currentPlan', this.currentPlan);
@@ -1603,6 +1537,10 @@ a {
   border-bottom-right-radius: 0;
 }
 
+/deep/ .el-table__fixed,
+/deep/ .el-table__fixed-right {
+  height: 98% !important;
+}
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
   min-height: 530px;

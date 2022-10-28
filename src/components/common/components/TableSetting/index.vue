@@ -4,7 +4,7 @@
         <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
         <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
         <!-- <filterComp v-if="filter"></filterComp> -->
-        <dragComp></dragComp>
+        <dragComp :columns="columns" v-if="filter"></dragComp>
     </div>
   </div>
 </template>
@@ -29,6 +29,10 @@ export default {
             type: Boolean,
             default: () => false
         },
+        columns: {
+            type: Array,
+            default: () => []
+        }
     },
     components: {
         refreshComp,

@@ -133,6 +133,13 @@
                             fixed>
                         </el-table-column>
                         <el-table-column
+                            class-name="el-table-column-asLab"
+                            prop="siteOrientation"
+                            label="位置朝向"
+                            min-width="90"
+                            fixed>
+                        </el-table-column>
+                        <el-table-column
                             v-for="(item,index) in tableHeader"
                             :prop="item.dayOfMonth"
                             :key="index"
@@ -360,7 +367,7 @@
                     "uid": this.sessionData.uID
                 };
                 api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', info).then(res =>{
-                    console.log(res.data);
+                    // console.log(res.data);
                     if(res.data.SysCode == 300200){
                         let resinfo = res.data.data;
                         let result = [];
@@ -432,7 +439,7 @@
                     delete params.districtId
                 }
                 api.getApi(this.apiVar.Advertisement + '/VisualizeAds',params).then(res=>{
-                    console.log('点位表盘列表',res)
+                    // console.log('点位表盘列表',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         this.pageData.totalSize = res.data.data.totalCount
                         this.checkDate = res.data.data.checkDate
@@ -454,20 +461,23 @@
                 if (tableData.adsList.length) {
                     for (let key of tableData.adsList) {
                         let obj = {
-                            resName: key.resName,
+                            resName: key.resName || '--',
                             mID: key.mID,
                             mediaName: key.mTitle || '--',
                             asID: key.asID,
-                            cityName: key.cityName,
+                            cityName: key.cityName || '--',
                             districtName: key.districtName || '--',
-                            asLab: key.asLab,
-                            occupyingPlanList: key.occupyingPlanList
+                            asLab: key.asLab || '--',
+                            occupyingPlanList: key.occupyingPlanList,
+                            siteOrientation: key.siteOrientation || '--',
                         }
                         for (let oKey of key.occupyInfos) {
                             obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));
                         }
                         adsArr.push(obj)
                     }
+                    console.log('adsTableList',this.adsTableList);
+                    console.log('adsArr',adsArr);
                     this.adsTableList = adsArr.concat()
                     if(this.adsTableList.length < 10){
                         this.tableLength = true
@@ -479,23 +489,23 @@
                     }else{
                         this.tableKey = 1
                     }
-                    console.log('adsTableList',this.adsTableList,this.tableHeader)
+                    // console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },
             // 区域选择
             changeArea(val){
-                console.log('选择的区域val',val)
+                // console.log('选择的区域val',val)
                 // this.cityRid = this.areaRid.substr(0,4) + '00'
             },
             // 时间选择
             dateChange(val){
-                console.log('时间选择',val)
+                // console.log('时间选择',val)
                 if(val && val.length > 0){
                     let dayNum = this.GetDateDiff(val[0],val[1])
                     if(dayNum < 29){
                         // this.dateInput = this.beforDate.concat()
                         this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
-                        console.log('this.dateInput',this.dateInput)
+                        // console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){
                         this.dateInput = this.beforDate.concat()
@@ -508,7 +518,7 @@
             },
             // 搜索
             searchFun(){
-                console.log('this.dateInput',this.dateInput)
+                // console.log('this.dateInput',this.dateInput)
                 this.searchBtnAbled = true
                 this.pageData.pageNum = 1
                 this.getTableData()
@@ -533,14 +543,14 @@
             },
             // 分页
             changePage(val){
-                console.log('当前页',val)
+                // console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getTableData()
                 this.setFixedTableHieght()
             },
             // 每页的条数
             changeSize(val){
-                console.log('每页的条数',val)
+                // console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
                 this.setFixedTableHieght()

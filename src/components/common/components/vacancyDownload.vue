@@ -441,7 +441,7 @@ export default {
             resultValus.push(val);
           }
         }
-        console.log(resultValus, 'resultValusresultValus');
+        console.log('resultValusresultValus', resultValus);
         if (resultValus.length) {
           let returnobj = this.hasPointData(resultValus);
           if (returnobj.arr.length > 0) {
@@ -775,7 +775,7 @@ export default {
             ) {
               obj.asName = item.asName;
             }
-            
+
             resObj.showList.push(obj);
           }
           result.push(resObj);

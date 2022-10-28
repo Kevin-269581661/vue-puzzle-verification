@@ -14,10 +14,11 @@
                     <draggable
                         v-model="fixLeftList"
                         forceFallback="true"
-                        group="people"
+                        group="fixLeft"
                         animation="500"
                         @start="onStart"
                         @end="onEnd"
+                        :move="onMove"
                     >
                         <span
                             class="inner-column-item"
@@ -36,10 +37,11 @@
                     <draggable
                         v-model="notFixList"
                         forceFallback="true"
-                        group="people"
+                        group="notFix"
                         animation="500"
                         @start="onStart"
                         @end="onEnd"
+                        :move="onMove"
                     >
                         <span
                             class="inner-column-item"
@@ -55,7 +57,7 @@
                     </draggable>
                     <!-- 右侧 -->
                     <span class="inner-fix">固定在右侧</span>
-                    <span class="inner-column-item" v-for="item in fixRightList" :key="item.id">
+                    <span class="inner-column-item" v-for="item in fixRightList" :key="item.id" group="fixRight">
                         <i class="el-icon-menu"></i>
                         <el-checkbox checked disabled>{{ item.label }}</el-checkbox>
                     </span>
@@ -75,6 +77,12 @@ export default {
     components: {
         draggable,
     },
+    props: {
+        columns: {
+            type: Array,
+            default: () => []
+        }
+    },
     data() {
         return {
             drag: false,
@@ -83,46 +91,29 @@ export default {
             // 左侧固定数组
             fixLeftList: [],
             // 不固定数组
-            notFixList: [
-                { fix: "not", id: 1, label: "资源名称", isChecked: true },
-                { fix: "not", id: 2, label: "城市", isChecked: true },
-                { fix: "not", id: 3, label: "区域", isChecked: true },
-                { fix: "not", id: 4, label: "街道", isChecked: false },
-                { fix: "not", id: 5, label: "商圈", isChecked: true },
-                { fix: "not", id: 6, label: "媒体名称", isChecked: true },
-                { fix: "not", id: 7, label: "媒体位ID", isChecked: true},
-                { fix: "not", id: 8, label: "设备类型", isChecked: false },
-                { fix: "not", id: 9, label: "位置类型", isChecked: false },
-                { fix: "not", id: 10, label: "楼栋", isChecked: false },
-                { fix: "not", id: 11, label: "单元", isChecked: false },
-                { fix: "not", id: 12, label: "位置朝向", isChecked: false },
-                { fix: "not", id: 13, label: "投放面", isChecked: true },
-                { fix: "not", id: 14, label: "创建日期", isChecked: true },
-            ],
+            notFixList: [],
             // 右侧固定数组
-            fixRightList: [
-                { fix:'right', id: 1, label: "媒体状态", disabled: true },
-                { fix:'right', id: 2, label: "售卖状态", disabled: true },
-                { fix:'right', id: 3, label: "操作", disabled: true },
-            ],
-            // 重置
-            defaultList: [
-                { fix: "not", id: 1, label: "资源名称", isChecked: true },
-                { fix: "not", id: 2, label: "城市", isChecked: true },
-                { fix: "not", id: 3, label: "区域", isChecked: true },
-                { fix: "not", id: 4, label: "街道", isChecked: false },
-                { fix: "not", id: 5, label: "商圈", isChecked: true },
-                { fix: "not", id: 6, label: "媒体名称", isChecked: true },
-                { fix: "not", id: 7, label: "媒体位ID", isChecked: true},
-                { fix: "not", id: 8, label: "设备类型", isChecked: false },
-                { fix: "not", id: 9, label: "位置类型", isChecked: false },
-                { fix: "not", id: 10, label: "楼栋", isChecked: false },
-                { fix: "not", id: 11, label: "单元", isChecked: false },
-                { fix: "not", id: 12, label: "位置朝向", isChecked: false },
-                { fix: "not", id: 13, label: "投放面", isChecked: true },
-                { fix: "not", id: 14, label: "创建日期", isChecked: true },
-            ],
+            fixRightList: [],
+            // 默认设置
+            defaultLeftList: [],
+            defaultList: [],
+
+            // 拖拽
+            currList: [], // 目标数组
+            currObj: {}, // 拖拽对象
+            oldIndex: '', // 初始下标
+            newIndex: '', // 目标下标
         }
+    },
+    mounted() {
+        // 初始化
+        this.notFixList = this.columns.filter(v => v.fix === 'not')
+        this.fixLeftList = this.columns.filter(v => v.fix === 'left')
+        this.fixRightList = this.columns.filter(v => v.fix === 'right')
+        this.isCheckAll()
+        // 默认配置备份
+        this.defaultLeftList = this.columns.filter(v => v.fix === 'left')
+        this.defaultList = this.columns.filter(v => v.fix === 'not')
     },
     computed: {
         // 选中数组
@@ -138,16 +129,31 @@ export default {
     },
     methods: {
         // 重置
-        toReset() {},
+        toReset() {
+            this.allChecked = false
+            this.fixLeftList = JSON.parse(JSON.stringify(this.defaultLeftList))
+            this.notFixList = JSON.parse(JSON.stringify(this.defaultList))
+            this.isCheckAll()
+        },
         // 全选
         checkAll() {
             this.fixLeftList.forEach(v => v.isChecked = this.allChecked)
             this.notFixList.forEach(v => v.isChecked = this.allChecked)
         },
+        // 是否全选
+        isCheckAll() {
+            const arr = [...this.notFixList.filter(v => v.isChecked), ...this.fixLeftList.filter(v => v.isChecked)]
+            if(arr.length === (this.notFixList.length + this.fixLeftList.length)) {
+                this.allChecked = true
+            } else {
+                this.allChecked = false
+            }
+        },
         // 不固定
         notToFix(item) {
             // 获取点击项的下标
             const index = this.fixLeftList.findIndex(v => v.id === item.id)
+            this.fixLeftList[index].fix = 'not'
             // 不固定数组中插入该项
             this.notFixList.splice(index, 0, this.fixLeftList[index])
             // 左侧固定数组中删除该项
@@ -156,17 +162,30 @@ export default {
         // 固定左侧
         toFixLeft(item) {
             const index = this.notFixList.findIndex(v => v.id === item.id)
+            this.notFixList[index].fix = 'left'
             this.fixLeftList.splice(index, 0, this.notFixList[index])
             this.notFixList.splice(index, 1)
+            console.log('fixLeftList', this.fixLeftList);
         },
         //开始拖拽事件
-        onStart(){
-            this.drag=true;
+        onStart(e){
+            this.drag = true;
+            console.log(e);
         },
         //拖拽结束事件
-            onEnd() {
-            this.drag=false;
+            onEnd(e) {
+            this.drag = false;
+            console.log(this.currList);
+            console.log(this.currObj);
+            console.log(this.oldIndex);
+            console.log(this.newIndex);
         },
+        onMove(e){
+            this.currList = e.relatedContext.list // 当前数组
+            this.currObj = e.draggedContext.element // 当前对象
+            this.oldIndex = e.draggedContext.index // 初始下标
+            this.newIndex = e.relatedContext.index // 目标下标
+      },
     },
 };
 </script>

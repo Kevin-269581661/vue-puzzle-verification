@@ -27,19 +27,13 @@
               <el-button plain size="mini" @click="edit('add')" v-if="haveEdit && !isPay"
                 >添加媒体</el-button
               >
-              <el-button
-                plain
-                size="mini"
-                style="color: rgba(0, 0, 0, 0.65)"
-                @click="showResImg"
-                >小区全貌</el-button
-              >
               <el-button type="primary" @click="edit" v-if="haveEdit" size="mini"
                 >编辑</el-button
               >
             </div>
           </div>
           <div class="ad_mediaInfoPanel">
+            <!-- 基本信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>基本信息</h3>
               <el-row type="flex" class="row-bg row_box"  style="margin-bottom: 0">
@@ -67,7 +61,7 @@
                 </el-col>
                   <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">地址描述：</span
-                  ><span>{{ "--" }}</span>
+                  ><span>{{ resData.addressAlias || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">经纬度：</span
@@ -75,57 +69,45 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘介绍：</span
-                  ><span>{{ "--" }}</span>
+                  ><span>{{ resData.description || "--" }}</span>
                 </el-col>
               </el-row>
               <el-row  class="row-bg row_box" style="margin-bottom: 0">
                   <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">Q云企小区名称：</span
-                  ><span>{{ "--" }}</span>
+                  ><span>{{ resData.qCommunity || "--" }}</span>
                 </el-col>
               </el-row>
             </div>
+            <!-- 画像信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>画像信息</h3>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘类型：</span
-                  ><span>{{ resData.addressAlias || "--" }}</span>
+                  ><span>{{ resData.houseType || "--" }}</span>
                 </el-col>
-
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">所属商圈：</span
-                  ><span>{{ resData.tradingArea || "&#45;&#45;" }}</span>
+                  <span class="ad_mediaInfoPanel_row_title">楼盘价格：</span
+                  ><span>{{ `${resData.housePrice}元/平方米` || "--" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">住户数量：</span
+                  ><span>{{ `${resData.HouseNum}户` || "--" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">楼栋数量：</span
+                  ><span>{{ `${resData.buildingNum}栋` || "--" }}</span>
                 </el-col>
               </el-row>
-              <el-row class="row-bg row_box">
-                <el-col :span="6" style="position: relative">
-                  <div
-                    class="ad_mediaInfoPanel_row_box"
-                    style="cursor: pointer"
-                    :class="showAllDetail.des ? 'show_all_aetail' : ''"
-                    @click="showDetailFun('des')"
-                  >
-                    <div class="ad_mediaInfoPanel_row_title">
-                      具体描述：
-                      <div
-                        class="showAllText showAllTextDes"
-                        v-show="judgeShowBtn.des"
-                      >
-                        <span style="color: #1890ff"
-                          >{{ showAllDetail.des ? "收起" : "... 展开" }}
-                        </span>
-                      </div>
-                    </div>
-                    <div
-                      class="
-                        ad_mediaInfoPanel_row_content
-                        ad_mediaInfoPanel_row_content_des
-                      "
-                    >
-                      {{ resData.description || "--" }}
-                    </div>
-                  </div>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">入住年份：</span
+                  ><span>{{ `${resData.joinTime}年` || "--" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">商圈：</span
+                  ><span>{{ resData.tradingArea || "--" }}</span>
                 </el-col>
                 <el-col :span="6" style="position: relative">
                   <div
@@ -185,99 +167,50 @@
                   </div>
                 </el-col>
               </el-row>
-            </div>
-            <div class="ad_mediaInfoPanel_row">
-              <h3>属性信息</h3>
-              <el-row class="row-bg row_box" style="margin-bottom: 0">
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">楼盘价格：</span
-                  ><span>{{ resData.housePrice }}元/平方米</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title"
-                    >{{ res_village.hType }}：</span
-                  ><span>{{ resData.houseType }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title"
-                    >{{ res_village.hNum }}：</span
-                  ><span>{{ resData.HouseNum }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">楼栋数量：</span
-                  ><span>{{ resData.buildingNum }}</span>
-                </el-col>
-              </el-row>
-              <el-row class="row-bg row_box" style="margin-bottom: 0">
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">建筑类型：</span
-                  ><span>{{ resData.buildingType || "&#45;&#45;" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title"
-                    >{{ res_village.joinTime }}：</span
-                  ><span>{{ resData.joinTime || "&#45;&#45;" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">占地面积：</span
-                  ><span>{{ resData.floorSpace || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">建筑面积：</span
-                  ><span>{{ resData.constructionSpace || "--" }}</span>
-                </el-col>
-              </el-row>
-              <el-row class="row-bg row_box" style="margin-bottom: 0">
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">建筑结构：</span
-                  ><span>{{ resData.buildingStructure || "&#45;&#45;" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">容积率：</span
-                  ><span>{{ resData.plotRatio || "&#45;&#45;" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">绿化率：</span
-                  ><span>{{ resData.greenPercentage || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">产权年限：</span
-                  ><span>{{ resData.ownershipPeriod || "--" }}</span>
-                </el-col>
-              </el-row>
-              <el-row class="row-bg row_box">
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">出入口数：</span
                   ><span>{{ resData.EntryExitNum || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">车位数：</span
-                  ><span>{{ resData.carNumber }}</span>
+                  <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span
+                  ><span>{{ `${resData.liveRate}%` || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">车流量：</span
-                  ><span>{{ resData.carFlowrate }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">人流量：</span
-                  ><span>{{ resData.peopleFlowrate }}</span>
-                </el-col>
-              </el-row>
-              <el-row class="row-bg row_box">
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">其他社区广告：</span
-                  ><span>{{ resData.otherAd || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">有无电梯：</span
+                  <span class="ad_mediaInfoPanel_row_title">配套电梯：</span
                   ><span>{{ resData.liftType || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span
-                  ><span>{{ resData.liveRate }}</span>
+                  <span class="ad_mediaInfoPanel_row_title">竞品公司：</span
+                  ><span>{{ resData.competingCompany || "--" }}</span>
+                </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">居住人群：</span
+                  ><span>{{ "无" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">车位数：</span
+                  ><span>{{ resData.carNumber || "--" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">人流量：</span
+                  ><span>{{ `${resData.peopleFlowrate}人次/天` || "--" }}</span>
+                </el-col>
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">车流量：</span
+                  ><span>{{ `${resData.carFlowrate}车次/天` || "--" }}</span>
+                </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">广告限制：</span
+                  ><span>{{ resData.notPush || "--" }}</span>
                 </el-col>
               </el-row>
             </div>
+            <!-- 物业信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>物业信息</h3>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
@@ -287,35 +220,33 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">物业公司：</span
-                  ><span>{{
-                    resData.propertyManagement || resData.pmc || "--"
-                  }}</span>
+                  ><span>{{ resData.pmc || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">物业费：</span
-                  ><span>{{ resData.managementFee || "--" }}</span>
+                  <span class="ad_mediaInfoPanel_row_title">物业联系人：</span
+                  ><span>{{ resData.propertyContacts || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">售楼地址：</span
-                  ><span>{{ resData.salesOfficeAdd || "&#45;&#45;" }}</span>
+                  <span class="ad_mediaInfoPanel_row_title">物业联系电话：</span
+                  ><span>{{ resData.propertyContactsPhone || "--" }}</span>
                 </el-col>
               </el-row>
-              <el-row class="row-bg row_box">
+            </div>
+            <!-- 小区全貌图 -->
+            <div class="ad_mediaInfoPanel_row">
+              <h3>小区全貌图</h3>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">售楼电话：</span
-                  ><span>{{ resData.salesPhoneNumber || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">折扣信息：</span
-                  ><span>{{ resData.discount || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">预售许可证：</span
-                  ><span>{{ resData.preSalePermit || "--" }}</span>
-                </el-col>
-                <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">产权性质：</span
-                  ><span>{{ resData.ownershipType || "--" }}</span>
+                    <span v-for="(item, index) in ResImgSrc" :key="index">
+                        <span class="img-box" @click="showResImg(item)">
+                            <img style="height: 100px;" :src="item" alt=""/>
+                        </span>
+                    </span>
+                    <span v-for="(item, index) in ResImgSrc">
+                        <span class="img-box" @click="showResImg(item)">
+                            <img style="height: 100px;" :src="item" alt=""/>
+                        </span>
+                    </span>
                 </el-col>
               </el-row>
             </div>
@@ -344,7 +275,22 @@
                     style="width: 100%"
                     show-overflow-tooltip
                   >
-                    <el-table-column prop="mTitle" label="媒体名称" width="100px">
+                    <el-table-column
+                        prop="mac"
+                        label="媒体位置"
+                        width="100px">
+                        <template slot-scope="scope">
+                            {{ scope.row.mac || "--" }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="资产编号"
+                      min-width="100px"
+                      show-overflow-tooltip
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.assetTag || "&#45;&#45;" }}
+                      </template>
                     </el-table-column>
                     <el-table-column
                       prop="site"
@@ -356,18 +302,11 @@
                         {{ scope.row.site || "--" }}
                       </template>
                     </el-table-column>
-                    <el-table-column
-                      label="资产编号"
-                      min-width="100px"
-                      :show-overflow-tooltip="true"
-                    >
-                      <template slot-scope="scope">
-                        {{ scope.row.assetTag || "&#45;&#45;" }}
-                      </template>
+                    <el-table-column prop="mTitle" label="设备ID" width="100px">
                     </el-table-column>
                     <el-table-column
                       prop="mType"
-                      label="设备类型"
+                      label="设备型号"
                       min-width="100px"
                     >
                     </el-table-column>
@@ -390,14 +329,14 @@
                       </template>
                     </el-table-column>
                     <!-- <el-table-column
-                                          prop="grade"
-                                          label="媒体等级"
-                                          min-width="7%">
-                                          <template slot-scope="scope">
-                                              {{scope.row.grade || '--'}}
-                                          </template>
-                                      </el-table-column> -->
-                    <el-table-column
+                        prop="grade"
+                        label="媒体等级"
+                        min-width="7%">
+                        <template slot-scope="scope">
+                            {{scope.row.grade || '--'}}
+                        </template>
+                    </el-table-column> -->
+                    <!-- <el-table-column
                       label="广告限制"
                       min-width="120px"
                       class="tar"
@@ -406,7 +345,7 @@
                       <template slot-scope="scope">
                         <span>{{ scope.row.notPush || "--" }}</span>
                       </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                       label="备注"
                       min-width="100px"
@@ -415,6 +354,26 @@
                       <template slot-scope="scope">
                         {{ scope.row.mRemark || "--" }}
                       </template>
+                    </el-table-column>
+                    <el-table-column prop="buildingName" label="楼栋号" width="100px">
+                        <template slot-scope="scope">
+                            {{ scope.row.buildingName || "--" }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="unitName" label="单元号" width="100px">
+                        <template slot-scope="scope">
+                            {{ scope.row.unitName || "--" }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="floor" label="楼层" width="100px">
+                        <template slot-scope="scope">
+                            {{ scope.row.floor || "--" }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="siteOrientation" label="位置朝向" width="100px">
+                        <template slot-scope="scope">
+                            {{ scope.row.siteOrientation || "--" }}
+                        </template>
                     </el-table-column>
                     <el-table-column prop="mState" label="状态" min-width="80px">
                       <template slot-scope="scope">
@@ -432,14 +391,14 @@
                       </template>
                     </el-table-column>
                     <!-- <el-table-column
-                                          label="门禁图片"
-                                          min-width="6%">
-                                          <template slot-scope="scope">
-                                              <div style="color: #108EE9;cursor: pointer;"
-                                                   @click="showMediaImg(scope.row.mID)">查看
-                                              </div>
-                                          </template>
-                                      </el-table-column> -->
+                        label="门禁图片"
+                        min-width="6%">
+                        <template slot-scope="scope">
+                            <div style="color: #108EE9;cursor: pointer;"
+                                @click="showMediaImg(scope.row.mID)">查看
+                            </div>
+                        </template>
+                    </el-table-column> -->
                   </el-table>
                 </div>
               </el-tab-pane>
@@ -452,11 +411,9 @@
       </div>
       <!--资源图片模态框-->
       <el-dialog custom-class="img-dialog" :visible.sync="ResImgDialogVisible">
-        <el-carousel class="resImg">
-          <el-carousel-item v-for="item in ResImgSrc" :key="item">
-            <img class="resImg" :src="item" alt="资源图片" />
-          </el-carousel-item>
-        </el-carousel>
+        <div>
+            <img class="resImg" :src="imgUrl" alt="资源图片" />
+        </div>
       </el-dialog>
       <!--媒体图片模态框-->
       <!-- <el-dialog
@@ -543,32 +500,12 @@
     },
     data() {
       return {
+        imgUrl: '', // 小区全貌图
         isPay: 1,
         haveEdit: false,
         mediaLoading: true,
         resID: "",
-        resData: {
-          resName: "",
-          city: "",
-          cityArea: "",
-          tradingArea: "",
-          houseType: "",
-          EntryExitNum: "",
-          HouseNum: 1,
-          housePrice: 0,
-          buildingNum: 0,
-          joinTime: "",
-          resAddress: "",
-          latLng: "",
-          peopleFlowrate: 0, //人流量
-          carNumber: 0, // 车位数
-          carFlowrate: 0, // 车流量
-          pmc: "", //所属物业
-          fullViewUrl: "", // 资源图片
-          otherAd: "",
-          liftType: "",
-          liveRate: "",
-        },
+        resData: {},
         activeMedia: "",
         // 该小区所有媒体
         mediasOfRes: [],
@@ -676,6 +613,8 @@
       getDataFun() {
         this.mediaImgSrc = [];
         this.resID = sessionStorage.getItem("resID");
+
+        // 资源信息
         let params = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
@@ -693,52 +632,58 @@
                 sessFun.messageFun("warning", "媒体资源信息为空!");
               } else {
                 let resData = res.data.data;
+                console.log('resData', resData);
                 this.resData = {
-                  resID: this.resID,
-                  tradingArea: resData.tradingArea,
-                  resName: resData.resName,
-                  HouseNum: resData.hNum,
-                  EntryExitNum: resData.dNum,
-                  buildingNum: resData.fNum,
-                  rid: resData.rID,
-                  houseType: resData.cType,
-                  pmc: resData.resPMC, // 物业公司
-                  peopleFlowrate: resData.peopleFlow || 0, // 人流量
-                  carNumber: resData.parkSpaceNum || 0, // 车位数
-                  carFlowrate: resData.carFlow || 0, // 车流量
-                  fullViewUrl:
-                    resData.fullViewUrl === null ? "" : resData.fullViewUrl,
-                  housePrice: resData.hPrice / 100,
-                  joinTime: resData.chDay,
-                  resAddress: resData.resAddress,
-                  latLng: "",
-                  cityId: resData.cityId,
-                  city: resData.city,
-                  cityArea: resData.district,
-                  updateRecord: resData.updateRecord, // 小区信息更新时间
-                  otherAd: resData.otherAd,
-                  liftType: resData.liftType,
-                  liveRate: resData.liveRate,
-                  // 房价网信息
-                  resAlias: resData.alias, // 资源别名
-                  addressAlias: resData.addressAlias, // 地址别名
-                  description: resData.description || "", // 描述
-                  supportingFacilities: resData.supportingFacilities || "", // 周边配套
-                  buildingType: resData.buildingType || "", // 建筑类型
-                  transportation: resData.transportation || "", // 交通状况
-                  floorSpace: resData.floorSpace || "", // 占地面积
-                  constructionSpace: resData.constructionSpace || "", // 建筑面积
-                  buildingStructure: resData.buildingStructure || "", // 建筑结构
-                  plotRatio: resData.plotRatio || "", // 容积率
-                  greenPercentage: resData.greenPercentage || "", // 绿化率
-                  ownershipPeriod: resData.ownershipPeriod || "", // 产权年限
-                  developer: resData.developer || "", // 开发商
-                  managementFee: resData.managementFee || "", // 物业费
-                  salesOfficeAdd: resData.salesOfficeAdd || "", // 售楼地址
-                  preSalePermit: resData.preSalePermit || "", // 预售许可证
-                  ownershipType: resData.ownershipType || "", // 产权性质
-                  salesPhoneNumber: resData.salesPhoneNumber, // 售楼电话
-                  discount: resData.discount, // 折扣信息
+                    resID: this.resID,
+                    tradingArea: resData.tradingArea, // 商圈
+                    resName: resData.resName, // 资源名称
+                    HouseNum: resData.hNum, // 住户数量
+                    EntryExitNum: resData.dNum,
+                    buildingNum: resData.fNum, // 楼栋数量
+                    rid: resData.rID,
+                    qCommunity: resData.qcentCommunityName, // Q云企小区名称
+                    houseType: resData.cType, // 楼盘类型
+                    pmc: resData.resPMC, // 物业公司
+                    propertyContacts: resData.propertyContacts, //物业联系人
+                    propertyContactsPhone: resData.propertyContactsPhone, // 物业联系电话
+                    peopleFlowrate: resData.peopleFlow || 0, // 人流量
+                    carNumber: resData.parkSpaceNum || 0, // 车位数
+                    carFlowrate: resData.carFlow || 0, // 车流量
+                    fullViewUrl:resData.fullViewUrl === null ? "" : resData.fullViewUrl,
+                    housePrice: resData.hPrice / 100,
+                    joinTime: resData.chDay, // 入住年份
+                    resAddress: resData.resAddress, // 地址
+                    latLng: "", // 经纬度
+                    cityId: resData.cityId,
+                    city: resData.city, // 城市
+                    cityArea: resData.district, // 区域
+                    street: resData.street, // 街道
+                    updateRecord: resData.updateRecord, // 小区信息更新时间
+                    otherAd: resData.otherAd,
+                    liftType: resData.liftType,
+                    liveRate: resData.liveRate,
+                    competingCompany: resData.competingCompany,
+                    notPush: resData.notPush,
+                    // 房价网信息
+                    resAlias: resData.alias, // 资源别名
+                    addressAlias: resData.addressAlias, // 地址别名
+                    description: resData.description || "", // 描述
+                    supportingFacilities: resData.supportingFacilities || "", // 周边配套
+                    buildingType: resData.buildingType || "", // 建筑类型
+                    transportation: resData.transportation || "", // 交通状况
+                    floorSpace: resData.floorSpace || "", // 占地面积
+                    constructionSpace: resData.constructionSpace || "", // 建筑面积
+                    buildingStructure: resData.buildingStructure || "", // 建筑结构
+                    plotRatio: resData.plotRatio || "", // 容积率
+                    greenPercentage: resData.greenPercentage || "", // 绿化率
+                    ownershipPeriod: resData.ownershipPeriod || "", // 产权年限
+                    developer: resData.developer || "", // 开发商
+                    managementFee: resData.managementFee || "", // 物业费
+                    salesOfficeAdd: resData.salesOfficeAdd || "", // 售楼地址
+                    preSalePermit: resData.preSalePermit || "", // 预售许可证
+                    ownershipType: resData.ownershipType || "", // 产权性质
+                    salesPhoneNumber: resData.salesPhoneNumber, // 售楼电话
+                    discount: resData.discount, // 折扣信息
                 };
                 // if (resData.resType == "1") {
                   this.res_village = {
@@ -764,6 +709,13 @@
                   this.showAllDetail.tpt = false;
                   this.judgeShowBtn.tpt = true;
                 }
+                if (
+                    this.resData.fullViewUrl !== "" &&
+                    this.resData.fullViewUrl !== undefined &&
+                    this.resData.fullViewUrl !== null
+                ) {
+                    this.ResImgSrc = this.resData.fullViewUrl.split(",");
+                }
               }
             } else {
               sessFun.messageFun("warning", "资源详情获取异常!");
@@ -772,6 +724,8 @@
           .catch((err) => {
             sessFun.messageFun("warning", "接口异常!");
           });
+
+        // 媒体信息
         let mParams = {
           uid: this.sessionData.uID,
           token: this.sessionData.token,
@@ -787,6 +741,7 @@
               if (res.data.data.length === 0 || res.data.data === "") {
                 sessFun.messageFun("warning", "媒体资源信息为空!");
               } else {
+                console.log('mResData', res.data.data);
                 // classified--是否执行媒体分层 1启用 2关闭
                 this.mediasOfRes = res.data.data || [];
                 let mediaTypeObj = {};
@@ -835,6 +790,7 @@
                   }
                 }
                 this.mediaTypeObj = mediaTypeObj;
+                console.log('mediaTypeObj', this.mediaTypeObj);
               }
               this.mediaLoading = false;
             } else {
@@ -847,40 +803,42 @@
           });
       },
       // 点击查看显示该资源的图片
-      showResImg() {
-        if (this.ResImgSrc.length > 0) {
-          this.ResImgDialogVisible = true;
-        } else if (
-          this.resData.fullViewUrl !== "" &&
-          this.resData.fullViewUrl !== undefined &&
-          this.resData.fullViewUrl !== null
-        ) {
-          this.ResImgSrc = this.resData.fullViewUrl.split(",");
-          this.ResImgDialogVisible = true;
-        } else {
-          let uid = this.sessionData.uID;
-          let params = {
-            uid: uid,
-            token: this.sessionData.token,
-            ptid: this.resID,
-            ptype: "resType",
-          };
-          api
-            .getApi(this.apiVar.UCAPI + "/GetImg", params)
-            .then((res) => {
-              if (res.data.length === 0) {
-                sessFun.messageFun("warning", "暂时没有该资源的图片!");
-              } else if (Array.isArray(res.data)) {
-                res.data.forEach((item) => {
-                  item.pURL && this.ResImgSrc.push(item.pURL);
-                });
-              }
-            })
-            .catch((err) => {
-              console.log("error", err);
-              sessFun.messageFun("warning", "获取资源图片异常!");
-            });
-        }
+      showResImg(url) {
+        this.imgUrl = url
+        this.ResImgDialogVisible = true
+        // if (this.ResImgSrc.length > 0)
+        //   this.ResImgDialogVisible = true;
+        // }
+        // else if (
+        //   this.resData.fullViewUrl !== "" &&
+        //   this.resData.fullViewUrl !== undefined &&
+        //   this.resData.fullViewUrl !== null
+        // ) {
+        //   this.ResImgSrc = this.resData.fullViewUrl.split(",");
+        //   this.ResImgDialogVisible = true;
+        // } else {
+        //   let uid = this.sessionData.uID;
+        //   let params = {
+        //     uid: uid,
+        //     token: this.sessionData.token,
+        //     ptid: this.resID,
+        //     ptype: "resType",
+        //   };
+        //   api
+        //     .getApi(this.apiVar.UCAPI + "/GetImg", params)
+        //     .then((res) => {
+        //       if (res.data.length === 0) {
+        //         sessFun.messageFun("warning", "暂时没有该资源的图片!");
+        //       } else if (Array.isArray(res.data)) {
+        //         res.data.forEach((item) => {
+        //           item.pURL && this.ResImgSrc.push(item.pURL);
+        //         });
+        //       }
+        //     })
+        //     .catch((err) => {
+        //       console.log("error", err);
+        //       sessFun.messageFun("warning", "获取资源图片异常!");
+        //     });
       },
       // 点击查看显示该媒体的图片
       showMediaImg(mID) {
@@ -1130,7 +1088,7 @@
           }, 10);
         }
       },
-    },
+    }
   };
   </script>
 
@@ -1138,7 +1096,7 @@
   /deep/ .pre-column .cell {
     height: auto;
     line-height: unset;
-    white-space: pre-line;
+    // white-space: pre-line;
   }
   .resImg {
     max-width: 100%;
@@ -1230,6 +1188,17 @@
   }
   .ad_mediaInfoPanel_row span {
     color: #666666;
+  }
+  .ad_mediaInfoPanel_row .img-box {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin-right: 28px;
+    border: 1px solid #ccc;
+
+    img {
+        height: 100%;
+    }
   }
   .ad_mediaInfoPanel_row .ad_mediaInfoPanel_row_title {
     color: #333333;

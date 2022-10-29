@@ -7,7 +7,9 @@
         @command="handleCommand"
         >
             <span class="el-dropdown-link" style="cursor: pointer">
-            <i style="font-size: 22px; color: rgba(0, 0, 0, 0.85);" class="el-icon-d-caret"></i>
+                <el-tooltip class="item" effect="dark" content="密度" placement="top">
+                    <i style="font-size: 22px; color: rgba(0, 0, 0, 0.65);" class="el-icon-d-caret"></i>
+                </el-tooltip>
             </span>
             <el-dropdown-menu slot="dropdown">
             <el-dropdown-item

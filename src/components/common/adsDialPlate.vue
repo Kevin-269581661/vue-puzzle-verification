@@ -34,7 +34,7 @@
                             :options="areaList"
                             v-model="areaRid"
                             separator="-"
-                            :show-all-levels="false"
+                            :show-all-levels="true"
                             placeholder="请选择区域"
                             filterable
                             :clearable="true"
@@ -61,7 +61,8 @@
                 <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                     <span class="li-label">楼栋：</span>
                     <el-input
-                        placeholder="请输入"
+                        v-model="buildingName"
+                        placeholder="请输入楼栋"
                         size="small"
                         clearable
                     >
@@ -70,7 +71,8 @@
                 <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                     <span class="li-label">单元：</span>
                     <el-input
-                        placeholder="请输入"
+                        v-model="unitName"
+                        placeholder="请输入单元"
                         size="small"
                         clearable
                     >
@@ -85,11 +87,23 @@
         <div class="mediaList_wrap">
             <div class="tab-box">
                 <div style="width: 90%;">
-                    <el-tabs type="card" v-model="mediaTypeId" @tab-click="handleClick">
+                    <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
                         <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
                     </el-tabs>
                 </div>
-                <TableSetting class="tab-setting" refresh filter />
+                <!-- 列设置 -->
+                <template v-if="mediaTypesArr.length">
+                    <TableSetting
+                        class="tab-setting"
+                        refresh
+                        filter
+                        :columns="adsColumn"
+                        cacheKey="plate"
+                        @filterColumn="filterColumn"
+                        @refreshTable="refreshTable"
+                    >
+                    </TableSetting>
+                </template>
             </div>
             <div class="tab_conten">
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
@@ -97,48 +111,58 @@
                         v-loading="tableLoading"
                         element-loading-text="拼命加载中..."
                         element-loading-spinner="el-icon-loading"
-                        :key="tableKey"
+                        :key="itemKey"
                         :data="adsTableList"
                         class="ads_table"
                         :class="tableLength ? 'ads_table_10' : ''"
-                        style="width: 100%">
-                        <el-table-column
-                            class-name="el-table-column-resName"
-                            prop="resName"
-                            label="资源名称"
-                            min-width="120"
-                            fixed
-                            show-overflow-tooltip>
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-mediaName"
-                            prop="mediaName"
-                            label="媒体名称"
-                            min-width="120"
-                            fixed
-                            :show-overflow-tooltip="true">
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-districtName"
-                            prop="districtName"
-                            label="区域"
-                            min-width="120"
-                            fixed>
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-asLab"
-                            prop="asLab"
-                            label="投放面"
-                            min-width="90"
-                            fixed>
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-asLab"
-                            prop="siteOrientation"
-                            label="位置朝向"
-                            min-width="90"
-                            fixed>
-                        </el-table-column>
+                        style="width: 100%"
+                    >
+                            <template v-for="item in adsColumn">
+                                <template v-if="item.label === '媒体状态'">
+                                    <el-table-column
+                                        v-if="item.isChecked"
+                                        column-key="asState"
+                                        :prop="item.prop"
+                                        :label="item.label"
+                                        :width="item.width"
+                                        :fixed="item.fix === 'left' ? true : false"
+                                    >
+                                        <template slot-scope="scope">
+                                            <point-state
+                                            :state-text="stateToText(scope.row.asState).text"
+                                            :color="stateToText(scope.row.asState).color"
+                                            ></point-state>
+                                        </template>
+                                    </el-table-column>
+                                </template>
+                                <template v-else-if="item.label === '售卖状态'">
+                                    <el-table-column
+                                    v-if="item.isChecked"
+                                    column-key="asSaleState"
+                                    :prop="item.prop"
+                                    :label="item.label"
+                                    :width="item.width"
+                                    :fixed="item.fix === 'left' ? true : false"
+                                >
+                                    <template slot-scope="scope">
+                                        <point-state
+                                        :state-text="stateToSellText(scope.row.asSaleState).text"
+                                        :color="stateToSellText(scope.row.asSaleState).color"
+                                        ></point-state>
+                                    </template>
+                                </el-table-column>
+                                </template>
+                                <template v-else>
+                                    <el-table-column
+                                        v-if="item.isChecked"
+                                        :prop="item.prop"
+                                        :label="item.label"
+                                        :min-width="item.width"
+                                        :fixed="item.fix === 'left' ? true : false"
+                                        show-overflow-tooltip>
+                                    </el-table-column>
+                                </template>
+                            </template>
                         <el-table-column
                             v-for="(item,index) in tableHeader"
                             :prop="item.dayOfMonth"
@@ -219,15 +243,34 @@
     // 时间格式化
     import timeFormat from '../../commonFun/timeFormat'
     import areaArr from '../../commonFun/areaPackage_new'
-
+    import pointState from "./components/pointState.vue";
     import TableSetting from '../common/components/TableSetting'
     export default {
         name: "adsDialPlate",
         components: {
+            pointState,
             TableSetting
         },
         data() {
             return {
+                adsColumn: [
+                    { id: 0, label: "资源名称", prop: "resName", width: "120", isChecked: true, fix:"left" },
+                    { id: 1, label: "媒体名称", prop: "mTitle", width: "80", isChecked: true, fix:"left" },
+                    { id: 2, label: "城市", prop: "cityName", width: "80", isChecked: false, fix:"not" },
+                    { id: 3, label: "区域", prop: "districtName", width: "80", isChecked: true, fix:"left" },
+                    { id: 4, label: "街道", prop: "street", width: "100", isChecked: false, fix:"not" },
+                    { id: 5, label: "商圈", prop: "tradingArea", width: "120", isChecked: false, fix:"not" },
+                    { id: 6, label: "资产编号", prop: "assetTag", width: "180", isChecked: false, fix:"not" },
+                    { id: 7, label: "设备类型", prop: "mediaModel", width: "80", isChecked: false, fix:"not" },
+                    { id: 8, label: "位置类型", prop: "siteType", width: "80", isChecked: false, fix:"not" },
+                    { id: 9, label: "楼栋", prop: "buildingName", width: "80", isChecked: false, fix:"not" },
+                    { id: 10, label: "单元", prop: "unitName", width: "80", isChecked: false, fix:"not" },
+                    { id: 11, label: "投放面", prop: "asLab", width: "80", isChecked: true, fix:"left" },
+                    { id: 12, label: "位置朝向", prop: "siteOrientation", width: "80", isChecked: true, fix:"left" },
+                    { id: 13, label: "媒体状态", prop: "asState", width: "100", isChecked: false, fix:"not" },
+                    { id: 14, label: "售卖状态", prop: "asSaleState", width: "100", isChecked: false, fix:"not" },
+                ],
+                itemKey: '', // 用于更新表格
                 mediaTypeId: '', //当前选择的媒体类型id
                 mediaTypesArr:[],  //媒体类型数据
                 sessionData:'',
@@ -255,10 +298,14 @@
                 // 日期区间
                 dateInput: [],
                 beforDate: [],
+                // 楼栋搜索字段
+                buildingName: '',
+                // 单元搜索字段
+                unitName: '',
                 searchBtnAbled: false,
                 adsTableList: [],
                 // 表格key值用于强制刷新渲染
-                tableKey: 1,
+                // tableKey: 1,
                 // 表格头部
                 tableHeader:[],
                 // 选择的第一个日期
@@ -302,6 +349,57 @@
             this.getMediaType();
         },
         methods:{
+            // 列展示
+            filterColumn(columns) {
+                this.adsColumn = columns
+                this.itemKey = Math.random()
+            },
+            // 刷新列表
+            refreshTable() {
+                this.getTableData()
+            },
+            // 媒体状态转换
+            stateToText(state) {
+                let mediaArr = [
+                    {
+                    text: "正常",
+                    value: 1,
+                    color: "rgba(82,196,26,1)",
+                    },
+                    {
+                    text: "待安装",
+                    value: 2,
+                    color: "rgba(196,203,211,1)",
+                    },
+                    {
+                    text: "已拆除",
+                    value: 4,
+                    color: "rgba(199, 203, 206, 1)",
+                    },
+                ];
+                return (
+                    mediaArr.filter((item) => {
+                    return item.value === state;
+                    })[0] || {}
+                );
+            },
+
+            // 售卖状态转换
+            stateToSellText(state) {
+                let mediaArr = [
+                    {
+                    text: "可售卖",
+                    value: 1,
+                    color: "rgba(82,196,26,1)",
+                    },
+                    {
+                    text: "不可售卖",
+                    value: 2,
+                    color: "rgba(199, 203, 206, 1)",
+                    },
+                ];
+                return state === 2 ? mediaArr[1] : mediaArr[0];
+            },
             //根据公司id获取媒体类型
             getMediaType(){
                 let info={
@@ -325,7 +423,14 @@
             },
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
-                if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+                // if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+                //     this.$router.push('/*')
+                // }
+                if (
+                    this.sessionData.uType === !'ADN_MD' ||
+                    this.sessionData.uType === !'ADN_MD_COUNTRY' ||
+                    this.sessionData.uType === !'ADN_SA'
+                ) {
                     this.$router.push('/*')
                 }
             },
@@ -424,6 +529,8 @@
                     mediaTypeId: this.mediaTypeId,
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
+                    buildingName: this.buildingName,
+                    unitName: this.unitName,
                     [this.searchInfo.keywordType]: this.searchInfo[this.searchInfo.keywordType],
                     cityId: this.areaRid[0],//this.cityRid,
                     districtId: this.areaRid[1],
@@ -461,34 +568,39 @@
                 if (tableData.adsList.length) {
                     for (let key of tableData.adsList) {
                         let obj = {
-                            resName: key.resName || '--',
-                            mID: key.mID,
-                            mediaName: key.mTitle || '--',
-                            asID: key.asID,
-                            cityName: key.cityName || '--',
-                            districtName: key.districtName || '--',
-                            asLab: key.asLab || '--',
-                            occupyingPlanList: key.occupyingPlanList,
-                            siteOrientation: key.siteOrientation || '--',
+                            resName: key.resName || '--', // 资源名称
+                            cityName: key.cityName || '--', // 城市
+                            districtName: key.districtName || '--', // 区域
+                            street: key.street || '--', // 街道
+                            tradingArea: key.tradingArea || '--', // 商圈
+                            mTitle: key.mTitle || '--', // 媒体名称
+                            assetTag: key.assetTag || '--', // 资产编号
+                            mediaModel: key.mediaModel || '--', // 设备类型
+                            siteType: key.siteType || '--', // 位置类型
+                            buildingName: key.buildingName || '--', // 楼栋
+                            unitName: key.unitName || '--', // 单元
+                            siteOrientation: key.siteOrientation || '--', // 位置朝向
+                            asLab: key.asLab || '--', // 投放面
+                            asState: key.asState || '--', // 媒体状态
+                            asSaleState: key.asSaleState, // 售卖状态
+                            occupyingPlanList: key.occupyingPlanList, // 点位表盘列表
                         }
                         for (let oKey of key.occupyInfos) {
                             obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));
                         }
                         adsArr.push(obj)
                     }
-                    console.log('adsTableList',this.adsTableList);
-                    console.log('adsArr',adsArr);
                     this.adsTableList = adsArr.concat()
                     if(this.adsTableList.length < 10){
                         this.tableLength = true
                     }else{
                         this.tableLength = false
                     }
-                    if(this.tableKey === 1){
-                        this.tableKey = 2
-                    }else{
-                        this.tableKey = 1
-                    }
+                    // if(this.tableKey === 1){
+                    //     this.tableKey = 2
+                    // }else{
+                    //     this.tableKey = 1
+                    // }
                     // console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },
@@ -535,6 +647,8 @@
                 this.searchInfo.resName = ''
                 this.searchInfo.assetTag = ''
                 this.areaRid = []
+                this.buildingName = ''
+                this.unitName = ''
                 this.pageData.pageNum = 1
                 this.pageData.pageSize = 10
                 this.setTime()
@@ -671,11 +785,10 @@
 
     /deep/ .mediaList_wrap .el-tabs__item{
         min-width: 68px;
-        // padding-right: 4px;
         box-sizing: border-box;
         height: 54px;
         line-height: 54px;
-        // padding: 0;
+        padding: 0 20px !important;
         text-align: center;
         font-size: 16px;
         color: #666666;

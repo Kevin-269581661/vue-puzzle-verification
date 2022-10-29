@@ -1,7 +1,9 @@
 <template>
     <div style="margin-left: 8px;">
         <span style="cursor: pointer" @click="refreshTable">
-            <i style="font-size: 22px; color: rgba(0, 0, 0, 0.85);" class="el-icon-refresh-right"></i>
+            <el-tooltip class="item" effect="dark" content="刷新" placement="top">
+                <i style="font-size: 22px; color: rgba(0, 0, 0, 0.65);" class="el-icon-refresh-right"></i>
+            </el-tooltip>
         </span>
     </div>
 </template>
@@ -16,5 +18,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 </style>

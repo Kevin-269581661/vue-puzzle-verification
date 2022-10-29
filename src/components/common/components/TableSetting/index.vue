@@ -4,7 +4,7 @@
         <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
         <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
         <!-- <filterComp v-if="filter"></filterComp> -->
-        <dragComp :columns="columns" @filterColumn="filterColumn" v-if="filter"></dragComp>
+        <filterComp :cacheKey="cacheKey" :columns="columns" @filterColumn="filterColumn" v-if="filter"></filterComp>
     </div>
   </div>
 </template>
@@ -13,7 +13,6 @@
 import refreshComp from "./refreshComp.vue";
 import spaceComp from "./spaceComp.vue";
 import filterComp from "./filterComp.vue";
-import dragComp from "./dragComp.vue";
 
 export default {
     props: {
@@ -32,13 +31,16 @@ export default {
         columns: {
             type: Array,
             default: () => []
+        },
+        cacheKey: {
+            type: String,
+            default: () => ''
         }
     },
     components: {
         refreshComp,
         spaceComp,
-        filterComp,
-        dragComp
+        filterComp
     },
     data() {
         return {};

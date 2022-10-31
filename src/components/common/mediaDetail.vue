@@ -113,21 +113,21 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘价格：</span
-                  ><span>{{ `${resData.housePrice}元/平方米` || "--" }}</span>
+                  ><span>{{ resData.housePrice || "--" }} 元/平方米</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">住户数量：</span
-                  ><span>{{ `${resData.HouseNum}户` || "--" }}</span>
+                  ><span>{{ resData.HouseNum || "--" }} 户</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼栋数量：</span
-                  ><span>{{ `${resData.buildingNum}栋` || "--" }}</span>
+                  ><span>{{ resData.buildingNum || "--" }} 栋</span>
                 </el-col>
               </el-row>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住年份：</span
-                  ><span>{{ `${resData.joinTime}年` || "--" }}</span>
+                  ><span>{{ resData.joinTime || "--" }} 年</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">商圈：</span
@@ -198,7 +198,7 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span
-                  ><span>{{ `${resData.liveRate}%` || "--" }}</span>
+                  ><span>{{ resData.liveRate || "--" }} %</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">配套电梯：</span
@@ -220,11 +220,11 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">人流量：</span
-                  ><span>{{ `${resData.peopleFlowrate}人次/天` || "--" }}</span>
+                  ><span>{{ resData.peopleFlowrate || "--" }} 人次/天</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车流量：</span
-                  ><span>{{ `${resData.carFlowrate}车次/天` || "--" }}</span>
+                  ><span>{{ resData.carFlowrate || "--" }} 车次/天</span>
                 </el-col>
               </el-row>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
@@ -671,9 +671,9 @@
                     pmc: resData.resPMC, // 物业公司
                     propertyContacts: resData.propertyContacts, //物业联系人
                     propertyContactsPhone: resData.propertyContactsPhone, // 物业联系电话
-                    peopleFlowrate: resData.peopleFlow || 0, // 人流量
-                    carNumber: resData.parkSpaceNum || 0, // 车位数
-                    carFlowrate: resData.carFlow || 0, // 车流量
+                    peopleFlowrate: resData.peopleFlow, // 人流量
+                    carNumber: resData.parkSpaceNum, // 车位数
+                    carFlowrate: resData.carFlow, // 车流量
                     fullViewUrl:resData.fullViewUrl === null ? "" : resData.fullViewUrl,
                     housePrice: resData.hPrice / 100,
                     joinTime: resData.chDay, // 入住年份
@@ -1222,7 +1222,7 @@
     border: 1px solid #ccc;
 
     img {
-        height: 100%;
+        width: 100%;
     }
   }
   .ad_mediaInfoPanel_row .ad_mediaInfoPanel_row_title {

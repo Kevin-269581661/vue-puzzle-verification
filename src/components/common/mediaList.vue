@@ -27,17 +27,6 @@
                 >
                 </el-input>
             </el-col>
-            <!-- <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                    <span class="li-label">媒体名称：</span>
-                    <el-input
-                        placeholder="请输入媒体名称"
-                        v-model="mTitle"
-                        class="input-with-select u-key"
-                        size="small"
-                        clearable
-                    >
-                    </el-input>
-            </el-col> -->
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                     <span class="li-label">城市区域：</span>
                     <el-cascader
@@ -55,16 +44,6 @@
                     >
                     </el-cascader>
             </el-col>
-            <!-- <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                    <span class="li-label">商圈：</span>
-                    <el-input
-                        placeholder="请输入商圈"
-                        v-model="tradingArea"
-                        class="input-with-select u-key"
-                        size="small"
-                    >
-                    </el-input>
-            </el-col> -->
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <span class="li-label">楼栋：</span>
                 <el-input
@@ -182,27 +161,6 @@
                         :filter-multiple="false"
                         :fixed="item.fix === 'left' ? true : false"
                     >
-                    </el-table-column>
-                </template>
-                <template v-else-if="item.label === '资源类型'">
-                    <el-table-column
-                        v-if="item.isChecked"
-                        column-key="rtName"
-                        :prop="item.prop"
-                        :label="item.label"
-                        :min-width="item.width"
-                        :show-overflow-tooltip="true"
-                        :filters="[
-                            { text: '社区', value: '社区' },
-                            { text: '写字楼', value: '写字楼' },
-                            { text: '别墅', value: '别墅' },
-                        ]"
-                        filter-placement="bottom"
-                        :fixed="item.fix === 'left' ? true : false"
-                    >
-                        <template slot-scope="scope">
-                            {{ scope.row.rtName || "--" }}
-                        </template>
                     </el-table-column>
                 </template>
                 <template v-else-if="item.label === '媒体状态'">
@@ -647,7 +605,6 @@ export default {
         filterMediaType: "", // 表头媒体类型搜索状态
         asState: "", // 搜索的媒体状态
         asSaleState: "", //  搜索的售卖状态
-        rtNameList: [], // 搜索的资源类型
         planList: [], //  table的所有数据
         cityOptions: [], //城市数组
         cityProps: { multiple: false }, // 城市设置
@@ -924,15 +881,15 @@ export default {
                     this.filterMediaType = "";
                 }
             }
-            else if (key === "rtName") {
-                if (filters[key].length) {
-                    for (const i in filters[key]) {
-                        this.rtNameList.push(filters[key][i]);
-                    }
-                } else {
-                    this.rtNameList = [];
-                }
-            }
+            // else if (key === "rtName") {
+            //     if (filters[key].length) {
+            //         for (const i in filters[key]) {
+            //             this.rtNameList.push(filters[key][i]);
+            //         }
+            //     } else {
+            //         this.rtNameList = [];
+            //     }
+            // }
         }
         this.pageData.pageNum = 1;
         this.getData();
@@ -966,14 +923,12 @@ export default {
                 resName: this.resName, // 资源名称
                 assetTag: this.assetTag, // 资产编号（媒体ID）
                 mTitle: this.mTitle, // 媒体名称
-                rtName: ['社区', '写字楼'],
                 tradingArea: this.tradingArea, // 商圈
                 cityName: this.cityArea.cName,
                 regionName: this.cityArea.rName,
                 asState: this.asState, // 媒体状态
                 asSaleState: this.asSaleState, // 售卖状态
                 mediaTypeIds: this.filterMediaType + "", // 媒体类型
-                rtNameList: this.rtNameList, // 资源类型
                 buildingName: this.buildingName, // 楼栋
                 unitName: this.unitName, // 单元
             },
@@ -995,6 +950,7 @@ export default {
             // }
             for (const key of RMList) {
                 let obj = {
+                    resID: key.resID,
                     resName: key.resName || '--', // 资源名称
                     mVehicle: key.mVehicle || '--', // 媒体类型
                     mTitle: key.mTitle || '--', // 媒体名称
@@ -1232,6 +1188,7 @@ export default {
 
     // 跳转到媒体详情界面
     mediaDetail(data) {
+        console.log('row', data);
       this.$router.push("./mediaDetail");
       sessionStorage.setItem("resID", data.resID);
     },
@@ -1272,7 +1229,6 @@ export default {
         this.filterMediaType = "";
         this.asSaleState = "";
         this.asState = "";
-        this.rtNameList = [];
         this.$refs.tableEl.clearFilter();
         this.getData();
     },
@@ -1548,11 +1504,13 @@ a {
   border-bottom-right-radius: 0;
 }
 
-/deep/ .el-table__fixed-right{
-     height: auto !important; // 让固定列的高自适应
-     bottom: 0px !important; // 固定列默认设置了定位
-     right: 0px !important;
+/deep/ .el-table__fixed,
+/deep/ .el-table__fixed-right {
+    height: auto !important; // 让固定列的高自适应
+    bottom: 12px !important; // 固定列默认设置了定位
+    right: 0px !important;
 }
+
 /*滚动条*/
 /deep/ .el-table__body-wrapper {
   min-height: 530px;

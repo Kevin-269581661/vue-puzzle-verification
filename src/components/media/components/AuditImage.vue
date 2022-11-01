@@ -444,6 +444,7 @@ export default {
     // 上一页
     toLastOne() {
       this.toAuditImg();
+      setTimeout(() => { this.$emit("refresh") }, 10);
       const item = this.imageDataList.filter((item) => item.itemIndex === -1);
       if (item.length) {
         this.auditSearchParams.lID = item[0].lID;
@@ -459,6 +460,7 @@ export default {
     // 下一页
     toNextOne() {
       this.toAuditImg();
+      setTimeout(() => { this.$emit("refresh") }, 10);
       const item = this.imageDataList.filter((item) => item.itemIndex === 1);
       if (item.length) {
         this.currentPage = 1;
@@ -473,10 +475,12 @@ export default {
       }
     },
     handleClose() {
-      this.currentPage = 1;
-      this.toAuditImg();
-      this.$emit("update:dialogVisible", false);
-      this.$emit("refresh");
+        this.currentPage = 1;
+        this.toAuditImg();
+        setTimeout(() => {
+            this.$emit("refresh");
+            this.$emit("update:dialogVisible", false);
+        }, 10);
     },
     toOpenImage(imgUrl) {
       this.imgUrl = imgUrl;

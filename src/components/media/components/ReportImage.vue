@@ -362,7 +362,7 @@ export default {
         };
         for (let key in this.searchParams) {
             if (this.searchParams[key] === "") {
-            delete this.searchParams[key];
+                delete this.searchParams[key];
             }
         }
         let params = {

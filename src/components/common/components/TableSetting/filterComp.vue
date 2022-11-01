@@ -298,6 +298,7 @@ export default {
 
             &:hover {
                 background: #E6F7FF;
+
                 .fix-icon {
                     display: block;
                 }

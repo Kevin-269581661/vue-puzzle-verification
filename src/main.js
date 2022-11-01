@@ -6,6 +6,7 @@ import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
 import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
+import 'default-passive-events'
 Vue.config.productionTip = false;
 Vue.config.performance = true;
 
@@ -33,17 +34,17 @@ Vue.prototype.apiVar = apiVar;
 Vue.prototype.env = process.env.EVN_CONFIG;
 Vue.filter('uTypeToText', function (userInfo) {
 	if(userInfo) {
-		return { 
+		return {
 			'ADN_SA': '系统管理员',
-			'ADN_SM': '超级管理员', 
-			'ADN_OP': '运营', 
+			'ADN_SM': '超级管理员',
+			'ADN_OP': '运营',
 			'ADN_MD': '媒介',
 			'ADN_MD_COUNTRY': '全国媒介',
 			'ADN_BD': '销售',
 			'ADN_BD_COUNTRY': '全国销售',
 			'ADN_BD_KA': 'KA销售',
-			'AD': '广告主', 
-			'ADN_EP': '工程人员', 
+			'AD': '广告主',
+			'ADN_EP': '工程人员',
 			'ADN_DEV': '开发人员',
 			'ADN_DEV_ASSET': '资产人员',
 			'ADN_DEV_LEADER': '开发总监',
@@ -56,7 +57,7 @@ Vue.filter('moneyFormat', function (value, prefix='', decimal=2) {
 	if(value==='' || value===undefined || value===null) {
 		return '--'
 	} else {
-		value = value||0 
+		value = value||0
 	}
 	try {
 		return prefix+value.toFixed(decimal).toString().replace(/(\d)(?=(?:(\d{3})+$)|(\d{3})+\.\d*$)/g, '$1,') // 将整数部分逢三一断

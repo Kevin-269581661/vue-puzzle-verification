@@ -2,6 +2,7 @@
   <div>
     <el-card class="workplace-card">
       <el-input
+        v-if="activeName !== 'orderImgCheck'"
         class="u-input"
         v-model="searchKeyword"
         size="mini"
@@ -730,7 +731,6 @@ export default {
           break;
 
         case "orderImgCheck":
-          this.searchPlaceholder = "公司名称/品牌名称/所属销售";
           this.getOrderImgCheckList();
 
         default:

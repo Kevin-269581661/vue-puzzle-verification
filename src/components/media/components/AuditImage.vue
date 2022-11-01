@@ -37,7 +37,7 @@
               imageData.districtName
             }}</el-tag>
             <el-tag size="mini" type="info" style="color: #000">{{
-              `${imageData.asLab}面`
+              imageData.asLab
             }}</el-tag>
             <el-tag size="mini" type="info" style="color: #000">{{
               imageData.assetTag
@@ -68,12 +68,12 @@
         >
           <div class="img-box">
             <i
-              v-if="item.pURL"
+              v-if="item.thumbnailURL"
               slot="reference"
               class="el-icon-zoom-in"
               @click="toOpenImage(item.pURL)"
             ></i>
-            <img :src="item.pURL" />
+            <img :src="item.thumbnailURL" />
           </div>
           <div class="audit-detail">
             <div class="left">
@@ -427,7 +427,7 @@ export default {
     },
     // 打开添加问题对话框
     toOpenProblemDialog(item) {
-      this.imgUrl = item.pURL;
+      this.imgUrl = item.thumbnailURL;
       this.picID = item.pID;
       this.currentItem = item;
       this.addProblemVisible = true;

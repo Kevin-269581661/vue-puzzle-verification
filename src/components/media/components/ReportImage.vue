@@ -79,7 +79,7 @@
             <el-option
               v-for="(item, index) in searchParamsList[4]"
               :key="index"
-              :label="item.itemValue + '面'"
+              :label="item.itemValue"
               :value="item.itemValue"
             >
             </el-option>
@@ -115,7 +115,7 @@
             <el-option
               v-for="(item, index) in searchParamsList[6]"
               :key="index"
-              :label="item.itemValue + '张'"
+              :label="item.itemValue"
               :value="item.itemValue"
             >
             </el-option>
@@ -183,7 +183,7 @@
           </el-table-column>
           <el-table-column prop="asLab" label="投放面" min-width="108">
             <template slot-scope="scope">
-              <span>{{ `${scope.row.asLab}面` || "--" }}</span>
+              <span>{{ scope.row.asLab || "--" }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="assetTag" label="资产编号" min-width="160">
@@ -193,7 +193,7 @@
           </el-table-column>
           <el-table-column prop="imgNum" label="图片数量" min-width="108">
             <template slot-scope="scope">
-              <span>{{ `${scope.row.imgNum}张` || "--" }}</span>
+              <span>{{ scope.row.imgNum || "--" }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -323,8 +323,6 @@ export default {
         ];
         const list = JSON.parse(JSON.stringify(this.tableData));
         for (const key in list) {
-          list[key].asLab += "面";
-          list[key].imgNum += "张";
           list[key].auditStatus =
             list[key].auditStatus === 0 ? "未审核" : "已审核";
           list[key].auditResult =

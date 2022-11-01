@@ -333,6 +333,7 @@ export default {
       setTimeout(() => { this.$emit("refresh") }, 10);
       const item = this.imageDataList.filter((item) => item.itemIndex === -1);
       if (item.length) {
+        this.currentPage = 1;
         this.imageList = this.lastImageList
         this.auditSearchParams.lID = item[0].lID;
         this.getImageDetailsList();

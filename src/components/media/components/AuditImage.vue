@@ -242,6 +242,8 @@ export default {
       imageDataList: [],
       imageData: {},
       imageList: [],
+      lastImageList: [],
+      nextImageList: [],
       errList: [],
       currentItem: {},
 
@@ -295,9 +297,17 @@ export default {
             const resData = res.data.data;
             this.imageDataList = resData || [];
             const item = resData.filter((item) => item.itemIndex === 0);
+            const lastItem = resData.filter((item) => item.itemIndex === -1);
+            const nextItem = resData.filter((item) => item.itemIndex === 1);
             this.imageData = item[0] || [];
             // console.log('图片参数', this.imageData);
             this.imageList = this.imageData.imgList || [];
+            if(lastItem.length) {
+                this.lastImageList = lastItem[0]
+            }
+            if(nextItem.length) {
+                this.nextImageList = nextItem[0]
+            }
             this.imageList.map((v) => {
               if (v.errList) {
                 v.errList.map((v) => {
@@ -316,6 +326,43 @@ export default {
           console.log(err);
         });
     },
+
+    // 上一页
+    toLastOne() {
+      this.toAuditImg();
+      setTimeout(() => { this.$emit("refresh") }, 10);
+      const item = this.imageDataList.filter((item) => item.itemIndex === -1);
+      if (item.length) {
+        this.imageList = this.lastImageList
+        this.auditSearchParams.lID = item[0].lID;
+        this.getImageDetailsList();
+      } else {
+        this.$message({
+          showClose: false,
+          message: "已经到头了",
+          type: "warning",
+        });
+      }
+    },
+
+    // 下一页
+    toNextOne() {
+      this.toAuditImg();
+      setTimeout(() => { this.$emit("refresh") }, 10);
+      const item = this.imageDataList.filter((item) => item.itemIndex === 1);
+      if (item.length) {
+        this.currentPage = 1;
+        this.auditSearchParams.lID = item[0].lID;
+        this.getImageDetailsList();
+      } else {
+        this.$message({
+          showClose: false,
+          message: "已经到尾了",
+          type: "warning",
+        });
+      }
+    },
+
     // 显示tag删除提示
     toOpenCloseVisible(item, tag) {
       this.imageList.map((m) => m.errList.map((v) => (v.closeVisible = false)));
@@ -441,39 +488,6 @@ export default {
       }
     },
 
-    // 上一页
-    toLastOne() {
-      this.toAuditImg();
-      setTimeout(() => { this.$emit("refresh") }, 10);
-      const item = this.imageDataList.filter((item) => item.itemIndex === -1);
-      if (item.length) {
-        this.auditSearchParams.lID = item[0].lID;
-        this.getImageDetailsList();
-      } else {
-        this.$message({
-          showClose: false,
-          message: "已经到头了",
-          type: "warning",
-        });
-      }
-    },
-    // 下一页
-    toNextOne() {
-      this.toAuditImg();
-      setTimeout(() => { this.$emit("refresh") }, 10);
-      const item = this.imageDataList.filter((item) => item.itemIndex === 1);
-      if (item.length) {
-        this.currentPage = 1;
-        this.auditSearchParams.lID = item[0].lID;
-        this.getImageDetailsList();
-      } else {
-        this.$message({
-          showClose: false,
-          message: "已经到尾了",
-          type: "warning",
-        });
-      }
-    },
     handleClose() {
         this.currentPage = 1;
         this.toAuditImg();

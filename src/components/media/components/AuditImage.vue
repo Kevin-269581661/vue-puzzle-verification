@@ -68,12 +68,12 @@
         >
           <div class="img-box">
             <i
-              v-if="item.thumbnailURL"
+              v-if="item.pURL"
               slot="reference"
               class="el-icon-zoom-in"
               @click="toOpenImage(item.pURL)"
             ></i>
-            <img :src="item.thumbnailURL" />
+            <img :src="item.pURL" />
           </div>
           <div class="audit-detail">
             <div class="left">
@@ -427,7 +427,7 @@ export default {
     },
     // 打开添加问题对话框
     toOpenProblemDialog(item) {
-      this.imgUrl = item.thumbnailURL;
+      this.imgUrl = item.pURL;
       this.picID = item.pID;
       this.currentItem = item;
       this.addProblemVisible = true;

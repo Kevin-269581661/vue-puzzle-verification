@@ -278,10 +278,10 @@ export default {
   },
   data() {
     return {
-      currentApID: 0,
+      currentApID: '',
       auditImageVisible: false,
       tableData: [],
-      auditImageID: 0,
+      auditImageID: '',
       searchParams: {},
       auditSearchParams: {},
       pageSizes: [10, 20, 30],
@@ -336,56 +336,56 @@ export default {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     getAdPlanDetailsList() {
-      for (let key in this.searchParams) {
-        if (this.searchParams[key] === "") {
-          delete this.searchParams[key];
-        }
-      }
-      let params = {
-        ...this.searchParams,
-        apID: this.reportImageApID,
-        type: this.reportImageType,
-        pageNum: this.currentPage,
-        pageSize: this.pageSize,
-      };
-      api
-        .postApi_json("/addsp/api/v1/audit/adPlanDetails", params)
-        .then((res) => {
-          if (res.data.SysCode) {
-            const resData = res.data.data;
-            this.tableData = resData.list || [];
-            this.paginationTotal = resData.total || 0;
-          } else {
-            this.$message({
-              type: "warning",
-              message: res.data.MSG || "订单审核明细获取异常！",
-            });
-          }
-        });
-      this.$nextTick(() => {
         if (this.currentApID !== this.reportImageApID) {
-          this.currentApID = this.reportImageApID;
-          for (let i = 1; i < 7; i++) {
-            const data = {
-              type: i,
-              apID: this.reportImageApID,
-            };
-            api
-              .postApi_json("/addsp/api/v1/audit/imageDetailsIndexItem", data)
-              .then((res) => {
-                if (res.data.SysCode) {
-                  const resData = res.data.data;
-                  this.searchParamsList[i] = resData;
-                } else {
-                  console.log(res.data.MSG);
+            // this.$nextTick(() => {
+                this.currentApID = this.reportImageApID;
+                for (let i = 1; i < 7; i++) {
+                    const data = {
+                    type: i,
+                    apID: this.reportImageApID,
+                };
+                api
+                    .postApi_json("/addsp/api/v1/audit/imageDetailsIndexItem", data)
+                    .then((res) => {
+                        if (res.data.SysCode) {
+                        const resData = res.data.data;
+                        this.searchParamsList[i] = resData;
+                        } else {
+                        console.log(res.data.MSG);
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
                 }
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
+            // })
+        };
+        for (let key in this.searchParams) {
+            if (this.searchParams[key] === "") {
+            delete this.searchParams[key];
+            }
         }
-      });
+        let params = {
+            ...this.searchParams,
+            apID: this.reportImageApID,
+            type: this.reportImageType,
+            pageNum: this.currentPage,
+            pageSize: this.pageSize,
+        };
+        api
+            .postApi_json("/addsp/api/v1/audit/adPlanDetails", params)
+            .then((res) => {
+            if (res.data.SysCode) {
+                const resData = res.data.data;
+                this.tableData = resData.list || [];
+                this.paginationTotal = resData.total || 0;
+            } else {
+                this.$message({
+                type: "warning",
+                message: res.data.MSG || "订单审核明细获取异常！",
+                });
+            }
+        });
     },
     sizeChange(val) {
       this.pageSize = val;
@@ -447,7 +447,6 @@ export default {
     },
     handleClose() {
       this.toResetParams();
-      this.getAdPlanDetailsList();
       this.$emit("refresh");
       this.$emit("update:dialogVisible", false);
     },

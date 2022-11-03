@@ -596,12 +596,6 @@
                     }else{
                         this.tableLength = false
                     }
-                    // if(this.tableKey === 1){
-                    //     this.tableKey = 2
-                    // }else{
-                    //     this.tableKey = 1
-                    // }
-                    // console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },
             // 区域选择

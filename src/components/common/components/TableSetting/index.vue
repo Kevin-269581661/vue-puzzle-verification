@@ -7,16 +7,17 @@
         columns：表头数据（
             包括：
                 id，
-                label：表头字段，
+                label：表头列字段，
                 prop：与表体数据对应的字段，
                 width：列宽度，
                 isChecked：默认勾选，
                 fix：默认固定（not：不固定；left：左侧固定；right：右侧固定）
             ）
+        例如：{ id: 0, label: "资源名称", prop: "resName", width: "120", isChecked: true, fix:"left" },
 
         refreshTable：刷新列表的函数（在父组件中重新请求数据）
         spaceSetting：更新列表密度的函数（返回间距size给父组件）
-        filterColumn：筛选/冻结列表的函数（返回表头数据给父组件，根据情况需要给table添加key更细表格）
+        filterColumn：筛选/冻结列表的函数（返回表头数据给父组件，根据情况需要给table添加key来更新表格）
  -->
 
 <template>

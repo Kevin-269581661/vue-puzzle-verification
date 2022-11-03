@@ -10,10 +10,10 @@
             <div class="filter-box-outer">
                 <div class="filter-box-inner">
                     <!-- 左侧 -->
-                    <span class="inner-fix" v-if="fixLeftList.length">固定在左侧</span>
+                    <span class="inner-fix" v-if="leftFixList.length">固定在左侧</span>
                     <draggable
                         handle=".mover"
-                        v-model="fixLeftList"
+                        v-model="leftFixList"
                         forceFallback="true"
                         group="fixLeft"
                         animation="500"
@@ -23,7 +23,7 @@
                     >
                         <span
                             class="inner-column-item"
-                            v-for="item in fixLeftList"
+                            v-for="item in leftFixList"
                             :key="item.id"
                         >
                             <i class="el-icon-menu mover"></i>
@@ -58,8 +58,8 @@
                         </span>
                     </draggable>
                     <!-- 右侧 -->
-                    <span class="inner-fix" v-if="fixRightList.length">固定在右侧</span>
-                    <span class="inner-column-item" v-for="item in fixRightList" :key="item.id" group="fixRight">
+                    <span class="inner-fix" v-if="rightFixList.length">固定在右侧</span>
+                    <span class="inner-column-item" v-for="item in rightFixList" :key="item.id" group="fixRight">
                         <i class="el-icon-menu"></i>
                         <el-checkbox checked disabled>{{ item.label }}</el-checkbox>
                     </span>
@@ -98,11 +98,11 @@ export default {
             // 是否全选
             allChecked: false,
             // 左侧固定数组
-            fixLeftList: [],
+            leftFixList: [],
             // 不固定数组
             notFixList: [],
             // 右侧固定数组
-            fixRightList: [],
+            rightFixList: [],
             // 默认设置
             defaultLeftList: [],
             defaultList: [],
@@ -135,29 +135,29 @@ export default {
             this.notFixList = JSON.parse(JSON.stringify(initList))
             addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
         }
-        const fixLeftList = getLocalCache(`${this.cacheKey}-fixLeftList`)
-        if(fixLeftList) {
-            this.fixLeftList = fixLeftList
+        const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
+        if(leftFixList) {
+            this.leftFixList = leftFixList
         } else {
-            this.fixLeftList = JSON.parse(JSON.stringify(initLeftList))
-            addLocalCache(`${this.cacheKey}-fixLeftList`, this.fixLeftList)
+            this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
+            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
         }
-        const fixRightList = getLocalCache(`${this.cacheKey}-fixRightList`)
-        if(fixRightList) {
-            this.fixRightList = fixRightList
+        const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
+        if(rightFixList) {
+            this.rightFixList = rightFixList
         } else {
-            this.fixRightList = JSON.parse(JSON.stringify(initRightList))
-            addLocalCache(`${this.cacheKey}-fixRightList`, this.fixRightList)
+            this.rightFixList = JSON.parse(JSON.stringify(initRightList))
+            addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
         }
 
-        this.$emit('filterColumn', [...this.fixLeftList, ...this.notFixList, ...this.fixRightList])
+        this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
         this.isCheckAll()
     },
     computed: {
         // 选中数组
         CheckedList() {
-            const arr = [...this.notFixList.filter(v => v.isChecked), ...this.fixLeftList.filter(v => v.isChecked)]
-            if(arr.length === (this.notFixList.length + this.fixLeftList.length)) {
+            const arr = [...this.notFixList.filter(v => v.isChecked), ...this.leftFixList.filter(v => v.isChecked)]
+            if(arr.length === (this.notFixList.length + this.leftFixList.length)) {
                 this.allChecked = true
             } else {
                 this.allChecked = false
@@ -169,8 +169,8 @@ export default {
         // 刷新列表
         toInit() {
             addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
-            addLocalCache(`${this.cacheKey}-fixLeftList`, this.fixLeftList)
-            this.$emit('filterColumn', [...this.fixLeftList, ...this.notFixList, ...this.fixRightList])
+            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
+            this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
             this.isCheckAll()
         },
         // 重置
@@ -178,25 +178,25 @@ export default {
             this.allChecked = false
             this.$emit('filterColumn', [...this.initLeftList, ...this.initList, ...this.initRightList])
             addLocalCache(`${this.cacheKey}-notFixList`, this.initList)
-            addLocalCache(`${this.cacheKey}-fixLeftList`, this.initLeftList)
+            addLocalCache(`${this.cacheKey}-leftFixList`, this.initLeftList)
             this.$nextTick(() => {
                 // 初始化列展示弹窗
                 this.notFixList = JSON.parse(JSON.stringify(this.initList))
-                this.fixLeftList = JSON.parse(JSON.stringify(this.initLeftList))
-                this.fixRightList = JSON.parse(JSON.stringify(this.initRightList))
+                this.leftFixList = JSON.parse(JSON.stringify(this.initLeftList))
+                this.rightFixList = JSON.parse(JSON.stringify(this.initRightList))
                 this.isCheckAll()
             })
         },
         // 全选
         checkAll() {
-            this.fixLeftList.forEach(v => v.isChecked = this.allChecked)
+            this.leftFixList.forEach(v => v.isChecked = this.allChecked)
             this.notFixList.forEach(v => v.isChecked = this.allChecked)
             this.toInit()
         },
         // 是否全选
         isCheckAll() {
-            const arr = [...this.notFixList.filter(v => v.isChecked), ...this.fixLeftList.filter(v => v.isChecked)]
-            if(arr.length === (this.notFixList.length + this.fixLeftList.length)) {
+            const arr = [...this.notFixList.filter(v => v.isChecked), ...this.leftFixList.filter(v => v.isChecked)]
+            if(arr.length === (this.notFixList.length + this.leftFixList.length)) {
                 this.allChecked = true
             } else {
                 this.allChecked = false
@@ -205,19 +205,20 @@ export default {
         // 不固定
         notToFix(item) {
             // 获取点击项的下标
-            const index = this.fixLeftList.findIndex(v => v.id === item.id)
-            this.fixLeftList[index].fix = 'not'
+            const index = this.leftFixList.findIndex(v => v.id === item.id)
+            this.leftFixList[index].fix = 'not'
             // 不固定数组中插入该项
-            this.notFixList.splice(index, 0, this.fixLeftList[index])
+            this.notFixList.splice(index, 0, item)
             // 左侧固定数组中删除该项
-            this.fixLeftList.splice(index, 1)
+            this.leftFixList.splice(index, 1)
             this.toInit()
         },
         // 固定左侧
         toFixLeft(item) {
             const index = this.notFixList.findIndex(v => v.id === item.id)
             this.notFixList[index].fix = 'left'
-            this.fixLeftList.splice(index, 0, this.notFixList[index])
+            // this.leftFixList.splice(index, 0, this.notFixList[index])
+            this.leftFixList.push(item)
             this.notFixList.splice(index, 1)
             this.toInit()
         },
@@ -230,7 +231,7 @@ export default {
             this.drag = false;
             this.currList.splice(this.oldIndex, 1)
             this.currList.splice(this.newIndex, 0, this.currObj)
-            this.$emit('filterColumn', [...this.fixLeftList, ...this.notFixList, ...this.fixRightList])
+            this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
         },
         onMove(e){
             this.currList = e.relatedContext.list // 当前数组

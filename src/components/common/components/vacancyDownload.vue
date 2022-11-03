@@ -7,7 +7,9 @@
       <el-col :span="18">
         <el-radio-group v-model="downLoadInfo.loadType">
           <el-radio label="1">按小区</el-radio>
-          <el-radio label="2" v-if="showNdwBtn">按点位</el-radio>
+          <el-radio label="2">按楼栋</el-radio>
+          <el-radio label="3">按单元</el-radio>
+          <el-radio label="4" v-if="showNdwBtn">按点位</el-radio>
         </el-radio-group>
       </el-col>
     </el-row>
@@ -88,11 +90,7 @@
 
 <script>
 import api from "../../../api/api.js";
-// 时间格式化
-import timeFormat from "../../../commonFun/timeFormat.js";
-import sheetExcel from "../../../commonFun/sheetExcel.js";
 import sessFun from "../../../commonFun/sessFun.js";
-
 import { Message } from "element-ui";
 
 export default {
@@ -128,44 +126,28 @@ export default {
       this.$emit("cancelClick", false);
     },
     confirmDown () {
-      let { loadType, city, daterange, dateType } = this.downLoadInfo;
-      if (!city.length) {
-        Message.warning("请选择城市!");
-        return;
-      }
-      if (dateType == "2") {
-        if (!daterange || !daterange.length) {
-          this.messageFun("warning", "请先选择日期");
-          return;
+        let { loadType, city, daterange, dateType } = this.downLoadInfo;
+        if (!city.length) {
+            Message.warning("请选择城市!");
+            return;
         }
-      }
-      if (loadType == "1") {
-        if (dateType == "1") {
-          // 半年日期按照小区来导
-          this.exportExcelData();
-        } else {
-          // 自定义日期按照小区来导
-          this.dateRangeEmpty();
+        if (dateType == "2") {
+            if (!daterange || !daterange.length) {
+            this.messageFun("warning", "请先选择日期");
+            return;
+            }
         }
-      } else {
-        let { city, daterange, mediaTypeIds } = this.downLoadInfo;
-        let rid = city.join(",");
-        let info = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token,
-          rIDs: rid,
-          mediaTypeIds: mediaTypeIds.join(',')
-        };
-        if (dateType == "1") {
-          // 半年日期按照点位来导
-          this.getDaterangeAds(info);
-        } else {
-          info.startTime = daterange[0];
-          info.endTime = daterange[1];
-          // 自定义日期按照点位来导
-          this.getDaterangeAds(info);
+
+        switch(loadType) {
+            // 按小区
+            case "1": this.getExcelData('exportVacancyByCommunity', '小区'); break;
+            // 按楼栋
+            case "2": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
+            // 按单元
+            case "3": this.getExcelData('exportVacancyByUnit', '单元'); break;
+            // 按点位
+            case "4": this.getExcelData('exportVacancyByAds', '点位'); break;
         }
-      }
     },
     // 获取城市
     getCity () {
@@ -176,7 +158,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/GetAuthorCity", info)
         .then((res) => {
-          console.log(res.data);
+        // console.log(res.data);
           if (res.data.SysCode == 300200) {
             let resinfo = res.data.data;
             let result = [];
@@ -203,592 +185,73 @@ export default {
         }
       })
     },
-    // 自定义日期按照小区
-    dateRangeEmpty () {
-      this.postDownLoadNum(0);
-      let { city, daterange, mediaTypeIds } = this.downLoadInfo;
-      let loadingPoint = this.$loading({
-        lock: true,
-        text: "玩命加载中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      let rid = city.join(",");
-      console.log(daterange, rid);
-      let info = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        rIDs: rid,
-        startTime: daterange[0],
-        endTime: daterange[1],
-        mediaTypeIds: mediaTypeIds.join(',')
-      };
-      api
-        .postApi(this.apiVar.Advertisement + "/ExportSpareRes", info)
-        .then((res) => {
-          console.log(res.data);
-          if (!res.data.SysCode) {
-            if (res.data.length) {
-              let returnobj = this.formatData(res.data);
-              let head = [
-                "资源名称",
-                "省份",
-                "城市",
-                "区域",
-                "详细地址",
-                "媒介载体",
-                "商圈",
-                "楼栋数量",
-                "住户数量",
-                "楼盘价格",
-                "楼盘类型",
-                "入住时间",
-                "广告限制",
-                "车位数",
-                "车流量",
-                "人流量",
-                "媒体数量(面)",
-                "点位备注",
-                "经度",
-                "纬度"
-              ];
-              let customPermission = JSON.parse(
-                sessionStorage.getItem("session_data")
-              ).customPermission;
-              switch (customPermission.patrolPermission) {
-                case 1:
-                  head.push("巡点问题", "通行情况");
-                  break;
-                case 2:
-                  head.push("巡点问题", "通行情况", "通电情况");
-                  break;
-              }
-
-              if (
-                (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                (this.sessionData.uType == "ADN_BD_KA")
-              ) {
-                head.push("归属公司");
-              }
-
-              let allHead = head.concat([info.startTime + "-" + info.endTime]);
-              let filename =
-                returnobj.city.join("-") +
-                "-" +
-                info.startTime +
-                "~" +
-                info.endTime +
-                "空位表";
-              sheetExcel.toDownload(allHead, returnobj.arr, filename);
-            } else {
-              this.messageFun("warning", "此城市没有点位");
-            }
-          } else {
-            this.messageFun("warning", res.data.MSG);
-          }
-          loadingPoint.close();
-        })
-        .catch((err) => {
-          console.log(err);
-          loadingPoint.close();
-        });
-    },
-
-    // 导出空点格式化数据
-    formatData(arr) {
-      let returnObj = {
-        city: [],
-        arr: "",
-      };
-      let result = [];
-      for (let data of arr) {
-        let resObj = {
-          sheetName: this.getCityName(data.rID),
-          showList: [],
-        };
-        returnObj.city.push(resObj.sheetName);
-        let dataArr = data.adsList || [];
-        if(dataArr.length === 0) {
-          this.messageFun("warning", `${resObj.sheetName || '城市'}没有点位`);
-          break;
-        }
-        for (let item of dataArr) {
-          let obj = {
-            resName: item.resName || "",
-            province: item.prName || "",
-            city: item.crName || "",
-            rName: item.rName || "",
-            resAddress: item.resAddress || "",
-            mVehicle: item.mVehicle,
-            tradingArea: item.tradingArea || "",
-            fNum: item.fNum || "",
-            hNum: item.hNum || "",
-            hPrice: item.hPrice / 100,
-            cType: item.cType || "",
-            chDay: item.chDay || "",
-            notPush: item.allNotPush || "",
-            parkSpaceNum: item.parkSpaceNum || "",
-            carFlow: item.carFlow || "",
-            peopleFlow: item.peopleFlow || "",
-            adsNum: item.adsNum || 0,
-            remark: item.allRemark1 || "",
-            lng: item.lng || "",
-            lat: item.lat || ""
-          };
-
-          let customPermission = JSON.parse(
-            sessionStorage.getItem("session_data")
-          ).customPermission;
-
-          // (定制巡点)
-          if (customPermission) {
-            switch (customPermission.patrolPermission) {
-              case 1:
-                obj.allRemark = item.allRemark;
-                obj.allTrafficState = item.allTrafficState;
-                break;
-              case 2:
-                obj.allRemark = item.allRemark;
-                obj.allTrafficState = item.allTrafficState;
-                obj.allElectrifyState = item.allElectrifyState;
-                break;
-            }
-          }
-
-          if (
-            (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-            (this.sessionData.uType == "ADN_BD_KA")
-          ) {
-            obj.asNames = item.asNames;
-          }
-
-          obj[
-            this.downLoadInfo.daterange[0] +
-            "-" +
-            this.downLoadInfo.daterange[1]
-          ] = item.DateInfo.adsNum || 0;
-          resObj.showList.push(obj);
-        }
-        result.push(resObj);
-      }
-      returnObj.arr = result;
-      return returnObj;
-    },
     // 获取城市中文名称
-    getCityName (rid) {
-      let str = "";
-      for (let data of this.cityList) {
-        if (data.value == rid) {
-          str = data.label;
-          break;
+    getCityName (rids) {
+        let citys = [];
+        for (let i = 0; i < rids.length; i++) {
+            for(let data of this.cityList) {
+                if(data.value === rids[i]) {
+                    citys.push(data.label)
+                    break
+                }
+            }
         }
-      }
-      return str;
+        return citys.join('-');
     },
-    // 导出空点导出次数接口
-    postDownLoadNum (type) {
-      let data = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        type,
-      };
-      api
-        .postApi(this.apiVar.Advertisement + "/AddExportLog", data)
-        .then((res) => {
-          console.log(res);
+    // 导出表格
+    exportToExcel(data, name) {
+        let { city, dateType, daterange } = this.downLoadInfo;
+        let fileName = this.getCityName(city)
+        // 自定义日期
+        if(dateType == '2') {
+            fileName += '-' + daterange[0] + '~' + daterange[1]
+        }
+        // 导出excel
+        let blob = new Blob([data], {type: "application/vnd.ms-excel;charset=utf-8"});
+        let downloadElement = document.createElement("a");
+        let href = window.URL.createObjectURL(blob); //创建下载的链接
+        downloadElement.href = href;
+        downloadElement.download = `${fileName} 空位表(按${name}).xls`; //下载后文件名
+        document.body.appendChild(downloadElement);
+        downloadElement.click(); //点击下载
+        document.body.removeChild(downloadElement); //下载完成移除元素
+        window.URL.revokeObjectURL(href); //释放掉blob对象
+    },
+    // 按小区/楼栋/单元/点位 - 表格数据请求
+    getExcelData(url, name) {
+        let loadingPoint = this.$loading({
+            lock: true,
+            text: "玩命加载中...",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
         });
-    },
-    // 半年日期按照小区导出数据
-    exportExcelData () {
-      this.postDownLoadNum(0);
-      let loadingPoint = this.$loading({
-        lock: true,
-        text: "玩命加载中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      let request_times = this.downLoadInfo.city.length; //计算分几次请求
-      let funcs = []; //Promise.all要用到的参数, 存放每次请求的Promise对象
-      for (let i = 0; i < request_times; i++) {
-        // 循环请求次数，构造请求的Promise对象并插入funcs数组
-        let func = new Promise((resolve, reject) => {
-          let data = [];
-          api
-            .getApi(
-              this.apiVar.Advertisement + "/ExportHalfYearSpaceRes",
-              { cityIds: this.downLoadInfo.city[i], mediaTypeIds: this.downLoadInfo.mediaTypeIds.join(',') }
-            )
-            .then((response) => {
-              if (response.data.SysCode == 200200) {
-                let dataArr = response.data.data[0];
-                data.push(dataArr);
-                resolve(data);
-              } else {
-                resolve("");
-              }
-            })
-            .catch((error) => {
-              resolve("");
-            });
-        });
-        funcs.push(func);
-      }
-      Promise.all(funcs).then((values) => {
-        //使用Promise.all调用funcs里面的函数，并合并数据，最后给js-xlsx生成Excel
-        let resultValus = [];
-        for (let val of values) {
-          if (val) {
-            resultValus.push(val);
-          }
+        let { city, mediaTypeIds, dateType, daterange } = this.downLoadInfo;
+        let params = {
+            cityIds: city.join(','),
+            mediaTypeIds: mediaTypeIds.join(','),
         }
-        console.log('resultValusresultValus', resultValus);
-        if (resultValus.length) {
-          let returnobj = this.hasPointData(resultValus);
-          if (returnobj.arr.length > 0) {
-            console.log("returnobj", returnobj);
-            let date = returnobj.date,
-              head = [
-                "资源名称",
-                "省份",
-                "城市",
-                "区域",
-                "详细地址",
-                "媒介载体",
-                "商圈",
-                "楼栋数量",
-                "住户数量",
-                "楼盘价格",
-                "楼盘类型",
-                "入住时间",
-                "广告限制",
-                "车位数",
-                "车流量",
-                "人流量",
-                "媒体数量(面)",
-                "点位备注",
-                "经度",
-                "纬度",
-              ],
-              customPermission = JSON.parse(
-                sessionStorage.getItem("session_data")
-              ).customPermission;
-
-            switch (customPermission.patrolPermission) {
-              case 1:
-                head.push("巡点问题", "通行情况");
-                break;
-              case 2:
-                head.push("巡点问题", "通行情况", "通电情况");
-                break;
-            }
-
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              head.push("归属公司");
-            }
-
-            let allHead = head.concat(date);
-            let filename =
-              returnobj.filename +
-              "-" +
-              date[0].substring(0, 10) +
-              "~" +
-              date[date.length - 1].substring(11) +
-              "空位表";
-            sheetExcel.toDownload(allHead, returnobj.arr, filename);
-          } else {
-            this.messageFun("warning", "点位为空");
-          }
-        } else {
-          this.messageFun("warning", "此城市没有点位");
+        // 自定义日期
+        if(dateType === '2') {
+            params.startTime = daterange[0]
+            params.endTime = daterange[1]
         }
-        loadingPoint.close();
-      });
-    },
-    // 处理数据
-    hasPointData (arr) {
-      let returnObj = {
-        arr: "",
-        date: "",
-        filename: "",
-      };
-      let result = [];
-      let allDateArr = [];
-      let filenameArr = [];
-      for (let data of arr) {
-        if (data.length === 0 || data[0].length === 0) {
-          continue;
-        }
-        let resObj = {
-          sheetName: data[0][0].crName,
-          showList: [],
-        };
-        filenameArr.push(resObj.sheetName);
-        for (let k = 0, kLen = data.length; k < kLen; k++) {
-          for (let item of data[k]) {
-            let dateArr = [];
-            let dataStr = [];
-            let obj = {
-              resName: item.resName,
-              province: item.prName,
-              city: item.crName,
-              rName: item.rName,
-              resAddress: item.resAddress,
-              mVehicle: item.mVehicle,
-              tradingArea: item.tradingArea,
-              fNum: item.fNum,
-              hNum: item.hNum,
-              hPrice: item.hPrice / 100,
-              cType: item.cType,
-              chDay: item.chDay,
-              notPush: item.allNotPush || "",
-              parkSpaceNum: item.parkSpaceNum || "",
-              carFlow: item.carFlow || "",
-              peopleFlow: item.peopleFlow || "",
-              adsNum: item.adsNum || 0,
-              remark: item.allRemark1 || "",
-              lng: item.lng || "",
-              lat: item.lat || ""
-            };
-            let customPermission = JSON.parse(
-              sessionStorage.getItem("session_data")
-            ).customPermission;
-
-            if (customPermission) {
-              switch (customPermission.patrolPermission) {
-                case 1:
-                  obj.allRemark = item.allRemark;
-                  obj.allTrafficState = item.allTrafficState;
-                  break;
-                case 2:
-                  obj.allRemark = item.allRemark;
-                  obj.allTrafficState = item.allTrafficState;
-                  obj.allElectrifyState = item.allElectrifyState;
-                  break;
-              }
-            }
-
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asNames = item.asNames;
-            }
-
-            let showData = item.DateInfo.sort(this.sortDate);
-            for (let date of showData) {
-              dateArr.push(
-                timeFormat.toDate(date.starDate, "/") +
-                "-" +
-                timeFormat.toDate(date.endDate, "/")
-              );
-              dataStr.push(date.adsNum);
-            }
-            let dateObj = this.concatObj(dateArr, dataStr);
-            let resultObj = Object.assign(obj, dateObj);
-            resObj.showList.push(obj);
-            if (k >= kLen - 1) {
-              allDateArr = dateArr;
-            }
-          }
-        }
-        result.push(resObj);
-      }
-      returnObj = {
-        arr: result,
-        date: allDateArr,
-        filename: filenameArr.join("-"),
-      };
-      return returnObj;
-    },
-    // 键转换为值
-    concatObj (dateArr, dataStr) {
-      let obj = {};
-      for (let dateI = 0, dateLen = dateArr.length; dateI < dateLen; dateI++) {
-        obj[dateArr[dateI]] = dataStr[dateI];
-      }
-      return obj;
-    },
-    // 自定义日期按照点位来导
-    getDaterangeAds (info) {
-      this.postDownLoadNum(1);
-      let loadingPoint = this.$loading({
-        lock: true,
-        text: "玩命加载中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      api
-        .postApi(this.apiVar.Advertisement + "/ExportSpareAds", info)
+        api.getApi_file('/addsp/api/v1/excel/export/' + url, params)
         .then((res) => {
-          console.log(res.data);
-          if (res.data.SysCode == 300200) {
-            let resinfo = res.data;
-            let date = resinfo.startTime + "-" + resinfo.endTime;
-            if (resinfo.data.length) {
-              let returnData = [];
-              for (let item of resinfo.data) {
-                if (item.spareAds.length) {
-                  returnData.push(item.spareAds);
+            if (res.status === 200) {
+                if(res.data) {
+                    this.exportToExcel(res.data, name)
+                    this.messageFun('success', '导出成功')
                 }
-              }
-              if (returnData.length) {
-                let returnobj = this.formatDataAds(resinfo.data, date);
-                console.log("returnobj-", returnobj);
-                let head = [
-                  "资源名称",
-                  "省份",
-                  "城市",
-                  "区域",
-                  "详细地址",
-                  "媒介载体",
-                  "媒体名称",
-                  "资产编号",
-                  "投放面",
-                  "空闲日期",
-                  "门体类型",
-                  "商圈",
-                  "楼栋数量",
-                  "住户数量",
-                  "楼盘价格",
-                  "楼盘类型",
-                  "入住年份",
-                  "广告限制",
-                  "车位数",
-                  "车流量",
-                  "人流量",
-                  "素材尺寸",
-                  "可视尺寸",
-                  "点位备注",
-                  "位置类型",
-                  "经度",
-                  "纬度"
-                ];
-
-                let customPermission = JSON.parse(
-                  sessionStorage.getItem("session_data")
-                ).customPermission;
-                switch (customPermission.patrolPermission) {
-                  case 1:
-                    head.push("巡点问题", "通行情况");
-                    break;
-                  case 2:
-                    head.push("巡点问题", "通行情况", "通电情况");
-                    break;
-                }
-
-                if (
-                  (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-                  (this.sessionData.uType == "ADN_BD_KA")
-                ) {
-                  head.push("归属公司");
-                }
-
-                let filename = returnobj.city.join("-") + "-" + date + "空位表";
-                sheetExcel.toDownload(head, returnobj.arr, filename);
-              } else {
-                this.messageFun("warning", "此城市在此时间段内没有点位");
-              }
             } else {
-              this.messageFun("warning", "此城市在此时间段内没有点位");
+                this.messageFun('error', '导出失败')
             }
-          } else {
-            this.messageFun("warning", res.data.MSG);
-          }
-          loadingPoint.close();
         })
         .catch((err) => {
-          loadingPoint.close();
-          console.log(err);
-        });
-    },
-    // 结构格式化
-    formatDataAds (arr, date) {
-      let resultObj = {
-        city: [],
-        arr: "",
-      };
-      let result = [];
-      for (let data of arr) {
-        console.log("cityname", data.cityName);
-        if (data.spareAds.length) {
-          let resObj = {
-            sheetName: data.cityName,
-            showList: [],
-          };
-          resultObj.city.push(data.cityName);
-          for (let item of data.spareAds) {
-            let obj = {
-              resName: item.resName || "",
-              province: item.prName || "",
-              city: item.crName || "",
-              rName: item.rName || "",
-              resAddress: item.resAddress || "",
-              mVehicle: item.mVehicle,
-              mTitle: item.mTitle || "",
-              assetTag: item.assetTag,
-              asLab: item.asLab,
-              date: date,
-              mType: item.mType,
-              tradingArea: item.tradingArea || "",
-              fNum: item.fNum || "",
-              hNum: item.hNum || "",
-              hPrice: item.hPrice / 100,
-              // grade: item.grade || "",
-              cType: item.cType || "",
-              chDay: item.chDay || "",
-              notPush: item.allNotPush || "",
-              parkSpaceNum: item.parkSpaceNum || "",
-              carFlow: item.carFlow || "",
-              peopleFlow: item.peopleFlow || "",
-              adSize: item.adSize || "",
-              adViewSize: item.adViewSize || "",
-              allremark: item.allremark || "",
-              site: item.site || "",
-              lng: item.lng || "",
-              lat: item.lat || "",
-            };
-
-            let customPermission = JSON.parse(
-              sessionStorage.getItem("session_data")
-            ).customPermission;
-
-            if (customPermission) {
-              switch (customPermission.patrolPermission) {
-                case 1:
-                  obj.remark = item.remark || "";
-                  obj.trafficState = item.trafficState || "";
-                  break;
-                case 2:
-                  obj.remark = item.remark || "";
-                  obj.trafficState = item.trafficState || "";
-                  obj.electrifyState = item.electrifyState || "";
-                  break;
-              }
-            }
-
-            if (
-              (this.sessionData.uType == "ADN_MD_COUNTRY") ||
-              (this.sessionData.uType == "ADN_BD_KA")
-            ) {
-              obj.asName = item.asName;
-            }
-
-            resObj.showList.push(obj);
-          }
-          result.push(resObj);
-        }
-      }
-      resultObj.arr = result;
-      return resultObj;
-    },
-    // 时间大小排序
-    sortDate (a, b) {
-      let aDate = timeFormat.toDate(a.starDate, "");
-      let bDate = timeFormat.toDate(b.starDate, "");
-      return aDate - bDate;
+            console.log(err);
+        })
+        .finally(() => {
+            loadingPoint.close()
+        })
     },
     // 操作提示统一方法
     messageFun (mesType, mes) {

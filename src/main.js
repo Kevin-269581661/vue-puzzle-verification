@@ -6,6 +6,7 @@ import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
 import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
+import 'default-passive-events'
 Vue.config.productionTip = false;
 Vue.config.performance = true;
 

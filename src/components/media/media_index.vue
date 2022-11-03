@@ -958,7 +958,7 @@ export default {
           console.log("err", err);
         })
         .finally((_) => {});
-      /* 
+      /*
         媒介的媒体概况
         "banLabCnt" 禁止的点位数
         "banMediaCnt" 禁止的媒体数
@@ -972,7 +972,7 @@ export default {
         "demolishMediaCnt" 拆除的媒体数
         "offPubMediaCnt" 不可投的媒体数
         "offPubLabCnt" 不可投的点位数
-        "offPubRank" 排名百分比 
+        "offPubRank" 排名百分比
       */
       api
         .getApi(this.apiVar.report + "/homepage/getMDMediaReport", params)

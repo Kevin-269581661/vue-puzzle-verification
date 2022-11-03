@@ -116,6 +116,7 @@
             </TableSetting>
           </div>
         </div>
+
         <div class="table_wrap">
           <el-table
             :size="rowSpace"
@@ -511,9 +512,7 @@ import timeFormat from "../../commonFun/timeFormat";
 import unvailableSellDialog from "./components/unvailableSellDialog.vue";
 import vailableSellDialog from "./components/vailableSellDialog.vue";
 import TableSetting from "./components/TableSetting";
-
 import { getLocalCache } from "@/utils/user.js";
-
 import {
   Form,
   FormItem,
@@ -707,7 +706,6 @@ export default {
     let endTime = timeFormat.returnDayCount(0, "/");
     let startTime = timeFormat.returnDayCount(-180, "/");
     this.canSelectDayTime = [startTime, endTime];
-
     // 获取列表设置缓存
     const rowSpace = getLocalCache("rowSpace");
     this.rowSpace = rowSpace || "medium";

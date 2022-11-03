@@ -329,7 +329,7 @@
                     <el-table-column
                         prop="mac"
                         label="设备ID"
-                        width="100px"
+                        width="120px"
                     >
                         <template slot-scope="scope">
                             {{ scope.row.mac || "--" }}
@@ -338,7 +338,7 @@
                     <el-table-column
                       prop="mType"
                       label="设备型号"
-                      min-width="100px"
+                      min-width="180px"
                     >
                     </el-table-column>
                     <el-table-column
@@ -379,19 +379,19 @@
                     </el-table-column> -->
                     <el-table-column
                       label="备注"
-                      min-width="100px"
+                      min-width="200px"
                       :show-overflow-tooltip="true"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.mRemark || "--" }}
                       </template>
                     </el-table-column>
-                    <el-table-column prop="buildingName" label="楼栋号" width="100px">
+                    <el-table-column prop="buildingName" label="楼栋号" width="120px">
                         <template slot-scope="scope">
                             {{ scope.row.buildingName || "--" }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="unitName" label="单元号" width="100px">
+                    <el-table-column prop="unitName" label="单元号" width="120px">
                         <template slot-scope="scope">
                             {{ scope.row.unitName || "--" }}
                         </template>

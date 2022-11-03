@@ -17,9 +17,9 @@
                     </el-input>
             </el-col>
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                <span class="li-label">资产编号：</span>
+                <span class="li-label">媒体位ID：</span>
                 <el-input
-                    placeholder="请输入资产编号"
+                    placeholder="请输入媒体位ID"
                     v-model="assetTag"
                     class="input-with-select u-key"
                     size="small"
@@ -419,7 +419,7 @@
           </el-table-column>
           <el-table-column prop="mTitle" label="媒体名称" min-width="85">
           </el-table-column>
-          <el-table-column prop="assetTag" label="资产编号" min-width="85">
+          <el-table-column prop="assetTag" label="媒体位ID" min-width="85">
           </el-table-column>
           <el-table-column prop="errorMsg" label="失败信息" min-width="90">
             <template slot-scope="scope">
@@ -561,7 +561,7 @@ export default {
             { id: 1, label: "媒体类型", prop: "mVehicle", width: "180", isChecked: true, fix:"not" },
             { id: 2, label: "媒体名称", prop: "mTitle", width: "180", isChecked: true, fix:"not" },
             { id: 3, label: "投放面", prop: "asLab", width: "120", isChecked: true, fix:"not" },
-            { id: 4, label: "资产编号", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
+            { id: 4, label: "媒体位ID", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
             { id: 5, label: "资源类型", prop: "rtName", width: "120", isChecked: true, fix:"not" },
             { id: 6, label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
             { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
@@ -596,7 +596,7 @@ export default {
         showNewBtn: false, // 新建按钮
         haveDetail: true,
         resName: "", // 搜索的资源名称
-        assetTag: "", // 资产编号（媒体ID）
+        assetTag: "", // 资产编号（媒体位ID）
         mTitle: "", // 搜索的媒体名称
         selectedOptions: [], // 搜索的城市区域
         tradingArea: "", // 搜索的商圈
@@ -1052,7 +1052,7 @@ export default {
         if (!rows.assetTag && rows.asState == 2) {
           return sessFun.messageFun(
             "warning",
-            "该媒体尚未填写资产编号，请在详情页中点击【编辑】修改媒体状态并补全资产编号"
+            "该媒体尚未填写媒体位ID，请在详情页中点击【编辑】修改媒体状态并补全媒体位ID"
           );
         }
         this.isVailableSell = true;
@@ -1387,7 +1387,7 @@ export default {
           "城市",
           "区域",
           "媒体名称",
-          "资产编号",
+          "媒体位ID",
           "失败信息",
         ];
         const filterVal = [

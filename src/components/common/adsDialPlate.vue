@@ -24,7 +24,7 @@
                                 style="width: 98px"
                             >
                                 <el-option label="资源名称" value="resName"></el-option>
-                                <el-option label="资产编号" value="assetTag"></el-option>
+                                <el-option label="媒体位ID" value="assetTag"></el-option>
                             </el-select>
                         </el-input>
                 </el-col>
@@ -260,7 +260,7 @@
                     { id: 3, label: "区域", prop: "districtName", width: "80", isChecked: true, fix:"left" },
                     { id: 4, label: "街道", prop: "street", width: "100", isChecked: false, fix:"not" },
                     { id: 5, label: "商圈", prop: "tradingArea", width: "120", isChecked: false, fix:"not" },
-                    { id: 6, label: "资产编号", prop: "assetTag", width: "180", isChecked: false, fix:"not" },
+                    { id: 6, label: "媒体位ID", prop: "assetTag", width: "180", isChecked: false, fix:"not" },
                     { id: 7, label: "设备类型", prop: "mediaModel", width: "80", isChecked: false, fix:"not" },
                     { id: 8, label: "位置类型", prop: "siteType", width: "80", isChecked: false, fix:"not" },
                     { id: 9, label: "楼栋", prop: "buildingName", width: "80", isChecked: false, fix:"not" },
@@ -574,7 +574,7 @@
                             street: key.street || '--', // 街道
                             tradingArea: key.tradingArea || '--', // 商圈
                             mTitle: key.mTitle || '--', // 媒体名称
-                            assetTag: key.assetTag || '--', // 资产编号
+                            assetTag: key.assetTag || '--', // 资产编号（媒体位ID）
                             mediaModel: key.mediaModel || '--', // 设备类型
                             siteType: key.siteType || '--', // 位置类型
                             buildingName: key.buildingName || '--', // 楼栋

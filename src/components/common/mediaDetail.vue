@@ -300,11 +300,11 @@
                     show-overflow-tooltip
                   >
                     <el-table-column
-                        prop="mac"
+                        prop="mTitle"
                         label="媒体位置"
                         width="100px">
                         <template slot-scope="scope">
-                            {{ scope.row.mac || "--" }}
+                            {{ scope.row.mTitle || "--" }}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -326,7 +326,14 @@
                         {{ scope.row.site || "--" }}
                       </template>
                     </el-table-column>
-                    <el-table-column prop="mTitle" label="设备ID" width="100px">
+                    <el-table-column
+                        prop="mac"
+                        label="设备ID"
+                        width="100px"
+                    >
+                        <template slot-scope="scope">
+                            {{ scope.row.mac || "--" }}
+                        </template>
                     </el-table-column>
                     <el-table-column
                       prop="mType"

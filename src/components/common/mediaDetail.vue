@@ -210,10 +210,10 @@
                 </el-col>
               </el-row>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
-                <el-col :span="6">
+                <!-- <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">居住人群：</span
-                  ><span>{{ "无" }}</span>
-                </el-col>
+                  ><span>{{ "--" }}</span>
+                </el-col> -->
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车位数：</span
                   ><span>{{ resData.carNumber || "--" }}</span>
@@ -226,8 +226,6 @@
                   <span class="ad_mediaInfoPanel_row_title">车流量：</span
                   ><span>{{ resData.carFlowrate || "--" }} 车次/天</span>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">广告限制：</span
                   ><span>{{ resData.notPush || "--" }}</span>

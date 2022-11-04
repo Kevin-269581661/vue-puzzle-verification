@@ -316,9 +316,12 @@
                     <el-col :span="6">
                         <el-form-item label="广告限制" prop="notPush" class="right_form_item">
                             <el-select
-                                v-model="recForm.notPush" multiple collapse-tags placeholder="请选择广告限制"
-                                @change="changeAdLimit">
-                                <!-- 不限 -->
+                                v-model="recForm.notPush"
+                                multiple
+                                collapse-tags
+                                placeholder="请选择广告限制"
+                                @change="(value) => changeAdLimit(value, 'basic')"
+                            >
                                 <el-option
                                     v-for="(limit, index) in adLimit"
                                     :key="index"
@@ -606,7 +609,7 @@
                     <el-row :gutter="76" class="from_row">
                       <el-col :span="6" class="el_col_box">
                         <el-form-item
-                          label="媒体名称"
+                          label="媒体位置"
                           prop="mediaName"
                           :rules="[{
                             validator: validateMediaName,
@@ -615,7 +618,7 @@
                           },
                           {
                             required: true,
-                            message: '媒体名称不能为空!',
+                            message: '媒体位置不能为空!',
                             trigger: ['blur', 'change'],
                           },
                           { validator: validateSpace, trigger: ['blur', 'change'] },
@@ -634,7 +637,7 @@
                       </el-col>
                       <el-col :span="6" class="el_col_box">
                         <el-form-item
-                          label="资产编号"
+                          label="媒体位ID"
                           prop="assetId"
                           ref="ResAssetId"
                           :rules="mediaRules.assetId"
@@ -667,7 +670,7 @@
                             </ul>
                           </div>
                           <p class="the_same_error">
-                            这个资产编号已存在 <i class="el-icon-warning"></i>
+                            这个媒体位ID已存在 <i class="el-icon-warning"></i>
                           </p>
                         </el-tooltip>
                       </el-col>
@@ -682,7 +685,7 @@
                       <el-col :span="6">
                         <el-form-item label="广告限制" prop="adLimit" class="right_form_item">
                             <el-select v-model="mediaItem.mediaForm.adLimit" multiple collapse-tags placeholder="请选择广告限制"
-                                @change="(value) => changeAdLimit(value, mediaItem)">
+                                @change="(value) => changeAdLimit(value, 'media', mediaItem)">
                                 <el-option
                                     v-for="(limit, index) in adLimit"
                                     :key="index"
@@ -977,7 +980,7 @@ export default {
     elInputNumber: InputNumber,
   },
   data() {
-    //资产编号
+    //媒体位ID
     let validateAssetId = (rule, value, callback) => {
       let reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
       if (reg.test(value)) {
@@ -1317,7 +1320,7 @@ export default {
         assetId: [
           {
             required: true,
-            message: "资产编号不能为空!",
+            message: "媒体位ID不能为空!",
             trigger: ["blur", "change"],
           },
           { validator: validateAssetId, trigger: "change" },
@@ -1380,7 +1383,7 @@ export default {
       mediaADImg: [], // 广告门媒体图片
       mediaImgDialogVisible: false, // 媒体图片放大的模态框
       mediaImgSrc: [], // 媒体图片放大时图片链接
-      mediaImgTitle: "", // 当前图片的媒体名称
+      mediaImgTitle: "", // 当前图片的媒体位置
       mediaLevel: [
         // 媒体等级
         { label: "A级", value: "A" },
@@ -1503,6 +1506,7 @@ export default {
                 item.mediaList = [];
               });
               this.mediaTypeList = resultArr;
+              console.log('媒体列表mediatypelist', resultArr);
             }
           } else {
             Message.warning(res.data.MSG || "公司权限内媒体类型获取失败！");
@@ -1867,12 +1871,17 @@ export default {
       this.mapVisible = false;
     },
     // 广告限制，当选择为不限时
-    changeAdLimit(val) {
+    changeAdLimit(val, type, mediaItem) {
     //   console.log('value, mediaItem', val, mediaItem)
         let valArr = val
         for (let i = 0; i < valArr.length; i++) {
             if (valArr[i] === '不限') {
-                mediaItem.mediaForm.adLimit = []
+                if(type === 'basic') {
+                    this.recForm.notPush = []
+                }
+                if(type === 'media') {
+                    mediaItem.mediaForm.adLimit = []
+                }
             }
         }
         // if (val[0] === '不限') {
@@ -2001,9 +2010,9 @@ export default {
         });
       }
     },
-    //资产编号校验去重
+    //媒体位ID校验去重
     validateAssetTag(rule, value, callback) {
-    //   console.log("_________资产编号是否重复_________", value);
+    //   console.log("_________媒体位ID是否重复_________", value);
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -2029,7 +2038,7 @@ export default {
             // 对比当前页面中所有媒体的资产id
             let flag = this.filterlocalAssetId(value);
             if (flag) {
-              callback(new Error("这个资产编号已在该小区内存在!"));
+              callback(new Error("这个媒体位ID已在该小区内存在!"));
             } else {
               callback();
             }
@@ -2060,7 +2069,7 @@ export default {
       }
       return result >= 2;
     },
-    // 判断同资源下资产编号是否重复
+    // 判断同资源下媒体位ID是否重复
     filterAssetId(resData, value) {
       let result = false;
       const mediaTypeLength = this.mediaTypeList.length;
@@ -2091,7 +2100,7 @@ export default {
       }
       return result;
     },
-    // 媒体名称校验去重
+    // 媒体位置校验去重
     validateMediaName(rule, value, callback, source, options) {
       const checkMediaTypeIndex = rule.options.checkMediaTypeIndex;
       const mediaIndexOfMediaType = rule.options.mediaIndexOfMediaType;
@@ -2110,12 +2119,12 @@ export default {
           }
         }
         if (result >= 2) {
-          callback(new Error("该媒体名称已存在!"));
+          callback(new Error("该媒体位置已存在!"));
         } else {
           callback();
         }
       } else {
-        callback(new Error("媒体名称验证失败!"));
+        callback(new Error("媒体位置验证失败!"));
       }
     },
     // 广告门输入框和下拉框失去光标
@@ -2293,7 +2302,7 @@ export default {
               mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
-              notPush: tempMediaForm.adLimit.join(',')
+              notPush: tempMediaForm.adLimit.join('、')
             };
             params.push(obj);
           }
@@ -2589,7 +2598,7 @@ export default {
           carNumber: recObj.carNumber, // 车位数
           peopleFlowrate: recObj.peopleFlowrate, // 人流量
           carFlowrate: recObj.carFlowrate, // 车流量
-          notPush: recObj.notPush.split(','), // 广告限制
+          notPush: recObj.notPush ? recObj.notPush.split(',') : [], // 广告限制
           // 物业信息
           developer: recObj.developer || "", // 开发商
           pmc: recObj.pmc, // 物业公司
@@ -2669,7 +2678,7 @@ export default {
                 mRemark: mediaItem.mRemark,
                 mImg: mediaItem.mImg || "",
                 updataImg: [],
-                adLimit: mediaItem.notPush ? mediaItem.notPush.split(',') : []
+                adLimit: mediaItem.notPush ? mediaItem.notPush.split('、') : []
               };
               if (mediaItem.mImg) {
                 let imgArr = [];
@@ -2804,7 +2813,7 @@ export default {
         parkSpaceNum: recObj.carNumber, // 车位数
         peopleFlow: recObj.peopleFlowrate, // 人流量
         carFlow: recObj.carFlowrate, // 车流量
-        notPush: recObj.notPush.join(','), // 广告限制
+        notPush: recObj.notPush ? recObj.notPush.join(',') : '', // 广告限制
         // 物业信息
         developer: recObj.developer || "", // 开发商
         pmc: recObj.pmc, // 物业公司
@@ -2930,7 +2939,7 @@ export default {
                 site: tempMediaForm.site || "",
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                notPush: tempMediaForm.adLimit.join(','),
+                notPush: tempMediaForm.adLimit.join('、'),
               };
               editMediaParams.push(obj);
             }

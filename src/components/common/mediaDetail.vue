@@ -258,7 +258,7 @@
             <div class="ad_mediaInfoPanel_row">
               <h3>小区全貌图</h3>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
-                <el-col :span="6">
+                <el-col>
                     <span v-for="(item, index) in ResImgSrc" :key="index">
                         <span class="img-box" @click="showResImg(item)">
                             <img style="height: 100px;" :src="item" alt=""/>
@@ -300,14 +300,14 @@
                     <el-table-column
                         prop="mTitle"
                         label="媒体位置"
-                        width="100px">
+                        width="140px">
                         <template slot-scope="scope">
                             {{ scope.row.mTitle || "--" }}
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="资产编号"
-                      min-width="100px"
+                      label="媒体位ID"
+                      min-width="140px"
                       show-overflow-tooltip
                     >
                       <template slot-scope="scope">
@@ -317,7 +317,7 @@
                     <el-table-column
                       prop="site"
                       label="位置类型"
-                      width="100px"
+                      width="120px"
                       show-overflow-tooltip
                     >
                       <template slot-scope="scope">
@@ -327,7 +327,7 @@
                     <el-table-column
                         prop="mac"
                         label="设备ID"
-                        width="120px"
+                        width="150px"
                     >
                         <template slot-scope="scope">
                             {{ scope.row.mac || "--" }}
@@ -336,7 +336,7 @@
                     <el-table-column
                       prop="mType"
                       label="设备型号"
-                      min-width="180px"
+                      min-width="150px"
                     >
                     </el-table-column>
                     <el-table-column

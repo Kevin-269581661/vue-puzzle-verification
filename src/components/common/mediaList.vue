@@ -24,25 +24,48 @@
                     class="input-with-select u-key"
                     size="small"
                     clearable
+
                 >
                 </el-input>
             </el-col>
+            <li class="handel_ul_li handel_ul_li_city">
+
+          </li>
+          <li class="handel_ul_li handel_ul_li_area">
+
+          </li>
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
-                    <span class="li-label">城市区域：</span>
-                    <el-cascader
-                        :options="cityOptions"
-                        :props="cityProps"
-                        collapse-tags
-                        v-model="selectedOptions"
-                        separator="-"
-                        :show-all-levels="true"
-                        placeholder="请选择城市"
-                        filterable
-                        size="small"
-                        clearable
-                        @change="handleChange"
+                <span class="li-label">城市：</span>
+                <el-cascader
+                    :options="cityOptions"
+                    v-model="selectedOptions"
+                    separator="-"
+                    :show-all-levels="false"
+                    placeholder="请选择城市"
+                    filterable
+                    size="small"
+                    clearable
+                    @change="handleChange"
+                >
+                </el-cascader>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">区域：</span>
+                <el-select
+                    v-model="selectRName"
+                    placeholder="请选择区域"
+                    :clearable="true"
+                    size="small"
+                    @change="getRegion"
+                >
+                    <el-option
+                        v-for="item in regionOpt"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
                     >
-                    </el-cascader>
+                    </el-option>
+                </el-select>
             </el-col>
             <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <span class="li-label">楼栋：</span>
@@ -55,7 +78,7 @@
                 >
                 </el-input>
             </el-col>
-            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+            <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                 <span class="li-label">单元：</span>
                 <el-input
                     placeholder="请输入单元"
@@ -83,10 +106,10 @@
                     >推送地图</el-button
                 >
                 <!-- 搜索字段大于5时，使用isCollapse控制显示的搜索字段 -->
-                <!-- <div class="collapse-box" @click="isCollapse = !isCollapse">
+                <div class="collapse-box" @click="isCollapse = !isCollapse">
                     <span>展开</span>
                     <i :class="isCollapse === false ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
-                </div> -->
+                </div>
             </el-col>
         </el-row>
     </el-card>
@@ -136,7 +159,7 @@
                     <el-table-column
                         v-if="item.isChecked"
                         :label="item.label"
-                        :min-width="item.width"
+                        :width="item.width"
                         :show-overflow-tooltip="true"
                         :fixed="item.fix === 'left' ? true : false"
                     >
@@ -177,7 +200,7 @@
                             { text: '已拆除', value: 4 },
                         ]"
                         :filter-multiple="false"
-                        fixed="right"
+                        :fixed="item.fix"
                     >
                         <template slot-scope="scope">
                             <point-state
@@ -199,7 +222,7 @@
                             { text: '不可售卖', value: 2 },
                         ]"
                         :filter-multiple="false"
-                        fixed="right"
+                        :fixed="item.fix"
                     >
                     <template slot-scope="scope">
                         <point-state
@@ -576,6 +599,12 @@ export default {
             { id: 17, label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
             { id: 18, label: "操作", width: "80", isChecked: true, fix:"right" },
         ],
+        // 右固定备份
+        fixRightArr: [
+            { id: 16, label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },
+            { id: 17, label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
+            { id: 18, label: "操作", width: "80", isChecked: true, fix:"right" },
+        ],
         // 表体数据
         currentPlan: [],
         itemKey: '',
@@ -597,7 +626,7 @@ export default {
         resName: "", // 搜索的资源名称
         assetTag: "", // 资产编号（媒体位ID）
         mTitle: "", // 搜索的媒体名称
-        selectedOptions: [], // 搜索的城市区域
+        selectedOptions: [], // 当前选择的城市rid数组
         tradingArea: "", // 搜索的商圈
         buildingName: "", // 楼栋
         unitName: "", // 单元
@@ -606,6 +635,8 @@ export default {
         asSaleState: "", //  搜索的售卖状态
         planList: [], //  table的所有数据
         cityOptions: [], //城市数组
+        regionOpt: [], // 地区
+        selectRName: "", // 当前选择的区域rid
         cityProps: { multiple: false }, // 城市设置
         cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
         loadScroll: true,
@@ -706,15 +737,26 @@ export default {
     let endTime = timeFormat.returnDayCount(0, "/");
     let startTime = timeFormat.returnDayCount(-180, "/");
     this.canSelectDayTime = [startTime, endTime];
+
     // 获取列表设置缓存
     const rowSpace = getLocalCache("rowSpace");
     this.rowSpace = rowSpace || "medium";
+
+    // 按下Enter键搜索
+    document.onkeydown = (e) => {
+        if(e.code.toUpperCase() === 'ENTER') {
+            this.searchFun()
+        }
+    }
   },
 
   methods: {
     // 列展示
     filterColumn(columns) {
         this.currentPlanColumn = columns
+        // console.log(columns.filter((item) => item.fix=='right'));
+        // console.log(columns.filter((item) => item.fix=='not'));
+        // console.log(this.currentPlanColumn);
         this.itemKey = Math.random()
     },
     // 刷新列表
@@ -995,28 +1037,47 @@ export default {
 
     // 设置可搜索的区域
     setCityAreaByUWho() {
-        this.cityOptions = areaPackageNew.cityArea();
-        // console.log(this.cityOptions);
+        this.cityOptions = areaPackageNew.province();
     },
 
-    // 根据id，获取具体市、区/县
+    // 根据市级城市rid，获取它的下属区、县
     handleChange(value) {
-        // console.log("selectedOptions", this.selectedOptions);
+        console.log("handleChange", value);
+        this.regionOpt = [];
+        this.selectRName = "";
+        this.cityArea.rName = "";
         if (value.length) {
             let cityRID = value[1];
-            let regionID = value[2];
             let regionArr = areaPackageNew.findArea(cityRID);
-            this.cityArea.cName = areaToTextNew.toTextCity(cityRID);
+            this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
+            // console.log("获取选中城市的区域",regionArr,"this.cityArea",this.cityArea);
+            let region = [];
             for (let key of regionArr) {
-                if (key.rID == regionID) {
-                    this.cityArea.rName = key.rName;
+            region.push({
+                label: key.rName,
+                value: key.rID,
+            });
+            }
+            this.regionOpt = region;
+            // console.log("this.regionOpt",this.regionOpt,"selectedOptions",this.selectedOptions);
+        } else {
+            this.cityArea.cName = "";
+        }
+    },
+
+    //获取区域
+    getRegion(val) {
+        console.log("获取区域val", val, this.regionOpt);
+        if (val) {
+            for (let key of this.regionOpt) {
+                if (key.value == val) {
+                    this.cityArea.rName = key.label;
                 }
             }
         } else {
-          this.cityArea.cName = "";
-          this.cityArea.rName = "";
+            this.cityArea.rName = "";
         }
-        // console.log("选择的区域为", this.cityArea);
+        console.log("选择的区域为", this.cityArea);
     },
 
     // 下拉选择状态
@@ -1176,8 +1237,6 @@ export default {
           sessFun.messageFun("success", "拆除成功!");
           this.rowData.asState = "4";
           this.clearSearch();
-          // this.rowData.asState.A = '4'
-          // this.rowData.asState.B = '4'
         } else {
           sessFun.messageFun("warning", res.data.MSG);
         }
@@ -1193,23 +1252,9 @@ export default {
 
     // 搜索按钮
     searchFun() {
-      this.searchBtnAbled = true;
-        // if (
-        //   (this.keyword === "" || this.keyword === null) &&
-        //   this.cityArea.cName === ""
-        // ) {
-        // if (this.keyword === "" || this.keyword === null) {
-        //   Message.warning({
-        //     message: "请先输入搜索条件",
-        //     duration: 1000,
-        //   });
-        //   this.searchBtnAbled = false;
-        // } else {
-        //   this.pageData.pageNum = 1;
-        //   this.getData();
-        // }
-      this.pageData.pageNum = 1;
-      this.getData();
+        this.searchBtnAbled = true;
+        this.pageData.pageNum = 1;
+        this.getData();
     },
 
     // 重置搜索
@@ -1218,6 +1263,7 @@ export default {
         this.assetTag = "";
         this.mTitle = "";
         this.selectedOptions = [];
+        this.selectRName = [];
         this.tradingArea = "";
         this.buildingName = "";
         this.unitName = "";

@@ -279,16 +279,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="竞品公司" prop="competingCompany">
-                            <el-input
-                            v-model="recForm.competingCompany"
-                            placeholder=""
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-row :gutter="76" class="from_row">
-                    <el-col :span="6">
                         <el-form-item label="车位数" prop="carNumber">
                             <el-input
                             v-model="recForm.carNumber"
@@ -297,6 +287,9 @@
                             ></el-input>
                         </el-form-item>
                     </el-col>
+                </el-row>
+                <el-row :gutter="76" class="from_row">
+
                     <el-col :span="6">
                         <el-form-item label="人流量（人次/日）" prop="peopleFlowrate">
                             <el-input
@@ -1114,7 +1107,6 @@ export default {
         doorwayNum: "", // 出入口数
         liveRate: "", // 入住率#
         liftType: "", // 配套电梯
-        competingCompany: "", // 竞品公司
         carNumber: "", // 车位数
         peopleFlowrate: "", //人流量
         carFlowrate: "", // 车流量
@@ -1244,8 +1236,6 @@ export default {
         liveRate: [{ validator: validateGreenP, trigger: "blur" }],
         // 配套电梯
         liftType: [{ max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
-        // 竞品公司
-        competingCompany: [{ max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
         // 车位数
         carNumber: [{ validator: validatePrice, trigger: "blur" }],
         // 人流量
@@ -2168,7 +2158,6 @@ export default {
         dn: this.recForm.doorwayNum, // 出入口数
         liveRate: this.recForm.liveRate, // 入住率
         liftType: this.recForm.liftType, // 配套电梯
-        competingCompany: this.recForm.competingCompany, // 竞品公司
         parkSpaceNum: this.recForm.carNumber, //车位数
         peopleFlow: this.recForm.peopleFlowrate, //人流量
         carFlow: this.recForm.carFlowrate, // 车流量
@@ -2594,7 +2583,6 @@ export default {
           doorwayNum: recObj.EntryExitNum || "", // 出入口数
           liveRate: recObj.liveRate, // 入住率
           liftType: recObj.liftType, // 配套电梯
-          competingCompany: recObj.competingCompany, // 竞品公司
           carNumber: recObj.carNumber, // 车位数
           peopleFlowrate: recObj.peopleFlowrate, // 人流量
           carFlowrate: recObj.carFlowrate, // 车流量
@@ -2809,7 +2797,6 @@ export default {
         dn: recObj.doorwayNum, // 出入口数
         liveRate: recObj.liveRate, // 入住率
         liftType: recObj.liftType, // 配套电梯
-        competingCompany: recObj.competingCompany, // 竞品公司
         parkSpaceNum: recObj.carNumber, // 车位数
         peopleFlow: recObj.peopleFlowrate, // 人流量
         carFlow: recObj.carFlowrate, // 车流量

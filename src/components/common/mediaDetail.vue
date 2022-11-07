@@ -113,21 +113,21 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘价格：</span
-                  ><span>{{ resData.housePrice || "--" }} 元/平方米</span>
+                  ><span>{{ resData.housePrice || "--" }}元/平方米</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">住户数量：</span
-                  ><span>{{ resData.HouseNum || "--" }} 户</span>
+                  ><span>{{ resData.HouseNum || "--" }}户</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼栋数量：</span
-                  ><span>{{ resData.buildingNum || "--" }} 栋</span>
+                  ><span>{{ resData.buildingNum || "--" }}栋</span>
                 </el-col>
               </el-row>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住年份：</span
-                  ><span>{{ resData.joinTime || "--" }} 年</span>
+                  ><span>{{ resData.joinTime || "--" }}年</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">商圈：</span
@@ -198,33 +198,25 @@
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span
-                  ><span>{{ resData.liveRate || "--" }} %</span>
+                  ><span>{{ resData.liveRate || "--" }}%</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">配套电梯：</span
                   ><span>{{ resData.liftType || "--" }}</span>
                 </el-col>
                 <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">竞品公司：</span
-                  ><span>{{ resData.competingCompany || "--" }}</span>
-                </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
-                <!-- <el-col :span="6">
-                  <span class="ad_mediaInfoPanel_row_title">居住人群：</span
-                  ><span>{{ "--" }}</span>
-                </el-col> -->
-                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车位数：</span
                   ><span>{{ resData.carNumber || "--" }}</span>
                 </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">人流量：</span
-                  ><span>{{ resData.peopleFlowrate || "--" }} 人次/天</span>
+                  ><span>{{ resData.peopleFlowrate || "--" }}人次/天</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车流量：</span
-                  ><span>{{ resData.carFlowrate || "--" }} 车次/天</span>
+                  ><span>{{ resData.carFlowrate || "--" }}车次/天</span>
                 </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">广告限制：</span
@@ -692,7 +684,6 @@
                     otherAd: resData.otherAd,
                     liftType: resData.liftType,
                     liveRate: resData.liveRate,
-                    competingCompany: resData.competingCompany,
                     notPush: resData.notPush,
                     // 房价网信息
                     resAlias: resData.alias, // 资源别名

@@ -187,7 +187,7 @@ export default {
                 this.isCheckAll()
             })
         },
-        // 全选
+        // 全选 / 全不选
         checkAll() {
             this.leftFixList.forEach(v => v.isChecked = this.allChecked)
             this.notFixList.forEach(v => v.isChecked = this.allChecked)

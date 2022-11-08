@@ -360,24 +360,6 @@
                         {{ scope.row.adViewSizeInfo || "--" }}
                       </template>
                     </el-table-column>
-                    <!-- <el-table-column
-                        prop="grade"
-                        label="媒体等级"
-                        min-width="7%">
-                        <template slot-scope="scope">
-                            {{scope.row.grade || '--'}}
-                        </template>
-                    </el-table-column> -->
-                    <!-- <el-table-column
-                      label="广告限制"
-                      min-width="120px"
-                      class="tar"
-                      :show-overflow-tooltip="true"
-                    >
-                      <template slot-scope="scope">
-                        <span>{{ scope.row.notPush || "--" }}</span>
-                      </template>
-                    </el-table-column> -->
                     <el-table-column
                       label="备注"
                       min-width="200px"
@@ -404,7 +386,7 @@
                     </el-table-column>
                     <el-table-column prop="siteOrientation" label="位置朝向" width="100px">
                         <template slot-scope="scope">
-                            {{ scope.row.siteOrientation || "--" }}
+                            {{ scope.row.adSpaceInfos[0].siteOrientation || "--" }}
                         </template>
                     </el-table-column>
                     <el-table-column prop="mState" label="状态" min-width="80px">

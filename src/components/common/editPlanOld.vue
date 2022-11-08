@@ -1956,6 +1956,7 @@
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
+                        mID: data.mID,
                         province: data.province, //省份
                         city: data.city, //城市
                         rName: data.origin, //区域
@@ -1986,7 +1987,6 @@
                         peopleFlow: data.peopleFlow, //人流量
                         map: data.mapCenter, //地图中心点
                         timeRange: "", //投放排期
-                        mID: data.mID
                     };
 
                     let mIDitem = mIDArr.find(item => {
@@ -2391,7 +2391,7 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true&timeRange=${String(this.dateInput)}`
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()

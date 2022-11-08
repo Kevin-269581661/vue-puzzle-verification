@@ -7,217 +7,216 @@
       </p>
       <p v-else><a href="#">方案管理</a></p>
     </div>
+
+    <div class="mediaList_wrap mediaList_search">
+      <el-row class="search_row" :gutter="24">
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>关键词：</span>
+            <el-input
+              placeholder="请输入内容"
+              v-model="searchInfo.keyword"
+              size="small"
+              class="u-select"
+            >
+              <el-select
+                v-model="searchInfo.select"
+                slot="prepend"
+                placeholder="请选择"
+              >
+                <el-option label="方案名称" value="1"></el-option>
+                <el-option label="客户名称" value="2"></el-option>
+                <el-option label="品牌名称" value="3"></el-option>
+                <el-option
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  label="所属销售"
+                  value="4"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>日期：</span>
+            <el-select
+              size="small"
+              v-model="searchInfo.dateType"
+              placeholder="请选择"
+              class="u-date"
+            >
+              <el-option label="上刊日期" value="0"></el-option>
+              <el-option label="下刊日期" value="1"></el-option>
+              <el-option label="创建日期" value="2"></el-option>
+              <!--<el-option label="换画日期" value="2"></el-option>-->
+            </el-select>
+            <el-date-picker
+              size="small"
+              class="u-date-picker"
+              v-model="searchInfo.rangeDate"
+              type="daterange"
+              range-separator="-"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              start-placeholder="选择日期"
+              end-placeholder="选择日期"
+            >
+            </el-date-picker>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>选择状态：</span>
+            <el-select
+              v-model="searchInfo.status"
+              placeholder="请选择状态"
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of stateList"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>选择城市：</span>
+            <el-select
+              v-model="searchInfo.cityWord"
+              placeholder="请选择投放城市"
+              filterable
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of filterCityData"
+                :key="item.rID"
+                :label="item.text"
+                :value="item.text"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item" v-if="isAll">
+            <span>选择公司：</span>
+            <el-select
+              v-model="searchInfo.company"
+              placeholder="请选择所属公司"
+              filterable
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of companyData"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>是否预锁：</span>
+            <el-select
+              v-model="searchInfo.Lock"
+              placeholder="是否预锁"
+              size="small"
+              class="u-select2"
+            >
+              <el-option label="已预锁" value="2"></el-option>
+              <el-option label="未预锁" value="1"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="btn_wrapper">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              @click="search()"
+              :disabled="!isSearch"
+              class="marginR"
+              >搜索
+            </el-button>
+
+            <el-button
+              plain
+              @click="reset()"
+              :disabled="!isReset"
+              class="marginR"
+              >重置</el-button
+            >
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
     <div class="mediaList_wrap">
-      <div class="mediaList_head">
-        <h2>方案列表</h2>
-      </div>
       <div class="mediaList_container">
-        <!-- flex_box search_row -->
-        <div class="">
-          <el-row class="search_row" :gutter="24">
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>关键词：</span>
-                <el-input
-                  placeholder="请输入内容"
-                  v-model="searchInfo.keyword"
-                  size="small"
-                  class="u-select"
-                >
-                  <el-select
-                    v-model="searchInfo.select"
-                    slot="prepend"
-                    placeholder="请选择"
-                  >
-                    <el-option label="方案名称" value="1"></el-option>
-                    <el-option label="客户名称" value="2"></el-option>
-                    <el-option label="品牌名称" value="3"></el-option>
-                    <el-option
-                      v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                      label="所属销售"
-                      value="4"
-                    ></el-option>
-                  </el-select>
-                </el-input>
-              </div>
-            </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>日期：</span>
-                <el-select
-                  size="small"
-                  v-model="searchInfo.dateType"
-                  placeholder="请选择"
-                  class="u-date"
-                >
-                  <el-option label="上刊日期" value="0"></el-option>
-                  <el-option label="下刊日期" value="1"></el-option>
-                  <el-option label="创建日期" value="2"></el-option>
-                  <!--<el-option label="换画日期" value="2"></el-option>-->
-                </el-select>
-                <el-date-picker
-                  size="small"
-                  class="u-date-picker"
-                  v-model="searchInfo.rangeDate"
-                  type="daterange"
-                  range-separator="-"
-                  format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd"
-                  start-placeholder="选择日期"
-                  end-placeholder="选择日期"
-                >
-                </el-date-picker>
-              </div>
-            </el-col>
+        <div class="mediaList_title">
+          <h2>方案列表</h2>
+          <div class="btn_box">
+            <el-button
+              plain
+              @click.native.prevent="openRecycleBin"
+              class="marginR"
+              >回收站</el-button
+            >
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>选择状态：</span>
-                <el-select
-                  v-model="searchInfo.status"
-                  placeholder="请选择状态"
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of stateList"
-                    :key="item.value"
-                    :label="item.text"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
+            <el-button
+              plain
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && showExportBtns.includes(8)"
+              @click.native.prevent="allPointExportVisible = true"
+              class="marginR"
+              >总点导出</el-button
+            >
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>选择城市：</span>
-                <el-select
-                  v-model="searchInfo.cityWord"
-                  placeholder="请选择投放城市"
-                  filterable
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of filterCityData"
-                    :key="item.rID"
-                    :label="item.text"
-                    :value="item.text"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
+            <template v-if="showNewBtn || !isNation">
+              <el-button
+                plain
+                @click="reset()"
+                v-if="showExportBtns.includes(6)"
+                @click.native.prevent="exportRes"
+                class="marginR"
+                >门店导点</el-button
+              >
+              <el-button
+                plain
+                v-if="showNewBtn"
+                @click.native.prevent="isOpenDownload = true"
+                class="marginR"
+                >空位导出</el-button
+              >
+            </template>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item" v-if="isAll">
-                <span>选择公司：</span>
-                <el-select
-                  v-model="searchInfo.company"
-                  placeholder="请选择所属公司"
-                  filterable
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of companyData"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
+            <template v-if="showNewBtn || !isNation">
+              <el-button
+                type="primary"
+                icon="el-icon-plus"
+                v-if="showNewBtn"
+                @click="addOne()"
+                class="marginR"
+                >新建</el-button
+              >
+            </template>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>是否预锁：</span>
-                <el-select
-                  v-model="searchInfo.Lock"
-                  placeholder="是否预锁"
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option label="已预锁" value="2"></el-option>
-                  <el-option label="未预锁" value="1"></el-option>
-                </el-select>
-              </div>
-            </el-col>
-
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="btn_wrapper">
-                <el-button
-                  type="primary"
-                  icon="el-icon-search"
-                  @click="search()"
-                  :disabled="!isSearch"
-                  class="marginR"
-                  >搜索
-                </el-button>
-
-                <el-button
-                  plain
-                  @click="reset()"
-                  :disabled="!isReset"
-                  class="marginR"
-                  >重置</el-button
-                >
-
-                <template v-if="showNewBtn || !isNation">
-                  <el-button
-                    plain
-                    v-if="showNewBtn"
-                    @click="addOne()"
-                    class="marginR"
-                    >新建</el-button
-                  >
-                </template>
-
-                <el-dropdown placement="bottom-start" class="u-dropdown-more">
-                  <el-button class="marginR u-more">
-                    更多<i class="el-icon-arrow-down el-icon--right"></i>
-                  </el-button>
-                  <el-dropdown-menu slot="dropdown" class="newDrop">
-                    <template v-if="showNewBtn || !isNation">
-                      <el-dropdown-item
-                        plain
-                        v-if="showNewBtn"
-                        @click.native.prevent="isOpenDownload = true"
-                        >空位导出</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        plain
-                        v-if="showExportBtns.includes(6)"
-                        @click.native.prevent="exportRes"
-                        >门店导点</el-dropdown-item
-                      >
-                    </template>
-                    <el-dropdown-item
-                      plain
-                      v-if="
-                        ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
-                        showExportBtns.includes(8)
-                      "
-                      @click.native.prevent="allPointExportVisible = true"
-                      >总点导出</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      plain
-                      @click.native.prevent="openRecycleBin"
-                      >回收站</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-            </el-col>
-          </el-row>
-
-          <!-- <el-row class="search_row" :gutter="24"> </el-row> -->
+          </div>
         </div>
         <div class="table_wrap">
           <el-table
-            border
             :data="currentPlan"
             style="width: 100%"
             @sort-change="sortChange"
@@ -284,6 +283,7 @@
               :filter-multiple="true"
             >
             </el-table-column>
+
             <el-table-column
               label="投放城市(点位面数,排期)"
               prop="cityArea"
@@ -410,6 +410,23 @@
                 </template>
               </template>
             </el-table-column>
+
+            <el-table-column
+              prop="apcTime"
+              label="媒体类型"
+              width="120px"
+              show-overflow-tooltip
+              column-key="type"
+              :filters="[{text: '2016-05-01', value: '2016-05-01'}]"
+              :filter-method="filterMediaType"
+              :filter-multiple="false"
+              v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM')"
+            >
+              <template slot-scope="scope">
+                <span>{{ formatTime(scope.row.apcTime) }}</span>
+              </template>
+            </el-table-column>
+
             <el-table-column
               prop="apcTime"
               label="创建日期"
@@ -421,6 +438,7 @@
                 <span>{{ formatTime(scope.row.apcTime) }}</span>
               </template>
             </el-table-column>
+
             <el-table-column
               class="tac"
               prop="apState"
@@ -1000,6 +1018,7 @@ export default {
       console.log("page----", page);
       this.searchFun();
     },
+
     // 每页条数切换
     sizeChange(val) {
       console.log("val----", val);
@@ -1007,6 +1026,7 @@ export default {
       this.currPage = 1;
       this.searchFun();
     },
+
     // 获取公司
     getCompany() {
       let sess = this.sessionData;
@@ -1060,6 +1080,7 @@ export default {
           });
       }
     },
+
     // 滚动加载获取数据(无搜索数据)
     getData(params) {
       api
@@ -1078,6 +1099,7 @@ export default {
           }
         });
     },
+
     //获取下级销售列表
     getSubSaleList() {
       api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
@@ -1088,9 +1110,11 @@ export default {
         }
       });
     },
+
     filterRealNameFun(value, row) {
       return row.realName === value;
     },
+
     // 数据处理
     funcData(dataArr) {
       let result = [];
@@ -1101,6 +1125,7 @@ export default {
       }
       return result;
     },
+
     // 获取session数据
     getSessionData() {
       this.sessionData = sessFun.getSess();
@@ -1112,6 +1137,7 @@ export default {
         this.isAll = false;
       }
     },
+
     // 获取城市
     getFanCity() {
       let info = {
@@ -1138,6 +1164,7 @@ export default {
           }
         });
     },
+
     // 判断角色是否有新建按钮(媒介和销售有)
     getRole() {
       let role = this.sessionData.uType;
@@ -1156,7 +1183,7 @@ export default {
       }
       if (
         !["ADN_BD_KA", "ADN_BD"].includes(role) &&
-        !["ADN_MD_COUNTRY", "ADN_MD"].includes(role)
+        !["ADN_MD"].includes(role)
       ) {
         this.showNewBtn = false;
       }
@@ -1164,6 +1191,7 @@ export default {
         this.isDisable = true;
       }
     },
+
     // 状态转换成文本
     stateToText(val) {
       let state = [
@@ -1180,14 +1208,17 @@ export default {
         }
       }
     },
+
     // 时间格式规范预锁
     formatTime(val) {
       return dateFormat.toDate(val, "/");
     },
+
     // 价格加上逗号
     priceFormat(price) {
       return commaFormat.init(price);
     },
+
     // 价格时间排序(请求后台接口进行排序)
     sortChange(column) {
       console.log("columm---", column);
@@ -1201,6 +1232,7 @@ export default {
       this.currPage = 1;
       this.searchFun();
     },
+
     routeSelect() {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
@@ -1214,6 +1246,7 @@ export default {
         this.$router.push("./createPlanOld");
       }
     },
+
     //新增意向方案查询意向方案草稿箱
     getProposalAdBackUp(params) {
       api
@@ -1251,6 +1284,7 @@ export default {
           }
         });
     },
+
     // 新建方案
     addOne() {
       this.continueEditLoading = this.$loading({
@@ -1300,11 +1334,13 @@ export default {
           });
       }
     },
+
     // 点位表盘
     goToDiaPlate() {
       console.log("this.$router", this.$router);
       this.$router.push("./adsDialPlate");
     },
+
     //显示意向方案缓存信息
     showProposalCookeAdPlan(adPlan) {
       this.planInfo = {
@@ -1315,6 +1351,7 @@ export default {
       };
       this.unfinishedDialogVisible = true;
     },
+
     // 显示缓存方案的信息
     showCookeAdPlan(adPlan) {
       // this.planForm.realNamesName
@@ -1341,6 +1378,7 @@ export default {
       result = result + "00" + Math.round(Math.random() * 9);
       return result;
     },
+
     // 获取方案列表
     getPlanList(apID, suID) {
       return new Promise((resolve, reject) => {
@@ -1380,6 +1418,7 @@ export default {
           });
       });
     },
+
     // 发布
     release(row) {
       // 1)	全国媒介可发布全部销售的方案
@@ -1434,6 +1473,7 @@ export default {
         this.messageFun("warning", "您没有权限发布该方案");
       }
     },
+
     // 提交
     commitRelease() {
       if (/^[^\u4e00-\u9fa5]{0,}$/.test(this.QCinfo)) {
@@ -1448,6 +1488,7 @@ export default {
         this.messageFun("warning", "只能输入数字,字母,字符");
       }
     },
+
     // 保存合同编号
     saveContractNo(contractNo, planType, relatedApId) {
       // uid         int【必填】     当前账户UserID
@@ -1499,6 +1540,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     releaseFun() {
       let reseleInfo = {
         uid: this.sessionData.uID,
@@ -1509,6 +1551,7 @@ export default {
       };
       this.releaseFangan(reseleInfo);
     },
+
     // 发布方案(优化后的接口)
     releaseFangan(info) {
       api
@@ -1540,6 +1583,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     // 跳转到详情页面
     ToDetail(row) {
       sessionStorage.setItem("plan_apid", row.apID);
@@ -1554,6 +1598,7 @@ export default {
         this.$router.push("./planDetail");
       }
     },
+
     // 跳转到编辑页面
     ToEdit(row) {
       sessionStorage.setItem("plan_apid", row.apID);
@@ -1566,10 +1611,12 @@ export default {
         this.$router.push("./editPlanOld");
       }
     },
+
     // 比较两个时间大小
     compareTime(arr, sField, eField) {
       return dateFormat.compareTime(arr, sField, eField);
     },
+
     // 意向方案配点（直营媒介配点）
     addPoint(row) {
       if (
@@ -1581,6 +1628,7 @@ export default {
         this.$message.warning("暂无权限！");
       }
     },
+
     //预锁
     preload(row) {
       this.$confirm(
@@ -1635,6 +1683,7 @@ export default {
           });
         });
     },
+
     // 获取权限城市内的城市,进行勾选
     getCityList(arr) {
       // 1)	全国媒介可发布全部销售的方案
@@ -1662,6 +1711,7 @@ export default {
       }
       return resultInfo;
     },
+
     // 解除预锁
     clearLock(row) {
       this.$confirm(
@@ -1703,6 +1753,7 @@ export default {
           });
         });
     },
+
     // 检查当前拆分方案是否有点位被删除
     checkPoin(row) {
       let params = {
@@ -1739,6 +1790,7 @@ export default {
           });
       });
     },
+
     // KA方案拆分
     splitAdPlan(row) {
       if (row.planMode == 1) {
@@ -1776,6 +1828,7 @@ export default {
           .catch((error) => {});
       }
     },
+
     cancelLock() {
       this.dialogVisible = false;
       this.$message({
@@ -1783,6 +1836,7 @@ export default {
         message: "已取消操作",
       });
     },
+
     // 确定预锁
     confirmLock() {
       console.log(this.cityChoose);
@@ -1816,6 +1870,7 @@ export default {
         }
       }
     },
+
     // 预锁
     LockCity(arr, act) {
       console.log("lockcity----", arr);
@@ -1855,6 +1910,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     // 解锁
     noLockCity(arr) {
       let asrIDs = [];
@@ -1882,6 +1938,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     // 7天以上显示7天,否则显示相隔天数
     countDay(time) {
       let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
@@ -1889,6 +1946,7 @@ export default {
       let RemainDay = dayA > 7 ? 7 : dayA;
       return RemainDay;
     },
+
     // 弹出框修改路径
     changeRoute() {
       this.$confirm(`存在点位被占，是否修改方案？`, "提示", {
@@ -1906,6 +1964,7 @@ export default {
           });
         });
     },
+
     // 搜索（优化）
     search() {
       let { keyword, rangeDate, status, company, cityWord, Lock, dateType } =
@@ -1932,6 +1991,7 @@ export default {
         this.messageFun("warning", "请输入搜索条件");
       }
     },
+
     searchFun() {
       this.paginationShow = false;
       this.loading = true;
@@ -1941,6 +2001,7 @@ export default {
         this.paginationShow = true;
       });
     },
+
     // 搜索数据格式化
     searchFormat() {
       let info = {
@@ -1975,6 +2036,7 @@ export default {
       };
       return info;
     },
+
     // 设置表格数据
     setTableData(item) {
       let obj = {
@@ -2015,9 +2077,11 @@ export default {
       obj.cityArea = item.details;
       return obj;
     },
+
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
+
     // 重置
     reset() {
       this.searchInfo = {
@@ -2040,6 +2104,7 @@ export default {
       }, 1000);
       this.searchFun();
     },
+
     // 操作提示统一方法
     messageFun(mesType, mes) {
       this.$message({
@@ -2048,6 +2113,7 @@ export default {
         showClose: true,
       });
     },
+
     //清除意向方案缓存
     clearProposalAdPlanBackups(params) {
       api
@@ -2063,6 +2129,7 @@ export default {
       cacheAdPlan.removeData(this.sessionData.uID);
       this.routeSelect();
     },
+
     // 放弃继续编辑
     cancelEdit() {
       this.$confirm("放弃后将清除该方案信息!", "提示", {
@@ -2103,6 +2170,7 @@ export default {
           });
         });
     },
+
     // 继续创建
     continueEdit() {
       this.continueEditLoading = this.$loading({
@@ -2119,6 +2187,7 @@ export default {
 
       this.unfinishedDialogVisible = false;
     },
+
     /**
      * 周边小区导出
      * */
@@ -2135,6 +2204,7 @@ export default {
       this.isResExport = true;
       this.getAllMediaTypes();
     },
+
     // 个人权限公司下媒体类型列表
     getAllMediaTypes() {
       api
@@ -2147,17 +2217,20 @@ export default {
           }
         });
     },
+
     exportUploadFile(params) {
       this.exportFileData = [];
       let fileObj = params.file;
       this.exportFileData.push(fileObj);
       console.log("上传周边", params);
     },
+
     // 文件删除
     exportFileRemove(file, fileList) {
       console.log(file, fileList);
       this.exportFileData = fileList;
     },
+
     //周边小区导出下一步
     nextExportRes() {
       if (this.exportResStep === 1) {
@@ -2196,6 +2269,7 @@ export default {
         }
       }
     },
+
     // 导出周边小区
     importBroundRes() {
       let formData = new FormData();
@@ -2278,12 +2352,18 @@ export default {
       this.isShowRecycleBin = true;
       console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
     },
+
+    filterMediaType () {
+
+    }
+
   },
+
   beforeDestroy() {
     if (this.continueEditLoading) {
       this.continueEditLoading.close();
     }
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -2362,7 +2442,7 @@ a {
 }
 
 .marginR {
-  margin-right: 8px;
+  margin-right: 4px;
   margin-bottom: 16px;
 }
 
@@ -2695,14 +2775,15 @@ a {
   }
 
   .u-select {
-    min-width: 302px;
+    min-width: 338px;
     /deep/ .el-input__inner {
-      width: 203px;
+      width: 232px;
     }
     /deep/ .el-select {
       width: 98px;
       padding: 0;
       box-sizing: border-box;
+      color: rgba(0, 0, 0, 0.85);
       .el-input__inner {
         width: 100%;
       }
@@ -2737,7 +2818,7 @@ a {
   }
 
   .u-select2 {
-    width: 302px;
+    width: 338px;
     /deep/ .el-input__inner {
       width: 100%;
     }
@@ -2762,6 +2843,31 @@ a {
 
 .u-btn {
   color: #fff;
+}
+
+.mediaList_search {
+  padding: 24px 24px 8px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.mediaList_title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  h2 {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    height: 24px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  .btn_box {
+    height: 32px;
+  }
 }
 
 @media only screen and (min-width: 1200px) {

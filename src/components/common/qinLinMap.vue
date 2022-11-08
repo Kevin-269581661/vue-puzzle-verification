@@ -1551,9 +1551,16 @@ export default {
       selectedAll: [],
       // 城市选择弹框
       dialogCity: false,
+
+      // 投放排期
+      timeRange: []
     };
   },
   created () {
+    const timeRange = this.$route.query.timeRange
+    this.timeRange = timeRange.replace(',', ' - ')
+
+
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
@@ -4086,11 +4093,11 @@ export default {
             }
           }
           let obj = {
-            resName: data.resName,
+            resName: data.resName, // 资源名称
             rName: data.districtName,
             resAddress: data.resAddress,
             mVehicle: data.mVehicle,
-            tradingArea: data.tradingArea,
+            tradingArea: data.tradingArea, // 商圈
             fNum: data.fNum == "0" ? "#" : data.fNum,
             hNum: data.hNum == "0" ? "#" : data.hNum,
             cType: data.cType,
@@ -4108,7 +4115,16 @@ export default {
             provinceName: data.provinceName || '',
             parkSpaceNum: data.parkSpaceNum || '',
             carFlow: data.carFlow,
-            peopleFlow: data.peopleFlow
+            peopleFlow: data.peopleFlow,
+            street: data.street,
+            unitCount: data.unitCount,
+            alias: data.alias,
+            supportingFacilities: data.supportingFacilities,
+            liveRate: data.liveRate,
+            dNum: data.dNum,
+            lng: data.lng,
+            lat: data.lat,
+            timeRange: this.timeRange
           };
           if (this.systemSource === 0) {
             obj.city = this.routeQuery.city;
@@ -4171,48 +4187,64 @@ export default {
             ];
           } else if (this.systemSource === 0) {
             tHeader = [
-              "资源名称",
               '省份',
               "城市",
               "区域",
-              "详细地址",
-              '媒介载体',
+              "街道",
               "商圈",
+              "资源名称",
+              "详细地址",
               "楼栋数量",
-              "住户数量",
-              "楼盘价格",
+              "单元数量",
               "楼盘类型",
+              "楼盘价格",
+              "住户数量",
               "入住年份/建成年份",
               '广告限制',
-              '车位数',
-              '车流量',
-              '人流量',
-              "媒体数量（门）",
               '可投数量（面）',
-              "地图中心点",
+              '资源别名',
+              '楼盘介绍',
+              '周边配套',
+              '出入口数', // dNum	
+              '入住率', // liveRate
+              '配套电梯',
+              '车位数',
+              '媒介类型',
               '媒体备注',
+              '经度',
+              '纬度',
+              "地图中心点",
+              '投放排期'
             ];
             filterVal = [
-              "resName",
               'provinceName',
               "city",
               "rName",
-              "resAddress",
-              'mVehicle',
-              "tradingArea",
+              "street", 
+              "tradingArea", // 商圈
+              "resName",
+              "resAddress", // 详细地址
               "fNum",
-              "hNum",
-              "hPrice",
+              "unitCount", // 单元数量
               "cType",
+              "hPrice",
+              "hNum",
               "chDay",
               'notPush',
-              'parkSpaceNum',
-              'carFlow',
-              'peopleFlow',
-              'mediaNum',
               'spareAdsCount',
-              "mapCenter",
+              'alias',
+              'description',
+              'liveRate',
+              'supportingFacilities', // 周边配套
+              'dNum',
+              'liftType', // 配套电梯
+              'parkSpaceNum',
+              'mVehicle', // 媒体类型
               'mRemark',
+              'lng', // 经度
+              'lat', // 纬度
+              'mapCenter', // 地图中心点
+              'timeRange', // 投放排期
             ];
 
             switch (this.sessionData.customPermission.patrolPermission) {

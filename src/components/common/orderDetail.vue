@@ -1578,111 +1578,125 @@ export default {
       let resultArr = [];
       for (let data of this.exportArr) {
         let obj = {
-          province: data.province, //省份
+          province: data.province, //省份1
           city: data.city, //城市
           rName: data.rName, //区域
-          street: data.street, //街道#
+          street: data.street, //街道
           tradingArea: data.tradingArea, //商圈
           resName: data.resName, //资源名称
           resAddress: data.resAddress, //详细地址
           fNum: data.fNum, //楼栋数量
-          unitCount: data.unitCount, //单元数量#
+          unitCount: data.unitCount, //单元数量
           cType: data.cType, //楼盘类型
           hPrice: data.hPrice / 100, //楼盘价格
           hNum: data.hNum == '0' ? '&' : data.hNum, //住户数量
           chDay: data.chDay, //入住年份
           notPush: data.notPush, //广告限制
-          resAlias: data.resAlias, //资源别名#
-          description: data.description, //楼盘介绍#
+          resAlias: data.resAlias, //资源别名1
+          description: data.description, //楼盘介绍#1
           supportingFacilities: data.supportingFacilities, //周边配套#
-          EntryExitNum: data.EntryExitNum, //出入口数#
-          liveRate: data.liveRate, //入住率#
-          liftType: data.liftType, //配套电梯#
+          dNum: data.dNum, //出入口数#
+          liveRate: data.liveRate, //入住率
+          liftType: data.liftType, //配套电梯
           parkSpaceNum: data.parkSpaceNum || "", //车位数
-          // 经度
-          // 纬度
-          // 媒体类型
+          lat: data.lng, // 经度
+          lng: data.lat, // 纬度
+          mediaTypeName: data.mediaTypeName,// 媒体类型
           mTitle: data.mTitle, //媒体名称
-          // 楼栋
-          // 单元
-          // 位置朝向
+          buildingName: data.buildingName, // 楼栋
+          unitName: data.unitName, // 单元
+          siteOrientation: data.siteOrientation, // 位置朝向
           assetTag: data.assetTag, //媒体位ID
           mType: data.mType || "", // 设备型号
           asLab: data.asLab, //投放面
           adSize: data.adSize, //素材尺寸
           adViewSize: data.adViewSize, //可视尺寸
-
-
-          asName: data.asName,
-          mVehicle: data.mVehicle,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
           mRemark: data.mRemark,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          electrifyState: data.electrifyState,
+          timeRange: data.timeRange,
           mapCenter: data.mapCenterName || '',
-          carFlow: data.carFlow || "",
-          peopleFlow: data.peopleFlow || "",
-
+          finishTimeRange: data.finishTimeRange,
         };
         resultArr.push(obj);
       }
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
         let tHeader = [
-          '资源名称',
           '省份',
           '城市',
           '区域',
-          '详细地址',
-          '媒介载体',
-          '媒体名称',
-          '资产编号',
-          '投放面',
-          '投放排期',
-          '门体类型',
+          '街道',
           '商圈',
+          '资源名称',
+          '详细地址',
           '楼栋数量',
-          '住户数量',
-          '楼盘价格',
+          '单元数量',
           '楼盘类型',
-          '入住年份/建成年份',
+          '楼盘价格',
+          '住户数量',
+          '入住年份',
           '广告限制',
+          '资源别名',
+          '楼盘介绍',
+          '周边配套',
+          '出入口数',
+          '入住率',
+          '配套电梯',
           '车位数',
-          '车流量',
-          '人流量',
+          '经度',
+          '纬度',
+          '媒体类型',
+          '媒体名称',
+          '楼栋',
+          '单元',
+          '位置朝向',
+          '媒体位ID',
+          '设备型号',
+          '位置类型',
+          '投放面',
           '素材尺寸',
           '可视尺寸',
           '媒体备注',
+          '投放排期',
           '地图中心点',
           '终止日期',
         ];
         let filterVal = [
-          'resName',
           'province',
           'city',
           'rName',
-          'resAddress',
-          'mVehicle',
-          'mTitle',
-          'assetTag',
-          'asLab',
-          'timeRange',
-          'mType',
+          'street',
           'tradingArea',
+          'resName',
+          'resAddress',
           'fNum',
-          'hNum',
-          'hPrice',
+          'unitCount',
           'cType',
+          'hPrice',
+          'hNum',
           'chDay',
           'notPush',
+          'resAlias',
+          'description',
+          'supportingFacilities',
+          'dNum',
+          'liveRate',
+          'liftType',
           'parkSpaceNum',
-          'carFlow',
-          'peopleFlow',
+          'lat',
+          'lng',
+          'mediaTypeName',
+          'mTitle',
+          'buildingName',
+          'unitName',
+          'siteOrientation',
+          'assetTag',
+          'mType',
+          'site',
+          'asLab',
           'adSize',
           'adViewSize',
           'mRemark',
+          'timeRange',
           'mapCenter',
           'finishTimeRange',
         ];

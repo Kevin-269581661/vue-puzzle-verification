@@ -1578,36 +1578,53 @@ export default {
       let resultArr = [];
       for (let data of this.exportArr) {
         let obj = {
-          resName: data.resName,
-          province: data.province,
-          city: data.city,
-          rName: data.rName,
+          province: data.province, //省份
+          city: data.city, //城市
+          rName: data.rName, //区域
+          street: data.street, //街道#
+          tradingArea: data.tradingArea, //商圈
+          resName: data.resName, //资源名称
+          resAddress: data.resAddress, //详细地址
+          fNum: data.fNum, //楼栋数量
+          unitCount: data.unitCount, //单元数量#
+          cType: data.cType, //楼盘类型
+          hPrice: data.hPrice / 100, //楼盘价格
+          hNum: data.hNum == '0' ? '&' : data.hNum, //住户数量
+          chDay: data.chDay, //入住年份
+          notPush: data.notPush, //广告限制
+          resAlias: data.resAlias, //资源别名#
+          description: data.description, //楼盘介绍#
+          supportingFacilities: data.supportingFacilities, //周边配套#
+          EntryExitNum: data.EntryExitNum, //出入口数#
+          liveRate: data.liveRate, //入住率#
+          liftType: data.liftType, //配套电梯#
+          parkSpaceNum: data.parkSpaceNum || "", //车位数
+          // 经度
+          // 纬度
+          // 媒体类型
+          mTitle: data.mTitle, //媒体名称
+          // 楼栋
+          // 单元
+          // 位置朝向
+          assetTag: data.assetTag, //媒体位ID
+          mType: data.mType || "", // 设备型号
+          asLab: data.asLab, //投放面
+          adSize: data.adSize, //素材尺寸
+          adViewSize: data.adViewSize, //可视尺寸
+
+
           asName: data.asName,
           mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          assetTag: data.assetTag,
-          asLab: data.asLab,
           timeRange: data.timeRange,
           finishTimeRange: data.finishTimeRange,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == '0' ? '&' : data.hNum,
-          fNum: data.fNum,
-          chDay: data.chDay,
-          adSize: data.adSize,
-          adViewSize: data.adViewSize,
-          notPush: data.notPush,
           mRemark: data.mRemark,
-          resAddress: data.resAddress,
           remark: data.remark,
           trafficState: data.trafficState,
           electrifyState: data.electrifyState,
           mapCenter: data.mapCenterName || '',
-          parkSpaceNum: data.parkSpaceNum || "",
           carFlow: data.carFlow || "",
           peopleFlow: data.peopleFlow || "",
-          mType: data.mType || "",
+
         };
         resultArr.push(obj);
       }
@@ -1821,6 +1838,7 @@ export default {
             }
             // 选点排期
             this.exportArr = result;
+            console.log('选点排期',this.exportArr);
             this.loading = false;
             this.maLoading = false;
           } else {

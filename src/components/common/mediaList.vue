@@ -584,7 +584,6 @@ export default {
             { id: 2, label: "媒体名称", prop: "mTitle", width: "180", isChecked: true, fix:"not" },
             { id: 3, label: "投放面", prop: "asLab", width: "120", isChecked: true, fix:"not" },
             { id: 4, label: "媒体位ID", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
-            { id: 5, label: "资源类型", prop: "rtName", width: "120", isChecked: true, fix:"not" },
             { id: 6, label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
             { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
             { id: 8, label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
@@ -592,15 +591,9 @@ export default {
             { id: 10, label: "楼栋", prop: "buildingName", width: "120", isChecked: false, fix:"not" },
             { id: 11, label: "单元", prop: "unitName", width: "120", isChecked: false, fix:"not" },
             { id: 12, label: "街道", prop: "street", width: "180", isChecked: false, fix:"not" },
-            { id: 13, label: "设备类型", prop: "mediaModel", width: "120", isChecked: false, fix:"not" },
+            { id: 13, label: "设备型号", prop: "mType", width: "120", isChecked: false, fix:"not" },
             { id: 14, label: "位置类型", prop: "siteType", width: "120", isChecked: false, fix:"not" },
             { id: 15, label: "位置朝向", prop: "siteOrientation", width: "120", isChecked: false, fix:"not" },
-            { id: 16, label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },
-            { id: 17, label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
-            { id: 18, label: "操作", width: "80", isChecked: true, fix:"right" },
-        ],
-        // 右固定备份
-        fixRightArr: [
             { id: 16, label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },
             { id: 17, label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
             { id: 18, label: "操作", width: "80", isChecked: true, fix:"right" },
@@ -921,15 +914,6 @@ export default {
                     this.filterMediaType = "";
                 }
             }
-            // else if (key === "rtName") {
-            //     if (filters[key].length) {
-            //         for (const i in filters[key]) {
-            //             this.rtNameList.push(filters[key][i]);
-            //         }
-            //     } else {
-            //         this.rtNameList = [];
-            //     }
-            // }
         }
         this.pageData.pageNum = 1;
         this.getData();
@@ -990,13 +974,13 @@ export default {
             // }
             for (const key of RMList) {
                 let obj = {
+                    mID: key.mID,
                     resID: key.resID,
                     resName: key.resName || '--', // 资源名称
                     mVehicle: key.mVehicle || '--', // 媒体类型
                     mTitle: key.mTitle || '--', // 媒体名称
                     asLab: key.asLab || '--', // 投放面
                     assetTag: key.assetTag || '--', // 资产编号
-                    rtName: key.rtName || '--', // 资源类型
                     city: key.city || '--', // 城市
                     rName: key.rName, // 区域
                     tradingArea: key.tradingArea || '--', // 商圈
@@ -1004,10 +988,9 @@ export default {
                     buildingName: key.buildingName || '--', // 楼栋
                     unitName: key.unitName || '--', // 单元
                     street: key.street || '--', // 街道
-                    mediaModel: key.mediaModel || '--', // 设备类型
+                    mType: key.mType || '--', // 设备型号
                     siteType: key.siteType || '--', // 位置类型
                     siteOrientation: key.siteOrientation || '--', // 位置朝向
-
                     asState: key.asState || '--', // 媒体状态
                     asSaleState: key.asSaleState || '--', // 售卖状态
 

@@ -528,7 +528,7 @@ export default {
       }
     };
   },
-  created () { 
+  created () {
      //获取物料信息
     this.getMaterialInfo();
     // 获取角色
@@ -538,7 +538,7 @@ export default {
     this.getMatchCnt(sessionStorage.getItem("plan_apid"));
     this.getADLimit()       // 获取广告限制列表
 
-  
+
   },
   computed: {
     currentPagination () {
@@ -559,94 +559,126 @@ export default {
       let resultArr = [];
       for (let data of this.setpointArr) {
         let obj = {
-          resName: data.resName,
+          province: data.province || "",
           city: data.city,
           rName: data.rName,
-          mediaTypeName: data.mediaTypeName,
-          mTitle: data.mTitle,
-          site: data.site,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          assetTag: data.assetTag,
+          street: data.street, //街道
           tradingArea: data.tradingArea,
+          resName: data.resName,
+          resAddress: data.resAddress,
+          fNum: data.fNum == '0' ? '#' : data.fNum,
+          unitCount: data.unitCount, //单元数量
           cType: data.cType,
           hPrice: data.hPrice / 100,
           hNum: data.hNum == '0' ? '#' : data.hNum,
-          fNum: data.fNum == '0' ? '#' : data.fNum,
           chDay: data.chDay,
+          notPush: data.notPush,
+          resAlias: data.alias,
+          description: data.description,
+          supportingFacilities: data.supportingFacilities,
+          dNum: data.dNum, //出入口数
+          liveRate: data.liveRatem, //入住率
+          liftType: data.liftType, // 配套电梯
+          parkSpaceNum: data.parkSpaceNum || "",
+          lat: data.lng, //经度
+          lng: data.lat, //纬度
+          mediaTypeName: data.mediaTypeName,
+          mTitle: data.mTitle,
+          buildingName: data.buildingName, //楼栋
+          unitName: data.unitName, //单元
+          siteOrientation: data.siteOrientation, //位置朝向
+          assetTag: data.assetTag,
+          mType: data.mType,
+          site: data.site,
+          asLab: data.asLab,
           adSize: data.adSize,
           adViewSize: data.adViewSize,
-          notPush: data.notPush,
           mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState || '',
-          electrifyState: data.electrifyState || '',
-          asName: data.asName,
+          timeRange: data.timeRange,
           mapCenter: data.mapCenterName || '',
-          parkSpaceNum: data.parkSpaceNum || "",
-          carFlow: data.carFlow || "",
-          peopleFlow: data.peopleFlow || "",
-          province: data.province || ""
+          finishTimeRange: data.finishTimeRange,
         };
         resultArr.push(obj);
       }
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
         let tHeader = [
-          '资源名称',
           '省份',
           '城市',
           '区域',
-          '详细地址',
-          '媒介载体',
-          '媒体名称',
-          '资产编号',
-          '投放面',
-          '投放排期',
-          '位置类型',
+          '街道',
           '商圈',
+          '资源名称',
+          '详细地址',
           '楼栋数量',
-          '住户数量',
-          '楼盘价格',
+          '单元数量',
           '楼盘类型',
+          '楼盘价格',
+          '住户数量',
           '入住年份',
           '广告限制',
+          '资源别名',
+          '楼盘介绍',
+          '周边配套',
+          '出入口数',
+          '入住率',
+          '配套电梯',
           '车位数',
-          '车流量',
-          '人流量',
+          '经度',
+          '纬度',
+          '媒体类型',
+          '媒体名称',
+          '楼栋',
+          '单元',
+          '位置朝向',
+          '媒体位ID',
+          '设备型号',
+          '位置类型',
+          '投放面',
           '素材尺寸',
           '可视尺寸',
           '媒体备注',
+          '投放排期',
           '地图中心点',
-          '终止日期'
+          '终止日期',
         ];
         let filterVal = [
-          'resName',
           'province',
           'city',
           'rName',
-          'resAddress',
-          'mediaTypeName',
-          'mTitle',
-          'assetTag',
-          'asLab',
-          'timeRange',
-          'site',
+          'street',
           'tradingArea',
+          'resName',
+          'resAddress',
           'fNum',
-          'hNum',
-          'hPrice',
+          'unitCount',
           'cType',
+          'hPrice',
+          'hNum',
           'chDay',
           'notPush',
+          'resAlias',
+          'description',
+          'supportingFacilities',
+          'dNum',
+          'liveRate',
+          'liftType',
           'parkSpaceNum',
-          'carFlow',
-          'peopleFlow',
+          'lat',
+          'lng',
+          'mediaTypeName',
+          'mTitle',
+          'buildingName',
+          'unitName',
+          'siteOrientation',
+          'assetTag',
+          'mType',
+          'site',
+          'asLab',
           'adSize',
           'adViewSize',
           'mRemark',
+          'timeRange',
           'mapCenter',
           'finishTimeRange',
         ];
@@ -821,6 +853,7 @@ export default {
           if (!res.data.SysCode) {
             let initData = res.data;
             let resInfo = initData.adSpaceInfo;
+            console.log('resInfo', resInfo);
             // 城市中文名称
             for (let data of resInfo) {
               let time = "";
@@ -1071,7 +1104,7 @@ export default {
         }
       });
     },
-    // 
+    //
     resetSettlement (done) {
       if (this.$refs.settlementForm) {
         this.$refs.settlementForm.resetFields()

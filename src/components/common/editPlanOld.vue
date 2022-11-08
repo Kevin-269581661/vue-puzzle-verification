@@ -285,7 +285,7 @@
                                         <div v-if="isOccupied" class="space-group">
                                             <div v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList" :key="adSpaceIndex" class="space-item">
                                                 <!-- 点位状态和点位售卖状态确定是否可选 -->
-                                                <el-checkbox 
+                                                <el-checkbox
                                                     v-if="adSpaceItem.checkFlag"
                                                     v-model="adSpaceItem.checkBox" :label="adSpaceItem.asLab || '--'"
                                                     @change="changeCheckBox(scope.row, adSpaceItem)">
@@ -1885,26 +1885,36 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = [
-                    '资源名称',
-                    '省份',
-                    '城市', 
-                    '区域',
-                    '详细地址',
-                    '媒介载体',
-                    '商圈',
-                    '楼栋数量', 
-                    '住户数量',	
-                    '楼盘价格',	
-                    '楼盘类型',
-                    '入住时间',	
-                    '广告限制',
-                    '车位数',
-                    '车流量',
-                    '人流量',
-                    '媒体数量（门）',
-                    '可投数量（面）',
-                    '地图中心点', 
-                    '投放排期'
+                "省份",
+                "城市",
+                "区域",
+                "街道",
+                "商圈",
+                "资源名称",
+                "详细地址",
+                "楼栋数量",
+                "单元数量",
+                "楼盘类型",
+                "楼盘价格",
+                "住户数量",
+                "入住年份",
+                "广告限制",
+                "媒体面数",
+                "资源别名",
+                "楼盘介绍",
+                "周边配套",
+                "出入口数",
+                "入住率",
+                "配套电梯",
+                "车位数",
+                "媒体类型",
+                "媒体备注",
+                "经度",
+                "纬度",
+                "车流量",
+                "人流量",
+                "地图中心点",
+                "投放排期",
                 ];
 
                 switch (this.customPermission.patrolPermission) {
@@ -1946,33 +1956,43 @@
                 for(let data of arr){
                     let obj = {
                         resID: data.resID,
-                        resName: data.resName,
-                        province: data.province || '',
-                        city: data.city,
-                        rName: data.origin,
-                        resAddress: data.address,
-                        mediaTypeName: data.mediaTypeName,
-                        tradingArea: data.tradingArea,
-                        fNum: data.buildNum,
-                        hNum: data.houseNum,
-                        hPrice: data.buildPrice,
-                        cType: data.buildType,
-                        chDay: data.liveYear,
-                        notPush: data.notPush || '',
-                        parkSpaceNum: data.parkSpaceNum,
-                        carFlow: data.carFlow,
-                        peopleFlow: data.peopleFlow,
-                        actualMediaCnt: 1,
-                        adsNum: 1,
-                        map: data.mapCenter,
-                        timeRange: '',
+                        province: data.province, //省份
+                        city: data.city, //城市
+                        rName: data.origin, //区域
+                        street: data.street, // 街道
+                        tradingArea: data.tradingArea, //商圈
+                        resName: data.resName, //资源名称
+                        resAddress: data.address, //详细地址
+                        fNum: data.buildNum, //楼栋数量
+                        unitCount: data.unitCount, //单元数量
+                        cType: data.buildType, //楼盘类型
+                        hPrice: data.buildPrice, //楼盘价格
+                        hNum: data.houseNum, //住户数量
+                        chDay: data.liveYear, //入住年份
+                        notPush: data.notPush, //广告限制
+                        mediaCount: data.adsList.length, // 媒体面数
+                        resAlias: data.alias, //资源别名
+                        description: data.description, // 楼盘介绍
+                        supportingFacilities: data.supportingFacilities, // 周边配套
+                        dNum: data.dNum, // 出入口数
+                        liveRate: data.liveRatem, // 入住率
+                        liftType: data.liftType, // 配套电梯
+                        parkSpaceNum: data.parkSpaceNum, //车位数
+                        mediaTypeName: data.mediaTypeName, // 媒体类型
+                        mRemark: data.mRemark, // 媒体备注
+                        lat: data.lng, // 经度
+                        lng: data.lat, // 纬度
+                        carFlow: data.carFlow, //车流量
+                        peopleFlow: data.peopleFlow, //人流量
+                        map: data.mapCenter, //地图中心点
+                        timeRange: "", //投放排期
                         mID: data.mID
                     };
 
                     let mIDitem = mIDArr.find(item => {
                         return item.resID == data.resID
                     })
-                    
+
                     // 如果该资源存在
                     if (mIDitem) {
                         if (!mIDitem.mID.includes(data.mID)) {

@@ -37,6 +37,10 @@
             <div class="ad_mediaInfoPanel_row">
               <h3>基本信息</h3>
               <el-row type="flex" class="row-bg row_box"  style="margin-bottom: 0">
+                <!-- <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">资源名称：</span
+                  ><span>{{ resData.resName || "--" }}</span>
+                </el-col> -->
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">资源别名：</span
                   ><span>{{ resData.resAlias || "--" }}</span>
@@ -126,6 +130,10 @@
               </el-row>
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">单元数量：</span
+                  ><span>{{ resData.unitCount || "--" }}个</span>
+                </el-col>
+                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住年份：</span
                   ><span>{{ resData.joinTime || "--" }}年</span>
                 </el-col>
@@ -162,6 +170,8 @@
                     </div>
                   </div>
                 </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6" style="position: relative">
                   <div
                     class="ad_mediaInfoPanel_row_box"
@@ -190,8 +200,6 @@
                     </div>
                   </div>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">出入口数：</span
                   ><span>{{ resData.EntryExitNum || "--" }}</span>
@@ -204,12 +212,12 @@
                   <span class="ad_mediaInfoPanel_row_title">配套电梯：</span
                   ><span>{{ resData.liftType || "--" }}</span>
                 </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车位数：</span
                   ><span>{{ resData.carNumber || "--" }}</span>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">人流量：</span
                   ><span>{{ resData.peopleFlowrate || "--" }}人次/天</span>
@@ -330,6 +338,9 @@
                       label="设备型号"
                       min-width="150px"
                     >
+                        <template slot-scope="scope">
+                            {{ scope.row.mType || "--" }}
+                        </template>
                     </el-table-column>
                     <el-table-column
                       label="素材尺寸"
@@ -662,6 +673,7 @@
                     HouseNum: resData.hNum, // 住户数量
                     EntryExitNum: resData.dNum,
                     buildingNum: resData.fNum, // 楼栋数量
+                    unitCount: resData.unitCount, // 单元数量
                     rid: resData.rID,
                     qCommunity: resData.qcentCommunityName, // Q云企小区名称
                     houseType: resData.cType, // 楼盘类型

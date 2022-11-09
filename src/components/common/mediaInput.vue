@@ -18,6 +18,14 @@
             >
                 <el-form-item label="基本信息" class="baseInfo firstInfo"></el-form-item>
                 <el-row :gutter="76" class="from_row">
+                    <el-col :span="6">
+                        <el-form-item label="资源名称" prop="resName">
+                            <el-input
+                            v-model="recForm.resName"
+                            placeholder=""
+                            ></el-input>
+                        </el-form-item>
+                    </el-col>
                      <!-- <el-col :span="6" class="el_col_box">
                         <el-form-item label="资源名称" prop="resname">
                             <el-autocomplete
@@ -99,16 +107,16 @@
                         </el-select>
                     </el-form-item>
                     </el-col>
-                    <el-col :span="6">
-                    <el-form-item label="街道" prop="street">
-                        <el-input
-                        v-model="recForm.street"
-                        placeholder=""
-                        ></el-input>
-                    </el-form-item>
-                    </el-col>
                 </el-row>
                 <el-row :gutter="76" class="from_row">
+                    <el-col :span="6">
+                        <el-form-item label="街道" prop="street">
+                            <el-input
+                            v-model="recForm.street"
+                            placeholder=""
+                            ></el-input>
+                        </el-form-item>
+                    </el-col>
                     <el-col :span="6">
                     <el-form-item label="地址" prop="resaddr">
                         <el-input
@@ -153,6 +161,9 @@
                         </div>
                     </el-form-item>
                     </el-col>
+                </el-row>
+
+                <el-row :gutter="76" class="from_row">
                     <el-col :span="6">
                     <el-form-item label="楼盘介绍" prop="description">
                         <el-input
@@ -1009,7 +1020,7 @@ export default {
       recRules: {
         // 1、画像信息
         // 资源名称
-        resname: [
+        resName: [
           {
             required: true,
             message: "资源名称不能为空!",
@@ -1017,9 +1028,19 @@ export default {
           },
           { validator: validateSpace, trigger: ["blur", "change"] },
           { validator: validateSpecialString, trigger: ["blur", "change"] },
-          { validator: this.isHaveCommenName, trigger: "blur" },
           { max: 40, message: "最多只能输入40个字节", trigger: "change" },
         ],
+        // resname: [
+        //   {
+        //     required: true,
+        //     message: "资源名称不能为空!",
+        //     trigger: ["blur", "change"],
+        //   },
+        //   { validator: validateSpace, trigger: ["blur", "change"] },
+        //   { validator: validateSpecialString, trigger: ["blur", "change"] },
+        //   { validator: this.isHaveCommenName, trigger: "blur" },
+        //   { max: 40, message: "最多只能输入40个字节", trigger: "change" },
+        // ],
         // 资源别名
         resAlias: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
         // 城市
@@ -1527,7 +1548,7 @@ export default {
             : ""; // 入住年份
           this.recForm.lng = obj.lat; // 纬度
           this.recForm.lat = obj.lng; // 经度
-          //
+          this.recForm.resName = obj.resName
           this.recForm.resAlias = obj.alias.join(","); // 资源别名
           this.recForm.addressAlias = obj.addressAlias[0]; // 地址别名
           this.recForm.description = obj.description || ""; // 描述
@@ -2418,6 +2439,7 @@ export default {
         // 获取设置资源信息
         let tempObj = {
           // 基本信息
+          resName: recObj.resName,
           resAlias: recObj.resAlias, // 资源别名
           city: this.recForm.city, // 城市
           region: recObj.rid.toString(), // 区域
@@ -2640,6 +2662,7 @@ export default {
       let recObj = this.recForm;
       let SetResCTObj = {
         // 基本信息
+        resName: recObj.resName,
         resAlias: recObj.resAlias || "", // 资源别名
         rid: "", // 地区id
         street: recObj.street, // 街道

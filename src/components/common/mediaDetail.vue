@@ -37,10 +37,10 @@
             <div class="ad_mediaInfoPanel_row">
               <h3>基本信息</h3>
               <el-row type="flex" class="row-bg row_box"  style="margin-bottom: 0">
-                <!-- <el-col :span="6">
+                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">资源名称：</span
                   ><span>{{ resData.resName || "--" }}</span>
-                </el-col> -->
+                </el-col>
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">资源别名：</span
                   ><span>{{ resData.resAlias || "--" }}</span>
@@ -53,12 +53,12 @@
                   <span class="ad_mediaInfoPanel_row_title">区域：</span
                   ><span>{{ resData.cityArea || "--" }}</span>
                 </el-col>
+              </el-row>
+              <el-row class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">街道：</span
                   ><span>{{ resData.street || "--" }}</span>
                 </el-col>
-              </el-row>
-              <el-row class="row-bg row_box" style="margin-bottom: 0">
                   <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">地址：</span
                   ><span>{{ resData.resAddress || "--" }}</span>
@@ -71,6 +71,8 @@
                   <span class="ad_mediaInfoPanel_row_title">经纬度：</span
                   ><span>{{ resData.latLng || "--" }}</span>
                 </el-col>
+              </el-row>
+              <el-row  class="row-bg row_box" style="margin-bottom: 0">
                 <el-col :span="6" style="position: relative">
                     <div
                     class="ad_mediaInfoPanel_row_box"
@@ -99,8 +101,6 @@
                     </div>
                     </div>
                 </el-col>
-              </el-row>
-              <el-row  class="row-bg row_box" style="margin-bottom: 0">
                   <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">Q云企小区名称：</span
                   ><span>{{ resData.qCommunity || "--" }}</span>
@@ -260,11 +260,6 @@
               <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
                 <el-col>
                     <span v-for="(item, index) in ResImgSrc" :key="index">
-                        <span class="img-box" @click="showResImg(item)">
-                            <img style="height: 100px;" :src="item" alt=""/>
-                        </span>
-                    </span>
-                    <span v-for="(item, index) in ResImgSrc">
                         <span class="img-box" @click="showResImg(item)">
                             <img style="height: 100px;" :src="item" alt=""/>
                         </span>

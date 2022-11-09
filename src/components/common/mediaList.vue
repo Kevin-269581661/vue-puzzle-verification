@@ -993,6 +993,7 @@ export default {
                     siteOrientation: key.siteOrientation || '--', // 位置朝向
                     asState: key.asState || '--', // 媒体状态
                     asSaleState: key.asSaleState || '--', // 售卖状态
+                    unSaleableReason: key.unSaleableReason, // 不可售卖原因
 
                 }
                 mediaList.push(obj)
@@ -1079,6 +1080,7 @@ export default {
         this.mID = rows.mID;
         this.unSaleableReason = JSON.parse(rows.unSaleableReason || "[]");
         this.mTitle = rows.mTitle;
+        console.log(rows);
       }
 
       if (selectState === "4") {

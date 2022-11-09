@@ -1976,7 +1976,7 @@
                         description: data.description, // 楼盘介绍
                         supportingFacilities: data.supportingFacilities, // 周边配套
                         dNum: data.dNum, // 出入口数
-                        liveRate: data.liveRatem, // 入住率
+                        liveRate: data.liveRate, // 入住率
                         liftType: data.liftType, // 配套电梯
                         parkSpaceNum: data.parkSpaceNum, //车位数
                         mediaTypeName: data.mediaTypeName, // 媒体类型
@@ -4376,7 +4376,17 @@
                                     carFlow: data.carFlow,
                                     peopleFlow: data.peopleFlow,
                                     notPush: data.notPush,
-                                    province: data.province
+                                    province: data.province,
+                                    unitCount: data.unitCount,
+                                    description: data.description,
+                                    supportingFacilities: data.supportingFacilities,
+                                    mRemark: data.mRemark,
+                                    liftType: data.liftType,
+                                    liveRate: data.liveRate,
+                                    lng: data.lng,
+                                    lat: data.lat,
+                                    alias: data.alias,
+                                    street: data.street,
                                 }
                                 // if (data.mediaTypeName === '道闸') {
                                 //     selectInfo.adPrice = data.asPrice / 100

@@ -1972,7 +1972,6 @@
                         chDay: data.liveYear, //入住年份
                         notPush: data.notPush, //广告限制
                         // mediaCount: data.adsList.length || 0, // 媒体面数
-                        // mediaCount: 0, // 媒体面数
                         resAlias: data.alias, //资源别名
                         description: data.description, // 楼盘介绍
                         supportingFacilities: data.supportingFacilities, // 周边配套

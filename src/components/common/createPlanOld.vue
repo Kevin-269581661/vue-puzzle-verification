@@ -2926,7 +2926,7 @@ export default {
           description: data.description, // 楼盘介绍
           supportingFacilities: data.supportingFacilities, // 周边配套
           dNum: data.dNum, // 出入口数
-          liveRate: data.liveRatem, // 入住率
+          liveRate: data.liveRate, // 入住率
           liftType: data.liftType, // 配套电梯
           parkSpaceNum: data.parkSpaceNum, //车位数
           mediaTypeName: data.mediaTypeName, // 媒体类型
@@ -3537,6 +3537,7 @@ export default {
           houseNum: key.hNum, //楼栋数量
           liveYear: key.chDay, //入住年份
           notPush: key.notPush, //广告限制
+          unitCount: key.unitCount,
           adsList: key.adsList || [], // 所属公司id
           alias: key.alias, //资源别名
           description: key.description, //楼盘介绍

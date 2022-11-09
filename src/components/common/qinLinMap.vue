@@ -1560,7 +1560,6 @@ export default {
     const timeRange = this.$route.query.timeRange
     this.timeRange = timeRange.replace(',', ' - ')
 
-
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
@@ -4125,6 +4124,7 @@ export default {
             lng: data.lng,
             lat: data.lat,
             description: data.description,
+            liftType: data.liftType,
             timeRange: this.timeRange
           };
           if (this.systemSource === 0) {

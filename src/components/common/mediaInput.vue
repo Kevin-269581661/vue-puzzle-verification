@@ -622,7 +622,7 @@
                       <el-col :span="6">
                         <el-form-item label="位置朝向" prop="siteOrientation">
                             <el-select
-                                v-model="mediaItem.mediaForm.siteOrientation"
+                                v-model="mediaItem.mediaForm.adSpaceInfo[0].siteOrientation"
                                 placeholder="请选择位置朝向"
                                 clearable
                             >
@@ -2154,7 +2154,7 @@ export default {
                 adSizeHeight,
                 adViewSizeWidth,
                 adViewSizeHeight,
-                siteOrientation: tempMediaForm.siteOrientation
+                siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
               });
             } else {
               break mediaTop;
@@ -2806,7 +2806,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.siteOrientation
+                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
                 });
               } else {
                 break mediaTop;
@@ -2862,7 +2862,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.siteOrientation
+                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
                 });
               } else {
                 break mediaTop;

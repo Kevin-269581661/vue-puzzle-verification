@@ -2216,7 +2216,9 @@ export default {
     },
     // 详情里选定按钮
     addResFun (item) {
-      this.checkBoxFun(this.showResInfo);
+      // 直接勾选小区没有地图中心点
+      const info = {...this.showResInfo, notOnline: true}
+      this.checkBoxFun(info);
     },
     // 获取指定资源到媒体列表
     getMediaListByResID () {
@@ -3411,6 +3413,7 @@ export default {
     },
     // 在线勾选/取消
     onlineCheckBox (item) {
+      console.log(item, '在线勾选/取消')
       for (let key of this.onlineMarkers) {
         if (
           key.point.lat === item.point.lat &&
@@ -4106,7 +4109,7 @@ export default {
             mRemark: data.mRemark || "",
             mediaNum: data.mediaCount || "",
             spareAdsCount: data.spareAdsCount || "",
-            mapCenter: centerArr.join(";"),
+            mapCenter: data.notOnline ? '' : centerArr.join(";"),
             asNames: data.asNames,
             allRemark: data.allRemark,
             allTrafficState: data.allTrafficState,

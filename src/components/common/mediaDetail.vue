@@ -368,14 +368,6 @@
                       {{ scope.row.adViewSizeInfo || "--" }}
                     </template>
                   </el-table-column>
-                  <!-- <el-table-column
-                                        prop="grade"
-                                        label="媒体等级"
-                                        min-width="7%">
-                                        <template slot-scope="scope">
-                                            {{scope.row.grade || '--'}}
-                                        </template>
-                                    </el-table-column> -->
                   <el-table-column
                     label="广告限制"
                     min-width="120px"
@@ -410,15 +402,6 @@
                       }}
                     </template>
                   </el-table-column>
-                  <!-- <el-table-column
-                                        label="门禁图片"
-                                        min-width="6%">
-                                        <template slot-scope="scope">
-                                            <div style="color: #108EE9;cursor: pointer;"
-                                                 @click="showMediaImg(scope.row.mID)">查看
-                                            </div>
-                                        </template>
-                                    </el-table-column> -->
                 </el-table>
               </div>
             </el-tab-pane>
@@ -437,20 +420,6 @@
         </el-carousel-item>
       </el-carousel>
     </el-dialog>
-    <!--媒体图片模态框-->
-    <!-- <el-dialog
-            custom-class="img-dialog"
-            :visible.sync="mediaImgDialogVisible"
-            :title="mediaImgTitle">
-            <div class="block mediaImg">
-                <el-carousel height="550px">
-                    <el-carousel-item v-for="(src,index) in mediaImgSrc" :key="index">
-                        <img class="mediaImg" :src='src' alt="媒体图片">
-                    </el-carousel-item>
-                </el-carousel>
-            </div>
-        </el-dialog> -->
-    <!--设置连排门-->
     <el-dialog
       :visible.sync="ConnectDoorDialogVisible"
       title="连排门设置"

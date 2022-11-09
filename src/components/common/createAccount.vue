@@ -67,6 +67,25 @@
                 ></el-option>
               </el-select>
             </el-form-item>
+            <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
+                <el-form-item label="媒体权限：" prop="mediaPermission">
+                    <el-select
+                        multiple
+                        v-model="accountForm.mediaPermission"
+                        placeholder="请选择媒体权限"
+                        @change="mediaAccessSelect"
+                        size="small"
+                        :disabled="isEdit"
+                    >
+                        <el-option
+                        v-for="item in mediaPermissionArr"
+                        :key="item.value"
+                        :value="item.value"
+                        :label="item.label"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+            </template>
             <template v-if="accountForm.role == 'DEV'">
               <!-- 开发楼盘人员 -->
               <el-form-item label="开发类别：" prop="devManageLevel">
@@ -481,6 +500,7 @@ export default {
         value: "DEV",
       });
     }
+    this.getMediaPermission()
   },
   methods: {
     //获取媒体权限数据
@@ -501,7 +521,21 @@ export default {
               })
             })
           }
-          this.mediaPermissionArr=_newData;
+            // console.log('data', _data);
+            // if(_data.length > 0) {
+            //     _data.forEach((item) => {
+            //         _newData.push({
+            //             label: item.mediaTypeName,
+            //             value: item.mediaTypeId,
+            //             children: []
+            //         })
+            //         _newData.children.push({
+            //             label: item.child.chooseTypeName,
+            //             value: item.chooseType
+            //         })
+            //     })
+            // }
+            this.mediaPermissionArr=_newData;
         }else{
           this.$message({
               message: res.data.MSG,

@@ -577,7 +577,7 @@
         description: data.description,
         supportingFacilities: data.supportingFacilities,
         dNum: data.dNum, //出入口数
-        liveRate: data.liveRatem, //入住率
+        liveRate: data.liveRate, //入住率
         liftType: data.liftType, // 配套电梯
         parkSpaceNum: data.parkSpaceNum || "",
         lat: data.lng, //经度

@@ -1899,7 +1899,7 @@
                 "住户数量",
                 "入住年份",
                 "广告限制",
-                // "媒体面数",
+                "媒体面数",
                 "资源别名",
                 "楼盘介绍",
                 "周边配套",
@@ -1971,7 +1971,7 @@
                         hNum: data.houseNum, //住户数量
                         chDay: data.liveYear, //入住年份
                         notPush: data.notPush, //广告限制
-                        // mediaCount: data.adsList.length || 0, // 媒体面数
+                        adsNum: 1, // 媒体面数
                         resAlias: data.alias, //资源别名
                         description: data.description, // 楼盘介绍
                         supportingFacilities: data.supportingFacilities, // 周边配套

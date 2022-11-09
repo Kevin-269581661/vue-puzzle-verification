@@ -499,7 +499,6 @@ export default {
         value: "DEV",
       });
     }
-    this.getMediaPermission()
   },
   methods: {
     //获取媒体权限数据
@@ -507,8 +506,9 @@ export default {
       let info={
         companyIds: this.accountForm.company
       }
-      api.getApi("/addsp/api/v1/company/mediaTypes", info).then(res => {
-        if(res.data.SysCode== 200200){
+      api.getApi("/api/v1/company/mediaChooseConfig", info).then(res => {
+        // if(res.data.SysCode == 200200){
+        if(res.data.SysCode){
           let _data=res.data.data;
           let _newData=[];
 
@@ -681,6 +681,9 @@ export default {
       if (this.accountForm.role == "BD") {
         this.getRoleCity();
       }
+      if (this.accountForm.role == "MD" || this.accountForm.role == "BD") {
+        this.getMediaPermission()
+      }
     },
     // 选择工程类型
     engineerCategorySelect(val) {},
@@ -716,7 +719,7 @@ export default {
           // this.accountForm.role = "";
         }
       }
-      this.getMediaPermission();
+    //   this.getMediaPermission();
     },
     lazyFunction(fn, timeout) {
       var timer = 0;

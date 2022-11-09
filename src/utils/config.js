@@ -16,7 +16,8 @@ if(process.env.NODE_ENV == 'development'){
     jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
 const apiRoot = {
-    devURL: '"https://test-qadn.qinlindmp.com/"',
+    devURL: '"https://mock.apifox.cn/m1/1737989-0-default/"',
+    // devURL: '"https://test-qadn.qinlindmp.com/"',
     // devURL: '"/devURL/"',
     // testURL: '"http://192.168.1.239/"',
     testURL: '"https://test-qadn.qinlindmp.com/"',

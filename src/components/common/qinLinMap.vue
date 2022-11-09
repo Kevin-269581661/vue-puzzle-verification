@@ -4124,6 +4124,7 @@ export default {
             lng: data.lng,
             lat: data.lat,
             description: data.description,
+            liftType: data.liftType,
             timeRange: this.timeRange
           };
           if (this.systemSource === 0) {

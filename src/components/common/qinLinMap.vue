@@ -4102,7 +4102,7 @@ export default {
             cType: data.cType,
             hPrice: data.hPrice / 100,
             chDay: data.chDay || "",
-            notPush: data.adLimit || "",
+            notPush: data.notPush || "",
             mRemark: data.mRemark || "",
             mediaNum: data.mediaCount || "",
             spareAdsCount: data.spareAdsCount || "",

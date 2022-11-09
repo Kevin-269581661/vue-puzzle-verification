@@ -6,48 +6,45 @@
                 <span class="ad_breadcrumb_time">数据统计截止至{{checkDate}}</span>
             </p>
         </div>
-        <div class="mediaList_wrap">
-            <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
-                <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
-            </el-tabs>
-            <div class="tab_conten">
-                <div :gutter="32" class="tab_conten_row">
-                    <div class="row-unit">
-                        <span class="search_label">关键词：</span>
+        <el-card style="margin: 0 64px 16px 64px;">
+            <el-row class="handel_ul" :gutter="36">
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">关键词：</span>
                         <el-input
                             placeholder="请输入关键词"
                             v-model="searchInfo[searchInfo.keywordType]"
                             size="small"
-                            class="search-row-item"
+                            class="input-with-select"
                             >
                             <el-select
                                 v-model="searchInfo.keywordType"
                                 slot="prepend"
                                 size="small"
                                 placeholder="请输入关键词"
+                                style="width: 98px"
                             >
                                 <el-option label="资源名称" value="resName"></el-option>
-                                <el-option label="资产编号" value="assetTag"></el-option>
+                                <el-option label="媒体位ID" value="assetTag"></el-option>
                             </el-select>
-                            </el-input>
-                    </div>
-                    <div class="row-unit">
-                        <span class="search_label">城市区域：</span>
+                        </el-input>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">城市区域：</span>
                         <el-cascader
                             :options="areaList"
                             v-model="areaRid"
                             separator="-"
-                            :show-all-levels="false"
+                            :show-all-levels="true"
                             placeholder="请选择区域"
                             filterable
                             :clearable="true"
                             size="small"
                             @change="changeArea"
-                            class="search-row-item">
+                        >
                         </el-cascader>
-                    </div>
-                    <div class="row-unit">
-                        <span class="search_label">查询范围：</span>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                        <span class="li-label">查询范围：</span>
                         <el-date-picker
                             v-model="dateInput"
                             size="small"
@@ -57,56 +54,115 @@
                             end-placeholder="结束日期"
                             value-format="yyyy/MM/dd"
                             format="yyyy/MM/dd"
-                            class="date-select search-row-item"
                             @change="dateChange"
                             :picker-options="pickerOptions">
                         </el-date-picker>
-                    </div>
-                    <div class="btn-group">
-                        <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun">搜索</el-button>
-                        <el-button @click="clearSearch">重置</el-button>
-                    </div>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">楼栋：</span>
+                    <el-input
+                        v-model="buildingName"
+                        placeholder="请输入楼栋"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+                </el-col>
+                <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">单元：</span>
+                    <el-input
+                        v-model="unitName"
+                        placeholder="请输入单元"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+                </el-col>
+                <el-col class="handel_ul_li handel_ul_li_btn" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <el-button type="primary" :disabled="searchBtnAbled" @click="searchFun" class="el-icon-search">&nbsp;搜索</el-button>
+                    <el-button @click="clearSearch">重置</el-button>
+                </el-col>
+            </el-row>
+        </el-card>
+        <div class="mediaList_wrap">
+            <div class="tab-box">
+                <div style="width: 90%;">
+                    <el-tabs v-model="mediaTypeId" @tab-click="handleClick">
+                        <el-tab-pane v-for="item in mediaTypesArr" :key="item.id" :label="item.name" :name="item.id"></el-tab-pane>
+                    </el-tabs>
                 </div>
+                <!-- 列设置 -->
+                <template v-if="mediaTypesArr.length">
+                    <TableSetting
+                        class="tab-setting"
+                        refresh
+                        filter
+                        :columns="adsColumn"
+                        cacheKey="plate"
+                        @filterColumn="filterColumn"
+                        @refreshTable="refreshTable"
+                    >
+                    </TableSetting>
+                </template>
+            </div>
+            <div class="tab_conten">
                 <div class="table_wrap" :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
                     <el-table
                         v-loading="tableLoading"
                         element-loading-text="拼命加载中..."
                         element-loading-spinner="el-icon-loading"
-                        :key="tableKey"
+                        :key="itemKey"
                         :data="adsTableList"
                         class="ads_table"
                         :class="tableLength ? 'ads_table_10' : ''"
-                        style="width: 100%">
-                        <el-table-column
-                            class-name="el-table-column-resName"
-                            prop="resName"
-                            label="资源名称"
-                            min-width="120"
-                            fixed
-                            show-overflow-tooltip>
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-mediaName"
-                            prop="mediaName"
-                            label="媒体名称"
-                            min-width="120"
-                            fixed
-                            :show-overflow-tooltip="true">
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-districtName"
-                            prop="districtName"
-                            label="区域"
-                            min-width="120"
-                            fixed>
-                        </el-table-column>
-                        <el-table-column
-                            class-name="el-table-column-asLab"
-                            prop="asLab"
-                            label="投放面"
-                            min-width="90"
-                            fixed>
-                        </el-table-column>
+                        style="width: 100%"
+                    >
+                            <template v-for="item in adsColumn">
+                                <template v-if="item.label === '媒体状态'">
+                                    <el-table-column
+                                        v-if="item.isChecked"
+                                        column-key="asState"
+                                        :prop="item.prop"
+                                        :label="item.label"
+                                        :width="item.width"
+                                        :fixed="item.fix === 'left' ? true : false"
+                                    >
+                                        <template slot-scope="scope">
+                                            <point-state
+                                            :state-text="stateToText(scope.row.asState).text"
+                                            :color="stateToText(scope.row.asState).color"
+                                            ></point-state>
+                                        </template>
+                                    </el-table-column>
+                                </template>
+                                <template v-else-if="item.label === '售卖状态'">
+                                    <el-table-column
+                                    v-if="item.isChecked"
+                                    column-key="asSaleState"
+                                    :prop="item.prop"
+                                    :label="item.label"
+                                    :width="item.width"
+                                    :fixed="item.fix === 'left' ? true : false"
+                                >
+                                    <template slot-scope="scope">
+                                        <point-state
+                                        :state-text="stateToSellText(scope.row.asSaleState).text"
+                                        :color="stateToSellText(scope.row.asSaleState).color"
+                                        ></point-state>
+                                    </template>
+                                </el-table-column>
+                                </template>
+                                <template v-else>
+                                    <el-table-column
+                                        v-if="item.isChecked"
+                                        :prop="item.prop"
+                                        :label="item.label"
+                                        :min-width="item.width"
+                                        :fixed="item.fix === 'left' ? true : false"
+                                        show-overflow-tooltip>
+                                    </el-table-column>
+                                </template>
+                            </template>
                         <el-table-column
                             v-for="(item,index) in tableHeader"
                             :prop="item.dayOfMonth"
@@ -122,13 +178,18 @@
                                     width="310"
                                     trigger="hover">
                                     <div>
-                                        <p class="propmt_message_p">
+                                        <div v-if="mediaTypesArr[mediaTypeId-1].name == '单元门禁灯箱' && scope.row[item.dayOfMonth].status == 0">
+                                            <p class="propmt_message_p">全国单预锁/全国单占用</p>
+                                        </div>
+                                        <div v-else>
+                                            <p class="propmt_message_p">
                                             占点方案：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].apName}}
-                                        </p>
-                                        <p class="propmt_message_p">
-                                            占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
-                                            + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
-                                        </p>
+                                            </p>
+                                            <p class="propmt_message_p">
+                                                占点排期：{{scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lStar + '-'
+                                                + (scope.row[item.dayOfMonth] && scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].lEnd)}}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div slot="reference" class="color_chunk"
                                          :class="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status == 0 ? 'color_chunk_0' : scope.row[item.dayOfMonth] && (scope.row[item.dayOfMonth].status == 1 || scope.row[item.dayOfMonth].status == 2) ? 'color_chunk_1' : 'color_chunk_2'">
@@ -182,11 +243,34 @@
     // 时间格式化
     import timeFormat from '../../commonFun/timeFormat'
     import areaArr from '../../commonFun/areaPackage_new'
-
+    import pointState from "./components/pointState.vue";
+    import TableSetting from '../common/components/TableSetting'
     export default {
         name: "adsDialPlate",
+        components: {
+            pointState,
+            TableSetting
+        },
         data() {
             return {
+                adsColumn: [
+                    { id: 0, label: "资源名称", prop: "resName", width: "120", isChecked: true, fix:"left" },
+                    { id: 1, label: "媒体名称", prop: "mTitle", width: "80", isChecked: true, fix:"left" },
+                    { id: 2, label: "城市", prop: "cityName", width: "80", isChecked: false, fix:"not" },
+                    { id: 3, label: "区域", prop: "districtName", width: "80", isChecked: true, fix:"left" },
+                    { id: 4, label: "街道", prop: "street", width: "100", isChecked: false, fix:"not" },
+                    { id: 5, label: "商圈", prop: "tradingArea", width: "120", isChecked: false, fix:"not" },
+                    { id: 6, label: "媒体位ID", prop: "assetTag", width: "180", isChecked: false, fix:"not" },
+                    { id: 7, label: "设备类型", prop: "mediaModel", width: "80", isChecked: false, fix:"not" },
+                    { id: 8, label: "位置类型", prop: "siteType", width: "80", isChecked: false, fix:"not" },
+                    { id: 9, label: "楼栋", prop: "buildingName", width: "80", isChecked: false, fix:"not" },
+                    { id: 10, label: "单元", prop: "unitName", width: "80", isChecked: false, fix:"not" },
+                    { id: 11, label: "投放面", prop: "asLab", width: "80", isChecked: true, fix:"left" },
+                    { id: 12, label: "位置朝向", prop: "siteOrientation", width: "80", isChecked: true, fix:"left" },
+                    { id: 13, label: "媒体状态", prop: "asState", width: "100", isChecked: false, fix:"not" },
+                    { id: 14, label: "售卖状态", prop: "asSaleState", width: "100", isChecked: false, fix:"not" },
+                ],
+                itemKey: '', // 用于更新表格
                 mediaTypeId: '', //当前选择的媒体类型id
                 mediaTypesArr:[],  //媒体类型数据
                 sessionData:'',
@@ -214,10 +298,14 @@
                 // 日期区间
                 dateInput: [],
                 beforDate: [],
+                // 楼栋搜索字段
+                buildingName: '',
+                // 单元搜索字段
+                unitName: '',
                 searchBtnAbled: false,
                 adsTableList: [],
                 // 表格key值用于强制刷新渲染
-                tableKey: 1,
+                // tableKey: 1,
                 // 表格头部
                 tableHeader:[],
                 // 选择的第一个日期
@@ -261,6 +349,57 @@
             this.getMediaType();
         },
         methods:{
+            // 列展示
+            filterColumn(columns) {
+                this.adsColumn = columns
+                this.itemKey = Math.random()
+            },
+            // 刷新列表
+            refreshTable() {
+                this.getTableData()
+            },
+            // 媒体状态转换
+            stateToText(state) {
+                let mediaArr = [
+                    {
+                    text: "正常",
+                    value: 1,
+                    color: "rgba(82,196,26,1)",
+                    },
+                    {
+                    text: "待安装",
+                    value: 2,
+                    color: "rgba(196,203,211,1)",
+                    },
+                    {
+                    text: "已拆除",
+                    value: 4,
+                    color: "rgba(199, 203, 206, 1)",
+                    },
+                ];
+                return (
+                    mediaArr.filter((item) => {
+                    return item.value === state;
+                    })[0] || {}
+                );
+            },
+
+            // 售卖状态转换
+            stateToSellText(state) {
+                let mediaArr = [
+                    {
+                    text: "可售卖",
+                    value: 1,
+                    color: "rgba(82,196,26,1)",
+                    },
+                    {
+                    text: "不可售卖",
+                    value: 2,
+                    color: "rgba(199, 203, 206, 1)",
+                    },
+                ];
+                return state === 2 ? mediaArr[1] : mediaArr[0];
+            },
             //根据公司id获取媒体类型
             getMediaType(){
                 let info={
@@ -284,7 +423,14 @@
             },
             getSessionData(){
                 this.sessionData = JSON.parse(sessionStorage.getItem('session_data'))
-                if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+                // if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+                //     this.$router.push('/*')
+                // }
+                if (
+                    this.sessionData.uType === !'ADN_MD' ||
+                    this.sessionData.uType === !'ADN_MD_COUNTRY' ||
+                    this.sessionData.uType === !'ADN_SA'
+                ) {
                     this.$router.push('/*')
                 }
             },
@@ -326,7 +472,7 @@
                     "uid": this.sessionData.uID
                 };
                 api.postApi(this.apiVar.Advertisement + '/GetAuthorCity', info).then(res =>{
-                    console.log(res.data);
+                    // console.log(res.data);
                     if(res.data.SysCode == 300200){
                         let resinfo = res.data.data;
                         let result = [];
@@ -383,6 +529,8 @@
                     mediaTypeId: this.mediaTypeId,
                     startTime: this.dateInput[0],
                     endTime: this.dateInput[1],
+                    buildingName: this.buildingName,
+                    unitName: this.unitName,
                     [this.searchInfo.keywordType]: this.searchInfo[this.searchInfo.keywordType],
                     cityId: this.areaRid[0],//this.cityRid,
                     districtId: this.areaRid[1],
@@ -398,7 +546,7 @@
                     delete params.districtId
                 }
                 api.getApi(this.apiVar.Advertisement + '/VisualizeAds',params).then(res=>{
-                    console.log('点位表盘列表',res)
+                    // console.log('点位表盘列表',res)
                     if (res.data.SysCode == 200200 || res.data.MSG === "成功") {
                         this.pageData.totalSize = res.data.data.totalCount
                         this.checkDate = res.data.data.checkDate
@@ -420,14 +568,22 @@
                 if (tableData.adsList.length) {
                     for (let key of tableData.adsList) {
                         let obj = {
-                            resName: key.resName,
-                            mID: key.mID,
-                            mediaName: key.mTitle || '--',
-                            asID: key.asID,
-                            cityName: key.cityName,
-                            districtName: key.districtName || '--',
-                            asLab: key.asLab,
-                            occupyingPlanList: key.occupyingPlanList
+                            resName: key.resName || '--', // 资源名称
+                            cityName: key.cityName || '--', // 城市
+                            districtName: key.districtName || '--', // 区域
+                            street: key.street || '--', // 街道
+                            tradingArea: key.tradingArea || '--', // 商圈
+                            mTitle: key.mTitle || '--', // 媒体名称
+                            assetTag: key.assetTag || '--', // 资产编号（媒体位ID）
+                            mediaModel: key.mediaModel || '--', // 设备类型
+                            siteType: key.siteType || '--', // 位置类型
+                            buildingName: key.buildingName || '--', // 楼栋
+                            unitName: key.unitName || '--', // 单元
+                            siteOrientation: key.siteOrientation || '--', // 位置朝向
+                            asLab: key.asLab || '--', // 投放面
+                            asState: key.asState || '--', // 媒体状态
+                            asSaleState: key.asSaleState, // 售卖状态
+                            occupyingPlanList: key.occupyingPlanList, // 点位表盘列表
                         }
                         for (let oKey of key.occupyInfos) {
                             obj[oKey.dayOfMonth] = oKey; //JSON.parse(JSON.stringify(oKey));
@@ -440,28 +596,22 @@
                     }else{
                         this.tableLength = false
                     }
-                    if(this.tableKey === 1){
-                        this.tableKey = 2
-                    }else{
-                        this.tableKey = 1
-                    }
-                    console.log('adsTableList',this.adsTableList,this.tableHeader)
                 }
             },
             // 区域选择
             changeArea(val){
-                console.log('选择的区域val',val)
+                // console.log('选择的区域val',val)
                 // this.cityRid = this.areaRid.substr(0,4) + '00'
             },
             // 时间选择
             dateChange(val){
-                console.log('时间选择',val)
+                // console.log('时间选择',val)
                 if(val && val.length > 0){
                     let dayNum = this.GetDateDiff(val[0],val[1])
                     if(dayNum < 29){
                         // this.dateInput = this.beforDate.concat()
                         this.dateInput[1] = timeFormat.returnDayCount(29,'/',new Date(this.dateInput[0]))
-                        console.log('this.dateInput',this.dateInput)
+                        // console.log('this.dateInput',this.dateInput)
                         this.messageFun('warning','最短周期为30天')
                     }else if(dayNum > 90){
                         this.dateInput = this.beforDate.concat()
@@ -474,7 +624,7 @@
             },
             // 搜索
             searchFun(){
-                console.log('this.dateInput',this.dateInput)
+                // console.log('this.dateInput',this.dateInput)
                 this.searchBtnAbled = true
                 this.pageData.pageNum = 1
                 this.getTableData()
@@ -491,6 +641,8 @@
                 this.searchInfo.resName = ''
                 this.searchInfo.assetTag = ''
                 this.areaRid = []
+                this.buildingName = ''
+                this.unitName = ''
                 this.pageData.pageNum = 1
                 this.pageData.pageSize = 10
                 this.setTime()
@@ -499,14 +651,14 @@
             },
             // 分页
             changePage(val){
-                console.log('当前页',val)
+                // console.log('当前页',val)
                 this.pageData.pageNum = val
                 this.getTableData()
                 this.setFixedTableHieght()
             },
             // 每页的条数
             changeSize(val){
-                console.log('每页的条数',val)
+                // console.log('每页的条数',val)
                 this.pageData.pageSize = val
                 this.getTableData()
                 this.setFixedTableHieght()
@@ -535,6 +687,51 @@
 </script>
 
 <style lang="scss" scoped>
+.handel_ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/deep/ .handel_ul_li {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  padding: 12px 0;
+  margin: 0;
+    .u-key > .el-input__inner {
+        width: 100%;
+    }
+
+    .el-select--small {
+        width: 100%;
+    }
+    .el-cascader--small {
+        width: 100%;
+    }
+  .li-label {
+    display: inline-block;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+.handel_ul_li_btn {
+  .el-button + .el-button {
+    margin-left: 8px;
+  }
+
+  .collapse-box {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1890FF;
+    cursor: pointer;
+  }
+}
     /*面包屑*/
     .ad_breadcrumb{
         height: 42px;
@@ -557,23 +754,35 @@
         float: right;
     }
     /*tag颜色覆盖*/
+    .mediaList_wrap .tab-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e4e7ed;
+        .tab-setting {
+            margin-right: 38px;
+        }
+    }
     /deep/ .mediaList_wrap .el-tabs__header{
         padding: 0 20px;
         margin: 0;
-        border-bottom: 1px solid #e4e7ed;
-    }
+        width: 100%;
+        border: 0;
 
+        .el-tabs__nav-next, .el-tabs__nav-prev {
+            line-height: 52px;
+        }
+    }
     /deep/ .mediaList_wrap .el-tabs__nav-wrap::after{
         width: 0;
     }
 
     /deep/ .mediaList_wrap .el-tabs__item{
         min-width: 68px;
-        padding-right: 4px;
         box-sizing: border-box;
         height: 54px;
         line-height: 54px;
-        // padding: 0;
+        padding: 0 20px !important;
         text-align: center;
         font-size: 16px;
         color: #666666;
@@ -601,6 +810,7 @@
     /*搜索块*/
     .tab_conten_row {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         .row-unit {
             width: 280px;
@@ -621,18 +831,6 @@
             /deep/ .el-date-editor .el-range-separator {
                 font-size: 14px;
                 color: rgba(0, 0, 0, 0.25);
-            }
-            .search-row-item {
-                width: 100%;
-                /deep/ .el-input-group__prepend .el-input__inner {
-                    width: 100px;
-                }
-                .el-cascader .el-input{
-                    width: 100%;
-                }
-                ::placeholder {
-                    font-size: 14px;
-                }
             }
         }
         .btn-group {
@@ -745,6 +943,7 @@
     .table_bottom{
         padding: 0 32px 16px;
     }
+
     .ad_footer{
         text-align: center;
         margin-top: 24px;

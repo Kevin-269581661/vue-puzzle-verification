@@ -285,7 +285,7 @@
                                         <div v-if="isOccupied" class="space-group">
                                             <div v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList" :key="adSpaceIndex" class="space-item">
                                                 <!-- 点位状态和点位售卖状态确定是否可选 -->
-                                                <el-checkbox 
+                                                <el-checkbox
                                                     v-if="adSpaceItem.checkFlag"
                                                     v-model="adSpaceItem.checkBox" :label="adSpaceItem.asLab || '--'"
                                                     @change="changeCheckBox(scope.row, adSpaceItem)">
@@ -1606,6 +1606,7 @@
                             asrID: info.asrID,                 // 所属公司id
                             province: info.province,
                             notPush: info.notPush,
+                            unitCount: info.unitCount,
                             parkSpaceNum: info.parkSpaceNum,
                             peopleFlow: info.peopleFlow,
                             carFlow: info.carFlow
@@ -1874,6 +1875,7 @@
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                     province: info.province,
                     notPush: info.notPush,
+                    unitCount: info.unitCount,
                     parkSpaceNum: info.parkSpaceNum,
                     peopleFlow: info.peopleFlow,
                     carFlow: info.carFlow,
@@ -1885,26 +1887,36 @@
                 console.log('this.shopingList---', this.shopingList);
                 let arr = this.excelData(this.shopingList)
                 let allHead = [
-                    '资源名称',
-                    '省份',
-                    '城市', 
-                    '区域',
-                    '详细地址',
-                    '媒介载体',
-                    '商圈',
-                    '楼栋数量', 
-                    '住户数量',	
-                    '楼盘价格',	
-                    '楼盘类型',
-                    '入住时间',	
-                    '广告限制',
-                    '车位数',
-                    '车流量',
-                    '人流量',
-                    '媒体数量（门）',
-                    '可投数量（面）',
-                    '地图中心点', 
-                    '投放排期'
+                "省份",
+                "城市",
+                "区域",
+                "街道",
+                "商圈",
+                "资源名称",
+                "详细地址",
+                "楼栋数量",
+                "单元数量",
+                "楼盘类型",
+                "楼盘价格",
+                "住户数量",
+                "入住年份",
+                "广告限制",
+                "媒体面数",
+                "资源别名",
+                "楼盘介绍",
+                "周边配套",
+                "出入口数",
+                "入住率",
+                "配套电梯",
+                "车位数",
+                "媒体类型",
+                "媒体备注",
+                "经度",
+                "纬度",
+                "车流量",
+                "人流量",
+                "地图中心点",
+                "投放排期",
                 ];
 
                 switch (this.customPermission.patrolPermission) {
@@ -1945,34 +1957,42 @@
 
                 for(let data of arr){
                     let obj = {
-                        resID: data.resID,
-                        resName: data.resName,
-                        province: data.province || '',
-                        city: data.city,
-                        rName: data.origin,
-                        resAddress: data.address,
-                        mediaTypeName: data.mediaTypeName,
-                        tradingArea: data.tradingArea,
-                        fNum: data.buildNum,
-                        hNum: data.houseNum,
-                        hPrice: data.buildPrice,
-                        cType: data.buildType,
-                        chDay: data.liveYear,
-                        notPush: data.notPush || '',
-                        parkSpaceNum: data.parkSpaceNum,
-                        carFlow: data.carFlow,
-                        peopleFlow: data.peopleFlow,
-                        actualMediaCnt: 1,
-                        adsNum: 1,
-                        map: data.mapCenter,
-                        timeRange: '',
-                        mID: data.mID
+                        province: data.province, //省份
+                        city: data.city, //城市
+                        rName: data.origin, //区域
+                        street: data.street, // 街道
+                        tradingArea: data.tradingArea, //商圈
+                        resName: data.resName, //资源名称
+                        resAddress: data.address, //详细地址
+                        fNum: data.buildNum, //楼栋数量
+                        unitCount: data.unitCount, //单元数量
+                        cType: data.buildType, //楼盘类型
+                        hPrice: data.buildPrice, //楼盘价格
+                        hNum: data.houseNum, //住户数量
+                        chDay: data.liveYear, //入住年份
+                        notPush: data.notPush, //广告限制
+                        adsNum: 1, // 媒体面数
+                        resAlias: data.alias, //资源别名
+                        description: data.description, // 楼盘介绍
+                        supportingFacilities: data.supportingFacilities, // 周边配套
+                        dNum: data.dNum, // 出入口数
+                        liveRate: data.liveRate, // 入住率
+                        liftType: data.liftType, // 配套电梯
+                        parkSpaceNum: data.parkSpaceNum, //车位数
+                        mediaTypeName: data.mediaTypeName, // 媒体类型
+                        mRemark: data.mRemark, // 媒体备注
+                        lat: data.lng, // 经度
+                        lng: data.lat, // 纬度
+                        carFlow: data.carFlow, //车流量
+                        peopleFlow: data.peopleFlow, //人流量
+                        map: data.mapCenter, //地图中心点
+                        timeRange: "", //投放排期
                     };
 
                     let mIDitem = mIDArr.find(item => {
                         return item.resID == data.resID
                     })
-                    
+
                     // 如果该资源存在
                     if (mIDitem) {
                         if (!mIDitem.mID.includes(data.mID)) {
@@ -2180,43 +2200,55 @@
                         mID: key.mID,
                         resType: key.resType,
                         resID: key.resID,
-                        resName: key.resName,
-                        province: key.province,
-                        city: key.city,
+                        province: key.province, //省份
+                        city: key.city, //城市
+                        origin: key.rName, //区域
+                        street: key.street, //街道
+                        tradingArea: key.tradingArea || "", //商圈
+                        resName: key.resName, // 资源名称
+                        address: key.resAddress || "", //详细地址
+                        houseNum: key.hNum, //楼栋数量
+                        liveYear: key.chDay, //入住年份
+                        notPush: key.notPush, //广告限制
+                        unitCount: key.unitCount,
+                        adsList: key.adsList || [], // 所属公司id
+                        alias: key.alias, //资源别名
+                        description: key.description, //楼盘介绍
+                        supportingFacilities: key.supportingFacilities, //周边配套
+                        dNum: key.dNum || "", //出入口数
+                        liveRate: key.liveRate, //入住率
+                        liftType: key.liftType, //配套电梯
+                        parkSpaceNum: key.parkSpaceNum, //车位数
+                        mediaTypeName: key.mediaTypeName, // 媒体类型
+                        mRemark: key.mRemark, //备注
+                        lng: key.lng, //经度
+                        lat: key.lat, //纬度
+                        carFlow: key.carFlow, //车流量
+                        peopleFlow: key.peopleFlow, //人流量
+                        mapCenter: key.reference || "", // 地图中心点
+
                         rid: this.city[this.activeIndex].rid,
-                        origin: key.rName,
                         buildType: key.cType,
-                        houseNum: key.hNum,
-                        buildPrice: (key.hPrice / 100),
-                        mediaName: key.mTitle || '',
-                        mediaTypeName: key.mediaTypeName,             // 媒体类型
-                        mediaTypeId: key.mediaTypeId,            // 媒体类型
-                        mediaRemark: key.mRemark || '--',
-                        parkSpaceNum: key.parkSpaceNum,
-                        carFlow: key.carFlow,
-                        peopleFlow : key.peopleFlow,
+                        buildPrice: key.hPrice / 100,
+                        mediaName: key.mTitle || "",
+                        mediaTypeId: key.mediaTypeId, // 媒体类型
+                        mediaRemark: key.mRemark || "--",
                         buildNum: key.fNum,
-                        schedules: this.dateInput[0] + '-' + this.dateInput[1],
-                        tradingArea: key.tradingArea || '',
-                        assetTag: key.assetTag || '',
-                        liveYear: key.chDay,
-                        adLimit: key.notPush || '',
-                        mState: key.mState === 1 ? '正常' : (key.mState === 2 ? '待安装' : '--'),
-                        adSize: key.adSize || '',
-                        // picSize: key.picSize || '',
-                        mapCenter: key.reference || '',      // 地图中心点
-                        address: key.resAddress || '',
-                        dNum: key.dNum || '',               // 出入口数
-                        connID: key.connID || '',           // 连排门id
-                        industryInfos: key.industryInfos,   // 同行业资源、媒体回避
-                        mediaLevel: key.grade || '',
-                        asName: key.asName || '',                 // 点位所属公司名称
+                        schedules: this.dateInput[0] + "-" + this.dateInput[1],
+                        assetTag: key.assetTag || "",
+                        adLimit: key.notPush || "",
+                        mState:
+                            key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
+                        adSize: key.adSize || "",
+                        // picSize: key.picSize || "",
+                        connID: key.connID || "", // 连排门id
+                        industryInfos: key.industryInfos, // 同行业资源、媒体回避
+                        mediaLevel: key.grade || "",
+                        asName: key.asName || "", // 点位所属公司名称
                         asrID: key.asrID,
-                        adsList: key.adsList || [],                        // 所属公司id
                         remark: key.remark,
                         trafficState: key.trafficState,
                         electrifyState: key.electrifyState,
-                        notPush: key.notPush,
                     }
                     // if (key.mediaTypeName === '道闸') {
                     //     adObj.adPrice = key.asPrice / 100
@@ -2371,7 +2403,7 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true&timeRange=${String(this.dateInput)}`
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()
@@ -2489,6 +2521,7 @@
                                 asrID: key.asrID,                 // 所属公司id
                                 province: key.province,
                                 notPush: key.notPush,
+                                unitCount: key.unitCount,
                                 parkSpaceNum: key.parkSpaceNum,
                                 peopleFlow: key.peopleFlow,
                                 carFlow: key.carFlow,
@@ -3428,6 +3461,7 @@
             },
             // 选点列表数据到购物车数据
             setShopingTable(mediaInfo, adSpaceInfo) {
+                console.log('mediaInfo--',mediaInfo);
                 let selectInfo = {
                     rid: mediaInfo.rid,
                     mID: mediaInfo.mID,
@@ -3467,7 +3501,19 @@
                     notPush: mediaInfo.notPush,
                     parkSpaceNum: mediaInfo.parkSpaceNum,
                     peopleFlow: mediaInfo.peopleFlow,
-                    carFlow: mediaInfo.carFlow
+                    carFlow: mediaInfo.carFlow,
+                    street: mediaInfo.street, //街道
+                    unitCount: mediaInfo.unitCount, //单元数量
+                    adsList: mediaInfo.adsList,
+                    alias: mediaInfo.alias,
+                    description: mediaInfo.description,
+                    supportingFacilities: mediaInfo.supportingFacilities,
+                    liveRate: mediaInfo.liveRate,
+                    liftType: mediaInfo.liftType,
+                    mediaTypeName: mediaInfo.mediaTypeName,
+                    mRemark: mediaInfo.mRemark,
+                    lng: mediaInfo.lng,
+                    lat: mediaInfo.lat,
                 }
                 return selectInfo
             },
@@ -3729,6 +3775,7 @@
                         asrID: key.asrID,                 // 所属公司id
                         province: key.province,
                         notPush: key.notPush,
+                        unitCount: key.unitCount,
                         parkSpaceNum: key.parkSpaceNum,
                         peopleFlow: key.peopleFlow,
                         carFlow: key.carFlow,
@@ -4332,7 +4379,17 @@
                                     carFlow: data.carFlow,
                                     peopleFlow: data.peopleFlow,
                                     notPush: data.notPush,
-                                    province: data.province
+                                    province: data.province,
+                                    unitCount: data.unitCount,
+                                    description: data.description,
+                                    supportingFacilities: data.supportingFacilities,
+                                    mRemark: data.mRemark,
+                                    liftType: data.liftType,
+                                    liveRate: data.liveRate,
+                                    lng: data.lng,
+                                    lat: data.lat,
+                                    alias: data.alias,
+                                    street: data.street,
                                 }
                                 // if (data.mediaTypeName === '道闸') {
                                 //     selectInfo.adPrice = data.asPrice / 100

@@ -2065,7 +2065,7 @@ export default {
       this.setPlanInfo();
     }
 
-    console.log("this.cityOptions", this.cityOptions);
+    // console.log("this.cityOptions", this.cityOptions);
   },
   watch: {
     "planForm.throwCity": {
@@ -2076,7 +2076,7 @@ export default {
         this.getPointOfAsr();
       },
     },
-    
+
     "planForm.companyBrand": {
       handler: function () {
         this.planForm.opportunityId = undefined;
@@ -2164,7 +2164,7 @@ export default {
       if (inputPath.indexOf("from=index") !== -1) {
         this.setDataByIndex();
       }
-      console.log("this.dateInput", this.dateInput);
+    //   console.log("this.dateInput", this.dateInput);
     },
     // 动态设置购物车动画起点位置
     setShopAnimate() {
@@ -2324,10 +2324,13 @@ export default {
     },
     // 导入方案弹出框
     importFanan(type) {
+        // 小区
       if (type == "res") {
         this.importType = "1";
         this.doUpload = "/advertisement/AdPlanResImport";
-      } else if (type == "ads") {
+      }
+        // 点位
+      else if (type == "ads") {
         this.importType = "2";
         this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";
       } else if (type == "copy") {
@@ -2343,13 +2346,13 @@ export default {
     // 自定义上传
     uploadFile(params) {
       this.fileData = [];
-      console.log(params);
+    //   console.log(params);
       let fileObj = params.file;
       this.fileData.push(fileObj);
     },
     // 文件删除
     fileRemove(file, fileList) {
-      console.log(file, fileList);
+    //   console.log(file, fileList);
       this.fileData = fileList;
     },
     // 导入模版下载
@@ -2389,15 +2392,15 @@ export default {
         .then((res) => {
           if (!res.data.SysCode) {
             let importInfo = res.data;
-            console.log("importInfo", importInfo);
+            // console.log("importInfo", importInfo);
             this.importInfoData = res.data;
             if (importInfo.successList.length) {
               this.setShopDataByImport(importInfo.successList);
             }
-            console.log(
-              "importInfo.errorList.length",
-              importInfo.errorList.length
-            );
+            // console.log(
+            //   "importInfo.errorList.length",
+            //   importInfo.errorList.length
+            // );
             if (importInfo.errorList.length) {
               this.excelDataUpload = this.checkPointFun(importInfo);
               this.excelObj = {
@@ -2411,7 +2414,7 @@ export default {
           }
         })
         .catch((res) => {
-          console.log(res);
+        //   console.log(res);
         });
     },
     // 小区导入
@@ -2436,7 +2439,7 @@ export default {
           Loading.close();
         })
         .catch((res) => {
-          console.log(res);
+        //   console.log(res);
           Loading.close();
         });
     },
@@ -2635,7 +2638,7 @@ export default {
     },
     // 导入excel后台返回的问题点位
     questionPoint(arr, successArr) {
-      console.log("导出excel");
+    //   console.log("导出excel");
       let resultarr = [
         {
           sheetName: "问题点位",
@@ -2715,7 +2718,7 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
+            // console.log(err);
           });
       } else {
         this.orderArr = [];
@@ -2736,7 +2739,7 @@ export default {
         api
           .getApi(this.apiVar.Advertisement + "/GetAdsFromCopiedAdPlan", info)
           .then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             if (res.data.SysCode == 200200) {
               let resinfo = res.data.data;
               let result = [];
@@ -2754,7 +2757,7 @@ export default {
             this.isCopy = false;
           })
           .catch((err) => {
-            console.log(err);
+            // console.log(err);
             this.isCopy = false;
           });
       } else {
@@ -2815,24 +2818,34 @@ export default {
       console.log(this.shopingList, "this.shopingList");
       let arr = this.excelData(this.shopingList);
       let allHead = [
-        "资源名称",
         "省份",
         "城市",
         "区域",
-        "详细地址",
-        "媒介载体",
+        "街道",
         "商圈",
+        "资源名称",
+        "详细地址",
         "楼栋数量",
-        "住户数量",
-        "楼盘价格",
+        "单元数量",
         "楼盘类型",
-        "入住时间",
+        "楼盘价格",
+        "住户数量",
+        "入住年份",
         "广告限制",
+        "媒体面数",
+        "资源别名",
+        "楼盘介绍",
+        "周边配套",
+        "出入口数",
+        "入住率",
+        "配套电梯",
         "车位数",
+        "媒体类型",
+        "媒体备注",
+        "经度",
+        "纬度",
         "车流量",
         "人流量",
-        "媒体数量（门）",
-        "可投数量（面）",
         "地图中心点",
         "投放排期",
       ];
@@ -2894,29 +2907,36 @@ export default {
 
       for (let data of arr) {
         let obj = {
-          resID: data.resID,
-          resName: data.resName,
-          province: data.province,
-          city: data.city,
-          rName: data.origin,
-          resAddress: data.address,
-          mediaTypeName: data.mediaTypeName,
-          tradingArea: data.tradingArea,
-          fNum: data.buildNum,
-          hNum: data.houseNum,
-          hPrice: data.buildPrice,
-          cType: data.buildType,
-          chDay: data.liveYear,
-          notPush: data.notPush,
-          parkSpaceNum: data.parkSpaceNum,
-          carFlow: data.carFlow,
-          peopleFlow: data.peopleFlow,
-          // dNum: data.dNum,
-          actualMediaCnt: 1,
-          adsNum: 1,
-          map: data.mapCenter,
-          timeRange: "",
-          mID: data.mID,
+          province: data.province, //省份
+          city: data.city, //城市
+          rName: data.origin, //区域
+          street: data.street, // 街道
+          tradingArea: data.tradingArea, //商圈
+          resName: data.resName, //资源名称
+          resAddress: data.address, //详细地址
+          fNum: data.buildNum, //楼栋数量
+          unitCount: data.unitCount, //单元数量
+          cType: data.buildType, //楼盘类型
+          hPrice: data.buildPrice, //楼盘价格
+          hNum: data.houseNum, //住户数量
+          chDay: data.liveYear, //入住年份
+          notPush: data.notPush, //广告限制
+          mediaCount: data.adsList ? data.adsList.length : 0 , // 媒体面数
+          resAlias: data.alias, //资源别名
+          description: data.description, // 楼盘介绍
+          supportingFacilities: data.supportingFacilities, // 周边配套
+          dNum: data.dNum, // 出入口数
+          liveRate: data.liveRatem, // 入住率
+          liftType: data.liftType, // 配套电梯
+          parkSpaceNum: data.parkSpaceNum, //车位数
+          mediaTypeName: data.mediaTypeName, // 媒体类型
+          mRemark: data.mRemark, // 媒体备注
+          lat: data.lng, // 经度
+          lng: data.lat, // 纬度
+          carFlow: data.carFlow, //车流量
+          peopleFlow: data.peopleFlow, //人流量
+          map: data.mapCenter, //地图中心点
+          timeRange: "", //投放排期
         };
 
         let mIDitem = mIDArr.find((item) => {
@@ -3031,7 +3051,7 @@ export default {
     },
     // 非全国，移除城市
     removeCity(val) {
-      console.log("非全国，移除城市val", val, this.planForm.throwCity);
+    //   console.log("非全国，移除城市val", val, this.planForm.throwCity);
       if (this.indexData.rid == val) {
         sessFun.messageFun(
           "warning",
@@ -3084,7 +3104,7 @@ export default {
     },
     // 选择所属销售
     changeSaler(val) {
-      console.log("选择所属销售", val);
+    //   console.log("选择所属销售", val);
       // 重新输入账号时，初始化部分数据
       this.planForm.companyName = "";
       this.planForm.companyBrand = "";
@@ -3183,7 +3203,7 @@ export default {
     GetBrandByCid(val) {
       this.planForm.companyBrand = "";
       this.planForm.ownerBU = "";
-      console.log("所选公司的ID", val);
+    //   console.log("所选公司的ID", val);
       let cidParams = {
         cid: val,
         token: this.sessionData.token,
@@ -3191,7 +3211,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/GetBrand", cidParams)
         .then((res) => {
-          console.log("公司品牌", res.data);
+        //   console.log("公司品牌", res.data);
           if (res.data.SysCode === 200200) {
             let CBrand = res.data.data;
             let BrandList = [];
@@ -3237,7 +3257,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log("表单验证this.throwCity", this.throwCity);
+        //   console.log("表单验证this.throwCity", this.throwCity);
           // 初始化
           this.initStep2Data();
           this.active++;
@@ -3270,7 +3290,7 @@ export default {
       this.areaName = "全市"; // step2当前选中的区域
       let inputPath = this.$route.fullPath;
       if (inputPath.indexOf("unfinishedPlan") !== -1) {
-        console.log("缓存方案再编辑", this.unfinishedData.planData);
+        console.log("缓存方案再编辑", this.shopingList);
         let arr = [];
         for (let key of this.shopingList) {
           if (
@@ -3326,7 +3346,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/getSalesProject", params)
         .then((res) => {
-          console.log("销售所属方案", res);
+        //   console.log("销售所属方案", res);
           if (res.data.SysCode == 200200) {
             let resData = res.data.data;
             let tempList = [];
@@ -3352,7 +3372,7 @@ export default {
         data: {},
       };
       api.postApi_new(this.apiVar.Media, params).then((res) => {
-        console.log("广告限制列表", res);
+        // console.log("广告限制列表", res);
         if (res.data.SysCode === 200200) {
           let limit = res.data.data;
           let limitArr = [];
@@ -3389,19 +3409,19 @@ export default {
           }
         }
         if (j >= throwCityList.length - 1) {
-          console.log("cityArr", cityArr);
+        //   console.log("cityArr", cityArr);
           this.city = cityArr;
           this.city.sort(this.compareFun);
-          console.log("this.city ", this.city);
+        //   console.log("this.city ", this.city);
           this.activeCityData = this.city[0]; // 设置初始选中城市信息
           this.activeRName = this.activeCityData.rName;
           for (let n = 0; n < this.city.length; n++) {
             let rid = this.city[n].rid.toString();
-            console.log("投放城市rid", rid);
+            // console.log("投放城市rid", rid);
             let provinceRid = rid.substring(0, 2) + "0000";
             let city_arr = this.areaCity;
             let areaArr = [];
-            console.log("this.cityOptions", this.areaCity);
+            // console.log("this.cityOptions", this.areaCity);
             for (let i = 0; i < city_arr.length; i++) {
               // 遍历城市查找城市名对应的rid，用于删除勾选的城市
               if (city_arr[i].value == provinceRid) {
@@ -3432,9 +3452,9 @@ export default {
                   }
                 }
               }
-              if (i >= city_arr.length - 1) {
-                console.log("this.area", this.area);
-              }
+            //   if (i >= city_arr.length - 1) {
+            //     console.log("this.area", this.area);
+            //   }
             }
           }
         }
@@ -3446,7 +3466,7 @@ export default {
         this.$message.warning("媒体类型不能为空！");
         return;
       }
-      console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
+    //   console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
       this.loading = true;
       (this.getAdsParamsData.prID = this.city[this.activeIndex].rid),
         (this.getAdsParamsData.act = 1),
@@ -3499,51 +3519,61 @@ export default {
     },
     // 接口数据转成table
     setTableDataADDoor(ADSdata) {
-      console.log("接口数据转成table当前时间", this.dateInput);
+    //   console.log("接口数据转成table当前时间", this.dateInput);
+        console.log('接口数据ADSdata', ADSdata);
       let i = 0;
       for (let key of ADSdata) {
         let adObj = {
           mID: key.mID,
           resType: key.resType,
           resID: key.resID,
-          resName: key.resName,
-          province: key.province,
-          city: key.city,
+          province: key.province, //省份
+          city: key.city, //城市
+          origin: key.rName, //区域
+          street: key.street, //街道
+          tradingArea: key.tradingArea || "", //商圈
+          resName: key.resName, // 资源名称
+          address: key.resAddress || "", //详细地址
+          houseNum: key.hNum, //楼栋数量
+          liveYear: key.chDay, //入住年份
+          notPush: key.notPush, //广告限制
+          adsList: key.adsList || [], // 所属公司id
+          alias: key.alias, //资源别名
+          description: key.description, //楼盘介绍
+          supportingFacilities: key.supportingFacilities, //周边配套
+          dNum: key.dNum || "", //出入口数
+          liveRate: key.liveRate, //入住率
+          liftType: key.liftType, //配套电梯
+          parkSpaceNum: key.parkSpaceNum, //车位数
+          mediaTypeName: key.mediaTypeName, // 媒体类型
+          mRemark: key.mRemark, //备注
+          lng: key.lng, //经度
+          lat: key.lat, //纬度
+          carFlow: key.carFlow, //车流量
+          peopleFlow: key.peopleFlow, //人流量
+          mapCenter: key.reference || "", // 地图中心点
           rid: this.city[this.activeIndex].rid,
-          origin: key.rName,
           buildType: key.cType,
-          houseNum: key.hNum,
           buildPrice: key.hPrice / 100,
           mediaName: key.mTitle || "",
-          mediaTypeName: key.mediaTypeName, // 媒体类型
           mediaTypeId: key.mediaTypeId, // 媒体类型
           mediaRemark: key.mRemark || "--",
-          parkSpaceNum: key.parkSpaceNum,
-          carFlow: key.carFlow,
-          peopleFlow: key.peopleFlow,
           buildNum: key.fNum,
           schedules: this.dateInput[0] + "-" + this.dateInput[1],
-          tradingArea: key.tradingArea || "",
           assetTag: key.assetTag || "",
-          liveYear: key.chDay,
           adLimit: key.notPush || "",
           mState:
             key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
           adSize: key.adSize || "",
           // picSize: key.picSize || "",
-          mapCenter: key.reference || "", // 地图中心点
-          address: key.resAddress || "",
-          dNum: key.dNum || "", // 出入口数
           connID: key.connID || "", // 连排门id
           industryInfos: key.industryInfos, // 同行业资源、媒体回避
           mediaLevel: key.grade || "",
           asName: key.asName || "", // 点位所属公司名称
           asrID: key.asrID,
-          adsList: key.adsList || [], // 所属公司id
           remark: key.remark,
           trafficState: key.trafficState,
           electrifyState: key.electrifyState,
-          notPush: key.notPush,
         };
         // if (key.mediaTypeName === '道闸') {
         //     adObj.adPrice = key.asPrice / 100
@@ -3608,7 +3638,7 @@ export default {
     //step2搜索按钮
     searchFun() {
       this.searchBtnAbled = true;
-      console.log("搜索排期时间", this.dateInput);
+    //   console.log("搜索排期时间", this.dateInput);
       this.areaName = "全市";
       if (this.selectValue === "被占查询") {
         this.beOccupiedGetList(); // 获取被占列表接口
@@ -3653,7 +3683,7 @@ export default {
     },
     // 当搜索框为空的时候进行重置显示
     initData(val) {
-      console.log("搜索框变化的值", val);
+    //   console.log("搜索框变化的值", val);
       if (!this.searchInput && this.selectValue !== "被占查询") {
         this.isOccupied = true;
         this.getAdsParamsData.tradingArea = "";
@@ -3786,7 +3816,7 @@ export default {
           asrIDs: _asrIDs
         })
       );
-      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`;
+      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true&timeRange=${String(this.dateInput)}`;
       /* if(window.location.hostname == 'localhost') {
                     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 } else {
@@ -3822,7 +3852,7 @@ export default {
     },
     //一键选点
     oneKeySelectPoint() {
-      console.log("一键选点");
+    //   console.log("一键选点");
       let oneKeyPointLoading = this.$loading({
         lock: true,
         text: "快马加鞭选点中...",
@@ -3871,7 +3901,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/AutoSetAdS", params)
         .then((res) => {
-          console.log("一键选点", res.data);
+        //   console.log("一键选点", res.data);
           IsXhr = true;
           let tempArr = [];
           let resArr = res.data;
@@ -3969,14 +3999,14 @@ export default {
     },
     //媒体类型切换
     activeMediaType(mType) {
-      console.log("媒体类型", mType);
+    //   console.log("媒体类型", mType);
       this.setPageNoAndTableData();
       this.currentMediaType = mType;
       this.getAdList();
     },
     // tab切换城市
     activeCity(item, index) {
-      console.log("item", item, "index", index);
+    //   console.log("item", item, "index", index);
       this.activeIndex = index;
       this.activeRName = item.rName;
       this.activeCityData = item;
@@ -3999,7 +4029,7 @@ export default {
     },
     // 选点表格头部过滤条件tab删除方法
     filterTagCloseFun(tab, index) {
-      console.log("tab", tab, "index", index);
+    //   console.log("tab", tab, "index", index);
       if (tab.condition === "mstate") {
         // 媒体状态
         this.getAdsParamsData.mState = "";
@@ -4064,7 +4094,7 @@ export default {
     },
     // 判断是否存在该条件的tag
     isHaveThisTag(letter, tagName) {
-      console.log("letter", letter, "tagName", tagName);
+    //   console.log("letter", letter, "tagName", tagName);
       let isHave = false;
       for (let i in this.filterCondition) {
         if (this.filterCondition[i].condition === letter) {
@@ -4104,7 +4134,7 @@ export default {
     },
     // 媒体等级过滤
     gradeChange(data) {
-      console.log("媒体等级过滤", data);
+    //   console.log("媒体等级过滤", data);
       this.isHaveThisTag("grade", data + "级");
       this.getAdsParamsData.grade = this.activeGrade;
       this.setPageNoAndTableData();
@@ -4112,7 +4142,7 @@ export default {
     },
     // 广告限制切换
     activeADLimit(limit) {
-      console.log("广告限制limit", limit); // 保险,恶俗医疗
+    //   console.log("广告限制limit", limit); // 保险,恶俗医疗
       let limitText = limit.join(",");
       let stateName = "广告限制：" + limit.join("/");
       if (limit.length > 0) {
@@ -4174,7 +4204,7 @@ export default {
     },
     // 楼盘类型过滤
     tableHeaderFilter_cType(data) {
-      console.log("楼盘类型过滤", data);
+    //   console.log("楼盘类型过滤", data);
       this.isHaveThisTag("cType", data);
       if (data === "全部") {
         this.getAdsParamsData.buildType = "";
@@ -4285,7 +4315,7 @@ export default {
           }
         }
       } else {
-        console.log("不同城市");
+        // console.log("不同城市");
       }
     },
     // 重置planList的勾选
@@ -4393,7 +4423,7 @@ export default {
             this.shopingList.splice(j, 1);
             break;
           } else {
-            console.log("购物车中不存在相同点位");
+            // console.log("购物车中不存在相同点位");
           }
         }
       }
@@ -4401,7 +4431,7 @@ export default {
     },
     // 购物车-获取地图选择的点位列表（亲邻地图）
     getMapADList() {
-      console.log("触发获取地图选点信息click");
+    //   console.log("触发获取地图选点信息click");
       this.getMapLoading = this.$loading({
         lock: true,
         text: "数据获取中...",
@@ -4494,10 +4524,10 @@ export default {
           tempArr.push(adInfo);
         }
       }
-      console.log(
-        "根据地图选点返回的数据，设置成购物车所需的数据格式",
-        tempArr
-      );
+    //   console.log(
+    //     "根据地图选点返回的数据，设置成购物车所需的数据格式",
+    //     tempArr
+    //   );
       if (this.shopingList.length !== 0) {
         for (let key of tempArr) {
           this.shopingList.push(key);
@@ -4521,7 +4551,7 @@ export default {
       if (shopArr.length !== 0) {
         for (let i = 0; i < shopArr.length; i++) {
           if (ADData.asID === shopArr[i].asID) {
-            console.log("相同mid,相同面", ADData);
+            // console.log("相同mid,相同面", ADData);
             let ADScheArr = ADData.schedules.split("-");
             let shopScheArr = shopArr[i].schedules.split("-");
             // 全等
@@ -4580,7 +4610,7 @@ export default {
           if (letter === "media") {
             // 移除同行媒体点位
             if (shopingData[i].connData.commentworkMedia !== "") {
-              console.log(i, "移除同行媒体点位", shopingData[i]);
+            //   console.log(i, "移除同行媒体点位", shopingData[i]);
               num++;
             } else {
               arr.push(shopingData[i]);
@@ -4631,7 +4661,7 @@ export default {
       let currTab = this.activeName;
       if (!this.typeShopList[currTab]) return;
       shopList = this.typeShopList[currTab].asidList;
-      console.log("购物车统计面数媒体数shopList", shopList);
+    //   console.log("购物车统计面数媒体数shopList", shopList);
       let mediaArr = [];
       let mediaAD = [];
       let resArr = [];
@@ -4681,7 +4711,7 @@ export default {
           resAsidArr.push(obj);
         }
       }
-      console.log("resAsidArr------", resAsidArr);
+    //   console.log("resAsidArr------", resAsidArr);
       this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
       this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
       this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
@@ -4769,7 +4799,7 @@ export default {
     },
     // 事件选择
     changeEvent(val) {
-      console.log("val", val);
+    //   console.log("val", val);
       if (this.shopShowList.length) {
         switch (val) {
           case 1:
@@ -4910,7 +4940,7 @@ export default {
     // 移除A/B面
     removeAllType(type) {
       let resultArr = this.funToArr(this.shopShowList, "mID");
-      console.log("resultArr------------das---", resultArr);
+    //   console.log("resultArr------------das---", resultArr);
       let len = this.shopShowList.length;
       if (resultArr.length > 0) {
         resultArr = this.isEnoughMedia(type, resultArr);
@@ -5013,7 +5043,7 @@ export default {
           let commentWorkArr = shopData[i].industryInfos;
           for (let key of commentWorkArr) {
             if (this.industryID === key.piID) {
-              console.log("1");
+            //   console.log("1");
               if (shopData[i].connData.commentWorkRes === "") {
                 shopData[i].connData.commentWorkRes = key.piName;
               } else {
@@ -5052,7 +5082,7 @@ export default {
     },
     // 购物车行被点击
     shopRowClick(row, event, column) {
-      console.log("购物车行被点击row", row, column);
+    //   console.log("购物车行被点击row", row, column);
       if (row.lState !== undefined && row.lState.length > 0) {
         let dataArr = row.lState;
         console.log("row.asID", row.asID);
@@ -5067,7 +5097,7 @@ export default {
           });
         }
         this.beOccupiedAdsData = arr;
-        console.log("this.beOccupiedAdsData", this.beOccupiedAdsData);
+        // console.log("this.beOccupiedAdsData", this.beOccupiedAdsData);
         if (!this.shopDelRowClick) {
           this.beOccupiedDialogVisible = true;
         } else {
@@ -5079,7 +5109,7 @@ export default {
         row.connData.connectMedia !== ""
       ) {
         this.ActiveConnectADList = row.connData;
-        console.log("this.ActiveConnectADList", this.ActiveConnectADList);
+        // console.log("this.ActiveConnectADList", this.ActiveConnectADList);
         this.connectAdDialogVisible = true;
       }
     },
@@ -5096,6 +5126,7 @@ export default {
     },
     // 选点列表数据到购物车数据
     setShopingTable(mediaInfo, adSpaceInfo) {
+        console.log(mediaInfo, adSpaceInfo);
       let selectInfo = {
         rid: mediaInfo.rid,
         mID: mediaInfo.mID,
@@ -5141,6 +5172,18 @@ export default {
         parkSpaceNum: mediaInfo.parkSpaceNum,
         peopleFlow: mediaInfo.peopleFlow,
         carFlow: mediaInfo.carFlow,
+        street: mediaInfo.street, //街道
+        unitCount: mediaInfo.unitCount, //单元数量
+        adsList: mediaInfo.adsList,
+        alias: mediaInfo.alias,
+        description: mediaInfo.description,
+        supportingFacilities: mediaInfo.supportingFacilities,
+        liveRate: mediaInfo.liveRate,
+        liftType: mediaInfo.liftType,
+        mediaTypeName: mediaInfo.mediaTypeName,
+        mRemark: mediaInfo.mRemark,
+        lng: mediaInfo.lng,
+        lat: mediaInfo.lat,
       };
       return selectInfo;
     },
@@ -5197,7 +5240,7 @@ export default {
     shopShow_hide(all) {
       let R = this.shopXY.x;
       let T = this.shopXY.y;
-      console.log("Right:", R, ",Top:", T);
+    //   console.log("Right:", R, ",Top:", T);
       let shopAnimate = document.getElementsByClassName("shopAnimate")[0];
       let animateAll = document.getElementsByClassName("shopAnimateAll")[0];
 
@@ -5348,7 +5391,7 @@ export default {
       }
       if(this.isPay && this.BDData.uType === 'ADN_BD') {
         if(this.planForm.opportunityId) {
-          const tempOpportunity = this.opportunityList.find(opportunity => 
+          const tempOpportunity = this.opportunityList.find(opportunity =>
             opportunity.opportunityId === this.planForm.opportunityId
           );
           params.opportunityId = this.planForm.opportunityId;
@@ -5359,7 +5402,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)
         .then((res) => {
-          console.log("创建方案", res);
+        //   console.log("创建方案", res);
           if (res.data.SysCode == 200200) {
             this.FAData.apID = res.data.Data[0].apID;
             this.PushADBFun(res.data.Data);
@@ -5404,7 +5447,7 @@ export default {
         cityArr.push(cityObj);
       }
       let pbSetTime = this.timestampToTime(Date.parse(new Date()));
-      console.log("当前日期时间", pbSetTime);
+    //   console.log("当前日期时间", pbSetTime);
       let arr = [];
       for (let key of this.shopingList) {
         for (let cKey of cityArr) {
@@ -5473,9 +5516,9 @@ export default {
                   params
                 )
                 .then((res) => {
-                  console.log("清空缓存的方案", res);
+                //   console.log("清空缓存的方案", res);
                   if (res.data.SysCode === 200200) {
-                    console.log("缓存方案清除成功");
+                    // console.log("缓存方案清除成功");
                   } else {
                   }
                 });
@@ -5503,7 +5546,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/CreateShareCode", params)
         .then((res) => {
-          console.log("生成协同选点aiCode", res);
+        //   console.log("生成协同选点aiCode", res);
           this.apAicode = res.data.aiCode; // 协同选点 aiCode
           this.shareADUrl =
             this.apiVar.qadnUrl +
@@ -5559,10 +5602,10 @@ export default {
           companyBrand: this.companyBrand,
         },
       };
-      console.log(
-        "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
-        planInfo
-      );
+    //   console.log(
+    //     "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
+    //     planInfo
+    //   );
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -5571,7 +5614,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
         .then((res) => {
-          console.log("res创建方案缓存", res);
+        //   console.log("res创建方案缓存", res);
           if (res.data.SysCode == 200200) {
           } else {
             // 后台缓存异常，则前台缓存到localStorage
@@ -5606,7 +5649,7 @@ export default {
           this.salerList = arr;
         }
         this.active = 1;
-        console.log("设置方案信息returnData", returnData);
+        // console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域
         this.getAreaFun();
         this.getMediaTypesByCompany();
@@ -5639,7 +5682,7 @@ export default {
   // 页面销毁
   destroyed() {
     if (this.active == 1 || this.active == 2) {
-      console.log("页面销毁----");
+    //   console.log("页面销毁----");
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -5647,10 +5690,10 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/AddCreatePlanLog", params)
         .then((res) => {
-          console.log("上报成功-----", res);
+        //   console.log("上报成功-----", res);
         })
         .catch((err) => {
-          console.log("上报失败-----", err);
+        //   console.log("上报失败-----", err);
         });
     }
   },

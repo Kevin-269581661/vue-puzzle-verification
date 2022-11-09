@@ -1615,6 +1615,10 @@ export default {
           timeRange: data.timeRange,
           mapCenter: data.mapCenterName || '',
           finishTimeRange: data.finishTimeRange,
+          remark: data.remark,
+          trafficState: data.trafficState || '',
+          electrifyState: data.electrifyState || '',
+          asName: data.asName,
         };
         resultArr.push(obj);
       }

@@ -285,7 +285,7 @@
                                         <div v-if="isOccupied" class="space-group">
                                             <div v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList" :key="adSpaceIndex" class="space-item">
                                                 <!-- 点位状态和点位售卖状态确定是否可选 -->
-                                                <el-checkbox 
+                                                <el-checkbox
                                                     v-if="adSpaceItem.checkFlag"
                                                     v-model="adSpaceItem.checkBox" :label="adSpaceItem.asLab || '--'"
                                                     @change="changeCheckBox(scope.row, adSpaceItem)">
@@ -1887,23 +1887,23 @@
                 let allHead = [
                     '资源名称',
                     '省份',
-                    '城市', 
+                    '城市',
                     '区域',
                     '详细地址',
                     '媒介载体',
                     '商圈',
-                    '楼栋数量', 
-                    '住户数量',	
-                    '楼盘价格',	
+                    '楼栋数量',
+                    '住户数量',
+                    '楼盘价格',
                     '楼盘类型',
-                    '入住时间',	
+                    '入住时间',
                     '广告限制',
                     '车位数',
                     '车流量',
                     '人流量',
                     '媒体数量（门）',
                     '可投数量（面）',
-                    '地图中心点', 
+                    '地图中心点',
                     '投放排期'
                 ];
 
@@ -1972,7 +1972,7 @@
                     let mIDitem = mIDArr.find(item => {
                         return item.resID == data.resID
                     })
-                    
+
                     // 如果该资源存在
                     if (mIDitem) {
                         if (!mIDitem.mID.includes(data.mID)) {

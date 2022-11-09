@@ -21,7 +21,7 @@
                     <el-col :span="6">
                         <el-form-item label="资源名称" prop="resName">
                             <el-input
-                            v-model="recForm.resName"
+                            v-model="recForm.resname"
                             placeholder=""
                             ></el-input>
                         </el-form-item>
@@ -1132,7 +1132,7 @@ export default {
         ],
         // 单元数量
         unitCount: [
-            { required: true, message: "单元数量不能为空!", trigger: ["blur", "change"],},
+            { required: false, message: "单元数量不能为空!", trigger: ["blur", "change"],},
             { validator: validatePrice, trigger: "change" },
         ],
         // 入住年份
@@ -2039,14 +2039,14 @@ export default {
         liveRate: this.recForm.liveRate, // 入住率
         liftType: this.recForm.liftType, // 配套电梯
         parkSpaceNum: this.recForm.carNumber, //车位数
-        peopleFlow: this.recForm.peopleFlowrate, //人流量
-        carFlow: this.recForm.carFlowrate, // 车流量
-        notPush: this.recForm.notPush, // 广告限制
+        // peopleFlow: this.recForm.peopleFlowrate, //人流量
+        // carFlow: this.recForm.carFlowrate, // 车流量
+        notPush: this.recForm.notPush.join(','), // 广告限制
         // 物业信息
         developer: this.recForm.developer, // 开发商
         pmc: this.recForm.pmc, // 物业公司
         propertyContacts: this.recForm.pc, // 物业联系人
-        propertyContactsPhone: this.recform.pcp, // 物业联系电话
+        propertyContactsPhone: this.recForm.pcp, // 物业联系电话
         // 小区全貌图
         fullViewUrl: this.recForm.fullViewUrl, // 资源图片
 
@@ -2076,6 +2076,7 @@ export default {
         token: this.sessionData.token,
         data: recObj,
       };
+      console.log(recObj);
       api
         .postApi_new(this.apiVar.Media, params)
         .then((res) => {
@@ -2185,6 +2186,7 @@ export default {
       this.batchCreateApi(params);
     },
     batchCreateApi(params, editFlag) {
+        console.log(params);
       if (params.length) {
         api
           .postApi_json("/addsp/api/v1/media/create/batch", params)
@@ -2312,9 +2314,10 @@ export default {
         clearTimeout(timer);
       }, 500);
       // 资源表单校验
-      console.log("资源表单校验recForm", this.$refs.recForm);
+    //   console.log("资源表单校验recForm", this.$refs.recForm);
       this.$refs.recForm.validate((valid, invalidObject) => {
         if (valid) {
+            // console.log('valid', valid);
           // 验证全部通过后校验媒体表单
           this.adDoorValidateFrom();
         } else {
@@ -2349,7 +2352,7 @@ export default {
                 mediaValidFlag -= 1;
                 if (mediaValidFlag === 0) {
                   // 全部媒体表单验证通过
-                  console.log('全部媒体表单验证通过');
+                  console.log('验证通过');
                   this.validateFinted();
                 }
               }

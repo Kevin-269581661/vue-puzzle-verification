@@ -1606,6 +1606,7 @@
                             asrID: info.asrID,                 // 所属公司id
                             province: info.province,
                             notPush: info.notPush,
+                            unitCount: info.unitCount,
                             parkSpaceNum: info.parkSpaceNum,
                             peopleFlow: info.peopleFlow,
                             carFlow: info.carFlow
@@ -1874,6 +1875,7 @@
                     lState: info.adlInfo ? info.adlInfo : '',   // 是否被占
                     province: info.province,
                     notPush: info.notPush,
+                    unitCount: info.unitCount,
                     parkSpaceNum: info.parkSpaceNum,
                     peopleFlow: info.peopleFlow,
                     carFlow: info.carFlow,
@@ -2208,6 +2210,7 @@
                         houseNum: key.hNum, //楼栋数量
                         liveYear: key.chDay, //入住年份
                         notPush: key.notPush, //广告限制
+                        unitCount: key.unitCount,
                         adsList: key.adsList || [], // 所属公司id
                         alias: key.alias, //资源别名
                         description: key.description, //楼盘介绍
@@ -2518,6 +2521,7 @@
                                 asrID: key.asrID,                 // 所属公司id
                                 province: key.province,
                                 notPush: key.notPush,
+                                unitCount: key.unitCount,
                                 parkSpaceNum: key.parkSpaceNum,
                                 peopleFlow: key.peopleFlow,
                                 carFlow: key.carFlow,
@@ -3771,6 +3775,7 @@
                         asrID: key.asrID,                 // 所属公司id
                         province: key.province,
                         notPush: key.notPush,
+                        unitCount: key.unitCount,
                         parkSpaceNum: key.parkSpaceNum,
                         peopleFlow: key.peopleFlow,
                         carFlow: key.carFlow,

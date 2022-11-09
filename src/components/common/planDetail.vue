@@ -555,155 +555,159 @@
       },
       // 导出excel
       export2Excel (name) {
-    this.isDown = true;
-    let resultArr = [];
-    for (let data of this.setpointArr) {
-      let obj = {
-        province: data.province || "",
-        city: data.city,
-        rName: data.rName,
-        street: data.street, //街道
-        tradingArea: data.tradingArea,
-        resName: data.resName,
-        resAddress: data.resAddress,
-        fNum: data.fNum == '0' ? '#' : data.fNum,
-        unitCount: data.unitCount, //单元数量
-        cType: data.cType,
-        hPrice: data.hPrice / 100,
-        hNum: data.hNum == '0' ? '#' : data.hNum,
-        chDay: data.chDay,
-        notPush: data.notPush,
-        resAlias: data.alias,
-        description: data.description,
-        supportingFacilities: data.supportingFacilities,
-        dNum: data.dNum, //出入口数
-        liveRate: data.liveRate, //入住率
-        liftType: data.liftType, // 配套电梯
-        parkSpaceNum: data.parkSpaceNum || "",
-        lat: data.lng, //经度
-        lng: data.lat, //纬度
-        mediaTypeName: data.mediaTypeName,
-        mTitle: data.mTitle,
-        buildingName: data.buildingName, //楼栋
-        unitName: data.unitName, //单元
-        siteOrientation: data.siteOrientation, //位置朝向
-        assetTag: data.assetTag,
-        mType: data.mType,
-        site: data.site,
-        asLab: data.asLab,
-        adSize: data.adSize,
-        adViewSize: data.adViewSize,
-        mRemark: data.mRemark,
-        timeRange: data.timeRange,
-        mapCenter: data.mapCenterName || '',
-        finishTimeRange: data.finishTimeRange,
-      };
-      resultArr.push(obj);
-    }
-    require.ensure([], () => {
-      const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-      let tHeader = [
-        '省份',
-        '城市',
-        '区域',
-        '街道',
-        '商圈',
-        '资源名称',
-        '详细地址',
-        '楼栋数量',
-        '单元数量',
-        '楼盘类型',
-        '楼盘价格',
-        '住户数量',
-        '入住年份',
-        '广告限制',
-        '资源别名',
-        '楼盘介绍',
-        '周边配套',
-        '出入口数',
-        '入住率',
-        '配套电梯',
-        '车位数',
-        '经度',
-        '纬度',
-        '媒体类型',
-        '媒体名称',
-        '楼栋',
-        '单元',
-        '位置朝向',
-        '媒体位ID',
-        '设备型号',
-        '位置类型',
-        '投放面',
-        '素材尺寸',
-        '可视尺寸',
-        '媒体备注',
-        '投放排期',
-        '地图中心点',
-        '终止日期',
-      ];
-      let filterVal = [
-        'province',
-        'city',
-        'rName',
-        'street',
-        'tradingArea',
-        'resName',
-        'resAddress',
-        'fNum',
-        'unitCount',
-        'cType',
-        'hPrice',
-        'hNum',
-        'chDay',
-        'notPush',
-        'resAlias',
-        'description',
-        'supportingFacilities',
-        'dNum',
-        'liveRate',
-        'liftType',
-        'parkSpaceNum',
-        'lat',
-        'lng',
-        'mediaTypeName',
-        'mTitle',
-        'buildingName',
-        'unitName',
-        'siteOrientation',
-        'assetTag',
-        'mType',
-        'site',
-        'asLab',
-        'adSize',
-        'adViewSize',
-        'mRemark',
-        'timeRange',
-        'mapCenter',
-        'finishTimeRange',
-      ];
+        this.isDown = true;
+        let resultArr = [];
+        for (let data of this.setpointArr) {
+        let obj = {
+            province: data.province || "",
+            city: data.city,
+            rName: data.rName,
+            street: data.street, //街道
+            tradingArea: data.tradingArea,
+            resName: data.resName,
+            resAddress: data.resAddress,
+            fNum: data.fNum == '0' ? '#' : data.fNum,
+            unitCount: data.unitCount, //单元数量
+            cType: data.cType,
+            hPrice: data.hPrice / 100,
+            hNum: data.hNum == '0' ? '#' : data.hNum,
+            chDay: data.chDay,
+            notPush: data.notPush,
+            resAlias: data.alias,
+            description: data.description,
+            supportingFacilities: data.supportingFacilities,
+            dNum: data.dNum, //出入口数
+            liveRate: data.liveRate, //入住率
+            liftType: data.liftType, // 配套电梯
+            parkSpaceNum: data.parkSpaceNum || "",
+            lat: data.lng, //经度
+            lng: data.lat, //纬度
+            mediaTypeName: data.mediaTypeName,
+            mTitle: data.mTitle,
+            buildingName: data.buildingName, //楼栋
+            unitName: data.unitName, //单元
+            siteOrientation: data.siteOrientation, //位置朝向
+            assetTag: data.assetTag,
+            mType: data.mType,
+            site: data.site,
+            asLab: data.asLab,
+            adSize: data.adSize,
+            adViewSize: data.adViewSize,
+            mRemark: data.mRemark,
+            timeRange: data.timeRange,
+            mapCenter: data.mapCenterName || '',
+            finishTimeRange: data.finishTimeRange,
+            remark: data.remark,
+            trafficState: data.trafficState || '',
+            electrifyState: data.electrifyState || '',
+            asName: data.asName,
+        };
+        resultArr.push(obj);
+        }
+        require.ensure([], () => {
+        const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+        let tHeader = [
+            '省份',
+            '城市',
+            '区域',
+            '街道',
+            '商圈',
+            '资源名称',
+            '详细地址',
+            '楼栋数量',
+            '单元数量',
+            '楼盘类型',
+            '楼盘价格',
+            '住户数量',
+            '入住年份',
+            '广告限制',
+            '资源别名',
+            '楼盘介绍',
+            '周边配套',
+            '出入口数',
+            '入住率',
+            '配套电梯',
+            '车位数',
+            '经度',
+            '纬度',
+            '媒体类型',
+            '媒体名称',
+            '楼栋',
+            '单元',
+            '位置朝向',
+            '媒体位ID',
+            '设备型号',
+            '位置类型',
+            '投放面',
+            '素材尺寸',
+            '可视尺寸',
+            '媒体备注',
+            '投放排期',
+            '地图中心点',
+            '终止日期',
+        ];
+        let filterVal = [
+            'province',
+            'city',
+            'rName',
+            'street',
+            'tradingArea',
+            'resName',
+            'resAddress',
+            'fNum',
+            'unitCount',
+            'cType',
+            'hPrice',
+            'hNum',
+            'chDay',
+            'notPush',
+            'resAlias',
+            'description',
+            'supportingFacilities',
+            'dNum',
+            'liveRate',
+            'liftType',
+            'parkSpaceNum',
+            'lat',
+            'lng',
+            'mediaTypeName',
+            'mTitle',
+            'buildingName',
+            'unitName',
+            'siteOrientation',
+            'assetTag',
+            'mType',
+            'site',
+            'asLab',
+            'adSize',
+            'adViewSize',
+            'mRemark',
+            'timeRange',
+            'mapCenter',
+            'finishTimeRange',
+        ];
 
-      switch (this.customPermission.patrolPermission) {
-        case 1:
-          tHeader.push('巡点问题', '通行情况');
-          filterVal.push('remark', 'trafficState');
-          break;
-        case 2:
-          tHeader.push('巡点问题', '通行情况', '通电情况');
-          filterVal.push('remark', 'trafficState', 'electrifyState');
-          break;
-      }
+        switch (this.customPermission.patrolPermission) {
+            case 1:
+            tHeader.push('巡点问题', '通行情况');
+            filterVal.push('remark', 'trafficState');
+            break;
+            case 2:
+            tHeader.push('巡点问题', '通行情况', '通电情况');
+            filterVal.push('remark', 'trafficState', 'electrifyState');
+            break;
+        }
 
-      if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-        tHeader.push('归属公司')
-        filterVal.push('asName');
-      }
+        if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+            tHeader.push('归属公司')
+            filterVal.push('asName');
+        }
 
-      const list = resultArr;
-      const data = this.formatJson(filterVal, list);
-      export_json_to_excel(tHeader, data, name);
-      this.isDown = false;
-    })
+        const list = resultArr;
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, name);
+        this.isDown = false;
+        })
   },
       formatJson (filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))

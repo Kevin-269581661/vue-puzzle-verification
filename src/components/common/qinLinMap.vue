@@ -4069,7 +4069,7 @@ export default {
     },
     // 导出exc
     exportExcel () {
-      console.log('this.selectResList', this.selectResList)
+      console.log(this.selectResList, 'this.selectResList----')
       if (this.selectResList.length) {
         let time = timeFormat.toDateTime(new Date(), "").split(" ");
         let timeString = time[0] + time[1].split(":").join("");
@@ -4187,7 +4187,7 @@ export default {
             ];
           } else if (this.systemSource === 0) {
             tHeader = [
-              '省份',
+              '省份', // provinceName
               "城市",
               "区域",
               "街道",
@@ -4217,30 +4217,30 @@ export default {
               '投放排期'
             ];
             filterVal = [
-              'provinceName',
-              "city",
-              "rName",
-              "street", 
+              'provinceName', // 省份
+              "city", // 城市
+              "rName", // 区域
+              "street", // 街道
               "tradingArea", // 商圈
-              "resName",
+              "resName", // 资源名称
               "resAddress", // 详细地址
-              "fNum",
+              "fNum", // 楼栋数量
               "unitCount", // 单元数量
-              "cType",
-              "hPrice",
-              "hNum",
-              "chDay",
-              'notPush',
-              'spareAdsCount',
-              'alias',
-              'description',
-              'liveRate',
+              "cType", // 楼盘类型
+              "hPrice", // 楼盘价格
+              "hNum", // 住户数量
+              "chDay", // 入住年份/建成年份
+              'notPush', // 广告限制
+              'spareAdsCount', // 可投数量（面）
+              'alias', // 资源别名
+              'description', // 楼盘介绍
               'supportingFacilities', // 周边配套
-              'dNum',
+              'dNum', // 出入口数
+              'liveRate', // 入住率
               'liftType', // 配套电梯
-              'parkSpaceNum',
+              'parkSpaceNum', // 车位数
               'mVehicle', // 媒体类型
-              'mRemark',
+              'mRemark', // 媒体备注
               'lng', // 经度
               'lat', // 纬度
               'mapCenter', // 地图中心点

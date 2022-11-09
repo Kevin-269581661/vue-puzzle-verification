@@ -1592,9 +1592,9 @@ export default {
           hNum: data.hNum == '0' ? '&' : data.hNum, //住户数量
           chDay: data.chDay, //入住年份
           notPush: data.notPush, //广告限制
-          resAlias: data.resAlias, //资源别名1
-          description: data.description, //楼盘介绍#1
-          supportingFacilities: data.supportingFacilities, //周边配套#
+          resAlias: data.resAlias, //资源别名
+          description: data.description, //楼盘介绍
+          supportingFacilities: data.supportingFacilities, //周边配套
           dNum: data.dNum, //出入口数#
           liveRate: data.liveRate, //入住率
           liftType: data.liftType, //配套电梯

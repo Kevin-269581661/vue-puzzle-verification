@@ -290,10 +290,18 @@
                     </el-col>
                     <el-col :span="6">
                         <el-form-item label="配套电梯" prop="liftType">
-                            <el-input
-                            v-model="recForm.liftType"
-                            placeholder=""
-                            ></el-input>
+
+                            <el-select
+                                v-model="recForm.liftType"
+                                placeholder="请选择"
+                            >
+                                <el-option
+                                    v-for="(type, index) in ['全部有电梯', '部分有电梯', '全部无电梯']"
+                                    :key="index"
+                                    :label="type"
+                                    :value="type">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -1048,7 +1056,7 @@ export default {
         // 区域
         region: [{ required: true, message: "请选择所属区域!", trigger: ["blur", "change"]}],
         // 街道
-        street: [{ required: true, max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
+        street: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
         // 地址
         resaddr: [
           {

@@ -591,7 +591,7 @@ export default {
             { id: 10, label: "楼栋", prop: "buildingName", width: "120", isChecked: false, fix:"not" },
             { id: 11, label: "单元", prop: "unitName", width: "120", isChecked: false, fix:"not" },
             { id: 12, label: "街道", prop: "street", width: "180", isChecked: false, fix:"not" },
-            { id: 13, label: "设备型号", prop: "mType", width: "120", isChecked: false, fix:"not" },
+            { id: 13, label: "设备型号", prop: "mType", width: "180", isChecked: false, fix:"not" },
             { id: 14, label: "位置类型", prop: "siteType", width: "120", isChecked: false, fix:"not" },
             { id: 15, label: "位置朝向", prop: "siteOrientation", width: "120", isChecked: false, fix:"not" },
             { id: 16, label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },

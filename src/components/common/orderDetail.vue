@@ -1576,7 +1576,7 @@ export default {
     export2Excel (name) {
       this.isDown = true;
       let resultArr = [];
-      for (let data of this.exportArr) {
+      for (let data of this.currentPointArr) {
         let obj = {
           province: data.province, //省份1
           city: data.city, //城市

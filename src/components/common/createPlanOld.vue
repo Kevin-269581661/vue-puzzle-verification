@@ -3554,7 +3554,6 @@ export default {
           carFlow: key.carFlow, //车流量
           peopleFlow: key.peopleFlow, //人流量
           mapCenter: key.reference || "", // 地图中心点
-
           rid: this.city[this.activeIndex].rid,
           buildType: key.cType,
           buildPrice: key.hPrice / 100,

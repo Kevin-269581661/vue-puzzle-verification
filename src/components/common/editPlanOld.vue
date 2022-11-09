@@ -2402,7 +2402,7 @@
                     suID: this.BDData.uid,
                     asrIDs: this.BDData.asrIDs.split(',')
                 }));
-                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true`
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true&timeRange=${String(this.dateInput)}`
                 window.open(url);
                 this.mapBtn = false;
                 this.dialogVisible()

@@ -123,7 +123,7 @@
               class="el-icon-plus"
               type="primary"
               @click="newMedia"
-              v-if="showNewBtn && isPay"
+              v-if="showNewBtn && !isPay"
               >新建</el-button
             >
             <!-- 列设置 -->

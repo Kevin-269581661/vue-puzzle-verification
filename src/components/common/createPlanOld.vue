@@ -2907,8 +2907,6 @@ export default {
 
       for (let data of arr) {
         let obj = {
-          resID: data.resID,
-          mID: data.mID,
           province: data.province, //省份
           city: data.city, //城市
           rName: data.origin, //区域

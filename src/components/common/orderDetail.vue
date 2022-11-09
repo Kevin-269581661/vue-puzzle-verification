@@ -1576,6 +1576,7 @@ export default {
     export2Excel (name) {
       this.isDown = true;
       let resultArr = [];
+      console.log(this.currentPointArr);
       for (let data of this.currentPointArr) {
         let obj = {
           province: data.province, //省份1
@@ -1592,7 +1593,7 @@ export default {
           hNum: data.hNum == '0' ? '&' : data.hNum, //住户数量
           chDay: data.chDay, //入住年份
           notPush: data.notPush, //广告限制
-          resAlias: data.resAlias, //资源别名
+          resAlias: data.alias, //资源别名
           description: data.description, //楼盘介绍
           supportingFacilities: data.supportingFacilities, //周边配套
           dNum: data.dNum, //出入口数#
@@ -1608,6 +1609,7 @@ export default {
           siteOrientation: data.siteOrientation, // 位置朝向
           assetTag: data.assetTag, //媒体位ID
           mType: data.mType || "", // 设备型号
+          site: data.site, // 位置类型
           asLab: data.asLab, //投放面
           adSize: data.adSize, //素材尺寸
           adViewSize: data.adViewSize, //可视尺寸

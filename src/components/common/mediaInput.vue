@@ -21,7 +21,7 @@
                     <el-col :span="6">
                         <el-form-item label="资源名称" prop="resName">
                             <el-input
-                            v-model="recForm.resname"
+                            v-model="recForm.resName"
                             placeholder=""
                             ></el-input>
                         </el-form-item>
@@ -1132,7 +1132,6 @@ export default {
         ],
         // 单元数量
         unitCount: [
-            { required: false, message: "单元数量不能为空!", trigger: ["blur", "change"],},
             { validator: validatePrice, trigger: "change" },
         ],
         // 入住年份
@@ -1155,11 +1154,11 @@ export default {
         // 出入口数
         doorwayNum: [{ required: false, validator: validatePrice, trigger: ["blur", "change"] }],
         // 入住率
-        liveRate: [{ required: false, validator: validateGreenP, trigger: ["blur", "change"] }],
+        liveRate: [{ validator: validateGreenP, trigger: ["blur", "change"] }],
         // 配套电梯
         liftType: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: ["blur", "change"] }],
         // 车位数
-        carNumber: [{ required: false, validator: validatePrice, trigger: ["blur", "change"] }],
+        carNumber: [{ validator: validatePrice, trigger: ["blur", "change"] }],
         // 广告限制
 
         // 3、物业信息
@@ -2015,7 +2014,7 @@ export default {
         uid: this.recForm.uid,
         rid: Number(this.recForm.region),
         // 基本信息
-        resname: this.recForm.resname, // 资源名称
+        resname: this.recForm.resName, // 资源名称
         resAlias: this.recForm.resAlias, // 资源别名
         city: this.resAddres.city, // 城市
         district: this.resAddres.area, // 区域

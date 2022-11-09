@@ -1579,7 +1579,7 @@ export default {
     //   console.log(this.exportArr);
       for (let data of this.exportArr) {
         let obj = {
-          province: data.province, //省份1
+          province: data.province, //省份
           city: data.city, //城市
           rName: data.rName, //区域
           street: data.street, //街道
@@ -1596,7 +1596,7 @@ export default {
           resAlias: data.alias, //资源别名
           description: data.description, //楼盘介绍
           supportingFacilities: data.supportingFacilities, //周边配套
-          dNum: data.dNum, //出入口数#
+          dNum: data.dNum, //出入口数
           liveRate: data.liveRate, //入住率
           liftType: data.liftType, //配套电梯
           parkSpaceNum: data.parkSpaceNum || "", //车位数

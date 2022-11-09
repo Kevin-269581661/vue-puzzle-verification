@@ -75,7 +75,6 @@
                         placeholder="请选择媒体权限"
                         @change="mediaAccessSelect"
                         size="small"
-                        :disabled="isEdit"
                     >
                         <el-option
                         v-for="item in mediaPermissionArr"

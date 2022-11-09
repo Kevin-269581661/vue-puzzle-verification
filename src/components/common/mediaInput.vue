@@ -19,7 +19,7 @@
                 <el-form-item label="基本信息" class="baseInfo firstInfo"></el-form-item>
                 <el-row :gutter="76" class="from_row">
                     <el-col :span="6">
-                        <el-form-item label="资源名称" prop="resName">
+                        <el-form-item label="资源名称" prop="resname">
                             <el-input
                             v-model="recForm.resname"
                             placeholder=""
@@ -1038,17 +1038,17 @@ export default {
           { validator: validateSpecialString, trigger: ["blur", "change"] },
           { max: 40, message: "最多只能输入40个字节", trigger: "change" },
         ],
-        // resname: [
-        //   {
-        //     required: true,
-        //     message: "资源名称不能为空!",
-        //     trigger: ["blur", "change"],
-        //   },
-        //   { validator: validateSpace, trigger: ["blur", "change"] },
-        //   { validator: validateSpecialString, trigger: ["blur", "change"] },
-        //   { validator: this.isHaveCommenName, trigger: "blur" },
-        //   { max: 40, message: "最多只能输入40个字节", trigger: "change" },
-        // ],
+        resname: [
+          {
+            required: true,
+            message: "资源名称不能为空!",
+            trigger: ["blur", "change"],
+          },
+          { validator: validateSpace, trigger: ["blur", "change"] },
+          { validator: validateSpecialString, trigger: ["blur", "change"] },
+          { validator: this.isHaveCommenName, trigger: "blur" },
+          { max: 40, message: "最多只能输入40个字节", trigger: "change" },
+        ],
         // 资源别名
         resAlias: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" }],
         // 城市

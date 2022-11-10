@@ -2894,7 +2894,6 @@ export default {
       let dateArr = [];
       let filtersData = filterFormat(arr, "schedules");
       for (let item of filtersData) {
-        console.log(item);
         let dateObj = {
           sheetName: item.value,
           showList: [],
@@ -3902,7 +3901,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/AutoSetAdS", params)
         .then((res) => {
-        //   console.log("一键选点", res.data);
+          console.log("一键选点", res.data);
           IsXhr = true;
           let tempArr = [];
           let resArr = res.data;
@@ -3949,6 +3948,7 @@ export default {
                 asrID: key.asrID, // 所属公司id
                 province: key.province,
                 notPush: key.notPush,
+                unitCount: key.unitCount,
                 parkSpaceNum: key.parkSpaceNum,
                 peopleFlow: key.peopleFlow,
                 carFlow: key.carFlow,

@@ -2466,13 +2466,13 @@ export default {
           buildingNum: recObj.buildingNum, // 楼栋数量
           liveTime: recObj.joinTime, // 入住年份
           business: recObj.tradingArea, // 商圈
-          unitCount: recObj.unitCount, // 单元数量
+          unitCount: recObj.unitCount || "", // 单元数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
           doorwayNum: recObj.EntryExitNum || "", // 出入口数
           liveRate: recObj.liveRate, // 入住率
           liftType: recObj.liftType, // 配套电梯
-          carNumber: recObj.carNumber, // 车位数
+          carNumber: recObj.carNumber || "", // 车位数
           peopleFlowrate: recObj.peopleFlowrate, // 人流量
           carFlowrate: recObj.carFlowrate, // 车流量
           notPush: recObj.notPush ? recObj.notPush.split(',') : [], // 广告限制
@@ -2675,9 +2675,9 @@ export default {
         resName: recObj.resName,
         resAlias: recObj.resAlias || "", // 资源别名
         rid: "", // 地区id
-        street: recObj.street, // 街道
+        street: recObj.street || "", // 街道
         resaddr: recObj.resaddr, // 地址
-        addressAlias: recObj.addressAlias, // 地址描述
+        addressAlias: recObj.addressAlias || "", // 地址描述
         latlng: recObj.lat + ";" + recObj.lng, // 经纬度
         resid: this.resData.resID,
         description: recObj.description || "", // 楼盘介绍
@@ -2687,22 +2687,22 @@ export default {
         hn: recObj.households, // 住户数量
         fn: recObj.buildingNum, // 楼栋数量
         cd: recObj.liveTime, // 入住年份
-        ta: recObj.business, // 商圈
-        unitCount: recObj.unitCount, // 单元数量
+        ta: recObj.business || "", // 商圈
+        unitCount: recObj.unitCount || "", // 单元数量
         supportingFacilities: recObj.supportingFacilities || "", // 周边配套
         transportation: recObj.transportation || "", // 交通状况
-        dn: recObj.doorwayNum, // 出入口数
-        liveRate: recObj.liveRate, // 入住率
+        dn: recObj.doorwayNum || "", // 出入口数
+        liveRate: recObj.liveRate || "", // 入住率
         liftType: recObj.liftType, // 配套电梯
-        parkSpaceNum: recObj.carNumber, // 车位数
+        parkSpaceNum: recObj.carNumber || "", // 车位数
         // peopleFlow: recObj.peopleFlowrate, // 人流量
         // carFlow: recObj.carFlowrate, // 车流量
         notPush: recObj.notPush ? recObj.notPush.join(',') : '', // 广告限制
         // 物业信息
         developer: recObj.developer || "", // 开发商
-        pmc: recObj.pmc, // 物业公司
-        propertyContacts: recObj.pc, // 物业联系人
-        propertyContactsPhone: recObj.pcp, // 物业联系电话
+        pmc: recObj.pmc || "", // 物业公司
+        propertyContacts: recObj.pc || "", // 物业联系人
+        propertyContactsPhone: recObj.pcp || "", // 物业联系电话
         // 小区全貌图
         fullViewUrl: recObj.fullViewUrl || "", // 资源图片
 

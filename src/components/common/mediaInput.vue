@@ -2450,12 +2450,12 @@ export default {
         let tempObj = {
           // 基本信息
           resName: recObj.resName,
-          resAlias: recObj.resAlias, // 资源别名
+          resAlias: recObj.resAlias || "", // 资源别名
           city: this.recForm.city, // 城市
           region: recObj.rid.toString(), // 区域
-          street: recObj.street, // 街道
+          street: recObj.street || "", // 街道
           resaddr: recObj.resAddress, // 地址
-          addressAlias: recObj.addressAlias, // 地址描述
+          addressAlias: recObj.addressAlias || "", // 地址描述
           lat: "", // 经度
           lng: "", // 纬度
           description: recObj.description || "", // 楼盘介绍
@@ -2465,12 +2465,12 @@ export default {
           households: recObj.HouseNum, // 住户数量
           buildingNum: recObj.buildingNum, // 楼栋数量
           liveTime: recObj.joinTime, // 入住年份
-          business: recObj.tradingArea, // 商圈
+          business: recObj.tradingArea || "", // 商圈
           unitCount: recObj.unitCount || "", // 单元数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
           doorwayNum: recObj.EntryExitNum || "", // 出入口数
-          liveRate: recObj.liveRate, // 入住率
+          liveRate: recObj.liveRate || "", // 入住率
           liftType: recObj.liftType, // 配套电梯
           carNumber: recObj.carNumber || "", // 车位数
           peopleFlowrate: recObj.peopleFlowrate, // 人流量
@@ -2479,8 +2479,8 @@ export default {
           // 物业信息
           developer: recObj.developer || "", // 开发商
           pmc: recObj.pmc, // 物业公司
-          pc: recObj.propertyContacts, // 物业联系人
-          pcp: recObj.propertyContactsPhone, // 物业联系电话
+          pc: recObj.propertyContacts || "", // 物业联系人
+          pcp: recObj.propertyContactsPhone || "", // 物业联系电话
           // 小区全貌图
           fullViewUrl: recObj.fullViewUrl || "", // 资源图片
 

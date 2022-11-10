@@ -2894,7 +2894,6 @@ export default {
       let dateArr = [];
       let filtersData = filterFormat(arr, "schedules");
       for (let item of filtersData) {
-        console.log(item);
         let dateObj = {
           sheetName: item.value,
           showList: [],
@@ -2921,7 +2920,7 @@ export default {
           hNum: data.houseNum, //住户数量
           chDay: data.liveYear, //入住年份
           notPush: data.notPush, //广告限制
-          mediaCount: data.adsList ? data.adsList.length : 0 , // 媒体面数
+          adsNum: 1, // 媒体面数
           resAlias: data.alias, //资源别名
           description: data.description, // 楼盘介绍
           supportingFacilities: data.supportingFacilities, // 周边配套
@@ -2937,6 +2936,8 @@ export default {
           peopleFlow: data.peopleFlow, //人流量
           map: data.mapCenter, //地图中心点
           timeRange: "", //投放排期
+          resID: data.resID,
+          mID: data.mID,
         };
 
         let mIDitem = mIDArr.find((item) => {
@@ -2996,17 +2997,18 @@ export default {
             break;
           }
         }
+
       }
       // 获取媒体数量
-      for (let dateArrItem of dateArr) {
-        for (let showListItem of dateArrItem.showList) {
-          for (let mIDitem of mIDArr) {
-            if (showListItem.resID == mIDitem.resID) {
-              showListItem.actualMediaCnt = mIDitem.mID.length;
-            }
-          }
-        }
-      }
+    //   for (let dateArrItem of dateArr) {
+    //     for (let showListItem of dateArrItem.showList) {
+    //       for (let mIDitem of mIDArr) {
+    //         if (showListItem.resID == mIDitem.resID) {
+    //           showListItem.actualMediaCnt = mIDitem.mID.length;
+    //         }
+    //       }
+    //     }
+    //   }
 
       for (let data of dateArr) {
         for (let obj of data.showList) {
@@ -3016,7 +3018,7 @@ export default {
         data.sheetName = data.sheetName.replace(/[/]/g, ".");
       }
 
-      // console.log('datearrr-----', dateArr);
+      console.log('datearrr-----', dateArr);
       return dateArr;
     },
     // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
@@ -3902,7 +3904,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/AutoSetAdS", params)
         .then((res) => {
-        //   console.log("一键选点", res.data);
+          console.log("一键选点", res.data);
           IsXhr = true;
           let tempArr = [];
           let resArr = res.data;
@@ -3949,6 +3951,7 @@ export default {
                 asrID: key.asrID, // 所属公司id
                 province: key.province,
                 notPush: key.notPush,
+                unitCount: key.unitCount,
                 parkSpaceNum: key.parkSpaceNum,
                 peopleFlow: key.peopleFlow,
                 carFlow: key.carFlow,

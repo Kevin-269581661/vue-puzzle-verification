@@ -1131,9 +1131,7 @@ export default {
             { validator: validatePrice, trigger: "change" },
         ],
         // 单元数量
-        unitCount: [
-            { validator: validatePrice, trigger: "change" },
-        ],
+        unitCount: [{ required: false, validator: validatePrice, trigger: ["blur"] },],
         // 入住年份
         liveTime: [ { required: true, message: "请选择年份!", trigger: "change" }],
         // 商圈
@@ -1158,7 +1156,7 @@ export default {
         // 配套电梯
         liftType: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: ["blur", "change"] }],
         // 车位数
-        carNumber: [{ validator: validatePrice, trigger: ["blur", "change"] }],
+        carNumber: [{ required: false, validator: validatePrice, trigger: ["blur"] }],
         // 广告限制
 
         // 3、物业信息
@@ -2008,6 +2006,7 @@ export default {
     },
     //添加资源媒体
     createRes() {
+      const addressAlias  = this.recForm.addressAlias
       this.recForm.uid = this.sessionData.uID;
       this.recForm.latlng = this.recForm.lat + ";" + this.recForm.lng;
       let recObj = {
@@ -2020,7 +2019,7 @@ export default {
         district: this.resAddres.area, // 区域
         street: this.recForm.street, // 街道
         resaddr: this.recForm.resaddr, // 地址
-        addressAlias: this.recForm.addressAlias, // 地址描述
+        addressAlias: addressAlias, // 地址描述
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
         latlng: this.recForm.latlng, // 经纬度 重庆:9.61;106.47  北京:116.46;39.92 广州: 113.27;23.13  上海:121.29;31.11 深圳:113.46;22.27
         description: this.recForm.description, // 楼盘介绍
@@ -2031,13 +2030,13 @@ export default {
         fn: this.recForm.buildingNum, // 楼栋数量
         cd: this.recForm.liveTime, // 入住年份 '2017'
         ta: this.recForm.business, // 商圈
-        unitCount: this.recForm.unitCount, // 单元数量
+        unitCount: this.recForm.unitCount  || '', // 单元数量
         supportingFacilities: this.recForm.supportingFacilities, // 周边配套
         transportation: this.recForm.transportation, // 交通状况
         dn: this.recForm.doorwayNum, // 出入口数
         liveRate: this.recForm.liveRate, // 入住率
         liftType: this.recForm.liftType, // 配套电梯
-        parkSpaceNum: this.recForm.carNumber, //车位数
+        parkSpaceNum: this.recForm.carNumber || '', //车位数
         // peopleFlow: this.recForm.peopleFlowrate, //人流量
         // carFlow: this.recForm.carFlowrate, // 车流量
         notPush: this.recForm.notPush.join(','), // 广告限制
@@ -2075,7 +2074,6 @@ export default {
         token: this.sessionData.token,
         data: recObj,
       };
-      console.log(recObj);
       api
         .postApi_new(this.apiVar.Media, params)
         .then((res) => {
@@ -2118,6 +2116,7 @@ export default {
         mediaTypeIndex++
       ) {
         let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
+        // console.log(mediaTypeItem);
         let tempMediaList = mediaTypeItem.mediaList;
         let mediaLength = tempMediaList.length;
         mediaTop: for (
@@ -2140,6 +2139,7 @@ export default {
               adViewSizeWidth,
               adViewSizeHeight,
               id: adSpaceId,
+              siteOrientation
             } = adSpaceItem;
             if (
               adSizeWidth &&
@@ -2154,7 +2154,7 @@ export default {
                 adSizeHeight,
                 adViewSizeWidth,
                 adViewSizeHeight,
-                siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                siteOrientation
               });
             } else {
               break mediaTop;
@@ -2172,7 +2172,7 @@ export default {
               mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
-              notPush: tempMediaForm.adLimit.join('、'),
+              notPush: tempMediaForm.adLimit.join(','),
               mac: tempMediaForm.mac || "",
               buildingName: tempMediaForm.buildingName || "",
               unitName: tempMediaForm.unitName || "",
@@ -2466,13 +2466,13 @@ export default {
           buildingNum: recObj.buildingNum, // 楼栋数量
           liveTime: recObj.joinTime, // 入住年份
           business: recObj.tradingArea, // 商圈
-          unitCount: recObj.unitCount, // 单元数量
+          unitCount: recObj.unitCount || "", // 单元数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
           doorwayNum: recObj.EntryExitNum || "", // 出入口数
           liveRate: recObj.liveRate, // 入住率
           liftType: recObj.liftType, // 配套电梯
-          carNumber: recObj.carNumber, // 车位数
+          carNumber: recObj.carNumber || "", // 车位数
           peopleFlowrate: recObj.peopleFlowrate, // 人流量
           carFlowrate: recObj.carFlowrate, // 车流量
           notPush: recObj.notPush ? recObj.notPush.split(',') : [], // 广告限制
@@ -2516,14 +2516,14 @@ export default {
         this.recForm = tempObj;
         //设置媒体信息
         let mediaTypeObj = JSON.parse(sessionStorage.getItem("mediaTypeObj"));
+        console.log(mediaTypeObj);
         for (let i = 0; i < this.mediaTypeList.length; i++) {
           let tempMediaTypeItem = this.mediaTypeList[i];
           // 将媒体详情中已有类型的媒体合并至mediaTypeList对应的媒体类型下
           if (mediaTypeObj[tempMediaTypeItem.id]) {
             let mediaTypeItemDetail = mediaTypeObj[tempMediaTypeItem.id];
             // 标记原有媒体个数
-            this.mediaTypeList[i].editMediaLength =
-              mediaTypeItemDetail.mediaList.length;
+            this.mediaTypeList[i].editMediaLength = mediaTypeItemDetail.mediaList.length;
             mediaTypeItemDetail.mediaList.forEach((mediaItem) => {
               let tempAdSpaceInfos = (mediaItem.adSpaceInfos || []).map(
                 (adSpaceItem) => {
@@ -2561,7 +2561,7 @@ export default {
                 floor: mediaItem.floor || "", // 楼层
                 mImg: mediaItem.mImg || "",
                 updataImg: [],
-                adLimit: mediaItem.notPush ? mediaItem.notPush.split('、') : []
+                adLimit: mediaItem.notPush ? mediaItem.notPush.split(',') : []
               };
               if (mediaItem.mImg) {
                 let imgArr = [];
@@ -2675,9 +2675,9 @@ export default {
         resName: recObj.resName,
         resAlias: recObj.resAlias || "", // 资源别名
         rid: "", // 地区id
-        street: recObj.street, // 街道
+        street: recObj.street || "", // 街道
         resaddr: recObj.resaddr, // 地址
-        addressAlias: recObj.addressAlias, // 地址描述
+        addressAlias: recObj.addressAlias || "", // 地址描述
         latlng: recObj.lat + ";" + recObj.lng, // 经纬度
         resid: this.resData.resID,
         description: recObj.description || "", // 楼盘介绍
@@ -2687,22 +2687,22 @@ export default {
         hn: recObj.households, // 住户数量
         fn: recObj.buildingNum, // 楼栋数量
         cd: recObj.liveTime, // 入住年份
-        ta: recObj.business, // 商圈
-        unitCount: recObj.unitCount, // 单元数量
+        ta: recObj.business || "", // 商圈
+        unitCount: recObj.unitCount || "", // 单元数量
         supportingFacilities: recObj.supportingFacilities || "", // 周边配套
         transportation: recObj.transportation || "", // 交通状况
-        dn: recObj.doorwayNum, // 出入口数
-        liveRate: recObj.liveRate, // 入住率
+        dn: recObj.doorwayNum || "", // 出入口数
+        liveRate: recObj.liveRate || "", // 入住率
         liftType: recObj.liftType, // 配套电梯
-        parkSpaceNum: recObj.carNumber, // 车位数
+        parkSpaceNum: recObj.carNumber || "", // 车位数
         // peopleFlow: recObj.peopleFlowrate, // 人流量
         // carFlow: recObj.carFlowrate, // 车流量
         notPush: recObj.notPush ? recObj.notPush.join(',') : '', // 广告限制
         // 物业信息
         developer: recObj.developer || "", // 开发商
-        pmc: recObj.pmc, // 物业公司
-        propertyContacts: recObj.pc, // 物业联系人
-        propertyContactsPhone: recObj.pcp, // 物业联系电话
+        pmc: recObj.pmc || "", // 物业公司
+        propertyContacts: recObj.pc || "", // 物业联系人
+        propertyContactsPhone: recObj.pcp || "", // 物业联系电话
         // 小区全貌图
         fullViewUrl: recObj.fullViewUrl || "", // 资源图片
 
@@ -2792,6 +2792,7 @@ export default {
                 adViewSizeWidth,
                 adViewSizeHeight,
                 asId,
+                siteOrientation
               } = adSpaceItem;
               if (
                 adSizeWidth &&
@@ -2806,7 +2807,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                  siteOrientation
                 });
               } else {
                 break mediaTop;
@@ -2824,13 +2825,12 @@ export default {
                 site: tempMediaForm.site || "",
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                notPush: tempMediaForm.adLimit.join('、'),
-                mac: tempMediaForm.mac || "",
-                buildingName: tempMediaForm.buildingName || "",
-                unitName: tempMediaForm.unitName || "",
-                floor: tempMediaForm.floor || "",
+                buildingName: tempMediaForm.buildingName,
+                unitName: tempMediaForm.unitName,
+                floor: tempMediaForm.floor,
+                mac: tempMediaForm.mac,
+                notPush: tempMediaForm.adLimit.join(','),
               };
-              console.log(obj.unitName);
               editMediaParams.push(obj);
             }
           } else {
@@ -2848,6 +2848,7 @@ export default {
                 adViewSizeWidth,
                 adViewSizeHeight,
                 id: adSpaceId,
+                siteOrientation
               } = adSpaceItem;
               if (
                 adSizeWidth &&
@@ -2862,7 +2863,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                  siteOrientation
                 });
               } else {
                 break mediaTop;
@@ -2880,20 +2881,358 @@ export default {
                 mRemark: tempMediaForm.mRemark || "",
                 site: tempMediaForm.site || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                mac: tempMediaForm.mac || "",
-                buildingName: tempMediaForm.buildingName || "",
-                unitName: tempMediaForm.unitName || "",
-                floor: tempAdSpaceInfo.floor || "",
               };
               newMediaParams.push(obj);
             }
           }
         }
       }
-      console.log('editMediaParams', editMediaParams);
+      if (editMediaParams.length) {
+        this.batchUpdateApi(editMediaParams);
+      } else {
+        console.log("媒体编辑数据为空");
       }
+      if (newMediaParams.length) {
+        this.batchCreateApi(newMediaParams, true);
+      } else {
+        console.log("媒体新增数据为空");
       }
-dius: 4px;
+    },
+    // 取消
+    clearData() {
+      this.resetForm();
+      window.history.go(-1);
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.mediaList_content {
+  /*width: 92%;*/
+  background: #ffffff;
+  margin: 16px 64px 0;
+  padding-bottom: 32px;
+}
+/deep/ .ad_index_footer {
+  text-align: center;
+  font-size: 14px;
+  color: #8a8a8a;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.content_top_wrap {
+  background: #ffffff;
+  padding-top: 3px;
+}
+
+.content_bottom_wrap {
+  margin-top: 0;
+  background: #ffffff;
+  padding-top: 3px;
+}
+
+.content_bottom_wrap_box {
+  border-right: 1px solid rgba(230, 231, 233, 1);
+  border-left: 1px solid rgba(230, 231, 233, 1);
+}
+
+.content_top_wrap .content_top_head {
+  width: 100%;
+  height: 35px;
+  border-bottom: 1px solid #dedede;
+}
+
+.content_bottom_wrap .content_bottom_head {
+  height: 35px;
+  line-height: 35px;
+  width: calc(100% - 80px);
+  margin: 18px 32px 10px;
+  padding-left: 16px;
+  background: rgba(245, 246, 250, 1);
+}
+
+.content_top_wrap .content_top_head h2,
+.content_bottom_wrap .content_bottom_head h2 {
+  float: left;
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  width: 70%;
+}
+
+/*媒体删除按钮*/
+.media_deleBtn {
+  float: right;
+  width: 50px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+.media_deleBtn > i {
+  color: rgba(255, 0, 0, 0.85);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.content_top_wrap .content_top_form_wrap {
+  padding: 26px 0 16px;
+}
+
+/deep/ .el-form.demo-ruleForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.from_row {
+  width: 100%;
+  margin: 0 10px !important;
+}
+
+/deep/ .from_row .el-form-item {
+  width: 100%;
+}
+
+/deep/ .el-cascader {
+  width: 100%;
+}
+
+/deep/ .el-select {
+  width: 100%;
+}
+
+/deep/ .el-input-number {
+  padding-right: 0;
+}
+
+.el_col_box {
+  position: relative;
+}
+
+/deep/ .el_col_box .el-autocomplete {
+  width: calc(100% - 82px);
+}
+.the_same_error {
+  position: absolute;
+  bottom: 2px;
+  left: 38px;
+  font-size: 12px;
+  color: rgb(245, 108, 108);
+  font-family: "PingFangSC-Regular", "Microsoft YaHei";
+}
+.the_same_error > i {
+  font-size: 12px;
+  color: rgb(245, 108, 108);
+}
+
+.get_resName_btn {
+  width: 66px;
+  min-width: 66px;
+}
+
+/*经纬度*/
+.form_item_box_son {
+  width: 49%;
+  margin-right: 1%;
+  float: left;
+}
+
+.col_lng_lat {
+  position: relative;
+}
+
+.lng_lat_map_btn {
+  position: absolute;
+  left: 100px;
+  top: 6px;
+  color: rgba(24, 144, 255, 1);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.el-input {
+  width: 100%;
+  height: 34px;
+}
+
+/deep/ .el-input__inner,
+.el-input-number {
+  height: 32px;
+  text-align: left;
+  line-height: 35px;
+  padding-right: 20px;
+  text-align: left;
+}
+/deep/ .el-input-number {
+  width: 100%;
+  padding-right: 0;
+}
+/deep/ .el-input__suffix {
+  right: 0;
+}
+
+/*计数器*/
+/deep/ .el-input-number__decrease,
+/deep/ .el-input-number__increase {
+  background-color: transparent !important;
+}
+
+/deep/ .el-icon-arrow-down {
+  position: relative;
+  top: 1px;
+}
+
+/deep/ .el-input-number .el-input__suffix {
+  right: 42px !important;
+}
+
+/deep/
+  .el-input-number.is-controls-right
+  .el-input-number__decrease
+  [class*="el-icon"],
+.el-input-number.is-controls-right
+  .el-input-number__increase
+  [class*="el-icon"] {
+  position: relative;
+  top: 2px;
+}
+
+/deep/ .el-form-item {
+  margin-bottom: 16px;
+}
+
+/deep/ .form_item_box_son .el-form-item {
+  margin-bottom: 0;
+}
+
+/deep/ .el-form-item.is-required .el-form-item__label:before {
+  position: absolute;
+  right: 0px;
+}
+
+/deep/ .el-form-item.floor_house_item.is-required .el-form-item__label:before {
+  left: 73px;
+}
+
+/deep/ .el-form-item.lng_lat_form_item.is-required .el-form-item__label:before {
+  left: 46px;
+}
+
+/deep/ .el-form-item.baseInfo.firstInfo {
+  padding-top: 0;
+  margin-top: 0;
+  border: none;
+}
+
+/deep/ .el-form-item.baseInfo {
+  width: calc(100% - 64px);
+  margin: 18px 32px 10px;
+  padding-left: 16px;
+  background: rgba(245, 246, 250, 1);
+}
+
+/deep/ .el-form-item.baseInfo .el-form-item__label {
+  font-size: 16px;
+  font-family: PingFangSC-Semibold;
+  font-weight: 600;
+  line-height: 42px;
+  color: rgba(44, 49, 60, 1);
+}
+
+/deep/ .el-popper[x-placement^="bottom"] {
+  margin-top: 3px !important;
+}
+
+/deep/ .mediaMana_content_top .el-form-item__error {
+  top: 90%;
+  width: 200px;
+}
+
+/deep/ .el-popper[x-placement^="bottom"] {
+  margin-top: 3px !important;
+  top: 200px !important;
+}
+
+/*媒体一表单*/
+.mediaList_content .content_bottom_upload {
+  width: 408px;
+  height: 877px;
+  border: 2px dashed #979797;
+  float: left;
+  margin-left: 10px;
+  text-align: center;
+  line-height: 810px;
+  cursor: pointer;
+}
+/*素材尺寸单位等*/
+.mm {
+  display: inline-block;
+  position: relative;
+}
+
+.mm span {
+  position: absolute;
+  /*left: 68px;*/
+  right: 20px;
+  top: 0;
+  color: #666666;
+}
+
+.el-form-item_unit {
+  position: relative;
+}
+
+.el-form-item_unit span {
+  position: absolute;
+  left: 212px;
+  color: #666666;
+  top: 0;
+}
+/*按钮*/
+.content_bottom_btn {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/deep/ .mediaList_content .el-form-item__error {
+  top: 92%;
+}
+
+/*上传图片*/
+/deep/ .el-upload--picture-card {
+  width: 110px;
+  height: 110px;
+  position: relative;
+  top: 10px;
+}
+
+/deep/ .el-upload--picture-card i {
+  position: relative;
+  top: -15px;
+}
+
+/deep/ .el-upload-list--picture-card .el-upload-list__item {
+  width: 110px;
+  height: 110px;
+  position: relative;
+  top: 9px;
+  left: 0;
+}
+
+.upload_img_wrap {
+  width: 120px;
+  height: 125px;
+  overflow: hidden;
+}
+
+/*新增媒体*/
+.add_media_btn {
+  box-sizing: border-box;
+  height: 32px;
+  border: 1px dashed #d9d9d9;
+  border-radius: 4px;
   text-align: center;
   line-height: 32px;
   cursor: pointer;

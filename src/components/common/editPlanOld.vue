@@ -1987,6 +1987,8 @@
                         peopleFlow: data.peopleFlow, //人流量
                         map: data.mapCenter, //地图中心点
                         timeRange: "", //投放排期
+                        resID: data.resID,
+                        mID: data.mID,
                     };
 
                     let mIDitem = mIDArr.find(item => {
@@ -2034,6 +2036,7 @@
                                         break;
                                     }
                                 }
+                                console.log(date.showList);
                             }else{
                                 obj.timeRange = date.sheetName;
                                 date.resIDArr.push(data.resID);
@@ -2044,15 +2047,15 @@
                     }
                 }
                 // 获取媒体数量
-                for(let dateArrItem of dateArr){
-                    for(let showListItem of dateArrItem.showList) {
-                        for(let mIDitem of mIDArr) {
-                            if(showListItem.resID==mIDitem.resID) {
-                                showListItem.actualMediaCnt = mIDitem.mID.length
-                            }
-                        }
-                    }
-                }
+                // for(let dateArrItem of dateArr){
+                //     for(let showListItem of dateArrItem.showList) {
+                //         for(let mIDitem of mIDArr) {
+                //             if(showListItem.resID==mIDitem.resID) {
+                //                 showListItem.actualMediaCnt = mIDitem.mID.length
+                //             }
+                //         }
+                //     }
+                // }
                 for(let data of dateArr){
                     for(let obj of data.showList){
                         delete obj.resID;

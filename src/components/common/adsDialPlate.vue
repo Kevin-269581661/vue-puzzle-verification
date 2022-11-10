@@ -178,7 +178,7 @@
                                     width="310"
                                     trigger="hover">
                                     <div>
-                                        <div v-if="mediaTypesArr[mediaTypeId-1].name == '单元门禁灯箱' && scope.row[item.dayOfMonth].status == 0">
+                                        <div v-if="mediaTypesArr.find(item => item.id == mediaTypeId).name == '单元门禁灯箱' && scope.row[item.dayOfMonth].status == 0">
                                             <p class="propmt_message_p">全国单预锁/全国单占用</p>
                                         </div>
                                         <div v-else>

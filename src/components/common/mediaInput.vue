@@ -2030,13 +2030,13 @@ export default {
         fn: this.recForm.buildingNum, // 楼栋数量
         cd: this.recForm.liveTime, // 入住年份 '2017'
         ta: this.recForm.business, // 商圈
-        unitCount: this.recForm.unitCount, // 单元数量
+        unitCount: this.recForm.unitCount  || '', // 单元数量
         supportingFacilities: this.recForm.supportingFacilities, // 周边配套
         transportation: this.recForm.transportation, // 交通状况
         dn: this.recForm.doorwayNum, // 出入口数
         liveRate: this.recForm.liveRate, // 入住率
         liftType: this.recForm.liftType, // 配套电梯
-        parkSpaceNum: this.recForm.carNumber, //车位数
+        parkSpaceNum: this.recForm.carNumber || '', //车位数
         // peopleFlow: this.recForm.peopleFlowrate, //人流量
         // carFlow: this.recForm.carFlowrate, // 车流量
         notPush: this.recForm.notPush.join(','), // 广告限制

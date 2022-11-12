@@ -38,24 +38,29 @@
                         </el-form-item>
                         <!-- , checkStrictly: true -->
                         <!-- 媒介或销售 -->
-                        <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
-                            <el-form-item label="媒体权限：" prop="userMediaChooseConfig">
-                                <!-- <el-cascader ref="cascader" collapse-tags clearable
+                        <!-- <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'"> -->
+                        <el-form-item label="媒体权限：" prop="userMediaChooseConfig">
+                            <!-- <el-cascader ref="cascader" collapse-tags clearable
                                     v-model="accountForm.userMediaChooseConfig" :options="MD_BD_MediaPermissonArr"
                                     :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
                                     @change="handleChange">
                                 </el-cascader> -->
-                                <el-cascader v-model="accountForm.userMediaChooseConfig" :props="{ multiple: true }"
-                                    filterable placeholder="请选择代理品牌" size="mini" clearable :disabled="false"
-                                    v-on:change="dailiChange" v-bind:options="MD_BD_MediaPermissonArr"></el-cascader>
+                            <el-cascader ref="cascader" size="small" v-model="accountForm.userMediaChooseConfig"
+                                :options="MD_BD_MediaPermissonArr"
+                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
+                                @change="handleChange" collapse-tags clearable>
+                                <template slot-scope="{ node, data }">
+                                    <span>{{ data.label }}</span>
+                                </template>
+                            </el-cascader>
 
-                                <!-- <el-cascader ref="cascader" v-model="accountForm.userMediaChooseConfig"
+                            <!-- <el-cascader ref="cascader" v-model="accountForm.userMediaChooseConfig"
                                     :options="MD_BD_MediaPermissonArr"
                                     :props="{ expandTrigger: 'hover', multiple: true, emitPath: false, checkStrictly: true }"
                                     collapse-tags clearable filterable size="small" @change="handlerChange">
                                 </el-cascader> -->
-                            </el-form-item>
-                        </template>
+                        </el-form-item>
+                        <!-- </template> -->
                         <!-- 开发楼盘人员 -->
                         <template v-if="accountForm.role == 'DEV'">
                             <el-form-item label="开发类别：" prop="devManageLevel">
@@ -145,7 +150,7 @@
             </div>
             <div class="content_bottom_btn">
                 <el-button type="primary" @click="submitForm('accountForm')">{{
-                isEdit ? "保存" : "创建"
+                        isEdit ? "保存" : "创建"
                 }}</el-button>
                 <el-button plain type="default" @click="resetForm()">取消</el-button>
             </div>
@@ -445,63 +450,105 @@ export default {
         }
     },
     methods: {
-        dailiChange(arr) {
-            console.log(arr);//此时的arr就是选择之后的级联选择器的结果，是个数组组成的数组。
-            if (arr.length) {
-                arr.sort();//这个地方的排序完全没有用，因为默认的arr会自动排好序后返回，拿到的arr就是排好序的了
-                let newArr = [arr[0]];//取第一个作为一个新的数组[[2,1],[2,2],[2,3]],这样的结果需要改为[[2,1]]，后面的几个数组都不要选中。
-                for (var i = 1; i < arr.length; i++) {
-                    if (arr[i][0] !== newArr[newArr.length - 1][0]) {//判断数组中的第一项是否相等
-                        newArr.push(arr[i])//如果不相等，则添加到数组中，否则不进行处理
-                    }
-                }
-                console.log("new", newArr);
-                this.accountForm.userMediaChooseConfig = newArr;//这个dailiArr就是级联选择器的结果
-            }
+        currentNode(node) {
+            console.log(node);
         },
 
         handleChange(arr) {
-            // let pNode = [] // 父节点id
-            // if (arr.length) {
-            //     let pNode = arr.map((v) => v[0])
-            //     if (pNode.length) {
-            //         // 去重
-            //         for (var i = 0; i < pNode.length; i++) {
-            //             for (var j = i + 1; j < pNode.length; j++) {
-            //                 if (pNode[i] == pNode[j]) {         //第一个等同于第二个，splice方法删除第二个
-            //                     pNode.splice(j, 1);
-            //                     j--;
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-            // console.log(pNode);
-
-            // console.log(arr);//此时的arr就是选择之后的级联选择器的结果，是个数组组成的数组。
-            // if (arr.length) {
-            //     let newArr = [arr[0]];//取第一个作为一个新的数组[[2,1],[2,2],[2,3]],这样的结果需要改为[[2,1]]，后面的几个数组都不要选中。
-            //     for (var i = 1; i < arr.length; i++) {
-            //         if (arr[i][0] !== newArr[newArr.length - 1][0]) {//判断数组中的第一项是否相等
-            //             newArr.push(arr[i])//如果不相等，则添加到数组中，否则不进行处理
-            //         }
-            //     }
-            //     console.log("new", newArr);
-            //     this.accountForm.userMediaChooseConfig = newArr;//这个dailiArr就是级联选择器的结果
-            // }
-            // const nodeList = this.$refs.cascader.getCheckedNodes()
+            const nodeList = this.$refs.cascader.getCheckedNodes()
             // console.log(nodeList);
-            // const pNode = []
-            // if(nodeList.length) {
-            //     nodeList.forEach(v => {
-            //         if(v.level === 1) {
-            //             pNode.push({
-            //                 mediaTypeName: v.label,
-            //                 mediaTypeId: v.value,
-            //             })
-            //         }
-            //     })
+
+            const fNodeArr = [] // 父级数组
+            const cNodeArr = [] // 子级数组
+
+            // 存储父级数据
+            let adGate = "" // 广告门
+            let brake = "" // 道闸
+            let unitBox = ""
+
+            nodeList.forEach((node) => {
+                if (node.level === 1) {
+                    fNodeArr.push(node)
+                }
+                else if (node.level === 2) {
+                    cNodeArr.push(node)
+                }
+            })
+
+            // fNodeArr不为空
+            if (fNodeArr.length) {
+                // cNodeArr不为空
+                if (cNodeArr.length) {
+                    fNodeArr.forEach(node => {
+
+                    })
+                }
+                // cNodeArr为空
+                else {
+                    fNodeArr.forEach(node => {
+                        let index
+                        const children = node.children
+                        if (node.label === '单元门禁灯箱' && this.accountForm.role === 'BD') {
+                            index = children.findIndex((child) => child.label === '单元')
+                        } else {
+                            index = children.findIndex((child) => child.label === '点位')
+                        }
+                        node.children[index].checked = true
+                    })
+                }
+                // fNodeArr.forEach(node => {
+                //     const isNotChecked = node.children.every((child) => child.checked === false)
+                //     const children = node.children
+                //     // 没有选中子级时（广告门、道闸：点位，单元门禁灯箱：媒介-点位、销售-单元）
+                //     if (isNotChecked) {
+                //         let index
+                //         if (node.label === '单元门禁灯箱' && this.accountForm.role === 'BD') {
+                //             index = children.findIndex((child) => child.label === '单元')
+                //         } else {
+                //             index = children.findIndex((child) => child.label === '点位')
+                //         }
+                //         node.children[index].checked = true
+                //     }
+                // 选中子级时，选中纬度最小的（value最小）
+                // else {
+                //     const valArr = [] //存放value的数组
+                //     children.forEach((child) => {
+                //         if (child.checked) {
+                //             valArr.push(child.value)
+                //         }
+                //     })
+                //     const index = children.findIndex((child) => child.value === Math.max(...valArr))
+                //     children.forEach((child) => child.checked = false)
+                //     children[index].checked = true
+                // }
+                // })
+            }
+            // else {
+            //     // 选中子级
+            //     if (cNodeArr.length) {
+            //         cNodeArr.forEach(node => {
+            //             if (node.checked) {
+            //                 node.parent.checked = true
+            //             }
+            //         })
+            //     }
+            //     else {
+            //         cNodeArr.forEach(node => {
+            //             if (!node.parent.checked) {
+            //                 node.checked = false
+            //             }
+            //         })
+            //     }
             // }
+
+            // 取消选中父级时
+            // cNodeArr.forEach(node => {
+            //     if (!node.parent.checked) {
+            //         node.checked = false
+            //     }
+            // })
+
+            console.log(fNodeArr, cNodeArr);
         },
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermisson() {

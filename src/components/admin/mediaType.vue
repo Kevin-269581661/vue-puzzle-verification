@@ -11,9 +11,11 @@
                     <el-col :span="4">
                         <div class="mediaTypeList">
                             <ul class="mediaTypeUl">
-                                <li v-for="(item,index) in mediaTypeList" :key="item.id" :class="{'active':currentActiveTab==index}" @click="getMediaTypeDetail(item,index)">
+                                <li v-for="(item, index) in mediaTypeList" :key="item.id"
+                                    :class="{ 'active': currentActiveTab == index }"
+                                    @click="getMediaTypeDetail(item, index)">
                                     <div class="mediaType_see">
-                                        <p>{{item.name}}</p>
+                                        <p>{{ item.name }}</p>
                                     </div>
                                 </li>
                             </ul>
@@ -23,14 +25,14 @@
                     <el-col :span="19">
                         <div class="mediaDetail">
                             <div v-if="!isEditForm">
-                                <h3>{{mediaTypeForm.name}}</h3>
+                                <h3>{{ mediaTypeForm.name }}</h3>
                                 <div class="mediaTable see">
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>媒体来源</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{sourceList | getOptionsLabel(mediaTypeForm.source)}}</p>
+                                            <p>{{ sourceList | getOptionsLabel(mediaTypeForm.source) }}</p>
                                         </div>
                                     </div>
                                     <div class="mediaTable_tr">
@@ -38,7 +40,8 @@
                                             <p>适用公司</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p><span class="see_all" @click="seeCompany(mediaTypeForm.id)">查看全部</span></p>
+                                            <p><span class="see_all" @click="seeCompany(mediaTypeForm.id)">查看全部</span>
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="mediaTable_tr">
@@ -46,7 +49,17 @@
                                             <p>可投面数</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{mediaTypeForm.adSpaceNum}}</p>
+                                            <p>{{ mediaTypeForm.adSpaceNum }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mediaTable_tr">
+                                        <div class="mediaTable_td">
+                                            <p>选点纬度</p>
+                                        </div>
+                                        <div class="mediaTable_td">
+                                            <p v-for="item in mediaTypeForm.mediaTypeChooseConfigs" :key="item.id">
+                                                {{ item.chooseTypeName }}
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="mediaTable_tr">
@@ -54,7 +67,7 @@
                                             <p>售卖方式</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{saleTypeData | getOptionsLabel(mediaTypeForm.saleModel)}}</p>
+                                            <p>{{ saleTypeData | getOptionsLabel(mediaTypeForm.saleModel) }}</p>
                                         </div>
                                     </div>
                                     <div class="mediaTable_tr">
@@ -62,7 +75,8 @@
                                             <p>监播照片尺寸</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{monitoringPhotosSizeData | getOptionsLabel(mediaTypeForm.pptType)}}</p>
+                                            <p>{{ monitoringPhotosSizeData | getOptionsLabel(mediaTypeForm.pptType) }}
+                                            </p>
                                         </div>
                                     </div>
                                     <!-- <div class="mediaTable_tr">
@@ -82,7 +96,7 @@
                                             <p>投放方式</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{launchTypeData | getOptionsLabel(mediaTypeForm.releaseModel)}}</p>
+                                            <p>{{ launchTypeData | getOptionsLabel(mediaTypeForm.releaseModel) }}</p>
                                         </div>
                                     </div>
                                     <div class="mediaTable_tr">
@@ -91,7 +105,7 @@
                                         </div>
                                         <div class="mediaTable_td">
                                             <p v-for="item in mediaTypeForm.adSpaceConfig" :key="item.id">
-                                                {{item.name}}
+                                                {{ item.name }}
                                             </p>
                                         </div>
                                     </div>
@@ -100,16 +114,17 @@
                                             <p>媒体说明</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p>{{mediaTypeForm.remark}}</p>
+                                            <p>{{ mediaTypeForm.remark }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <el-form v-else :model="mediaTypeForm" :rules="rules" ref="mediaTypeForm">
                                 <el-form-item prop="name" style="width: 220px;">
-                                    <el-input v-model.trim="mediaTypeForm.name" maxlength="15" placeholder="请输入类型名称"></el-input>
+                                    <el-input v-model.trim="mediaTypeForm.name" maxlength="15" placeholder="请输入类型名称">
+                                    </el-input>
                                 </el-form-item>
-                            
+
                                 <div class="mediaTable form">
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
@@ -125,7 +140,8 @@
                                         </div>
                                         <!--编辑-则显示查看全部，新增-则显示暂无-->
                                         <div class="mediaTable_td" v-if="mediaTypeForm.id">
-                                            <p><span class="see_all" @click="seeCompany(mediaTypeForm.id)">查看全部</span></p>
+                                            <p><span class="see_all" @click="seeCompany(mediaTypeForm.id)">查看全部</span>
+                                            </p>
                                         </div>
                                         <div class="mediaTable_td" v-else>
                                             <p>暂无</p>
@@ -138,15 +154,29 @@
                                         <div class="mediaTable_td">
                                             <p>
                                                 <el-form-item prop="adSpaceNum">
-                                                    <el-input-number 
-                                                        :disabled="type=='edit'"
-                                                        v-model.trim="mediaTypeForm.adSpaceNum" 
-                                                        onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))" 
-                                                        :step-strictly="true" 
-                                                        controls-position="right" 
-                                                        :min="1"
+                                                    <el-input-number :disabled="type == 'edit'"
+                                                        v-model.trim="mediaTypeForm.adSpaceNum"
+                                                        onKeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))"
+                                                        :step-strictly="true" controls-position="right" :min="1"
                                                         :max="9">
                                                     </el-input-number>
+                                                </el-form-item>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="mediaTable_tr">
+                                        <div class="mediaTable_td">
+                                            <p>选点纬度</p>
+                                        </div>
+                                        <div class="mediaTable_td">
+                                            <p>
+                                                <el-form-item prop="chooseConfigs">
+                                                    <el-checkbox-group v-model="mediaTypeForm.chooseConfigs"
+                                                        :disabled="type == 'edit'">
+                                                        <el-checkbox :label="label"
+                                                            v-for="(label, index) in chooseConfigsArr" :key="index">
+                                                        </el-checkbox>
+                                                    </el-checkbox-group>
                                                 </el-form-item>
                                             </p>
                                         </div>
@@ -158,8 +188,10 @@
                                         <div class="mediaTable_td">
                                             <p>
                                                 <el-form-item prop="saleModel">
-                                                    <el-radio-group v-model="mediaTypeForm.saleModel" :disabled="type=='edit'">
-                                                        <el-radio :label="item.value" v-for="item in saleTypeData" :key="item.value">{{item.label}}</el-radio>
+                                                    <el-radio-group v-model="mediaTypeForm.saleModel"
+                                                        :disabled="type == 'edit'">
+                                                        <el-radio :label="item.value" v-for="item in saleTypeData"
+                                                            :key="item.value">{{ item.label }}</el-radio>
                                                     </el-radio-group>
                                                 </el-form-item>
                                             </p>
@@ -172,8 +204,11 @@
                                         <div class="mediaTable_td">
                                             <p>
                                                 <el-form-item prop="pptType">
-                                                    <el-radio-group v-model="mediaTypeForm.pptType" :disabled="type=='edit'">
-                                                        <el-radio :label="item.value" v-for="item in monitoringPhotosSizeData" :key="item.value">{{item.label}}</el-radio>
+                                                    <el-radio-group v-model="mediaTypeForm.pptType"
+                                                        :disabled="type == 'edit'">
+                                                        <el-radio :label="item.value"
+                                                            v-for="item in monitoringPhotosSizeData" :key="item.value">
+                                                            {{ item.label }}</el-radio>
                                                     </el-radio-group>
                                                 </el-form-item>
                                             </p>
@@ -200,8 +235,10 @@
                                         <div class="mediaTable_td">
                                             <p>
                                                 <el-form-item prop="releaseModel">
-                                                    <el-radio-group v-model="mediaTypeForm.releaseModel" :disabled="type=='edit'">
-                                                        <el-radio :label="item.value" v-for="item in launchTypeData" :key="item.value">{{item.label}}</el-radio>
+                                                    <el-radio-group v-model="mediaTypeForm.releaseModel"
+                                                        :disabled="type == 'edit'">
+                                                        <el-radio :label="item.value" v-for="item in launchTypeData"
+                                                            :key="item.value">{{ item.label }}</el-radio>
                                                     </el-radio-group>
                                                 </el-form-item>
                                             </p>
@@ -212,9 +249,11 @@
                                             <p>广告位配置</p>
                                         </div>
                                         <div class="mediaTable_td">
-                                            <p v-for="(item,index) in mediaTypeForm.adSpaceConfig" :key="index">
+                                            <p v-for="(item, index) in mediaTypeForm.adSpaceConfig" :key="index">
                                                 <el-form-item :prop="`adSpaceConfig.${index}.name`" :rules="rules.name">
-                                                    <el-input :disabled="type=='edit'" style="width: 220px;" v-model.trim="item.name" maxlength="15" placeholder="广告位名称"></el-input>
+                                                    <el-input :disabled="type == 'edit'" style="width: 220px;"
+                                                        v-model.trim="item.name" maxlength="15" placeholder="广告位名称">
+                                                    </el-input>
                                                 </el-form-item>
                                             </p>
                                         </div>
@@ -225,12 +264,8 @@
                                         </div>
                                         <div class="mediaTable_td">
                                             <p>
-                                                <el-input
-                                                    v-model.trim="mediaTypeForm.remark"
-                                                    type="textarea"
-                                                    :rows="3"
-                                                    maxlength="50"
-                                                    placeholder="请输入媒体说明">
+                                                <el-input v-model.trim="mediaTypeForm.remark" type="textarea" :rows="3"
+                                                    maxlength="50" placeholder="请输入媒体说明">
                                                 </el-input>
                                             </p>
                                         </div>
@@ -247,38 +282,26 @@
                 <el-button type="primary" @click="editFun">编辑</el-button>
             </div>
             <div class="save" v-else>
-                <el-button @click="isEditForm=false">取消</el-button>
+                <el-button @click="isEditForm = false">取消</el-button>
                 <el-button type="primary" @click="saveFun">保存</el-button>
             </div>
         </div>
-        <el-dialog
-            title="公司列表"
-            :visible="isVisible"
-            top="12vh"
-            width="500px"
-            @close="isVisible=false"
-        >
+        <el-dialog title="公司列表" :visible="isVisible" top="12vh" width="500px" @close="isVisible = false">
             <el-table :data="companyList" v-loading="loading" border class="m-table">
                 <el-table-column width="20%" property="num" label="序号"></el-table-column>
                 <el-table-column width="80%" property="companyName" label="公司名称"></el-table-column>
             </el-table>
             <!--分页-->
             <div class="pagination clearfix">
-            <el-pagination
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange"
-                :current-page="searchParams.pageNum"
-                :page-sizes="[10,20,50,100]"
-                :page-size="searchParams.pageSize"
-                layout="total, prev, pager, next"
-                :total="total"
-                :background="true"
-            >
-            </el-pagination>
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="searchParams.pageNum" :page-sizes="[10, 20, 50, 100]"
+                    :page-size="searchParams.pageSize" layout="total, prev, pager, next" :total="total"
+                    :background="true">
+                </el-pagination>
             </div>
 
             <div slot="footer" class="dialog-footer">
-            <el-button @click="isVisible=false">关 闭</el-button>
+                <el-button @click="isVisible = false">关 闭</el-button>
             </div>
         </el-dialog>
     </div>
@@ -288,9 +311,9 @@ import api from "../../api/api.js";
 export default {
     name: "mediaType",
     data() {
-        return{
+        return {
             type: 'create',  //区分当前是新建还是编辑，create为新建，edit为编辑
-            isVisible:false,
+            isVisible: false,
             loading: false,
             total: 0,
             searchParams: {
@@ -298,20 +321,40 @@ export default {
                 pageSize: 10,
                 pageNum: 1
             },
-            companyList:[],  //适用公司列表
+            companyList: [],  //适用公司列表
             currentActiveTab: 0,  //当前选中的是哪个媒体类型
             isEditForm: false,  //是否显示编辑媒体类型的表单
             //媒体类型列表
-            mediaTypeList:[],
+            mediaTypeList: [],
             //来源数据
-            sourceList:[
+            sourceList: [
                 {
                     label: '亲邻',
                     value: 1
                 }
             ],
+            chooseConfigsArr: ['点位', '楼栋', '单元', '小区'],
+            //选点纬度
+            // chooseConfigsList: [
+            //     {
+            //         chooseType: 0,
+            //         chooseTypeName: '点位'
+            //     },
+            //     {
+            //         chooseType: 1,
+            //         chooseTypeName: '单元'
+            //     },
+            //     {
+            //         chooseType: 2,
+            //         chooseTypeName: '楼栋'
+            //     },
+            //     {
+            //         chooseType: 3,
+            //         chooseTypeName: '小区'
+            //     },
+            // ],
             //售卖方式数据
-            saleTypeData:[
+            saleTypeData: [
                 {
                     label: '单面售卖',
                     value: 1
@@ -355,106 +398,109 @@ export default {
                 }
             ],
             //媒体类型form数据
-            mediaTypeForm:{},
+            mediaTypeForm: {},
             //表单校验规则
-            rules:{
+            rules: {
                 name: [
                     { required: true, message: '请输入类型名称', trigger: 'blur' }
                 ],
-                adSpaceNum:[
+                adSpaceNum: [
                     { required: true, message: '请输入可投面数', trigger: 'blur' }
                 ],
-                saleModel:[
+                chooseConfigs: [
+                    { required: true, message: '请选择选点维度', trigger: 'change' }
+                ],
+                saleModel: [
                     { required: true, message: '请选择售卖方式', trigger: 'change' }
                 ],
-                pptType:[
+                pptType: [
                     { required: true, message: '请选择监播照片尺寸', trigger: 'change' }
                 ],
                 // publishPriceModel:[
                 //     { required: true, type: 'array', message: '请选择刊例价模式', trigger: 'change' }
                 // ],
-                releaseModel:[
+                releaseModel: [
                     { required: true, message: '请选择投放方式', trigger: 'change' }
                 ],
-                'adSpaceConfig.name':[
+                'adSpaceConfig.name': [
                     { required: true, message: '请输入广告位配置', trigger: 'blur' }
-                ]
+                ],
             }
         }
     },
-    filters:{
-        getOptionsLabel(e,value){
-            let optionItem=e.filter((item)=>{
-                return item.value==value
+    filters: {
+        getOptionsLabel(e, value) {
+            let optionItem = e.filter((item) => {
+                return item.value == value
             })
-            if(optionItem.length>0){
+            if (optionItem.length > 0) {
                 return optionItem[0].label
-            }else{
+            } else {
                 return null
             }
         }
     },
     watch: {
         //监听可投面数的数值变化，生成广告位配置
-        'mediaTypeForm.adSpaceNum':function(newVal){
-            let length=this.mediaTypeForm.adSpaceConfig.length
-            if(newVal>length){
+        'mediaTypeForm.adSpaceNum': function (newVal) {
+            let length = this.mediaTypeForm.adSpaceConfig.length
+            if (newVal > length) {
                 //增加
-                let difference=newVal-length;
-                let _adSpaceConfig=[];
-                for(let i=0;i<difference;i++){
+                let difference = newVal - length;
+                let _adSpaceConfig = [];
+                for (let i = 0; i < difference; i++) {
                     _adSpaceConfig.push({
-                        name:'' 
+                        name: ''
                     })
                 }
-                this.mediaTypeForm.adSpaceConfig=this.mediaTypeForm.adSpaceConfig.concat(_adSpaceConfig)
-            }else{
+                this.mediaTypeForm.adSpaceConfig = this.mediaTypeForm.adSpaceConfig.concat(_adSpaceConfig)
+            } else {
                 //减少
-                let difference=length-newVal;
-                let _adSpaceConfig=this.mediaTypeForm.adSpaceConfig;
-                for(let i=0;i<difference;i++){
+                let difference = length - newVal;
+                let _adSpaceConfig = this.mediaTypeForm.adSpaceConfig;
+                for (let i = 0; i < difference; i++) {
                     _adSpaceConfig.pop();
                 }
-                this.mediaTypeForm.adSpaceConfig=_adSpaceConfig;
+                this.mediaTypeForm.adSpaceConfig = _adSpaceConfig;
             }
         }
     },
     mounted() {
         this.getMediaTypes();
     },
-    methods:{
-        handleCurrentChange (val) {
+    methods: {
+        handleCurrentChange(val) {
             this.searchParams.pageNum = val
             this.getMediaTypeCompany()
         },
-        handleSizeChange (val) {
+        handleSizeChange(val) {
             this.searchParams.pageSize = val
             this.searchParams.pageNum = 1
             this.getMediaTypeCompany()
         },
         //查看公司列表
-        seeCompany(_id){
-            this.isVisible=true;
-            this.searchParams.id=_id;
+        seeCompany(_id) {
+            this.isVisible = true;
+            this.searchParams.id = _id;
             this.getMediaTypeCompany();
         },
         //获取媒体类型公司列表
-        getMediaTypeCompany(){
-            this.loading=true;
-            api.getApi('/addsp/api/v1/mediaTypes/pageMediaTypeCompany',{
+        getMediaTypeCompany() {
+            this.loading = true;
+            api.getApi('/addsp/api/v1/mediaTypes/pageMediaTypeCompany', {
                 id: this.searchParams.id,
                 pageNum: this.searchParams.pageNum,
                 pageSize: this.searchParams.pageSize
-            }).then(res=>{
-                this.loading=false;
-                if(res.data.SysCode == 200200) {
-                    this.total=res.data.data.total;
-                    let _list=res.data.data.list;
-                    _list.forEach((item,index)=>{
-                        item.num=(this.searchParams.pageNum-1)*this.searchParams.pageSize+index+1
+            }).then(res => {
+                this.loading = false;
+                if (res.data.SysCode == 200200) {
+                    this.total = res.data.data.total;
+                    let _list = res.data.data.list;
+                    _list.forEach((item, index) => {
+                        item.num = (this.searchParams.pageNum - 1) * this.searchParams.pageSize + index + 1
                     })
-                    this.companyList= _list;
-                }else{
+                    this.companyList = _list;
+                } else {
                     this.$message({
                         message: res.data.MSG,
                         type: 'error'
@@ -465,78 +511,86 @@ export default {
             })
         },
         //媒体类型form数据初始化
-        formInit(){
-            let _mediaTypeForm={
+        formInit() {
+            let _mediaTypeForm = {
                 name: '',  //类型名称
                 source: 1,  //来源  1：亲邻
                 adSpaceNum: 1, //可投面数
+                chooseConfigs: [], //选点纬度
                 saleModel: null, //售卖方式
                 pptType: null,  //监播照片尺寸
                 // publishPriceModel: [], //刊例价模式
                 releaseModel: null, //投放方式
                 adSpaceConfig: [
                     {
-                        name:'' 
+                        name: ''
                     }
                 ],  //广告位配置
                 remark: ''  //媒体说明
             }
-            this.mediaTypeForm=_mediaTypeForm
+            this.mediaTypeForm = _mediaTypeForm
         },
         //获取媒体类型详情
-        getMediaTypeDetail(item,index){
-            let _id=item.id;
-            this.currentActiveTab=index;
-            if(_id){
+        getMediaTypeDetail(item, index) {
+            let _id = item.id;
+            this.currentActiveTab = index;
+            if (_id) {
                 //存在id，代表媒体类型已经创建了
-                api.getApi('/addsp/api/v1/mediaType/details',{
-                    id:_id
-                }).then(res=>{
-                    if(res.data.SysCode == 200200) {
-                        let _data=res.data.data;
+                api.getApi('/addsp/api/v1/mediaType/details', {
+                    id: _id
+                }).then(res => {
+                    if (res.data.SysCode == 200200) {
+                        let _data = res.data.data;
                         // _data.publishPriceModel=_data.publishPriceModel.split(",").map(Number);
-                        this.mediaTypeForm=res.data.data;
-                    }else{
+                        const chooseConfigs = []
+                        _data.mediaTypeChooseConfigs.forEach(item => {
+                            chooseConfigs.push(item.chooseTypeName)
+                        })
+                        this.mediaTypeForm = {
+                            ..._data,
+                            chooseConfigs
+                        };
+                    } else {
                         this.$message({
                             message: res.data.MSG,
                             type: 'error'
                         });
                     }
-                }).catch(err=>{
+                }).catch(err => {
                     console.log(err);
                 })
-                this.isEditForm=false;
-            }else{
+                this.isEditForm = false;
+            } else {
                 //不存在id，代表媒体类型还未创建
-                this.type='create';
-                this.isEditForm=true;
+                this.type = 'create';
+                this.isEditForm = true;
                 this.formInit();
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.$refs['mediaTypeForm'].clearValidate();
                 })
             }
         },
         //新增媒体类型
-        addMediaType(){
+        addMediaType() {
             this.mediaTypeList.push({
-                name:'未命名'
+                name: '未命名'
             })
         },
         //获取系统所有媒体类型列表
-        getMediaTypes(){
+        getMediaTypes() {
             let Loading = this.$loading({
                 lock: true,
                 text: '正在加载中，请稍候...'
             });
-            api.getApi('/addsp/api/v1/mediaTypes').then(res=>{
-                if(res.data.SysCode == 200200) {
-                    let _mediaTypeList=res.data.data
-                    this.mediaTypeList=_mediaTypeList;
+            api.getApi('/addsp/api/v1/mediaTypes').then(res => {
+                if (res.data.SysCode == 200200) {
+                    let _mediaTypeList = res.data.data
+                    this.mediaTypeList = _mediaTypeList;
                     Loading.close();
-                    let _currentActiveTab=this.currentActiveTab;
-                    let firstMediaType=_mediaTypeList[_currentActiveTab]
-                    this.getMediaTypeDetail(firstMediaType,_currentActiveTab)
-                }else{
+                    let _currentActiveTab = this.currentActiveTab;
+                    let firstMediaType = _mediaTypeList[_currentActiveTab]
+                    this.getMediaTypeDetail(firstMediaType, _currentActiveTab)
+                } else {
                     this.$message({
                         message: res.data.MSG,
                         type: 'error'
@@ -548,20 +602,21 @@ export default {
             });
         },
         //编辑
-        editFun(){
-            this.type='edit';
-            this.isEditForm=true;
+        editFun() {
+            this.type = 'edit';
+            this.isEditForm = true;
         },
         //保存
-        saveFun(){
+        saveFun() {
             this.$refs['mediaTypeForm'].validate((valid) => {
-                if (valid) {        
-                    if(this.type=="create"){
+                if (valid) {
+                    if (this.type == "create") {
                         //新建
                         let {
                             name,
                             source,
                             adSpaceNum,
+                            chooseConfigs,
                             saleModel,
                             pptType,
                             // publishPriceModel,
@@ -569,16 +624,42 @@ export default {
                             adSpaceConfig,
                             remark
                         } = this.mediaTypeForm;
-                        let _publishPriceModel='';
+                        let _publishPriceModel = '';
                         // publishPriceModel=publishPriceModel.sort()
                         // publishPriceModel.forEach((item)=>{
                         //     _publishPriceModel+=item+','
                         // })
                         // _publishPriceModel=_publishPriceModel.slice(0,_publishPriceModel.length-1)
-                        let params={
+                        const chooseConfigsList = []
+                        for (let i = 0; i < chooseConfigs.length; i++) {
+                            switch (chooseConfigs[i]) {
+                                case '点位': chooseConfigsList.push({
+                                    chooseType: 0,
+                                    chooseTypeName: '点位'
+                                })
+                                    break;
+                                case '单元': chooseConfigsList.push({
+                                    chooseType: 1,
+                                    chooseTypeName: '单元'
+                                })
+                                    break;
+                                case '楼栋': chooseConfigsList.push({
+                                    chooseType: 2,
+                                    chooseTypeName: '楼栋'
+                                })
+                                    break;
+                                case '小区': chooseConfigsList.push({
+                                    chooseType: 3,
+                                    chooseTypeName: '小区'
+                                })
+                                    break;
+                            }
+                        }
+                        let params = {
                             name,
                             source,
                             adSpaceNum,
+                            chooseConfigs: chooseConfigsList,
                             saleModel,
                             pptType,
                             // publishPriceModel:_publishPriceModel,
@@ -590,11 +671,11 @@ export default {
                             lock: true,
                             text: '正在保存中，请稍候...'
                         });
-                        api.postApi_json('/addsp/api/v1/mediaTypes',params).then(res=>{
+                        api.postApi_json('/addsp/api/v1/mediaTypes', params).then(res => {
                             Loading.close();
-                            if(res.data.SysCode == 200200) {
+                            if (res.data.SysCode == 200200) {
                                 this.getMediaTypes();
-                            }else{
+                            } else {
                                 this.$message({
                                     message: res.data.MSG,
                                     type: 'error'
@@ -604,14 +685,14 @@ export default {
                             console.log(err);
                             Loading.close();
                         });
-                    }else{
+                    } else {
                         //编辑
                         let {
                             id,
                             name,
                             remark
                         } = this.mediaTypeForm;
-                        let params={
+                        let params = {
                             id,
                             name,
                             remark
@@ -620,11 +701,11 @@ export default {
                             lock: true,
                             text: '正在保存中，请稍候...'
                         });
-                        api.postApi_json('/addsp/api/v1/mediaTypes/update',params).then(res=>{
+                        api.postApi_json('/addsp/api/v1/mediaTypes/update', params).then(res => {
                             Loading.close();
-                            if(res.data.SysCode == 200200) {
+                            if (res.data.SysCode == 200200) {
                                 this.getMediaTypes();
-                            }else{
+                            } else {
                                 this.$message({
                                     message: res.data.MSG,
                                     type: 'error'
@@ -644,28 +725,34 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
->>>.el-form-item{
+>>>.el-form-item {
     margin-bottom: 0px;
 }
->>>.el-form-item__error{
+
+>>>.el-form-item__error {
     top: 25%;
     left: 110%;
     width: 100%;
 }
-.mediaList_wrap{
-    .mediaList_container{
-        margin :16px 0px;
-        .mediaTypeList{
+
+.mediaList_wrap {
+    .mediaList_container {
+        margin: 16px 0px;
+
+        .mediaTypeList {
             height: 100%;
-            text-align :center;
+            text-align: center;
             border-right: 0.5px solid #E6E7E9;
-            .mediaTypeUl{
+
+            .mediaTypeUl {
                 width: 100%;
-                li{
+
+                li {
                     width: 100%;
                     height: 40px;
                     box-sizing: border-box;
-                    .mediaType_see{
+
+                    .mediaType_see {
                         padding-left: 23px;
                         padding-right: 26px;
                         cursor: pointer;
@@ -673,40 +760,47 @@ export default {
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
-                        >p{
+
+                        >p {
                             font-size: 14px;
                             font-weight: 400;
                             color: rgba(0, 0, 0, 0.65);
                             line-height: 22px;
                             overflow: hidden;
-                            text-overflow:ellipsis;
+                            text-overflow: ellipsis;
                             white-space: nowrap;
                         }
-                        >img{
+
+                        >img {
                             width: 16px;
                             height: 16px;
                             display: none;
                             cursor: pointer;
                         }
                     }
-                    &:hover{
+
+                    &:hover {
                         background: #E9F7FE;
                         border-right: 3px solid #1890FF;
-                        .mediaType_see>p{
+
+                        .mediaType_see>p {
                             font-weight: 600;
                             color: rgba(24, 144, 255, 0.85);
                         }
-                        .mediaType_see>img{
+
+                        .mediaType_see>img {
                             display: inline-block;
                         }
                     }
-                    &.active{
+
+                    &.active {
                         background: #E9F7FE;
                         border-right: 3px solid #1890FF;
                     }
                 }
-            }     
-            .createMedia{
+            }
+
+            .createMedia {
                 width: 80%;
                 height: 40px;
                 background: #1890FF;
@@ -721,16 +815,19 @@ export default {
                 cursor: pointer;
             }
         }
-        .mediaDetail{
+
+        .mediaDetail {
             box-sizing: border-box;
             padding: 16px 32px;
-            h3{
+
+            h3 {
                 font-size: 20px;
                 font-weight: 500;
                 color: rgba(0, 0, 0, 0.85);
                 line-height: 22px;
             }
-            .mediaTable{
+
+            .mediaTable {
                 width: 100%;
                 border: 1px solid #E8E8E8;
                 border-radius: 2px;
@@ -739,33 +836,40 @@ export default {
                 color: rgba(0, 0, 0, 0.65);
                 line-height: 22px;
                 margin-top: 24px;
-                .mediaTable_tr{
+
+                .mediaTable_tr {
                     widows: 100%;
                     display: flex;
-                    &:last-child{
-                        p{
+
+                    &:last-child {
+                        p {
                             border-bottom: none;
                         }
                     }
-                    .mediaTable_td{
+
+                    .mediaTable_td {
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
-                        &:nth-child(1){
+
+                        &:nth-child(1) {
                             width: 13%;
                             background: #FAFAFA;
                             border-right: 1px solid #E8E8E8;
                         }
-                        &:nth-child(2){
+
+                        &:nth-child(2) {
                             width: 87%;
                         }
-                        >p{
+
+                        >p {
                             padding: 16px;
                             border-bottom: 1px solid #E8E8E8;
                             flex: 1;
                             display: flex;
                             align-items: center;
-                            .see_all{    
+
+                            .see_all {
                                 color: #1890FF;
                                 cursor: pointer;
                             }
@@ -775,8 +879,9 @@ export default {
             }
         }
     }
-} 
-.actions_btn{
+}
+
+.actions_btn {
     margin: 0 64px;
     text-align: center;
     margin: 32px 0px;
@@ -784,78 +889,84 @@ export default {
 </style>
 <style lang="scss" scoped>
 .m-table {
-  width: 100%;
-  /deep/ table {
-    width: 100% !important;
-    th {
-      background: #fafafa;
-      height: 46px;
-      & > .cell {
-        font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
-        font-weight: 500;
-        color: rgba(0, 0, 0, 0.85);
-      }
+    width: 100%;
+
+    /deep/ table {
+        width: 100% !important;
+
+        th {
+            background: #fafafa;
+            height: 46px;
+
+            &>.cell {
+                font-size: 14px;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: 500;
+                color: rgba(0, 0, 0, 0.85);
+            }
+        }
     }
-  }
-  /deep/ .el-table__empty-block {
-    width: 100% !important;
-  }
+
+    /deep/ .el-table__empty-block {
+        width: 100% !important;
+    }
 }
 
 .pagination {
-  padding: 16px 0 24px 0;
-  display: flex;
-  justify-content: flex-end;
+    padding: 16px 0 24px 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .opt {
-  font-size: 14px;
-  font-family: PingFangSC-Regular, PingFang SC;
-  font-weight: 400;
-  color: #1890ff;
-  cursor: pointer;
-}
-
-/deep/.el-pagination {
-  padding: 0;
-  button:last-of-type {
-    margin-right: 0;
-  }
-}
-
-/deep/ .el-dialog__body {
-  padding: 24px;
-  padding-bottom: 0;
-}
-
-/deep/ .el-dialog__footer {
-  padding: 11px 24px;
-  border-top: 1px solid #e9e9e9;
-}
-
-/deep/ .el-table__row {
-  .cell {
     font-size: 14px;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.65);
-  }
+    color: #1890ff;
+    cursor: pointer;
+}
+
+/deep/.el-pagination {
+    padding: 0;
+
+    button:last-of-type {
+        margin-right: 0;
+    }
+}
+
+/deep/ .el-dialog__body {
+    padding: 24px;
+    padding-bottom: 0;
+}
+
+/deep/ .el-dialog__footer {
+    padding: 11px 24px;
+    border-top: 1px solid #e9e9e9;
+}
+
+/deep/ .el-table__row {
+    .cell {
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+    }
 }
 
 /deep/ .el-table tr td {
-  height: 46px;
-  padding: 0;
+    height: 46px;
+    padding: 0;
 }
 
 /deep/ .el-dialog__header {
-  border-bottom: 1px solid #e9e9e9;
-  padding: 15px 24px;
-  .el-dialog__title {
-    font-size: 16px;
-    font-family: PingFangSC-Semibold, PingFang SC;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
-  }
+    border-bottom: 1px solid #e9e9e9;
+    padding: 15px 24px;
+
+    .el-dialog__title {
+        font-size: 16px;
+        font-family: PingFangSC-Semibold, PingFang SC;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.85);
+    }
 }
 </style>

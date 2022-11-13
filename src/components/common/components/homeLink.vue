@@ -240,9 +240,9 @@
 
                 let url = '';
                 if(window.location.hostname == 'localhost') {
-                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
+                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + `&timeRange=${String(this.dateInput)}`
                 } else {
-                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city
+                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + `&timeRange=${String(this.dateInput)}`
                 }
                 // 角色
                 if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {

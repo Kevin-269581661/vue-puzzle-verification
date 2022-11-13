@@ -4209,7 +4209,7 @@ export default {
               '资源别名',
               '楼盘介绍',
               '周边配套',
-              '出入口数', // dNum	
+              '出入口数', // dNum
               '入住率', // liveRate
               '配套电梯',
               '车位数',
@@ -4273,7 +4273,7 @@ export default {
               tHeader.push("归属公司");
               filterVal.push("asNames");
             }
-            
+
           }
           const list = resultArr;
           const data = this.formatJson(filterVal, list);

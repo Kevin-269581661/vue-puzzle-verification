@@ -999,7 +999,7 @@ export default {
         supportingFacilities: "", // 周边配套
         transportation: "", // 交通状况
         doorwayNum: "", // 出入口数
-        liveRate: "", // 入住率#
+        liveRate: "", // 入住率
         liftType: "", // 配套电梯
         carNumber: "", // 车位数
         notPush: [], // 广告限制
@@ -1110,7 +1110,7 @@ export default {
           },
         ],
         // 楼盘介绍
-        description: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: "blur" }],
+        description: [{ required: false, max: 1000, message: "最多只能输入1000个字符!", trigger: "blur" }],
 
         // 2、画像信息
         // 楼盘类型
@@ -1146,13 +1146,13 @@ export default {
           },
         ],
         // 周边配套
-        supportingFacilities: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: ["blur", "change"] }],
+        supportingFacilities: [{ required: false, max: 1000, message: "最多只能输入1000个字符!", trigger: ["blur", "change"] }],
         // 交通情况
         transportation: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: ["blur", "change"] }],
         // 出入口数
         doorwayNum: [{ required: false, validator: validatePrice, trigger: ["blur", "change"] }],
         // 入住率
-        liveRate: [{ validator: validateGreenP, trigger: ["blur", "change"] }],
+        liveRate: [{  required: false, validator: validateGreenP, trigger: ["blur", "change"] }],
         // 配套电梯
         liftType: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: ["blur", "change"] }],
         // 车位数
@@ -2006,7 +2006,7 @@ export default {
     },
     //添加资源媒体
     createRes() {
-      const addressAlias  = this.recForm.addressAlias
+      const addressAlias  = this.recForm.addressAlias || ''
       this.recForm.uid = this.sessionData.uID;
       this.recForm.latlng = this.recForm.lat + ";" + this.recForm.lng;
       let recObj = {
@@ -2014,39 +2014,39 @@ export default {
         rid: Number(this.recForm.region),
         // 基本信息
         resname: this.recForm.resName, // 资源名称
-        resAlias: this.recForm.resAlias, // 资源别名
+        resAlias: this.recForm.resAlias || '', // 资源别名
         city: this.resAddres.city, // 城市
         district: this.resAddres.area, // 区域
-        street: this.recForm.street, // 街道
+        street: this.recForm.street || '', // 街道
         resaddr: this.recForm.resaddr, // 地址
         addressAlias: addressAlias, // 地址描述
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
         latlng: this.recForm.latlng, // 经纬度 重庆:9.61;106.47  北京:116.46;39.92 广州: 113.27;23.13  上海:121.29;31.11 深圳:113.46;22.27
-        description: this.recForm.description, // 楼盘介绍
+        description: this.recForm.description || '', // 楼盘介绍
         // 画像信息
         ct: this.recForm.floorType, //楼盘类型
         hp: (this.recForm.buildingPrice * 100).toFixed(0), // 楼盘价格
         hn: this.recForm.households, // 住户数量
         fn: this.recForm.buildingNum, // 楼栋数量
         cd: this.recForm.liveTime, // 入住年份 '2017'
-        ta: this.recForm.business, // 商圈
-        unitCount: this.recForm.unitCount  || '', // 单元数量
-        supportingFacilities: this.recForm.supportingFacilities, // 周边配套
-        transportation: this.recForm.transportation, // 交通状况
-        dn: this.recForm.doorwayNum, // 出入口数
-        liveRate: this.recForm.liveRate, // 入住率
-        liftType: this.recForm.liftType, // 配套电梯
-        parkSpaceNum: this.recForm.carNumber || '', //车位数
+        ta: this.recForm.business || '', // 商圈
+        unitCount: this.recForm.unitCount || 0, // 单元数量
+        supportingFacilities: this.recForm.supportingFacilities || '', // 周边配套
+        transportation: this.recForm.transportation || '', // 交通状况
+        dn: this.recForm.doorwayNum || 0, // 出入口数
+        liveRate: this.recForm.liveRate || 0, // 入住率
+        liftType: this.recForm.liftType || '', // 配套电梯
+        parkSpaceNum: this.recForm.carNumber || 0, //车位数
         // peopleFlow: this.recForm.peopleFlowrate, //人流量
         // carFlow: this.recForm.carFlowrate, // 车流量
-        notPush: this.recForm.notPush.join(','), // 广告限制
+        notPush: this.recForm.notPush.join(',') || '', // 广告限制
         // 物业信息
-        developer: this.recForm.developer, // 开发商
-        pmc: this.recForm.pmc, // 物业公司
-        propertyContacts: this.recForm.pc, // 物业联系人
-        propertyContactsPhone: this.recForm.pcp, // 物业联系电话
+        developer: this.recForm.developer || '', // 开发商
+        pmc: this.recForm.pmc || '', // 物业公司
+        propertyContacts: this.recForm.pc || '', // 物业联系人
+        propertyContactsPhone: this.recForm.pcp || '', // 物业联系电话
         // 小区全貌图
-        fullViewUrl: this.recForm.fullViewUrl, // 资源图片
+        fullViewUrl: this.recForm.fullViewUrl || '', // 资源图片
 
 
         // buildingType: this.recForm.buildingType, // 建筑类型
@@ -2466,15 +2466,15 @@ export default {
           buildingNum: recObj.buildingNum, // 楼栋数量
           liveTime: recObj.joinTime, // 入住年份
           business: recObj.tradingArea || "", // 商圈
-          unitCount: recObj.unitCount || "", // 单元数量
+          unitCount: recObj.unitCount || '', // 单元数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
-          doorwayNum: recObj.EntryExitNum || "", // 出入口数
-          liveRate: recObj.liveRate || "", // 入住率
-          liftType: recObj.liftType, // 配套电梯
-          carNumber: recObj.carNumber || "", // 车位数
-          peopleFlowrate: recObj.peopleFlowrate, // 人流量
-          carFlowrate: recObj.carFlowrate, // 车流量
+          doorwayNum: recObj.EntryExitNum || '', // 出入口数
+          liveRate: recObj.liveRate || '', // 入住率
+          liftType: recObj.liftType || '', // 配套电梯
+          carNumber: recObj.carNumber || '', // 车位数
+        //   peopleFlowrate: recObj.peopleFlowrate, // 人流量
+        //   carFlowrate: recObj.carFlowrate, // 车流量
           notPush: recObj.notPush ? recObj.notPush.split(',') : [], // 广告限制
           // 物业信息
           developer: recObj.developer || "", // 开发商
@@ -2688,13 +2688,13 @@ export default {
         fn: recObj.buildingNum, // 楼栋数量
         cd: recObj.liveTime, // 入住年份
         ta: recObj.business || "", // 商圈
-        unitCount: recObj.unitCount || "", // 单元数量
+        unitCount: recObj.unitCount || 0, // 单元数量
         supportingFacilities: recObj.supportingFacilities || "", // 周边配套
         transportation: recObj.transportation || "", // 交通状况
-        dn: recObj.doorwayNum || "", // 出入口数
+        dn: recObj.doorwayNum || 0, // 出入口数
         liveRate: recObj.liveRate || "", // 入住率
-        liftType: recObj.liftType, // 配套电梯
-        parkSpaceNum: recObj.carNumber || "", // 车位数
+        liftType: recObj.liftType || '', // 配套电梯
+        parkSpaceNum: recObj.carNumber || 0, // 车位数
         // peopleFlow: recObj.peopleFlowrate, // 人流量
         // carFlow: recObj.carFlowrate, // 车流量
         notPush: recObj.notPush ? recObj.notPush.join(',') : '', // 广告限制

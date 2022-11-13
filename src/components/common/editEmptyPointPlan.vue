@@ -1769,7 +1769,7 @@ export default {
           mVehicle: this.mediaType,
         })
       );
-      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}`;
+      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?flag=true&city=${this.mapParams.city}&timeRange=${String(this.dateInput)}`;
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();

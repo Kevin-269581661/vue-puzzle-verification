@@ -240,7 +240,7 @@
                         })
                     }
                 }
-                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}`;
+                let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?&city=${this.mapParams.city}&timeRange=${String(this.dateInput)}`;
                 // 角色
                 if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                     url = url + '&flag=' + true;

@@ -100,13 +100,15 @@
                             width="50" :label="item.dayOfMonth + item.dayOfWeek" class-name="el-table-column-dayTime">
                             <template slot-scope="scope">
                                 <div class="color_chunk color_chunk_2"
-                                    v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status === -1"></div>
+                                    v-if="scope.row[item.dayOfMonth] && scope.row[item.dayOfMonth].status === -1">
+                                </div>
                                 <el-popover v-else placement="top-start" width="310" trigger="hover">
                                     <div>
                                         <div v-if="
-                                        mediaTypesArr.find(item => item.id == mediaTypeId).name == '单元门禁灯箱' &&
-                                        scope.row[item.dayOfMonth].status == 0 &&
-                                        scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].ka">
+                                            mediaTypesArr.find(item => item.id == mediaTypeId).name == '单元门禁灯箱' &&
+                                            scope.row[item.dayOfMonth].status == 0 &&
+                                            scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].ka
+                                        ">
                                             <p class="propmt_message_p">全国单预锁/全国单占用</p>
                                         </div>
                                         <div v-else>

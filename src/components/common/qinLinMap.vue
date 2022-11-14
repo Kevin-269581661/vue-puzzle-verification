@@ -2201,6 +2201,7 @@ export default {
     },
     // 显示详情
     showInfo (info, point) {
+      console.log(info, 'infoinfo--显示详情')
       this.showResInfo = info;
       let content = this.$refs.resInfoWindow;
       let opts = {
@@ -2217,8 +2218,8 @@ export default {
     // 详情里选定按钮
     addResFun (item) {
       // 直接勾选小区没有地图中心点
-      const info = {...this.showResInfo, notOnline: true}
-      this.checkBoxFun(info);
+      this.$set(this.showResInfo, 'notOnline', true)
+      this.checkBoxFun(this.showResInfo);
     },
     // 获取指定资源到媒体列表
     getMediaListByResID () {
@@ -3347,6 +3348,7 @@ export default {
     },
     // 添加到选中列表
     pushSelectList (item) {
+      console.log(this.showResInfo, 'showResInfo-----添加到选中列表')
       let isHave = this.selectResList.some((key) => {
         if (key.resID == item.resID) {
           return true;

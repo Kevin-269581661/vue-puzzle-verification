@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver';
 import api from "../../../api/api.js";
 import sessFun from "../../../commonFun/sessFun.js";
 import { Message } from "element-ui";
@@ -207,15 +208,7 @@ export default {
             fileName += '-' + daterange[0] + '~' + daterange[1]
         }
         // 导出excel
-        let blob = new Blob([data], {type: "application/vnd.ms-excel;charset=utf-8"});
-        let downloadElement = document.createElement("a");
-        let href = window.URL.createObjectURL(blob); //创建下载的链接
-        downloadElement.href = href;
-        downloadElement.download = `${fileName} 空位表(按${name}).xlsx`; //下载后文件名
-        document.body.appendChild(downloadElement);
-        downloadElement.click(); //点击下载
-        document.body.removeChild(downloadElement); //下载完成移除元素
-        window.URL.revokeObjectURL(href); //释放掉blob对象
+        FileSaver.saveAs(new Blob([data], {type: "application/vnd.ms-excel"}), `${fileName} 空位表(按${name}).xlsx`)
     },
     // 按小区/楼栋/单元/点位 - 表格数据请求
     getExcelData(url, name) {

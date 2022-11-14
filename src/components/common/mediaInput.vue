@@ -571,15 +571,7 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                        <el-form-item label="位置类型" prop="site"
-                            :rules="[
-                                {
-                                    required: true,
-                                    message: '请选择位置类型!',
-                                    trigger: ['blur', 'change']
-                                },
-                            ]"
-                        >
+                        <el-form-item label="位置类型" prop="site">
                           <el-select
                             v-model="mediaItem.mediaForm.site"
                             placeholder="请选择位置类型"

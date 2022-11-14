@@ -40,25 +40,20 @@
                         <!-- 媒介或销售 -->
                         <!-- <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'"> -->
                         <el-form-item label="媒体权限：" prop="userMediaChooseConfig">
-                            <!-- <el-cascader ref="cascader" collapse-tags clearable
-                                    v-model="accountForm.userMediaChooseConfig" :options="MD_BD_MediaPermissonArr"
-                                    :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                    @change="handleChange">
-                                </el-cascader> -->
-                            <el-cascader ref="cascader" size="small" v-model="accountForm.userMediaChooseConfig"
+                            <el-cascader
+                                ref="cascader" collapse-tags clearable
+                                v-model="accountForm.userMediaChooseConfig"
                                 :options="MD_BD_MediaPermissonArr"
-                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                @change="handleChange" collapse-tags clearable>
-                                <template slot-scope="{ node, data }">
-                                    <span>{{ data.label }}</span>
-                                </template>
+                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: false }"
+                                @change="handleChange">
                             </el-cascader>
-
-                            <!-- <el-cascader ref="cascader" v-model="accountForm.userMediaChooseConfig"
-                                    :options="MD_BD_MediaPermissonArr"
-                                    :props="{ expandTrigger: 'hover', multiple: true, emitPath: false, checkStrictly: true }"
-                                    collapse-tags clearable filterable size="small" @change="handlerChange">
-                                </el-cascader> -->
+                            <!-- <el-cascader
+                                ref="cascader"
+                                v-model="accountForm.userMediaChooseConfig"
+                                :options="MD_BD_MediaPermissonArr"
+                                :props="{ expandTrigger: 'hover', emitPath: false }"
+                                collapse-tags clearable filterable size="small" @change="handlerChange">
+                            </el-cascader> -->
                         </el-form-item>
                         <!-- </template> -->
                         <!-- 开发楼盘人员 -->
@@ -202,6 +197,7 @@ export default {
             }
         };
         return {
+            tempCascader: [],
             isEdit: false, //新建/修改
             // 角色列表
             roleArr: [
@@ -450,112 +446,15 @@ export default {
         }
     },
     methods: {
-        currentNode(node) {
-            console.log(node);
-        },
-
         handleChange(arr) {
-            const nodeList = this.$refs.cascader.getCheckedNodes()
-            // console.log(nodeList);
 
-            const fNodeArr = [] // 父级数组
-            const cNodeArr = [] // 子级数组
-
-            // 存储父级数据
-            let adGate = "" // 广告门
-            let brake = "" // 道闸
-            let unitBox = ""
-
-            nodeList.forEach((node) => {
-                if (node.level === 1) {
-                    fNodeArr.push(node)
-                }
-                else if (node.level === 2) {
-                    cNodeArr.push(node)
-                }
-            })
-
-            // fNodeArr不为空
-            if (fNodeArr.length) {
-                // cNodeArr不为空
-                if (cNodeArr.length) {
-                    fNodeArr.forEach(node => {
-
-                    })
-                }
-                // cNodeArr为空
-                else {
-                    fNodeArr.forEach(node => {
-                        let index
-                        const children = node.children
-                        if (node.label === '单元门禁灯箱' && this.accountForm.role === 'BD') {
-                            index = children.findIndex((child) => child.label === '单元')
-                        } else {
-                            index = children.findIndex((child) => child.label === '点位')
-                        }
-                        node.children[index].checked = true
-                    })
-                }
-                // fNodeArr.forEach(node => {
-                //     const isNotChecked = node.children.every((child) => child.checked === false)
-                //     const children = node.children
-                //     // 没有选中子级时（广告门、道闸：点位，单元门禁灯箱：媒介-点位、销售-单元）
-                //     if (isNotChecked) {
-                //         let index
-                //         if (node.label === '单元门禁灯箱' && this.accountForm.role === 'BD') {
-                //             index = children.findIndex((child) => child.label === '单元')
-                //         } else {
-                //             index = children.findIndex((child) => child.label === '点位')
-                //         }
-                //         node.children[index].checked = true
-                //     }
-                // 选中子级时，选中纬度最小的（value最小）
-                // else {
-                //     const valArr = [] //存放value的数组
-                //     children.forEach((child) => {
-                //         if (child.checked) {
-                //             valArr.push(child.value)
-                //         }
-                //     })
-                //     const index = children.findIndex((child) => child.value === Math.max(...valArr))
-                //     children.forEach((child) => child.checked = false)
-                //     children[index].checked = true
-                // }
-                // })
-            }
-            // else {
-            //     // 选中子级
-            //     if (cNodeArr.length) {
-            //         cNodeArr.forEach(node => {
-            //             if (node.checked) {
-            //                 node.parent.checked = true
-            //             }
-            //         })
-            //     }
-            //     else {
-            //         cNodeArr.forEach(node => {
-            //             if (!node.parent.checked) {
-            //                 node.checked = false
-            //             }
-            //         })
-            //     }
-            // }
-
-            // 取消选中父级时
-            // cNodeArr.forEach(node => {
-            //     if (!node.parent.checked) {
-            //         node.checked = false
-            //     }
-            // })
-
-            console.log(fNodeArr, cNodeArr);
         },
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermisson() {
             let info = {
                 companyIds: this.accountForm.company
             }
-            api.getApi("/api/v1/company/mediaChooseConfig", info).then(res => {
+            api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
                 // if(res.data.SysCode == 200200){
                 if (res.data.SysCode) {
                     let _data = res.data.data;
@@ -577,7 +476,7 @@ export default {
                         })
                     }
                     console.log('data', _newData);
-                    // this.MD_BD_MediaPermissonArr = _newData;
+                    this.MD_BD_MediaPermissonArr = _newData;
                 } else {
                     this.$message({
                         message: res.data.MSG,

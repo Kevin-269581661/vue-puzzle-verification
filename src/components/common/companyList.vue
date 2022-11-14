@@ -305,11 +305,11 @@ export default {
       splitOrderOptions: [
         {
             label: '不可拆单',
-            value: 0
+            value: false
         },
         {
             label: '可拆单',
-            value: 1
+            value: true
         }
       ],
       // 表格数据
@@ -320,7 +320,7 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
-        acceptSpiltOrderStatus: 0
+        acceptSpiltOrderStatus: false
       },
       isShowNew: false,
       // 是否可新建公司
@@ -390,7 +390,8 @@ export default {
               type: item.ascType >= 0 ? item.ascType : "",
               mediaTypeList: item.mediaTypeList || [],
               createTime: item.createTime || "",
-              openStatus: item.openStatus
+              openStatus: item.openStatus,
+              acceptSpiltOrderStatus: item.acceptSpiltOrderStatus,
             }
           })
           this.loading = false;
@@ -468,7 +469,7 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
-        acceptSpiltOrderStatus: 0,
+        acceptSpiltOrderStatus: false,
       };
       this.isAdd = true;
       this.isShowNew = true;

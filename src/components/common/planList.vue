@@ -338,25 +338,7 @@
         </div>
       </div>
     </div>
-    <!-- 预锁公司 -->
-    <el-dialog :title="isLock ? '请选择预锁公司' : '请选择解锁公司'" :visible.sync="dialogVisible" width="35%" center>
-      <el-checkbox-group v-model="cityChoose">
-        <template v-if="isLock">
-          <el-checkbox :label="item.asrID" v-for="item of cityList" :key="item.rid" border
-            :disabled="item.RemainDay >= 0" size="mini">{{ item.asName }}
-          </el-checkbox>
-        </template>
-        <template v-else>
-          <el-checkbox :label="item.asrID" v-for="item of cityList" :key="item.rid" border
-            :disabled="item.RemainDay == undefined || item.RemainDay == null" size="mini">{{ item.asName }}
-          </el-checkbox>
-        </template>
-      </el-checkbox-group>
-      <span slot="footer" class="dialog-footer">
-        <el-button plain @click="cancelLock">取 消</el-button>
-        <el-button type="primary" @click="confirmLock">确 定</el-button>
-      </span>
-    </el-dialog>
+
     <!--存在异常未完成的方案-->
     <el-dialog title="您有一个新方案未完成保存，是否继续编辑？" :visible.sync="unfinishedDialogVisible" width="400px"
       custom-class="unfinished_plan_dialog" :close-on-click-modal="false">
@@ -508,17 +490,17 @@
     <div class="media-type-dialog">
       <el-dialog :visible.sync="mediaDialogVisible" width="280px" :show-close="false">
         <h2 class="title"><img src="@/assets/images/question-circle.png" class="icon" /> 确认锁定该方案的点位吗？</h2>
-        <div class="ctn">
+        <div class="ctn" v-if="mediaDialogVisible">
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
-            <div class="checkbox-item"><el-checkbox label="广告门"></el-checkbox></div>
-            <div class="checkbox-item"><el-checkbox label="单元门禁灯箱"></el-checkbox></div>
-            <div class="checkbox-item"><el-checkbox label="道闸" disabled></el-checkbox></div>
+            <div class="checkbox-item" v-for="item in mediaType" :key="item.value">
+              <el-checkbox :label="item.value" :disabled="isDisableMediaType(item.value)">{{item.label}}</el-checkbox>
+            </div>
           </el-checkbox-group>
 
           <div class="btn-box">
-            <el-button class="btn">取 消</el-button>
-            <el-button type="primary">确 定</el-button>
+            <el-button class="btn" @click="handleMediaTypeCancel">取 消</el-button>
+            <el-button type="primary" @click="handleMediaTypeCommit">确 定</el-button>
           </div>
         </div>
       </el-dialog>
@@ -546,6 +528,7 @@ import recycleBinDialog from "./components/recycleBinDialog.vue";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 import timeFormat from "../../commonFun/timeFormat.js";
+import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 export default {
   name: "projectList",
   components: {
@@ -607,8 +590,7 @@ export default {
       isLock: false,
       // 预锁弹出框
       dialogVisible: false,
-      // 选择要预锁的城市
-      cityChoose: [],
+
       // 预锁的城市列表
       cityList: [],
       // 状态列表
@@ -671,8 +653,13 @@ export default {
       isShowRecycleBin: false,
 
       // 预锁媒体类型窗口
-      mediaDialogVisible: true,
-
+      mediaDialogVisible: false,
+      // 媒体类型
+      mediaType: [
+        { label: '广告门', value: 0},
+        { label: '道闸', value: 1},
+        { label: '单元门禁灯箱', value: 2},
+      ],
       // 预锁的公司在这个方案中涉及的所有媒体类型
       mediaTypeChecks: []
     };
@@ -689,9 +676,11 @@ export default {
       this.getSubSaleList();
     }
   },
+
   mounted() {
     this.getCustomConfig();
   },
+
   methods: {
     // 导出周边资源
     getCustomConfig() {
@@ -1209,7 +1198,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
         .then((res) => {
-          console.log(res, "reeeeeeeeeeeeee");
           if (res.data.SysCode == 300200) {
             // 查看是否被锁
             api
@@ -1251,7 +1239,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/SetFangan", info)
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 300200) {
             this.messageFun("success", res.data.MSG);
             for (let data of this.currentPlan) {
@@ -1346,29 +1333,8 @@ export default {
             );
             return;
           }
-          this.cityList = this.getCityList(row.cityArea);
-          if (this.cityList.length) {
-            this.cityChoose = [];
-            this.isLock = true;
-          } else {
-            this.messageFun("warning", "方案权限城市内您没有可以预锁的城市");
-          }
-          if (this.isNation) {
-            this.dialogVisible = true;
-          } else {
-            //地方媒介
-            this.Ctrlloading = this.$loading({
-              text: "请耐心等待...",
-              spinner: "el-icon-loading",
-              background: "rgba(0, 0, 0, 0.7)",
-            });
-            if (this.isLock) {
-              this.LockCity(this.cityList, "L");
-            } else {
-              this.noLockCity(this.cityList);
-            }
-            this.dialogVisible = false;
-          }
+
+          this.mediaDialogVisible = true
         })
         .catch(() => {
           this.$message({
@@ -1419,7 +1385,6 @@ export default {
         }
       )
         .then(() => {
-          this.cityChoose = [];
           this.isLock = false;
           this.currentItem = row;
           this.cityList = this.getCityList(row.cityArea);
@@ -1523,64 +1488,15 @@ export default {
       }
     },
 
-    cancelLock() {
-      this.dialogVisible = false;
-      this.$message({
-        type: "info",
-        message: "已取消操作",
-      });
-    },
-
-    // 确定预锁
-    confirmLock() {
-      console.log(this.cityChoose);
-      if (this.cityChoose.length) {
-        this.Ctrlloading = this.$loading({
-          text: "请耐心等待...",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)",
-        });
-        let arr = [];
-        for (let select of this.cityChoose) {
-          for (let data of this.cityList) {
-            if (data.asrID == select) {
-              arr.push(data);
-              break;
-            }
-          }
-        }
-
-        if (this.isLock) {
-          this.LockCity(arr, "L");
-        } else {
-          this.noLockCity(arr);
-        }
-        this.dialogVisible = false;
-      } else {
-        if (this.isLock) {
-          this.messageFun("warning", "请选择预锁公司！");
-        } else {
-          this.messageFun("warning", "请选择解锁公司！");
-        }
-      }
-    },
-
     // 预锁
-    LockCity(arr, act) {
-      console.log("lockcity----", arr);
-      let asrIDs = [];
-      for (let data of arr) {
-        asrIDs.push(data.asrID);
-      }
-      let apid = arr[0].apID;
+    LockCity(act) {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         act: act,
-        apid: apid,
-        asrIDs: asrIDs.join(","),
+        apid: this.currentItem.apID
       };
-      console.log(info);
+
       api
         .postApi(this.apiVar.Advertisement + "/SetFangan", info)
         .then((res) => {
@@ -1598,10 +1514,12 @@ export default {
             this.messageFun("warning", res.data.MSG);
           }
           this.Ctrlloading.close();
+          this.mediaDialogVisible = false
         })
         .catch((err) => {
           console.log(err);
           this.Ctrlloading.close();
+          this.mediaDialogVisible = false
         });
     },
 
@@ -1622,7 +1540,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/ClFangan", info)
         .then((res) => {
-          console.log(res.data);
           this.Ctrlloading.close();
           this.searchFun();
           this.messageFun("success", res.data.MSG);
@@ -2049,6 +1966,34 @@ export default {
 
     filterMediaType() {
 
+    },
+
+    // 关闭预锁媒体类型弹窗
+    handleMediaTypeCancel () {
+      this.mediaTypeChecks = []
+      this.mediaDialogVisible = false
+    },
+
+    // 对媒体类型选择进行预锁
+    handleMediaTypeCommit () {
+      this.Ctrlloading = this.$loading({
+        text: "请耐心等待...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      this.LockCity("L");
+    },
+
+    isDisableMediaType (type) {
+      //  广告门,道闸  地方媒介/全国媒介可预锁
+      if ((type === 0 || type === 1) && ["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
+        return false
+      } else if (type === 2 && !["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
+        // 单元门禁灯箱 地方媒介/全国媒介不可预锁
+        return false
+      } else {
+        return true
+      }
     }
 
   },

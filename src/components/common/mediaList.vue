@@ -3,90 +3,141 @@
     <div class="ad_mediaDetail_nav">
       <p><a href="#">媒体管理</a><em> / </em><a href="#">媒体列表</a></p>
     </div>
-    <div class="mediaList_wrap">
-      <div class="mediaList_head">
-        <h2>媒体列表</h2>
-      </div>
-      <div class="mediaList_container">
-        <div class="handel_ul">
-          <li class="handel_ul_li handel_ul_li_select">
-            <span class="li-label">关键词：</span>
-            <el-input
-              placeholder="请输入内容"
-              v-model="keyword"
-              class="input-with-select u-key"
-              size="small"
-              @change="initData"
-            >
-              <el-select
-                v-model="selectInfo"
-                slot="prepend"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in SelOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+    <el-card class="box-card">
+        <el-row class="handel_ul" :gutter="36">
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                    <span class="li-label">资源名称：</span>
+                    <el-input
+                        placeholder="请输入资源名称"
+                        v-model="resName"
+                        class="input-with-select u-key"
+                        size="small"
+                        clearable
+                    >
+                    </el-input>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">媒体位ID：</span>
+                <el-input
+                    placeholder="请输入媒体位ID"
+                    v-model="assetTag"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+
                 >
-                </el-option>
-              </el-select>
-            </el-input>
-          </li>
-          <li class="handel_ul_li handel_ul_li_city">
-            <span class="li-label">城市：</span>
-            <el-cascader
-              :options="cityOptions"
-              v-model="selectedOptions"
-              separator="-"
-              :show-all-levels="false"
-              placeholder="请选择城市"
-              filterable
-              size="small"
-              style="width: 236px"
-              clearable
-              @change="handleChange"
-            >
-            </el-cascader>
+                </el-input>
+            </el-col>
+            <li class="handel_ul_li handel_ul_li_city">
+
           </li>
           <li class="handel_ul_li handel_ul_li_area">
-            <span class="li-label">区域：</span>
-            <el-select
-              v-model="selectRName"
-              placeholder="请选择区域"
-              :clearable="true"
-              style="width: 236px"
-              size="small"
-              @change="getRegion"
-            >
-              <el-option
-                v-for="item in regionOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+
           </li>
-          <li class="handel_ul_li handel_ul_li_btn">
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">城市：</span>
+                <el-cascader
+                    :options="cityOptions"
+                    v-model="selectedOptions"
+                    separator="-"
+                    :show-all-levels="false"
+                    placeholder="请选择城市"
+                    filterable
+                    size="small"
+                    clearable
+                    @change="handleChange"
+                >
+                </el-cascader>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">区域：</span>
+                <el-select
+                    v-model="selectRName"
+                    placeholder="请选择区域"
+                    :clearable="true"
+                    size="small"
+                    @change="getRegion"
+                >
+                    <el-option
+                        v-for="item in regionOpt"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </el-col>
+            <el-col class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">楼栋：</span>
+                <el-input
+                    placeholder="请输入楼栋"
+                    v-model="buildingName"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+                >
+                </el-input>
+            </el-col>
+            <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <span class="li-label">单元：</span>
+                <el-input
+                    placeholder="请输入单元"
+                    v-model="unitName"
+                    class="input-with-select u-key"
+                    size="small"
+                    clearable
+                >
+                </el-input>
+            </el-col>
+
+            <el-col class="handel_ul_li handel_ul_li_btn" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="searchFun"
+                    :disabled="searchBtnAbled"
+                    >搜索</el-button
+                >
+                <el-button plain @click="clearSearch">重置</el-button>
+                <el-button plain @click="importMedia" v-if="showImportBtn"
+                    >导入媒体</el-button
+                >
+                <el-button v-if="showImportBtn" plain @click="showPushMap"
+                    >推送地图</el-button
+                >
+                <!-- 搜索字段大于5时，使用isCollapse控制显示的搜索字段 -->
+                <div class="collapse-box" @click="isCollapse = !isCollapse">
+                    <span>展开</span>
+                    <i :class="isCollapse === false ? 'el-icon-arrow-down' : 'el-icon-arrow-up'"></i>
+                </div>
+            </el-col>
+        </el-row>
+    </el-card>
+    <div class="mediaList_wrap">
+      <div class="mediaList_container">
+        <div class="table-title">
+          <h2>媒体列表</h2>
+          <div style="display: flex; align-items: center">
             <el-button
+              style="margin-right: 16px"
+              class="el-icon-plus"
               type="primary"
-              icon="el-icon-search"
-              @click="searchFun"
-              :disabled="searchBtnAbled"
-              >搜索</el-button
-            >
-            <el-button plain @click="clearSearch">重置</el-button>
-            <el-button plain @click="newMedia" v-if="showNewBtn && !isPay"
+              @click="newMedia"
+              v-if="showNewBtn && !isPay"
               >新建</el-button
             >
-            <el-button plain @click="importMedia" v-if="showImportBtn"
-              >导入媒体</el-button
-            >
-            <el-button v-if="showImportBtn" plain @click="showPushMap"
-              >推送地图</el-button
-            >
-          </li>
+            <!-- 列设置 -->
+            <TableSetting
+                refresh
+                space
+                filter
+                :columns="currentPlanColumn"
+                cacheKey="media"
+                @filterColumn="filterColumn"
+                @refreshTable="refreshTable"
+                @spaceSetting="spaceSetting">
+            </TableSetting>
+          </div>
         </div>
 
         <div class="table_wrap">
@@ -101,201 +152,152 @@
             @filter-change="filterChange"
             :default-sort="{ prop: 'resName', order: 'descending' }"
             ref="tableEl"
+            :key="itemKey"
           >
-            <el-table-column
-              label="资源名称"
-              min-width="210"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span
-                  @click="mediaDetail(scope.row)"
-                  style="color: #108ee9; cursor: pointer"
-                >
-                  {{ scope.row.resName }}
-                </span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="mVehicle"
-              prop="mVehicle"
-              label="媒体类型"
-              width="127"
-              :show-overflow-tooltip="true"
-              :filters="mediaTypes"
-              :filter-multiple="false"
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="mTitle"
-              label="媒体名称"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mTitle || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              label="投放面"
-              width="130"
-              prop="asLab"
-              :show-overflow-tooltip="true"
-            >
-            </el-table-column>
-
-            <el-table-column
-              prop="assetTag"
-              label="资产编号"
-              min-width="215"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.assetTag || "--" }}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="city"
-              label="城市"
-              width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.city || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="rName"
-              label="区域"
-              width="113"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.rName || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="tradingArea"
-              label="商圈"
-              width="127"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.tradingArea || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createTime"
-              label="创建日期"
-              width="130"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createTime || "--" }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="asState"
-              prop="asState"
-              label="媒体状态"
-              width="112"
-              :filters="[
-                { text: '正常', value: 1 },
-                { text: '待安装', value: '2' },
-                { text: '已拆除', value: 4 },
-              ]"
-              :filter-multiple="false"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="stateToText(scope.row.asState).text"
-                  :color="stateToText(scope.row.asState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="asSaleState"
-              prop="asSaleState"
-              label="售卖状态"
-              width="112"
-              :filters="[
-                { text: '可售卖', value: 1 },
-                { text: '不可售卖', value: 2 },
-              ]"
-              :filter-multiple="false"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="stateToSellText(scope.row.asSaleState).text"
-                  :color="stateToSellText(scope.row.asSaleState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              v-if="showNewBtn"
-              label="操作"
-              width="80"
-              fixed="right"
-            >
-              <template slot-scope="scope">
-                <el-dropdown
-                  size="small"
-                  trigger="click"
-                  placement="bottom-start"
-                  :hide-on-click="true"
-                >
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('6', scope.$index, scope.row)
-                      "
-                      :disabled="
-                        scope.row.asSaleState === 1 || scope.row.asState == 4
-                      "
-                      >可售卖</el-dropdown-item
+            <template v-for="item in currentPlanColumn">
+                <template v-if="item.label === '资源名称'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        :label="item.label"
+                        :width="item.width"
+                        :show-overflow-tooltip="true"
+                        :fixed="item.fix === 'left' ? true : false"
                     >
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('7', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asSaleState === 2"
-                      >不可售卖</el-dropdown-item
+                    <template slot-scope="scope">
+                        <span
+                        @click="mediaDetail(scope.row)"
+                        style="color: #108ee9; cursor: pointer"
+                        >
+                        {{ scope.row.resName }}
+                        </span>
+                    </template>
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '媒体类型'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="mVehicle"
+                        prop="mVehicle"
+                        :label="item.label"
+                        :width="item.width"
+                        :show-overflow-tooltip="true"
+                        :filters="mediaTypes"
+                        :filter-multiple="false"
+                        :fixed="item.fix === 'left' ? true : false"
                     >
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '媒体状态'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="asState"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :filters="[
+                            { text: '正常', value: 1 },
+                            { text: '待安装', value: 2 },
+                            { text: '已拆除', value: 4 },
+                        ]"
+                        :filter-multiple="false"
+                        :fixed="item.fix"
+                    >
+                        <template slot-scope="scope">
+                            <point-state
+                            :state-text="stateToText(scope.row.asState).text"
+                            :color="stateToText(scope.row.asState).color"
+                            ></point-state>
+                        </template>
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '售卖状态'">
+                    <el-table-column
+                        v-if="item.isChecked"
+                        column-key="asSaleState"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :filters="[
+                            { text: '可售卖', value: 1 },
+                            { text: '不可售卖', value: 2 },
+                        ]"
+                        :filter-multiple="false"
+                        :fixed="item.fix"
+                    >
+                    <template slot-scope="scope">
+                        <point-state
+                        :state-text="stateToSellText(scope.row.asSaleState).text"
+                        :color="stateToSellText(scope.row.asSaleState).color"
+                        ></point-state>
+                    </template>
+                    </el-table-column>
+                </template>
+                <template v-else-if="item.label === '操作'">
+                    <el-table-column
+                    v-if="showNewBtn"
+                    :label="item.label"
+                    :width="item.width"
+                    :fixed="item.fix"
+                    >
+                    <template slot-scope="scope">
+                        <el-dropdown
+                        size="small"
+                        trigger="click"
+                        placement="bottom-start"
+                        :hide-on-click="true"
+                        >
+                        <span class="el-dropdown-link">
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('6', scope.$index, scope.row)
+                            "
+                            :disabled="
+                                scope.row.asSaleState === 1 || scope.row.asState == 4
+                            "
+                            >可售卖</el-dropdown-item
+                            >
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('7', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asSaleState === 2"
+                            >不可售卖</el-dropdown-item
+                            >
 
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('5', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asState == 5"
-                      >删除</el-dropdown-item
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('5', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asState == 5"
+                            >删除</el-dropdown-item
+                            >
+                            <el-dropdown-item
+                            @click.native.prevent="
+                                changeState('4', scope.$index, scope.row)
+                            "
+                            :disabled="scope.row.asState == 4"
+                            >拆除</el-dropdown-item
+                            >
+                        </el-dropdown-menu>
+                        </el-dropdown>
+                    </template>
+                    </el-table-column>
+                </template>
+                <template v-else>
+                    <el-table-column
+                        v-if="item.isChecked"
+                        :prop="item.prop"
+                        :label="item.label"
+                        :width="item.width"
+                        :show-overflow-tooltip="true"
+                        :fixed="item.fix === 'left' ? true : false"
                     >
-                    <el-dropdown-item
-                      @click.native.prevent="
-                        changeState('4', scope.$index, scope.row)
-                      "
-                      :disabled="scope.row.asState == 4"
-                      >拆除</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
-
+                    </el-table-column>
+                </template>
+            </template>
             <div slot="empty">
               <no-search-result></no-search-result>
             </div>
@@ -441,7 +443,7 @@
           </el-table-column>
           <el-table-column prop="mTitle" label="媒体名称" min-width="85">
           </el-table-column>
-          <el-table-column prop="assetTag" label="资产编号" min-width="85">
+          <el-table-column prop="assetTag" label="媒体位ID" min-width="85">
           </el-table-column>
           <el-table-column prop="errorMsg" label="失败信息" min-width="90">
             <template slot-scope="scope">
@@ -532,7 +534,8 @@ import pointState from "./components/pointState.vue";
 import timeFormat from "../../commonFun/timeFormat";
 import unvailableSellDialog from "./components/unvailableSellDialog.vue";
 import vailableSellDialog from "./components/vailableSellDialog.vue";
-
+import TableSetting from "./components/TableSetting";
+import { getLocalCache } from "@/utils/user.js";
 import {
   Form,
   FormItem,
@@ -570,122 +573,144 @@ export default {
     elOption: Option,
     unvailableSellDialog,
     vailableSellDialog,
+    TableSetting,
   },
   data() {
     return {
-      //加载中
-      loading: true,
-      loadSign: true,
-      // 页码及条数
-      pageData: {
-        pageNum: 1,
-        pageSize: 10,
-        totalSize: 0,
-      },
-      showNewBtn: false, // 新建按钮
-      haveDetail: true,
-      //搜索框和下拉列表
-      keyword: "",
-      selectInfo: "1",
-      SelOptions: [
-        {
-          value: "1",
-          label: "资源名称",
+        // 表头数据
+        currentPlanColumn: [
+            { id: 0, label: "资源名称", prop: "resName", width: "210", isChecked: true, fix:"not" },
+            { id: 1, label: "媒体类型", prop: "mVehicle", width: "180", isChecked: true, fix:"not" },
+            { id: 2, label: "媒体名称", prop: "mTitle", width: "180", isChecked: true, fix:"not" },
+            { id: 3, label: "投放面", prop: "asLab", width: "120", isChecked: true, fix:"not" },
+            { id: 4, label: "媒体位ID", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
+            { id: 6, label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
+            { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
+            { id: 8, label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
+            { id: 9, label: "创建日期", prop: "createTime", width: "140", isChecked: true, fix:"not" },
+            { id: 10, label: "楼栋", prop: "buildingName", width: "120", isChecked: false, fix:"not" },
+            { id: 11, label: "单元", prop: "unitName", width: "120", isChecked: false, fix:"not" },
+            { id: 12, label: "街道", prop: "street", width: "180", isChecked: false, fix:"not" },
+            { id: 13, label: "设备型号", prop: "mType", width: "180", isChecked: false, fix:"not" },
+            { id: 14, label: "位置类型", prop: "siteType", width: "120", isChecked: false, fix:"not" },
+            { id: 15, label: "位置朝向", prop: "siteOrientation", width: "120", isChecked: false, fix:"not" },
+            { id: 16, label: "媒体状态", prop: "asState", width: "112", isChecked: true, fix:"right" },
+            { id: 17, label: "售卖状态", prop: "asSaleState", width: "112", isChecked: true, fix:"right" },
+            { id: 18, label: "操作", width: "80", isChecked: true, fix:"right" },
+        ],
+        // 表体数据
+        currentPlan: [],
+        itemKey: '',
+        // 是否展开
+        isCollapse: false,
+        // 行距
+        rowSpace: "",
+        //加载中
+        loading: true,
+        loadSign: true,
+        // 页码及条数
+        pageData: {
+            pageNum: 1,
+            pageSize: 10,
+            totalSize: 0,
         },
-        {
-          value: "2",
-          label: "商圈",
+        showNewBtn: false, // 新建按钮
+        haveDetail: true,
+        resName: "", // 搜索的资源名称
+        assetTag: "", // 资产编号（媒体位ID）
+        mTitle: "", // 搜索的媒体名称
+        selectedOptions: [], // 当前选择的城市rid数组
+        tradingArea: "", // 搜索的商圈
+        buildingName: "", // 楼栋
+        unitName: "", // 单元
+        filterMediaType: "", // 表头媒体类型搜索状态
+        asState: "", // 搜索的媒体状态
+        asSaleState: "", //  搜索的售卖状态
+        planList: [], //  table的所有数据
+        cityOptions: [], //城市数组
+        regionOpt: [], // 地区
+        selectRName: "", // 当前选择的区域rid
+        cityProps: { multiple: false }, // 城市设置
+        cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
+        loadScroll: true,
+        provinceCity: [], //省份及其地级市
+        timeID: "", // 计时器
+        cityRid: "", // 搜索前置条件为城市时,转换成rid
+        sessionData: "",
+        pageNo: 1, // 页数
+        totalPage: 1, // 总页数
+        searchBtnAbled: false, // 搜索按钮禁止
+        mStatusDialogVisible: false, // 媒体状态修改模态框
+        normalToDisabled: true, //  是否为正常转禁用
+        doorState: { asState: false, adState: "" }, // 广告门单面禁用：媒体状态、点位状态
+        // 修改媒体状态时的行数据
+        rowData: {
+            asState: {
+            A: false,
+            B: false,
+            },
         },
-      ],
-      filterMediaType: "", // 表头媒体类型搜索状态
-      asState: "", // 搜索的媒体状态
-      asSaleState: "", //  搜索的售卖状态
-      planList: [], //  table的所有数据
-      currentPlan: [], // 显示在table中的数据
-      cityOptions: [], //城市数组
-      selectedOptions: [], // 当前选择的城市rid数组
-      regionOpt: [], // 地区
-      selectRName: "", // 当前选择的区域rid
-      cityArea: { cName: "", rName: "" }, // 当前选择的城市名称和区域名称
-      loadScroll: true,
-      provinceCity: [], //省份及其地级市
-      timeID: "", // 计时器
-      cityRid: "", // 搜索前置条件为城市时,转换成rid
-      sessionData: "",
-      pageNo: 1, // 页数
-      totalPage: 1, // 总页数
-      searchBtnAbled: false, // 搜索按钮禁止
-      mStatusDialogVisible: false, // 媒体状态修改模态框
-      normalToDisabled: true, //  是否为正常转禁用
-      doorState: { asState: false, adState: "" }, // 广告门单面禁用：媒体状态、点位状态
-      // 修改媒体状态时的行数据
-      rowData: {
-        asState: {
-          A: false,
-          B: false,
+        rowIndex: "", // 修改媒体状态时的行下标
+        selectState: "", // 修改到媒体状态
+        ImportDialogVisible: false, // 媒体导入弹出框
+        importAsrID: "", // 导入媒体时所选择的公司id
+        importSelectLoading: true, // 公司下拉选项
+        companyList: [], // SA媒体导入时获取的公司列表
+        doUpload: this.apiVar.qadnUrl + "/addsp/api/v1/media/batchImport",
+        fileData: [], // 当前上传文件的数据- 表格
+        excelDataUpload: [], // 导入excel之后返回的数组
+        showUploadFail: false, // 导入失败的媒体弹出框
+        excelObj: { successNum: 0, failNum: 0 }, // 导入excel之后返回的失败成功点数
+        ImportLoading: "", // 导入excel提交loading
+        showImportBtn: false, // SA才显示导入媒体按钮
+        pushMapDialogVisible: false, // 推送地图弹出框
+        isShowTag: true,
+        selectDay: [], // 选择的时间
+        canSelectDayTime: [], // 限制选择区间
+        dayOptionsSelect: {
+            disabledDate: (time) => {
+            return (
+                time.getTime() < Date.parse(this.canSelectDayTime[0]) ||
+                time.getTime() > Date.parse(this.canSelectDayTime[1])
+            );
+            },
         },
-      },
-      rowIndex: "", // 修改媒体状态时的行下标
-      selectState: "", // 修改到媒体状态
-      ImportDialogVisible: false, // 媒体导入弹出框
-      importAsrID: "", // 导入媒体时所选择的公司id
-      importSelectLoading: true, // 公司下拉选项
-      companyList: [], // SA媒体导入时获取的公司列表
-      doUpload: this.apiVar.qadnUrl + "/addsp/api/v1/media/batchImport",
-      fileData: [], // 当前上传文件的数据- 表格
-      excelDataUpload: [], // 导入excel之后返回的数组
-      showUploadFail: false, // 导入失败的媒体弹出框
-      excelObj: { successNum: 0, failNum: 0 }, // 导入excel之后返回的失败成功点数
-      ImportLoading: "", // 导入excel提交loading
-      showImportBtn: false, // SA才显示导入媒体按钮
-      pushMapDialogVisible: false, // 推送地图弹出框
-      isShowTag: true,
-      selectDay: [], // 选择的时间
-      canSelectDayTime: [], // 限制选择区间
-      dayOptionsSelect: {
-        disabledDate: (time) => {
-          return (
-            time.getTime() < Date.parse(this.canSelectDayTime[0]) ||
-            time.getTime() > Date.parse(this.canSelectDayTime[1])
-          );
+        // 媒体状态禁用、启用弹出框
+        mStateDialogVisible: false,
+        // 媒体状态
+        mediaState: {
+            allState: false,
+            AState: false,
+            BState: false,
+            ADisable: false,
+            BDisable: false,
         },
-      },
-      // 媒体状态禁用、启用弹出框
-      mStateDialogVisible: false,
-      // 媒体状态
-      mediaState: {
-        allState: false,
-        AState: false,
-        BState: false,
-        ADisable: false,
-        BDisable: false,
-      },
-      // 标识启用（true）还是禁用(false)
-      isDisabled: false,
-      // 拆除
-      dismantleVisible: false,
-      // 拆除信息
-      dismantleInfo: "",
+        // 标识启用（true）还是禁用(false)
+        isDisabled: false,
+        // 拆除
+        dismantleVisible: false,
+        // 拆除信息
+        dismantleInfo: "",
 
-      // 不可售卖弹窗
-      isUnvailableSell: false,
-      // 可售卖弹窗
-      isVailableSell: false,
-      // 更改售卖状态时 媒体的所有广告位的状态
-      mediaAdsStateAction: [],
-      // 更改售卖状态时 资源名称
-      resourceName: "",
-      // 更改售卖状态时 选择的投放面
-      activeAsLab: "",
-      // 投放门id
-      mID: "",
-      // 不可售卖原因
-      unSaleableReason: [],
-      // 媒体名称
-      mTitle: "",
-      // 是否开通数字化权限
-      isPay: 1,
-      mediaTypes: [],
+        // 不可售卖弹窗
+        isUnvailableSell: false,
+        // 可售卖弹窗
+        isVailableSell: false,
+        // 更改售卖状态时 媒体的所有广告位的状态
+        mediaAdsStateAction: [],
+        // 更改售卖状态时 资源名称
+        resourceName: "",
+        // 更改售卖状态时 选择的投放面
+        activeAsLab: "",
+        // 投放门id
+        mID: "",
+        // 不可售卖原因
+        unSaleableReason: [],
+        // 媒体名称
+        mTitle: "",
+        // 是否开通数字化权限
+        isPay: 1,
+        mediaTypes: [],
     };
   },
   created() {
@@ -705,9 +730,37 @@ export default {
     let endTime = timeFormat.returnDayCount(0, "/");
     let startTime = timeFormat.returnDayCount(-180, "/");
     this.canSelectDayTime = [startTime, endTime];
+
+    // 获取列表设置缓存
+    const rowSpace = getLocalCache("rowSpace");
+    this.rowSpace = rowSpace || "medium";
+
+    // 按下Enter键搜索
+    document.onkeydown = (e) => {
+        if(e.code.toUpperCase() === 'ENTER') {
+            this.searchFun()
+        }
+    }
   },
 
   methods: {
+    // 列展示
+    filterColumn(columns) {
+        this.currentPlanColumn = columns
+        // console.log(columns.filter((item) => item.fix=='right'));
+        // console.log(columns.filter((item) => item.fix=='not'));
+        // console.log(this.currentPlanColumn);
+        this.itemKey = Math.random()
+    },
+    // 刷新列表
+    refreshTable() {
+      this.getData();
+    },
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
+
     getMediaTypes() {
       let _this = this;
       function requestMediaType() {
@@ -839,83 +892,114 @@ export default {
     },
 
     filterChange(filters) {
-      for (let key in filters) {
-        if (key === "asState") {
-          if (filters[key].length) {
-            this.asState = filters[key][0];
-          } else {
-            this.asState = "";
-          }
-        } else if (key === "asSaleState") {
-          if (filters[key].length) {
-            this.asSaleState = filters[key][0];
-          } else {
-            this.asSaleState = "";
-          }
-        } else if (key === "mVehicle") {
-          if (filters[key].length) {
-            this.filterMediaType = filters[key][0];
-          } else {
-            this.filterMediaType = "";
-          }
+        for (let key in filters) {
+            if (key === "asState") {
+                if (filters[key].length) {
+                    this.asState = filters[key][0];
+                } else {
+                    this.asState = "";
+                }
+            }
+            else if (key === "asSaleState") {
+                if (filters[key].length) {
+                    this.asSaleState = filters[key][0];
+                } else {
+                    this.asSaleState = "";
+                }
+            }
+            else if (key === "mVehicle") {
+                if (filters[key].length) {
+                    this.filterMediaType = filters[key][0];
+                } else {
+                    this.filterMediaType = "";
+                }
+            }
         }
-      }
-      this.pageData.pageNum = 1;
-      this.getData();
+        this.pageData.pageNum = 1;
+        this.getData();
     },
 
     // 分页
     changePage(val) {
-      console.log("当前页", val);
-      this.pageData.pageNum = val;
-      this.getData();
+        console.log("当前页", val);
+        this.pageData.pageNum = val;
+        this.getData();
     },
 
     // 每页的条数
     changeSize(val) {
-      console.log("每页的条数", val);
-      this.pageData.pageNum = 1;
-      this.pageData.pageSize = val;
-      this.getData();
+        console.log("每页的条数", val);
+        this.pageData.pageNum = 1;
+        this.pageData.pageSize = val;
+        this.getData();
     },
 
     // 获取媒体列表
     getData() {
-      this.loading = true;
-      let params = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "GetRMListV2",
-        data: {
-          pageNo: this.pageData.pageNum,
-          pageSize: this.pageData.pageSize,
-          cityName: this.cityArea.cName,
-          regionName: this.cityArea.rName,
-          asState: this.asState,
-          asSaleState: this.asSaleState,
-          mediaTypeIds: this.filterMediaType + "",
-        },
-      };
-      if (this.selectInfo === "1") {
-        params.data.resName = this.keyword;
-      } else if (this.selectInfo === "2") {
-        params.data.tradeArea = this.keyword;
-      }
-      for (let i in params.data) {
-        if (params.data[i] === "") {
-          delete params.data[i];
+        this.loading = true;
+        let params = {
+            uid: this.sessionData.uID,
+            token: this.sessionData.token,
+            service: "GetRMListV2",
+            data: {
+                pageNo: this.pageData.pageNum,
+                pageSize: this.pageData.pageSize,
+                resName: this.resName, // 资源名称
+                assetTag: this.assetTag, // 资产编号（媒体ID）
+                mTitle: this.mTitle, // 媒体名称
+                tradingArea: this.tradingArea, // 商圈
+                cityName: this.cityArea.cName,
+                regionName: this.cityArea.rName,
+                asState: this.asState, // 媒体状态
+                asSaleState: this.asSaleState, // 售卖状态
+                mediaTypeIds: this.filterMediaType + "", // 媒体类型
+                buildingName: this.buildingName, // 楼栋
+                unitName: this.unitName, // 单元
+            },
+        };
+        for (let i in params.data) {
+            if (params.data[i] === "") {
+                delete params.data[i];
+            }
         }
-      }
       api.postApi_new(this.apiVar.Media, params).then((res) => {
         this.pageData.totalSize = res.data.data.total;
         let RMList = res.data.data.list;
         if (res.data.SysCode == 200200) {
           if (RMList) {
+            // 过滤列表数据
             let mediaList = [];
-            for (let key of RMList) {
-              mediaList.push(key);
+            // for (let key of RMList) {
+            //   mediaList.push(key);
+            // }
+            for (const key of RMList) {
+                let obj = {
+                    mID: key.mID,
+                    resID: key.resID,
+                    resName: key.resName || '--', // 资源名称
+                    mVehicle: key.mVehicle || '--', // 媒体类型
+                    mTitle: key.mTitle || '--', // 媒体名称
+                    asLab: key.asLab || '--', // 投放面
+                    assetTag: key.assetTag || '--', // 资产编号
+                    city: key.city || '--', // 城市
+                    rName: key.rName, // 区域
+                    tradingArea: key.tradingArea || '--', // 商圈
+                    createTime: key.createTime || '--', // 创建日期
+                    buildingName: key.buildingName || '--', // 楼栋
+                    unitName: key.unitName || '--', // 单元
+                    street: key.street || '--', // 街道
+                    mType: key.mType || '--', // 设备型号
+                    siteType: key.siteType || '--', // 位置类型
+                    siteOrientation: key.siteOrientation || '--', // 位置朝向
+                    asState: key.asState || '--', // 媒体状态
+                    asSaleState: key.asSaleState || '--', // 售卖状态
+                    unSaleableReason: key.unSaleableReason, // 不可售卖原因
+
+                }
+                mediaList.push(obj)
             }
             this.currentPlan = mediaList;
+            // console.log('currentPlan', this.currentPlan);
             //正在加载
             this.loading = false;
           } else {
@@ -937,57 +1021,47 @@ export default {
 
     // 设置可搜索的区域
     setCityAreaByUWho() {
-      this.cityOptions = areaPackageNew.province();
+        this.cityOptions = areaPackageNew.province();
     },
 
     // 根据市级城市rid，获取它的下属区、县
     handleChange(value) {
-      console.log("handleChange", value);
-      this.regionOpt = [];
-      this.selectRName = "";
-      this.cityArea.rName = "";
-      if (value.length) {
-        let cityRID = value[1];
-        let regionArr = areaPackageNew.findArea(cityRID);
-        this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
-        console.log(
-          "获取选中城市的区域",
-          regionArr,
-          "this.cityArea",
-          this.cityArea
-        );
-        let region = [];
-        for (let key of regionArr) {
-          region.push({
-            label: key.rName,
-            value: key.rID,
-          });
+        console.log("handleChange", value);
+        this.regionOpt = [];
+        this.selectRName = "";
+        this.cityArea.rName = "";
+        if (value.length) {
+            let cityRID = value[1];
+            let regionArr = areaPackageNew.findArea(cityRID);
+            this.cityArea.cName = areaToTextNew.toTextCity(value[1]);
+            // console.log("获取选中城市的区域",regionArr,"this.cityArea",this.cityArea);
+            let region = [];
+            for (let key of regionArr) {
+            region.push({
+                label: key.rName,
+                value: key.rID,
+            });
+            }
+            this.regionOpt = region;
+            // console.log("this.regionOpt",this.regionOpt,"selectedOptions",this.selectedOptions);
+        } else {
+            this.cityArea.cName = "";
         }
-        this.regionOpt = region;
-        console.log(
-          "this.regionOpt",
-          this.regionOpt,
-          "selectedOptions",
-          this.selectedOptions
-        );
-      } else {
-        this.cityArea.cName = "";
-      }
     },
 
     //获取区域
     getRegion(val) {
-      console.log("获取区域val", val, this.regionOpt);
-      if (val) {
-        for (let key of this.regionOpt) {
-          if (key.value == val) {
-            this.cityArea.rName = key.label;
-          }
+        console.log("获取区域val", val, this.regionOpt);
+        if (val) {
+            for (let key of this.regionOpt) {
+                if (key.value == val) {
+                    this.cityArea.rName = key.label;
+                }
+            }
+        } else {
+            this.cityArea.rName = "";
         }
-      } else {
-        this.cityArea.rName = "";
-      }
-      console.log("选择的区域为", this.cityArea);
+        console.log("选择的区域为", this.cityArea);
     },
 
     // 下拉选择状态
@@ -1006,6 +1080,7 @@ export default {
         this.mID = rows.mID;
         this.unSaleableReason = JSON.parse(rows.unSaleableReason || "[]");
         this.mTitle = rows.mTitle;
+        console.log(rows);
       }
 
       if (selectState === "4") {
@@ -1021,7 +1096,7 @@ export default {
         if (!rows.assetTag && rows.asState == 2) {
           return sessFun.messageFun(
             "warning",
-            "该媒体尚未填写资产编号，请在详情页中点击【编辑】修改媒体状态并补全资产编号"
+            "该媒体尚未填写媒体位ID，请在详情页中点击【编辑】修改媒体状态并补全媒体位ID"
           );
         }
         this.isVailableSell = true;
@@ -1147,8 +1222,6 @@ export default {
           sessFun.messageFun("success", "拆除成功!");
           this.rowData.asState = "4";
           this.clearSearch();
-          // this.rowData.asState.A = '4'
-          // this.rowData.asState.B = '4'
         } else {
           sessFun.messageFun("warning", res.data.MSG);
         }
@@ -1157,51 +1230,36 @@ export default {
 
     // 跳转到媒体详情界面
     mediaDetail(data) {
+        console.log('row', data);
       this.$router.push("./mediaDetail");
       sessionStorage.setItem("resID", data.resID);
     },
 
-    // 当搜索框为空的时候进行重置显示
-    initData(val) {
-      console.log("搜索框变化的值", val);
-      if (!this.keyword) {
-        this.setPageNoAndTableData();
-        this.getData({ pageNo: this.pageNo, pageSize: 50 });
-      }
-    },
-
     // 搜索按钮
     searchFun() {
-      this.searchBtnAbled = true;
-      if (
-        (this.keyword === "" || this.keyword === null) &&
-        this.cityArea.cName === ""
-      ) {
-        Message.warning({
-          message: "请先输入搜索条件",
-          duration: 1000,
-        });
-        this.searchBtnAbled = false;
-      } else {
+        this.searchBtnAbled = true;
         this.pageData.pageNum = 1;
         this.getData();
-      }
     },
 
     // 重置搜索
     clearSearch() {
-      this.keyword = "";
-      this.selectedOptions = [];
-      this.selectRName = "";
-      this.regionOpt = [];
-      this.pageData.pageNum = 1;
-      this.pageData.pageSize = 10;
-      this.cityArea = { cName: "", rName: "" };
-      this.filterMediaType = "";
-      this.asSaleState = "";
-      this.asState = "";
-      this.$refs.tableEl.clearFilter();
-      this.getData();
+        this.resName = "";
+        this.assetTag = "";
+        this.mTitle = "";
+        this.selectedOptions = [];
+        this.selectRName = [];
+        this.tradingArea = "";
+        this.buildingName = "";
+        this.unitName = "";
+        this.pageData.pageNum = 1;
+        this.pageData.pageSize = 10;
+        this.cityArea = { cName: "", rName: "" };
+        this.filterMediaType = "";
+        this.asSaleState = "";
+        this.asState = "";
+        this.$refs.tableEl.clearFilter();
+        this.getData();
     },
 
     // 导入媒体
@@ -1358,7 +1416,7 @@ export default {
           "城市",
           "区域",
           "媒体名称",
-          "资产编号",
+          "媒体位ID",
           "失败信息",
         ];
         const filterVal = [
@@ -1415,26 +1473,46 @@ a {
   list-style: none;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.handel_ul_li {
-  // float: left;
-  // flex-grow: 1;
+/deep/ .handel_ul_li {
   display: flex;
   align-items: center;
   flex-flow: row nowrap;
-  width: 306px;
-  margin-right: 32px;
+  padding: 12px 0;
+  margin: 0;
+    .u-key > .el-input__inner {
+        width: 100%;
+    }
+
+    .el-select--small {
+        width: 100%;
+    }
+    .el-cascader--small {
+        width: 100%;
+    }
   .li-label {
-    font-size: 14px;
+    display: inline-block;
     white-space: nowrap;
-    color: rgba(0, 0, 0, 0.65);
+    min-width: 70px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
   }
 }
 
 .handel_ul_li_btn {
   .el-button + .el-button {
     margin-left: 8px;
+  }
+
+  .collapse-box {
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1890FF;
+    cursor: pointer;
   }
 }
 /*下拉搜索框*/
@@ -1453,6 +1531,13 @@ a {
   border-bottom-left-radius: 4px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/deep/ .el-table__fixed,
+/deep/ .el-table__fixed-right {
+    height: auto !important; // 让固定列的高自适应
+    bottom: 12px !important; // 固定列默认设置了定位
+    right: 0px !important;
 }
 
 /*滚动条*/
@@ -1680,6 +1765,20 @@ a {
 /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
   background-color: #ddd;
   border-radius: 3px;
+}
+
+.box-card {
+  margin: 0 64px 16px 64px;
+}
+
+.table-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
 </style>
 

@@ -23,6 +23,11 @@
                 <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
                 <!--<el-menu-item index="/media/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>-->
             </el-submenu>
+            <!-- <el-submenu index="5" :show-timeout="80" popper-class="submenu">
+                <template slot="title">方案管理</template>
+                <el-menu-item index="/media/planList">方案列表</el-menu-item>
+                <el-menu-item index="/media/adsDialPlate">点位表盘</el-menu-item>
+            </el-submenu> -->
             <el-menu-item v-if="isNation" index="/media/planList">方案管理</el-menu-item>
             <el-submenu v-if="!isNation" index="5" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
@@ -235,8 +240,8 @@
         width: calc(100% - 24px);
         padding: 5px 12px 0;
         text-align: left;
-        color: rgba(0, 0, 0, 0.85); 
-        font-size: 14px; 
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
         line-height: 18px;
     }
     .my-balance::after {

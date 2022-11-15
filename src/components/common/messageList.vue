@@ -23,7 +23,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              ></el-option>
+              ></el-option> 
             </el-select>
           </el-col>
           <el-col :xs="12" :sm="8" :md="8" :lg="8" :xl="6" class="form-item-wrap">

@@ -73,7 +73,7 @@ export default {
               new Date().getHours() +
               new Date().getMinutes() +
               new Date().getSeconds() +
-              ".xls"; //下载后文件名
+              ".xlsx"; //下载后文件名
             document.body.appendChild(downloadElement);
             downloadElement.click(); //点击下载
             document.body.removeChild(downloadElement); //下载完成移除元素

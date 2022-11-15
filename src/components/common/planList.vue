@@ -94,235 +94,291 @@
 
         <div class="mediaList_title">
           <h2>方案列表</h2>
-          <div class="btn_box">
-            <el-button plain @click.native.prevent="openRecycleBin" class="marginR">回收站</el-button>
 
-            <el-button plain v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && showExportBtns.includes(8)"
-              @click.native.prevent="allPointExportVisible = true" class="marginR">总点导出</el-button>
+          <div class="m-act">
+            <div class="btn_box">
+              <el-button plain @click.native.prevent="openRecycleBin" class="marginR">回收站</el-button>
 
-            <template v-if="showNewBtn || !isNation">
-              <el-button plain @click="reset()" v-if="showExportBtns.includes(6)" @click.native.prevent="exportRes"
-                class="marginR">门店导点</el-button>
-              <el-button plain v-if="showNewBtn" @click.native.prevent="isOpenDownload = true" class="marginR">空位导出
-              </el-button>
-            </template>
+              <el-button plain v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && showExportBtns.includes(8)"
+                @click.native.prevent="allPointExportVisible = true" class="marginR">总点导出</el-button>
 
-            <template v-if="showNewBtn || !isNation">
-              <el-button type="primary" icon="el-icon-plus" v-if="showNewBtn" @click="addOne()" class="marginR">新建
-              </el-button>
-            </template>
+              <template v-if="showNewBtn || !isNation">
+                <el-button plain @click="reset()" v-if="showExportBtns.includes(6)" @click.native.prevent="exportRes"
+                  class="marginR">门店导点</el-button>
+                <el-button plain v-if="showNewBtn" @click.native.prevent="isOpenDownload = true" class="marginR">空位导出
+                </el-button>
+              </template>
+
+              <template v-if="showNewBtn || !isNation">
+                <el-button type="primary" icon="el-icon-plus" v-if="showNewBtn" @click="addOne()" class="marginR">新建
+                </el-button>
+              </template>
+            </div>
+
+            <!-- 列设置 -->
+            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey=""
+              @filterColumn="filterColumn" @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+            </TableSetting>
 
           </div>
         </div>
         <div class="table_wrap">
           <el-table :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading"
-            element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
-            <el-table-column prop="apName" label="方案名称" min-width="14.9%">
-              <template slot-scope="scope">
-                <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
-                <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">{{
-                    scope.row.apName
-                }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="cName" label="客户名称" min-width="12.6%" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="bTitle" label="品牌名称" min-width="7.6%" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="apTotal" label="方案价格" sortable="custom" width="120px" align="right">
-              <template slot-scope="scope">
-                <span v-if="scope.row.apState == '-1'">--</span>
-                <span v-else>&yen;{{
-                    scope.row.apTotal ? priceFormat(scope.row.apTotal / 100) : 0
-                }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="realName" label="所有人" min-width="6.1%"
-              v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role)" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="realName" label="所有人" min-width="6.1%" v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
-              show-overflow-tooltip :filters="filterRealName" :filter-method="filterRealNameFun"
-              :filter-multiple="true">
-            </el-table-column>
+            element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey" :size="rowSpace">
+            <template v-for="item in currentPlanColumn">
 
-            <el-table-column label="投放城市(点位面数,排期)" prop="cityArea" min-width="25.8%">
-              <template slot-scope="scope">
-                <template v-if="isAll">
-                  <div v-for="(item, index) of scope.row.cityArea" :key="index" class="city_p">
-                    <el-tooltip class="item" effect="dark" :content="
-                      item.asName +
-                      ' ' +
-                      item.city +
-                      '(' +
-                      item.num +
-                      '面,' +
-                      formatTime(item.pdStar) +
-                      '至' +
-                      formatTime(item.pdEnd) +
-                      ')'
-                    " placement="top">
-                      <div>
-                        <!-- <span v-if="item.isshow">{{ item.asName }}</span> -->
-                        <span>
-                          {{
-                              item.city +
-                              "(" +
-                              item.num +
-                              "面," +
-                              formatTime(item.pdStar) +
-                              "至" +
-                              formatTime(item.pdEnd) +
-                              ")"
-                          }}
-                        </span>
+              <template v-if="item.label === '方案名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="14.9%" v-if="item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
+                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">{{
+                        scope.row.apName
+                    }}</span>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '客户名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="12.6%" show-overflow-tooltip
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '品牌名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="7.6%" show-overflow-tooltip
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '方案价格'">
+                <el-table-column :prop="item.prop" :label="item.label" sortable="custom" width="120px" align="right"
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span v-if="scope.row.apState == '-1'">--</span>
+                    <span v-else>&yen;{{
+                        scope.row.apTotal ? priceFormat(scope.row.apTotal / 100) : 0
+                    }}</span>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '所有人'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="8.1%"
+                  v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked"
+                  show-overflow-tooltip :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+
+                <el-table-column :prop="item.prop" :label="item.label" min-width="8.1%"
+                  v-if="['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked" show-overflow-tooltip
+                  :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true"
+                  :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+
+              </template>
+
+              <template v-if="item.label === '投放城市(点位面数,排期)'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="25.8%" v-if="item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <template v-if="isAll">
+                      <div v-for="(item, index) of scope.row.cityArea" class="city_p">
+                        <el-tooltip class="item" effect="dark" :content="
+                          item.asName +
+                          ' ' +
+                          item.city +
+                          '(' +
+                          item.num +
+                          '面,' +
+                          formatTime(item.pdStar) +
+                          '至' +
+                          formatTime(item.pdEnd) +
+                          ')'
+                        " placement="top">
+                          <div>
+                            <!-- <span v-if="item.isshow">{{ item.asName }}</span> -->
+                            <span>
+                              {{
+                                  item.city +
+                                  "(" +
+                                  item.num +
+                                  "面," +
+                                  formatTime(item.pdStar) +
+                                  "至" +
+                                  formatTime(item.pdEnd) +
+                                  ")"
+                              }}
+                            </span>
+                          </div>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
+                          placement="top">
+                          <span v-show="item.RemainDay" class="lock-icon">
+                            <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                            <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
+                                item.RemainDay
+                            }}</b>
+                          </span>
+                        </el-tooltip>
                       </div>
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'" placement="top">
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                            item.RemainDay
-                        }}</b>
+                    </template>
+                    <template v-else>
+                      <div v-for="item of scope.row.cityArea" :key="item.rid + '-' + item.asrID" class="city_p">
+                        <el-tooltip class="item" effect="dark" :content="
+                          item.asName +
+                          ' ' +
+                          item.city +
+                          '(' +
+                          item.num +
+                          '面,' +
+                          formatTime(item.pdStar) +
+                          '至' +
+                          formatTime(item.pdEnd) +
+                          ')'
+                        " placement="top">
+                          <p v-if="item.apState == '-1'">
+                            {{
+                                item.city +
+                                "(" +
+                                "--面," +
+                                formatTime(item.pdStar) +
+                                "至" +
+                                formatTime(item.pdEnd) +
+                                ")"
+                            }}
+                          </p>
+                          <p v-else>
+                            {{
+                                item.city +
+                                "(" +
+                                item.num +
+                                "面," +
+                                formatTime(item.pdStar) +
+                                "至" +
+                                formatTime(item.pdEnd) +
+                                ")"
+                            }}
+                          </p>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
+                          placement="top">
+                          <span v-show="item.RemainDay" class="lock-icon">
+                            <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
+                            <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
+                                item.RemainDay
+                            }}</b>
+                          </span>
+                        </el-tooltip>
+                        <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
+                        <!--<i v-else></i>-->
+                      </div>
+                    </template>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '媒体类型'">
+                <el-table-column :prop="item.prop" :label="item.label" width="250px" show-overflow-tooltip
+                  column-key="type" :filters="[{ text: '2016-05-01', value: '2016-05-01' }]"
+                  :filter-method="filterMediaType" :filter-multiple="false"
+                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <div class="media-tag">
+                      <div class="tag ad">
+                        <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
+                          <img src="@/assets/images/suo-icon-ad.png" class="icon">
+                        </el-tooltip>
+                        广告门
+                      </div>
+
+                      <div class="tag light-box">
+                        <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
+                          <img src="@/assets/images/suo-icon.png" class="icon">
+                        </el-tooltip>
+                        单元门禁灯箱（3天）
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+
+              </template>
+
+              <template v-if="item.label === '创建日期'">
+                <el-table-column :prop="item.prop" :label="item.label" width="100px" sortable="custom"
+                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span>{{ formatTime(scope.row.apcTime) }}</span>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '状态'">
+                <el-table-column class="tac" :prop="item.prop" :label="item.label" min-width="6.1%"
+                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <point-state :state-text="stateToText(scope.row.apState).text"
+                      :color="stateToText(scope.row.apState).color"></point-state>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '操作'">
+                <el-table-column :label="item.label" width="100px"
+                  v-if="!(role == 'ADN_OP' || role == 'AD') && item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
+                      <span class="el-dropdown-link">
+                        操作<i class="el-icon-arrow-down el-icon--right"></i>
                       </span>
-                    </el-tooltip>
-                  </div>
-                </template>
-                <template v-else>
-                  <div v-for="item of scope.row.cityArea" :key="item.rid + '-' + item.asrID" class="city_p">
-                    <el-tooltip class="item" effect="dark" :content="
-                      item.asName +
-                      ' ' +
-                      item.city +
-                      '(' +
-                      item.num +
-                      '面,' +
-                      formatTime(item.pdStar) +
-                      '至' +
-                      formatTime(item.pdEnd) +
-                      ')'
-                    " placement="top">
-                      <p v-if="item.apState == '-1'">
-                        {{
-                            item.city +
-                            "(" +
-                            "--面," +
-                            formatTime(item.pdStar) +
-                            "至" +
-                            formatTime(item.pdEnd) +
-                            ")"
-                        }}
-                      </p>
-                      <p v-else>
-                        {{
-                            item.city +
-                            "(" +
-                            item.num +
-                            "面," +
-                            formatTime(item.pdStar) +
-                            "至" +
-                            formatTime(item.pdEnd) +
-                            ")"
-                        }}
-                      </p>
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'" placement="top">
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                            item.RemainDay
-                        }}</b>
-                      </span>
-                    </el-tooltip>
-                    <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
-                    <!--<i v-else></i>-->
-                  </div>
-                </template>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
+                          :disabled="isDisable || scope.row.apState !== -1">配点
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState == 1 && !scope.row.canLock)
+                        ">预锁
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState != 1 &&
+                            scope.row.apControlLevel !== 1)
+                        ">发布
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState == 1 && !scope.row.unLock)
+                        ">解除预锁
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
+                          scope.row.apControlLevel === 2 &&
+                          ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
+                        ">
+                          拆单
+                        </el-dropdown-item>
+                        <el-dropdown-item :disabled="
+                          scope.row.apState !== 1 && scope.row.apState !== -1
+                        " @click.native.prevent="deleteAdPlan(scope.row)">
+                          删除
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </template>
+                </el-table-column>
               </template>
-            </el-table-column>
 
-            <el-table-column prop="apcTime" label="媒体类型" width="250px" show-overflow-tooltip column-key="type"
-              :filters="[{ text: '2016-05-01', value: '2016-05-01' }]" :filter-method="filterMediaType"
-              :filter-multiple="false"
-              v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM')">
-              <template slot-scope="scope">
-                <div class="media-tag">
-                  <div class="tag ad">
-                    <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
-                      <img src="@/assets/images/suo-icon-ad.png" class="icon">
-                    </el-tooltip>
-                    广告门
-                  </div>
+            </template>
 
-                  <div class="tag light-box">
-                    <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
-                      <img src="@/assets/images/suo-icon.png" class="icon">
-                    </el-tooltip>
-                    单元门禁灯箱（3天）
-                  </div>
-                </div>
-              </template>
-            </el-table-column>
-
-            <el-table-column prop="apcTime" label="创建日期" width="100px" sortable="custom" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.apcTime) }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column class="tac" prop="apState" label="状态" min-width="6.1%" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <point-state :state-text="stateToText(scope.row.apState).text"
-                  :color="stateToText(scope.row.apState).color"></point-state>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="100px" v-if="!(role == 'ADN_OP' || role == 'AD')">
-              <template slot-scope="scope">
-                <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
-                      :disabled="isDisable || scope.row.apState !== -1">配点
-                    </el-dropdown-item>
-
-                    <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
-                      isDisable ||
-                      scope.row.apState !== 1 ||
-                      (scope.row.apState == 1 && !scope.row.canLock)
-                    ">预锁
-                    </el-dropdown-item>
-
-                    <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
-                      isDisable ||
-                      scope.row.apState !== 1 ||
-                      (scope.row.apState != 1 &&
-                        scope.row.apControlLevel !== 1)
-                    ">发布
-                    </el-dropdown-item>
-
-                    <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
-                      isDisable ||
-                      scope.row.apState !== 1 ||
-                      (scope.row.apState == 1 && !scope.row.unLock)
-                    ">解除预锁
-                    </el-dropdown-item>
-
-                    <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
-                      scope.row.apControlLevel === 2 &&
-                      ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
-                    ">
-                      拆单
-                    </el-dropdown-item>
-                    <el-dropdown-item :disabled="
-                      scope.row.apState !== 1 && scope.row.apState !== -1
-                    " @click.native.prevent="deleteAdPlan(scope.row)">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
             <div slot="empty">
               <no-search-result></no-search-result>
             </div>
@@ -494,7 +550,7 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in mediaType" :key="item.value">
-              <el-checkbox :label="item.value" :disabled="isDisableMediaType(item.value)">{{item.label}}</el-checkbox>
+              <el-checkbox :label="item.value" :disabled="isDisableMediaType(item.value)">{{ item.label }}</el-checkbox>
             </div>
           </el-checkbox-group>
 
@@ -522,6 +578,8 @@ import downloadVacancy from "../../components/common/components/vacancyDownload.
 import AllPointExport from "../../components/common/components/allPointExport.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
+// 表格设置
+import TableSetting from "./components/TableSetting/index.vue";
 
 // 回收站
 import recycleBinDialog from "./components/recycleBinDialog.vue";
@@ -537,6 +595,7 @@ export default {
     pointState,
     recycleBinDialog,
     AllPointExport,
+    TableSetting
   },
   data() {
     return {
@@ -656,12 +715,29 @@ export default {
       mediaDialogVisible: false,
       // 媒体类型
       mediaType: [
-        { label: '广告门', value: 0},
-        { label: '道闸', value: 1},
-        { label: '单元门禁灯箱', value: 2},
+        { label: '广告门', value: 0 },
+        { label: '道闸', value: 1 },
+        { label: '单元门禁灯箱', value: 2 },
       ],
       // 预锁的公司在这个方案中涉及的所有媒体类型
-      mediaTypeChecks: []
+      mediaTypeChecks: [],
+
+      // 表头数据
+      currentPlanColumn: [
+        { id: 0, label: "方案名称", prop: "apName", isChecked: true, fix: "not" },
+        { id: 1, label: "客户名称", prop: "cName", isChecked: true, fix: "not" },
+        { id: 2, label: "品牌名称", prop: "bTitle", isChecked: true, fix: "not" },
+        { id: 3, label: "方案价格", prop: "apTotal", isChecked: true, fix: "not" },
+        { id: 4, label: "所有人", prop: "realName", isChecked: true, fix: "not" },
+        { id: 5, label: "投放城市(点位面数,排期)", prop: "cityArea", isChecked: true, fix: "not" },
+        { id: 6, label: "媒体类型", prop: "apcTime", isChecked: true, fix: "not" },
+        { id: 7, label: "创建日期", prop: "apcTime", isChecked: true, fix: "not" },
+        { id: 8, label: "状态", prop: "apState", isChecked: true, fix: "not" },
+        { id: 9, label: "操作", isChecked: true, fix: "right" },
+      ],
+      // 行距
+      rowSpace: "",
+      itemKey: ''
     };
   },
   created() {
@@ -1969,13 +2045,13 @@ export default {
     },
 
     // 关闭预锁媒体类型弹窗
-    handleMediaTypeCancel () {
+    handleMediaTypeCancel() {
       this.mediaTypeChecks = []
       this.mediaDialogVisible = false
     },
 
     // 对媒体类型选择进行预锁
-    handleMediaTypeCommit () {
+    handleMediaTypeCommit() {
       this.Ctrlloading = this.$loading({
         text: "请耐心等待...",
         spinner: "el-icon-loading",
@@ -1984,7 +2060,7 @@ export default {
       this.LockCity("L");
     },
 
-    isDisableMediaType (type) {
+    isDisableMediaType(type) {
       //  广告门,道闸  地方媒介/全国媒介可预锁
       if ((type === 0 || type === 1) && ["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
         return false
@@ -1994,7 +2070,23 @@ export default {
       } else {
         return true
       }
-    }
+    },
+
+    // 列展示
+    filterColumn(columns) {
+      this.currentPlanColumn = columns
+      this.itemKey = Math.random()
+    },
+
+    // 刷新列表
+    refreshTable() {
+      this.search();
+    },
+
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
 
   },
 
@@ -2542,6 +2634,11 @@ a {
   .btn_box {
     height: 32px;
   }
+
+  .m-act {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .media-tag {
@@ -2621,8 +2718,10 @@ a {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
       }
+
       .checkbox-item {
         margin-bottom: 4px;
+
         .el-checkbox {
           display: block;
           margin-right: 0;
@@ -2632,6 +2731,7 @@ a {
       .btn-box {
         margin-top: 23px;
         padding-left: 24px;
+
         .btn {
           margin-right: 14px;
         }

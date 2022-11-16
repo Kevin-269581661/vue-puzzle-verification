@@ -1551,9 +1551,15 @@ export default {
       selectedAll: [],
       // 城市选择弹框
       dialogCity: false,
+
+      // 投放排期
+      timeRange: []
     };
   },
   created () {
+    const timeRange = this.$route.query.timeRange
+    this.timeRange = timeRange.replace(',', ' - ')
+
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
@@ -2195,6 +2201,7 @@ export default {
     },
     // 显示详情
     showInfo (info, point) {
+      console.log(info, 'infoinfo--显示详情')
       this.showResInfo = info;
       let content = this.$refs.resInfoWindow;
       let opts = {
@@ -2210,6 +2217,8 @@ export default {
     },
     // 详情里选定按钮
     addResFun (item) {
+      // 直接勾选小区没有地图中心点
+      this.$set(this.showResInfo, 'notOnline', true)
       this.checkBoxFun(this.showResInfo);
     },
     // 获取指定资源到媒体列表
@@ -3339,6 +3348,7 @@ export default {
     },
     // 添加到选中列表
     pushSelectList (item) {
+      console.log(this.showResInfo, 'showResInfo-----添加到选中列表')
       let isHave = this.selectResList.some((key) => {
         if (key.resID == item.resID) {
           return true;
@@ -3405,6 +3415,7 @@ export default {
     },
     // 在线勾选/取消
     onlineCheckBox (item) {
+      console.log(item, '在线勾选/取消')
       for (let key of this.onlineMarkers) {
         if (
           key.point.lat === item.point.lat &&
@@ -4062,7 +4073,7 @@ export default {
     },
     // 导出exc
     exportExcel () {
-      console.log('this.selectResList', this.selectResList)
+      console.log(this.selectResList, 'this.selectResList----')
       if (this.selectResList.length) {
         let time = timeFormat.toDateTime(new Date(), "").split(" ");
         let timeString = time[0] + time[1].split(":").join("");
@@ -4086,21 +4097,21 @@ export default {
             }
           }
           let obj = {
-            resName: data.resName,
+            resName: data.resName, // 资源名称
             rName: data.districtName,
             resAddress: data.resAddress,
             mVehicle: data.mVehicle,
-            tradingArea: data.tradingArea,
+            tradingArea: data.tradingArea, // 商圈
             fNum: data.fNum == "0" ? "#" : data.fNum,
             hNum: data.hNum == "0" ? "#" : data.hNum,
             cType: data.cType,
             hPrice: data.hPrice / 100,
             chDay: data.chDay || "",
-            notPush: data.adLimit || "",
+            notPush: data.notPush || "",
             mRemark: data.mRemark || "",
             mediaNum: data.mediaCount || "",
             spareAdsCount: data.spareAdsCount || "",
-            mapCenter: centerArr.join(";"),
+            mapCenter: data.notOnline ? '' : centerArr.join(";"),
             asNames: data.asNames,
             allRemark: data.allRemark,
             allTrafficState: data.allTrafficState,
@@ -4108,7 +4119,18 @@ export default {
             provinceName: data.provinceName || '',
             parkSpaceNum: data.parkSpaceNum || '',
             carFlow: data.carFlow,
-            peopleFlow: data.peopleFlow
+            peopleFlow: data.peopleFlow,
+            street: data.street,
+            unitCount: data.unitCount,
+            alias: data.alias,
+            supportingFacilities: data.supportingFacilities,
+            liveRate: data.liveRate,
+            dNum: data.dNum,
+            lng: data.lng,
+            lat: data.lat,
+            description: data.description,
+            liftType: data.liftType,
+            timeRange: this.timeRange
           };
           if (this.systemSource === 0) {
             obj.city = this.routeQuery.city;
@@ -4171,48 +4193,64 @@ export default {
             ];
           } else if (this.systemSource === 0) {
             tHeader = [
-              "资源名称",
-              '省份',
+              '省份', // provinceName
               "城市",
               "区域",
-              "详细地址",
-              '媒介载体',
+              "街道",
               "商圈",
+              "资源名称",
+              "详细地址",
               "楼栋数量",
-              "住户数量",
-              "楼盘价格",
+              "单元数量",
               "楼盘类型",
+              "楼盘价格",
+              "住户数量",
               "入住年份/建成年份",
               '广告限制',
-              '车位数',
-              '车流量',
-              '人流量',
-              "媒体数量（门）",
               '可投数量（面）',
-              "地图中心点",
+              '资源别名',
+              '楼盘介绍',
+              '周边配套',
+              '出入口数', // dNum
+              '入住率', // liveRate
+              '配套电梯',
+              '车位数',
+              '媒介类型',
               '媒体备注',
+              '经度',
+              '纬度',
+              "地图中心点",
+              '投放排期'
             ];
             filterVal = [
-              "resName",
-              'provinceName',
-              "city",
-              "rName",
-              "resAddress",
-              'mVehicle',
-              "tradingArea",
-              "fNum",
-              "hNum",
-              "hPrice",
-              "cType",
-              "chDay",
-              'notPush',
-              'parkSpaceNum',
-              'carFlow',
-              'peopleFlow',
-              'mediaNum',
-              'spareAdsCount',
-              "mapCenter",
-              'mRemark',
+              'provinceName', // 省份
+              "city", // 城市
+              "rName", // 区域
+              "street", // 街道
+              "tradingArea", // 商圈
+              "resName", // 资源名称
+              "resAddress", // 详细地址
+              "fNum", // 楼栋数量
+              "unitCount", // 单元数量
+              "cType", // 楼盘类型
+              "hPrice", // 楼盘价格
+              "hNum", // 住户数量
+              "chDay", // 入住年份/建成年份
+              'notPush', // 广告限制
+              'spareAdsCount', // 可投数量（面）
+              'alias', // 资源别名
+              'description', // 楼盘介绍
+              'supportingFacilities', // 周边配套
+              'dNum', // 出入口数
+              'liveRate', // 入住率
+              'liftType', // 配套电梯
+              'parkSpaceNum', // 车位数
+              'mVehicle', // 媒体类型
+              'mRemark', // 媒体备注
+              'lng', // 经度
+              'lat', // 纬度
+              'mapCenter', // 地图中心点
+              'timeRange', // 投放排期
             ];
 
             switch (this.sessionData.customPermission.patrolPermission) {
@@ -4237,7 +4275,7 @@ export default {
               tHeader.push("归属公司");
               filterVal.push("asNames");
             }
-            
+
           }
           const list = resultArr;
           const data = this.formatJson(filterVal, list);

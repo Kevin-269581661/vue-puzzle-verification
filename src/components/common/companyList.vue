@@ -208,7 +208,11 @@
       <p class="conpany-form-item">
         <span class="conpany-form__label">全国单拆单：</span>
         <el-select
+<<<<<<< HEAD
           v-model="companyInfo.acceptSpiltOrderStatus"
+=======
+          v-model="companyInfo.splitOrderType"
+>>>>>>> 515dd5a706733b6597d8b67793d4b9f2ef85676f
           collapse-tags
           placeholder="请选择"
           size="small"
@@ -302,6 +306,7 @@ export default {
           value: false
         }
       ],
+<<<<<<< HEAD
       splitOrderOptions: [
         {
             label: '不可拆单',
@@ -310,6 +315,17 @@ export default {
         {
             label: '可拆单',
             value: true
+=======
+      // 全国单拆单类型
+      splitOrderOptions: [
+        {
+            label: '不可拆单',
+            value: 0
+        },
+        {
+            label: '可拆单',
+            value: 1
+>>>>>>> 515dd5a706733b6597d8b67793d4b9f2ef85676f
         }
       ],
       // 表格数据
@@ -320,7 +336,11 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
+<<<<<<< HEAD
         acceptSpiltOrderStatus: false
+=======
+        splitOrderType: 1
+>>>>>>> 515dd5a706733b6597d8b67793d4b9f2ef85676f
       },
       isShowNew: false,
       // 是否可新建公司
@@ -469,7 +489,11 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
+<<<<<<< HEAD
         acceptSpiltOrderStatus: false,
+=======
+        splitOrderType: 0
+>>>>>>> 515dd5a706733b6597d8b67793d4b9f2ef85676f
       };
       this.isAdd = true;
       this.isShowNew = true;
@@ -665,6 +689,7 @@ a {
   .conpany-form__label {
     white-space: nowrap;
     line-height: 32px;
+    width: 120px;
   }
   & + .conpany-form-item {
     margin-top: 20px;

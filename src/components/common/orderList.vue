@@ -6,7 +6,7 @@
       </p>
     </div>
     <div class="mediaList_wrap">
-      <div class="mediaList_head">
+      <div class="mediaList_head"> 
         <h2>订单列表</h2>
       </div>
       <div class="mediaList_container">

@@ -52,7 +52,7 @@
                         {{ trItem.projectName || "--" }}
                       </div>
                       <div class="font-base">
-                        {{ `${trItem.mTitle || "--"}·${trItem.assetTag}` }}
+                        {{ `${trItem.mediaTitle || "--"}·${trItem.assetTag}` }}
                       </div>
                     </td>
                     <td class="table-td" style="width: 60px">

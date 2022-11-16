@@ -254,6 +254,7 @@
                     localStorage.removeItem('qinlinMapCode');
                     localStorage.setItem('mapParams', JSON.stringify(this.mapParams));
                 }
+                url = url + `&timeRange=${String(this.dateInput)}`
                 this.mapDialogVisible = false;
                 window.open(url);
             },

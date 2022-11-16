@@ -116,7 +116,7 @@
             </div>
 
             <!-- 列设置 -->
-            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="" @filterColumn="filterColumn"
+            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="planList" @filterColumn="filterColumn"
               @refreshTable="refreshTable" @spaceSetting="spaceSetting">
             </TableSetting>
 

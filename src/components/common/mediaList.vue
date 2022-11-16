@@ -132,7 +132,7 @@
                 space
                 filter
                 :columns="currentPlanColumn"
-                cacheKey="media"
+                cacheKey="mediaList"
                 @filterColumn="filterColumn"
                 @refreshTable="refreshTable"
                 @spaceSetting="spaceSetting">
@@ -733,7 +733,7 @@ export default {
 
     // 获取列表设置缓存
     const rowSpace = getLocalCache("rowSpace");
-    this.rowSpace = rowSpace || "medium";
+    this.rowSpace = rowSpace || "mediaList";
 
     // 按下Enter键搜索
     document.onkeydown = (e) => {

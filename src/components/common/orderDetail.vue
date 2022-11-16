@@ -258,6 +258,16 @@
                       <span>{{ scope.row.resName || '--' }}</span>
                     </template>
                   </el-table-column>
+                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.mediaTypeName || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="asLab" label="投放面" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.asLab || '--' }}</span>
+                    </template>
+                  </el-table-column>
                   <el-table-column
                     prop="city"
                     label="城市"
@@ -274,7 +284,7 @@
                     :filter-method="filterRName"
                   >
                   </el-table-column>
-                  <el-table-column prop="street" label="街道（new）" min-width="150px">
+                  <el-table-column prop="street" label="街道（new）" min-width="180px">
                     <template slot-scope="scope">
                         <span>{{ scope.row.street || '--' }}</span>
                     </template>
@@ -317,16 +327,6 @@
                   <el-table-column prop="siteOrientation" label="位置朝向（new）" min-width="100px">
                     <template slot-scope="scope">
                         <span>{{ scope.row.siteOrientation || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="100px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.mediaTypeName || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="asLab" label="投放面" min-width="80px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.asLab || '--' }}</span>
                     </template>
                   </el-table-column>
 
@@ -1250,6 +1250,13 @@ export default {
   },
   data () {
     return {
+      currentColumns: [
+        { id: 0, label: "资源名称", prop: "resName", width: "180px", isChecked: true, fix:"not" },
+        { id: 1, label: "媒体类型", prop: "mediaTypeName", width: "100px", isChecked: true, fix:"not" },
+        { id: 2, label: "投放面", prop: "asLab", width: "100px", isChecked: true, fix:"not" },
+        { id: 3, label: "街道", prop: "street", width: "180px", isChecked: true, fix:"not" },
+        { id: 4, label: "媒体名称", prop: "street", width: "180px", isChecked: true, fix:"not" },
+      ],
       companyId: null,  //公司ID
       mediaTypeList: [],  //媒体类型
       materialInfoJson:{},  //物料信息数据

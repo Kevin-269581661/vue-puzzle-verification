@@ -257,7 +257,7 @@
               width="150px"
               column-key="mediaTypeNames"
               :filters="mediaTypesList"
-              :filter-multiple="false"
+              :filter-multiple="true"
             >
                 <template slot-scope="scope">
                     <span>{{ scope.row.mediaTypeNames || '--' }}</span>

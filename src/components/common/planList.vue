@@ -116,8 +116,8 @@
             </div>
 
             <!-- 列设置 -->
-            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey=""
-              @filterColumn="filterColumn" @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="" @filterColumn="filterColumn"
+              @refreshTable="refreshTable" @spaceSetting="spaceSetting">
             </TableSetting>
 
           </div>
@@ -148,7 +148,6 @@
               <template v-if="item.label === '品牌名称'">
                 <el-table-column :prop="item.prop" :label="item.label" min-width="7.6%" show-overflow-tooltip
                   v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
-                </el-table-column>
                 </el-table-column>
               </template>
 
@@ -197,7 +196,6 @@
                           ')'
                         " placement="top">
                           <div>
-                            <!-- <span v-if="item.isshow">{{ item.asName }}</span> -->
                             <span>
                               {{
                                   item.city +
@@ -215,7 +213,6 @@
                         <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
                           placement="top">
                           <span v-show="item.RemainDay" class="lock-icon">
-                            <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
                             <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
                                 item.RemainDay
                             }}</b>
@@ -264,14 +261,11 @@
                         <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
                           placement="top">
                           <span v-show="item.RemainDay" class="lock-icon">
-                            <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
                             <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
                                 item.RemainDay
                             }}</b>
                           </span>
                         </el-tooltip>
-                        <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
-                        <!--<i v-else></i>-->
                       </div>
                     </template>
                   </template>
@@ -279,18 +273,27 @@
               </template>
 
               <template v-if="item.label === '媒体类型'">
-                <el-table-column :prop="item.prop" :label="item.label" width="250px" show-overflow-tooltip
-                  column-key="type" :filters="[{ text: '2016-05-01', value: '2016-05-01' }]"
-                  :filter-method="filterMediaType" :filter-multiple="false"
+                <el-table-column 
+                  :prop="item.prop" 
+                  :label="item.label" 
+                  width="250px" 
+                  show-overflow-tooltip
                   v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false">
+                  :fixed="item.fix === 'left' ? true : false" 
+                  :filters="[
+                    { text: '广告门', value: '广告门' },
+                    { text: '单元门禁灯箱', value: '单元门禁灯箱' },
+                    { text: '道闸', value: '道闸' }
+                  ]" 
+                  :filter-method="filterMediaType"
+                >
                   <template slot-scope="scope">
-                    <div class="media-tag">
+                    <div class="media-tag" v-for="t in item.details" :key="t.mediaTypeId">
                       <div class="tag ad">
-                        <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
+                        <el-tooltip class="item" effect="dark" :content="`预锁剩余3天${t.RemainDay}`" placement="top">
                           <img src="@/assets/images/suo-icon-ad.png" class="icon">
                         </el-tooltip>
-                        广告门
+                        {{ t.mediaTypeName }}{{ t.RemainDay ? `${t.RemainDay}天` : '' }}
                       </div>
 
                       <div class="tag light-box">
@@ -341,22 +344,25 @@
                         <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
                           isDisable ||
                           scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.canLock)
-                        ">预锁
+                          (scope.row.apState == 1 && !scope.row.canLock) ||
+                          medaiTypePermissions(scope.row.details)
+                        ">预锁 {{ medaiTypePermissions(scope.row.details) }}
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
                           isDisable ||
                           scope.row.apState !== 1 ||
                           (scope.row.apState != 1 &&
-                            scope.row.apControlLevel !== 1)
+                            scope.row.apControlLevel !== 1) ||
+                          medaiTypePermissions(scope.row.details)
                         ">发布
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
                           isDisable ||
                           scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.unLock)
+                          (scope.row.apState == 1 && !scope.row.unLock) ||
+                          medaiTypePermissions(scope.row.details)
                         ">解除预锁
                         </el-dropdown-item>
 
@@ -549,8 +555,9 @@
         <div class="ctn" v-if="mediaDialogVisible">
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
-            <div class="checkbox-item" v-for="item in mediaType" :key="item.value">
-              <el-checkbox :label="item.value" :disabled="isDisableMediaType(item.value)">{{ item.label }}</el-checkbox>
+            <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
+              <el-checkbox :label="item.value" :disabled="medaiTypePermissions(currentMediaType)">{{ item.label }}
+              </el-checkbox>
             </div>
           </el-checkbox-group>
 
@@ -645,10 +652,6 @@ export default {
       //加载中
       loading: true,
       currentItem: {},
-      // 解锁还是预锁
-      isLock: false,
-      // 预锁弹出框
-      dialogVisible: false,
 
       // 预锁的城市列表
       cityList: [],
@@ -714,12 +717,8 @@ export default {
       // 预锁媒体类型窗口
       mediaDialogVisible: false,
       // 媒体类型
-      mediaType: [
-        { label: '广告门', value: 0 },
-        { label: '道闸', value: 1 },
-        { label: '单元门禁灯箱', value: 2 },
-      ],
-      // 预锁的公司在这个方案中涉及的所有媒体类型
+      currentMediaType: [],
+      // 预锁的公司在这个方案中勾选的媒体类型
       mediaTypeChecks: [],
 
       // 表头数据
@@ -1400,6 +1399,13 @@ export default {
       )
         .then(() => {
           this.currentItem = row;
+          this.currentMediaType = row.details.map(item => {
+            return {
+              label: item.mediaTypeName,
+              value: item.mediaTypeId,
+              mediaTypeName: item.mediaTypeName
+            }
+          })
           let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
           let date = timeFormat.toDate(new Date(), "/");
           if (startObj.startTime <= date) {
@@ -1409,7 +1415,6 @@ export default {
             );
             return;
           }
-
           this.mediaDialogVisible = true
         })
         .catch(() => {
@@ -1461,25 +1466,20 @@ export default {
         }
       )
         .then(() => {
-          this.isLock = false;
           this.currentItem = row;
-          this.cityList = this.getCityList(row.cityArea);
-          if (this.isNation) {
-            this.dialogVisible = true;
-          } else {
-            //地方媒介
-            this.Ctrlloading = this.$loading({
-              text: "请耐心等待...",
-              spinner: "el-icon-loading",
-              background: "rgba(0, 0, 0, 0.7)",
-            });
-            if (this.isLock) {
-              this.LockCity(this.cityList, "L");
-            } else {
-              this.noLockCity(this.cityList);
+          this.currentMediaType = row.details.map(item => {
+            return {
+              label: item.mediaTypeName,
+              value: item.mediaTypeId,
+              mediaTypeName: item.mediaTypeName
             }
-            this.dialogVisible = false;
-          }
+          })
+          this.Ctrlloading = this.$loading({
+            text: "请耐心等待...",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          this.noLockCity();
         })
         .catch(() => {
           this.$message({
@@ -1741,11 +1741,13 @@ export default {
         cityArea: [],
         // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
         apControlLevel: item.apControlLevel, // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
+        details: item.details
       };
       item.details.sort((a, b) => {
         return a.asrID - b.asrID;
       });
       let asrIDarr = [];
+      // RemainDay-预锁时间，没有的时候，就说明方案没有被预锁
       obj.canLock = item.details.some(function (item, index) {
         return !item.RemainDay;
       });
@@ -2040,8 +2042,10 @@ export default {
       console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
     },
 
-    filterMediaType() {
-
+    filterMediaType(value, row, column) {
+      console.log(value, row, column)
+      const property = column['property'];
+      return row[property] === value;
     },
 
     // 关闭预锁媒体类型弹窗
@@ -2060,16 +2064,19 @@ export default {
       this.LockCity("L");
     },
 
-    isDisableMediaType(type) {
-      //  广告门,道闸  地方媒介/全国媒介可预锁
-      if ((type === 0 || type === 1) && ["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
+    // 媒体类型操作权限判断
+    medaiTypePermissions(arr) {
+      //  广告门 道闸 地方媒介/全国媒介 可预锁/解锁/发布所见方案
+      const types = arr.map(item => item.mediaTypeName)
+      if ((types.includes('广告门') || types.includes('道闸')) && ["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
         return false
-      } else if (type === 2 && !["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
-        // 单元门禁灯箱 地方媒介/全国媒介不可预锁
+      } else if (types.includes('单元门禁灯箱') && ["ADN_MD_COUNTRY"].includes(this.role)) {
+        // 单元门禁灯箱 全国媒介可预锁/解锁/发布所见方案
         return false
       } else {
         return true
       }
+
     },
 
     // 列展示

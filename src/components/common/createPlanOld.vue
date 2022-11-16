@@ -13,7 +13,7 @@
               status-icon
               :rules="planRules"
               ref="planForm"
-              label-width="100px"
+              label-width="110px"
               class="demo-ruleForm"
             >
               <el-form-item label="方案名称：" prop="planName">
@@ -172,7 +172,7 @@
               </el-form-item>
               <el-form-item
                 v-if="isPay && BDData.uType === 'ADN_BD'"
-                label="媒体类型："
+                label="意向投放媒体："
                 prop="customerMediaType"
               >
                 <el-select
@@ -6323,7 +6323,7 @@ export default {
 }
 
 /deep/ .el-form-item__label {
-  padding: 0 0 0 12px;
+  padding: 0 0 0 0px;
 }
 
 /deep/ .selectAdsTable .el-table__body-wrapper {

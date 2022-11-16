@@ -292,110 +292,6 @@
                     style="width: 100%"
                     show-overflow-tooltip
                   >
-<<<<<<< HEAD
-                    <template slot-scope="scope">
-                      {{ scope.row.site || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="资产编号"
-                    min-width="100px"
-                    :show-overflow-tooltip="true"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.assetTag || "&#45;&#45;" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="mType"
-                    label="设备类型"
-                    min-width="100px"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    label="素材尺寸"
-                    min-width="200px"
-                    class-name="pre-column"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.adSizeInfo || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="可视尺寸"
-                    min-width="200px"
-                    class-name="pre-column"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.adViewSizeInfo || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="广告限制"
-                    min-width="120px"
-                    class="tar"
-                    :show-overflow-tooltip="true"
-                  >
-                    <template slot-scope="scope">
-                      <span>{{ scope.row.notPush || "--" }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="备注"
-                    min-width="100px"
-                    :show-overflow-tooltip="true"
-                  >
-                    <template slot-scope="scope">
-                      {{ scope.row.mRemark || "--" }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="mState" label="状态" min-width="80px">
-                    <template slot-scope="scope">
-                      {{
-                        scope.row.mState == 0
-                          ? "禁用"
-                          : scope.row.mState == 1
-                          ? "正常"
-                          : scope.row.mState == 2
-                          ? "待安装"
-                          : scope.row.mState == 3
-                          ? "待维修"
-                          : "已拆除"
-                      }}
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-        <div class="content_bottom_btn">
-          <el-button plain type="default" @click="goBack">返回</el-button>
-        </div>
-      </div>
-    </div>
-    <!--资源图片模态框-->
-    <el-dialog custom-class="img-dialog" :visible.sync="ResImgDialogVisible">
-      <el-carousel class="resImg">
-        <el-carousel-item v-for="item in ResImgSrc" :key="item">
-          <img class="resImg" :src="item" alt="资源图片" />
-        </el-carousel-item>
-      </el-carousel>
-    </el-dialog>
-    <el-dialog
-      :visible.sync="ConnectDoorDialogVisible"
-      title="连排门设置"
-      custom-class="connectAD"
-    >
-      <ul>
-        <li
-          v-for="(item, index) in connectAdArr"
-          :key="index"
-          class="connect_door_li"
-        >
-          <span class="connect_door_h4"
-            >连排门{{ AToZList[index].value }}:</span
-=======
                     <el-table-column
                         prop="mTitle"
                         label="媒体位置"
@@ -552,7 +448,6 @@
             v-for="(item, index) in connectAdArr"
             :key="index"
             class="connect_door_li"
->>>>>>> 515dd5a706733b6597d8b67793d4b9f2ef85676f
           >
             <span class="connect_door_h4"
               >连排门{{ AToZList[index].value }}:</span

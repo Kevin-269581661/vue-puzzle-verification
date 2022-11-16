@@ -134,6 +134,28 @@
             <el-option label="未拍照" value="0"></el-option>
           </el-select>
         </el-form-item> -->
+        <!-- <el-form-item label="媒体名称:" class="tag-overflow">
+            <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitle" @change="arr=>changeSelect(arr, 'mTitle', 'mTitleList')">
+                <el-option label="全部" value="全部"></el-option>
+                <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
+                        :value="item.itemValue"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="媒体位ID:" class="tag-overflow">
+            <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTag" @change="arr=>changeSelect(arr, 'assetTag', 'assetTagList')">
+                <el-option label="全部" value="全部"></el-option>
+                <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
+                        :value="item.itemValue"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="位置朝向:">
+            <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation" @change="arr=>changeSelect(arr, 'siteOrientation', 'siteOrientationList')">
+                <el-option label="全部" value="全部"></el-option>
+                <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
+                        :value="item.itemValue"></el-option>
+            </el-select>
+        </el-form-item>
+        -->
         <el-form-item>
           <el-button type="primary" @click="searchImg()">搜 索</el-button>
           <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -981,6 +1003,12 @@ export default {
         // 物料备注
         materialRemark: ["全部"],
         // prStatus: "全部",
+        // 媒体位ID
+        assetTag: ['全部'],
+        // 媒体名称
+        mTitle: ['全部'],
+        // 位置朝向
+        siteOrientation: '全部',
       },
       // 资源列表
       allResource: [],
@@ -1147,7 +1175,11 @@ export default {
       isEdit: false, //是编辑或新增换画
       regionAreaList: [], //换画区域城市
       launchDateList: [], //换画排期筛选列表launchDateList
-      painList: []
+      painList: [],
+
+    //   assetTagList: [], //媒体位id数据
+    //   mTitleList: [], //媒体名称数据
+    //   siteOrientationList: [], //位置朝向数据
     };
   },
   mounted() {
@@ -1164,6 +1196,7 @@ export default {
     } else if (this.type === 2) {
       this.getPainList();
     }
+    this.getPlanDetails()
   },
   watch: {
     fromType() {
@@ -1174,6 +1207,41 @@ export default {
   },
 
   methods: {
+    // 获取 媒体位id/媒体名称/位置朝向 的数据
+    // getPlanDetails() {
+    //     let info = {
+    //         apID:sessionStorage.getItem('order_apid'),
+    //     }
+    //     // 1媒体位id
+    //     api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: 1})
+    //     .then((res) => {
+    //         if(res.data.SysCode === 200200) {
+    //             const _data = res.data.data
+    //             this.assetTagList = _data
+    //         }
+    //     })
+    //     .catch((err) => { console.log(err); })
+
+    //     // 2媒体名称
+    //     api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: 2})
+    //     .then((res) => {
+    //         if(res.data.SysCode === 200200) {
+    //             const _data = res.data.data
+    //             this.mTitleList = _data
+    //         }
+    //     })
+    //     .catch((err) => { console.log(err); })
+
+    //     // 3位置朝向
+    //     api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: 3})
+    //     .then((res) => {
+    //         if(res.data.SysCode === 200200) {
+    //             const _data = res.data.data
+    //             this.siteOrientationList = _data
+    //         }
+    //     })
+    //     .catch((err) => { console.log(err); })
+    // },
     //获取媒体类型数据
     getMediaTypes() {
       //如果当前换画组数据为空时，则不进行数据请求
@@ -1404,6 +1472,9 @@ export default {
         dateRange,
         materialRemark,
         // prStatus,
+        mTitle,
+        assetTag,
+        siteOrientation
       } = this.publishSearchInfo;
       let info = {
         uid: uID,
@@ -1417,6 +1488,9 @@ export default {
         time: dateRange.includes("全部") ? "" : dateRange.join(","),
         materialRemark: materialRemark.includes("全部") ? "" : materialRemark,
         // prStatus: prStatus == "全部" ? "" : prStatus,
+        mTitle: mTitle.includes('全部') ? "" : mTitle,
+        assetTag: assetTag.includes('全部') ? "" : assetTag,
+        siteOrientation: siteOrientation=='全部' ? "" : siteOrientation,
       };
 
       if (allPic == "2") {
@@ -1457,6 +1531,9 @@ export default {
           // 物料备注
           materialRemark: ["全部"],
           // prStatus: "全部",
+          mTitle: ["全部"],
+          assetTag: ["全部"],
+          siteOrientation: "全部",
         };
         this.searchFun();
       } else {
@@ -1467,6 +1544,9 @@ export default {
           resName: "全部",
           status: "全部",
           // prStatus: "全部",
+          mTitle: ["全部"],
+          assetTag: ["全部"],
+          siteOrientation: "全部",
         };
         this.getPainList();
       }

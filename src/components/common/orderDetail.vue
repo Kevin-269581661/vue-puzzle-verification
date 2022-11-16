@@ -182,14 +182,8 @@
                         inline
                         class="demo-table-expand"
                       >
-                        <el-form-item label="商圈：">
-                          <span>{{ props.row.tradingArea }}</span>
-                        </el-form-item>
                         <el-form-item label="楼栋数量：">
                           <span>{{ props.row.fNum }}</span>
-                        </el-form-item>
-                        <el-form-item label="资产编号：">
-                          <span>{{ props.row.assetTag }}</span>
                         </el-form-item>
                         <el-form-item label="入住年份：">
                           <span>{{ props.row.chDay }}</span>
@@ -235,7 +229,7 @@
                   </el-table-column>
                   <el-table-column
                     label="资源名称"
-                    min-width="16.1%"
+                    min-width="180px"
                     class-name="resName-wrap"
                     show-overflow-tooltip
                   >
@@ -265,19 +259,9 @@
                     </template>
                   </el-table-column>
                   <el-table-column
-                    prop="mTitle"
-                    label="媒体名称"
-                    min-width="10.3%"
-                  >
-                  </el-table-column>
-                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="10.3%">
-                  </el-table-column>
-                  <el-table-column prop="asLab" label="投放面" min-width="8.8%">
-                  </el-table-column>
-                  <el-table-column
                     prop="city"
                     label="城市"
-                    min-width="6%"
+                    min-width="120px"
                     :filters="filterCityData"
                     :filter-method="filterCity"
                   >
@@ -285,12 +269,68 @@
                   <el-table-column
                     prop="rName"
                     label="区域"
-                    min-width="7.4%"
+                    min-width="120px"
                     :filters="filtersArea"
                     :filter-method="filterRName"
                   >
                   </el-table-column>
-                  <el-table-column
+                  <el-table-column prop="street" label="街道（new）" min-width="150px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.street || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-form-item prop="tradingArea" label="商圈" min-width="120px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.tradingArea || '--' }}</span>
+                    </template>
+                  </el-form-item>
+                  <el-table-column prop="mTitle" label="媒体名称" min-width="150px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.mTitle || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="assetTag" label="媒体位ID" min-width="180px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.assetTag || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="mType" label="设备类型（new）" min-width="180px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.mType || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="site" label="位置类型（new）" min-width="120px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.site || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="buildingName" label="楼栋（new）" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.buildingName || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="unitName" label="单元（new）" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.unitName || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="siteOrientation" label="位置朝向（new）" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.siteOrientation || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="100px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.mediaTypeName || '--' }}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="asLab" label="投放面" min-width="80px">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.asLab || '--' }}</span>
+                    </template>
+                  </el-table-column>
+
+                  <!-- <el-table-column
                     prop="cType"
                     label="楼盘类型"
                     min-width="8.8%"
@@ -298,8 +338,8 @@
                     <template slot-scope="scope">
                       <span>{{ scope.row.cType || '--' }}</span>
                     </template>
-                  </el-table-column>
-                  <el-table-column
+                  </el-table-column> -->
+                  <!-- <el-table-column
                     prop="hNum"
                     label="小区户数"
                     min-width="7.3%"
@@ -310,8 +350,8 @@
                         scope.row.hNum ? priceToFormat(scope.row.hNum) : 0
                       }}</span>
                     </template>
-                  </el-table-column>
-                  <el-table-column
+                  </el-table-column> -->
+                  <!-- <el-table-column
                     label="楼盘价格"
                     min-width="7.3%"
                     align="right"
@@ -325,14 +365,16 @@
                         }}</span
                       >
                     </template>
-                  </el-table-column>
+                  </el-table-column> -->
+
                   <el-table-column
                     prop="timeRange"
                     label="排期"
-                    min-width="14.2%"
+                    min-width="220px"
                     :filters="scheduleList"
                     :filter-method="filterTimeRange"
                     show-overflow-tooltip
+                    fixed="right"
                   >
                     <template slot-scope="scope">
                       <template v-if="scope.row.lState == 2">
@@ -508,29 +550,90 @@
           :before-close="closeDialogChangePoint"
         >
           <div>
-            <el-row class="search-row" style="margin: 0">
-              <el-col>
+            <el-row class="search-row" style="margin: 0; display: flex; flex-wrap: wrap;">
+              <el-col class="el-col-box">
                 <span>资源名称：</span>
                 <el-input
-                  placeholder="请输入资源名称进行搜索"
-                  v-model="changeKeyword"
+                  placeholder="请输入资源名称"
+                  v-model="changePointParams.resName"
                   class="input-with-select"
-                  style="width: 200px"
-                  @change="search('change')"
                 ></el-input>
+              </el-col>
+              <el-col class="el-col-box" v-if="sessionData.uType == 'ADN_MD_COUNTRY'">
+                <span>媒体位ID：</span>
+                <el-select
+                    filterable multiple collapse-tags clearable
+                    placeholder="请选择媒体位ID"
+                    v-model="changePointParams.assetTag"
+                    class="input-with-select">
+                    <el-option
+                        v-for="(item, index) of assetTagList"
+                        :key="index"
+                        :label="item.itemValue"
+                        :value="item.itemValue">
+                    </el-option>
+                </el-select>
+              </el-col>
+              <el-col class="el-col-box" v-if="sessionData.uType == 'ADN_MD_COUNTRY'">
+                <span>媒体名称：</span>
+                <el-select
+                    filterable multiple collapse-tags clearable
+                    placeholder="请选择媒体名称"
+                    v-model="changePointParams.mTitle"
+                    class="input-with-select">
+                    <el-option
+                        v-for="(item, index) of mTitleList"
+                        :key="index"
+                        :label="item.itemValue"
+                        :value="item.itemValue">
+                    </el-option>
+                </el-select>
+              </el-col>
+              <el-col class="el-col-box">
+                <span>设备型号：</span>
+                <el-select
+                    filterable multiple collapse-tags clearable
+                    placeholder="请选择设备型号"
+                    v-model="changePointParams.mType"
+                    class="input-with-select">
+                    <el-option
+                        v-for="(item, index) of mTypeList"
+                        :key="index"
+                        :label="item.itemValue"
+                        :value="item.itemValue">
+                    </el-option>
+                </el-select>
+              </el-col>
+              <el-col class="el-col-box">
+                <span>位置朝向：</span>
+                <el-select
+                    filterable collapse-tags clearable
+                    placeholder="请选择位置朝向"
+                    v-model="changePointParams.siteOrientation"
+                    class="input-with-select">
+                    <el-option
+                        v-for="(item, index) of siteOrientationList"
+                        :key="index"
+                        :label="item.itemValue"
+                        :value="item.itemValue">
+                    </el-option>
+                </el-select>
+              </el-col>
+              <el-col class="el-col-box" style="width: 300px;">
                 <el-button
                   type="primary"
                   @click="search('change')"
                   icon="el-icon-search"
-                  style="position: relative; top: 2px; margin-left: 3px"
+                  style="margin-left: 3px"
                   >搜索
                 </el-button>
                 <el-button
                   plain
                   @click="reset('change')"
-                  style="position: relative; top: 2px"
                   >重置
                 </el-button>
+              </el-col>
+              <el-col>
                 <div style="float: right; display: flex">
                   <el-button
                     v-if="handleType === 1"
@@ -621,7 +724,7 @@
                       <el-form-item label="楼栋数量:">
                         <span>{{ props.row.fNum }}</span>
                       </el-form-item>
-                      <el-form-item label="资产编号:">
+                      <el-form-item label="媒体位ID:">
                         <span>{{ props.row.assetTag }}</span>
                       </el-form-item>
                       <el-form-item label="入住年份:">
@@ -1078,14 +1181,7 @@
               </div>
               <no-search-result
                 v-if="recordList.table.length == 0"
-                style="
-                  width: 100%;
-                  height: 100%;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                "
+                style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;"
               ></no-search-result>
             </div>
           </div>
@@ -1266,8 +1362,14 @@ export default {
       showBtn: true,
       //更换点位对话框
       dialogChangePoint: false,
-      //更换点位对话框搜索
-      changeKeyword: '',
+      //更换点位搜索参数
+      changePointParams: {
+        resName: '',
+        assetTag: [],
+        mTitle: [],
+        mType: [],
+        siteOrientation: '',
+      },
       //更换点位对话框数据
       changePointInfo: {
         lIDArr: [],
@@ -1333,7 +1435,12 @@ export default {
       recommendationPageSize: 10,
       recommendationCurrentPage: 1,
       recommendationTotalNum: 0,
-      handleType: 1
+      handleType: 1,
+      // 媒体位id/媒体名称/位置朝向/设备型号 的数据
+      assetTagList: [],
+      mTitleList: [],
+      siteOrientationList: [],
+      mTypeList: [],
     };
   },
   created () {
@@ -1362,6 +1469,8 @@ export default {
       this.getPainlist();
     }
     this.getOrderPriceDetail()
+
+    this.getPlanDetails()
   },
   computed: {
     currentPagination () {
@@ -1370,6 +1479,34 @@ export default {
     }
   },
   methods: {
+    // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
+    getPlanDetails() {
+        let info = {
+            apID:sessionStorage.getItem('order_apid'),
+        }
+        for (let i = 1; i < 5; i++) {
+            api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: i})
+                .then((res) => {
+                    if(res.data.SysCode === 200200) {
+                        const _data = res.data.data
+                        switch (i) {
+                            case 1:
+                                this.assetTagList = _data
+                                break;
+                            case 2:
+                                this.mTitleList = _data
+                                break;
+                            case 3:
+                                this.siteOrientationList = _data
+                                break;
+                            case 4:
+                                this.mTypeList = _data
+                        }
+                    }
+                })
+                .catch((err) => { console.log(err); })
+        }
+    },
     //初始化各项数据
     initListData () {
       this.currPage = 1
@@ -1377,7 +1514,6 @@ export default {
       this.pointCurrPage = 1
       this.pointPageSize = 500
       this.keyword = ''
-      this.changeKeyword = ''
       this.changePointInfo = {
         lIDArr: [],
         allPoint: 0,
@@ -1910,16 +2046,8 @@ export default {
         token: loginData.token,
         pageNum: this.currPage,
         pageSize: this.pageSize,
+        resName: this.keyword
       };
-      if (type && type == 'change') {
-        info.resName == this.changeKeyword
-        info.pageNum = this.pointCurrPage
-        info.pageSize = this.pointPageSize
-        info.lState = 1
-        info.enableStop = this.handleType === 2
-      } else {
-        info.resName = this.keyword
-      }
       api.getApi(this.apiVar.Advertisement + "/GetAdLaunchList", info)
         .then(res => {
           if (res.data.SysCode == 200200) {
@@ -2136,9 +2264,36 @@ export default {
       if (type == 'change') {
         //更换点位
         let t = [...this.tempSetPointArr];
+        let params = {}
+        for (const key in this.changePointParams) {
+            const temp = this.changePointParams[key]
+            if (typeof temp === 'string' && temp) {
+                params[key] = temp
+            }
+            else if (typeof temp === 'object' && temp.length) {
+                params[key] = temp
+            }
+        }
         this.setpointArr = t.filter(
-          (item) => item.resName.indexOf(this.changeKeyword) != -1
+          (item) => {
+            for (const key in params) {
+                if (typeof params[key] === 'string') {
+                    if(item[key].indexOf(params[key]) == -1) {
+                        return false
+                    }
+                }
+                else if (typeof params[key] === 'object') {
+                    for (const k in params[key]) {
+                        if(item[key] !== params[key][k]) {
+                            return false
+                        }
+                    }
+                }
+            }
+            return true
+          }
         );
+        // console.log('setpointArr', this.setpointArr);
         this.changePointPageFn()
       } else {
         this.getSetPoint()
@@ -2147,7 +2302,7 @@ export default {
     //重置
     reset (type) {
       if (type == 'change') {
-        this.changeKeyword = ''
+        this.changePointParams = {}
         this.setpointArr = this.tempSetPointArr
         this.changePointPageFn()
       } else {
@@ -2612,6 +2767,7 @@ export default {
   font-size: 14px;
   vertical-align: middle;
   margin-right: 4px;
+  width: 250px;
 }
 
 /*下拉搜索框*/
@@ -2799,6 +2955,17 @@ export default {
 /* 搜索 */
 .search-row {
   margin: 0 32px 0;
+
+  .el-col-box {
+    display: flex;
+    align-items: center;
+    width: 350px;
+    margin: 8px 0;
+  }
+
+  /deep/ .el-input__icon {
+    line-height: 32px;
+  }
 }
 .change-point-select {
   width: 74px;

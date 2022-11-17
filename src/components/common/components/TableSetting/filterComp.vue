@@ -1,6 +1,6 @@
 <template>
     <div style="margin-left: 8px;">
-        <el-popover popper-class="filter-popover" placement="bottom" :width="200" trigger="click">
+        <el-popover popper-class="filter-popover" placement="bottom" trigger="click">
             <div class="filter-box">
                 <div class="filter-box-title">
                     <el-checkbox v-model="allChecked" @change="checkAll">列展示</el-checkbox>
@@ -119,37 +119,51 @@ export default {
         }
     },
     mounted() {
+        // 获取本地缓存
+        const allColumnList = getLocalCache(`${this.cacheKey}-allColumnList`)
+        const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
+        const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
+        const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
+
+        // 列字段类型处理
         const initList = this.columns.filter(v => v.fix === 'not')
         const initLeftList = this.columns.filter(v => v.fix === 'left')
         const initRightList = this.columns.filter( v => v.fix === 'right')
-        // 重置数据备份
+
+        // 备份初始设置
         this.initList = JSON.parse(JSON.stringify(initList))
         this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
         this.initRightList = JSON.parse(JSON.stringify(initRightList))
 
-        // 本地是否存在默认配置，有直接拿，没有则保存
-        const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
-        if(notFixList) {
-            this.notFixList = notFixList
-        } else {
+        // 更新列字段
+        const updateColumns = () => {
             this.notFixList = JSON.parse(JSON.stringify(initList))
-            addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
-        }
-        const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
-        if(leftFixList) {
-            this.leftFixList = leftFixList
-        } else {
             this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
-            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
-        }
-        const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
-        if(rightFixList) {
-            this.rightFixList = rightFixList
-        } else {
             this.rightFixList = JSON.parse(JSON.stringify(initRightList))
+            addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
+            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
             addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
+            // 缓存总的列字段，用于比较是否更新
+            addLocalCache(`${this.cacheKey}-allColumnList`, this.columns)
         }
 
+        // 判断是否存在配置
+        if(allColumnList) {
+            // 判断是否更新
+            const arr1 = this.columns.filter(x => !allColumnList.some(y => y.prop === x.prop))
+            const arr2 = allColumnList.filter(x => !this.columns.some(y => y.prop === x.prop))
+            if(arr1.length || arr2.length) {
+                updateColumns()
+            }
+            else {
+                this.notFixList = notFixList
+                this.leftFixList = leftFixList
+                this.rightFixList = rightFixList
+            }
+        }
+        else {
+            updateColumns()
+        }
         this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
         this.isCheckAll()
     },
@@ -283,7 +297,7 @@ export default {
                 line-height: 20px;
                 color: #D6D6D6;
                 cursor: grab;
-                padding: 0 12px;
+                padding: 4px 12px 0 12px;
             }
 
             /deep/ label.el-checkbox {
@@ -312,7 +326,7 @@ export default {
 </style>
 <style lang="scss">
 .el-popover.filter-popover {
-    box-sizing: content-box;
+    box-sizing: border-box;
     padding: 0 !important;
     padding-bottom: 6px !important;
 }

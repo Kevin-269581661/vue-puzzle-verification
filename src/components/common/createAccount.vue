@@ -9,7 +9,6 @@
                     <a href="#" v-else>修改账号</a>
                 </p>
             </div>
-            {{ accountForm.userMediaChooseConfig }}
             <!--客户信息-->
             <div class="mediaList_wrap">
                 <div class="mediaList_container">
@@ -38,24 +37,17 @@
                         </el-form-item>
                         <!-- , checkStrictly: true -->
                         <!-- 媒介或销售 -->
-                        <!-- <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'"> -->
-                        <el-form-item label="媒体权限：" prop="userMediaChooseConfig">
-                            <el-cascader
-                                ref="userMediaRef" size="small" collapse-tags clearable
-                                v-model="accountForm.userMediaChooseConfig"
-                                :options="MD_BD_MediaPermissonArr"
-                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                @change="userMediaChange">
-                            </el-cascader>
-                            <!-- <el-cascader
-                                ref="cascader"
-                                v-model="accountForm.userMediaChooseConfig"
-                                :options="MD_BD_MediaPermissonArr"
-                                :props="{ expandTrigger: 'hover', emitPath: false }"
-                                collapse-tags clearable filterable size="small" @change="handlerChange">
-                            </el-cascader> -->
-                        </el-form-item>
-                        <!-- </template> -->
+                        <template v-if="accountForm.company || (accountForm.role == 'MD' || accountForm.role == 'BD')">
+                            <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
+                                <el-cascader
+                                    ref="userMediaRef" size="small" collapse-tags clearable
+                                    v-model="accountForm.MD_BD_MediaPermission"
+                                    :options="MD_BD_MediaPermissionArr"
+                                    :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
+                                    @change="MD_BD_MediaPermissionChange">
+                                </el-cascader>
+                            </el-form-item>
+                        </template>
                         <!-- 开发楼盘人员 -->
                         <template v-if="accountForm.role == 'DEV'">
                             <el-form-item label="开发类别：" prop="devManageLevel">
@@ -263,7 +255,7 @@ export default {
             // 媒体权限
             mediaPermissionArr: [],
             // 媒介或销售的媒体纬度数据
-            MD_BD_MediaPermissonArr: [
+            MD_BD_MediaPermissionArr: [
                 {
                     label: '广告门',
                     value: 1,
@@ -333,8 +325,8 @@ export default {
             ],
             //表单
             accountForm: {
-                account: "",
-                realName: "",
+                account: "wuyufan",
+                realName: "wuyufan",
                 role: "",
                 company: "",
                 boss: "",
@@ -342,14 +334,14 @@ export default {
                 engineerLevel: "",
                 devManageLevel: "",
                 mediaPermission: [],
-                phone: "",
+                phone: "13687495096",
                 division: "",
                 email: "",
                 saleManageLevel: "",
                 mediaManageLevel: "",
                 roleCity: [],
                 backstagePermission: 0,
-                userMediaChooseConfig: [],
+                MD_BD_MediaPermission: []
             },
             // 权限城市数组
             roleCityArr: [],
@@ -447,36 +439,51 @@ export default {
         }
     },
     methods: {
-        userMediaChange() {
-            const nodeList = this.$refs.userMediaRef.getCheckedNodes()
+        // 媒介/销售 媒体权限默认勾选/取消勾选
+        MD_BD_MediaPermissionChange(arr) {
+            let nodeList = this.$refs.userMediaRef.getCheckedNodes()
             const curLength = nodeList.length
             const tempLength = this.tempNodes.length
             let node = [];
             // 当前选中项
             if(curLength - tempLength > 0) {
-                node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1)[0];
-                // 点击的是单元门禁灯箱
-                if(node.label === '单元门禁灯箱') {
-                    if(this.accountForm.role == 'BD') {
-                        const index = node.children.findIndex((child) => child.label === '单元')
+                node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
+                if(node) {
+                    let index
+                    // 点击的是单元门禁灯箱
+                    if(node.label === '单元门禁灯箱' && this.accountForm.role == 'BD') {
+                        index = node.children.findIndex((child) => child.label === '单元')
                         node.children[index].checked = true
+                        nodeList = this.$refs.userMediaRef.getCheckedNodes()
                     }
-                }
-                else {
-                    const index = node.children.findIndex((child) => child.label === '点位')
-                    node.children[index].checked = true
+                    else {
+                        index = node.children.findIndex((child) => child.label === '点位')
+                        node.children[index].checked = true
+                        nodeList = this.$refs.userMediaRef.getCheckedNodes()
+                    }
+                    arr.push([node.value, node.children[index].value])
                 }
             }
             // 当前取消选中项
-            else {
-                node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1)[0];
-                node.children.forEach(child => child.checked = false)
+            else if (curLength - tempLength < 0){
+                node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1 && item.level === 1)[0];
+                if(node) {
+                    node.children.forEach(child => child.checked = false)
+                    const nodeIndex = nodeList.findIndex(item => item.parent === node)
+                    const delArr = arr.filter(item => item[0] === node.value)
+                    nodeList.splice(nodeIndex, 1)
+                    arr.forEach(item => {
+                        const index = delArr.indexOf(item)
+                        if(index > -1) {
+                            arr.splice(index, 1)
+                        }
+                    })
+                }
             }
             this.tempNodes = nodeList
-            console.log(node, 'node');
         },
         // 获取角色为媒介或销售的媒体纬度
-        getMD_BD_MediaPermisson() {
+        getMD_BD_MediaPermission() {
             let info = {
                 companyIds: this.accountForm.company
             }
@@ -502,7 +509,7 @@ export default {
                         })
                     }
                     console.log('data', _newData);
-                    this.MD_BD_MediaPermissonArr = _newData;
+                    this.MD_BD_MediaPermissionArr = _newData;
                 } else {
                     this.$message({
                         message: res.data.MSG,
@@ -715,7 +722,9 @@ export default {
                 }
             }
             this.getMediaPermission();
-            this.getMD_BD_MediaPermisson();
+            this.accountForm.MD_BD_MediaPermission = []
+            this.tempNodes = []
+            this.getMD_BD_MediaPermission();
         },
         lazyFunction(fn, timeout) {
             var timer = 0;
@@ -798,6 +807,22 @@ export default {
         // 编辑、新建数据接口模板
         setSubmitData() {
             let actFrom = this.accountForm;
+            // 处理媒介/销售选点维度
+            let userMediaConfig = []
+            let mp = this.accountForm.MD_BD_MediaPermission.filter(item => item.length > 1)
+            if(mp.length) {
+                let mpArr = this.MD_BD_MediaPermissionArr
+                for (const key of mp) {
+                    const fIndex = mpArr.findIndex(item => item.value === key[0])
+                    const cIndex = mpArr[fIndex].children.findIndex(item => item.value === key[1])
+                    userMediaConfig.push({
+                        mediaTypeId: mpArr[fIndex].value,
+                        mediaTypeName: mpArr[fIndex].label,
+                        chooseType: mpArr[fIndex].children[cIndex].value,
+                        chooseTypeName: mpArr[fIndex].children[cIndex].label
+                    })
+                }
+            }
             let sess = this.sessionData;
             let account = {
                 uid: sess.uID,
@@ -814,6 +839,7 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
+                userMediaChooseConfig: userMediaConfig
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -827,6 +853,7 @@ export default {
             if (this.isEdit) {
                 account.uID = actFrom.uID;
             }
+            console.log("提交的账号信息", account);
             return account;
         },
         sortCity(arr) {
@@ -838,7 +865,6 @@ export default {
         // 修改账户信息接口
         postEditInfo() {
             let account = this.setSubmitData();
-            console.log(account);
             api
                 .postApi(this.apiVar.UCAPI + "/RegUser", account)
                 .then((res) => {
@@ -862,7 +888,6 @@ export default {
         //注册接口
         createFun() {
             let account = this.setSubmitData();
-            console.log("提交的账号信息", account);
             api
                 .postApi(this.apiVar.UCAPI + "/RegUser", account)
                 .then((res) => {

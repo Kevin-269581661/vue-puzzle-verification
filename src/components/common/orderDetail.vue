@@ -266,6 +266,30 @@
                             </template>
                         </el-table-column>
                     </template>
+                    <template v-else-if="item.label === '媒体类型'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :fixed="item.fix === 'left' ? true : false"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :filters="filterMTypeData"
+                            :filter-method="filterMType"
+                        >
+                        </el-table-column>
+                    </template>
+                    <template v-else-if="item.label === '投放面'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :fixed="item.fix === 'left' ? true : false"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :filters="filterAsLabData"
+                            :filter-method="filterAsLab"
+                        >
+                        </el-table-column>
+                    </template>
                     <template v-else-if="item.label === '城市'">
                         <el-table-column
                             v-if="item.isChecked"
@@ -1256,6 +1280,10 @@ export default {
       filterCityData: [],
       // 地区过滤结果
       filtersArea: [],
+      // 媒体类型过滤结果
+      filterMTypeData: [],
+      // 投放面过滤结果
+      filterAsLabData: [],
       // 当前计划排期区间列表
       scheduleList: [],
       // 当前订单物料列表
@@ -2112,8 +2140,11 @@ export default {
 
             // 城市筛选过滤点位更改记录
             this.filterCityData = filterFormat(result, "city");
-            // console.log('城市filter', this.filterCityData)
             this.filtersArea = filterFormat(result, "rName");
+            // 媒体类型过滤
+            this.filterMTypeData = filterFormat(result, 'mType');
+            // 投放面过滤
+            this.filterAsLabData = filterFormat(result, 'asLab');
             this.filtersData = filterFormat(result, "timeRange");
             this.changePointloading = false;
             this.currPointloading = false;
@@ -2399,6 +2430,15 @@ export default {
       })
     },
 
+    // 媒体类型筛选
+    filterMType (value, row) {
+        console.log(row);
+        return row.mType === value
+    },
+    // 投放面筛选
+    filterAsLab (value, row) {
+        return row.asLab === value
+    },
     // 城市筛选
     filterCity (value, row) {
       return row.city === value;

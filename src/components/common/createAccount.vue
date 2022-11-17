@@ -41,11 +41,11 @@
                         <!-- <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'"> -->
                         <el-form-item label="媒体权限：" prop="userMediaChooseConfig">
                             <el-cascader
-                                ref="cascader" collapse-tags clearable
+                                ref="userMediaRef" size="small" collapse-tags clearable
                                 v-model="accountForm.userMediaChooseConfig"
                                 :options="MD_BD_MediaPermissonArr"
-                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: false }"
-                                @change="handleChange">
+                                :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
+                                @change="userMediaChange">
                             </el-cascader>
                             <!-- <el-cascader
                                 ref="cascader"
@@ -197,7 +197,8 @@ export default {
             }
         };
         return {
-            tempCascader: [],
+            // 媒介/销售 媒体权限缓存
+            tempNodes: [],
             isEdit: false, //新建/修改
             // 角色列表
             roleArr: [
@@ -446,8 +447,33 @@ export default {
         }
     },
     methods: {
-        handleChange(arr) {
-
+        userMediaChange() {
+            const nodeList = this.$refs.userMediaRef.getCheckedNodes()
+            const curLength = nodeList.length
+            const tempLength = this.tempNodes.length
+            let node = [];
+            // 当前选中项
+            if(curLength - tempLength > 0) {
+                node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1)[0];
+                // 点击的是单元门禁灯箱
+                if(node.label === '单元门禁灯箱') {
+                    if(this.accountForm.role == 'BD') {
+                        const index = node.children.findIndex((child) => child.label === '单元')
+                        node.children[index].checked = true
+                    }
+                }
+                else {
+                    const index = node.children.findIndex((child) => child.label === '点位')
+                    node.children[index].checked = true
+                }
+            }
+            // 当前取消选中项
+            else {
+                node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1)[0];
+                node.children.forEach(child => child.checked = false)
+            }
+            this.tempNodes = nodeList
+            console.log(node, 'node');
         },
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermisson() {

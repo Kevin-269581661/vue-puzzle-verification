@@ -25,7 +25,7 @@
                   planDetail.apName
                 }}
               </h4>
-              <div class="handleBtn">
+              <div class="handleBtn" v-if="planDetail.isSimpleRight === 1">
                 <el-tooltip
                   v-if="
                     ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
@@ -83,7 +83,7 @@
               </div>
             </div>
             <div>
-              <detail :detail="planDetail" v-if="isShow"></detail>
+              <detail :detail="planDetail"  :isSimpleRight="planDetail.isSimpleRight"  v-if="isShow"></detail>
             </div>
           </div>
         </div>
@@ -94,6 +94,16 @@
               <div class="first-wrap box-wrap">
                 <div class="table_wrap">
                   <div class="table-setting">
+                    <el-button
+                      plain
+                      type="default"
+                      icon="el-icon-download"
+                      class="searchBtn"
+                      v-if="planPanel == 'first'"
+                      @click="export2Excel(planDetail.apName)"
+                      :disabled="isDown"
+                      >导出</el-button
+                    >
                     <!-- 列设置 -->
                     <TableSetting refresh space filter :columns="currentColumn" cacheKey="planDetail" @filterColumn="filterColumn"
                       @refreshTable="refreshTable" @spaceSetting="spaceSetting">
@@ -306,7 +316,7 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="物料信息" name="third">
+            <el-tab-pane label="物料信息" name="third" v-if="planDetail.isSimpleRight === 1">
               <material
                 :materialInfoData="materialInfoJson"
                 :loading="maLoading"
@@ -317,16 +327,6 @@
           </el-tabs>
         </div>
         <div class="content_bottom_btn">
-          <el-button
-            plain
-            type="default"
-            icon="el-icon-download"
-            class="searchBtn"
-            v-if="planPanel == 'first'"
-            @click="export2Excel(planDetail.apName)"
-            :disabled="isDown"
-            >导出</el-button
-          >
           <el-button plain class="cancel" @click="goBack()">返回</el-button>
         </div>
         <el-dialog
@@ -604,10 +604,6 @@
       this.getMatchCnt(sessionStorage.getItem("plan_apid"));
       this.getADLimit()       // 获取广告限制列表
 
-      // 获取列表设置缓存
-      const rowSpace = getLocalCache("rowSpace");
-      this.rowSpace = rowSpace || "planDetail";
-
     },
     computed: {
       currentPagination () {
@@ -839,6 +835,7 @@
                   pdSendFee: this.priceFormat(info.barrier.adSendFee / 100),
                   pdOtherFee: this.priceFormat(info.barrier.adOtherFee / 100),
                 },
+                isSimpleRight: info.isSimpleRight
               };
               // 选点排期
               !updateDetail && this.getSetPoint();
@@ -1541,7 +1538,16 @@
 
   .table-setting {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     margin-bottom: 16px;
+    .searchBtn {
+      margin-right: 8px;
+      background: #1890FF;
+      border: 1px solid #1890FF;
+      box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+      border-radius: 2px;
+      color: #FFFFFF;
+    }
   }
   </style>

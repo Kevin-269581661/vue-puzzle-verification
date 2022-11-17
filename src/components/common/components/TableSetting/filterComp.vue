@@ -150,8 +150,8 @@ export default {
         // 判断是否存在配置
         if(allColumnList) {
             // 判断是否更新
-            const arr1 = this.columns.filter(x => !allColumnList.some(y => y.prop === x.prop))
-            const arr2 = allColumnList.filter(x => !this.columns.some(y => y.prop === x.prop))
+            const arr1 = this.columns.filter(x => !allColumnList.some(y => y.id === x.id))
+            const arr2 = allColumnList.filter(x => !this.columns.some(y => y.id === x.id))
             if(arr1.length || arr2.length) {
                 updateColumns()
             }
@@ -231,7 +231,6 @@ export default {
         toFixLeft(item) {
             const index = this.notFixList.findIndex(v => v.id === item.id)
             this.notFixList[index].fix = 'left'
-            // this.leftFixList.splice(index, 0, this.notFixList[index])
             this.leftFixList.push(item)
             this.notFixList.splice(index, 1)
             this.toInit()

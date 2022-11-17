@@ -6,7 +6,7 @@
       </p>
     </div>
     <div class="mediaList_wrap">
-      <div class="mediaList_head"> 
+      <div class="mediaList_head">
         <h2>订单列表</h2>
       </div>
       <div class="mediaList_container">
@@ -452,7 +452,7 @@ export default {
         // 升序降序0/1
         desc: "",
         // 媒体类型id
-        mediaTypeId: "",
+        mediaTypeIds: "",
       },
       // 公司列表
       companyData: [],
@@ -681,7 +681,7 @@ export default {
         orderby,
         desc,
         dateType,
-        mediaTypeId,
+        mediaTypeIds,
       } = this.searchInfo;
       info = {
         ...info,
@@ -696,7 +696,7 @@ export default {
         ...(orderby && { orderby }),
         ...(desc !== "" && desc >= 0 && { desc }),
         ...(rangeDate && { timeType: dateType }),
-        ...(mediaTypeId && { mediaTypeId }),
+        ...(mediaTypeIds && { mediaTypeIds }),
       };
       return info;
     },
@@ -739,7 +739,7 @@ export default {
         cityWord,
         status,
         dateType,
-        mediaTypeId
+        mediaTypeIds
       } =this.searchInfo;
       this.isSearch = false;
       let timer = setTimeout(() => {
@@ -754,7 +754,7 @@ export default {
         status > 0 ||
         status === 0 ||
         dateType ||
-        mediaTypeId
+        mediaTypeIds
       ) {
         this.currentOrder = [];
         this.loading = true;
@@ -1076,7 +1076,7 @@ export default {
         // 状态筛选
         status: "",
         dateType: "1",
-        mediaTypeId: "",
+        // mediaTypeIds: "",
       };
       this.currPage = 1;
       this.currentOrder = [];
@@ -1117,9 +1117,9 @@ export default {
             }
             else if (key === "mediaTypeNames") {
                 if (filters[key].length) {
-                    this.searchInfo.mediaTypeId = filters[key][0];
+                    this.searchInfo.mediaTypeIds = filters[key].join(',');
                 } else {
-                    this.searchInfo.mediaTypeId = "";
+                    this.searchInfo.mediaTypeIds = "";
                 }
             }
         }

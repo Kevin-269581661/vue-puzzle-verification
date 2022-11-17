@@ -731,10 +731,6 @@ export default {
     let startTime = timeFormat.returnDayCount(-180, "/");
     this.canSelectDayTime = [startTime, endTime];
 
-    // 获取列表设置缓存
-    const rowSpace = getLocalCache("rowSpace");
-    this.rowSpace = rowSpace || "mediaList";
-
     // 按下Enter键搜索
     document.onkeydown = (e) => {
         if(e.code.toUpperCase() === 'ENTER') {

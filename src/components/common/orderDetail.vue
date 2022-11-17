@@ -99,74 +99,75 @@
             <schedule-alter :detailData="orderDetail" />
             <div class="first-wrap box-wrap">
               <el-row class="search-row">
-                <el-col>
-                  <span style="font-size: 14px; color: rgba(0, 0, 0, 0.85)"
+                <el-col style="display: flex; justify-content: space-between;">
+                  <div>
+                    <span style="font-size: 14px; color: rgba(0, 0, 0, 0.85)"
                     >资源名称：</span
-                  >
-                  <el-input
-                    placeholder="请输入资源名称进行搜索"
-                    v-model="keyword"
-                    class="input-with-select"
-                    style="width: 260px"
-                    @change="search('current')"
-                  ></el-input>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-search"
-                    @click="search('current')"
-                    style="position: relative; top: 2px; margin-left: 3px"
-                  >
-                    搜索
-                  </el-button>
-                  <el-button
-                    style="position: relative; top: 2px"
-                    @click="reset('current')"
-                    plain
-                    >重置
-                  </el-button>
+                    >
+                    <el-input
+                        placeholder="请输入资源名称进行搜索"
+                        v-model="keyword"
+                        class="input-with-select"
+                        style="width: 260px"
+                        @change="search('current')"
+                    ></el-input>
+                    <el-button
+                        type="primary"
+                        icon="el-icon-search"
+                        @click="search('current')"
+                        style="position: relative; top: 2px; margin-left: 3px"
+                    >
+                        搜索
+                    </el-button>
+                    <el-button
+                        style="position: relative; top: 2px"
+                        @click="reset('current')"
+                        plain
+                        >重置
+                    </el-button>
+                  </div>
                   <!--<el-button type="primary" @click="showAddPointDialog" v-show="showHandel" >添加点位</el-button>-->
-                  <el-button
-                    style="
-                      float: right;
-                      position: relative;
-                      top: 2px;
-                      margin-left: 3px;
-                    "
-                    plain
-                    type="default"
-                    v-if="role != 'ADN_EP'"
-                    @click="getPointRecord"
-                    >更改记录
-                  </el-button>
-                  <el-button
-                    plain
-                    type="default"
-                    icon="el-icon-download"
-                    @click="export2Excel(orderDetail.apName)"
-                    :disabled="isDown"
-                    style="
-                      position: relative;
-                      top: 2px;
-                      float: right;
-                      margin-right: 3px;
-                    "
-                    >导出
-                  </el-button>
-                  <el-button
-                    v-if="customPermission.pptPermission.gzqylPermission"
-                    style="
-                      position: relative;
-                      top: 2px;
-                      float: right;
-                      margin-right: 3px;
-                    "
-                    @click="showRecommendation"
-                    >推荐理由</el-button
-                  >
+
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <TableSetting
+                        refresh
+                        space
+                        filter
+                        :columns="currentColumns"
+                        cacheKey="xuandianpaiqi"
+                        @filterColumn="filterColumn"
+                        @refreshTable="refreshTable"
+                        @spaceSetting="spaceSetting"
+                        style="margin-right: 20px;">
+                    </TableSetting>
+                    <div>
+                        <el-button
+                            plain
+                            type="default"
+                            v-if="role != 'ADN_EP'"
+                            @click="getPointRecord"
+                            >更改记录
+                        </el-button>
+                        <el-button
+                            plain
+                            type="default"
+                            icon="el-icon-download"
+                            @click="export2Excel(orderDetail.apName)"
+                            :disabled="isDown"
+                            >导出
+                        </el-button>
+                        <el-button
+                            v-if="customPermission.pptPermission.gzqylPermission"
+                            @click="showRecommendation"
+                            >推荐理由
+                        </el-button>
+                    </div>
+                  </div>
                 </el-col>
               </el-row>
               <div class="table_wrap">
                 <el-table
+                  :size="rowSpace"
                   border
                   :data="currentPointArr"
                   style="width: 100%"
@@ -174,8 +175,10 @@
                   v-loading="currPointloading"
                   element-loading-text="玩命加载中.."
                   element-loading-spinner="el-icon-loading"
+                  :key="colKey"
                 >
-                  <el-table-column type="expand">
+                  <!-- 展开项 -->
+                  <el-table-column type="expand" fixed="left">
                     <template slot-scope="props">
                       <el-form
                         label-position="left"
@@ -227,163 +230,96 @@
                       </el-form>
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    label="资源名称"
-                    min-width="180px"
-                    class-name="resName-wrap"
-                    show-overflow-tooltip
-                  >
-                    <template slot-scope="scope">
-                      <div
-                        style="float: left; position: absolute; left: 0; top: 0"
-                      >
-                        <div
-                          v-if="scope.row.lState == 2"
-                          slot="reference"
-                          class="color-line"
-                          style="background-color: #ff763b"
-                        ></div>
-                        <div
-                          v-if="scope.row.isNew == 1"
-                          slot="reference"
-                          class="color-line"
-                        ></div>
-                        <div
-                          v-if="scope.row.isChange == 1"
-                          slot="reference"
-                          class="color-line"
-                          style="background-color: #26d8bb"
-                        ></div>
-                      </div>
-                      <span>{{ scope.row.resName || '--' }}</span>
+                  <template v-for="item in currentColumns">
+                    <template v-if="item.label === '资源名称'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :fixed="item.fix === 'left' ? true : false"
+                            :label="item.label"
+                            :min-width="item.width"
+                            class-name="resName-wrap"
+                            show-overflow-tooltip
+                        >
+                            <template slot-scope="scope">
+                            <div
+                                style="float: left; position: absolute; left: 0; top: 0"
+                            >
+                                <div
+                                v-if="scope.row.lState == 2"
+                                slot="reference"
+                                class="color-line"
+                                style="background-color: #ff763b"
+                                ></div>
+                                <div
+                                v-if="scope.row.isNew == 1"
+                                slot="reference"
+                                class="color-line"
+                                ></div>
+                                <div
+                                v-if="scope.row.isChange == 1"
+                                slot="reference"
+                                class="color-line"
+                                style="background-color: #26d8bb"
+                                ></div>
+                            </div>
+                            <span>{{ scope.row.resName || '--' }}</span>
+                            </template>
+                        </el-table-column>
                     </template>
-                  </el-table-column>
-                  <el-table-column prop="mediaTypeName" label="媒体类型" min-width="100px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.mediaTypeName || '--' }}</span>
+                    <template v-else-if="item.label === '城市'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :fixed="item.fix === 'left' ? true : false"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :filters="filterCityData"
+                            :filter-method="filterCity"
+                        >
+                        </el-table-column>
                     </template>
-                  </el-table-column>
-                  <el-table-column prop="asLab" label="投放面" min-width="80px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.asLab || '--' }}</span>
+                    <template v-else-if="item.label === '区域'">
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :fixed="item.fix === 'left' ? true : false"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :filters="filtersArea"
+                            :filter-method="filterRName"
+                        >
+                        </el-table-column>
                     </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="city"
-                    label="城市"
-                    min-width="120px"
-                    :filters="filterCityData"
-                    :filter-method="filterCity"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="rName"
-                    label="区域"
-                    min-width="120px"
-                    :filters="filtersArea"
-                    :filter-method="filterRName"
-                  >
-                  </el-table-column>
-                  <el-table-column prop="street" label="街道（new）" min-width="180px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.street || '--' }}</span>
+                    <template v-else-if="item.label === '排期'">
+                        <el-table-column
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :filters="scheduleList"
+                            :filter-method="filterTimeRange"
+                            show-overflow-tooltip
+                            :fixed="item.fix"
+                        >
+                            <template slot-scope="scope">
+                            <template v-if="scope.row.lState == 2">
+                                <span>{{ scope.row.finishTimeRange }}</span>
+                            </template>
+                            <span v-else>{{ scope.row.timeRange }}</span>
+                            </template>
+                        </el-table-column>
                     </template>
-                  </el-table-column>
-                  <el-form-item prop="tradingArea" label="商圈" min-width="120px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.tradingArea || '--' }}</span>
+                    <template v-else>
+                        <el-table-column
+                            v-if="item.isChecked"
+                            :prop="item.prop"
+                            :label="item.label"
+                            :min-width="item.width"
+                            :show-overflow-tooltip="true"
+                            :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
                     </template>
-                  </el-form-item>
-                  <el-table-column prop="mTitle" label="媒体名称" min-width="150px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.mTitle || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="assetTag" label="媒体位ID" min-width="180px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.assetTag || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="mType" label="设备类型（new）" min-width="180px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.mType || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="site" label="位置类型（new）" min-width="120px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.site || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="buildingName" label="楼栋（new）" min-width="100px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.buildingName || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="unitName" label="单元（new）" min-width="100px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.unitName || '--' }}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="siteOrientation" label="位置朝向（new）" min-width="100px">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.siteOrientation || '--' }}</span>
-                    </template>
-                  </el-table-column>
-
-                  <!-- <el-table-column
-                    prop="cType"
-                    label="楼盘类型"
-                    min-width="8.8%"
-                  >
-                    <template slot-scope="scope">
-                      <span>{{ scope.row.cType || '--' }}</span>
-                    </template>
-                  </el-table-column> -->
-                  <!-- <el-table-column
-                    prop="hNum"
-                    label="小区户数"
-                    min-width="7.3%"
-                    align="right"
-                  >
-                    <template slot-scope="scope">
-                      <span>{{
-                        scope.row.hNum ? priceToFormat(scope.row.hNum) : 0
-                      }}</span>
-                    </template>
-                  </el-table-column> -->
-                  <!-- <el-table-column
-                    label="楼盘价格"
-                    min-width="7.3%"
-                    align="right"
-                  >
-                    <template slot-scope="scope">
-                      <span
-                        >&yen;{{
-                          scope.row.hPrice
-                            ? priceFormat(scope.row.hPrice / 100)
-                            : 0
-                        }}</span
-                      >
-                    </template>
-                  </el-table-column> -->
-
-                  <el-table-column
-                    prop="timeRange"
-                    label="排期"
-                    min-width="220px"
-                    :filters="scheduleList"
-                    :filter-method="filterTimeRange"
-                    show-overflow-tooltip
-                    fixed="right"
-                  >
-                    <template slot-scope="scope">
-                      <template v-if="scope.row.lState == 2">
-                        <span>{{ scope.row.finishTimeRange }}</span>
-                      </template>
-                      <span v-else>{{ scope.row.timeRange }}</span>
-                    </template>
-                  </el-table-column>
-
+                  </template>
                   <div slot="empty">
                     <no-search-result></no-search-result>
                   </div>
@@ -1232,6 +1168,7 @@ import noSearchResult from "./components/noSearchResult.vue";
 import changePic from "./components/changePic.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
+import TableSetting from "./components/TableSetting";
 
 
 export default {
@@ -1246,16 +1183,32 @@ export default {
     changePic,
     noSearchResult,
     changeProposalOrderPrice,
-    ScheduleAlter
+    ScheduleAlter,
+    TableSetting
   },
   data () {
     return {
+      //用于更新表格
+      colKey: 1,
+      // 行距
+      rowSpace: "",
+      //表格渲染列
       currentColumns: [
         { id: 0, label: "资源名称", prop: "resName", width: "180px", isChecked: true, fix:"not" },
         { id: 1, label: "媒体类型", prop: "mediaTypeName", width: "100px", isChecked: true, fix:"not" },
-        { id: 2, label: "投放面", prop: "asLab", width: "80px", isChecked: true, fix:"not" },
-        { id: 3, label: "街道", prop: "street", width: "180px", isChecked: true, fix:"not" },
-        { id: 4, label: "媒体名称", prop: "street", width: "180px", isChecked: true, fix:"not" },
+        { id: 2, label: "投放面", prop: "asLab", width: "100px", isChecked: true, fix:"not" },
+        { id: 3, label: "城市", prop: "city", width: "120px", isChecked: true, fix:"not" },
+        { id: 4, label: "区域", prop: "rName", width: "120px", isChecked: true, fix:"not" },
+        { id: 5, label: "街道", prop: "street", width: "180px", isChecked: false, fix:"not" },
+        { id: 6, label: "商圈", prop: "tradingArea", width: "120px", isChecked: false, fix:"not" },
+        { id: 7, label: "媒体名称", prop: "mTitle", width: "150px", isChecked: true, fix:"not" },
+        { id: 8, label: "媒体位ID", prop: "assetTag", width: "180px", isChecked: true, fix:"not" },
+        { id: 9, label: "设备类型", prop: "mType", width: "180px", isChecked: false, fix:"not" },
+        { id: 10, label: "位置类型", prop: "site", width: "120px", isChecked: false, fix:"not" },
+        { id: 11, label: "楼栋", prop: "buildingName", width: "100px", isChecked: false, fix:"not" },
+        { id: 12, label: "单元", prop: "unitName", width: "100px", isChecked: false, fix:"not" },
+        { id: 13, label: "位置朝向", prop: "siteOrientation", width: "100px", isChecked: false, fix:"not" },
+        { id: 14, label: "排期", prop: "timeRange", width: "220px", isChecked: true, fix:"right" },
       ],
       companyId: null,  //公司ID
       mediaTypeList: [],  //媒体类型
@@ -1486,6 +1439,19 @@ export default {
     }
   },
   methods: {
+    // 列展示
+    filterColumn(columns) {
+        this.currentColumns = columns
+        this.colKey = Math.random()
+    },
+    // 刷新列表
+    refreshTable() {
+      this.getSetPoint();
+    },
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
     // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
     getPlanDetails() {
         let info = {
@@ -2109,7 +2075,38 @@ export default {
               this.changePointPageFn()
             } else {
               // 选点排期表格
-              this.currentPointArr = result;
+              for (const key of result) {
+                let obj = {
+                    resName: key.resName,
+                    mediaTypeName: key.mediaTypeName || '--',
+                    asLab: key.asLab || '--',
+                    city: key.city || '--',
+                    rName: key.rName || '--',
+                    street: key.street || '--',
+                    tradingArea: key.tradingArea || '--',
+                    mTitle: key.mTitle || '--',
+                    assetTag: key.assetTag || '--',
+                    mType: key.mType || '--',
+                    site: key.site || '--',
+                    buildingName: key.buildingName || '--',
+                    unitName: key.unitName || '--',
+                    siteOrientation: key.siteOrientation || '--',
+                    timeRange: key.timeRange || '--',
+                    finishTimeRange: key.finishTimeRange || '--',
+                    fNum: key.fNum || '--',
+                    chDay: key.chDay || '--',
+                    notPush: key.notPush || '--',
+                    asName: key.asName || '--',
+                    remark: key.remark || '--',
+                    trafficState: key.trafficState || '--',
+                    electrifyState: key.electrifyState || '--',
+                    lState: key.lState || '--',
+                    isNew: key.isNew || '--',
+                    isChange: key.isChange || '--',
+                }
+                this.currentPointArr.push(obj)
+              }
+            //   this.currentPointArr = result;
             }
 
             // 城市筛选过滤点位更改记录

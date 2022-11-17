@@ -1,5 +1,6 @@
 <!--
     组件相关参数：
+        cacheKey：用于本地缓存标识
         refresh：是否开启刷新，默认false
         space：是否开启密度，默认false
         filter：是否开启列筛选，默认false
@@ -24,7 +25,7 @@
   <div class="setting-container">
     <div class="setting-box">
         <refreshComp v-if="refresh" @refreshTable="refreshTable"></refreshComp>
-        <spaceComp v-if="space" @spaceSetting="spaceSetting"></spaceComp>
+        <spaceComp v-if="space" :cacheKey="cacheKey" @spaceSetting="spaceSetting"></spaceComp>
         <filterComp :cacheKey="cacheKey" :columns="columns" @filterColumn="filterColumn" v-if="filter"></filterComp>
     </div>
   </div>

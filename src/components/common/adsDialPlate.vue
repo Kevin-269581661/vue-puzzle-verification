@@ -58,7 +58,11 @@
                     </el-tabs>
                 </div>
                 <!-- 列设置 -->
-                <template v-if="mediaTypesArr.length">
+                <template
+                v-if="mediaTypesArr.length &&
+                    (sessionData.uType === 'ADN_MD' ||
+                    sessionData.uType === 'ADN_MD_COUNTRY' ||
+                    sessionData.uType === 'ADN_SM')">
                     <TableSetting class="tab-setting" refresh filter :columns="adsColumn" cacheKey="plate"
                         @filterColumn="filterColumn" @refreshTable="refreshTable">
                     </TableSetting>

@@ -205,22 +205,6 @@
           ></el-option>
         </el-select>
       </p>
-      <p class="conpany-form-item">
-        <span class="conpany-form__label">全国单拆单：</span>
-        <el-select
-          v-model="companyInfo.splitOrderType"
-          collapse-tags
-          placeholder="请选择"
-          size="small"
-        >
-          <el-option
-            v-for="item of splitOrderOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </p>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="isShowNew = false">取 消</el-button>
         <el-button type="primary" @click="handleCompany()">确 定</el-button>
@@ -302,17 +286,6 @@ export default {
           value: false
         }
       ],
-      // 全国单拆单类型
-      splitOrderOptions: [
-        {
-            label: '不可拆单',
-            value: 0
-        },
-        {
-            label: '可拆单',
-            value: 1
-        }
-      ],
       // 表格数据
       companyList: [],
       // 新增公司信息
@@ -321,7 +294,6 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
-        splitOrderType: 1
       },
       isShowNew: false,
       // 是否可新建公司
@@ -469,7 +441,6 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
-        splitOrderType: 0
       };
       this.isAdd = true;
       this.isShowNew = true;

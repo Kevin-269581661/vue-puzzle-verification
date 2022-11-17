@@ -127,16 +127,21 @@
               >新建</el-button
             >
             <!-- 列设置 -->
-            <TableSetting
-                refresh
-                space
-                filter
-                :columns="currentPlanColumn"
-                cacheKey="media"
-                @filterColumn="filterColumn"
-                @refreshTable="refreshTable"
-                @spaceSetting="spaceSetting">
-            </TableSetting>
+            <template
+                v-if="sessionData.uType === 'ADN_MD' ||
+                    sessionData.uType === 'ADN_MD_COUNTRY' ||
+                    sessionData.uType === 'ADN_SM'">
+                <TableSetting
+                    refresh
+                    space
+                    filter
+                    :columns="currentPlanColumn"
+                    cacheKey="media"
+                    @filterColumn="filterColumn"
+                    @refreshTable="refreshTable"
+                    @spaceSetting="spaceSetting">
+                </TableSetting>
+            </template>
           </div>
         </div>
 
@@ -731,10 +736,6 @@ export default {
     let startTime = timeFormat.returnDayCount(-180, "/");
     this.canSelectDayTime = [startTime, endTime];
 
-    // 获取列表设置缓存
-    const rowSpace = getLocalCache("rowSpace");
-    this.rowSpace = rowSpace || "medium";
-
     // 按下Enter键搜索
     document.onkeydown = (e) => {
         if(e.code.toUpperCase() === 'ENTER') {
@@ -747,9 +748,6 @@ export default {
     // 列展示
     filterColumn(columns) {
         this.currentPlanColumn = columns
-        // console.log(columns.filter((item) => item.fix=='right'));
-        // console.log(columns.filter((item) => item.fix=='not'));
-        // console.log(this.currentPlanColumn);
         this.itemKey = Math.random()
     },
     // 刷新列表

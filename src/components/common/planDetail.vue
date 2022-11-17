@@ -579,7 +579,7 @@
           { id: 9, label: "楼盘类型", prop: "cType", isChecked: true, fix: "not" },
           { id: 17, label: "小区户数", prop: "hNum", isChecked: true, fix: "not" },
           { id: 16, label: "楼盘价格", prop: "hPrice", isChecked: true, fix: "not" },
-          { id: 18, label: "排期", prop: "timeRange", isChecked: true, fix: "not" },
+          { id: 18, label: "排期", prop: "timeRange", isChecked: true, fix: "left" },
           { id: 3, label: "街道", prop: "street", isChecked: false, fix: "not" },
           { id: 4, label: "商圈", prop: "tradingArea", isChecked: false, fix: "not" },
           { id: 10, label: "单元", prop: "unitName", isChecked: false, fix: "not" },

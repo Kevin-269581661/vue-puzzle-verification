@@ -1197,12 +1197,12 @@ export default {
         { id: 0, label: "资源名称", prop: "resName", width: "180px", isChecked: true, fix:"not" },
         { id: 1, label: "媒体类型", prop: "mediaTypeName", width: "100px", isChecked: true, fix:"not" },
         { id: 2, label: "投放面", prop: "asLab", width: "100px", isChecked: true, fix:"not" },
-        { id: 3, label: "城市", prop: "city", width: "120px", isChecked: true, fix:"not" },
-        { id: 4, label: "区域", prop: "rName", width: "120px", isChecked: true, fix:"not" },
+        { id: 3, label: "城市", prop: "city", width: "100px", isChecked: true, fix:"not" },
+        { id: 4, label: "区域", prop: "rName", width: "100px", isChecked: true, fix:"not" },
         { id: 5, label: "街道", prop: "street", width: "180px", isChecked: false, fix:"not" },
         { id: 6, label: "商圈", prop: "tradingArea", width: "120px", isChecked: false, fix:"not" },
-        { id: 7, label: "媒体名称", prop: "mTitle", width: "150px", isChecked: true, fix:"not" },
-        { id: 8, label: "媒体位ID", prop: "assetTag", width: "180px", isChecked: true, fix:"not" },
+        { id: 7, label: "媒体名称", prop: "mTitle", width: "120px", isChecked: true, fix:"not" },
+        { id: 8, label: "媒体位ID", prop: "assetTag", width: "150px", isChecked: true, fix:"not" },
         { id: 9, label: "设备类型", prop: "mType", width: "180px", isChecked: false, fix:"not" },
         { id: 10, label: "位置类型", prop: "site", width: "120px", isChecked: false, fix:"not" },
         { id: 11, label: "楼栋", prop: "buildingName", width: "100px", isChecked: false, fix:"not" },
@@ -2075,6 +2075,7 @@ export default {
               this.changePointPageFn()
             } else {
               // 选点排期表格
+              let newData = []
               for (const key of result) {
                 let obj = {
                     resName: key.resName,
@@ -2104,9 +2105,9 @@ export default {
                     isNew: key.isNew || '--',
                     isChange: key.isChange || '--',
                 }
-                this.currentPointArr.push(obj)
+                newData.push(obj)
               }
-            //   this.currentPointArr = result;
+              this.currentPointArr = newData;
             }
 
             // 城市筛选过滤点位更改记录
@@ -2287,10 +2288,8 @@ export default {
                     }
                 }
                 else if (typeof params[key] === 'object') {
-                    for (const k in params[key]) {
-                        if(item[key] !== params[key][k]) {
-                            return false
-                        }
+                    if(!params[key].includes(item[key])) {
+                        return false
                     }
                 }
             }

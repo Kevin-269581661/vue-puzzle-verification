@@ -48,7 +48,6 @@
                                 >
                                 </el-cascader>
                             </el-form-item>
-                            {{accountForm.MD_BD_MediaPermission}}
                         </template>
                         <!-- 开发楼盘人员 -->
                         <template v-if="accountForm.role == 'DEV'">

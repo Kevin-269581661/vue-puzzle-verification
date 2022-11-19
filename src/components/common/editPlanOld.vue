@@ -484,7 +484,6 @@
               <el-radio-group
                 v-model="getAdsParamsData.chooseType"
                 class="chooseType-radio"
-                @change="handleChooseTypeChange"
               >
                 <el-radio-button
                   v-for="item in tabChooseTypeList"
@@ -526,7 +525,7 @@
                   >全选本页</el-checkbox
                 >
               </div>
-              <div class="myCheckbox" v-if="getAdsParamsData.chooseType !== 0">
+              <div class="myCheckbox pointNum" v-if="getAdsParamsData.chooseType !== 0">
                 点位数量
               </div>
               <el-table
@@ -547,12 +546,20 @@
                 <el-table-column
                   class-name="el-table-column-checkbox"
                   width="180"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="getAdsParamsData.chooseType === 0"
                   fixed="left"
                 >
                   <template slot-scope="scope">
-                    <div v-if="getAdsParamsData.chooseType !== 0">
-                      {{getAdsParamsData.chooseType}}
+                    <div v-if="getAdsParamsData.chooseType !== 0" class="pointCount-box">
+                      <el-input-number 
+                        v-model="scope.row.pointCount" 
+                        :min="0" 
+                        :max="scope.row.actualAdsCnt" 
+                        size="mini" 
+                        class="pointCount-input"
+                        @change="(currentValue, oldValue) => handlePointCountChange(currentValue, oldValue, scope.row)"
+                      >
+                      </el-input-number>
                     </div>
                     <template v-else>
                       <div
@@ -1847,6 +1854,15 @@ export default {
       handler(nVal) {
         if (nVal === 0) {
           this.currentColumn.unshift(MEDIA_NAME);
+          // 表格勾选
+          // for (let i = 0; i < this.planList.length; i++) {
+          //   if (item.mID === this.planList[i].mID) {
+          //     this.planList[i].adsList.forEach((pItem) => {
+          //       console.log(pItem, 'pItempItem')
+          //       pItem.checkBox = true;
+          //     });
+          //   }
+          // }
         }
         if (nVal === 1 || nVal === 2 || nVal === 3) {
           const index = this.currentColumn.findIndex((item) => {
@@ -1854,7 +1870,16 @@ export default {
           });
           this.currentColumn.splice(index, 1);
         }
-        this.filterColumn(this.currentColumn);
+        let pointCountType = ''
+        if(nVal === 1){
+          pointCountType = 'unitId'
+        } else if (nVal === 2) {
+          pointCountType = 'buildingId'
+        } else if (nVal === 3) {
+          pointCountType = 'resID'
+        }
+        this.pointCountType = pointCountType
+        this.getAdList();
       },
     },
   },
@@ -2426,9 +2451,14 @@ export default {
       ],
       siteOrientation: '',
 
-      // 居住人群
-      residents: [],
-      currentResidents: ''
+      pointCountType: '',
+      
+      // 楼栋数量map
+      buildingIdMap: {},
+      // 单元数量map
+      unitIdMap: {},
+      // 小区数量map
+      resIDMap: {}
     };
   },
   mounted() {
@@ -3238,7 +3268,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/getSalesProject", params)
         .then((res) => {
-          console.log("销售所属方案", res);
+          // console.log("销售所属方案", res);
           if (res.data.SysCode == 200200) {
             let resData = res.data.data;
             let tempList = [];
@@ -3334,14 +3364,14 @@ export default {
       });
     },
     // 接口数据转成table
-    setTableDataADDoor(ADSdata) {
-      console.log("接口数据转成table当前时间", this.dateInput);
+    setTableDataADDoor(ADSdata, isGetDataADDoor = false) {
       let i = 0;
+      let list = []
       for (let key of ADSdata) {
         let adObj = {
           mID: key.mID,
           resType: key.resType,
-          resID: key.resID,
+          resID: key.resID, // 小区ID
           province: key.province, //省份
           city: key.city, //城市
           origin: key.rName, //区域
@@ -3391,10 +3421,17 @@ export default {
           remark: key.remark,
           trafficState: key.trafficState,
           electrifyState: key.electrifyState,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
+          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          asID: key.asID,
+          asLab: key.asLab
         };
-        // if (key.mediaTypeName === '道闸') {
-        //     adObj.adPrice = key.asPrice / 100
-        // } else {
+        
+        if(this.getAdsParamsData.chooseType !== 0){
+          adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
+        }
+
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
         } else {
@@ -3408,7 +3445,7 @@ export default {
             adObj.adPrice = 0;
           }
         }
-        // }
+
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
           //本页可选点位
@@ -3435,11 +3472,19 @@ export default {
         } else {
           adObj.adlInfo = "";
         }
-        this.planList.push(adObj);
+        if (!isGetDataADDoor) {
+          this.planList.push(adObj);
+        } else {
+          list.push(adObj)
+        }
       }
-      this.currPageAsLength = i;
-      this.loadScroll = true;
+      if (!isGetDataADDoor) { 
+        this.currPageAsLength = i;
+        this.loadScroll = true;
+      }
+      return list
     },
+
     setPageNoAndTableData() {
       this.loadScroll = false;
       this.IsAll = false;
@@ -3740,7 +3785,7 @@ export default {
     },
     //媒体类型切换
     activeMediaType(mType) {
-      console.log("媒体类型", mType);
+      // console.log("媒体类型", mType);
       this.setPageNoAndTableData();
       this.currentMediaType = mType;
       this.getAdsParamsData.mediaTypeId = mType;
@@ -4097,8 +4142,10 @@ export default {
     // 选点表格(planList)的勾选
     hadADByshop(data) {
       let shopAD = data;
+      // console.log(this.shopingList, 'this.shopingList')
+      // console.log(this.planList, 'this.shopingListthis.shopingList')
       if (this.activeRName === shopAD.city) {
-        for (let sourceRow of this.planList) {
+        for (let sourceRow of this.planList) {    
           if (
             sourceRow.mID === shopAD.mID &&
             this.crossSchedules(shopAD.schedules)
@@ -4145,6 +4192,7 @@ export default {
     },
     // 选中A、B面的时候
     changeCheckBox(row, adSpaceItem) {
+      console.log(row, adSpaceItem, 'row, adSpaceItem')
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
@@ -4739,7 +4787,6 @@ export default {
     },
     // 选点列表数据到购物车数据
     setShopingTable(mediaInfo, adSpaceInfo) {
-      console.log("mediaInfo--", mediaInfo);
       let selectInfo = {
         rid: mediaInfo.rid,
         mID: mediaInfo.mID,
@@ -4797,7 +4844,13 @@ export default {
         mRemark: mediaInfo.mRemark,
         lng: mediaInfo.lng,
         lat: mediaInfo.lat,
+        unitId: mediaInfo.unitId, // 单元ID
+        buildingId: mediaInfo.buildingId, // 楼栋ID
+        actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
       };
+      if(this.getAdsParamsData.chooseType !== 0){
+        mediaInfo.pointCount = this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]]
+      }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -4829,6 +4882,11 @@ export default {
                 adSpaceItem.checkBox = false;
               }
             });
+          }
+          // 点位表对应的点位数据减一
+          if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
+            this.reduceAdspaceToshopCart(this.planList[i])
+            this.planList[i].pointCount--
           }
         }
       }
@@ -5116,7 +5174,12 @@ export default {
           parkSpaceNum: key.parkSpaceNum,
           peopleFlow: key.peopleFlow,
           carFlow: key.carFlow,
+          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
         };
+
+        if(this.getAdsParamsData.chooseType !== 0){
+          adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+        }
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -5822,10 +5885,10 @@ export default {
                   lat: data.lat,
                   alias: data.alias,
                   street: data.street,
+                  unitId: data.unitId, // 单元ID
+                  buildingId: data.buildingId, // 楼栋ID
                 };
-                // if (data.mediaTypeName === '道闸') {
-                //     selectInfo.adPrice = data.asPrice / 100
-                // } else {
+
                 if (data.asPrice === null || data.asPrice === undefined) {
                   selectInfo.adPrice = (data.asPrice * 1) / 700;
                 } else {
@@ -5839,10 +5902,10 @@ export default {
                     selectInfo.adPrice = 1900 / 7;
                   }
                 }
-                // }
                 shopList.push(selectInfo);
               }
               this.shopingList = shopList;
+              this.initPointCounts(shopList)
             } else {
               this.shopingList = [];
             }
@@ -5958,7 +6021,7 @@ export default {
     // 获取权限下的城市列表
     getCityList() {
       let cityArea = JSON.parse(sessionStorage.getItem("cityArea"));
-      console.log("获取权限下的城市列表cityArea", cityArea);
+      // console.log("获取权限下的城市列表cityArea", cityArea);
       let cityList = [];
       for (let cKey of cityArea) {
         if (cKey.asrID == this.sessionData.asrID) {
@@ -6090,7 +6153,13 @@ export default {
                 parkSpaceNum: key.parkSpaceNum,
                 peopleFlow: key.peopleFlow,
                 carFlow: key.carFlow,
+                unitId: key.unitId, // 单元ID
+                buildingId: key.buildingId, // 楼栋ID
+                actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
               };
+              if(this.getAdsParamsData.chooseType !== 0){
+                adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+              }
               arr.push(AD_data);
             }
             this.planList = arr;
@@ -6111,10 +6180,6 @@ export default {
     // 更改列表行距
     spaceSetting(size) {
       this.rowSpace = size;
-    },
-
-    handleChooseTypeChange() {
-      this.getAdList();
     },
 
     // 设备型号筛选
@@ -6162,7 +6227,156 @@ export default {
       this.sites = [{dictDesc: '全部', dictValue: ''}, ...await this.getMediaTag('media_site')]
       // 位置朝向
       this.siteOrientations = [{dictDesc: '全部', dictValue: ''}, ...await this.getMediaTag('media_siteOrientation')]
-    }
+    },
+
+    // 点位数量变化
+    async handlePointCountChange (currentValue, oldValue, row) {
+      if(+currentValue > +oldValue) {
+        let addNum = currentValue - oldValue
+        const point = await this.handlePointRequest(addNum, row)
+        this.shopShow_hide(); // 动画效果
+        point.forEach(item => {
+          const adSpaceItem = {
+            asID: item.asID,
+            asLab: item.asLab,
+            asPrice: item.asPrice,
+            asSaleState: item.asSaleState,
+            asState: item.asState,
+            checkBox: true,
+            checkFlag: true,
+            mID: item.mID,
+            occupyFlag: true
+          }
+          console.log(item, adSpaceItem, 'item, adSpaceItem')
+          console.log(this.planList)
+          this.AddShopingInfo(item, adSpaceItem)
+          this.addAdspaceToshopCart(item)
+        })
+        
+      } else {
+        const arr = this.shopingList.filter(item => {
+          return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
+        })
+        const delArr = arr.slice(0, oldValue-currentValue)
+        delArr.forEach(item => {
+          const adSpaceItem = {
+            asID: item.asID,
+            asLab: item.asLab,
+            asPrice: item.asPrice,
+            asSaleState: item.asSaleState,
+            asState: item.asState,
+            checkBox: false,
+            checkFlag: item.checkFlag,
+            mID: item.mID,
+            occupyFlag: false
+          }
+          this.reduceAdspaceToshopCart(item)
+          this.deleteShopRow(adSpaceItem);
+        })
+      }
+    },
+
+    // 添加点位数请求
+    handlePointRequest (addNum, row) {
+      let paramsData = {
+        prID: this.city[this.activeIndex].rid,
+        mediaTypeId: this.currentMediaType,
+        dateTimeBegin: this.dateInput[0],
+        dateTimeEnd: this.dateInput[1],
+        uid: this.BDData.uid,
+        asrIDs: this.BDData.asrIDs || "",
+        chooseType: this.getAdsParamsData.chooseType,
+        resID: row.resID,
+        [this.pointCountType]: row[this.pointCountType],
+        addNum
+      }
+
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: 'AddShopCartItem',
+        data: paramsData
+      }
+      return api.postApi_new(this.apiVar.Media, params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          if (Array.isArray(res.data.data.list)) {
+            let list = this.setTableDataADDoor(res.data.data.list, true);
+            return Promise.resolve(list)
+          }
+        }
+      });
+    },
+    
+
+    // 减少点位到购物车，更新楼栋，小区，单元数量统计
+    reduceAdspaceToshopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] -= 1
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] -= 1
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] -= 1
+      }
+    },
+
+    // 增加点位到购物车，更新楼栋，小区，单元数量统计
+    addAdspaceToshopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] += 1
+      }else{
+        this.buildingIdMap[adApaceInfo.buildingId] = 1
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] += 1
+      }else{
+        this.unitIdMap[adApaceInfo.unitId] = 1
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] += 1
+      }else{
+        this.resIDMap[adApaceInfo.resID] = 1
+      }
+    },
+
+    // 初始化点位数量
+    initPointCounts (arr) {
+      const buildingIdMap = {}
+      const unitIdMap = {}
+      const resIDMap = {}
+      arr.forEach(item=>{
+        if(buildingIdMap[item.buildingId]){
+          buildingIdMap[item.buildingId]++
+        }else{
+          buildingIdMap[item.buildingId] = 1
+        }
+        if(unitIdMap[item.unitId]){
+          unitIdMap[item.unitId]++
+        }else{
+          unitIdMap[item.unitId] = 1
+        }
+        if(resIDMap[item.resID]){
+          resIDMap[item.resID]++
+        }else{
+          resIDMap[item.resID] = 1
+        }
+      })
+
+      this.buildingIdMap = buildingIdMap
+      this.unitIdMap = unitIdMap
+      this.resIDMap = resIDMap
+    },
+
+    // 判断购物车里是否有已选点位，计算点位数
+    shopingCarHasPoint (type,typeId) {
+      const pointCount = this.shopingList.filter(item => item[type] === typeId)
+      return pointCount.length || 0
+    },
   
   },
 };
@@ -7457,6 +7671,36 @@ export default {
       height: 32px;
       line-height: 32px;
     }
+  }
+}
+.pointNum {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.pointCount-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.pointCount-input {
+  width: 108px;
+  overflow: hidden;
+  /deep/ .el-input__inner {
+    width: 108px!important;
+    height: 24px!important;
+    line-height: 24px!important;
+  }
+  /deep/ .el-input-number__decrease, 
+  /deep/.el-input-number__increase {
+    height: 24px!important;
   }
 }
 </style>

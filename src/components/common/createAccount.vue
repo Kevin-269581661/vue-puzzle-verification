@@ -35,16 +35,16 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <!-- , checkStrictly: true -->
                         <!-- 媒介或销售 -->
-                        <template v-if="accountForm.company || (accountForm.role == 'MD' || accountForm.role == 'BD')">
+                        <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
                                 <el-cascader
                                     ref="userMediaRef" size="small" collapse-tags clearable
                                     v-model="accountForm.MD_BD_MediaPermission"
                                     :options="MD_BD_MediaPermissionArr"
                                     :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                    @change="MD_BD_MediaPermissionChange">
+                                    @change="MD_BD_MediaPermissionChange"
+                                    :disabled="Boolean((sessionData.uType === 'ADN_SM' && !accountForm.company))">
                                 </el-cascader>
                             </el-form-item>
                         </template>
@@ -418,6 +418,7 @@ export default {
                     },
                 ],
                 boss: [{ validator: validateBoss, trigger: "blur" }],
+                MD_BD_MediaPermission: [{ required: true, message: "媒体权限不能为空", trigger: "blur" }],
             },
             // 登录信息
             sessionData: "",
@@ -442,6 +443,7 @@ export default {
         // 媒介/销售 媒体权限默认勾选/取消勾选
         MD_BD_MediaPermissionChange(arr) {
             let nodeList = this.$refs.userMediaRef.getCheckedNodes()
+            console.log('nodelist', nodeList);
             const curLength = nodeList.length
             const tempLength = this.tempNodes.length
             let node = [];
@@ -508,7 +510,7 @@ export default {
                             })
                         })
                     }
-                    console.log('data', _newData);
+                    // console.log('data', _newData);
                     this.MD_BD_MediaPermissionArr = _newData;
                 } else {
                     this.$message({
@@ -686,6 +688,7 @@ export default {
             if (this.accountForm.role == "BD") {
                 this.getRoleCity();
             }
+            this.getMD_BD_MediaPermission()
         },
         // 选择工程类型
         engineerCategorySelect(val) { },
@@ -839,7 +842,7 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-                userMediaChooseConfig: userMediaConfig
+                userMediaChooseConfigs: userMediaConfig || []
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -865,6 +868,7 @@ export default {
         // 修改账户信息接口
         postEditInfo() {
             let account = this.setSubmitData();
+            console.log('accout', account);
             api
                 .postApi(this.apiVar.UCAPI + "/RegUser", account)
                 .then((res) => {
@@ -953,6 +957,13 @@ export default {
                             if (res.data.SysCode == 200200) {
                                 this.isEdit = true;
                                 let result = res.data.data;
+                                let ump = result.userMediaChooseConfigs // 当前账户的媒体权限列表
+                                let MD_BD_MediaPermission = []
+                                if(ump.length) {
+                                    ump.forEach(item => {
+                                        MD_BD_MediaPermission.push([item.mediaTypeId, item.chooseType])
+                                    })
+                                }
                                 let editInfo = {
                                     uID: result.uID,
                                     account: result.sName,
@@ -982,7 +993,9 @@ export default {
                                     backstagePermission: result.backstagePermission
                                         ? result.backstagePermission
                                         : 0,
+                                    MD_BD_MediaPermission: MD_BD_MediaPermission || []
                                 };
+                                // console.log('this.accountForm.MD_BD_MediaPermission', this.accountForm.MD_BD_MediaPermission);
                                 this.companyChange(editInfo.company);
                                 this.accountForm = editInfo;
                                 this.roleSelect(editInfo.role);

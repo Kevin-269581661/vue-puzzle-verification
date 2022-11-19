@@ -49,6 +49,7 @@ export default {
   mounted() {
     const size = getLocalCache(`${this.cacheKey}-rowSpace`);
     this.size = size || "medium";
+    this.$emit("spaceSetting", this.size);
   },
   methods: {
     handleCommand(command) {

@@ -35,16 +35,17 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
-                        <!-- , checkStrictly: true -->
                         <!-- 媒介或销售 -->
-                        <template v-if="accountForm.company || (accountForm.role == 'MD' || accountForm.role == 'BD')">
+                        <!-- :disabled="Boolean((sessionData.uType === 'ADN_SM' && !accountForm.company))" -->
+                        <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
                                 <el-cascader
                                     ref="userMediaRef" size="small" collapse-tags clearable
                                     v-model="accountForm.MD_BD_MediaPermission"
                                     :options="MD_BD_MediaPermissionArr"
                                     :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                    @change="MD_BD_MediaPermissionChange">
+                                    @change="MD_BD_MediaPermissionChange"
+                                >
                                 </el-cascader>
                             </el-form-item>
                         </template>
@@ -255,74 +256,7 @@ export default {
             // 媒体权限
             mediaPermissionArr: [],
             // 媒介或销售的媒体纬度数据
-            MD_BD_MediaPermissionArr: [
-                {
-                    label: '广告门',
-                    value: 1,
-                    children: [
-                        {
-                            label: '点位',
-                            value: 0
-                        },
-                        {
-                            label: '单元',
-                            value: 1
-                        },
-                        {
-                            label: '楼栋',
-                            value: 2
-                        },
-                        {
-                            label: '小区',
-                            value: 3
-                        },
-                    ]
-                },
-                {
-                    label: '道闸',
-                    value: 2,
-                    children: [
-                        {
-                            label: '点位',
-                            value: 0
-                        },
-                        {
-                            label: '单元',
-                            value: 1
-                        },
-                        {
-                            label: '楼栋',
-                            value: 2
-                        },
-                        {
-                            label: '小区',
-                            value: 3
-                        },
-                    ]
-                },
-                {
-                    label: '单元门禁灯箱',
-                    value: 3,
-                    children: [
-                        {
-                            label: '点位',
-                            value: 0
-                        },
-                        {
-                            label: '单元',
-                            value: 1
-                        },
-                        {
-                            label: '楼栋',
-                            value: 2
-                        },
-                        {
-                            label: '小区',
-                            value: 3
-                        },
-                    ]
-                },
-            ],
+            MD_BD_MediaPermissionArr: [],
             //表单
             accountForm: {
                 account: "wuyufan",
@@ -418,6 +352,7 @@ export default {
                     },
                 ],
                 boss: [{ validator: validateBoss, trigger: "blur" }],
+                MD_BD_MediaPermission: [{ required: true, message: "媒体权限不能为空", trigger: "blur" }],
             },
             // 登录信息
             sessionData: "",
@@ -448,6 +383,7 @@ export default {
             // 当前选中项
             if(curLength - tempLength > 0) {
                 node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
+                // console.log(nodeList, node);
                 if(node) {
                     let index
                     // 点击的是单元门禁灯箱
@@ -465,15 +401,20 @@ export default {
                 }
             }
             // 当前取消选中项
-            else if (curLength - tempLength < 0){
+            else if (curLength - tempLength <= 0) {
                 node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1 && item.level === 1)[0];
                 if(node) {
                     node.children.forEach(child => child.checked = false)
-                    const nodeIndex = nodeList.findIndex(item => item.parent === node)
+                    const cList = nodeList.filter(item => item.parent === node)
                     const delArr = arr.filter(item => item[0] === node.value)
-                    nodeList.splice(nodeIndex, 1)
-                    arr.forEach(item => {
-                        const index = delArr.indexOf(item)
+                    cList.forEach(item => {
+                        const index = nodeList.indexOf(item)
+                        if(index > -1) {
+                            nodeList.splice(index, 1)
+                        }
+                    })
+                    delArr.forEach(item => {
+                        const index = arr.indexOf(item)
                         if(index > -1) {
                             arr.splice(index, 1)
                         }
@@ -487,6 +428,12 @@ export default {
             let info = {
                 companyIds: this.accountForm.company
             }
+            // if(this.sessionData.uType === 'ADN_SA') {
+            //     info.companyIds = this.sessionData.asrID + ',' + this.accountForm.company
+            // }
+            // else if (this.sessionData.uType === 'ADN_SM') {
+            //     info.companyIds = this.sessionData.asrID
+            // }
             api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
                 // if(res.data.SysCode == 200200){
                 if (res.data.SysCode) {
@@ -508,7 +455,7 @@ export default {
                             })
                         })
                     }
-                    console.log('data', _newData);
+                    // console.log('data', _newData);
                     this.MD_BD_MediaPermissionArr = _newData;
                 } else {
                     this.$message({
@@ -686,6 +633,7 @@ export default {
             if (this.accountForm.role == "BD") {
                 this.getRoleCity();
             }
+            // this.getMD_BD_MediaPermission()
         },
         // 选择工程类型
         engineerCategorySelect(val) { },
@@ -723,7 +671,6 @@ export default {
             }
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []
-            this.tempNodes = []
             this.getMD_BD_MediaPermission();
         },
         lazyFunction(fn, timeout) {
@@ -839,7 +786,7 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-                userMediaChooseConfig: userMediaConfig
+                userMediaChooseConfigs: userMediaConfig || []
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -865,6 +812,7 @@ export default {
         // 修改账户信息接口
         postEditInfo() {
             let account = this.setSubmitData();
+            console.log('accout', account);
             api
                 .postApi(this.apiVar.UCAPI + "/RegUser", account)
                 .then((res) => {
@@ -953,6 +901,13 @@ export default {
                             if (res.data.SysCode == 200200) {
                                 this.isEdit = true;
                                 let result = res.data.data;
+                                let ump = result.userMediaChooseConfigs // 当前账户的媒体权限列表
+                                let MD_BD_MediaPermission = []
+                                if(ump.length) {
+                                    ump.forEach(item => {
+                                        MD_BD_MediaPermission.push([item.mediaTypeId, item.chooseType])
+                                    })
+                                }
                                 let editInfo = {
                                     uID: result.uID,
                                     account: result.sName,
@@ -982,7 +937,9 @@ export default {
                                     backstagePermission: result.backstagePermission
                                         ? result.backstagePermission
                                         : 0,
+                                    MD_BD_MediaPermission: MD_BD_MediaPermission || []
                                 };
+                                // console.log('this.accountForm.MD_BD_MediaPermission', this.accountForm.MD_BD_MediaPermission);
                                 this.companyChange(editInfo.company);
                                 this.accountForm = editInfo;
                                 this.roleSelect(editInfo.role);

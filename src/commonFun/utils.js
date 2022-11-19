@@ -24,5 +24,23 @@ var utils = {
     this.setCookie(name, "", -1);//修改2值都为空，天数为负1
   },
 
+  //存储用户数据
+  setLocalData(resData) {
+    console.log(resData);
+    let info = {
+        uid: resData.uID,
+    }
+    let userInfoList = JSON.parse(localStorage.getItem('local_data')) || []
+    if(userInfoList.length) {
+        const index = userInfoList.findIndex((item) => item.uid === info.uid)
+        if(index === -1) {
+            userInfoList.push(info)
+        }
+    }
+    else {
+        userInfoList.push(info)
+    }
+    localStorage.setItem('local_data', JSON.stringify(userInfoList))
+  }
 };
 export default utils

@@ -188,7 +188,7 @@
             // 切换页码
             changePage(page) {
                 this.currPage = page;
-                console.log('page----', page);
+                // console.log('page----', page);/
                 this.searchFun();
             },
             // 每页条数切换
@@ -205,7 +205,7 @@
                     token: sess.token,
                 };
                 api.getApi(this.apiVar.UCAPI + '/ShowAscr', info).then(res =>{
-                    console.log(res);
+                    // console.log(res);
                     if(!res.data.SysCode){
                         let result = [];
                         for(let data of res.data){
@@ -245,7 +245,7 @@
             // 滚动加载数据列表
             getData(params){
                 api.getApi(this.apiVar.UCAPI+'/GetUserList', params).then(res =>{
-                    console.log(res.data);
+                    // console.log(res.data);
                     if(!res.data.SysCode){
                         let dataInfo = res.data;
                         this.totalNum = dataInfo.count;
@@ -263,7 +263,7 @@
             },
             // 数据处理
             funcData(dataArr){
-                console.log(dataArr);
+                // console.log(dataArr);
                 let result = [];
                 for(let data of dataArr){
                     let tmpObj = '';
@@ -314,7 +314,7 @@
             },
             // 时间排序(请求后台接口进行排序)
             sortChange(column){
-                console.log('columm---', column);
+                // console.log('columm---', column);
                 if(column.order == "ascending"){
                     this.searchInfo.orderby = column.prop;
                     this.searchInfo.desc = 0;
@@ -387,7 +387,7 @@
             },
             // 开通或者禁用：
             isForbidden(row) {
-                console.log(row);
+                // console.log(row);
                 MessageBox.confirm(
                     `是否${row.uState ? "禁用" : "开通"}该角色?`,
                     "提示",
@@ -406,7 +406,7 @@
                         };
                         api.postApi(this.apiVar.UCAPI + "/CtrlUser", info)
                             .then(res => {
-                                console.log(res.data);
+                                // console.log(res.data);
                                 if (res.data.SysCode == 200200) {
                                     Message.success(res.data.MSG);
                                     row.uState = row.uState  == 1 ? -1 : 1;
@@ -424,7 +424,7 @@
             },
             // 重置密码
             reSetPassword(item){
-                console.log('item',item)
+                // console.log('item',item)
                 this.$confirm('确定要重置改账号到密码吗, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -447,7 +447,7 @@
                 })
             },
             ToEdit(row) {
-                console.log(row);
+                // console.log(row);
                 sessionStorage.setItem("userId", row.uID);
                 this.$router.push("./createAccount?edit=y");
             },

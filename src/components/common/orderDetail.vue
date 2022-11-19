@@ -1181,6 +1181,7 @@ import filterFormat from "../../commonFun/filterTableData.js";
 // 时间格式化
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from '../../commonFun/sessFun.js';
+import { getLocalCache } from "@/utils/user.js";
 // 报价单
 import apQuotation from './components/apQuotation.vue'
 import material from "./components/materialInfo.vue";
@@ -1193,7 +1194,6 @@ import changePic from "./components/changePic.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 import TableSetting from "./components/TableSetting";
-
 
 export default {
   name: "orderDetail",
@@ -1215,7 +1215,7 @@ export default {
       //用于更新表格
       colKey: 1,
       // 行距
-      rowSpace: "",
+      rowSpace: "medium",
       //表格渲染列
       currentColumns: [
         { id: 0, label: "资源名称", prop: "resName", width: "180px", isChecked: true, fix:"not" },
@@ -1457,7 +1457,6 @@ export default {
       this.getPainlist();
     }
     this.getOrderPriceDetail()
-
     this.getPlanDetails()
   },
   computed: {
@@ -3162,7 +3161,7 @@ export default {
 }
 
 .table_wrap /deep/ .el-form-item__content {
-  line-height: 46px;
+//   line-height: 46px;
 }
 
 /deep/ .table_wrap .el-table__body-wrapper {

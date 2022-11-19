@@ -6,10 +6,12 @@
       </el-col>
       <el-col :span="18">
         <el-radio-group v-model="downLoadInfo.loadType">
-          <el-radio label="1">按小区</el-radio>
-          <el-radio label="2">按楼栋</el-radio>
-          <el-radio label="3">按单元</el-radio>
-          <el-radio label="4" v-if="showNdwBtn">按点位</el-radio>
+          <el-radio
+            v-for="(item, index) in mediaPermissionList"
+            :label="item"
+            :key="index"
+            v-if="showNdwBtn">{{item}}
+          </el-radio>
         </el-radio-group>
       </el-col>
     </el-row>
@@ -115,12 +117,22 @@ export default {
           return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
+      mediaPermissionList: [],
     };
   },
   methods: {
     // 获取session数据
     getSessionData () {
       this.sessionData = sessFun.getSess();
+      // 处理导点纬度
+      const permissionList = this.sessionData.userMediaChooseConfigs || []
+      const temp = []
+      if(permissionList.length) {
+        permissionList.forEach(per => {
+            temp.push(per.chooseTypeName)
+        })
+      }
+      this.mediaPermissionList = [...new Set(temp)]
     },
     cancelDown () {
       this.messageFun("info", "取消此操作");
@@ -128,10 +140,10 @@ export default {
     },
     confirmDown () {
         let { loadType, city, daterange, dateType } = this.downLoadInfo;
-        if (!city.length) {
-            Message.warning("请选择城市!");
-            return;
-        }
+        // if (!city.length) {
+        //     Message.warning("请选择城市!");
+        //     return;
+        // }
         if (dateType == "2") {
             if (!daterange || !daterange.length) {
             this.messageFun("warning", "请先选择日期");
@@ -141,13 +153,13 @@ export default {
 
         switch(loadType) {
             // 按小区
-            case "1": this.getExcelData('exportVacancyByCommunity', '小区'); break;
+            case "小区": this.getExcelData('exportVacancyByCommunity', '小区'); break;
             // 按楼栋
-            case "2": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
+            case "楼栋": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
             // 按单元
-            case "3": this.getExcelData('exportVacancyByUnit', '单元'); break;
+            case "单元": this.getExcelData('exportVacancyByUnit', '单元'); break;
             // 按点位
-            case "4": this.getExcelData('exportVacancyByAds', '点位'); break;
+            case "点位": this.getExcelData('exportVacancyByAds', '点位'); break;
         }
     },
     // 获取城市

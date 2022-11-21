@@ -660,6 +660,7 @@
                     </template>
                   </template>
                 </el-table-column>
+                
                 <template v-for="item in currentColumn">
                   <template v-if="item.label === '资源名称'">
                     <el-table-column
@@ -6177,7 +6178,7 @@ export default {
     },
     // 刷新列表
     refreshTable() {
-      this.getData();
+      this.getAdList();
     },
     // 更改列表行距
     spaceSetting(size) {

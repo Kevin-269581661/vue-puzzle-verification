@@ -537,6 +537,8 @@
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :size="rowSpace"
+                :key="itemKey"
               >
                 <el-table-column
                   class-name="el-table-column-checkbox"
@@ -5729,7 +5731,7 @@ export default {
     },
     // 刷新列表
     refreshTable() {
-      this.getData();
+      this.getAdList();
     },
     // 更改列表行距
     spaceSetting(size) {

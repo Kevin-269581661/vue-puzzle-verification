@@ -375,6 +375,43 @@
                   {{ item.rName }}
                 </dd>
               </dl>
+
+              <dl>
+                <dt>设备型号：</dt>
+                <dd
+                  v-for="(item, index) in mTypeList"
+                  :key="index"
+                  :class="mediaMType === item.dictValue ? 'active' : ''"
+                  @click="activeMtype(item.dictValue)"
+                >
+                  {{item.dictDesc}}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>安装位置：</dt>
+                <dd
+                  v-for="(item, index) in sites"
+                  :key="index"
+                  :class="site === item.dictValue ? 'active' : ''"
+                  @click="activeSite(item.dictValue)"
+                >
+                  {{item.dictDesc}}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>位置朝向：</dt>
+                <dd
+                  v-for="(item, index) in siteOrientations"
+                  :key="index"
+                  :class="siteOrientation === item.dictValue ? 'active' : ''"
+                  @click="activeSiteOrientation(item.dictValue)"
+                >
+                  {{item.dictDesc}}
+                </dd>
+              </dl>
+
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
@@ -653,6 +690,33 @@
                 {{ tag.name }}
               </el-tag>
             </div>
+            <!-- 表格控件 -->
+            <div class="table-set">
+              <el-radio-group
+                v-model="getAdsParamsData.chooseType"
+                class="chooseType-radio"
+              >
+                <el-radio-button
+                  v-for="item in tabChooseTypeList"
+                  :label="item.label"
+                  :key="item.label"
+                  >{{ item.name }}</el-radio-button
+                >
+              </el-radio-group>
+
+              <TableSetting
+                refresh
+                space
+                filter
+                :columns="currentColumn"
+                cacheKey="editPlan"
+                @filterColumn="filterColumn"
+                @refreshTable="refreshTable"
+                @spaceSetting="spaceSetting"
+              >
+              </TableSetting>
+            </div>
+
             <!--提示-->
             <div class="tip">
               <i class="el-icon-info"></i>
@@ -663,10 +727,16 @@
             </div>
             <!--表格-->
             <div class="table_wrap adsTable">
-              <div class="myCheckbox" v-if="isOccupied">
+              <div
+                class="myCheckbox"
+                v-if="isOccupied && getAdsParamsData.chooseType === 0"
+              >
                 <el-checkbox v-model="IsAll" @change="allCheckboxAds"
                   >全选本页</el-checkbox
                 >
+              </div>
+              <div class="myCheckbox pointNum" v-if="getAdsParamsData.chooseType !== 0">
+                点位数量
               </div>
               <el-table
                 v-loading="loading"
@@ -680,274 +750,399 @@
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :size="rowSpace"
+                :key="itemKey"
               >
                 <el-table-column
-                  fixed
-                  width="180px"
-                  class-name="el-table-column-checkbox"
-                >
-                  <template slot-scope="scope">
-                    <div v-if="isOccupied" class="space-group">
-                      <div
-                        v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList"
-                        :key="adSpaceIndex"
-                        class="space-item"
-                      >
-                        <!-- 点位状态和点位售卖状态确定是否可选 -->
-                        <el-checkbox
-                          v-if="adSpaceItem.checkFlag"
-                          v-model="adSpaceItem.checkBox"
-                          :label="adSpaceItem.asLab || '--'"
-                          @change="changeCheckBox(scope.row, adSpaceItem)"
+                    class-name="el-table-column-checkbox"
+                    width="180"
+                    :show-overflow-tooltip="getAdsParamsData.chooseType === 0"
+                    fixed="left"
+                  >
+                    <template slot-scope="scope">
+                      <div v-if="getAdsParamsData.chooseType !== 0" class="pointCount-box">
+                        <el-input-number 
+                          v-model="scope.row.pointCount" 
+                          :min="0" 
+                          :max="scope.row.actualAdsCnt" 
+                          size="mini" 
+                          class="pointCount-input"
+                          @change="(currentValue, oldValue) => handlePointCountChange(currentValue, oldValue, scope.row)"
                         >
-                        </el-checkbox>
-                        <el-popover
-                          v-else
-                          placement="top-start"
-                          width="310"
-                          trigger="hover"
-                        >
-                          <span v-if="scope.row.adlInfo === ''"
-                            >暂无被占信息</span
-                          >
-                          <ul v-else>
-                            <li
-                              v-for="(item, itemIndex) in scope.row.adlInfo"
-                              :key="itemIndex"
-                            >
-                              <template v-if="item.lState == null">
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333"
-                                    >该点位：{{ item.asState }}中</span
-                                  >
-                                </p>
-                                <div style="margin-bottom: 5px">
-                                  <span style="color: #333">状态原因：</span>
-                                  <span
-                                    style="color: #333"
-                                    v-for="(u, i) in item.unSaleableReason"
-                                    :key="i"
-                                  >
-                                    <template
-                                      v-if="item.unSaleableReason.length > 1"
-                                      >{{ i + 1 }}.</template
-                                    >
-                                    {{ u }}
-                                  </span>
-                                </div>
-                              </template>
-                              <template v-else>
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333">占点方案：</span>
-                                  <span>
-                                    <span style="font-weight: bold">
-                                      {{
-                                        ["ADN_MD_COUNTRY", "ADN_MD"].includes(
-                                          sessionData.uType
-                                        )
-                                          ? item.beOccupieApName
-                                          : "******"
-                                      }}
-                                    </span>
-                                    方案（{{
-                                      item.lState == 0
-                                        ? "预锁"
-                                        : item.lState == 1
-                                        ? "被占"
-                                        : "强制停止"
-                                    }}）
-                                  </span>
-                                </p>
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
-                                </p>
-                              </template>
-                            </li>
-                          </ul>
-                          <el-checkbox
-                            slot="reference"
-                            v-model="adSpaceItem.checkBox"
-                            :label="adSpaceItem.asLab || '--'"
-                            :disabled="true"
-                          >
-                          </el-checkbox>
-                        </el-popover>
+                        </el-input-number>
                       </div>
-                    </div>
-                    <div v-else>
-                      {{
-                        scope.row.asLabs
-                      }}
-                    </div>
+                      <template v-else>
+                        <div
+                          v-if="isOccupied && getAdsParamsData.chooseType === 0"
+                          class="space-group"
+                        >
+                          <div
+                            v-for="(adSpaceItem, adSpaceIndex) in scope.row
+                              .adsList"
+                            :key="adSpaceIndex"
+                            class="space-item"
+                          >
+                            <!-- 点位状态和点位售卖状态确定是否可选 -->
+                            <el-checkbox
+                              v-if="adSpaceItem.checkFlag"
+                              v-model="adSpaceItem.checkBox"
+                              :label="adSpaceItem.asLab || '--'"
+                              @change="changeCheckBox(scope.row, adSpaceItem)"
+                            >
+                            </el-checkbox>
+                            <el-popover
+                              v-else
+                              placement="top-start"
+                              width="310"
+                              trigger="hover"
+                            >
+                              <span v-if="scope.row.adlInfo === ''"
+                                >暂无被占信息</span
+                              >
+                              <ul v-else>
+                                <li
+                                  v-for="(item, itemIndex) in scope.row.adlInfo"
+                                  :key="itemIndex"
+                                >
+                                  <template v-if="item.lState == null">
+                                    <p style="margin-bottom: 5px">
+                                      <span style="color: #333"
+                                        >该点位：{{ item.asState }}中</span
+                                      >
+                                    </p>
+                                    <div style="margin-bottom: 5px">
+                                      <span style="color: #333">状态原因：</span>
+                                      <span
+                                        style="color: #333"
+                                        v-for="(u, i) in item.unSaleableReason"
+                                        :key="i"
+                                      >
+                                        <template
+                                          v-if="item.unSaleableReason.length > 1"
+                                          >{{ i + 1 }}.</template
+                                        >
+                                        {{ u }}
+                                      </span>
+                                    </div>
+                                  </template>
+                                  <template v-else>
+                                    <p style="margin-bottom: 5px">
+                                      <span style="color: #333">占点方案：</span>
+                                      <span>
+                                        <span style="font-weight: bold">
+                                          {{
+                                            ["ADN_MD_COUNTRY", "ADN_MD"].includes(
+                                              sessionData.uType
+                                            )
+                                              ? item.beOccupieApName
+                                              : "******"
+                                          }}
+                                        </span>
+                                        方案（{{
+                                          item.lState == 0
+                                            ? "预锁"
+                                            : item.lState == 1
+                                            ? "被占"
+                                            : "强制停止"
+                                        }}）
+                                      </span>
+                                    </p>
+                                    <p style="margin-bottom: 5px">
+                                      <span style="color: #333">占点排期：</span
+                                      >{{ item.schedules }}
+                                    </p>
+                                  </template>
+                                </li>
+                              </ul>
+                              <el-checkbox
+                                slot="reference"
+                                v-model="adSpaceItem.checkBox"
+                                :label="adSpaceItem.asLab || '--'"
+                                :disabled="true"
+                              >
+                              </el-checkbox>
+                            </el-popover>
+                          </div>
+                        </div>
+                        <div v-else>
+                          {{ scope.row.asLabs }}
+                        </div>
+                      </template>
+                    </template>
+                </el-table-column>
+
+                <template v-for="item in currentColumn">
+                  <template v-if="item.label === '资源名称'">
+                    <el-table-column
+                      class-name="el-table-column-resName"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  fixed
-                  class-name="el-table-column-resName"
-                  label="资源名称"
-                  width="200"
-                  prop="resName"
-                >
-                </el-table-column>
-                <el-table-column
-                  fixed
-                  class-name="el-table-column-mediaName"
-                  prop="mediaName"
-                  label="媒体名称"
-                  width="140"
-                  :show-overflow-tooltip="true"
-                >
-                </el-table-column>
-                <el-table-column prop="city" label="城市" min-width="110">
-                </el-table-column>
-                <el-table-column prop="origin" label="区域" min-width="110">
-                </el-table-column>
-                <el-table-column label="商圈" min-width="130">
-                  <template slot-scope="scope">
-                    {{ scope.row.tradingArea || "--" }}
+
+                  <template v-else-if="item.label === '媒体名称'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="媒体备注"
-                  min-width="140"
-                  prop="mediaRemark"
-                  class-name="el-table-column-mediaRemark"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.mediaRemark || "--" }}</span>
+
+                  <template v-else-if="item.label === '商圈'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.tradingArea || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="巡点问题"
-                  align="right"
-                  min-width="110"
-                  show-overflow-tooltip
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.remark || "--" }}
+
+                  <template v-else-if="item.label === '媒体备注'">
+                    <el-table-column
+                      class-name="el-table-column-mediaRemark"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.mediaRemark || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="通行情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.trafficState || "--" }}
+
+                  <template v-else-if="item.label === '巡点问题'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked && customPermission.patrolPermission"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.remark || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission == 2"
-                  label="通电情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.electrifyState || "--" }}
+
+                  <template v-else-if="item.label === '通行情况'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked && customPermission.patrolPermission"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.trafficState || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="资产编号"
-                  min-width="160"
-                  prop="assetTag"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.assetTag || "--" }}</span>
+
+                  <template v-else-if="item.label === '通电情况'">
+                    <el-table-column
+                      align="right"
+                      v-if="
+                        item.isChecked && customPermission.patrolPermission == 2
+                      "
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.electrifyState || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="媒体等级"
-                  min-width="120"
-                  prop="mediaLevel"
-                >
-                  <template slot-scope="scope">
-                    {{
-                      scope.row.mediaLevel !== ""
-                        ? scope.row.mediaLevel + "级"
-                        : "--"
-                    }}
+
+                  <template v-else-if="item.label === '资产编号'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.assetTag || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="广告限制"
-                  min-width="130"
-                  prop="adLimit"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.adLimit || "--" }}</span>
+
+                  <template v-else-if="item.label === '媒体等级'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{
+                          scope.row.mediaLevel !== ""
+                            ? scope.row.mediaLevel + "级"
+                            : "--"
+                        }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="楼盘类型"
-                  min-width="100"
-                  prop="buildType"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.buildType || "--" }}</span>
+
+                  <template v-else-if="item.label === '广告限制'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.adLimit || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  prop="mState"
-                  label="媒体状态"
-                  min-width="90"
-                  class="tar"
-                >
-                </el-table-column>
-                <el-table-column label="楼盘价格" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    <span>&yen;{{ scope.row.buildPrice }}</span>
+
+                  <template v-else-if="item.label === '楼盘类型'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.buildType || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  prop="buildNum"
-                  label="楼栋数量"
-                  align="right"
-                  min-width="100"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="liveYear"
-                  align="right"
-                  label="入住年份"
-                  min-width="90"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="houseNum"
-                  align="right"
-                  label="小区户数"
-                  min-width="90"
-                >
-                </el-table-column>
-                <el-table-column label="人流量" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.peopleFlow || "--" }}
+
+                  <template v-else-if="item.label === '媒体状态'">
+                    <el-table-column
+                      class="tar"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column label="车位数" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.parkSpaceNum || "--" }}
+
+                  <template v-else-if="item.label === '楼盘价格'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>&yen;{{ scope.row.buildPrice }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column label="车流量" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.carFlow || "--" }}
+
+                  <template v-else-if="item.label === '人流量'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.peopleFlow || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  fixed="right"
-                  prop="schedules"
-                  label="排期"
-                  min-width="190"
-                >
-                </el-table-column>
+
+                  <template v-else-if="item.label === '车位数'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.parkSpaceNum || "--" }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '车流量'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.carFlow || "--" }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '排期'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix"
+                    >
+                    </el-table-column>
+                  </template>
+
+                  <template v-else>
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                  </template>
+                </template>
               </el-table>
               <div class="ad_pagination" v-if="total">
                 <el-pagination
@@ -1647,6 +1842,9 @@ import cacheAdPlan from "../../commonFun/cacheAdPlan";
 // 方案导入结果
 import importResult from "./components/importResult.vue";
 
+// 表格控件
+import TableSetting from "./components/TableSetting";
+
 export default {
   name: "createPlanOld",
   components: {
@@ -1669,6 +1867,7 @@ export default {
     elCheckbox: Checkbox,
     elInputNumber: InputNumber,
     importResult,
+    TableSetting
   },
   data() {
     let validateSales = (rule, value, callback) => {
@@ -2014,7 +2213,9 @@ export default {
       pageNo: 1, // 页码
       total: 1, // 总页数
       pageSize: 20, //每页条数
-      getAdsParamsData: {}, //　获取点位列表的参数data
+      getAdsParamsData: {
+        chooseType: 0,
+      }, //　获取点位列表的参数data
       apMinTime: "", // 方案创建的开始时间
       ADLimitActiveName: "1",
       isShowAll: false, // 控制表头显示时的过渡效果
@@ -2047,6 +2248,268 @@ export default {
       cartPageSize: 500,
       currentPage: 1,
       totalNum: 0,
+
+       // 表头数据
+       currentColumn: [
+        {
+          id: 1,
+          label: "资源名称",
+          prop: "resName",
+          width: "200",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 2,
+          label: "媒体名称",
+          prop: "mediaName",
+          width: "140",
+          isChecked: true,
+          fix: "left",
+          showTooltip: true,
+        },
+        {
+          id: 3,
+          label: "城市",
+          prop: "city",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 4,
+          label: "区域",
+          prop: "origin",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 6,
+          label: "商圈",
+          prop: "tradingArea",
+          width: "120",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 7,
+          label: "媒体备注",
+          prop: "mediaRemark",
+          width: "140",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 8,
+          label: "巡点问题",
+          prop: "remark",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 9,
+          label: "通行情况",
+          prop: "trafficState",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 10,
+          label: "通电情况",
+          prop: "electrifyState",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 11,
+          label: "资产编号",
+          prop: "assetTag",
+          width: "160",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 12,
+          label: "媒体等级",
+          prop: "mediaLevel",
+          width: "120",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 13,
+          label: "广告限制",
+          prop: "adLimit",
+          width: "130",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 14,
+          label: "楼盘类型",
+          prop: "buildType",
+          width: "100",
+          isChecked: true,
+          fix: "not",
+          showTooltip: true,
+        },
+        {
+          id: 15,
+          label: "媒体状态",
+          prop: "mState",
+          width: "100",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 16,
+          label: "楼盘价格",
+          prop: "buildPrice",
+          width: "110",
+          isChecked: true,
+          showTooltip: false,
+          fix: "not",
+        },
+        {
+          id: 17,
+          label: "楼栋数量",
+          prop: "buildNum",
+          width: "100",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 18,
+          label: "入住年份",
+          prop: "liveYear",
+          width: "90",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 19,
+          label: "小区户数",
+          prop: "houseNum",
+          width: "90",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 20,
+          label: "人流量",
+          prop: "peopleFlow",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 21,
+          label: "车位数",
+          prop: "parkSpaceNum",
+          width: "90",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 22,
+          label: "车流量",
+          prop: "carFlow",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 23,
+          label: "车位数",
+          prop: "parkSpaceNum",
+          width: "90",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 24,
+          label: "排期",
+          prop: "schedules",
+          width: "190",
+          isChecked: true,
+          fix: "right",
+          showTooltip: false,
+        },
+      ],
+      itemKey: "",
+      rowSpace: "",
+
+      tabChooseTypeList: [
+        {
+          label: 0,
+          name: "点位",
+        },
+        {
+          label: 1,
+          name: "单元",
+        },
+        {
+          label: 2,
+          name: "楼栋",
+        },
+        {
+          label: 3,
+          name: "小区",
+        },
+      ],
+      
+      // 设备型号
+      mTypeList: [],
+      mediaMType: '',
+
+      // 安装位置
+      sites: [],
+      site: '',
+
+      // 位置朝向
+      siteOrientations:[
+        {
+          id: 1,
+          name: '内'
+        },
+        {
+          id: 2,
+          name: '外'
+        }
+      ],
+      siteOrientation: '',
+
+      pointCountType: '',
+      
+      // 楼栋数量map
+      buildingIdMap: {},
+      // 单元数量map
+      unitIdMap: {},
+      // 小区数量map
+      resIDMap: {}
     };
   },
   created() {
@@ -2064,7 +2527,6 @@ export default {
     if (this.routePath.indexOf("unfinishedPlan") !== -1) {
       this.setPlanInfo();
     }
-
     // console.log("this.cityOptions", this.cityOptions);
   },
   watch: {
@@ -2083,6 +2545,30 @@ export default {
         this.opportunityList = [];
         if (!this.planForm.companyBrand &&  typeof this.planForm.companyBrand !== 'number') return;
         this.getOpportunityList();
+      },
+    },
+
+    "getAdsParamsData.chooseType": {
+      handler(nVal) {
+        // if (nVal === 0) {
+        //   this.currentColumn.unshift(MEDIA_NAME);
+        // }
+        if (nVal === 1 || nVal === 2 || nVal === 3) {
+          const index = this.currentColumn.findIndex((item) => {
+            return item.prop === "mediaName";
+          });
+          this.currentColumn.splice(index, 1);
+        }
+        let pointCountType = ''
+        if(nVal === 1){
+          pointCountType = 'unitId'
+        } else if (nVal === 2) {
+          pointCountType = 'buildingId'
+        } else if (nVal === 3) {
+          pointCountType = 'resID'
+        }
+        this.pointCountType = pointCountType
+        this.getAdList();
       },
     },
   },
@@ -2275,6 +2761,7 @@ export default {
     // 下一步
     next() {
       if (this.active === 0) {
+        this.initMediaTag()
         this.submitForm("planForm");
       } else if (this.active === 1) {
         if (this.shopingList.length !== 0) {
@@ -3302,6 +3789,7 @@ export default {
           }
         }
         this.shopingList = arr;
+        this.initPointCounts(arr)
       } else {
         this.shopingList = []; // 购物车
       }
@@ -3468,7 +3956,6 @@ export default {
         this.$message.warning("媒体类型不能为空！");
         return;
       }
-    //   console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
       this.loading = true;
       (this.getAdsParamsData.prID = this.city[this.activeIndex].rid),
         (this.getAdsParamsData.act = 1),
@@ -3479,6 +3966,9 @@ export default {
       this.getAdsParamsData.pageSize = this.pageSize;
       this.getAdsParamsData.uid = this.BDData.uid;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+      this.getAdsParamsData.mType = this.mediaMType || ''
+      this.getAdsParamsData.site = this.site || ''
+      this.getAdsParamsData.siteOrientation = this.siteOrientation || ''
       for (let i in this.getAdsParamsData) {
         if (
           this.getAdsParamsData[i] === "" ||
@@ -3520,10 +4010,9 @@ export default {
       }, 0);
     },
     // 接口数据转成table
-    setTableDataADDoor(ADSdata) {
-    //   console.log("接口数据转成table当前时间", this.dateInput);
-        console.log('接口数据ADSdata', ADSdata);
+    setTableDataADDoor(ADSdata,  isGetDataADDoor = false) {
       let i = 0;
+      let list = []
       for (let key of ADSdata) {
         let adObj = {
           mID: key.mID,
@@ -3577,10 +4066,16 @@ export default {
           remark: key.remark,
           trafficState: key.trafficState,
           electrifyState: key.electrifyState,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
+          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          asID: key.asID,
+          asLab: key.asLab
         };
-        // if (key.mediaTypeName === '道闸') {
-        //     adObj.adPrice = key.asPrice / 100
-        // } else {
+        if(this.getAdsParamsData.chooseType !== 0){
+          adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
+        }
+
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
         } else {
@@ -3594,7 +4089,6 @@ export default {
             adObj.adPrice = 0;
           }
         }
-        // }
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
           //本页可选点位
@@ -3621,10 +4115,17 @@ export default {
         } else {
           adObj.adlInfo = "";
         }
-        this.planList.push(adObj);
+        if (!isGetDataADDoor) {
+          this.planList.push(adObj);
+        } else {
+          list.push(adObj)
+        }
       }
-      this.currPageAsLength = i;
-      this.loadScroll = true;
+      if (!isGetDataADDoor) { 
+        this.currPageAsLength = i;
+        this.loadScroll = true;
+      }
+      return list
     },
     setPageNoAndTableData() {
       this.IsAll = false;
@@ -3784,7 +4285,13 @@ export default {
                 parkSpaceNum: key.parkSpaceNum,
                 peopleFlow: key.peopleFlow,
                 carFlow: key.carFlow,
+                unitId: key.unitId, // 单元ID
+                buildingId: key.buildingId, // 楼栋ID
+                actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
               };
+              if(this.getAdsParamsData.chooseType !== 0){
+                adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+              }
               arr.push(AD_data);
             }
             this.planList = arr;
@@ -4326,6 +4833,7 @@ export default {
     resetPlanList() {
       for (let i = 0; i < this.planList.length; i++) {
         this.planList[i].adsList.forEach((item) => (item.checkBox = false));
+        this.planList[i].pointCount = 0
       }
     },
     //点位有时间交叉
@@ -4395,6 +4903,7 @@ export default {
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
+        this.addAdspaceToshopCart(row)
       } else {
         // A、B都勾选的时候
         this.IsAll = false;
@@ -4512,7 +5021,13 @@ export default {
           parkSpaceNum: key.parkSpaceNum,
           peopleFlow: key.peopleFlow,
           carFlow: key.carFlow,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
+          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
         };
+        if(this.getAdsParamsData.chooseType !== 0){
+          adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+        }
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -4646,6 +5161,9 @@ export default {
         })
           .then(() => {
             let arr = [];
+            this.shopingList.forEach(item => {
+              this.clearAdspaceShopCart(item)
+            })
             this.getResultData(arr);
             this.allCheckboxUpdata();
             this.computeMedia_AD();
@@ -5130,7 +5648,6 @@ export default {
     },
     // 选点列表数据到购物车数据
     setShopingTable(mediaInfo, adSpaceInfo) {
-        console.log(mediaInfo, adSpaceInfo);
       let selectInfo = {
         rid: mediaInfo.rid,
         mID: mediaInfo.mID,
@@ -5188,7 +5705,13 @@ export default {
         mRemark: mediaInfo.mRemark,
         lng: mediaInfo.lng,
         lat: mediaInfo.lat,
+        unitId: mediaInfo.unitId, // 单元ID
+        buildingId: mediaInfo.buildingId, // 楼栋ID
+        actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
       };
+      if(this.getAdsParamsData.chooseType !== 0){
+        mediaInfo.pointCount = this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]]
+      }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -5220,6 +5743,11 @@ export default {
                 adSpaceItem.checkBox = false;
               }
             });
+          }
+          if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
+            // 点位表对应的点位数据减一
+            this.reduceAdspaceToshopCart(this.planList[i])
+            this.planList[i].pointCount-- 
           }
         }
       }
@@ -5682,6 +6210,216 @@ export default {
         date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(); //date.getSeconds();
       return Y + M + D + h + m + s;
     },
+
+       // 列展示
+       filterColumn(columns) {
+      this.currentColumn = columns;
+      this.itemKey = Math.random();
+    },
+    // 刷新列表
+    refreshTable() {
+      this.getAdList();
+    },
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
+
+    // 设备型号筛选
+    activeMtype (value) {
+      this.mediaMType = value
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+    // 安装位置筛选
+    activeSite (value) {
+      this.site = value
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+    // 位置朝向
+    activeSiteOrientation (value) {
+      this.siteOrientation = value
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 选点媒体信息标签
+    getMediaTag (tagName) {
+      let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
+      if (!selectedAsrIds) {
+        selectedAsrIds = this.BDData.asrID?(this.BDData.asrID + ""):this.cacheAsrID;
+      }
+      const params = {
+        companyIds: selectedAsrIds,
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        tagName
+      }
+      return new Promise((resolve, reject) => {
+        api.getApi('/addsp/api/v1/media/company/mediaTag', params).then(res => {
+          console.log(res.data, 'ss')
+          resolve(res.data.data)
+        }).catch(error => {
+          reject(error)
+          console.log(error, 'error---getMediaTag')
+        })
+      })
+
+    },
+
+    async initMediaTag () {
+      // 设备型号
+      this.mTypeList = [{dictDesc: '全部', dictValue: ''}, ...await this.getMediaTag('media_mType')]
+      // 安装位置
+      this.sites = [{dictDesc: '全部', dictValue: ''}, ...await this.getMediaTag('media_site')]
+      // 位置朝向
+      this.siteOrientations = [{dictDesc: '全部', dictValue: ''}, ...await this.getMediaTag('media_siteOrientation')]
+    },
+
+    // 点位数量变化
+    async handlePointCountChange (currentValue, oldValue, row) {
+      let addNum = currentValue - oldValue
+      if(+currentValue > +oldValue) {
+        const point = await this.handlePointRequest(addNum, row)
+        this.shopShow_hide(); // 动画效果
+        point.forEach(item => {
+          item.adsList.forEach(adSpaceItem => {
+            this.AddShopingInfo(item, adSpaceItem)
+            this.addAdspaceToshopCart(item)
+          })
+        })
+        
+      } else {
+        const arr = this.shopingList.filter(item => {
+          return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
+        })
+        const delArr = arr.slice(0, oldValue-currentValue) || []
+        delArr.forEach(item => {
+          item.adsList.forEach(adSpaceItem => {
+            this.deleteShopRow(adSpaceItem)
+          })
+
+        })
+      }
+    },
+
+    // 添加点位数请求
+    handlePointRequest (addNum, row) {
+      let paramsData = {
+        prID: this.city[this.activeIndex].rid,
+        mediaTypeId: this.currentMediaType,
+        dateTimeBegin: this.dateInput[0],
+        dateTimeEnd: this.dateInput[1],
+        uid: this.BDData.uid,
+        asrIDs: this.BDData.asrIDs || "",
+        chooseType: this.getAdsParamsData.chooseType,
+        resID: row.resID,
+        [this.pointCountType]: row[this.pointCountType],
+        addNum
+      }
+
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: 'AddShopCartItem',
+        data: paramsData
+      }
+      return api.postApi_new(this.apiVar.Media, params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          if (Array.isArray(res.data.data.list)) {
+            let list = this.setTableDataADDoor(res.data.data.list, true);
+            return Promise.resolve(list)
+          }
+        }
+      });
+    },
+    
+
+    // 减少点位到购物车，更新楼栋，小区，单元数量统计
+    reduceAdspaceToshopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] -= 1
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] -= 1
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] -= 1
+      }
+    },
+
+    clearAdspaceShopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] = 0
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] = 0
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] = 0
+      }
+    },
+
+    // 增加点位到购物车，更新楼栋，小区，单元数量统计
+    addAdspaceToshopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] += 1
+      }else{
+        this.buildingIdMap[adApaceInfo.buildingId] = 1
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] += 1
+      }else{
+        this.unitIdMap[adApaceInfo.unitId] = 1
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] += 1
+      }else{
+        this.resIDMap[adApaceInfo.resID] = 1
+      }
+    },
+
+    // 初始化点位数量
+    initPointCounts (arr) {
+      const buildingIdMap = {}
+      const unitIdMap = {}
+      const resIDMap = {}
+      arr.forEach(item=>{
+        if(buildingIdMap[item.buildingId]){
+          buildingIdMap[item.buildingId]++
+        }else{
+          buildingIdMap[item.buildingId] = 1
+        }
+        if(unitIdMap[item.unitId]){
+          unitIdMap[item.unitId]++
+        }else{
+          unitIdMap[item.unitId] = 1
+        }
+        if(resIDMap[item.resID]){
+          resIDMap[item.resID]++
+        }else{
+          resIDMap[item.resID] = 1
+        }
+      })
+
+      this.buildingIdMap = buildingIdMap
+      this.unitIdMap = unitIdMap
+      this.resIDMap = resIDMap
+    },
+
+    // 判断购物车里是否有已选点位，计算点位数
+    shopingCarHasPoint (type,typeId) {
+      const pointCount = this.shopingList.filter(item => item[type] === typeId)
+      return pointCount.length || 0
+    },
+
   },
   // 页面销毁
   destroyed() {
@@ -6836,6 +7574,55 @@ export default {
 
 .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
   width: 45px;
+}
+
+.table-set {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.chooseType-radio {
+  height: 32px;
+  /deep/ .el-radio-button {
+    height: 32px;
+    .el-radio-button__inner {
+      padding: 0 16px;
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+}
+.pointNum {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.pointCount-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.pointCount-input {
+  width: 108px;
+  overflow: hidden;
+  /deep/ .el-input__inner {
+    width: 108px!important;
+    height: 24px!important;
+    line-height: 24px!important;
+  }
+  /deep/ .el-input-number__decrease, 
+  /deep/.el-input-number__increase {
+    height: 24px!important;
+  }
 }
 </style>
 <style>

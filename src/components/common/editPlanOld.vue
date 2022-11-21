@@ -660,6 +660,7 @@
                     </template>
                   </template>
                 </el-table-column>
+                
                 <template v-for="item in currentColumn">
                   <template v-if="item.label === '资源名称'">
                     <el-table-column
@@ -1854,15 +1855,6 @@ export default {
       handler(nVal) {
         if (nVal === 0) {
           this.currentColumn.unshift(MEDIA_NAME);
-          // 表格勾选
-          // for (let i = 0; i < this.planList.length; i++) {
-          //   if (item.mID === this.planList[i].mID) {
-          //     this.planList[i].adsList.forEach((pItem) => {
-          //       console.log(pItem, 'pItempItem')
-          //       pItem.checkBox = true;
-          //     });
-          //   }
-          // }
         }
         if (nVal === 1 || nVal === 2 || nVal === 3) {
           const index = this.currentColumn.findIndex((item) => {
@@ -2505,6 +2497,9 @@ export default {
     },
     currentPagination() {
       this.totalNum = this.shopShowList.length;
+      if(!this.typeShopList[this.activeName]) {
+        return []
+      }
       return this.shopShowList.slice(
         (this.currentPage - 1) * this.cartPageSize,
         this.currentPage * this.cartPageSize
@@ -4142,8 +4137,6 @@ export default {
     // 选点表格(planList)的勾选
     hadADByshop(data) {
       let shopAD = data;
-      // console.log(this.shopingList, 'this.shopingList')
-      // console.log(this.planList, 'this.shopingListthis.shopingList')
       if (this.activeRName === shopAD.city) {
         for (let sourceRow of this.planList) {    
           if (
@@ -4174,6 +4167,7 @@ export default {
     resetPlanList() {
       for (let i = 0; i < this.planList.length; i++) {
         this.planList[i].adsList.forEach((item) => (item.checkBox = false));
+        this.planList[i].pointCount = 0
       }
     },
     //点位有时间交叉
@@ -4196,6 +4190,7 @@ export default {
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
+        this.addAdspaceToshopCart(row)
       } else {
         // A、B都勾选的时候
         this.IsAll = false;
@@ -4883,11 +4878,12 @@ export default {
               }
             });
           }
-          // 点位表对应的点位数据减一
           if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
+            // 点位表对应的点位数据减一
             this.reduceAdspaceToshopCart(this.planList[i])
-            this.planList[i].pointCount--
+            this.planList[i].pointCount-- 
           }
+
         }
       }
       for (let j = 0, len = this.shopingList.length; j < len; ) {
@@ -4915,6 +4911,7 @@ export default {
         if (this.shopingList[j].asID === row.asID) {
           let crossIf = this.crossSchedules(this.shopingList[j].schedules);
           if (crossIf) {
+            this.reduceAdspaceToshopCart(this.shopingList[j])
             this.shopingList.splice(j, 1);
             break;
           } else {
@@ -5174,6 +5171,8 @@ export default {
           parkSpaceNum: key.parkSpaceNum,
           peopleFlow: key.peopleFlow,
           carFlow: key.carFlow,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
         };
 
@@ -5591,6 +5590,9 @@ export default {
         })
           .then(() => {
             let arr = [];
+            this.shopingList.forEach(item => {
+              this.clearAdspaceShopCart(item)
+            })
             this.getResultData(arr);
             this.allCheckboxUpdata();
             this.computeMedia_AD();
@@ -5887,6 +5889,7 @@ export default {
                   street: data.street,
                   unitId: data.unitId, // 单元ID
                   buildingId: data.buildingId, // 楼栋ID
+                  actualAdsCnt: data.actualAdsCnt, // 最多可添加点位数量
                 };
 
                 if (data.asPrice === null || data.asPrice === undefined) {
@@ -6175,7 +6178,7 @@ export default {
     },
     // 刷新列表
     refreshTable() {
-      this.getData();
+      this.getAdList();
     },
     // 更改列表行距
     spaceSetting(size) {
@@ -6231,47 +6234,27 @@ export default {
 
     // 点位数量变化
     async handlePointCountChange (currentValue, oldValue, row) {
+      let addNum = currentValue - oldValue
       if(+currentValue > +oldValue) {
-        let addNum = currentValue - oldValue
         const point = await this.handlePointRequest(addNum, row)
         this.shopShow_hide(); // 动画效果
         point.forEach(item => {
-          const adSpaceItem = {
-            asID: item.asID,
-            asLab: item.asLab,
-            asPrice: item.asPrice,
-            asSaleState: item.asSaleState,
-            asState: item.asState,
-            checkBox: true,
-            checkFlag: true,
-            mID: item.mID,
-            occupyFlag: true
-          }
-          console.log(item, adSpaceItem, 'item, adSpaceItem')
-          console.log(this.planList)
-          this.AddShopingInfo(item, adSpaceItem)
-          this.addAdspaceToshopCart(item)
+          item.adsList.forEach(adSpaceItem => {
+            this.AddShopingInfo(item, adSpaceItem)
+            this.addAdspaceToshopCart(item)
+          })
         })
         
       } else {
         const arr = this.shopingList.filter(item => {
           return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
         })
-        const delArr = arr.slice(0, oldValue-currentValue)
+        const delArr = arr.slice(0, oldValue-currentValue) || []
         delArr.forEach(item => {
-          const adSpaceItem = {
-            asID: item.asID,
-            asLab: item.asLab,
-            asPrice: item.asPrice,
-            asSaleState: item.asSaleState,
-            asState: item.asState,
-            checkBox: false,
-            checkFlag: item.checkFlag,
-            mID: item.mID,
-            occupyFlag: false
-          }
-          this.reduceAdspaceToshopCart(item)
-          this.deleteShopRow(adSpaceItem);
+          item.adsList.forEach(adSpaceItem => {
+            this.deleteShopRow(adSpaceItem)
+          })
+
         })
       }
     },
@@ -6320,6 +6303,20 @@ export default {
 
       if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
         this.resIDMap[adApaceInfo.resID] -= 1
+      }
+    },
+
+    clearAdspaceShopCart (adApaceInfo) {
+      if(Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)){
+        this.buildingIdMap[adApaceInfo.buildingId] = 0
+      }
+
+      if(Reflect.has(this.unitIdMap, adApaceInfo.unitId)){
+        this.unitIdMap[adApaceInfo.unitId] = 0
+      }
+
+      if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
+        this.resIDMap[adApaceInfo.resID] = 0
       }
     },
 

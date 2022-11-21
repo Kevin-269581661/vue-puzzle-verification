@@ -40,7 +40,9 @@
                         <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
                                 <el-cascader
-                                    ref="userMediaRef" size="small" collapse-tags clearable
+                                    popper-class="cascader-checkbox"
+                                    ref="userMediaRef" size="small"
+                                    clearable
                                     v-model="accountForm.MD_BD_MediaPermission"
                                     :options="MD_BD_MediaPermissionArr"
                                     :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
@@ -357,6 +359,8 @@ export default {
             // 登录信息
             sessionData: "",
             haveEPPerssion: false,
+            tempArr: [],
+            tempNodeArr: []
         };
     },
     mounted() {
@@ -377,32 +381,31 @@ export default {
         // 媒介/销售 媒体权限默认勾选/取消勾选
         MD_BD_MediaPermissionChange(arr) {
             let nodeList = this.$refs.userMediaRef.getCheckedNodes()
+            console.log(nodeList);
             const curLength = nodeList.length
             const tempLength = this.tempNodes.length
             let node = [];
             // 当前选中项
             if(curLength - tempLength > 0) {
                 node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
-                // console.log(nodeList, node);
                 if(node) {
                     let index
                     // 点击的是单元门禁灯箱
                     if(node.label === '单元门禁灯箱' && this.accountForm.role == 'BD') {
                         index = node.children.findIndex((child) => child.label === '单元')
-                        node.children[index].checked = true
-                        nodeList = this.$refs.userMediaRef.getCheckedNodes()
                     }
                     else {
                         index = node.children.findIndex((child) => child.label === '点位')
-                        node.children[index].checked = true
-                        nodeList = this.$refs.userMediaRef.getCheckedNodes()
                     }
+                    node.checked = false
+                    node.children[index].checked = true
+                    nodeList = this.$refs.userMediaRef.getCheckedNodes()
                     arr.push([node.value, node.children[index].value])
                 }
             }
             // 当前取消选中项
             else if (curLength - tempLength <= 0) {
-                node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1 && item.level === 1)[0];
+                node = this.tempNodes.filter(item => nodeList.indexOf(item) === -1 && item .level === 1)[0];
                 if(node) {
                     node.children.forEach(child => child.checked = false)
                     const cList = nodeList.filter(item => item.parent === node)
@@ -423,17 +426,18 @@ export default {
             }
             this.tempNodes = nodeList
         },
+
         // 获取角色为媒介或销售的媒体纬度
-        getMD_BD_MediaPermission() {
+        getMD_BD_MediaPermission(val) {
             let info = {
-                companyIds: this.accountForm.company
+                companyIds: ''
             }
-            // if(this.sessionData.uType === 'ADN_SA') {
-            //     info.companyIds = this.sessionData.asrID + ',' + this.accountForm.company
-            // }
-            // else if (this.sessionData.uType === 'ADN_SM') {
-            //     info.companyIds = this.sessionData.asrID
-            // }
+            if(this.sessionData.uType === 'ADN_SA') {
+                info.companyIds = this.sessionData.asrID + ',' + val
+            }
+            else if (this.sessionData.uType === 'ADN_SM') {
+                info.companyIds = this.sessionData.asrID
+            }
             api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
                 // if(res.data.SysCode == 200200){
                 if (res.data.SysCode) {
@@ -455,7 +459,6 @@ export default {
                             })
                         })
                     }
-                    // console.log('data', _newData);
                     this.MD_BD_MediaPermissionArr = _newData;
                 } else {
                     this.$message({
@@ -671,7 +674,7 @@ export default {
             }
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []
-            this.getMD_BD_MediaPermission();
+            this.getMD_BD_MediaPermission(val);
         },
         lazyFunction(fn, timeout) {
             var timer = 0;
@@ -786,7 +789,7 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-                userMediaChooseConfigs: userMediaConfig || []
+                userMediaChooseConfig: JSON.stringify([... new Set(userMediaConfig)]) || ""
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -1088,6 +1091,21 @@ export default {
     height: 20px;
     margin-left: 5px;
     filter: brightness(0.8);
+}
+</style>
+<style lang="scss">
+.cascader-checkbox {
+    .el-cascader-panel {
+        .el-scrollbar:first-child {
+            .el-checkbox {
+                width: 100% !important;
+                height: 100% !important;
+                z-index: 999 !important;
+                position: absolute !important;
+                right: 20px !important;
+            }
+        }
+    }
 }
 </style>
 

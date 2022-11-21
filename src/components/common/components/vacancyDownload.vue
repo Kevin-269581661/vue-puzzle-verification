@@ -5,7 +5,7 @@
         <span>导出空位:</span>
       </el-col>
       <el-col :span="18">
-        <el-radio-group v-model="downLoadInfo.loadType">
+        <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
           <el-radio
             v-for="(item, index) in mediaPermissionList"
             :label="item"
@@ -51,7 +51,7 @@
             v-model="downLoadInfo.mediaTypeIds"
             placeholder="请选择媒体类型"
           >
-            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
+            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.mediaTypeName" :value="item.mediaTypeId"></el-option>
           </el-select>
       </el-col>
     </el-row>
@@ -110,6 +110,7 @@ export default {
         daterange: [],
       },
       allMediaTypes: [],
+      tempMediaTypes: [],
       // 城市列表
       cityList: [],
       pickerOptions: {
@@ -118,21 +119,41 @@ export default {
         },
       },
       mediaPermissionList: [],
+      mediaTypeList: [],
     };
   },
   methods: {
+    // 导出类型对应媒体类型
+    loadTypeChange(type) {
+        const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
+        this.allMediaTypes = this.tempMediaTypes[index].mediaTypeList
+    },
     // 获取session数据
     getSessionData () {
       this.sessionData = sessFun.getSess();
       // 处理导点纬度
-      const permissionList = this.sessionData.userMediaChooseConfigs || []
-      const temp = []
+      let permissionList = this.sessionData.userMediaChooseConfigs || []
+      let tempPermiision = []
+      let tempMediaTypes = []
       if(permissionList.length) {
         permissionList.forEach(per => {
-            temp.push(per.chooseTypeName)
+            tempPermiision.push(per.chooseTypeName)
         })
       }
-      this.mediaPermissionList = [...new Set(temp)]
+      tempPermiision = [...new Set(tempPermiision)]
+      if(tempPermiision.length) {
+        let list
+        tempPermiision.forEach(item => {
+            list = permissionList.filter(v => v.chooseTypeName === item)
+            tempMediaTypes.push({
+                chooseTypeName: item,
+                mediaTypeList: list
+            })
+        })
+      }
+      this.tempMediaTypes = tempMediaTypes
+      this.mediaPermissionList = tempPermiision
+
     },
     cancelDown () {
       this.messageFun("info", "取消此操作");
@@ -189,15 +210,15 @@ export default {
         });
     },
     // 个人权限公司下媒体类型列表
-    getAllMediaTypes() {
-      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
-        if (res.data.SysCode == 200200) {
-          this.allMediaTypes = res.data.data || []
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-      })
-    },
+    // getAllMediaTypes() {
+    //   api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
+    //     if (res.data.SysCode == 200200) {
+    //       this.allMediaTypes = res.data.data || []
+    //     } else {
+    //       this.messageFun('warning', res.data.MSG);
+    //     }
+    //   })
+    // },
     // 获取城市中文名称
     getCityName (rids) {
         let citys = [];
@@ -270,7 +291,7 @@ export default {
   mounted () {
     this.getSessionData();
     this.getCity();
-    this.getAllMediaTypes();
+    // this.getAllMediaTypes();
   },
   computed: {
     //显示导点位

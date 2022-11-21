@@ -1266,6 +1266,17 @@ a {
   width: 104px;
 }
 
+/deep/ .el-table-filter {
+    .el-table-filter__bottom {
+        button {
+            padding: 2px 6px !important;
+            margin-right: 10px !important;
+            border: 1px solid #ccc !important;
+            border-radius: 4px !important;
+        }
+    }
+}
+
 /*操作*/
 .el-dropdown-link {
   cursor: pointer;

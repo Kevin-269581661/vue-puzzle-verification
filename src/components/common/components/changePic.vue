@@ -921,7 +921,7 @@
                     console.log(err);
                 })
             },
-            //获取媒体类型及上下刊点位数量和上传图片数量
+            // 获取媒体类型及上下刊点位数量和上传图片数量
             getAdsUploadImgCnt(){
                 let _type
                 if(this.type==1){
@@ -1201,7 +1201,7 @@
                 api.postApi(this.apiVar.Advertisement + "/GetImg", params)
                     .then(res => {
                         if (!res.data.SysCode) {
-                            console.log(res.data);
+                            console.log('GetImg', res.data);
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);

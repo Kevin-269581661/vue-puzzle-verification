@@ -2258,7 +2258,14 @@ export default {
     },
     //更换点位列表前端分页
     changePointPageFn () {
+      let _setpointArr = []
       let total = this.setpointArr.length
+      // 排除不正常的点位
+      _setpointArr = this.setpointArr.filter(item => item.lState !== 2)
+      // 地方媒介不显示单元门禁灯箱
+      if(this.sessionData.uType === 'ADN_MD') {
+        _setpointArr = _setpointArr.filter(item => item.mVehicle !== '单元门禁灯箱')
+      }
       let pageNum = this.pointCurrPage
       let pageSize = this.pointPageSize
       let totalPage = 0
@@ -2270,9 +2277,8 @@ export default {
       this.pointTotal = total
       var result = [];
       for (let i = 0; i < total; i += pageSize) {
-        result.push(this.setpointArr.slice(i, i + pageSize));
+        result.push(_setpointArr.slice(i, i + pageSize));
       }
-      console.log(result);
       //当前页
       this.changePointArr = result[pageNum - 1]
       //切换页数时勾选
@@ -2507,6 +2513,7 @@ export default {
       this.initListData()
       this.handleTime = new Date().getTime()
       this.dialogChangePoint = true
+      this.changePointParams = []
       this.changePointInfo.stopPointlist = []
       this.changePointInfo.addPointlist = []
       this.isHandleChange = false
@@ -2945,13 +2952,6 @@ export default {
   color: #606266;
 }
 
-/*换点表格*/
-/deep/ .el-table td,
-.el-table th {
-  padding: 4px 0;
-  height: 48px;
-}
-
 /*添加点位对话框*/
 .first-wrap /deep/ .el-dialog {
   width: 87% !important;
@@ -2970,6 +2970,11 @@ export default {
 
 /deep/ .el-table__row td:nth-child(2) .cell span {
   width: 225px;
+}
+
+/deep/ .el-table--small,
+/deep/ .el-table--mini {
+    font-size: 14px;
 }
 
 /deep/ .table_wrap .el-table__row td:nth-child(2) .cell span {

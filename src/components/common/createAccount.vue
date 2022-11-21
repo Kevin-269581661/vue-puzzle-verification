@@ -261,8 +261,8 @@ export default {
             MD_BD_MediaPermissionArr: [],
             //表单
             accountForm: {
-                account: "wuyufan",
-                realName: "wuyufan",
+                account: "",
+                realName: "",
                 role: "",
                 company: "",
                 boss: "",
@@ -270,7 +270,7 @@ export default {
                 engineerLevel: "",
                 devManageLevel: "",
                 mediaPermission: [],
-                phone: "13687495096",
+                phone: "",
                 division: "",
                 email: "",
                 saleManageLevel: "",
@@ -1025,6 +1025,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-tag__close {
+    display: none;
+}
+
 /deep/ .el-form.demo-ruleForm {
     display: flex;
     flex-direction: column;

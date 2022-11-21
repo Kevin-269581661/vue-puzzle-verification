@@ -1854,15 +1854,6 @@ export default {
       handler(nVal) {
         if (nVal === 0) {
           this.currentColumn.unshift(MEDIA_NAME);
-          // 表格勾选
-          // for (let i = 0; i < this.planList.length; i++) {
-          //   if (item.mID === this.planList[i].mID) {
-          //     this.planList[i].adsList.forEach((pItem) => {
-          //       console.log(pItem, 'pItempItem')
-          //       pItem.checkBox = true;
-          //     });
-          //   }
-          // }
         }
         if (nVal === 1 || nVal === 2 || nVal === 3) {
           const index = this.currentColumn.findIndex((item) => {
@@ -4900,13 +4891,11 @@ export default {
           this.shopingList[j].schedules === adSpaceRow.schedules
         ) {
           this.shopingList.splice(j, 1);
-          this.$forceUpdate()
           break;
         } else {
           j++;
         }
       }
-      console.log(this.shopingList, 'this.shopingList')
       this.typeShopList = this.getTypeList();
       this.getShowList();
       this.computeMedia_AD();
@@ -5181,6 +5170,8 @@ export default {
           parkSpaceNum: key.parkSpaceNum,
           peopleFlow: key.peopleFlow,
           carFlow: key.carFlow,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
         };
 
@@ -5897,6 +5888,7 @@ export default {
                   street: data.street,
                   unitId: data.unitId, // 单元ID
                   buildingId: data.buildingId, // 楼栋ID
+                  actualAdsCnt: data.actualAdsCnt, // 最多可添加点位数量
                 };
 
                 if (data.asPrice === null || data.asPrice === undefined) {
@@ -6241,8 +6233,8 @@ export default {
 
     // 点位数量变化
     async handlePointCountChange (currentValue, oldValue, row) {
+      let addNum = currentValue - oldValue
       if(+currentValue > +oldValue) {
-        let addNum = currentValue - oldValue
         const point = await this.handlePointRequest(addNum, row)
         this.shopShow_hide(); // 动画效果
         point.forEach(item => {
@@ -6256,7 +6248,7 @@ export default {
         const arr = this.shopingList.filter(item => {
           return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
         })
-        const delArr = arr.slice(0, oldValue-currentValue)
+        const delArr = arr.slice(0, oldValue-currentValue) || []
         delArr.forEach(item => {
           item.adsList.forEach(adSpaceItem => {
             this.deleteShopRow(adSpaceItem)
@@ -6325,7 +6317,6 @@ export default {
       if(Reflect.has(this.resIDMap, adApaceInfo.resID)){
         this.resIDMap[adApaceInfo.resID] = 0
       }
-      console.log(this.resIDMap, 'this.resIDMap')
     },
 
     // 增加点位到购物车，更新楼栋，小区，单元数量统计

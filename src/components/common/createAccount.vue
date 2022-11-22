@@ -389,12 +389,19 @@ export default {
                 node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
                 if(node) {
                     let index
+
+                    let cVals = []
+                    node.children.forEach(child => cVals.push(child.value))
+                    let minVal = Math.min(...cVals)
                     // 点击的是单元门禁灯箱
                     if(node.label === '单元门禁灯箱' && this.accountForm.role == 'BD') {
                         index = node.children.findIndex((child) => child.label === '单元')
+                        if(index === -1) {
+                            index = node.children.findIndex(child => child.value === minVal)
+                        }
                     }
                     else {
-                        index = node.children.findIndex((child) => child.label === '点位')
+                        index = node.children.findIndex(child => child.value === minVal)
                     }
                     node.checked = false
                     node.children[index].checked = true

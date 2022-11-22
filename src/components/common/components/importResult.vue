@@ -192,7 +192,8 @@
     </template>
     <p class="button_box">
       <el-button @click="cancelImport()" size="small">取 消</el-button>
-      <el-button type="primary" @click="confirmImport()" size="small"
+      <el-button type="primary" v-if="isPointSetting" @click="handlePointSetting">配点</el-button>
+      <el-button v-else type="primary" @click="confirmImport()" size="small"
         >确 定</el-button
       >
     </p>
@@ -219,6 +220,11 @@ export default {
       type: Object,
       default: () => {},
     },
+
+    isPointSetting: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -582,6 +588,11 @@ export default {
     confirmImport() {
       this.$emit("confirmImport", this.shopList);
     },
+
+    // 配点
+    handlePointSetting () {
+      this.$emit('handlePointSetting')
+    }
   },
 };
 </script>

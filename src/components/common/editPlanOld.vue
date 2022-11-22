@@ -1586,8 +1586,10 @@
           :importData="importInfoData"
           :name="planForm.planName"
           :customPermission="customPermission"
+          :isPointSetting="isPointSetting"
           @cancel="cancelImport"
           @confirmImport="confirmImport"
+          @handlePointSetting="handlePointSetting"
         ></import-result>
       </template>
       <template v-if="importType == '2'">
@@ -1765,6 +1767,15 @@
         >
       </span>
     </el-dialog>
+
+    <!-- 导入小区弹窗 -->
+    <PointSetting 
+      :visible.sync="pointSettingShow" 
+      :rejectAdPlan="rejectAdPlan"
+      :mTypeList="mTypeList"
+      :sites="sites"
+    >
+    </PointSetting>
   </div>
 </template>
 
@@ -1804,6 +1815,9 @@ import importResult from "./components/importResult.vue";
 
 // 表格控件
 import TableSetting from "./components/TableSetting";
+
+// 导入小区设置
+import PointSetting from './components/tempComp/pointSetting.vue'
 
 const MEDIA_NAME = {
   id: new Date().getDate(),
@@ -1848,6 +1862,7 @@ export default {
     elInputNumber: InputNumber,
     importResult,
     TableSetting,
+    PointSetting
   },
 
   watch: {
@@ -2450,7 +2465,12 @@ export default {
       // 单元数量map
       unitIdMap: {},
       // 小区数量map
-      resIDMap: {}
+      resIDMap: {},
+      // 小区导入设置弹窗
+      pointSettingShow: false,
+      
+      // 是否要配点
+      isPointSetting: false
     };
   },
   mounted() {
@@ -2518,6 +2538,12 @@ export default {
       if (type == "res") {
         this.importType = "1";
         this.doUpload = "/advertisement/AdPlanResImport";
+        const mediaItem = this.mediaTypeObjectArr.find(item => item.id === this.currentMediaType)
+        if (mediaItem.name === '单元门禁灯箱') {
+          this.isPointSetting = true
+        } else {
+          this.isPointSetting = false
+        }
       } else if (type == "ads") {
         this.importType = "2";
         this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";
@@ -6374,6 +6400,10 @@ export default {
       const pointCount = this.shopingList.filter(item => item[type] === typeId)
       return pointCount.length || 0
     },
+ 
+    handlePointSetting () {
+      this.pointSettingShow = true
+    }
   
   },
 };

@@ -1776,6 +1776,11 @@
       font-weight: 600;
     }
   }
+
+  /deep/ .el-table--small,
+  /deep/ .el-table--mini {
+    font-size: 14px;
+  }
   </style>
 
   <style>

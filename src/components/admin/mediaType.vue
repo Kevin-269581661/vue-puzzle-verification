@@ -333,7 +333,7 @@ export default {
                     value: 1
                 }
             ],
-            chooseConfigsArr: ['点位', '楼栋', '单元', '小区'],
+            chooseConfigsArr: ['点位', '单元', '楼栋', '小区'],
             //选点纬度
             // chooseConfigsList: [
             //     {

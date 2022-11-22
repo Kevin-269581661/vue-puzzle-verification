@@ -389,7 +389,6 @@ export default {
                 node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
                 if(node) {
                     let index
-
                     let cVals = []
                     node.children.forEach(child => cVals.push(child.value))
                     let minVal = Math.min(...cVals)

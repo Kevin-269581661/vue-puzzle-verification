@@ -551,11 +551,11 @@
                 >
                   <template slot-scope="scope">
                     <div v-if="getAdsParamsData.chooseType !== 0" class="pointCount-box">
-                      <el-input-number 
-                        v-model="scope.row.pointCount" 
-                        :min="0" 
-                        :max="scope.row.actualAdsCnt" 
-                        size="mini" 
+                      <el-input-number
+                        v-model="scope.row.pointCount"
+                        :min="0"
+                        :max="scope.row.actualAdsCnt"
+                        size="mini"
                         class="pointCount-input"
                         @change="(currentValue, oldValue) => handlePointCountChange(currentValue, oldValue, scope.row)"
                       >
@@ -660,7 +660,7 @@
                     </template>
                   </template>
                 </el-table-column>
-                
+
                 <template v-for="item in currentColumn">
                   <template v-if="item.label === '资源名称'">
                     <el-table-column
@@ -1769,11 +1769,12 @@
     </el-dialog>
 
     <!-- 导入小区弹窗 -->
-    <PointSetting 
-      :visible.sync="pointSettingShow" 
+    <PointSetting
+      :visible.sync="pointSettingShow"
       :rejectAdPlan="rejectAdPlan"
       :mTypeList="mTypeList"
       :sites="sites"
+      :matchKeys="pointMatchKeys"
     >
     </PointSetting>
   </div>
@@ -2436,7 +2437,7 @@ export default {
           name: "小区",
         },
       ],
-      
+
       // 设备型号
       mTypeList: [],
       mediaMType: '',
@@ -2444,6 +2445,9 @@ export default {
       // 安装位置
       sites: [],
       site: '',
+
+      // 配点匹配数据
+      pointMatchKeys: {},
 
       // 位置朝向
       siteOrientations:[
@@ -2459,7 +2463,7 @@ export default {
       siteOrientation: '',
 
       pointCountType: '',
-      
+
       // 楼栋数量map
       buildingIdMap: {},
       // 单元数量map
@@ -2468,7 +2472,7 @@ export default {
       resIDMap: {},
       // 小区导入设置弹窗
       pointSettingShow: false,
-      
+
       // 是否要配点
       isPointSetting: false
     };
@@ -2610,6 +2614,7 @@ export default {
           if (!res.data.SysCode) {
             let importInfo = res.data;
             this.importInfoData = res.data;
+            console.log(this.pointMatchKeys, 'pointMatchKeys');
             if (importInfo.successList.length) {
               this.setShopDataByImport(importInfo.successList);
             }
@@ -2644,6 +2649,11 @@ export default {
           if (res.data.SysCode == 200200) {
             let importInfo = res.data.data;
             this.importInfoData = importInfo;
+            // 配点匹配数据
+            this.pointMatchKeys = {
+                matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
+                matchResCacheKey: importInfo.successResKey //导入小区媒体
+            }
             this.showUploadFail = true;
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -3448,7 +3458,7 @@ export default {
           asID: key.asID,
           asLab: key.asLab
         };
-        
+
         if(this.getAdsParamsData.chooseType !== 0){
           adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
         }
@@ -3499,7 +3509,7 @@ export default {
           list.push(adObj)
         }
       }
-      if (!isGetDataADDoor) { 
+      if (!isGetDataADDoor) {
         this.currPageAsLength = i;
         this.loadScroll = true;
       }
@@ -4164,7 +4174,7 @@ export default {
     hadADByshop(data) {
       let shopAD = data;
       if (this.activeRName === shopAD.city) {
-        for (let sourceRow of this.planList) {    
+        for (let sourceRow of this.planList) {
           if (
             sourceRow.mID === shopAD.mID &&
             this.crossSchedules(shopAD.schedules)
@@ -4907,7 +4917,7 @@ export default {
           if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
             // 点位表对应的点位数据减一
             this.reduceAdspaceToshopCart(this.planList[i])
-            this.planList[i].pointCount-- 
+            this.planList[i].pointCount--
           }
 
         }
@@ -6270,7 +6280,7 @@ export default {
             this.addAdspaceToshopCart(item)
           })
         })
-        
+
       } else {
         const arr = this.shopingList.filter(item => {
           return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
@@ -6315,7 +6325,7 @@ export default {
         }
       });
     },
-    
+
 
     // 减少点位到购物车，更新楼栋，小区，单元数量统计
     reduceAdspaceToshopCart (adApaceInfo) {
@@ -6400,11 +6410,11 @@ export default {
       const pointCount = this.shopingList.filter(item => item[type] === typeId)
       return pointCount.length || 0
     },
- 
+
     handlePointSetting () {
       this.pointSettingShow = true
     }
-  
+
   },
 };
 </script>
@@ -7725,7 +7735,7 @@ export default {
     height: 24px!important;
     line-height: 24px!important;
   }
-  /deep/ .el-input-number__decrease, 
+  /deep/ .el-input-number__decrease,
   /deep/.el-input-number__increase {
     height: 24px!important;
   }

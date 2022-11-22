@@ -4,10 +4,11 @@
       title="配点设置"
       :visible.sync="dialogVisible"
       :show-close="false"
+      :before-close="handleClose"
       width="519px"
     >
       <div class="top-panel">
-        <el-radio-group v-model="params.mediaChooseConfig" @change="handleConfigChange">
+        <el-radio-group v-model="mediaChooseConfig" @change="handleConfigChange">
           <el-radio-button
             v-for="item in tagList"
             :key="item.value"
@@ -42,10 +43,10 @@
           </el-input-number>
         </el-form-item>
 
-        <template v-if="params.mediaChooseConfig === 1">
+        <template v-if="mediaChooseConfig === 3">
           <el-form-item label="每个小区配点数：">
             <el-radio-group v-model="isAllRes" @change="handleResChange">
-              <el-radio :label="true">全部点数</el-radio>
+              <el-radio :label="true">全部点位</el-radio>
               <el-radio :label="false">指定数量</el-radio>
             </el-radio-group>
             <el-input
@@ -85,7 +86,7 @@
           </el-form-item>
         </template>
 
-        <template v-else-if="params.mediaChooseConfig === 2">
+        <template v-else-if="mediaChooseConfig === 2">
           <el-form-item label="投放楼栋数：">
             <el-radio-group v-model="isAllBuild">
               <el-radio :label="true">全部可投楼栋</el-radio>
@@ -134,7 +135,7 @@
           <el-form-item label="投放楼栋数：">
             <el-radio-group v-model="isAllBuild">
               <el-radio :label="true">全部可投楼栋</el-radio>
-              <el-radio :label="false">指定数楼栋</el-radio>
+              <el-radio :label="false">指定楼栋数</el-radio>
             </el-radio-group>
             <el-input
               style="width: 100px"
@@ -191,6 +192,7 @@
             placeholder="请选择"
             size="small"
             clearable
+            filterable
           >
             <el-option
               v-for="item in rejectAdPlan"
@@ -231,10 +233,11 @@
         </el-form-item>
         <el-form-item label="朝外比例不高于：">
           <el-input-number
+            :disabled="!sessionData.uType === 'ADN_MD'"
             v-model="params.siteOrientationRate"
             size="small"
             controls-position="right"
-            :min="1"
+            :min="0"
             :max="100"
             class="input-number"
           >
@@ -252,41 +255,46 @@
 
 <script>
 import api from "../../../../api/api";
+import sessFun from "../../../../commonFun/sessFun";
+
 export default {
   data() {
     return {
       tagList: [
-        { name: "按小区配点", value: 1 },
+        { name: "按小区配点", value: 3 },
         { name: "按楼栋配点", value: 2 },
-        { name: "按单元配点", value: 3 },
+        { name: "按单元配点", value: 1 },
       ],
-
+      mediaChooseConfig: 3, // 配点纬度：0-点位 1-单元 2-楼栋 3-小区
       params: {
-        mediaChooseConfig: 1, // 配点纬度：0-点位 1-单元 2-楼栋 3-小区
         excludeApId: "", // 排斥方案id
         deviceTypeList: [], // 设备类型
         mediaSiteList: [], // 位置类型集合
         pdNumFirstFlag: false, // 是否优先满足点位数量
-        
         siteOrientationRate: 50, // 朝外比例上限
+
         pdNum: '', // 投放总数
         resChooseSpaceCount: "", // 小区配点数量上限 -1-全部
 
-        floorChooseSpaceMax: "", // 楼栋配点数量上限 -1-全部
         floorMaxCount: '', // 楼栋数量上限 -1-全部
+        floorChooseSpaceMax: "", // 楼栋配点数量上限 -1-全部
 
         unitMaxCount: '', // 单元数量上限 -1-全部
         unitChooseSpaceMax: "", // 单元配点数量上限 -1-全部
 
         matchOriginType: 0, // 匹配数据来源:0-导入小区 1-地图
+
+        matchMediaCacheKey: "", // 导入媒体缓存
+        matchResCacheKey: "",  // 导入小区媒体
       },
 
       isAllRes: true,
       isAllBuild: true,
-      isAllBuildSpace: true, 
+      isAllBuildSpace: true,
       isAllUnit: true,
-      isAllUnitSpace: true
+      isAllUnitSpace: true,
 
+      sessionData: "", // 登录信息
     };
   },
 
@@ -313,6 +321,12 @@ export default {
       type: Array,
       default: () => [],
     },
+
+    // 配点匹配数据
+    matchKeys: {
+      type: Object,
+      default: () => {},
+    }
   },
   computed: {
     dialogVisible: {
@@ -324,7 +338,19 @@ export default {
       },
     },
   },
+  watch: {
+    // 监听选点维度重置页面数据
+    mediaChooseConfig() {
+        this.resetParams()
+    }
+  },
+  mounted() {
+    this.getSession()
+  },
   methods: {
+    getSession() {
+      this.sessionData = sessFun.getSess();
+    },
     handleChange(val) {
       const index = this.params.deviceTypeList.indexOf("全部");
       if (index !== -1) {
@@ -334,36 +360,108 @@ export default {
 
     handleClose() {
       this.dialogVisible = false;
+      this.resetParams()
     },
 
     handleResChange(isAllRes) {
-      // if (isAllRes) {
-      //   this.params.resChooseSpaceCount = "";
-      //   this.params.floorChooseSpaceMax = "";
-      //   this.params.unitChooseSpaceMax = "";
-      // } else {
-      //   this.params.resChooseSpaceCount = 1;
-      //   this.params.floorChooseSpaceMax = 1;
-      //   this.params.unitChooseSpaceMax = 1;
-      // }
+    //   if (isAllRes) {
+    //     this.params.resChooseSpaceCount = "";
+    //     this.params.floorChooseSpaceMax = "";
+    //     this.params.unitChooseSpaceMax = "";
+    //   } else {
+    //     this.params.resChooseSpaceCount = 1;
+    //     this.params.floorChooseSpaceMax = 1;
+    //     this.params.unitChooseSpaceMax = 1;
+    //   }
     },
 
     handleConfigChange () {
 
     },
 
-    handleCommit() {
-      console.log(this.params, 'paramsparamsparams')
-      this.handlePointConfig(this.params)
+    // 重置参数
+    resetParams() {
+			let params = this.params
+			params.excludeApId = ""
+			params.deviceTypeList = []
+			params.mediaSiteList = []
+			params.pdNumFirstFlag = false
+			params.siteOrientationRate = 50
+			params.pdNum = ""
+			params.resChooseSpaceCount = ""
+			params.floorMaxCount = ""
+			params.floorChooseSpaceMax = ""
+			params.unitMaxCount = ""
+			params.unitChooseSpaceMax = ""
+			params.matchOriginType = 0
+			this.isAllRes = true,
+			this.isAllBuild = true,
+			this.isAllBuildSpace = true,
+			this.isAllUnit = true,
+			this.isAllUnitSpace = true
     },
 
+    // 参数处理
+    handleCommit() {
+      let info = this.params
+      let tempInfo = {}
+      // 公共参数
+      let publicInfo = {
+        mediaChooseConfig: this.mediaChooseConfig, // 配点纬度
+        pdNumFirstFlag: info.pdNumFirstFlag, // 配点要求
+        pdNum: info.pdNum, // 总投放点位数
+        excludeApId: info.excludeApId, //方案互斥
+        deviceTypeList: info.deviceTypeList, // 设备型号
+        mediaSiteList: info.mediaSiteList, // 安装位置
+        siteOrientationRate: info.siteOrientationRate, // 朝内外比例
+        matchOriginType: info.matchOriginType, // 匹配来源
+        matchMediaCacheKey: this.matchKeys.matchMediaCacheKey, //导入媒体缓存
+        matchResCacheKey: this.matchKeys.matchResCacheKey, //导入小区媒体
+      }
+      // 按小区
+      if (this.mediaChooseConfig === 3) {
+        tempInfo = {
+            resChooseSpaceCount: this.isAllRes ? -1 : Number(info.resChooseSpaceCount), // 每个小区配点数
+            floorChooseSpaceMax: this.isAllRes ? -1 : info.floorChooseSpaceMax, // 每栋楼配点上限
+            unitChooseSpaceMax: this.isAllRes ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
+        }
+      }
+      // 按楼栋
+      else if (this.mediaChooseConfig === 2) {
+        tempInfo = {
+            floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
+            floorChooseSpaceMax: this.isAllBuildSpace ? -1 : info.floorChooseSpaceMax, // 每楼栋配点数
+            unitChooseSpaceMax: this.isAllBuildSpace ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
+        }
+      }
+      // 按单元
+      else {
+        tempInfo = {
+            floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
+            unitMaxCount: this.isAllUnit ? -1 : Number(info.unitMaxCount), // 投放单元数
+            unitChooseSpaceMax: this.isAllUnitSpace ? -1 : Number(info.unitChooseSpaceMax), // 每单元配点数
+        }
+      }
+      let params = {
+        ...publicInfo,
+        ...tempInfo
+      }
+      this.handlePointConfig(params)
+    },
+
+		// 小区导入配点
     handlePointConfig (data) {
-      api.postApi('/addsp/api/v2/adPlan/getResImportMatchResult', data).then(res => {
-          resolve(res.data.data)
-        }).catch(error => {
-          reject(error)
-          console.log(error, 'error---getMediaTag')
-        })
+			api.postApi_json('/addsp/api/v2/adPlan/getResImportMatchResult', data)
+				.then(res => {
+						if(res.data.SysCode === 200200) {
+								sessFun.messageFun("success", "配点设置成功");
+                // this.handleClose()
+						}
+				})
+				.catch(error => {
+						sessFun.messageFun("warning", res.data.MSG);
+						console.log(error, 'error---getMediaTag')
+				})
     }
   },
 };

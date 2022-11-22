@@ -381,7 +381,6 @@ export default {
         // 媒介/销售 媒体权限默认勾选/取消勾选
         MD_BD_MediaPermissionChange(arr) {
             let nodeList = this.$refs.userMediaRef.getCheckedNodes()
-            console.log(nodeList);
             const curLength = nodeList.length
             const tempLength = this.tempNodes.length
             let node = [];
@@ -390,12 +389,19 @@ export default {
                 node = nodeList.filter(item => this.tempNodes.indexOf(item) === -1 && item.level === 1)[0];
                 if(node) {
                     let index
+
+                    let cVals = []
+                    node.children.forEach(child => cVals.push(child.value))
+                    let minVal = Math.min(...cVals)
                     // 点击的是单元门禁灯箱
                     if(node.label === '单元门禁灯箱' && this.accountForm.role == 'BD') {
                         index = node.children.findIndex((child) => child.label === '单元')
+                        if(index === -1) {
+                            index = node.children.findIndex(child => child.value === minVal)
+                        }
                     }
                     else {
-                        index = node.children.findIndex((child) => child.label === '点位')
+                        index = node.children.findIndex(child => child.value === minVal)
                     }
                     node.checked = false
                     node.children[index].checked = true
@@ -424,6 +430,7 @@ export default {
                     })
                 }
             }
+            nodeList = nodeList.filter(item => item.level === 2)
             this.tempNodes = nodeList
         },
 
@@ -773,6 +780,12 @@ export default {
                     })
                 }
             }
+            let userMediaChooseConfig = userMediaConfig.filter((curVal, curIndex, arr) => {
+                return arr.findIndex(
+                    item => item.mediaTypeId === curVal.mediaTypeId &&
+                    item.chooseType === curVal.chooseType
+                ) === curIndex
+            })
             let sess = this.sessionData;
             let account = {
                 uid: sess.uID,
@@ -789,7 +802,7 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-                userMediaChooseConfig: JSON.stringify([... new Set(userMediaConfig)]) || ""
+                userMediaChooseConfig: JSON.stringify(userMediaChooseConfig) || ""
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -815,7 +828,6 @@ export default {
         // 修改账户信息接口
         postEditInfo() {
             let account = this.setSubmitData();
-            console.log('accout', account);
             api
                 .postApi(this.apiVar.UCAPI + "/RegUser", account)
                 .then((res) => {

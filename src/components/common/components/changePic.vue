@@ -69,7 +69,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="位置朝向:">
-                    <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation" @change="arr=>changeSelect(arr, 'siteOrientation', 'siteOrientationList')">
+                    <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>

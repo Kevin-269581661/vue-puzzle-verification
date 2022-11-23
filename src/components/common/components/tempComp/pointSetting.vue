@@ -8,7 +8,10 @@
       width="519px"
     >
       <div class="top-panel">
-        <el-radio-group v-model="mediaChooseConfig" @change="handleConfigChange">
+        <el-radio-group
+          v-model="mediaChooseConfig"
+          @change="handleConfigChange"
+        >
           <el-radio-button
             v-for="item in tagList"
             :key="item.value"
@@ -28,7 +31,9 @@
         <el-form-item label="配点要求：">
           <el-radio-group v-model="params.pdNumFirstFlag">
             <el-radio :label="false">优先覆盖目标小区</el-radio>
-            <el-radio :label="true" style="margin-right: 0;">优先满足点位数量</el-radio>
+            <el-radio :label="true" style="margin-right: 0"
+              >优先满足点位数量</el-radio
+            >
           </el-radio-group>
         </el-form-item>
         <el-form-item label="总投放点位数：">
@@ -228,7 +233,8 @@
               v-for="item in sites.slice(1)"
               :key="item.dictValue"
               :label="item.dictValue"
-            >{{item.dictDesc}}</el-checkbox>
+              >{{ item.dictDesc }}</el-checkbox
+            >
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="朝外比例不高于：">
@@ -248,6 +254,29 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="handleCommit">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="succeedVisible"
+      :show-close="false"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      width="30%"
+    >
+      <div class="el-message-box__container">
+        <div class="el-message-box__status el-icon-success"></div>
+        <div class="el-message-box__message">
+          <p class="pointTitle">恭喜您，配点成功</p>
+        </div>
+      </div>
+      <div class="pointTxt">
+        计划配点共{{adResMatch.planResCount}}个小区，成功{{adResMatch.adResMatchSummaryVO.successResCount}}个，失败{{adResMatch.adResMatchSummaryVO.failResCount}}个
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleDetails"
+          >查看详情</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -273,19 +302,19 @@ export default {
         pdNumFirstFlag: false, // 是否优先满足点位数量
         siteOrientationRate: 50, // 朝外比例上限
 
-        pdNum: '', // 投放总数
+        pdNum: "", // 投放总数
         resChooseSpaceCount: "", // 小区配点数量上限 -1-全部
 
-        floorMaxCount: '', // 楼栋数量上限 -1-全部
+        floorMaxCount: "", // 楼栋数量上限 -1-全部
         floorChooseSpaceMax: "", // 楼栋配点数量上限 -1-全部
 
-        unitMaxCount: '', // 单元数量上限 -1-全部
+        unitMaxCount: "", // 单元数量上限 -1-全部
         unitChooseSpaceMax: "", // 单元配点数量上限 -1-全部
 
         matchOriginType: 0, // 匹配数据来源:0-导入小区 1-地图
 
         matchMediaCacheKey: "", // 导入媒体缓存
-        matchResCacheKey: "",  // 导入小区媒体
+        matchResCacheKey: "", // 导入小区媒体
       },
 
       isAllRes: true,
@@ -295,6 +324,13 @@ export default {
       isAllUnitSpace: true,
 
       sessionData: "", // 登录信息
+
+      succeedVisible: false,
+      
+      adResMatch: {
+        adResMatchSummaryVO: {},
+        adResMatchSummaryVO: {}
+      },  // 配点成功详情
     };
   },
 
@@ -326,7 +362,7 @@ export default {
     matchKeys: {
       type: Object,
       default: () => {},
-    }
+    },
   },
   computed: {
     dialogVisible: {
@@ -341,11 +377,11 @@ export default {
   watch: {
     // 监听选点维度重置页面数据
     mediaChooseConfig() {
-        this.resetParams()
-    }
+      this.resetParams();
+    },
   },
   mounted() {
-    this.getSession()
+    this.getSession();
   },
   methods: {
     getSession() {
@@ -360,51 +396,49 @@ export default {
 
     handleClose() {
       this.dialogVisible = false;
-      this.resetParams()
+      this.resetParams();
     },
 
     handleResChange(isAllRes) {
-    //   if (isAllRes) {
-    //     this.params.resChooseSpaceCount = "";
-    //     this.params.floorChooseSpaceMax = "";
-    //     this.params.unitChooseSpaceMax = "";
-    //   } else {
-    //     this.params.resChooseSpaceCount = 1;
-    //     this.params.floorChooseSpaceMax = 1;
-    //     this.params.unitChooseSpaceMax = 1;
-    //   }
+      //   if (isAllRes) {
+      //     this.params.resChooseSpaceCount = "";
+      //     this.params.floorChooseSpaceMax = "";
+      //     this.params.unitChooseSpaceMax = "";
+      //   } else {
+      //     this.params.resChooseSpaceCount = 1;
+      //     this.params.floorChooseSpaceMax = 1;
+      //     this.params.unitChooseSpaceMax = 1;
+      //   }
     },
 
-    handleConfigChange () {
-
-    },
+    handleConfigChange() {},
 
     // 重置参数
     resetParams() {
-			let params = this.params
-			params.excludeApId = ""
-			params.deviceTypeList = []
-			params.mediaSiteList = []
-			params.pdNumFirstFlag = false
-			params.siteOrientationRate = 50
-			params.pdNum = ""
-			params.resChooseSpaceCount = ""
-			params.floorMaxCount = ""
-			params.floorChooseSpaceMax = ""
-			params.unitMaxCount = ""
-			params.unitChooseSpaceMax = ""
-			params.matchOriginType = 0
-			this.isAllRes = true,
-			this.isAllBuild = true,
-			this.isAllBuildSpace = true,
-			this.isAllUnit = true,
-			this.isAllUnitSpace = true
+      let params = this.params;
+      params.excludeApId = "";
+      params.deviceTypeList = [];
+      params.mediaSiteList = [];
+      params.pdNumFirstFlag = false;
+      params.siteOrientationRate = 50;
+      params.pdNum = "";
+      params.resChooseSpaceCount = "";
+      params.floorMaxCount = "";
+      params.floorChooseSpaceMax = "";
+      params.unitMaxCount = "";
+      params.unitChooseSpaceMax = "";
+      params.matchOriginType = 0;
+      (this.isAllRes = true),
+        (this.isAllBuild = true),
+        (this.isAllBuildSpace = true),
+        (this.isAllUnit = true),
+        (this.isAllUnitSpace = true);
     },
 
     // 参数处理
     handleCommit() {
-      let info = this.params
-      let tempInfo = {}
+      let info = this.params;
+      let tempInfo = {};
       // 公共参数
       let publicInfo = {
         mediaChooseConfig: this.mediaChooseConfig, // 配点纬度
@@ -417,51 +451,69 @@ export default {
         matchOriginType: info.matchOriginType, // 匹配来源
         matchMediaCacheKey: this.matchKeys.matchMediaCacheKey, //导入媒体缓存
         matchResCacheKey: this.matchKeys.matchResCacheKey, //导入小区媒体
-      }
+      };
       // 按小区
       if (this.mediaChooseConfig === 3) {
         tempInfo = {
-            resChooseSpaceCount: this.isAllRes ? -1 : Number(info.resChooseSpaceCount), // 每个小区配点数
-            floorChooseSpaceMax: this.isAllRes ? -1 : info.floorChooseSpaceMax, // 每栋楼配点上限
-            unitChooseSpaceMax: this.isAllRes ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
-        }
+          resChooseSpaceCount: this.isAllRes
+            ? -1
+            : Number(info.resChooseSpaceCount), // 每个小区配点数
+          floorChooseSpaceMax: this.isAllRes ? -1 : info.floorChooseSpaceMax, // 每栋楼配点上限
+          unitChooseSpaceMax: this.isAllRes ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
+        };
       }
       // 按楼栋
       else if (this.mediaChooseConfig === 2) {
         tempInfo = {
-            floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
-            floorChooseSpaceMax: this.isAllBuildSpace ? -1 : info.floorChooseSpaceMax, // 每楼栋配点数
-            unitChooseSpaceMax: this.isAllBuildSpace ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
-        }
+          floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
+          floorChooseSpaceMax: this.isAllBuildSpace
+            ? -1
+            : info.floorChooseSpaceMax, // 每楼栋配点数
+          unitChooseSpaceMax: this.isAllBuildSpace
+            ? -1
+            : info.unitChooseSpaceMax, // 每单元配点上限
+        };
       }
       // 按单元
       else {
         tempInfo = {
-            floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
-            unitMaxCount: this.isAllUnit ? -1 : Number(info.unitMaxCount), // 投放单元数
-            unitChooseSpaceMax: this.isAllUnitSpace ? -1 : Number(info.unitChooseSpaceMax), // 每单元配点数
-        }
+          floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
+          unitMaxCount: this.isAllUnit ? -1 : Number(info.unitMaxCount), // 投放单元数
+          unitChooseSpaceMax: this.isAllUnitSpace
+            ? -1
+            : Number(info.unitChooseSpaceMax), // 每单元配点数
+        };
       }
       let params = {
         ...publicInfo,
-        ...tempInfo
-      }
-      this.handlePointConfig(params)
+        ...tempInfo,
+      };
+      this.handlePointConfig(params);
     },
 
-		// 小区导入配点
-    handlePointConfig (data) {
-			api.postApi_json('/addsp/api/v2/adPlan/getResImportMatchResult', data)
-				.then(res => {
-						if(res.data.SysCode === 200200) {
-								sessFun.messageFun("success", "配点设置成功");
-                // this.handleClose()
-						}
-				})
-				.catch(error => {
-						sessFun.messageFun("warning", res.data.MSG);
-						console.log(error, 'error---getMediaTag')
-				})
+    // 小区导入配点
+    handlePointConfig(data) {
+      api
+        .postApi_json("/addsp/api/v2/adPlan/getResImportMatchResult", data)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            this.dialogVisible = false
+            this.succeedVisible = true
+            this.adResMatch = res.data.data
+          } else {
+            sessFun.messageFun("warning", `配点失败`);
+          }
+        })
+        .catch((error) => {
+          sessFun.messageFun("warning", res.data.MSG);
+          console.log(error, "error---handlePointConfig");
+        });
+    },
+
+    handleDetails () {
+      this.dialogVisible = false
+      this.succeedVisible = false
+      this.$emit('handleDetails', this.adResMatch)
     }
   },
 };
@@ -538,5 +590,15 @@ export default {
   /deep/ .el-input__inner {
     width: 100px;
   }
+}
+
+.pointTitle {
+  font-size: 16px;
+  font-weight: bold;
+}
+.pointTxt {
+  margin-top: 16px;
+  font-size: 13px;
+  padding-left: 36px;
 }
 </style>

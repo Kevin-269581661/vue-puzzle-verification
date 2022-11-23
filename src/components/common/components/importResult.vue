@@ -24,11 +24,11 @@
     </p>
     <template v-if="activeType == 1">
       <div class="adsTable">
-        <div class="myCheckbox">
+        <div class="myCheckbox" v-if="!isPointSetting">
           <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
         </div>
         <el-table border :data="successList" style="width: 100%">
-          <el-table-column width="120px" class-name="el-table-column-checkbox">
+          <el-table-column width="120px" class-name="el-table-column-checkbox" v-if="!isPointSetting">
             <template slot-scope="scope">
               <div class="space-group">
                 <div
@@ -591,6 +591,7 @@ export default {
 
     // 配点
     handlePointSetting () {
+      this.$emit("cancel");
       this.$emit('handlePointSetting')
     }
   },

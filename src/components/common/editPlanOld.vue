@@ -1775,8 +1775,16 @@
       :mTypeList="mTypeList"
       :sites="sites"
       :matchKeys="pointMatchKeys"
+      @handleDetails="handlePointDetails"
     >
     </PointSetting>
+    <PointTable
+      :visible.sync="pointTableShow"
+      :importData="adResMatch"
+      @savePoint="savePoint"
+      @resetPoint="resetPoint"
+    >
+    </PointTable>
   </div>
 </template>
 
@@ -1819,6 +1827,7 @@ import TableSetting from "./components/TableSetting";
 
 // 导入小区设置
 import PointSetting from './components/tempComp/pointSetting.vue'
+import PointTable from './components/tempComp/pointTable.vue'
 
 const MEDIA_NAME = {
   id: new Date().getDate(),
@@ -1863,7 +1872,8 @@ export default {
     elInputNumber: InputNumber,
     importResult,
     TableSetting,
-    PointSetting
+    PointSetting,
+    PointTable
   },
 
   watch: {
@@ -2446,9 +2456,6 @@ export default {
       sites: [],
       site: '',
 
-      // 配点匹配数据
-      pointMatchKeys: {},
-
       // 位置朝向
       siteOrientations:[
         {
@@ -2474,7 +2481,12 @@ export default {
       pointSettingShow: false,
 
       // 是否要配点
-      isPointSetting: false
+      isPointSetting: false,
+      // 配点匹配数据
+      pointMatchKeys: {},
+      // 配点成功数据
+      adResMatch: {},
+      pointTableShow: false
     };
   },
   mounted() {
@@ -2594,7 +2606,7 @@ export default {
           this.BDData.uid
         }&rids=${rids}&excludedApId=${
           this.activeAdPlan ? this.activeAdPlan : ""
-        }&asrIDs=${this.BDData.asrIDs}`;
+        }&asrIDs=${this.BDData.asrIDs}&mediaTypeId=${this.currentMediaType}`;
         let formData = new FormData();
         formData.append("file", this.fileData[0]);
         if (this.importType == "2") {
@@ -2765,6 +2777,12 @@ export default {
       for (let data of sameMidArr) {
         let ADScheArr = ADData.schedules.split("-");
         let shopScheArr = data.schedules.split("-");
+        // ADScheArr[0] 新增数据的开始时间
+        // ADScheArr[1] 新增数据的结束时间
+
+        // shopScheAr[0] 购物车里数据开始时间
+        // shopScheArr[1] 购物车里数据结束时间
+        // 11.20-11.23 11.23-11.24
         if (
           ADScheArr[0] < shopScheArr[0] &&
           shopScheArr[0] <= ADScheArr[1] &&
@@ -6411,7 +6429,29 @@ export default {
       return pointCount.length || 0
     },
 
+    // 配点弹窗
     handlePointSetting () {
+      this.pointSettingShow = true
+    },
+
+    // 查看配点详情
+    handlePointDetails (data) {
+      this.pointTableShow = true
+      this.adResMatch = data
+    },
+
+    // 保存配点 
+    savePoint (arr) {
+      for (let info of arr) {
+        this.isHaveDiffPush(info);
+      }
+      this.judgeByselect();
+      this.dialogVisible();
+      this.pointTableShow = false
+    },
+    // 重新配点
+    resetPoint () {
+      this.pointTableShow = false
       this.pointSettingShow = true
     }
 

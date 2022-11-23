@@ -123,7 +123,7 @@
           </div>
         </div>
         <div class="table_wrap">
-          <el-table :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading"
+          <el-table @filter-change="filterChange" :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading"
             element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey" :size="rowSpace">
             <template v-for="item in currentPlanColumn">
 
@@ -174,7 +174,6 @@
                   :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true"
                   :fixed="item.fix === 'left' ? true : false">
                 </el-table-column>
-
               </template>
 
               <template v-if="item.label === '投放城市(点位面数,排期)'">
@@ -273,22 +272,18 @@
               </template>
 
               <template v-if="item.label === '媒体类型'">
-                <el-table-column 
-                  :prop="item.prop" 
-                  :label="item.label" 
-                  width="250px" 
+                <el-table-column
+                  :prop="item.prop"
+                  :label="item.label"
+                  width="250px"
                   show-overflow-tooltip
+                  column-key="mediaTypeNames"
                   v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false" 
-                  :filters="[
-                    { text: '广告门', value: '广告门' },
-                    { text: '单元门禁灯箱', value: '单元门禁灯箱' },
-                    { text: '道闸', value: '道闸' }
-                  ]" 
-                  :filter-method="filterMediaType"
+                  :fixed="item.fix === 'left' ? true : false"
+                  :filters="mediaTypeFilterList"
                 >
                   <template slot-scope="scope">
-                    <div class="media-tag" v-for="t in item.details" :key="t.mediaTypeId">
+                    <!-- <div class="media-tag" v-for="t in scope.row.details" :key="t.mediaTypeId">
                       <div class="tag ad">
                         <el-tooltip class="item" effect="dark" :content="`预锁剩余3天${t.RemainDay}`" placement="top">
                           <img src="@/assets/images/suo-icon-ad.png" class="icon">
@@ -302,6 +297,27 @@
                         </el-tooltip>
                         单元门禁灯箱（3天）
                       </div>
+                    </div> -->
+                    <div class="media-box">
+                        <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
+                            <div
+                                class="tag"
+                                :class="m.mediaTypeName === '广告门' ? 'ad' :
+                                        m.mediaTypeName === '单元门禁灯箱' ? 'unit-access':
+                                        m.mediaTypeName === '灯箱' ? 'light-box':
+                                        m.mediaTypeName === '道闸' ? 'brake': ''">
+                                <template v-if="m.RemainDay">
+                                    <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`" placement="top">
+                                    <i class="el-icon-lock icon"></i>
+                                    </el-tooltip>
+                                    {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                                </template>
+                                <template v-else>
+                                    {{ m.mediaTypeName }}
+                                </template>
+                            </div>
+
+                        </div>
                     </div>
                   </template>
                 </el-table-column>
@@ -346,7 +362,7 @@
                           scope.row.apState !== 1 ||
                           (scope.row.apState == 1 && !scope.row.canLock) ||
                           medaiTypePermissions(scope.row.details)
-                        ">预锁 {{ medaiTypePermissions(scope.row.details) }}
+                        ">预锁
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
@@ -560,7 +576,6 @@
               </el-checkbox>
             </div>
           </el-checkbox-group>
-
           <div class="btn-box">
             <el-button class="btn" @click="handleMediaTypeCancel">取 消</el-button>
             <el-button type="primary" @click="handleMediaTypeCommit">确 定</el-button>
@@ -628,6 +643,8 @@ export default {
         orderby: "",
         // 升序降序0/1
         desc: "",
+        // 媒体类型ids
+        mediaTypeIds: ""
       },
       // 公司列表
       companyData: [],
@@ -729,14 +746,17 @@ export default {
         { id: 3, label: "方案价格", prop: "apTotal", isChecked: true, fix: "not" },
         { id: 4, label: "所有人", prop: "realName", isChecked: true, fix: "not" },
         { id: 5, label: "投放城市(点位面数,排期)", prop: "cityArea", isChecked: true, fix: "not" },
-        { id: 6, label: "媒体类型", prop: "apcTime", isChecked: true, fix: "not" },
+        { id: 6, label: "媒体类型", prop: "mediaTypeDetails", isChecked: true, fix: "not" },
         { id: 7, label: "创建日期", prop: "apcTime", isChecked: true, fix: "not" },
         { id: 8, label: "状态", prop: "apState", isChecked: true, fix: "not" },
         { id: 9, label: "操作", isChecked: true, fix: "right" },
       ],
       // 行距
       rowSpace: "",
-      itemKey: ''
+      itemKey: '',
+
+      // 媒体类型筛选字段
+      mediaTypeFilterList: []
     };
   },
   created() {
@@ -754,6 +774,7 @@ export default {
 
   mounted() {
     this.getCustomConfig();
+    this.getAllMediaTypes();
   },
 
   methods: {
@@ -848,6 +869,7 @@ export default {
             let dataInfo = res.data;
             this.totalNum = dataInfo.total;
             this.currentPlan = this.funcData(dataInfo.list);
+            console.log('currentPlan', this.currentPlan);
             this.loading = false;
             if (dataInfo.totalpage == 0) {
               this.messageFun("warning", "暂无数据");
@@ -1479,7 +1501,7 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
           });
-          this.noLockCity();
+          this.noLockCity(row);
         })
         .catch(() => {
           this.$message({
@@ -1570,7 +1592,8 @@ export default {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         act: act,
-        apid: this.currentItem.apID
+        apid: this.currentItem.apID,
+        mediaTypeIds: this.currentItem.mediaTypeIds
       };
 
       api
@@ -1600,19 +1623,13 @@ export default {
     },
 
     // 解锁
-    noLockCity(arr) {
-      let asrIDs = [];
-      for (let data of arr) {
-        asrIDs.push(data.asrID);
-      }
-      let apid = arr[0].apID;
+    noLockCity(row) {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apId: apid,
-        asrIDs: asrIDs,
+        apId: row.apID,
+        mediaTypeIds: row.mediaTypeIds
       };
-      console.log(info);
       api
         .postApi(this.apiVar.Advertisement + "/ClFangan", info)
         .then((res) => {
@@ -1654,7 +1671,7 @@ export default {
 
     // 搜索（优化）
     search() {
-      let { keyword, rangeDate, status, company, cityWord, Lock, dateType } =
+      let { keyword, rangeDate, status, company, cityWord, Lock, dateType, mediaTypeIds } =
         this.searchInfo;
       this.isSearch = false;
       let timer = setTimeout(() => {
@@ -1668,7 +1685,8 @@ export default {
         company ||
         cityWord ||
         Lock ||
-        dateType
+        dateType ||
+        mediaTypeIds
       ) {
         this.currentPlan = [];
         this.loading = true;
@@ -1708,6 +1726,7 @@ export default {
         orderby,
         desc,
         dateType,
+        mediaTypeIds
       } = this.searchInfo;
       info = {
         ...info,
@@ -1720,6 +1739,7 @@ export default {
         ...(orderby && { orderby }),
         ...(desc !== "" && desc >= 0 && { desc }),
         ...(rangeDate && { timeType: dateType }),
+        ...(mediaTypeIds && { mediaTypeIds }),
       };
       return info;
     },
@@ -1730,19 +1750,35 @@ export default {
         apSrc: item.src,
         adcID: item.adcID,
         apID: item.apID,
-        apName: item.apName || "",
-        apState: item.apState || "",
+        apName: item.apName || "--",
+        apState: item.apState || "--",
         planMode: item.planMode || 0,
-        apTotal: item.apTotal || "",
-        apcTime: item.apcTime || "",
+        apTotal: item.apTotal || "--",
+        apcTime: item.apcTime || "--",
         bTitle: item.bTitle || "--",
-        cName: item.cName || "",
-        realName: item.realName || "",
+        cName: item.cName || "--",
+        realName: item.realName || "--",
         cityArea: [],
         // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
-        apControlLevel: item.apControlLevel, // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
-        details: item.details
+        apControlLevel: item.apControlLevel || "--", // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
+        details: item.details || "",
+        mediaTypeDetails: [], // 媒体类型详细数据（包括预锁）
+        mediaTypeNames: item.mediaTypeNames || "", // 媒体类型
+        mediaTypeIds: item.mediaTypeIds || "", // 媒体类型id
       };
+      // 处理媒体类型数据
+      let mediaTypeNames = obj.mediaTypeNames.split(',')
+      mediaTypeNames.forEach(type => {
+        const index = obj.details.findIndex(item => item.mediaTypeName === type)
+        if(index > -1) {
+            obj.mediaTypeDetails.push(obj.details[index])
+        } else {
+            obj.mediaTypeDetails.push({
+                mediaTypeName: type
+            })
+        }
+      })
+
       item.details.sort((a, b) => {
         return a.asrID - b.asrID;
       });
@@ -1773,16 +1809,14 @@ export default {
 
     // 重置
     reset() {
-      this.searchInfo = {
-        select: "1",
-        keyword: "",
-        rangeDate: "",
-        status: "",
-        company: "",
-        cityWord: "",
-        Lock: "",
-        dateType: "0",
-      };
+      let info = this.searchInfo
+      info.select = "1",
+      info.keyword = "",
+      info.rangeDate = "",
+      info.status = "",
+      info.company = "",
+      info.Lock = "",
+      info.dateType = "0"
 
       this.currPage = 1;
       this.currentPlan = [];
@@ -1891,7 +1925,7 @@ export default {
       };
       this.exportFileData = [];
       this.isResExport = true;
-      this.getAllMediaTypes();
+      getAllMediaTypes()
     },
 
     // 个人权限公司下媒体类型列表
@@ -1899,8 +1933,15 @@ export default {
       api
         .getApi("/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes")
         .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.allMediaTypes = res.data.data || [];
+          let _res = res.data
+          if (_res.SysCode == 200200) {
+            this.allMediaTypes = _res.data || [];
+            _res.data.forEach(item => {
+                this.mediaTypeFilterList.push({
+                    text: item.name,
+                    value: item.id
+                })
+            })
           } else {
             this.messageFun("warning", res.data.MSG);
           }
@@ -2042,10 +2083,18 @@ export default {
       console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
     },
 
-    filterMediaType(value, row, column) {
-      console.log(value, row, column)
-      const property = column['property'];
-      return row[property] === value;
+    // 列表筛选
+    filterChange(filters) {
+      for (let key in filters) {
+        if (key === "mediaTypeNames") {
+          if (filters[key].length) {
+              this.searchInfo.mediaTypeIds = filters[key].join(',');
+          } else {
+              this.searchInfo.mediaTypeIds = "";
+          }
+      }
+    }
+    this.search()
     },
 
     // 关闭预锁媒体类型弹窗
@@ -2062,6 +2111,7 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
       this.LockCity("L");
+      this.mediaTypeChecks = []
     },
 
     // 媒体类型操作权限判断
@@ -2648,47 +2698,62 @@ a {
   }
 }
 
-.media-tag {
-  display: flex;
-
-  .tag {
+.media-box {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 22px;
-    padding: 0 8px;
-    border: 1px solid;
-    border-radius: 2px;
-    font-family: 'Roboto';
-    font-size: 12px;
-    margin-right: 8px;
-    line-height: normal;
+    flex-wrap: wrap;
+    .media-tag {
+        margin: 4px 8px 4px 0;
 
-    &:last-of-type {
-      margin-right: 0;
-    }
+        .tag {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            border: 1px solid;
+            border-radius: 2px;
+            font-family: 'Roboto';
+            font-size: 12px;
+            margin-right: 8px;
+            line-height: normal;
 
-    &.ad {
-      background: #E6F7FF;
-      border-color: #91D5FF;
-      color: #1890FF;
-    }
+            &:last-of-type {
+            margin-right: 0;
+            }
 
-    &.light-box {
-      background: #F6FFED;
-      border-color: #B7EB8F;
-      color: #52C41A;
-    }
+            &.ad {
+            background: #E6F7FF;
+            border-color: #91D5FF;
+            color: #1890FF;
+            }
 
-    .icon {
-      cursor: pointer;
-      display: block;
-      width: 10px;
-      margin-right: 6px;
+            &.unit-access {
+            background: #F6FFED;
+            border-color: #B7EB8F;
+            color: #52C41A;
+            }
+
+            &.light-box {
+            background: #E6FFFB;
+            border-color: #87E8DE;
+            color: #13C2C2;
+            }
+
+            &.brake {
+            background: #f9f0ff;
+            border-color: #D3ADF7;
+            color: #722ED1;
+            }
+
+            .icon {
+            cursor: pointer;
+            display: block;
+            width: 10px;
+            margin-right: 6px;
+            }
+        }
     }
-  }
 }
-
 
 .media-type-dialog {
   /deep/ .el-dialog {

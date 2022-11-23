@@ -2152,7 +2152,7 @@ export default {
             this.filterCityData = filterFormat(result, "city");
             this.filtersArea = filterFormat(result, "rName");
             // 媒体类型过滤
-            this.filterMTypeData = filterFormat(result, 'mType');
+            this.filterMTypeData = filterFormat(result, 'mediaTypeName');
             // 投放面过滤
             this.filterAsLabData = filterFormat(result, 'asLab');
             this.filtersData = filterFormat(result, "timeRange");
@@ -2448,8 +2448,7 @@ export default {
 
     // 媒体类型筛选
     filterMType (value, row) {
-        console.log(row);
-        return row.mType === value
+        return row.mediaTypeName === value
     },
     // 投放面筛选
     filterAsLab (value, row) {

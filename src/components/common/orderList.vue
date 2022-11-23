@@ -1063,22 +1063,15 @@ export default {
     },
     // 重置
     reset() {
-      this.searchInfo = {
-        // 搜索的select框
-        select: "1",
-        // 关键字
-        keyword: "",
-        // 时间范围
-        rangeDate: "",
-        // 公司搜索
-        company: "",
-        // 城市筛选
-        cityWord: "",
-        // 状态筛选
-        status: "",
-        dateType: "1",
-        // mediaTypeIds: "",
-      };
+      let info = this.searchInfo
+      info.select = "1" // 搜索的select框
+      info.keyword = "" // 关键字
+      info.rangeDate = "" // 时间范围
+      info.company = "" // 公司搜索
+      info.cityWord = "" // 城市筛选
+      info.status = "" // 状态筛选
+      info.dateType = "1"
+
       this.currPage = 1;
       this.currentOrder = [];
       this.isReset = false;

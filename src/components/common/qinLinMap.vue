@@ -1553,12 +1553,20 @@ export default {
       dialogCity: false,
 
       // 投放排期
-      timeRange: []
+      timeRange: [],
+      
+      // 跳转传过来的媒体类型Id
+      queryMediaTypeId: ''
     };
   },
   created () {
     const timeRange = this.$route.query.timeRange
     this.timeRange = timeRange.replace(',', ' - ')
+
+    const queryMediaTypeId = this.$route.query.mediaTypeId
+    if(queryMediaTypeId) {
+      this.queryMediaTypeId = queryMediaTypeId
+    }
 
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (mapConfig.system === 0) {
@@ -1986,7 +1994,7 @@ export default {
         tradingArea: this.selectTradingArea,
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
-        mediaTypeId: this.selectMediaType,
+        mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,
@@ -2040,6 +2048,7 @@ export default {
           this.resMap.clearOverlays();
           if (res.data.SysCode === 200200) {
             console.log(res.data.data, 'res.data.data')
+            this.queryMediaTypeId = null
             res.data.data.forEach(item => {
               item.resList.forEach(i => {
                 i.provinceName = item.provinceName

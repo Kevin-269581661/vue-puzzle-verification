@@ -266,6 +266,7 @@
                         :key="item.value"
                         :label="item.value"
                         :value="item.value"
+                        :disabled="(item.value === '资产编号' && isDiableSearchOpt) || (item.value === '被占查询' && isDiableSearchOpt)"
                       ></el-option>
                     </el-select>
                   </el-input>
@@ -311,7 +312,7 @@
                     >地图
                   </el-button>
                   <el-dropdown>
-                    <el-button type="success" class="importXle">
+                    <el-button type="success" class="importXle" :disabled="isDiableSearchOpt">
                       导入<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
@@ -330,7 +331,7 @@
                   <el-button type="primary" @click="importFanan('copy')"
                     >复制方案
                   </el-button>
-                  <el-button plain @click="dialogOneKeyPoint = true"
+                  <el-button v-if="!['ADN_BD', 'ADN_BD_COUNTRY', 'ADN_BD_KA'].includes(sessionData.uType)" plain @click="dialogOneKeyPoint = true"
                     >一键选点
                   </el-button>
                 </el-col>
@@ -1247,7 +1248,7 @@
                         >
                       </span>
                       <el-dropdown size="small" type="primary">
-                        <el-button type="primary" style="padding: 0 8px">
+                        <el-button type="primary" style="padding: 0 8px" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)">
                           快捷配点<i
                             class="el-icon-arrow-down el-icon--right"
                           ></i>
@@ -2708,6 +2709,13 @@ export default {
         this.currentPage * this.cartPageSize
       );
     },
+
+    // 仅当当前所选媒体类型在该账号选点纬度的权限中配有“点位”时可点击“资产编号”，否则灰显不可选中；
+    // 仅当当前所选媒体类型在该账号选点纬度权限有“点位”时可点击“被占查询”，其余权限则灰显不可选中；
+    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用； 
+    isDiableSearchOpt () {
+      return !this.tabChooseTypeList.some(item => item.name === '点位')
+    }
   },
   methods: {
     requestIsPay() {
@@ -3946,6 +3954,7 @@ export default {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
+              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData)
               // 获取选点列表
               this.getAdList();
             }
@@ -4472,7 +4481,7 @@ export default {
         window.location.host
       }/ADResourceMap/chooseRes?city=${
         this.mapParams.city
-      }&flag=true&timeRange=${String(this.dateInput)}`;
+      }&flag=true&timeRange=${String(this.dateInput)}&mediaTypeId=${this.currentMediaType}`;
       /* if(window.location.hostname == 'localhost') {
                     url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
                 } else {
@@ -4656,7 +4665,16 @@ export default {
     },
     //媒体类型切换
     activeMediaType(mType) {
-      //   console.log("媒体类型", mType);
+      //  console.log("媒体类型", mType);
+      const arr = this.sessionData.userMediaChooseConfigs.filter(item => item.mediaTypeId === mType)
+      this.tabChooseTypeList = arr.map(item => {
+        return {
+          name: item.chooseTypeName,
+          label: item.chooseType
+        }
+      }).sort((a, b) => a.label - b.label)
+      this.getAdsParamsData.chooseType = this.tabChooseTypeList[0].label
+
       this.setPageNoAndTableData();
       this.currentMediaType = mType;
       this.getAdList();
@@ -6633,7 +6651,22 @@ export default {
     resetPoint () {
       this.pointTableShow = false
       this.pointSettingShow = true
-    }
+    },
+
+     // 根据账号配置过滤媒体类型
+    getUserMediaChooseConfigs (sessionData) {
+      let hash = {}; 
+      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) =>{ 
+        hash[next.mediaTypeName] ? '' : hash[next.mediaTypeName] = true && item.push(next); 
+        return item 
+      }, []) 
+      return arr.map(item => {
+        return {
+          name: item.mediaTypeName,
+          id: item.mediaTypeId
+        }
+      })
+    },
 
   },
   // 页面销毁

@@ -1320,7 +1320,7 @@ a {
 </style>
 
 <style>
-/deep/ .el-table-filter {
+/* /deep/ .el-table-filter {
     .el-table-filter__bottom {
         button {
             padding: 2px 6px !important;
@@ -1329,5 +1329,5 @@ a {
             border-radius: 4px !important;
         }
     }
-}
+} */
 </style>

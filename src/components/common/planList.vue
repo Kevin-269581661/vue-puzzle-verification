@@ -358,27 +358,27 @@
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
+                          scope.row.isdfmj ||
                           isDisable ||
                           scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.canLock) ||
-                          medaiTypePermissions(scope.row.details)
+                          (scope.row.apState == 1 && !scope.row.canLock)
                         ">预锁
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
+                          scope.row.isdfmj ||
                           isDisable ||
                           scope.row.apState !== 1 ||
                           (scope.row.apState != 1 &&
-                            scope.row.apControlLevel !== 1) ||
-                          medaiTypePermissions(scope.row.details)
+                            scope.row.apControlLevel !== 1)
                         ">发布
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
+                          scope.row.isdfmj ||
                           isDisable ||
                           scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.unLock) ||
-                          medaiTypePermissions(scope.row.details)
+                          (scope.row.apState == 1 && !scope.row.unLock)
                         ">解除预锁
                         </el-dropdown-item>
 
@@ -572,7 +572,7 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
-              <el-checkbox :label="item.value" :disabled="medaiTypePermissions(currentMediaType)">{{ item.label }}
+              <el-checkbox :label="item.value" :disabled="medaiTypePermissions(item)">{{ item.label }}
               </el-checkbox>
             </div>
           </el-checkbox-group>
@@ -756,7 +756,7 @@ export default {
       itemKey: '',
 
       // 媒体类型筛选字段
-      mediaTypeFilterList: []
+      mediaTypeFilterList: [],
     };
   },
   created() {
@@ -1778,6 +1778,19 @@ export default {
             })
         }
       })
+      // 针对地方媒介的预锁逻辑：
+      // 仅含单元门禁灯箱，不可预锁/解锁/发布
+      // 含有其他媒体类型，仅针对单元门禁灯箱灰显
+      let mLength = mediaTypeNames.length
+      if (["ADN_MD"].includes(this.role) && mediaTypeNames.includes('单元门禁灯箱')) {
+        if (mLength > 1) {
+            obj.isdfmj = false
+        } else {
+            obj.isdfmj = true
+        }
+      } else {
+        obj.isdfmj = false
+      }
 
       item.details.sort((a, b) => {
         return a.asrID - b.asrID;
@@ -2114,19 +2127,13 @@ export default {
       this.mediaTypeChecks = []
     },
 
-    // 媒体类型操作权限判断
-    medaiTypePermissions(arr) {
-      //  广告门 道闸 地方媒介/全国媒介 可预锁/解锁/发布所见方案
-      const types = arr.map(item => item.mediaTypeName)
-      if ((types.includes('广告门') || types.includes('道闸')) && ["ADN_MD", "ADN_MD_COUNTRY"].includes(this.role)) {
-        return false
-      } else if (types.includes('单元门禁灯箱') && ["ADN_MD_COUNTRY"].includes(this.role)) {
-        // 单元门禁灯箱 全国媒介可预锁/解锁/发布所见方案
-        return false
-      } else {
+    // 媒体类型操作权限判断：仅针对地方媒介对单元门禁灯箱进行灰显
+    medaiTypePermissions(item) {
+      if (item.mediaTypeName === '单元门禁灯箱' && ["ADN_MD"].includes(this.role)) {
         return true
+      } else {
+        return false
       }
-
     },
 
     // 列展示

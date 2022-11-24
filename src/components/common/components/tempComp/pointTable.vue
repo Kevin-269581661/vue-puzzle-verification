@@ -31,7 +31,7 @@
       </div>
 
       <div class="adsTable">
-        <el-table border :data="adResMatchSpaceVos" style="width: 100%">
+        <el-table border :data="adResMatchSpaceVos" style="width: 100%" height="440">
           <el-table-column label="资源名称" min-width="140" prop="resName">
           </el-table-column>
 

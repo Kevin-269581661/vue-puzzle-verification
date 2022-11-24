@@ -238,16 +238,20 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="朝外比例不高于：">
-          <el-input-number
-            :disabled="!sessionData.uType === 'ADN_MD'"
-            v-model="params.siteOrientationRate"
-            size="small"
-            controls-position="right"
-            :min="0"
-            :max="100"
-            class="input-number"
-          >
-          </el-input-number>
+          <div class="m-inputnum">
+            <el-input-number
+              :disabled="!sessionData.uType === 'ADN_MD'"
+              v-model="params.siteOrientationRate"
+              size="small"
+              controls-position="right"
+              :min="1"
+              :max="100"
+              class="input-number"
+            >
+            </el-input-number>
+            <span class="unit" :class="{min: params.siteOrientationRate < 10, max: params.siteOrientationRate >= 100}">%</span>
+          </div>
+
         </el-form-item>
       </el-form>
 
@@ -600,5 +604,24 @@ export default {
   margin-top: 16px;
   font-size: 13px;
   padding-left: 36px;
+}
+
+.m-inputnum {
+  display: inline-block;
+  position: relative;
+  height: 34px;
+  .unit {
+    position: absolute;
+    top: 50%;
+    right: 50px;
+    transform: translateY(-50%);
+    z-index: 9;
+    &.min {
+      right: 60px;
+    }
+    &.max {
+      right: 45px;
+    }
+  }
 }
 </style>

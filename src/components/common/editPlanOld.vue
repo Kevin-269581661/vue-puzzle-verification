@@ -678,7 +678,32 @@
                   <template v-else-if="item.label === '媒体名称'">
                     <el-table-column
                       class-name="el-table-column-mediaName"
-                      v-if="item.isChecked"
+                      v-if="item.isChecked  && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '楼栋号'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 1 || getAdsParamsData.chooseType === 2)"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                  </template>
+                  <template v-else-if="item.label === '单元号'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 1)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -706,7 +731,7 @@
                   <template v-else-if="item.label === '媒体备注'">
                     <el-table-column
                       class-name="el-table-column-mediaRemark"
-                      v-if="item.isChecked"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -722,7 +747,7 @@
                   <template v-else-if="item.label === '巡点问题'">
                     <el-table-column
                       align="right"
-                      v-if="item.isChecked && customPermission.patrolPermission"
+                      v-if="item.isChecked && customPermission.patrolPermission && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -738,7 +763,7 @@
                   <template v-else-if="item.label === '通行情况'">
                     <el-table-column
                       align="right"
-                      v-if="item.isChecked && customPermission.patrolPermission"
+                      v-if="item.isChecked && customPermission.patrolPermission && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -755,7 +780,7 @@
                     <el-table-column
                       align="right"
                       v-if="
-                        item.isChecked && customPermission.patrolPermission == 2
+                        item.isChecked && customPermission.patrolPermission == 2  && (getAdsParamsData.chooseType === 0)
                       "
                       :label="item.label"
                       :prop="item.prop"
@@ -771,7 +796,7 @@
 
                   <template v-else-if="item.label === '资产编号'">
                     <el-table-column
-                      v-if="item.isChecked"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -786,7 +811,7 @@
 
                   <template v-else-if="item.label === '媒体等级'">
                     <el-table-column
-                      v-if="item.isChecked"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -836,7 +861,7 @@
                   <template v-else-if="item.label === '媒体状态'">
                     <el-table-column
                       class="tar"
-                      v-if="item.isChecked"
+                      v-if="item.isChecked && (getAdsParamsData.chooseType === 0)"
                       :label="item.label"
                       :prop="item.prop"
                       :width="item.width"
@@ -917,6 +942,7 @@
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
+                      align="center"
                     >
                     </el-table-column>
                   </template>
@@ -1829,26 +1855,6 @@ import TableSetting from "./components/TableSetting";
 import PointSetting from './components/tempComp/pointSetting.vue'
 import PointTable from './components/tempComp/pointTable.vue'
 
-const MEDIA_NAME = {
-  id: new Date().getDate(),
-  label: "媒体名称",
-  prop: "mediaName",
-  width: "140",
-  isChecked: true,
-  fix: "left",
-  showTooltip: true,
-};
-
-const UNIT_ID = {
-  id: new Date().getDate(),
-  label: "单元id",
-  prop: "unitId",
-  width: "140",
-  isChecked: true,
-  fix: "not",
-  showTooltip: false,
-};
-
 export default {
   name: "editPlanOld",
   components: {
@@ -1879,15 +1885,6 @@ export default {
   watch: {
     "getAdsParamsData.chooseType": {
       handler(nVal) {
-        if (nVal === 0) {
-          this.currentColumn.unshift(MEDIA_NAME);
-        }
-        if (nVal === 1 || nVal === 2 || nVal === 3) {
-          const index = this.currentColumn.findIndex((item) => {
-            return item.prop === "mediaName";
-          });
-          this.currentColumn.splice(index, 1);
-        }
         let pointCountType = ''
         if(nVal === 1){
           pointCountType = 'unitId'
@@ -2237,6 +2234,24 @@ export default {
           showTooltip: true,
         },
         {
+          id: new Date().getDate(),
+          label: "楼栋号",
+          prop: "buildingName",
+          width: "140",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: new Date().getDate(),
+          label: "单元号",
+          prop: "unitName",
+          width: "140",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
           id: 3,
           label: "城市",
           prop: "city",
@@ -2357,6 +2372,15 @@ export default {
           id: 17,
           label: "楼栋数量",
           prop: "buildNum",
+          width: "100",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: new Date().getDate(),
+          label: "单元数量",
+          prop: "unitCount",
           width: "100",
           isChecked: true,
           fix: "not",
@@ -3474,7 +3498,9 @@ export default {
           buildingId: key.buildingId, // 楼栋ID
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
           asID: key.asID,
-          asLab: key.asLab
+          asLab: key.asLab,
+          buildingName: key.buildingName,
+          unitName: key.unitName
         };
 
         if(this.getAdsParamsData.chooseType !== 0){

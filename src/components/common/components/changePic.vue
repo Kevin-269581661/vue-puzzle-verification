@@ -846,7 +846,6 @@
             this.getCitys();
             //获取换画城市列表
             this.getRegionAreaList()
-            this.getPlanDetails()
             // 获取资源列表
             this.getResArr();
             //得到换画排期筛选列表
@@ -866,9 +865,10 @@
 
         methods: {
             // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
-            getPlanDetails() {
+            getPlanDetails(mid) {
                 let info = {
                     apID:sessionStorage.getItem('order_apid'),
+                    mediaTypeId: mid ? mid : ''
                 }
                 for (let i = 1; i < 5; i++) {
                     api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: i})
@@ -1098,6 +1098,7 @@
                 }
                 // info.pageSize = 6
                 this.getImgInfo(info);
+                this.getPlanDetails(info.mediaTypeId)
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
@@ -1201,7 +1202,7 @@
                 api.postApi(this.apiVar.Advertisement + "/GetImg", params)
                     .then(res => {
                         if (!res.data.SysCode) {
-                            console.log('GetImg', res.data);
+                            // console.log('GetImg', res.data);
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
@@ -1288,7 +1289,7 @@
                                 };
                             });
                             this.getMediaTypes();
-                            this.getPlanDetails('change')
+                            this.getPlanDetails()
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1472,8 +1473,6 @@
                 this.getRegionAreaList()
                 //得到换画排期筛选列表
                 this.getAdChangeLaunchDateList()
-                // 获取媒体名称/媒体位ID/位置朝向/设备型号
-                // this.getPlanDetails('change')
             },
             /**
              *  选择换画点位弹出框

@@ -278,7 +278,7 @@
         </div>
       </div>
       <div class="pointTxt">
-        计划配点共{{adResMatch.planResCount}}个小区，成功{{adResMatch.adResMatchSummaryVO.successResCount}}个，失败{{adResMatch.adResMatchSummaryVO.failResCount}}个
+        计划配点共{{adResMatch.planResCount || 0}}个小区，成功{{adResMatch.adResMatchSummaryVO.successResCount || 0}}个，失败{{adResMatch.adResMatchSummaryVO.failResCount}}个
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleDetails"
@@ -478,6 +478,7 @@ export default {
         matchOriginType: info.matchOriginType, // 匹配来源
         matchMediaCacheKey: this.matchKeys.matchMediaCacheKey, //导入媒体缓存
         matchResCacheKey: this.matchKeys.matchResCacheKey, //导入小区媒体
+        matchOriginType: this.matchKeys.matchOriginType
       };
       // 按小区
       if (this.mediaChooseConfig === 3) {

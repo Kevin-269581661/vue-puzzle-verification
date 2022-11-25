@@ -1,6 +1,6 @@
 <template>
   <div class="import_result">
-    <div class="car-title">
+    <div class="car-title" v-if="!isPointSetting && !forMap">
       <i class="el-icon-info" style="color: #1890ff"></i>
       <h4>
         已成功导入小区<span>{{ successRes }}</span
@@ -15,12 +15,10 @@
     <p>
       <el-radio-group v-model="activeType" size="small" class="marin10">
         <el-radio-button :label="1">成功小区</el-radio-button>
-        <el-radio-button :label="2">失败小区</el-radio-button>
+        <el-radio-button :label="2" v-if="!isPointSetting && !forMap">失败小区</el-radio-button>
       </el-radio-group>
-      <span
-        >提示：已选择 <b>{{ resNum }}</b> 个社区，<b>{{ pointNum }}</b>
-        个点位</span
-      >
+      <span v-if="!isPointSetting && !forMap">提示：已选择 <b>{{ resNum }}</b> 个社区，<b>{{ pointNum }}</b>
+        个点位</span>
     </p>
     <template v-if="activeType == 1">
       <div class="adsTable">
@@ -222,6 +220,11 @@ export default {
     },
 
     isPointSetting: {
+      type: Boolean,
+      default: false
+    },
+
+    forMap: {
       type: Boolean,
       default: false
     }

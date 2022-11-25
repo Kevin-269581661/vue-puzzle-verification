@@ -1614,6 +1614,7 @@
           :name="planForm.planName"
           :customPermission="customPermission"
           :isPointSetting="isPointSetting"
+          :forMap="forMap"
           @cancel="cancelImport"
           @confirmImport="confirmImport"
           @handlePointSetting="handlePointSetting"
@@ -2511,7 +2512,9 @@ export default {
       pointMatchKeys: {},
       // 配点成功数据
       adResMatch: {},
-      pointTableShow: false
+      pointTableShow: false,
+
+      forMap: false
     };
   },
   mounted() {
@@ -2591,7 +2594,6 @@ export default {
         } else {
           this.isPointSetting = false
         }
-        this.isPointSetting = true
       } else if (type == "ads") {
         this.importType = "2";
         this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";
@@ -2696,7 +2698,8 @@ export default {
             // 配点匹配数据
             this.pointMatchKeys = {
                 matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
-                matchResCacheKey: importInfo.successResKey //导入小区媒体
+                matchResCacheKey: importInfo.successResKey, //导入小区媒体
+                matchOriginType: 0
             }
             this.showUploadFail = true;
           } else {
@@ -3683,14 +3686,22 @@ export default {
           asrIDs: this.BDData.asrIDs.split(","),
         })
       );
+
+      const mediaTypeArr = this.mediaTypeObjectArr.filter(item => item.id === this.currentMediaType)
+      let mediaType = mediaTypeArr[0].name === '单元门禁灯箱' ? mediaTypeArr[0].name : ''
+
       let url = `${window.location.protocol}//${
         window.location.host
       }/ADResourceMap/chooseRes?city=${
         this.mapParams.city
-      }&flag=true&timeRange=${String(this.dateInput)}&mediaTypeId=${this.currentMediaType}`;
+      }&flag=true&timeRange=${String(this.dateInput)}&mediaType=${mediaType}&mediaTypeId=${mediaTypeArr[0].id}`;
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();
+
+      if (mediaType) {
+        this.isPointSetting = true
+      }
     },
     // 模态框中的确认按钮
     oneKeyPointBtn(item) {
@@ -5205,8 +5216,28 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            this.setMapAdsListInShopCar();
-            localStorage.removeItem("qinlinMapCode");
+            if(this.isPointSetting){
+              this.importType = "1";
+              this.forMap = true 
+              this.pointMatchKeys.matchOriginType = 1
+
+              this.importInfoData.successList = res.data.data.map(item => {
+                return {
+                  ...item,
+                  city: item.cityName,
+                  pbStar: item.startDate,
+                  pbEnd: item.endDate
+                }
+              })
+              this.mapBtn = true;
+              this.dialogTableVisible = false
+              this.showUploadFail = true
+              this.getMapLoading.close();
+            } else {
+              this.forMap = false
+              this.setMapAdsListInShopCar();
+              localStorage.removeItem("qinlinMapCode");
+            }
           } else {
             this.getMapLoading.close();
             sessFun.messageFun("warning", res.data.MSG || "数据获取异常");

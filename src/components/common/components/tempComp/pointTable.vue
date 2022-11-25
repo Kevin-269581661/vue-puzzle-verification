@@ -8,11 +8,11 @@
     width="54%"
   >
     <div class="import_result" v-if="dialogVisible">
-      <h3 class="yxxq">意向投放小区:{{importData.adResMatchSummaryVO.planResCount}}个</h3>
+      <h3 class="yxxq">意向投放小区:{{importData.adResMatchSummaryVO.planResCount || 0}}个</h3>
       <div class="car-title">
         <i class="el-icon-info" style="color: #1890ff"></i>
         <h4>
-          小区<span>{{ importData.adResMatchSummaryVO.successResCount }}</span>
+          小区<span>{{ importData.adResMatchSummaryVO.successResCount || 0 }}</span>
           | 楼栋<span>{{ importData.adResMatchSummaryVO.floorCount }}</span> |
           单元<span>{{ importData.adResMatchSummaryVO.unitCount }}</span> |
           点位<span>{{ importData.adResMatchSummaryVO.faceCount }}</span>

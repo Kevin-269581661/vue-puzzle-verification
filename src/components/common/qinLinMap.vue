@@ -1555,7 +1555,8 @@ export default {
       // 投放排期
       timeRange: [],
       
-      // 跳转传过来的媒体类型Id
+      // 跳转传过来的媒体类型
+      queryMediaType: '',
       queryMediaTypeId: ''
     };
   },
@@ -1563,9 +1564,10 @@ export default {
     const timeRange = this.$route.query.timeRange
     this.timeRange = timeRange.replace(',', ' - ')
 
-    const queryMediaTypeId = this.$route.query.mediaTypeId
-    if(queryMediaTypeId) {
-      this.queryMediaTypeId = queryMediaTypeId
+    const {mediaType, mediaTypeId} = this.$route.query
+    if (mediaType) {
+      this.queryMediaType = mediaType
+      this.queryMediaTypeId  = mediaTypeId
     }
 
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
@@ -1669,6 +1671,10 @@ export default {
         if(res.data.SysCode === 200200){
           this.mediaTypes=res.data.data
         }
+        console.log(this.queryMediaType)
+        if (this.queryMediaType === '单元门禁灯箱') {
+          this.mediaTypes = this.mediaTypes.filter(item => item.name === this.queryMediaType)
+        }
       }).catch((err)=>{
         console.log(err);
       })
@@ -1681,6 +1687,9 @@ export default {
       api.getApi("/addsp/api/v1/company/mediaTypes",params).then((res)=>{
         if(res.data.SysCode === 200200){
           this.mediaTypes=res.data.data
+          if (this.queryMediaType === '单元门禁灯箱') {
+            this.mediaTypes = this.mediaTypes.filter(item => item.name === this.queryMediaType)
+          }
         }
       }).catch((err)=>{
         console.log(err);
@@ -1994,7 +2003,7 @@ export default {
         tradingArea: this.selectTradingArea,
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
-        mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType,
+        mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,
@@ -2048,7 +2057,6 @@ export default {
           this.resMap.clearOverlays();
           if (res.data.SysCode === 200200) {
             console.log(res.data.data, 'res.data.data')
-            this.queryMediaTypeId = null
             res.data.data.forEach(item => {
               item.resList.forEach(i => {
                 i.provinceName = item.provinceName
@@ -2235,7 +2243,7 @@ export default {
       // console.log('获取指定资源到媒体列表-----')
       let params = {
         resID: this.showResInfo.resID,
-        mediaTypeId: this.selectMediaType
+        mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType
       };
       if (this.isShare) {
         params.shareCode = this.routeQuery.code;

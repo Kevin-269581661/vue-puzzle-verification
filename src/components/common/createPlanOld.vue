@@ -1777,6 +1777,7 @@
           :name="planForm.planName"
           :customPermission="customPermission"
           :isPointSetting="isPointSetting"
+          :forMap="forMap"
           @cancel="cancelImport"
           @confirmImport="confirmImport"
           @handlePointSetting="handlePointSetting"
@@ -2627,6 +2628,7 @@ export default {
       // 配点成功数据
       adResMatch: {},
       pointTableShow: false,
+      forMap: false
     };
   },
   created() {
@@ -4477,19 +4479,21 @@ export default {
           asrIDs: _asrIDs,
         })
       );
+      const mediaTypeArr = this.mediaTypeObjectArr.filter(item => item.id === this.currentMediaType)
+      let mediaType = mediaTypeArr[0].name === '单元门禁灯箱' ? mediaTypeArr[0].name : ''
+
       let url = `${window.location.protocol}//${
         window.location.host
       }/ADResourceMap/chooseRes?city=${
         this.mapParams.city
-      }&flag=true&timeRange=${String(this.dateInput)}&mediaTypeId=${this.currentMediaType}`;
-      /* if(window.location.hostname == 'localhost') {
-                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                } else {
-                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                } */
+      }&flag=true&timeRange=${String(this.dateInput)}&mediaType=${mediaType}&mediaTypeId=${mediaTypeArr[0].id}`;
+
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();
+      if (mediaType) {
+        this.isPointSetting = true
+      }
     },
     // 模态框中的确认按钮
     oneKeyPointBtn(item) {
@@ -5123,8 +5127,28 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            this.setMapAdsListInShopCar();
-            localStorage.removeItem("qinlinMapCode");
+            if(this.isPointSetting){
+              this.importType = "1";
+              this.forMap = true 
+              this.pointMatchKeys.matchOriginType = 1
+
+              this.importInfoData.successList = res.data.data.map(item => {
+                return {
+                  ...item,
+                  city: item.cityName,
+                  pbStar: item.startDate,
+                  pbEnd: item.endDate
+                }
+              })
+              this.mapBtn = true;
+              this.dialogTableVisible = false
+              this.showUploadFail = true
+              this.getMapLoading.close();
+            } else {
+              this.forMap = false
+              this.setMapAdsListInShopCar();
+              localStorage.removeItem("qinlinMapCode");
+            }
           } else {
             this.getMapLoading.close();
             sessFun.messageFun("warning", res.data.MSG || "数据获取异常");

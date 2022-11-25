@@ -572,7 +572,10 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
-              <el-checkbox :label="item.value" :disabled="medaiTypePermissions(item)">{{ item.label }}
+              <el-checkbox
+                :label="item.value"
+                :disabled="!item.authMediaFlag"
+                >{{ item.label }}
               </el-checkbox>
             </div>
           </el-checkbox-group>
@@ -1425,7 +1428,8 @@ export default {
             return {
               label: item.mediaTypeName,
               value: item.mediaTypeId,
-              mediaTypeName: item.mediaTypeName
+              mediaTypeName: item.mediaTypeName,
+              authMediaFlag: item.authMediaFlag
             }
           })
           let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
@@ -2128,13 +2132,13 @@ export default {
     },
 
     // 媒体类型操作权限判断：仅针对地方媒介对单元门禁灯箱进行灰显
-    medaiTypePermissions(item) {
-      if (item.mediaTypeName === '单元门禁灯箱' && ["ADN_MD"].includes(this.role)) {
-        return true
-      } else {
-        return false
-      }
-    },
+    // medaiTypePermissions(item) {
+    //   if (item.mediaTypeName === '单元门禁灯箱' && ["ADN_MD"].includes(this.role)) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // },
 
     // 列展示
     filterColumn(columns) {

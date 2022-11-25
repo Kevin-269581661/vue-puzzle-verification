@@ -2262,10 +2262,11 @@ export default {
       let total = this.setpointArr.length
       // 排除不正常的点位
       _setpointArr = this.setpointArr.filter(item => item.lState !== 2)
+      console.log("_setpointArr", _setpointArr)
       // 地方媒介不显示单元门禁灯箱
-      if(this.sessionData.uType === 'ADN_MD') {
-        _setpointArr = _setpointArr.filter(item => item.mVehicle !== '单元门禁灯箱')
-      }
+    //   if(this.sessionData.uType === 'ADN_MD') {
+    //     _setpointArr = _setpointArr.filter(item => item.mVehicle !== '单元门禁灯箱')
+    //   }
       let pageNum = this.pointCurrPage
       let pageSize = this.pointPageSize
       let totalPage = 0

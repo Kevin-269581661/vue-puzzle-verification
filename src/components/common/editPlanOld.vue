@@ -2591,6 +2591,7 @@ export default {
         } else {
           this.isPointSetting = false
         }
+        this.isPointSetting = true
       } else if (type == "ads") {
         this.importType = "2";
         this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";

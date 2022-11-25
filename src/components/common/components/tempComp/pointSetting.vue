@@ -10,7 +10,7 @@
       <div class="top-panel">
         <el-radio-group
           v-model="mediaChooseConfig"
-          @change="handleConfigChange"
+          size="mini"
         >
           <el-radio-button
             v-for="item in tagList"
@@ -27,6 +27,9 @@
         label-position="rigth"
         label-width="140px"
         style="margin: 0 auto"
+        :rules="rules"
+        :model="params"
+        ref="pointSettingForm"
       >
         <el-form-item label="配点要求：">
           <el-radio-group v-model="params.pdNumFirstFlag">
@@ -36,7 +39,7 @@
             >
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="总投放点位数：">
+        <el-form-item label="总投放点位数：" prop="pdNum">
           <el-input-number
             v-model="params.pdNum"
             size="small"
@@ -50,7 +53,7 @@
 
         <template v-if="mediaChooseConfig === 3">
           <el-form-item label="每个小区配点数：">
-            <el-radio-group v-model="isAllRes" @change="handleResChange">
+            <el-radio-group v-model="isAllRes">
               <el-radio :label="true">全部点位</el-radio>
               <el-radio :label="false">指定数量</el-radio>
             </el-radio-group>
@@ -291,7 +294,45 @@ import api from "../../../../api/api";
 import sessFun from "../../../../commonFun/sessFun";
 
 export default {
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+
+    // 方案互斥
+    rejectAdPlan: {
+      type: Array,
+      default: () => [],
+    },
+
+    // 设备型号
+    mTypeList: {
+      type: Array,
+      default: () => [],
+    },
+
+    //安装位置
+    sites: {
+      type: Array,
+      default: () => [],
+    },
+
+    // 配点匹配数据
+    matchKeys: {
+      type: Object,
+      default: () => {},
+    },
+  },
+
   data() {
+    let checkPdNum = (rule, value, callback) => {
+      if (!value && this.params.pdNumFirstFlag) {
+        return callback(new Error('投放的总点位数量不可小于等于0'));
+      } else {
+        callback()
+      }
+    };
     return {
       tagList: [
         { name: "按小区配点", value: 3 },
@@ -335,39 +376,15 @@ export default {
         adResMatchSummaryVO: {},
         adResMatchSummaryVO: {}
       },  // 配点成功详情
+
+      rules: {
+        pdNum: {
+          required: false, trigger: 'blur', validator: checkPdNum
+        }
+      }
     };
   },
 
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
-
-    // 方案互斥
-    rejectAdPlan: {
-      type: Array,
-      default: () => [],
-    },
-
-    // 设备型号
-    mTypeList: {
-      type: Array,
-      default: () => [],
-    },
-
-    //安装位置
-    sites: {
-      type: Array,
-      default: () => [],
-    },
-
-    // 配点匹配数据
-    matchKeys: {
-      type: Object,
-      default: () => {},
-    },
-  },
   computed: {
     dialogVisible: {
       get() {
@@ -383,6 +400,15 @@ export default {
     mediaChooseConfig() {
       this.resetParams();
     },
+
+    'params.pdNumFirstFlag' (nval) {
+      if(nval) {
+        this.rules.pdNum.required = true
+      } else {
+        this.rules.pdNum.required = false
+        this.$refs['pointSettingForm'].resetFields()
+      }
+    }
   },
   mounted() {
     this.getSession();
@@ -402,20 +428,6 @@ export default {
       this.dialogVisible = false;
       this.resetParams();
     },
-
-    handleResChange(isAllRes) {
-      //   if (isAllRes) {
-      //     this.params.resChooseSpaceCount = "";
-      //     this.params.floorChooseSpaceMax = "";
-      //     this.params.unitChooseSpaceMax = "";
-      //   } else {
-      //     this.params.resChooseSpaceCount = 1;
-      //     this.params.floorChooseSpaceMax = 1;
-      //     this.params.unitChooseSpaceMax = 1;
-      //   }
-    },
-
-    handleConfigChange() {},
 
     // 重置参数
     resetParams() {
@@ -442,6 +454,17 @@ export default {
     // 参数处理
     handleCommit() {
       let info = this.params;
+      let isPass = true
+      if(info.pdNumFirstFlag){
+        this.$refs['pointSettingForm'].validate((valid) => {
+          if (valid) {
+            isPass = true
+          } else {
+            isPass = false
+          }
+        })
+      }
+      if (!isPass) return
       let tempInfo = {};
       // 公共参数
       let publicInfo = {

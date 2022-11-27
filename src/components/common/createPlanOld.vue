@@ -1463,7 +1463,7 @@
                       <template slot-scope="scope">
                         <span
                           style="cursor: pointer; color: #1890ff"
-                          @click="deleteRow(scope.row)"
+                          @click="deleteRow(scope.row, true)"
                         >
                           <i
                             class="el-icon-delete"
@@ -5957,7 +5957,7 @@ export default {
       );
     },
     // 购物车删除行
-    deleteRow(adSpaceRow) {
+    deleteRow(adSpaceRow, isRefresh) {
       if (
         this.planList.length > 0 &&
         adSpaceRow.city === this.planList[0].city
@@ -5995,8 +5995,12 @@ export default {
       this.getShowList();
       this.computeMedia_AD();
       this.allCheckboxUpdata();
-      event.stopPropagation();
-      this.getAdList();
+      if(event){
+        event.stopPropagation();
+      }
+      if(isRefresh) {
+        this.getAdList();
+      }
     },
     //修改动画效果及显示隐藏
     shopShow_hide(all) {
@@ -6539,31 +6543,29 @@ export default {
     },
 
     // 点位数量变化
-    async handlePointCountChange(currentValue, oldValue, row) {
-      let addNum = currentValue - oldValue;
-      if (+currentValue > +oldValue) {
-        const point = await this.handlePointRequest(addNum, row);
-        this.shopShow_hide(); // 动画效果
-        point.forEach((item) => {
-          item.adsList.forEach((adSpaceItem) => {
-            this.AddShopingInfo(item, adSpaceItem);
-            // this.addAdspaceToshopCart(item);
-          });
-        });
+    async handlePointCountChange (currentValue, oldValue, row) {
+      let addNum = currentValue - oldValue
+      if(+currentValue > +oldValue) {
+        const point = await this.handlePointRequest(addNum, row)
+        if (point) {
+          this.shopShow_hide(); // 动画效果
+          point.forEach(item => {
+            item.adsList.forEach(adSpaceItem => {
+              this.AddShopingInfo(item, adSpaceItem)
+            })
+          })
+        } else {
+          row.chooseNum = oldValue
+          this.$message.warning('点位数量增加失败')
+        }
       } else {
-        const arr = this.shopingList.filter((item) => {
-          return (
-            item[this.pointCountType] === row[this.pointCountType] &&
-            item.schedules === row.schedules &&
-            item.mediaTypeId === this.currentMediaType
-          );
-        });
-        const delArr = arr.slice(0, oldValue - currentValue) || [];
-        delArr.forEach((item) => {
-          item.adsList.forEach((adSpaceItem) => {
-            this.deleteShopRow(adSpaceItem);
-          });
-        });
+        const arr = this.shopingList.filter(item => {
+          return item[this.pointCountType] === row[this.pointCountType] && item.mediaTypeId === this.currentMediaType && this.crossSchedules(item.schedules)
+        })
+        const delArr = arr.slice(0, oldValue-currentValue) || []
+        delArr.forEach(item => {
+          this.deleteRow(item)
+        })
       }
     },
 

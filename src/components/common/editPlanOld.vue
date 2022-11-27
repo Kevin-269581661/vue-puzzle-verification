@@ -1273,7 +1273,7 @@
                         <template slot-scope="scope">
                           <span
                             style="cursor: pointer; color: #1890ff"
-                            @click="deleteRow(scope.row)"
+                            @click="deleteRow(scope.row, true)"
                           >
                             <i
                               class="el-icon-delete"
@@ -4963,9 +4963,6 @@ export default {
         buildingName: mediaInfo.buildingName,
         unitName: mediaInfo.unitName
       };
-      // if(this.getAdsParamsData.chooseType !== 0){
-      //   mediaInfo.pointCount = this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]]
-      // }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -4985,7 +4982,7 @@ export default {
       );
     },
     // 购物车删除行
-    deleteRow(adSpaceRow) {
+    deleteRow(adSpaceRow, isRefresh = false) {
       if (
         this.planList.length > 0 &&
         adSpaceRow.city === this.planList[0].city
@@ -5021,15 +5018,21 @@ export default {
       this.getShowList();
       this.computeMedia_AD();
       this.allCheckboxUpdata();
-      event.stopPropagation();
-      this.getAdList();
+      if(event){
+        event.stopPropagation();
+      }
+      if(isRefresh) {
+        this.getAdList();
+      }
     },
     // 取消勾时,删除购物车里对应的数据行
     deleteShopRow(row) {
       this.currPageSelect--;
       let shopingListLength = this.shopingList.length;
+      console.log(row, 'rowrowrow')
       for (let j = 0; j < shopingListLength; j++) {
         if (this.shopingList[j].asID === row.asID) {
+          console.log(this.shopingList[j].schedules, 'this.shopingList[j].schedules')
           let crossIf = this.crossSchedules(this.shopingList[j].schedules);
           if (crossIf) {
             // this.reduceAdspaceToshopCart(this.shopingList[j])
@@ -5322,9 +5325,6 @@ export default {
           unitName: key.unitName
         };
 
-        // if(this.getAdsParamsData.chooseType !== 0){
-        //   adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
-        // }
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -5721,7 +5721,6 @@ export default {
           newArr.push(sKey);
         }
       }
-      console.log("newArr", newArr);
       this.shopingList = newArr.concat();
       this.typeShopList = this.getTypeList();
       this.getShowList();
@@ -6313,9 +6312,6 @@ export default {
                 buildingName: key.buildingName,
                 unitName: key.unitName
               };
-              // if(this.getAdsParamsData.chooseType !== 0){
-              //   adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
-              // }
               arr.push(AD_data);
             }
             this.planList = arr;
@@ -6390,24 +6386,26 @@ export default {
       let addNum = currentValue - oldValue
       if(+currentValue > +oldValue) {
         const point = await this.handlePointRequest(addNum, row)
-        this.shopShow_hide(); // 动画效果
-        point.forEach(item => {
-          item.adsList.forEach(adSpaceItem => {
-            this.AddShopingInfo(item, adSpaceItem)
-            // this.addAdspaceToshopCart(item)
+        if (point) {
+          this.shopShow_hide(); // 动画效果
+          point.forEach(item => {
+            item.adsList.forEach(adSpaceItem => {
+              this.AddShopingInfo(item, adSpaceItem)
+            })
           })
-        })
-
+        } else {
+          this.$nextTick(() => {
+            row.chooseNum = oldValue
+          })
+          this.$message.warning('点位数量增加失败')
+        }
       } else {
         const arr = this.shopingList.filter(item => {
-          return item[this.pointCountType] === row[this.pointCountType] && item.schedules === row.schedules && item.mediaTypeId === this.currentMediaType
+          return item[this.pointCountType] === row[this.pointCountType] && item.mediaTypeId === this.currentMediaType && this.crossSchedules(item.schedules)
         })
         const delArr = arr.slice(0, oldValue-currentValue) || []
         delArr.forEach(item => {
-          item.adsList.forEach(adSpaceItem => {
-            this.deleteShopRow(adSpaceItem)
-          })
-
+          this.deleteRow(item)
         })
       }
     },
@@ -6548,6 +6546,7 @@ export default {
       this.dialogVisible();
       this.pointTableShow = false
     },
+
     // 重新配点
     resetPoint () {
       this.pointTableShow = false

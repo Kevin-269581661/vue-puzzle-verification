@@ -182,7 +182,8 @@ export default {
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
           siteOrientation: key.siteOrientation,
           mediaTypeName: key.mediaTypeName,
-          actualAdsCnt: key.actualAdsCnt,
+          buildingName: key.buildingName,
+          unitName: key.unitName,
         };
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
@@ -257,6 +258,8 @@ export default {
         unitId: mediaInfo.unitId, // 单元ID
         buildingId: mediaInfo.buildingId, // 楼栋ID
         actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
+        buildingName: mediaInfo.buildingName,
+        unitName: mediaInfo.unitName,
       };
       return selectInfo;
     },

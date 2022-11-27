@@ -553,7 +553,7 @@
                   <template slot-scope="scope">
                     <div v-if="getAdsParamsData.chooseType !== 0" class="pointCount-box">
                       <el-input-number
-                        v-model="scope.row.pointCount"
+                        v-model="scope.row.chooseNum"
                         :min="0"
                         :max="scope.row.actualAdsCnt"
                         size="mini"
@@ -1847,6 +1847,10 @@ import timeFormat from "../../commonFun/timeFormat.js";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 import sheetExcel from "../../commonFun/sheetExcel.js";
+
+// 方案缓存
+import cacheAdPlan from "../../commonFun/cacheAdPlan";
+
 // 方案导入结果
 import importResult from "./components/importResult.vue";
 
@@ -2544,6 +2548,10 @@ export default {
       if (this.dialogTableVisible) {
         this.resetConnectAdData();
         this.computeConnectAdData();
+      }
+      // 当购物车点位数大于0时
+      if (this.shopingList.length || this.isSelect) {
+        this.saveApInfo();
       }
       return this.shopingList.length;
     },
@@ -3511,12 +3519,13 @@ export default {
           asID: key.asID,
           asLab: key.asLab,
           buildingName: key.buildingName,
-          unitName: key.unitName
+          unitName: key.unitName,
+          chooseNum: key.chooseNum
         };
 
-        if(this.getAdsParamsData.chooseType !== 0){
-          adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
-        }
+        // if(this.getAdsParamsData.chooseType !== 0){
+        //   adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
+        // }
 
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
@@ -4298,7 +4307,7 @@ export default {
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
-        this.addAdspaceToshopCart(row)
+        // this.addAdspaceToshopCart(row)
       } else {
         // A、B都勾选的时候
         this.IsAll = false;
@@ -4950,10 +4959,13 @@ export default {
         unitId: mediaInfo.unitId, // 单元ID
         buildingId: mediaInfo.buildingId, // 楼栋ID
         actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
+        chooseNum: mediaInfo.chooseNum,
+        buildingName: mediaInfo.buildingName,
+        unitName: mediaInfo.unitName
       };
-      if(this.getAdsParamsData.chooseType !== 0){
-        mediaInfo.pointCount = this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]]
-      }
+      // if(this.getAdsParamsData.chooseType !== 0){
+      //   mediaInfo.pointCount = this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]]
+      // }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -4986,11 +4998,11 @@ export default {
               }
             });
           }
-          if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
-            // 点位表对应的点位数据减一
-            this.reduceAdspaceToshopCart(this.planList[i])
-            this.planList[i].pointCount--
-          }
+          // if(adSpaceRow[this.pointCountType] === this.planList[i][this.pointCountType]) {
+          //   // 点位表对应的点位数据减一
+          //   this.reduceAdspaceToshopCart(this.planList[i])
+          //   this.planList[i].pointCount--
+          // }
 
         }
       }
@@ -5010,6 +5022,7 @@ export default {
       this.computeMedia_AD();
       this.allCheckboxUpdata();
       event.stopPropagation();
+      this.getAdList();
     },
     // 取消勾时,删除购物车里对应的数据行
     deleteShopRow(row) {
@@ -5019,7 +5032,7 @@ export default {
         if (this.shopingList[j].asID === row.asID) {
           let crossIf = this.crossSchedules(this.shopingList[j].schedules);
           if (crossIf) {
-            this.reduceAdspaceToshopCart(this.shopingList[j])
+            // this.reduceAdspaceToshopCart(this.shopingList[j])
             this.shopingList.splice(j, 1);
             break;
           } else {
@@ -5302,11 +5315,16 @@ export default {
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          chooseNum: key.chooseNum,
+          buildingName: key.buildingName,
+          unitName: key.unitName,
+          buildingName: key.buildingName,
+          unitName: key.unitName
         };
 
-        if(this.getAdsParamsData.chooseType !== 0){
-          adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
-        }
+        // if(this.getAdsParamsData.chooseType !== 0){
+        //   adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+        // }
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -5718,14 +5736,15 @@ export default {
         })
           .then(() => {
             let arr = [];
-            this.shopingList.forEach(item => {
-              this.clearAdspaceShopCart(item)
-            })
+            // this.shopingList.forEach(item => {
+            //   this.clearAdspaceShopCart(item)
+            // })
             this.getResultData(arr);
             this.allCheckboxUpdata();
             this.computeMedia_AD();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList();
+            this.saveApInfo()
           })
           .catch(() => {
             sessFun.messageFun("info", "已取消删除");
@@ -6018,6 +6037,8 @@ export default {
                   unitId: data.unitId, // 单元ID
                   buildingId: data.buildingId, // 楼栋ID
                   actualAdsCnt: data.actualAdsCnt, // 最多可添加点位数量
+                  buildingName: data.buildingName,
+                  unitName: data.unitName
                 };
 
                 if (data.asPrice === null || data.asPrice === undefined) {
@@ -6036,7 +6057,7 @@ export default {
                 shopList.push(selectInfo);
               }
               this.shopingList = shopList;
-              this.initPointCounts(shopList)
+              // this.initPointCounts(shopList)
             } else {
               this.shopingList = [];
             }
@@ -6288,10 +6309,13 @@ export default {
                 unitId: key.unitId, // 单元ID
                 buildingId: key.buildingId, // 楼栋ID
                 actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+                chooseNum: key.chooseNum,
+                buildingName: key.buildingName,
+                unitName: key.unitName
               };
-              if(this.getAdsParamsData.chooseType !== 0){
-                adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
-              }
+              // if(this.getAdsParamsData.chooseType !== 0){
+              //   adObj.pointCount = this.shopingCarHasPoint(this.pointCountType,key[this.pointCountType]) ? this[`${this.pointCountType}Map`][key[this.pointCountType]] : 0
+              // }
               arr.push(AD_data);
             }
             this.planList = arr;
@@ -6370,7 +6394,7 @@ export default {
         point.forEach(item => {
           item.adsList.forEach(adSpaceItem => {
             this.AddShopingInfo(item, adSpaceItem)
-            this.addAdspaceToshopCart(item)
+            // this.addAdspaceToshopCart(item)
           })
         })
 
@@ -6543,7 +6567,42 @@ export default {
           id: item.mediaTypeId
         }
       })
-    }
+    },
+
+    saveApInfo() {
+      //获取当前选择的公司id
+      let selectedAsrIds = this.planForm.pointOfAsrIDs ? this.planForm.pointOfAsrIDs.join(",") : '';
+      if (!selectedAsrIds) {
+        selectedAsrIds = this.BDData.asrID
+          ? this.BDData.asrID + ""
+          : this.cacheAsrID;
+      }
+      let planInfo = {
+        uid: this.sessionData.uID,
+        setTime: this.timestampToTime(Date.parse(new Date())),
+        planData: {
+          asrID: selectedAsrIds, //缓存公司id
+          suid: this.BDData.uid, // 销售uid,如果是销售自己创建方案则uid与suid相同
+          uType: this.BDData.uType, // 销售权限
+          baseInfo: this.planForm,
+          adsList: this.shopingList,
+          throwCity: this.throwCity,
+          companyBrand: this.companyBrand,
+        },
+      };
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        adPlan: JSON.stringify(planInfo),
+      };
+      api
+        .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            cacheAdPlan.setData(planInfo);
+          }
+        });
+    },
 
   },
 };
@@ -7673,7 +7732,7 @@ export default {
   color: #1890ff;
   font-size: 14px;
   position: absolute;
-  top: 113px;
+  top: 116px;
   right: 468px;
   z-index: 10;
   line-height: 45px;
@@ -7865,8 +7924,10 @@ export default {
     height: 24px!important;
     line-height: 24px!important;
   }
-  /deep/ .el-input-number__decrease,
-  /deep/.el-input-number__increase {
+  /deep/ span.el-input-number__decrease {
+    height: 24px!important;
+  }
+  /deep/ span.el-input-number__increase {
     height: 24px!important;
   }
 }

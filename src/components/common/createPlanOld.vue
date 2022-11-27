@@ -266,7 +266,10 @@
                         :key="item.value"
                         :label="item.value"
                         :value="item.value"
-                        :disabled="(item.value === '资产编号' && isDiableSearchOpt) || (item.value === '被占查询' && isDiableSearchOpt)"
+                        :disabled="
+                          (item.value === '资产编号' && isDiableSearchOpt) ||
+                          (item.value === '被占查询' && isDiableSearchOpt)
+                        "
                       ></el-option>
                     </el-select>
                   </el-input>
@@ -312,7 +315,11 @@
                     >地图
                   </el-button>
                   <el-dropdown>
-                    <el-button type="success" class="importXle" :disabled="isDiableSearchOpt">
+                    <el-button
+                      type="success"
+                      class="importXle"
+                      :disabled="isDiableSearchOpt"
+                    >
                       导入<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
@@ -331,7 +338,14 @@
                   <el-button type="primary" @click="importFanan('copy')"
                     >复制方案
                   </el-button>
-                  <el-button v-if="!['ADN_BD', 'ADN_BD_COUNTRY', 'ADN_BD_KA'].includes(sessionData.uType)" plain @click="dialogOneKeyPoint = true"
+                  <el-button
+                    v-if="
+                      !['ADN_BD', 'ADN_BD_COUNTRY', 'ADN_BD_KA'].includes(
+                        sessionData.uType
+                      )
+                    "
+                    plain
+                    @click="dialogOneKeyPoint = true"
                     >一键选点
                   </el-button>
                 </el-col>
@@ -769,7 +783,7 @@
                       class="pointCount-box"
                     >
                       <el-input-number
-                        v-model="scope.row.pointCount"
+                        v-model="scope.row.chooseNum"
                         :min="0"
                         :max="scope.row.actualAdsCnt"
                         size="mini"
@@ -1248,7 +1262,15 @@
                         >
                       </span>
                       <el-dropdown size="small" type="primary">
-                        <el-button type="primary" style="padding: 0 8px" v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)">
+                        <el-button
+                          type="primary"
+                          style="padding: 0 8px"
+                          v-if="
+                            ['ADN_MD_COUNTRY', 'ADN_MD'].includes(
+                              sessionData.uType
+                            )
+                          "
+                        >
                           快捷配点<i
                             class="el-icon-arrow-down el-icon--right"
                           ></i>
@@ -2628,7 +2650,7 @@ export default {
       // 配点成功数据
       adResMatch: {},
       pointTableShow: false,
-      forMap: false
+      forMap: false,
     };
   },
   created() {
@@ -2714,10 +2736,10 @@ export default {
 
     // 仅当当前所选媒体类型在该账号选点纬度的权限中配有“点位”时可点击“资产编号”，否则灰显不可选中；
     // 仅当当前所选媒体类型在该账号选点纬度权限有“点位”时可点击“被占查询”，其余权限则灰显不可选中；
-    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用； 
-    isDiableSearchOpt () {
-      return !this.tabChooseTypeList.some(item => item.name === '点位')
-    }
+    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用；
+    isDiableSearchOpt() {
+      return !this.tabChooseTypeList.some((item) => item.name === "点位");
+    },
   },
   methods: {
     requestIsPay() {
@@ -2942,11 +2964,13 @@ export default {
       if (type == "res") {
         this.importType = "1";
         this.doUpload = "/advertisement/AdPlanResImport";
-        const mediaItem = this.mediaTypeObjectArr.find(item => item.id === this.currentMediaType)
-        if (mediaItem.name === '单元门禁灯箱') {
-          this.isPointSetting = true
+        const mediaItem = this.mediaTypeObjectArr.find(
+          (item) => item.id === this.currentMediaType
+        );
+        if (mediaItem.name === "单元门禁灯箱") {
+          this.isPointSetting = true;
         } else {
-          this.isPointSetting = false
+          this.isPointSetting = false;
         }
       }
       // 点位
@@ -3054,9 +3078,9 @@ export default {
             this.importInfoData = importInfo;
             // 配点匹配数据
             this.pointMatchKeys = {
-                matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
-                matchResCacheKey: importInfo.successResKey //导入小区媒体
-            }
+              matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
+              matchResCacheKey: importInfo.successResKey, //导入小区媒体
+            };
             this.showUploadFail = true;
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -3956,7 +3980,9 @@ export default {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
-              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData)
+              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(
+                this.sessionData
+              );
               // 获取选点列表
               this.getAdList();
             }
@@ -4431,15 +4457,10 @@ export default {
                 unitId: key.unitId, // 单元ID
                 buildingId: key.buildingId, // 楼栋ID
                 actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+                chooseNum: key.chooseNum,
+                buildingName: key.buildingName,
+                unitName: key.unitName,
               };
-              if (this.getAdsParamsData.chooseType !== 0) {
-                adObj.pointCount = this.shopingCarHasPoint(
-                  this.pointCountType,
-                  key[this.pointCountType]
-                )
-                  ? this[`${this.pointCountType}Map`][key[this.pointCountType]]
-                  : 0;
-              }
               arr.push(AD_data);
             }
             this.planList = arr;
@@ -4479,20 +4500,25 @@ export default {
           asrIDs: _asrIDs,
         })
       );
-      const mediaTypeArr = this.mediaTypeObjectArr.filter(item => item.id === this.currentMediaType)
-      let mediaType = mediaTypeArr[0].name === '单元门禁灯箱' ? mediaTypeArr[0].name : ''
+      const mediaTypeArr = this.mediaTypeObjectArr.filter(
+        (item) => item.id === this.currentMediaType
+      );
+      let mediaType =
+        mediaTypeArr[0].name === "单元门禁灯箱" ? mediaTypeArr[0].name : "";
 
       let url = `${window.location.protocol}//${
         window.location.host
       }/ADResourceMap/chooseRes?city=${
         this.mapParams.city
-      }&flag=true&timeRange=${String(this.dateInput)}&mediaType=${mediaType}&mediaTypeId=${mediaTypeArr[0].id}`;
+      }&flag=true&timeRange=${String(
+        this.dateInput
+      )}&mediaType=${mediaType}&mediaTypeId=${mediaTypeArr[0].id}`;
 
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();
       if (mediaType) {
-        this.isPointSetting = true
+        this.isPointSetting = true;
       }
     },
     // 模态框中的确认按钮
@@ -4670,14 +4696,18 @@ export default {
     //媒体类型切换
     activeMediaType(mType) {
       //  console.log("媒体类型", mType);
-      const arr = this.sessionData.userMediaChooseConfigs.filter(item => item.mediaTypeId === mType)
-      this.tabChooseTypeList = arr.map(item => {
-        return {
-          name: item.chooseTypeName,
-          label: item.chooseType
-        }
-      }).sort((a, b) => a.label - b.label)
-      this.getAdsParamsData.chooseType = this.tabChooseTypeList[0].label
+      const arr = this.sessionData.userMediaChooseConfigs.filter(
+        (item) => item.mediaTypeId === mType
+      );
+      this.tabChooseTypeList = arr
+        .map((item) => {
+          return {
+            name: item.chooseTypeName,
+            label: item.chooseType,
+          };
+        })
+        .sort((a, b) => a.label - b.label);
+      this.getAdsParamsData.chooseType = this.tabChooseTypeList[0].label;
 
       this.setPageNoAndTableData();
       this.currentMediaType = mType;
@@ -5071,7 +5101,7 @@ export default {
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
-        this.addAdspaceToshopCart(row);
+        // this.addAdspaceToshopCart(row);
       } else {
         // A、B都勾选的时候
         this.IsAll = false;
@@ -5127,25 +5157,25 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            if(this.isPointSetting){
+            if (this.isPointSetting) {
               this.importType = "1";
-              this.forMap = true 
-              this.pointMatchKeys.matchOriginType = 1
+              this.forMap = true;
+              this.pointMatchKeys.matchOriginType = 1;
 
-              this.importInfoData.successList = res.data.data.map(item => {
+              this.importInfoData.successList = res.data.data.map((item) => {
                 return {
                   ...item,
                   city: item.cityName,
                   pbStar: item.startDate,
-                  pbEnd: item.endDate
-                }
-              })
+                  pbEnd: item.endDate,
+                };
+              });
               this.mapBtn = true;
-              this.dialogTableVisible = false
-              this.showUploadFail = true
+              this.dialogTableVisible = false;
+              this.showUploadFail = true;
               this.getMapLoading.close();
             } else {
-              this.forMap = false
+              this.forMap = false;
               this.setMapAdsListInShopCar();
               localStorage.removeItem("qinlinMapCode");
             }
@@ -5212,15 +5242,13 @@ export default {
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
           actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          chooseNum: key.chooseNum,
+          buildingName: key.buildingName,
+          unitName: key.unitName,
+          buildingName: key.buildingName,
+          unitName: key.unitName
         };
-        if (this.getAdsParamsData.chooseType !== 0) {
-          adObj.pointCount = this.shopingCarHasPoint(
-            this.pointCountType,
-            key[this.pointCountType]
-          )
-            ? this[`${this.pointCountType}Map`][key[this.pointCountType]]
-            : 0;
-        }
+
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -5354,14 +5382,15 @@ export default {
         })
           .then(() => {
             let arr = [];
-            this.shopingList.forEach((item) => {
-              this.clearAdspaceShopCart(item);
-            });
+            // this.shopingList.forEach((item) => {
+            //   this.clearAdspaceShopCart(item);
+            // });
             this.getResultData(arr);
             this.allCheckboxUpdata();
             this.computeMedia_AD();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
+            this.saveApInfo()
           })
           .catch(() => {
             sessFun.messageFun("info", "已取消删除");
@@ -5901,11 +5930,14 @@ export default {
         unitId: mediaInfo.unitId, // 单元ID
         buildingId: mediaInfo.buildingId, // 楼栋ID
         actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
+        chooseNum: mediaInfo.chooseNum,
+        buildingName: mediaInfo.buildingName,
+        unitName: mediaInfo.unitName,
       };
-      if (this.getAdsParamsData.chooseType !== 0) {
-        mediaInfo.pointCount =
-          this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]];
-      }
+      // if (this.getAdsParamsData.chooseType !== 0) {
+      //   mediaInfo.pointCount =
+      //     this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]];
+      // }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -5938,14 +5970,14 @@ export default {
               }
             });
           }
-          if (
-            adSpaceRow[this.pointCountType] ===
-            this.planList[i][this.pointCountType]
-          ) {
-            // 点位表对应的点位数据减一
-            this.reduceAdspaceToshopCart(this.planList[i]);
-            this.planList[i].pointCount--;
-          }
+          // if (
+          //   adSpaceRow[this.pointCountType] ===
+          //   this.planList[i][this.pointCountType]
+          // ) {
+          //   // 点位表对应的点位数据减一
+          //   this.reduceAdspaceToshopCart(this.planList[i]);
+          //   this.planList[i].pointCount--;
+          // }
         }
       }
       for (let j = 0, len = this.shopingList.length; j < len; ) {
@@ -5964,6 +5996,7 @@ export default {
       this.computeMedia_AD();
       this.allCheckboxUpdata();
       event.stopPropagation();
+      this.getAdList();
     },
     //修改动画效果及显示隐藏
     shopShow_hide(all) {
@@ -6514,7 +6547,7 @@ export default {
         point.forEach((item) => {
           item.adsList.forEach((adSpaceItem) => {
             this.AddShopingInfo(item, adSpaceItem);
-            this.addAdspaceToshopCart(item);
+            // this.addAdspaceToshopCart(item);
           });
         });
       } else {
@@ -6651,47 +6684,48 @@ export default {
       return pointCount.length || 0;
     },
 
-       // 配点弹窗
-       handlePointSetting () {
-      this.pointSettingShow = true
+    // 配点弹窗
+    handlePointSetting() {
+      this.pointSettingShow = true;
     },
 
     // 查看配点详情
-    handlePointDetails (data) {
-      this.pointTableShow = true
-      this.adResMatch = data
+    handlePointDetails(data) {
+      this.pointTableShow = true;
+      this.adResMatch = data;
     },
 
-    // 保存配点 
-    savePoint (arr) {
+    // 保存配点
+    savePoint(arr) {
       for (let info of arr) {
         this.isHaveDiffPush(info);
       }
       this.judgeByselect();
       this.dialogVisible();
-      this.pointTableShow = false
+      this.pointTableShow = false;
     },
     // 重新配点
-    resetPoint () {
-      this.pointTableShow = false
-      this.pointSettingShow = true
+    resetPoint() {
+      this.pointTableShow = false;
+      this.pointSettingShow = true;
     },
 
-     // 根据账号配置过滤媒体类型
-    getUserMediaChooseConfigs (sessionData) {
-      let hash = {}; 
-      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) =>{ 
-        hash[next.mediaTypeName] ? '' : hash[next.mediaTypeName] = true && item.push(next); 
-        return item 
-      }, []) 
-      return arr.map(item => {
+    // 根据账号配置过滤媒体类型
+    getUserMediaChooseConfigs(sessionData) {
+      let hash = {};
+      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) => {
+        hash[next.mediaTypeName]
+          ? ""
+          : (hash[next.mediaTypeName] = true && item.push(next));
+        return item;
+      }, []);
+      return arr.map((item) => {
         return {
           name: item.mediaTypeName,
-          id: item.mediaTypeId
-        }
-      })
+          id: item.mediaTypeId,
+        };
+      });
     },
-
   },
   // 页面销毁
   destroyed() {
@@ -7891,9 +7925,11 @@ export default {
     height: 24px !important;
     line-height: 24px !important;
   }
-  /deep/ .el-input-number__decrease,
-  /deep/.el-input-number__increase {
-    height: 24px !important;
+  /deep/ span.el-input-number__decrease {
+    height: 24px!important;
+  }
+  /deep/ span.el-input-number__increase {
+    height: 24px!important;
   }
 }
 </style>

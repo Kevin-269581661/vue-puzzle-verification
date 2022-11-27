@@ -1757,7 +1757,7 @@ export default {
         apName: item.apName || "--",
         apState: item.apState || "--",
         planMode: item.planMode || 0,
-        apTotal: item.apTotal || "--",
+        apTotal: item.apTotal || 0,
         apcTime: item.apcTime || "--",
         bTitle: item.bTitle || "--",
         cName: item.cName || "--",

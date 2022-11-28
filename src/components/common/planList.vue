@@ -1572,7 +1572,7 @@ export default {
         token: this.sessionData.token,
         act: act,
         apid: this.currentItem.apID,
-        mediaTypeIds: this.currentItem.mediaTypeIds
+        mediaTypeIds: this.mediaTypeChecks
       };
 
       api
@@ -1603,11 +1603,18 @@ export default {
 
     // 解锁
     noLockCity(row) {
+      let mediaTypeIds = []
+      row.mediaTypeDetails.map(item => {
+        if (item.authMediaFlag) {
+          mediaTypeIds.push(item.mediaTypeId)
+        }
+      })
+      console.log('mediaTypeIds', mediaTypeIds);
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apId: row.apID,
-        mediaTypeIds: row.mediaTypeIds
+        mediaTypeIds
       };
       api
         .postApi(this.apiVar.Advertisement + "/ClFangan", info)
@@ -1780,7 +1787,7 @@ export default {
         return !item.RemainDay;
       });
       obj.unLock = item.details.some(function (item, index) {
-        return item.RemainDay;
+        return item.RemainDay && item.authMediaFlag;
       });
       for (let data of item.details) {
         data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--

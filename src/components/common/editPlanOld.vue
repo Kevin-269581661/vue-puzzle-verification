@@ -112,6 +112,7 @@
                       >
                       <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
+                        :disabled="getAdsParamsData.chooseType === 0"
                         >导入点位</el-dropdown-item
                       >
                     </el-dropdown-menu>
@@ -2579,7 +2580,7 @@ export default {
     },
     // 仅当当前所选媒体类型在该账号选点纬度的权限中配有“点位”时可点击“资产编号”，否则灰显不可选中；
     // 仅当当前所选媒体类型在该账号选点纬度权限有“点位”时可点击“被占查询”，其余权限则灰显不可选中；
-    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用； 
+    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用；
     isDiableSearchOpt () {
       return !this.tabChooseTypeList.some(item => item.name === '点位')
     }
@@ -5234,7 +5235,7 @@ export default {
             this.mapAdsList = res.data.data;
             if(this.isPointSetting){
               this.importType = "1";
-              this.forMap = true 
+              this.forMap = true
               this.pointMatchKeys.matchOriginType = 1
 
               this.importInfoData.successList = res.data.data.map(item => {
@@ -6537,7 +6538,7 @@ export default {
       this.adResMatch = data
     },
 
-    // 保存配点 
+    // 保存配点
     savePoint (arr) {
       for (let info of arr) {
         this.isHaveDiffPush(info);
@@ -6555,11 +6556,11 @@ export default {
 
     // 根据账号配置过滤媒体类型
     getUserMediaChooseConfigs (sessionData) {
-      let hash = {}; 
-      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) =>{ 
-        hash[next.mediaTypeName] ? '' : hash[next.mediaTypeName] = true && item.push(next); 
-        return item 
-      }, []) 
+      let hash = {};
+      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) =>{
+        hash[next.mediaTypeName] ? '' : hash[next.mediaTypeName] = true && item.push(next);
+        return item
+      }, [])
       return arr.map(item => {
         return {
           name: item.mediaTypeName,

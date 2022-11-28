@@ -330,6 +330,7 @@
                       </el-dropdown-item>
                       <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
+                        :disabled="getAdsParamsData.chooseType === 0"
                       >
                         导入点位
                       </el-dropdown-item>

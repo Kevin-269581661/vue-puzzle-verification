@@ -2057,8 +2057,16 @@ export default {
         token: loginData.token,
         pageNum: this.currPage,
         pageSize: this.pageSize,
-        resName: this.keyword
       };
+      if (type && type == 'change') {
+        info.resName == this.changeKeyword
+        info.pageNum = this.pointCurrPage
+        info.pageSize = this.pointPageSize
+        info.lState = 1
+        info.enableStop = this.handleType === 2
+      } else {
+        info.resName = this.keyword
+      }
       api.getApi(this.apiVar.Advertisement + "/GetAdLaunchList", info)
         .then(res => {
           if (res.data.SysCode == 200200) {
@@ -2261,8 +2269,9 @@ export default {
       let _setpointArr = []
       let total = this.setpointArr.length
       // 排除不正常的点位
-      _setpointArr = this.setpointArr.filter(item => item.lState !== 2)
-      console.log("_setpointArr", _setpointArr)
+      _setpointArr = this.setpointArr
+    //   _setpointArr = this.setpointArr.filter(item => item.lState !== 2)
+    //   console.log("_setpointArr", _setpointArr)
       // 地方媒介不显示单元门禁灯箱
     //   if(this.sessionData.uType === 'ADN_MD') {
     //     _setpointArr = _setpointArr.filter(item => item.mVehicle !== '单元门禁灯箱')
@@ -2286,7 +2295,6 @@ export default {
       this.selectioUpdate()
       this.changePointloading = false
       console.log('更换点位当前页数据--', this.changePointArr);
-
     },
     // 时间格式规范 年月日
     formatTime (val) {

@@ -1890,6 +1890,7 @@
       :mTypeList="mTypeList"
       :sites="sites"
       :matchKeys="pointMatchKeys"
+      :tagList="tabChooseTypeList"
       @handleDetails="handlePointDetails"
     >
     </PointSetting>
@@ -3080,10 +3081,23 @@ export default {
           if (res.data.SysCode == 200200) {
             let importInfo = res.data.data;
             this.importInfoData = importInfo;
+
+            this.importInfoData.successList = importInfo.successList.map((item) => {
+              const date = item.date.split('-')
+              return {
+                ...item,
+                pbStar: date[0],
+                pbEnd: date[1],
+                origin: item.district,
+                rName: item.district
+              };
+            });
+            
             // 配点匹配数据
             this.pointMatchKeys = {
               matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
               matchResCacheKey: importInfo.successResKey, //导入小区媒体
+              matchOriginType: 0,
             };
             this.showUploadFail = true;
           } else {

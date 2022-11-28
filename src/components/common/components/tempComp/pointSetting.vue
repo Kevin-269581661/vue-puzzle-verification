@@ -13,7 +13,7 @@
           size="mini"
         >
           <el-radio-button
-            v-for="item in tagList"
+            v-for="item in tabList"
             :key="item.value"
             :label="item.value"
             >{{ item.name }}</el-radio-button
@@ -323,6 +323,11 @@ export default {
       type: Object,
       default: () => {},
     },
+
+    tagList: {
+      type: Array,
+      default: () => []
+    }
   },
 
   data() {
@@ -334,11 +339,11 @@ export default {
       }
     };
     return {
-      tagList: [
-        { name: "按小区配点", value: 3 },
-        { name: "按楼栋配点", value: 2 },
-        { name: "按单元配点", value: 1 },
-      ],
+      // tagList: [
+      //   { name: "按小区配点", value: 3 },
+      //   { name: "按楼栋配点", value: 2 },
+      //   { name: "按单元配点", value: 1 },
+      // ],
       mediaChooseConfig: 3, // 配点纬度：0-点位 1-单元 2-楼栋 3-小区
       params: {
         excludeApId: "", // 排斥方案id
@@ -392,6 +397,17 @@ export default {
         this.$emit("update:visible", val);
       },
     },
+
+    tabList () {
+      const tagList = this.tagList.filter(item => item.name !== '点位')
+      const currentList = tagList.map(item => {
+        return {
+          name: `按${item.name}配点`,
+          value: item.label
+        }
+      }).sort((a, b) => b.value - a.value)
+      return currentList
+    }
   },
   watch: {
     // 监听选点维度重置页面数据
@@ -408,9 +424,11 @@ export default {
       }
     }
   },
+
   mounted() {
     this.getSession();
   },
+
   methods: {
     getSession() {
       this.sessionData = sessFun.getSess();

@@ -280,10 +280,11 @@
                   <template slot-scope="scope">
                     <div class="media-box">
                       <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
-                        <div class="tag" :class="m.mediaTypeName === '广告门' ? 'ad' :
-                    m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
-                      m.mediaTypeName === '灯箱' ? 'light-box' :
-                        m.mediaTypeName === '道闸' ? 'brake' : ''">
+                        <div class="tag"
+                          :class="m.mediaTypeName === '广告门' ? 'ad' :
+                                m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
+                                m.mediaTypeName === '灯箱' ? 'light-box' :
+                                m.mediaTypeName === '道闸' ? 'brake' : ''">
                           <template v-if="m.RemainDay">
                             <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
                               placement="top">
@@ -550,7 +551,11 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
-              <el-checkbox :label="item.value" :disabled="!item.authMediaFlag">{{ item.label }}
+              <el-checkbox
+                :label="item.value"
+                :disabled="!item.authMediaFlag || item.RemainDay !== ''"
+                :checked="item.RemainDay !== ''"
+              >{{ item.label }}
               </el-checkbox>
             </div>
           </el-checkbox-group>
@@ -772,13 +777,13 @@ export default {
     // 切换页码
     changePage(page) {
       this.currPage = page;
-      console.log("page----", page);
+      // console.log("page----", page);
       this.searchFun();
     },
 
     // 每页条数切换
     sizeChange(val) {
-      console.log("val----", val);
+      // console.log("val----", val);
       this.pageSize = val;
       this.currPage = 1;
       this.searchFun();
@@ -979,7 +984,7 @@ export default {
 
     // 价格时间排序(请求后台接口进行排序)
     sortChange(column) {
-      console.log("columm---", column);
+      // console.log("columm---", column);
       if (column.order == "ascending") {
         this.searchInfo.orderby = column.prop;
         this.searchInfo.desc = 0;
@@ -1013,7 +1018,7 @@ export default {
           console.log("获取意向方案缓存", res);
           this.continueEditLoading.close();
           if (res.data.SysCode == 200200) {
-            console.log("获取意向方案缓存成功", res.data);
+            // console.log("获取意向方案缓存成功", res.data);
             let data = res.data.data;
             if (JSON.stringify(data) === "{}" || !data) {
               this.$router.push("./createPlan");
@@ -1064,7 +1069,7 @@ export default {
             console.log("获取方案缓存", res);
             this.continueEditLoading.close();
             if (res.data.SysCode == 200200) {
-              console.log("获取缓存成功", res.data);
+              // console.log("获取缓存成功", res.data);
               if (JSON.stringify(res.data.data) === "{}") {
                 this.routeSelect();
               } else {
@@ -1095,7 +1100,7 @@ export default {
 
     // 点位表盘
     goToDiaPlate() {
-      console.log("this.$router", this.$router);
+      // console.log("this.$router", this.$router);
       this.$router.push("./adsDialPlate");
     },
 
@@ -1212,7 +1217,7 @@ export default {
         api
           .getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
           .then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             if (res.data.SysCode == 200200) {
               let text = res.data.data;
               if (text.apQC) {
@@ -1278,7 +1283,7 @@ export default {
             api
               .postApi(this.apiVar.Advertisement + "/CheckLock", info)
               .then((res) => {
-                console.log(res.data);
+                // console.log(res.data);
                 if (!res.data.SysCode) {
                   if (!res.data.IsLock) {
                     this.releaseFun();
@@ -1404,9 +1409,11 @@ export default {
               label: item.mediaTypeName,
               value: item.mediaTypeId,
               mediaTypeName: item.mediaTypeName,
-              authMediaFlag: item.authMediaFlag
+              authMediaFlag: item.authMediaFlag,
+              RemainDay: item.RemainDay || ""
             }
           })
+          console.log(this.currentMediaType);
           let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
           let date = timeFormat.toDate(new Date(), "/");
           if (startObj.startTime <= date) {
@@ -1609,7 +1616,6 @@ export default {
           mediaTypeIds.push(item.mediaTypeId)
         }
       })
-      console.log('mediaTypeIds', mediaTypeIds);
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -1632,7 +1638,7 @@ export default {
     // 7天以上显示7天,否则显示相隔天数
     countDay(time) {
       let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
-      console.log("dayA-----", dayA);
+      // console.log("dayA-----", dayA);
       let RemainDay = dayA > 7 ? 7 : dayA;
       return RemainDay;
     },
@@ -1951,12 +1957,12 @@ export default {
       this.exportFileData = [];
       let fileObj = params.file;
       this.exportFileData.push(fileObj);
-      console.log("上传周边", params);
+      // console.log("上传周边", params);
     },
 
     // 文件删除
     exportFileRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
       this.exportFileData = fileList;
     },
 
@@ -1987,7 +1993,7 @@ export default {
       } else if (this.exportResStep < 3) {
         this.exportResStep += 1;
       } else {
-        console.log("exportFileData", this.exportFileData);
+        // console.log("exportFileData", this.exportFileData);
         this.isBroundImport = true;
         if (this.exportFileData.length) {
           sessFun.messageFun("warning", "导出excel可能需要一分钟甚至更长时间!");
@@ -2043,8 +2049,8 @@ export default {
 
     // 删除方案
     deleteAdPlan(row) {
-      console.log(this.apiVar, "this.apiVar");
-      console.log(row);
+      // console.log(this.apiVar, "this.apiVar");
+      // console.log(row);
 
       if (row.apState == 1 && !row.canLock) {
         return sessFun.messageFun(
@@ -2079,7 +2085,7 @@ export default {
     // 回收站
     openRecycleBin() {
       this.isShowRecycleBin = true;
-      console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
+      // console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
     },
 
     // 列表筛选

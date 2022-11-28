@@ -356,8 +356,6 @@ export default {
         unitMaxCount: "", // 单元数量上限 -1-全部
         unitChooseSpaceMax: "", // 单元配点数量上限 -1-全部
 
-        matchOriginType: 0, // 匹配数据来源:0-导入小区 1-地图
-
         matchMediaCacheKey: "", // 导入媒体缓存
         matchResCacheKey: "", // 导入小区媒体
       },
@@ -443,7 +441,6 @@ export default {
       params.floorChooseSpaceMax = "";
       params.unitMaxCount = "";
       params.unitChooseSpaceMax = "";
-      params.matchOriginType = 0;
       (this.isAllRes = true),
         (this.isAllBuild = true),
         (this.isAllBuildSpace = true),
@@ -475,7 +472,6 @@ export default {
         deviceTypeList: info.deviceTypeList, // 设备型号
         mediaSiteList: info.mediaSiteList, // 安装位置
         siteOrientationRate: info.siteOrientationRate, // 朝内外比例
-        matchOriginType: info.matchOriginType, // 匹配来源
         matchMediaCacheKey: this.matchKeys.matchMediaCacheKey, //导入媒体缓存
         matchResCacheKey: this.matchKeys.matchResCacheKey, //导入小区媒体
         matchOriginType: this.matchKeys.matchOriginType
@@ -533,7 +529,6 @@ export default {
           }
         })
         .catch((error) => {
-          sessFun.messageFun("warning", res.data.MSG);
           console.log(error, "error---handlePointConfig");
         });
     },

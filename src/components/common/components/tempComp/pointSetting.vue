@@ -339,11 +339,6 @@ export default {
       }
     };
     return {
-      // tagList: [
-      //   { name: "按小区配点", value: 3 },
-      //   { name: "按楼栋配点", value: 2 },
-      //   { name: "按单元配点", value: 1 },
-      // ],
       mediaChooseConfig: 3, // 配点纬度：0-点位 1-单元 2-楼栋 3-小区
       params: {
         excludeApId: "", // 排斥方案id

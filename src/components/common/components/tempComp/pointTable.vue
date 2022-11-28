@@ -31,15 +31,15 @@
       </div>
 
       <div class="adsTable">
-        <el-table border :data="adResMatchSpaceVos" style="width: 100%" height="440">
-          <el-table-column label="资源名称" min-width="140" prop="resName">
+        <el-table border :data="adResMatchSpaceVos" style="width: 100%" height="400">
+          <el-table-column label="资源名称" width="140" prop="resName" fixed="left">
           </el-table-column>
 
-          <el-table-column prop="city" label="城市"> </el-table-column>
+          <el-table-column prop="city" width="100" label="城市"> </el-table-column>
 
-          <el-table-column prop="origin" label="区域"> </el-table-column>
+          <el-table-column prop="origin" width="100" label="区域"> </el-table-column>
 
-          <el-table-column prop="schedules" label="排期" min-width="160">
+          <el-table-column prop="schedules" label="排期" width="200">
             <template slot-scope="scope">
               <el-tooltip
                 class="item"
@@ -52,17 +52,17 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="site" label="位置类型"> </el-table-column>
+          <el-table-column prop="site" label="位置类型" width="90"> </el-table-column>
 
-          <el-table-column prop="mediaTypeName" label="设备型号" min-width="110">
+          <el-table-column prop="mediaTypeName" label="设备型号" width="110">
           </el-table-column>
 
-          <el-table-column prop="asLab" label="投放面"> </el-table-column>
+          <el-table-column prop="asLab" label="投放面" width="90"> </el-table-column>
 
-          <el-table-column prop="siteOrientation" label="位置朝向">
+          <el-table-column prop="siteOrientation" label="位置朝向" width="90">
           </el-table-column>
 
-          <el-table-column prop="mediaName" label="媒体名称"> </el-table-column>
+          <el-table-column prop="mediaName" label="媒体名称" width="130"> </el-table-column>
 
         </el-table>
       </div>
@@ -79,9 +79,13 @@
   </el-dialog>
 </template>
   
-  <script>
+<script>
+import FileSaver from 'file-saver';
+
 // 时间格式化
 import timeFormat from "../../../../commonFun/timeFormat";
+import api from "../../../../api/api";
+import sessFun from "../../../../commonFun/sessFun";
 
 export default {
   props: {
@@ -94,14 +98,21 @@ export default {
       type: Boolean,
       default: false,
     },
+
+    matchKeys: {
+      type: Object,
+      default: () => {},
+    }
   },
 
   data() {
     return {
       // 成功小区
-      adResMatchSpaceVos: []
-    };
+      adResMatchSpaceVos: [],
+      sessionData: {}
+    }
   },
+
   computed: {
     dialogVisible: {
       get() {
@@ -120,11 +131,20 @@ export default {
       }
     }
   },
+
+  created () {
+    this.getSession()
+  },
+
   methods: {
+    getSession() {
+      this.sessionData = sessFun.getSess();
+    },
+
     initData() {
       this.adResMatchSpaceVos = this.setTableData(this.importData.adResMatchSpaceVos) || []
     },
-    // 勾选表格数据格式
+    // 表格数据格式
     setTableData(arr) {
       arr = JSON.parse(JSON.stringify(arr));
       let result = [];
@@ -134,7 +154,7 @@ export default {
           resType: key.resType,
           resID: key.resID,
           resName: key.resName,
-          city: key.city,
+          city: key.cityName,
           rid: key.rID,
           origin: key.rName,
           buildType: key.cType,
@@ -148,7 +168,7 @@ export default {
           carFlow: key.carFlow,
           peopleFlow: key.peopleFlow,
           buildNum: key.fNum,
-          schedules: key.pbStar + "-" + key.pbEnd,
+          schedules: key.startDate + "-" + key.endDate,
           tradingArea: key.tradingArea || "",
           assetTag: key.assetTag || "",
           liveYear: key.chDay,
@@ -184,6 +204,7 @@ export default {
           mediaTypeName: key.mediaTypeName,
           buildingName: key.buildingName,
           unitName: key.unitName,
+          site: key.site
         };
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
@@ -215,59 +236,31 @@ export default {
       return result;
     },
 
-    // 选点列表数据到购物车数据
-    setShopingTable(mediaInfo, adSpaceInfo) {
-      let selectInfo = {
-        rid: mediaInfo.rid,
-        mID: mediaInfo.mID,
-        mediaTypeName: mediaInfo.mediaTypeName,
-        mediaTypeId: mediaInfo.mediaTypeId,
-        asID: adSpaceInfo.asID,
-        asLab: adSpaceInfo.asLab,
-        resName: mediaInfo.resName,
-        resID: mediaInfo.resID,
-        city: mediaInfo.city,
-        origin: mediaInfo.origin,
-        buildType: mediaInfo.buildType,
-        houseNum: mediaInfo.houseNum,
-        buildPrice: mediaInfo.buildPrice,
-        mediaName: mediaInfo.mediaName,
-        mediaRemark: mediaInfo.mediaRemark,
-        buildNum: mediaInfo.buildNum,
-        schedules: mediaInfo.schedules,
-        tradingArea: mediaInfo.tradingArea,
-        assetTag: mediaInfo.assetTag,
-        liveYear: mediaInfo.liveYear,
-        adLimit: mediaInfo.adLimit,
-        mapCenter: mediaInfo.reference || "", // 地图中心点
-        recommendReason: mediaInfo.recommendReason || "", //  亲粤邻定制：推荐理由
-        address: mediaInfo.address || "",
-        dNum: mediaInfo.dNum || "", // 出入口数
-        connData: {
-          connectResName: "",
-          connectMedia: "",
-          commentWorkRes: "",
-          commentworkMedia: "",
-        },
-        connID: mediaInfo.connID, // 连排门id
-        industryInfos: mediaInfo.industryInfos, // 同行业资源回避
-        adPrice: mediaInfo.adPrice, // 点位价格
-        mediaLevel: mediaInfo.mediaLevel, // 媒体等级
-        asrID: mediaInfo.asrID, // 所属公司id
-        asName: mediaInfo.asName, // 所属公司名称
-        unitId: mediaInfo.unitId, // 单元ID
-        buildingId: mediaInfo.buildingId, // 楼栋ID
-        actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
-        buildingName: mediaInfo.buildingName,
-        unitName: mediaInfo.unitName,
-      };
-      return selectInfo;
-    },
-
     downLoadExcel() {
       if (this.adResMatchSpaceVos.length === 0) {
         return this.$message.warning("数据为空！");
       }
+      const sess = this.sessionData
+      const params = {
+        uid: sess.uID,
+        token: sess.token,
+        matchResultKey: this.matchKeys.matchResultKey,
+        matchOriginType: this.matchKeys.matchOriginType
+      }
+      api
+      .getApi_file("/addsp/api/v2/adPlan/exportMatchResultExcel", params)
+      .then((res) => {
+        if (res.status === 200) {
+          // 导出excel
+          FileSaver.saveAs(new Blob([res.data], {type: "application/vnd.ms-excel"}), `配点导出结果.xlsx`)
+        } else {
+          sessFun.messageFun("warning", '下载失败');
+        }
+      })
+      .catch((error) => {
+        sessFun.messageFun("warning", '下载失败');
+        console.log(error, "error---downLoadExcel");
+      });
     },
 
     // 保存配点
@@ -281,7 +274,6 @@ export default {
           }
         });
       }
-      console.log(arr, 'arrarrarrarrarrarrarrarrarrarr')
       this.$emit("savePoint", arr);
     },
     // 重新配点
@@ -294,15 +286,6 @@ export default {
 </script>
   
 <style scoped lang="scss">
-
-.el-checkbox {
-  margin-right: 5px;
-  vertical-align: middle;
-}
-.el-checkbox__label {
-  padding-left: 4px;
-}
-/* 头部导入成功个数以及失败个数 */
 .car-title {
   background: #e6f7ff;
   border: 1px solid #bae7ff;
@@ -338,41 +321,9 @@ export default {
   color: #1890ff;
 }
 
-/* 表头全勾选 */
-/deep/ .el-table .el-table-column-checkbox .cell {
-  min-width: 110px;
-  height: auto;
-}
-.adsTable {
-  position: relative;
-  .space-group {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-    overflow: auto;
-    .space-item {
-      margin-right: 12px;
-    }
-  }
-}
-.myCheckbox {
-  position: absolute;
-  width: 120px;
-  height: 42px;
-  text-align: center;
-  line-height: 42px;
-  top: 0;
-  left: 0;
-  z-index: 99;
-}
-
 .button_box {
   text-align: right;
   margin-top: 20px;
-}
-/deep/.import_result .el-table__body-wrapper {
-  min-height: 440px;
-  max-height: 440px;
 }
 .marin10 {
   margin: 0 20px 10px 0;
@@ -384,6 +335,14 @@ export default {
 }
 .padd {
   padding: 0 6px;
+}
+
+/deep/ .el-table__body-wrapper {
+  overflow-x: scroll!important;
+} 
+
+/deep/ .el-table__body-wrapper, /deep/ .el-table__empty-block { 
+  min-height: auto!important;;
 }
 </style>
   

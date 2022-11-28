@@ -1895,6 +1895,7 @@
     <PointTable
       :visible.sync="pointTableShow"
       :importData="adResMatch"
+      :matchKeys="pointMatchKeys"
       @savePoint="savePoint"
       @resetPoint="resetPoint"
     >
@@ -4696,6 +4697,7 @@ export default {
     //媒体类型切换
     activeMediaType(mType) {
       //  console.log("媒体类型", mType);
+      this.forMap = false
       const arr = this.sessionData.userMediaChooseConfigs.filter(
         (item) => item.mediaTypeId === mType
       );
@@ -5149,7 +5151,12 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      api
+      
+      if(this.isPointSetting){
+        this.pointMatchKeys.matchOriginType = 1
+        this.getMapImportResult()
+      } else {
+        api
         .getApi(this.apiVar.mapApi + "/adsListByUid", {
           asrIDs: this.planForm.pointOfAsrIDs.join(","),
           suID: this.BDData.uid,
@@ -5157,28 +5164,8 @@ export default {
         .then((res) => {
           if (res.data.SysCode === 200200) {
             this.mapAdsList = res.data.data;
-            if (this.isPointSetting) {
-              this.importType = "1";
-              this.forMap = true;
-              this.pointMatchKeys.matchOriginType = 1;
-
-              this.importInfoData.successList = res.data.data.map((item) => {
-                return {
-                  ...item,
-                  city: item.cityName,
-                  pbStar: item.startDate,
-                  pbEnd: item.endDate,
-                };
-              });
-              this.mapBtn = true;
-              this.dialogTableVisible = false;
-              this.showUploadFail = true;
-              this.getMapLoading.close();
-            } else {
-              this.forMap = false;
-              this.setMapAdsListInShopCar();
-              localStorage.removeItem("qinlinMapCode");
-            }
+            this.setMapAdsListInShopCar();
+            localStorage.removeItem("qinlinMapCode");
           } else {
             this.getMapLoading.close();
             sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
@@ -5188,6 +5175,8 @@ export default {
           this.getMapLoading.close();
           sessFun.messageFun("warning", "数据接口异常");
         });
+      }
+      
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
     setMapAdsListInShopCar() {
@@ -5246,7 +5235,7 @@ export default {
           buildingName: key.buildingName,
           unitName: key.unitName,
           buildingName: key.buildingName,
-          unitName: key.unitName
+          unitName: key.unitName,
         };
 
         if (key.centerInfos && key.centerInfos.length) {
@@ -5390,7 +5379,7 @@ export default {
             this.computeMedia_AD();
             sessFun.messageFun("success", "删除成功");
             this.resetPlanList(); // 重置planList的勾选
-            this.saveApInfo()
+            this.saveApInfo();
           })
           .catch(() => {
             sessFun.messageFun("info", "已取消删除");
@@ -5995,10 +5984,10 @@ export default {
       this.getShowList();
       this.computeMedia_AD();
       this.allCheckboxUpdata();
-      if(event){
+      if (event) {
         event.stopPropagation();
       }
-      if(isRefresh) {
+      if (isRefresh) {
         this.getAdList();
       }
     },
@@ -6543,29 +6532,33 @@ export default {
     },
 
     // 点位数量变化
-    async handlePointCountChange (currentValue, oldValue, row) {
-      let addNum = currentValue - oldValue
-      if(+currentValue > +oldValue) {
-        const point = await this.handlePointRequest(addNum, row)
+    async handlePointCountChange(currentValue, oldValue, row) {
+      let addNum = currentValue - oldValue;
+      if (+currentValue > +oldValue) {
+        const point = await this.handlePointRequest(addNum, row);
         if (point) {
           this.shopShow_hide(); // 动画效果
-          point.forEach(item => {
-            item.adsList.forEach(adSpaceItem => {
-              this.AddShopingInfo(item, adSpaceItem)
-            })
-          })
+          point.forEach((item) => {
+            item.adsList.forEach((adSpaceItem) => {
+              this.AddShopingInfo(item, adSpaceItem);
+            });
+          });
         } else {
-          row.chooseNum = oldValue
-          this.$message.warning('点位数量增加失败')
+          row.chooseNum = oldValue;
+          this.$message.warning("点位数量增加失败");
         }
       } else {
-        const arr = this.shopingList.filter(item => {
-          return item[this.pointCountType] === row[this.pointCountType] && item.mediaTypeId === this.currentMediaType && this.crossSchedules(item.schedules)
-        })
-        const delArr = arr.slice(0, oldValue-currentValue) || []
-        delArr.forEach(item => {
-          this.deleteRow(item)
-        })
+        const arr = this.shopingList.filter((item) => {
+          return (
+            item[this.pointCountType] === row[this.pointCountType] &&
+            item.mediaTypeId === this.currentMediaType &&
+            this.crossSchedules(item.schedules)
+          );
+        });
+        const delArr = arr.slice(0, oldValue - currentValue) || [];
+        delArr.forEach((item) => {
+          this.deleteRow(item);
+        });
       }
     },
 
@@ -6695,6 +6688,7 @@ export default {
     handlePointDetails(data) {
       this.pointTableShow = true;
       this.adResMatch = data;
+      this.pointMatchKeys.matchResultKey = data.matchResultKey
     },
 
     // 保存配点
@@ -6727,6 +6721,46 @@ export default {
           id: item.mediaTypeId,
         };
       });
+    },
+
+    // 地图导入结果
+    getMapImportResult() {
+      const sess = this.sessionData;
+      const params = {
+        uid: sess.uID,
+        token: sess.token,
+      };
+      api
+        .postApi("/addsp/api/v2/adPlan/getMapImportResult", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            console.log(res.data.data, "res.data.datares.data.data");
+            this.mapAdsList = res.data.data.successList;
+            this.importType = "1";
+            this.forMap = true;
+            this.importInfoData.successList = res.data.data.successList.map((item) => {
+              const date = item.date.split('-')
+              return {
+                ...item,
+                pbStar: date[0],
+                pbEnd: date[1],
+                origin: item.district,
+                rName: item.district
+              };
+            });
+            this.mapBtn = true;
+            this.dialogTableVisible = false;
+            this.showUploadFail = true;
+            this.getMapLoading.close();
+          } else {
+            this.getMapLoading.close();
+            sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
+          }
+        })
+        .catch((err) => {
+          this.getMapLoading.close();
+          sessFun.messageFun("warning", "数据接口异常");
+        });
     },
   },
   // 页面销毁
@@ -7928,10 +7962,10 @@ export default {
     line-height: 24px !important;
   }
   /deep/ span.el-input-number__decrease {
-    height: 24px!important;
+    height: 24px !important;
   }
   /deep/ span.el-input-number__increase {
-    height: 24px!important;
+    height: 24px !important;
   }
 }
 </style>

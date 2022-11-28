@@ -116,14 +116,22 @@
           </el-table-column>
           <el-table-column label="资源名称" min-width="140" prop="resName">
           </el-table-column>
-          <el-table-column prop="mediaName" label="媒体名称" min-width="130">
+          <el-table-column prop="mediaName" label="媒体名称" min-width="130" v-if="!isPointSetting">
           </el-table-column>
           <el-table-column prop="city" label="城市" min-width="85">
           </el-table-column>
           <el-table-column prop="origin" label="区域" min-width="85">
           </el-table-column>
-          <el-table-column prop="assetTag" label="资产编号" min-width="130">
+          <el-table-column prop="assetTag" label="资产编号" min-width="130" v-if="!isPointSetting">
           </el-table-column>
+
+          <el-table-column prop="buildCount" label="覆盖楼栋数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+          <el-table-column prop="unitCount" label="覆盖单元数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+          <el-table-column prop="actualAdsCnt" label="可投面数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+
           <el-table-column prop="schedules" label="排期" min-width="160">
             <template slot-scope="scope">
               <el-tooltip
@@ -136,7 +144,7 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <template v-if="customPermission.patrolPermission">
+          <template v-if="customPermission.patrolPermission && !isPointSetting">
             <el-table-column prop="feedback" label="巡点问题" min-width="130">
             </el-table-column>
             <el-table-column
@@ -146,7 +154,7 @@
             >
             </el-table-column>
             <el-table-column
-              v-if="customPermission.patrolPermission == 2"
+              v-if="customPermission.patrolPermission == 2 && !isPointSetting"
               prop="electrifyState"
               label="通电情况"
               min-width="130"
@@ -350,6 +358,9 @@ export default {
           trafficState: key.trafficState || "",
           electrifyState: key.electrifyState || "",
           feedback: key.feedback || "",
+          buildCount: key.buildCount, // 覆盖楼栋数
+          actualAdsCnt: key.actualAdsCnt, // 实际可投面数
+          unitCount: key.unitCount, // 覆盖单元数
         };
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;

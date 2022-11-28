@@ -116,15 +116,16 @@
             </div>
 
             <!-- 列设置 -->
-            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="planList" @filterColumn="filterColumn"
-              @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="planList"
+              @filterColumn="filterColumn" @refreshTable="refreshTable" @spaceSetting="spaceSetting">
             </TableSetting>
 
           </div>
         </div>
         <div class="table_wrap">
-          <el-table @filter-change="filterChange" :data="currentPlan" style="width: 100%" @sort-change="sortChange" v-loading="loading"
-            element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey" :size="rowSpace">
+          <el-table @filter-change="filterChange" :data="currentPlan" style="width: 100%" @sort-change="sortChange"
+            v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey"
+            :size="rowSpace">
             <template v-for="item in currentPlanColumn">
 
               <template v-if="item.label === '方案名称'">
@@ -220,7 +221,7 @@
                       </div>
                     </template>
                     <template v-else>
-                      <div v-for="item of scope.row.cityArea" :key="item.rid + '-' + item.asrID" class="city_p">
+                      <div v-for="item of scope.row.cityArea" :key="item.adcID" class="city_p">
                         <el-tooltip class="item" effect="dark" :content="
                           item.asName +
                           ' ' +
@@ -272,56 +273,33 @@
               </template>
 
               <template v-if="item.label === '媒体类型'">
-                <el-table-column
-                  :prop="item.prop"
-                  :label="item.label"
-                  width="250px"
-                  show-overflow-tooltip
+                <el-table-column :prop="item.prop" :label="item.label" width="250px" show-overflow-tooltip
                   column-key="mediaTypeNames"
                   v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false"
-                  :filters="mediaTypeFilterList"
-                >
+                  :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList">
                   <template slot-scope="scope">
-                    <!-- <div class="media-tag" v-for="t in scope.row.details" :key="t.mediaTypeId">
-                      <div class="tag ad">
-                        <el-tooltip class="item" effect="dark" :content="`预锁剩余3天${t.RemainDay}`" placement="top">
-                          <img src="@/assets/images/suo-icon-ad.png" class="icon">
-                        </el-tooltip>
-                        {{ t.mediaTypeName }}{{ t.RemainDay ? `${t.RemainDay}天` : '' }}
-                      </div>
-
-                      <div class="tag light-box">
-                        <el-tooltip class="item" effect="dark" content="预锁剩余3天" placement="top">
-                          <img src="@/assets/images/suo-icon.png" class="icon">
-                        </el-tooltip>
-                        单元门禁灯箱（3天）
-                      </div>
-                    </div> -->
                     <div class="media-box">
-                        <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
-                            <div
-                                class="tag"
-                                :class="m.mediaTypeName === '广告门' ? 'ad' :
-                                        m.mediaTypeName === '单元门禁灯箱' ? 'unit-access':
-                                        m.mediaTypeName === '灯箱' ? 'light-box':
-                                        m.mediaTypeName === '道闸' ? 'brake': ''">
-                                <template v-if="m.RemainDay">
-                                    <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`" placement="top">
-                                    <i class="el-icon-lock icon"></i>
-                                    </el-tooltip>
-                                    {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
-                                </template>
-                                <template v-else>
-                                    {{ m.mediaTypeName }}
-                                </template>
-                            </div>
-
+                      <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
+                        <div class="tag" :class="m.mediaTypeName === '广告门' ? 'ad' :
+                    m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
+                      m.mediaTypeName === '灯箱' ? 'light-box' :
+                        m.mediaTypeName === '道闸' ? 'brake' : ''">
+                          <template v-if="m.RemainDay">
+                            <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
+                              placement="top">
+                              <i class="el-icon-lock icon"></i>
+                            </el-tooltip>
+                            {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                          </template>
+                          <template v-else>
+                            {{ m.mediaTypeName }}
+                          </template>
                         </div>
+
+                      </div>
                     </div>
                   </template>
                 </el-table-column>
-
               </template>
 
               <template v-if="item.label === '创建日期'">
@@ -572,10 +550,7 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
-              <el-checkbox
-                :label="item.value"
-                :disabled="!item.authMediaFlag"
-                >{{ item.label }}
+              <el-checkbox :label="item.value" :disabled="!item.authMediaFlag">{{ item.label }}
               </el-checkbox>
             </div>
           </el-checkbox-group>
@@ -1774,12 +1749,12 @@ export default {
       let mediaTypeNames = obj.mediaTypeNames.split(',')
       mediaTypeNames.forEach(type => {
         const index = obj.details.findIndex(item => item.mediaTypeName === type)
-        if(index > -1) {
-            obj.mediaTypeDetails.push(obj.details[index])
+        if (index > -1) {
+          obj.mediaTypeDetails.push(obj.details[index])
         } else {
-            obj.mediaTypeDetails.push({
-                mediaTypeName: type
-            })
+          obj.mediaTypeDetails.push({
+            mediaTypeName: type
+          })
         }
       })
       // 针对地方媒介的预锁逻辑：
@@ -1788,9 +1763,9 @@ export default {
       let mLength = mediaTypeNames.length
       if (["ADN_MD"].includes(this.role) && mediaTypeNames.includes('单元门禁灯箱')) {
         if (mLength > 1) {
-            obj.isdfmj = false
+          obj.isdfmj = false
         } else {
-            obj.isdfmj = true
+          obj.isdfmj = true
         }
       } else {
         obj.isdfmj = false
@@ -1828,12 +1803,12 @@ export default {
     reset() {
       let info = this.searchInfo
       info.select = "1",
-      info.keyword = "",
-      info.rangeDate = "",
-      info.status = "",
-      info.company = "",
-      info.Lock = "",
-      info.dateType = "0"
+        info.keyword = "",
+        info.rangeDate = "",
+        info.status = "",
+        info.company = "",
+        info.Lock = "",
+        info.dateType = "0"
 
       this.currPage = 1;
       this.currentPlan = [];
@@ -1954,10 +1929,10 @@ export default {
           if (_res.SysCode == 200200) {
             this.allMediaTypes = _res.data || [];
             _res.data.forEach(item => {
-                this.mediaTypeFilterList.push({
-                    text: item.name,
-                    value: item.id
-                })
+              this.mediaTypeFilterList.push({
+                text: item.name,
+                value: item.id
+              })
             })
           } else {
             this.messageFun("warning", res.data.MSG);
@@ -2105,13 +2080,13 @@ export default {
       for (let key in filters) {
         if (key === "mediaTypeNames") {
           if (filters[key].length) {
-              this.searchInfo.mediaTypeIds = filters[key].join(',');
+            this.searchInfo.mediaTypeIds = filters[key].join(',');
           } else {
-              this.searchInfo.mediaTypeIds = "";
+            this.searchInfo.mediaTypeIds = "";
           }
+        }
       }
-    }
-    this.search()
+      this.search()
     },
 
     // 关闭预锁媒体类型弹窗
@@ -2710,60 +2685,61 @@ a {
 }
 
 .media-box {
-    display: flex;
-    flex-wrap: wrap;
-    .media-tag {
-        margin: 4px 8px 4px 0;
+  display: flex;
+  flex-wrap: wrap;
 
-        .tag {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 22px;
-            padding: 0 8px;
-            border: 1px solid;
-            border-radius: 2px;
-            font-family: 'Roboto';
-            font-size: 12px;
-            margin-right: 8px;
-            line-height: normal;
+  .media-tag {
+    margin: 4px 8px 4px 0;
 
-            &:last-of-type {
-            margin-right: 0;
-            }
+    .tag {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border: 1px solid;
+      border-radius: 2px;
+      font-family: 'Roboto';
+      font-size: 12px;
+      margin-right: 8px;
+      line-height: normal;
 
-            &.ad {
-            background: #E6F7FF;
-            border-color: #91D5FF;
-            color: #1890FF;
-            }
+      &:last-of-type {
+        margin-right: 0;
+      }
 
-            &.unit-access {
-            background: #F6FFED;
-            border-color: #B7EB8F;
-            color: #52C41A;
-            }
+      &.ad {
+        background: #E6F7FF;
+        border-color: #91D5FF;
+        color: #1890FF;
+      }
 
-            &.light-box {
-            background: #E6FFFB;
-            border-color: #87E8DE;
-            color: #13C2C2;
-            }
+      &.unit-access {
+        background: #F6FFED;
+        border-color: #B7EB8F;
+        color: #52C41A;
+      }
 
-            &.brake {
-            background: #f9f0ff;
-            border-color: #D3ADF7;
-            color: #722ED1;
-            }
+      &.light-box {
+        background: #E6FFFB;
+        border-color: #87E8DE;
+        color: #13C2C2;
+      }
 
-            .icon {
-            cursor: pointer;
-            display: block;
-            width: 10px;
-            margin-right: 6px;
-            }
-        }
+      &.brake {
+        background: #f9f0ff;
+        border-color: #D3ADF7;
+        color: #722ED1;
+      }
+
+      .icon {
+        cursor: pointer;
+        display: block;
+        width: 10px;
+        margin-right: 6px;
+      }
     }
+  }
 }
 
 .media-type-dialog {

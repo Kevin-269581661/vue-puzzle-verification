@@ -3981,10 +3981,8 @@ export default {
           if (res.data.SysCode == 200200) {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
+              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData);
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
-              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(
-                this.sessionData
-              );
               // 获取选点列表
               this.getAdList();
             }
@@ -4697,7 +4695,7 @@ export default {
     },
     //媒体类型切换
     activeMediaType(mType) {
-      //  console.log("媒体类型", mType);
+       console.log("媒体类型", mType);
       this.forMap = false
       const arr = this.sessionData.userMediaChooseConfigs.filter(
         (item) => item.mediaTypeId === mType

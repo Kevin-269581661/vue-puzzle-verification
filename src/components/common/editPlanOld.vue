@@ -6172,10 +6172,8 @@ export default {
           if (res.data.SysCode == 200200) {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
+              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData);
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
-              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(
-                this.sessionData
-              );
             }
           } else {
             sessFun.messageFun("warning", res.data.MSG || "媒体类型获取失败！");

@@ -216,6 +216,56 @@
                 </dd>
               </dl>
 
+              <dl>
+                <dt>开发商：</dt>
+                <dd style="margin-left: 11px;">
+                  <el-select
+                    v-model="developer"
+                    placeholder="请输入开发商"
+                    size="small"
+                    :class="developer ? 'otherSelectActive' : ''"
+                    class="otherSelect"
+                    filterable
+                    remote
+                    :remote-method="developerSearch"
+                    @change="tableHeaderFilter_developer"
+                  >
+                    <el-option
+                      v-for="item in developerList"
+                      :key="item.dictValue"
+                      :label="item.dictDesc"
+                      :value="item.dictValue"
+                    >
+                    </el-option>
+                  </el-select>
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>商圈：</dt>
+                <dd style="margin-left: 24px;">
+                  <el-select
+                    v-model="tradingArea"
+                    placeholder="请输入商圈"
+                    size="small"
+                    :class="tradingArea !== '' ? 'otherSelectActive' : ''"
+                    class="otherSelect"
+                    filterable
+                    remote
+                    :remote-method="tradingAreaSearch"
+                    @change="tableHeaderFilter_tradingArea"
+                  >
+                    <el-option
+                      v-for="item in tradingAreaList"
+                      :key="item.dictValue"
+                      :label="item.dictDesc"
+                      :value="item.dictValue"
+                    >
+                    </el-option>
+                  </el-select>
+                </dd>
+              </dl>
+
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
@@ -237,6 +287,7 @@
                     >
                     </el-option>
                   </el-select>
+
                   <el-select
                     v-model="buildValue"
                     placeholder="楼盘类型"
@@ -253,6 +304,7 @@
                     >
                     </el-option>
                   </el-select>
+
                   <el-select
                     v-model="activeGrade"
                     placeholder="媒体等级"
@@ -265,6 +317,7 @@
                     <el-option label="B级" value="B"></el-option>
                     <el-option label="C级" value="C"></el-option>
                   </el-select>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -296,6 +349,48 @@
                       住户数量
                     </el-button>
                   </el-popover>
+
+                  <!-- 楼栋数量 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'floorNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="floorNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="floorNum[1]"
+                      />
+                      <el-button @click="emptyFun('floorNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByFloor()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.floorNum ? 'otherBtnActive' : ''"
+                    >
+                      楼栋数量
+                    </el-button>
+                  </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -335,6 +430,7 @@
                       楼盘价格
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -366,6 +462,89 @@
                       入住年份
                     </el-button>
                   </el-popover>
+
+                  <!-- 出入口数 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'doorNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="doorNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="doorNum[1]"
+                      />
+                      <el-button @click="emptyFun('doorNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByDoorNum()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.doorNum ? 'otherBtnActive' : ''"
+                    >
+                    出入口数
+                    </el-button>
+                  </el-popover>
+
+                  <!-- 入住率 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'liveRateNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="liveRateNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="liveRateNum[1]"
+                      />
+                      <el-button @click="emptyFun('liveRateNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByLiveRate()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.liveRateNum ? 'otherBtnActive' : ''"
+                    >
+                      入住率
+                    </el-button>
+                  </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -405,6 +584,7 @@
                       人流量
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -436,6 +616,7 @@
                       车流量
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -475,6 +656,49 @@
                       车位数
                     </el-button>
                   </el-popover>
+
+                  <!-- 可投数量 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'actualAdsCntNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="actualAdsCntNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="actualAdsCntNum[1]"
+                      />
+                      <el-button @click="emptyFun('actualAdsCntNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByActualAdsCntNum()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.actualAdsCntNum ? 'otherBtnActive' : ''"
+                    >
+                      可投数量
+                    </el-button>
+                  </el-popover>
+
+
                 </dd>
               </dl>
             </div>
@@ -2122,6 +2346,12 @@ export default {
       peopleFlow: ["", ""], // 表头搜索人流量
       carFlow: ["", ""], // 表头搜索车位数
       parkSpaceNum: ["", ""], // 表头搜索车流量
+
+      floorNum: ['', ''], // 表头搜索楼栋数量
+      liveRateNum: ['', ''], // 表头搜索入住率
+      doorNum: ['', ''], // 表头搜索出入口数量
+      actualAdsCntNum: ['', ''], // 表头搜索可投数量
+
       filterData: {
         // 记录判断含有哪些表头的过滤条件
         hNum: false,
@@ -2131,6 +2361,11 @@ export default {
         pFlow: false,
         cFlow: false,
         pSNum: false,
+
+        floorNum: false,
+        liveRateNum: false,
+        doorNum: false,
+        actualAdsCntNum: false
       },
       loadSign: true, // table滚轮
       shopMedia_ADNum: {
@@ -2572,6 +2807,13 @@ export default {
       
       // 地图导入
       forMap: false,
+
+      developerList: [], // 开发商
+      developer: '',
+      
+      tradingAreaList: [], // 商圈
+      tradingArea: ''
+      
       
     };
   },
@@ -4066,7 +4308,44 @@ export default {
         this.filterData.pSNum = false;
         this.getAdsParamsData.parkSpaceNumMin = "";
         this.getAdsParamsData.parkSpaceNumMax = "";
+      } else if (tab.condition === "floorNum") {
+        // 楼栋数量
+        this.floorNum[0] = "";
+        this.floorNum[1] = "";
+        this.filterData.floorNum = false;
+        this.getAdsParamsData.floorNumMin = "";
+        this.getAdsParamsData.floorNumMax = "";
+      } else if (tab.condition === "liveRateNum") {
+        // 入住率
+        this.liveRateNum[0] = "";
+        this.liveRateNum[1] = "";
+        this.filterData.liveRateNum = false;
+        this.getAdsParamsData.liveRateMin = "";
+        this.getAdsParamsData.liveRateMax = "";
+      } else if (tab.condition === "doorNum") {
+        // 出入口数量
+        this.doorNum[0] = "";
+        this.doorNum[1] = "";
+        this.filterData.doorNum = false;
+        this.getAdsParamsData.doorNumMin = "";
+        this.getAdsParamsData.doorNumMax = "";
+      } else if (tab.condition === "actualAdsCntNum") {
+        // 可投数量
+        this.actualAdsCntNum[0] = "";
+        this.actualAdsCntNum[1] = "";
+        this.filterData.actualAdsCntNum = false;
+        this.getAdsParamsData.actualAdsCntMin = "";
+        this.getAdsParamsData.actualAdsCntMax = "";
+      } else if (tab.condition === "developer") {
+        // 开发商
+        this.developer = '';
+        this.getAdsParamsData.developer = "";
+      } else if (tab.condition === "tradingArea") {
+        // 商圈
+        this.tradingArea = '';
+        this.getAdsParamsData.tradingArea = "";
       }
+
       this.filterCondition.splice(index, 1);
       this.setPageNoAndTableData();
       this.getAdList();
@@ -4194,7 +4473,7 @@ export default {
     },
     //人流量过滤
     tableHeaderFilterByPeopleFlow() {
-      if (this.peopleFlow[0] == "" || this.peopleFlow[1] == "") {
+      if (this.peopleFlow[0] === "" || this.peopleFlow[1] === "") {
         sessFun.messageFun("warning", "数据区间填写有误!");
       } else {
         let tagName = "人流量:" + this.peopleFlow[0] + "-" + this.peopleFlow[1];
@@ -4208,7 +4487,7 @@ export default {
     },
     // 车流量过滤
     tableHeaderFilterByCarFlow() {
-      if (this.carFlow[0] == "" || this.carFlow[1] == "") {
+      if (this.carFlow[0] === "" || this.carFlow[1] === "") {
         sessFun.messageFun("warning", "数据区间填写有误!");
       } else {
         let tagName = "车流量:" + this.carFlow[0] + "-" + this.carFlow[1];
@@ -4222,7 +4501,7 @@ export default {
     },
     // 车位数过滤
     tableHeaderFilterByParkSpaceNum() {
-      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]) {
+      if (this.parkSpaceNum[0] === "" || this.parkSpaceNum[1] === '') {
         sessFun.messageFun("warning", "数据区间填写有误!");
       } else {
         let tagName =
@@ -4235,6 +4514,70 @@ export default {
         this.getAdList();
       }
     },
+
+    // 楼栋数过滤
+    tableHeaderFilterByFloor() {
+      if (this.floorNum[0] === "" || this.floorNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "楼栋数:" + this.floorNum[0] + "-" + this.floorNum[1];
+        this.isHaveThisTag("floorNum", tagName);
+        this.filterData.floorNum = true;
+        this.getAdsParamsData.floorNumMin = this.floorNum[0];
+        this.getAdsParamsData.floorNumMax = this.floorNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+    // 入住率过滤
+    tableHeaderFilterByLiveRate () {
+      if (this.liveRateNum[0] === "" || this.liveRateNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "入住率:" + this.liveRateNum[0] + "-" + this.liveRateNum[1];
+        this.isHaveThisTag("liveRateNum", tagName);
+        this.filterData.liveRateNum = true;
+        this.getAdsParamsData.liveRateMin = this.liveRateNum[0];
+        this.getAdsParamsData.liveRateMax = this.liveRateNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
+    // 出入口数
+    tableHeaderFilterByDoorNum () {
+      if (this.doorNum[0] === "" || this.doorNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "出入口数:" + this.doorNum[0] + "-" + this.doorNum[1];
+        this.isHaveThisTag("doorNum", tagName);
+        this.filterData.doorNum = true;
+        this.getAdsParamsData.doorNumMin = this.doorNum[0];
+        this.getAdsParamsData.doorNumMax = this.doorNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
+    // 可投数量
+    tableHeaderFilterByActualAdsCntNum () {
+      if (this.actualAdsCntNum[0] === "" || this.actualAdsCntNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "出入口数:" + this.actualAdsCntNum[0] + "-" + this.actualAdsCntNum[1];
+        this.isHaveThisTag("actualAdsCntNum", tagName);
+        this.filterData.actualAdsCntNum = true;
+        this.getAdsParamsData.actualAdsCntMin = this.actualAdsCntNum[0];
+        this.getAdsParamsData.actualAdsCntMax = this.actualAdsCntNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
     emptyFun(letter) {
       // 清空
       if (letter === "H") {
@@ -4251,7 +4594,15 @@ export default {
         this.parkSpaceNum = ["", ""];
       } else if (letter === "PF") {
         this.peopleFlow = ["", ""];
-      }
+      } else if (letter === "floorNum") {
+        this.floorNum = ["", ""];
+      } else if (letter === "liveRateNum") {
+        this.liveRateNum = ["", ""];
+      } else if (letter === "doorNum") {
+        this.doorNum = ["", ""];
+      } else if (letter === "actualAdsCntNum") {
+        this.actualAdsCntNum = ["", ""];
+      } 
     },
     // 表头全选
     allCheckboxAds() {
@@ -6734,6 +7085,69 @@ export default {
           sessFun.messageFun("warning", "数据接口异常");
         });
     },
+
+    // 选点小区信息搜索
+    getResInfoTag (tagName, keyword) {
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        companyIds: this.FAInfo.asrIDs,
+        tagName,
+        keyword
+      };
+      return api.getApi('/addsp/api/v1/media/company/ResInfoTag', params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          return Promise.resolve(res.data.data)
+        }
+      });
+    },
+
+    // 开发商过滤
+    tableHeaderFilter_developer(data) {
+      console.log(data);
+      let stateName = "开发商：" + data;
+      this.isHaveThisTag("developer", stateName);
+      if (data === "") {
+        this.getAdsParamsData.developer = "";
+      } else {
+        this.getAdsParamsData.developer = this.developer;
+      }
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 商圈过滤
+    tableHeaderFilter_tradingArea (data) {
+      let stateName = "开发商：" + data;
+      this.isHaveThisTag("tradingArea", stateName);
+      if (data === "") {
+        this.getAdsParamsData.tradingArea = "";
+      } else {
+        this.getAdsParamsData.tradingArea = this.tradingArea;
+      }
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 开发商搜索
+    async developerSearch (query ) {
+      if (query !== '') {
+        const res = await this.getResInfoTag('developer', query)
+        this.developerList = res
+      } else {
+        this.developerList = [];
+      }
+    },
+
+    // 商圈搜索
+    async tradingAreaSearch (query ) {
+      if (query !== '') {
+        const res = await this.getResInfoTag('tradingArea', query)
+        this.tradingAreaList = res
+      } else {
+        this.tradingAreaList = [];
+      }
+    }
   },
 };
 </script>

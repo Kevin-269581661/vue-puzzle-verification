@@ -337,11 +337,12 @@ export default {
   padding: 0 6px;
 }
 
-/deep/ .el-table__body-wrapper {
+.adsTable /deep/ .el-table__body-wrapper {
   overflow-x: scroll!important;
 } 
 
-/deep/ .el-table__body-wrapper, /deep/ .el-table__empty-block { 
+.adsTable /deep/ .el-table__body-wrapper, 
+.adsTable /deep/ .el-table__empty-block { 
   min-height: auto!important;;
 }
 </style>

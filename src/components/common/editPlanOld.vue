@@ -2772,7 +2772,7 @@ export default {
                 rName: item.district
               };
             });
-            
+
             // 配点匹配数据
             this.pointMatchKeys = {
               matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
@@ -5314,7 +5314,7 @@ export default {
       } else {
         api
         .getApi(this.apiVar.mapApi + "/adsListByUid", {
-          asrIDs: this.planForm.pointOfAsrIDs.join(","),
+          asrIDs: this.planForm.pointOfAsrIDs ? this.planForm.pointOfAsrIDs.join(",") : '',
           suID: this.BDData.uid,
         })
         .then((res) => {
@@ -7862,7 +7862,7 @@ export default {
   color: #1890ff;
   font-size: 14px;
   position: absolute;
-  top: 116px;
+  top: 113px;
   right: 468px;
   z-index: 10;
   line-height: 45px;

@@ -5173,7 +5173,7 @@ export default {
       } else {
         api
         .getApi(this.apiVar.mapApi + "/adsListByUid", {
-          asrIDs: this.planForm.pointOfAsrIDs.join(","),
+          asrIDs: this.planForm.pointOfAsrIDs ? this.planForm.pointOfAsrIDs.join(",") : '',
           suID: this.BDData.uid,
         })
         .then((res) => {

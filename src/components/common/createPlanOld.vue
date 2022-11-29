@@ -392,7 +392,7 @@
                 </dd>
               </dl>
 
-              <dl>
+              <dl v-if="getAdsParamsData.chooseType === 0">
                 <dt>设备型号：</dt>
                 <dd
                   v-for="(item, index) in mTypeList"
@@ -404,7 +404,7 @@
                 </dd>
               </dl>
 
-              <dl>
+              <dl v-if="getAdsParamsData.chooseType === 0">
                 <dt>安装位置：</dt>
                 <dd
                   v-for="(item, index) in sites"
@@ -416,7 +416,7 @@
                 </dd>
               </dl>
 
-              <dl>
+              <dl v-if="getAdsParamsData.chooseType === 0 && isShowSiteOrientation">
                 <dt>位置朝向：</dt>
                 <dd
                   v-for="(item, index) in siteOrientations"
@@ -1408,6 +1408,21 @@
                     </el-table-column>
                   </template>
 
+                  <template v-else-if="item.label === '可投数量'">
+                    <el-table-column
+                      v-if="item.isChecked && getAdsParamsData.chooseType !== 0"
+                      :label="item.label"
+                      :width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.actualAdsCnt || 0 }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
                   <template v-else-if="item.label === '排期'">
                     <el-table-column
                       v-if="item.isChecked"
@@ -1416,7 +1431,6 @@
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
-                      align="center"
                     >
                     </el-table-column>
                   </template>
@@ -2815,6 +2829,15 @@ export default {
           showTooltip: false,
         },
         {
+          id: new Date().getDate(),
+          label: "可投数量",
+          prop: "actualAdsCnt",
+          width: "90",
+          isChecked: true,
+          fix: "right",
+          showTooltip: false,
+        },
+        {
           id: 24,
           label: "排期",
           prop: "schedules",
@@ -2981,6 +3004,20 @@ export default {
     isDiableSearchOpt() {
       return !this.tabChooseTypeList.some((item) => item.name === "点位");
     },
+
+    // 单元门禁灯箱点位纬度时才展示位置朝向
+    isShowSiteOrientation () {
+      let isShowSite = true
+      const mediaItem = this.mediaTypeObjectArr.find(
+        (item) => item.id === this.currentMediaType
+      );
+      if (mediaItem && mediaItem.name === "单元门禁灯箱") {
+        isShowSite = false;
+      } else {
+        isShowSite = true;
+      }
+      return this.getAdsParamsData.chooseType === 0 && isShowSite
+    }
   },
   methods: {
     requestIsPay() {

@@ -436,7 +436,7 @@
                     placeholder="请输入开发商"
                     size="small"
                     :class="developer !== '' ? 'otherSelectActive' : ''"
-                    class="otherSelect"
+                    class="otherSelect input-hover"
                     filterable
                     remote
                     :remote-method="developerSearch"
@@ -458,7 +458,7 @@
                 <dd style="margin-left: 24px;">
                   <el-select
                     v-model="tradingArea"
-                    placeholder="请输入商圈"
+                    placeholder="请输入商圈 input-hover"
                     size="small"
                     :class="tradingArea !== '' ? 'otherSelectActive' : ''"
                     class="otherSelect"
@@ -8427,6 +8427,20 @@ export default {
   /deep/ span.el-input-number__increase {
     height: 24px !important;
   }
+}
+
+.input-hover {
+  /deep/ .el-input__inner {
+    &:hover {
+      cursor: text;
+    }
+  }
+
+  /deep/ .el-input__suffix {
+    &:hover {
+      cursor: text;
+    }
+  } 
 }
 </style>
 <style>

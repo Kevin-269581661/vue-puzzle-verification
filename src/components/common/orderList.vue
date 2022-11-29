@@ -1319,15 +1319,15 @@ a {
 }
 </style>
 
-<style>
-/* /deep/ .el-table-filter {
-    .el-table-filter__bottom {
-        button {
-            padding: 2px 6px !important;
-            margin-right: 10px !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
-        }
+<!-- <style lang="scss">
+/deep/.el-table-filter {
+  .el-table-filter__bottom {
+    button {
+      padding: 2px 6px !important;
+      margin-right: 10px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 4px !important;
     }
-} */
-</style>
+  }
+}
+</style> -->

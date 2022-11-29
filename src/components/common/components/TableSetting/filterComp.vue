@@ -21,7 +21,7 @@
                         @end="onEnd"
                         :move="onMove"
                     >
-                        <span
+                        <div
                             class="inner-column-item"
                             v-for="item in leftFixList"
                             :key="item.id"
@@ -31,7 +31,7 @@
                             <span class="fix-icon" @click="notToFix(item)">
                                 <i class="el-icon-minus" style="font-size: 14px;"></i>
                             </span>
-                        </span>
+                        </div>
                     </draggable>
                     <!-- 不固定 -->
                     <span class="inner-fix">不固定</span>
@@ -276,6 +276,29 @@ export default {
 
 .filter-box-outer {
     background-color: #fff;
+    min-height: 100px;
+    max-height: 500px;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+        border-radius: 0;
+        background: #fafafa;
+    }
+
     .filter-box-inner {
         .inner-fix {
             display: block;
@@ -288,7 +311,6 @@ export default {
         .inner-column-item {
             display: flex;
             align-items: center;
-            width: 200px;
             height: 24px;
 
             /deep/ i.el-icon-menu {
@@ -300,21 +322,22 @@ export default {
             }
 
             /deep/ label.el-checkbox {
-                width: 140px;
+                min-width: 130px;
+                max-width: 300px;
             }
 
             .fix-icon {
-                display: none;
+                visibility: hidden;
                 width: 28px;
                 color: #1890ff;
-                padding-right: 16px;
+                padding-left: 10px;
             }
 
             &:hover {
                 background: #E6F7FF;
 
                 .fix-icon {
-                    display: block;
+                    visibility: visible;
                 }
             }
 
@@ -328,5 +351,6 @@ export default {
     box-sizing: border-box;
     padding: 0 !important;
     padding-bottom: 6px !important;
+    width: max-content;
 }
 </style>

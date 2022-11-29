@@ -2542,7 +2542,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: new Date().getDate(),
+          id: 3,
           label: "楼栋号",
           prop: "buildingName",
           width: "140",
@@ -2551,7 +2551,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: new Date().getDate(),
+          id: 4,
           label: "单元号",
           prop: "unitName",
           width: "140",
@@ -2560,7 +2560,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 3,
+          id: 5,
           label: "城市",
           prop: "city",
           width: "110",
@@ -2569,7 +2569,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 4,
+          id: 6,
           label: "区域",
           prop: "origin",
           width: "110",
@@ -2578,7 +2578,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 6,
+          id: 7,
           label: "商圈",
           prop: "tradingArea",
           width: "120",
@@ -2587,7 +2587,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 7,
+          id: 8,
           label: "媒体备注",
           prop: "mediaRemark",
           width: "140",
@@ -2596,7 +2596,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: 8,
+          id: 9,
           label: "巡点问题",
           prop: "remark",
           width: "110",
@@ -2605,7 +2605,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: 9,
+          id: 10,
           label: "通行情况",
           prop: "trafficState",
           width: "110",
@@ -2614,7 +2614,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 10,
+          id: 11,
           label: "通电情况",
           prop: "electrifyState",
           width: "110",
@@ -2623,7 +2623,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 11,
+          id: 12,
           label: "资产编号",
           prop: "assetTag",
           width: "160",
@@ -2632,7 +2632,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: 12,
+          id: 13,
           label: "媒体等级",
           prop: "mediaLevel",
           width: "120",
@@ -2641,7 +2641,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 13,
+          id: 14,
           label: "广告限制",
           prop: "adLimit",
           width: "130",
@@ -2650,7 +2650,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: 14,
+          id: 15,
           label: "楼盘类型",
           prop: "buildType",
           width: "100",
@@ -2659,7 +2659,7 @@ export default {
           showTooltip: true,
         },
         {
-          id: 15,
+          id: 16,
           label: "媒体状态",
           prop: "mState",
           width: "100",
@@ -2668,7 +2668,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 16,
+          id: 17,
           label: "楼盘价格",
           prop: "buildPrice",
           width: "110",
@@ -2677,7 +2677,7 @@ export default {
           fix: "not",
         },
         {
-          id: 17,
+          id: 18,
           label: "楼栋数量",
           prop: "buildNum",
           width: "100",
@@ -2686,7 +2686,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: new Date().getDate(),
+          id: 19,
           label: "单元数量",
           prop: "unitCount",
           width: "100",
@@ -2695,7 +2695,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 18,
+          id: 20,
           label: "入住年份",
           prop: "liveYear",
           width: "90",
@@ -2704,7 +2704,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 19,
+          id: 21,
           label: "小区户数",
           prop: "houseNum",
           width: "90",
@@ -2713,27 +2713,9 @@ export default {
           showTooltip: false,
         },
         {
-          id: 20,
+          id: 22,
           label: "人流量",
           prop: "peopleFlow",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 21,
-          label: "车位数",
-          prop: "parkSpaceNum",
-          width: "90",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 22,
-          label: "车流量",
-          prop: "carFlow",
           width: "110",
           isChecked: true,
           fix: "not",
@@ -2749,7 +2731,25 @@ export default {
           showTooltip: false,
         },
         {
-          id: new Date().getDate(),
+          id: 24,
+          label: "车流量",
+          prop: "carFlow",
+          width: "110",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 25,
+          label: "车位数",
+          prop: "parkSpaceNum",
+          width: "90",
+          isChecked: true,
+          fix: "not",
+          showTooltip: false,
+        },
+        {
+          id: 26,
           label: "可投数量",
           prop: "actualAdsCnt",
           width: "90",
@@ -2758,7 +2758,7 @@ export default {
           showTooltip: false,
         },
         {
-          id: 24,
+          id: 27,
           label: "排期",
           prop: "schedules",
           width: "190",
@@ -2828,17 +2828,17 @@ export default {
       // 配点成功数据
       adResMatch: {},
       pointTableShow: false,
-      
+
       // 地图导入
       forMap: false,
 
       developerList: [], // 开发商
       developer: '',
-      
+
       tradingAreaList: [], // 商圈
       tradingArea: ''
-      
-      
+
+
     };
   },
   mounted() {
@@ -4640,7 +4640,7 @@ export default {
         this.doorNum = ["", ""];
       } else if (letter === "actualAdsCntNum") {
         this.actualAdsCntNum = ["", ""];
-      } 
+      }
     },
     // 表头全选
     allCheckboxAds() {
@@ -5696,7 +5696,7 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      
+
       if(this.isPointSetting){
         this.pointMatchKeys.matchOriginType = 1
         this.getMapImportResult()
@@ -5721,7 +5721,7 @@ export default {
           sessFun.messageFun("warning", "数据接口异常");
         });
       }
-      
+
     },
 
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）

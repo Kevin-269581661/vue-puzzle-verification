@@ -439,8 +439,7 @@ export default {
                 companyIds: val
             }
             api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
-                // if(res.data.SysCode == 200200){
-                if (res.data.SysCode) {
+                if (res.data.SysCode == 200200) {
                     let _data = res.data.data;
                     let _newData = [];
                     if (_data.length > 0) {

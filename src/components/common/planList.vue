@@ -210,14 +210,6 @@
                             </span>
                           </div>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
-                          placement="top">
-                          <span v-show="item.RemainDay" class="lock-icon">
-                            <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                                item.RemainDay
-                            }}</b>
-                          </span>
-                        </el-tooltip>
                       </div>
                     </template>
                     <template v-else>
@@ -257,14 +249,6 @@
                                 ")"
                             }}
                           </p>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" :content="'距离解锁还剩' + item.RemainDay + '天'"
-                          placement="top">
-                          <span v-show="item.RemainDay" class="lock-icon">
-                            <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                                item.RemainDay
-                            }}</b>
-                          </span>
                         </el-tooltip>
                       </div>
                     </template>

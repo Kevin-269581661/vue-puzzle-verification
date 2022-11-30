@@ -1016,6 +1016,7 @@ export default {
         .getApi(this.apiVar.AddspProposal + "/getAdBackUp", params)
         .then((res) => {
           console.log("获取意向方案缓存", res);
+          console.log(JSON.parse(res.data.data))
           this.continueEditLoading.close();
           if (res.data.SysCode == 200200) {
             // console.log("获取意向方案缓存成功", res.data);
@@ -1118,6 +1119,10 @@ export default {
     // 显示缓存方案的信息
     showCookeAdPlan(adPlan) {
       // this.planForm.realNamesName
+      if (adPlan.planData.isEdit) {
+        this.$router.push("./createPlanOld");
+        return
+      }
       let ownerSales =
         ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
           adPlan.planData.baseInfo.realNamesName
@@ -2832,4 +2837,18 @@ a {
 .newDrop {
   padding: 0 !important;
 }
+.el-table-filter .el-table-filter__bottom button:first-child{
+  color: #fff;
+  background-color: #1890FF;
+  border-color: #1890FF;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+.el-table-filter .el-table-filter__bottom button.is-disabled {
+  background: transparent;
+  border: none;
+  color: #C0C4CC;
+  padding: 0 3px;
+}
+
 </style>

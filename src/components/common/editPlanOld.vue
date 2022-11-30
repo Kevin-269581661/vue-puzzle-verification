@@ -7057,6 +7057,7 @@ export default {
           ? this.BDData.asrID + ""
           : this.cacheAsrID;
       }
+
       let planInfo = {
         uid: this.sessionData.uID,
         setTime: this.timestampToTime(Date.parse(new Date())),
@@ -7067,7 +7068,8 @@ export default {
           baseInfo: this.planForm,
           adsList: this.shopingList,
           throwCity: this.throwCity,
-          companyBrand: this.companyBrand,
+          companyBrand: this.FAInfo.asrIDs,
+          isEdit: true
         },
       };
       let params = {

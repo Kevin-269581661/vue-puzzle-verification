@@ -458,10 +458,10 @@
                 <dd style="margin-left: 24px;">
                   <el-select
                     v-model="tradingArea"
-                    placeholder="请输入商圈 input-hover"
+                    placeholder="请输入商圈"
                     size="small"
                     :class="tradingArea !== '' ? 'otherSelectActive' : ''"
-                    class="otherSelect"
+                    class="otherSelect input-hover"
                     filterable
                     remote
                     :remote-method="tradingAreaSearch"
@@ -4266,7 +4266,7 @@ export default {
       }
       api
         .getApi("/addsp/api/v1/company/mediaTypes", {
-          companyIds: selectedAsrIds,
+          companyIds: selectedAsrIds || this.sessionData.asrID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
@@ -4391,7 +4391,6 @@ export default {
                       };
                       areaArr.push(myArea);
                       if (n >= areaChild.length - 1) {
-                        console.log("areaArr", areaArr);
                         this.area.push(areaArr);
                         this.area.sort(this.compareArea);
                       }
@@ -6778,14 +6777,13 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
         .then((res) => {
-          //   console.log("res创建方案缓存", res);
           if (res.data.SysCode == 200200) {
+            cacheAdPlan.setData(planInfo);
           } else {
             // 后台缓存异常，则前台缓存到localStorage
             // cacheAdPlan.setData(planInfo)
           }
         });
-      cacheAdPlan.setData(planInfo);
     },
     // 设置方案信息
     async setPlanInfo() {
@@ -6815,6 +6813,7 @@ export default {
         this.active = 1;
         // console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域
+        this.initMediaTag();
         this.getAreaFun();
         this.getMediaTypesByCompany();
         this.getRejectPlanList(); // 获取排斥方案列表
@@ -6885,7 +6884,7 @@ export default {
           : this.cacheAsrID;
       }
       const params = {
-        companyIds: selectedAsrIds,
+        companyIds: selectedAsrIds || this.sessionData.asrID,
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         tagName,
@@ -6894,7 +6893,6 @@ export default {
         api
           .getApi("/addsp/api/v1/media/company/mediaTag", params)
           .then((res) => {
-            console.log(res.data, "ss");
             resolve(res.data.data);
           })
           .catch((error) => {

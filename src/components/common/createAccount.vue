@@ -436,13 +436,7 @@ export default {
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermission(val) {
             let info = {
-                companyIds: ''
-            }
-            if(this.sessionData.uType === 'ADN_SA') {
-                info.companyIds = this.sessionData.asrID + ',' + val
-            }
-            else if (this.sessionData.uType === 'ADN_SM') {
-                info.companyIds = this.sessionData.asrID
+                companyIds: val
             }
             api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
                 // if(res.data.SysCode == 200200){

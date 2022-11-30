@@ -119,7 +119,7 @@
                       >
                       <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
-                        :disabled="getAdsParamsData.chooseType === 0"
+                        :disabled="getAdsParamsData.chooseType !== 0"
                         >导入点位</el-dropdown-item
                       >
                     </el-dropdown-menu>
@@ -2836,7 +2836,9 @@ export default {
       developer: '',
 
       tradingAreaList: [], // 商圈
-      tradingArea: ''
+      tradingArea: '',
+
+      isFirstIntoPage: true
 
 
     };
@@ -3043,13 +3045,9 @@ export default {
             this.importInfoData = importInfo;
 
             this.importInfoData.successList = importInfo.successList.map((item) => {
-              const date = item.date.split('-')
               return {
                 ...item,
-                pbStar: date[0],
-                pbEnd: date[1],
-                origin: item.district,
-                rName: item.district
+                origin: item.rName,
               };
             });
 
@@ -3077,13 +3075,19 @@ export default {
     },
     // 确定导入
     confirmImport(arr) {
-      this.showUploadFail = false;
-      for (let info of arr) {
-        this.isHaveDiffPush(info);
-      }
-      this.isImport = false;
-      this.judgeByselect();
-      this.dialogVisible();
+      this.handleHasOtherPoint().then(() => {
+        this.showUploadFail = false;
+        for (let info of arr) {
+          this.isHaveDiffPush(info);
+        }
+        this.isImport = false;
+        this.judgeByselect();
+        this.dialogVisible();
+      }).catch(() => {
+        this.showUploadFail = false;
+        this.isImport = false;
+        this.dialogVisible();
+      })
     },
     // 根据导入返回的数据,设置购物车所需要的数据格式
     setShopDataByImport(arr) {
@@ -4669,8 +4673,13 @@ export default {
     },
     // 全选表格点位
     allSelectAdsBtn() {
-      this.allSelectToShop();
-      this.shopShow_hide("all");
+      this.handleHasOtherPoint().then(() => {
+        this.allSelectToShop();
+        this.shopShow_hide("all");
+      }).catch(() => {
+        this.IsAll= false
+      })
+
     },
     //取消全选
     cancleSelectAds() {
@@ -6856,20 +6865,26 @@ export default {
     async handlePointCountChange(currentValue, oldValue, row) {
       let addNum = currentValue - oldValue;
       if (+currentValue > +oldValue) {
-        const point = await this.handlePointRequest(addNum, row);
-        if (point) {
-          this.shopShow_hide(); // 动画效果
-          point.forEach((item) => {
-            item.adsList.forEach((adSpaceItem) => {
-              this.AddShopingInfo(item, adSpaceItem);
+        this.handleHasOtherPoint().then(async () => {
+          const point = await this.handlePointRequest(addNum, row);
+          if (point) {
+            this.shopShow_hide(); // 动画效果
+            point.forEach((item) => {
+              item.adsList.forEach((adSpaceItem) => {
+                this.AddShopingInfo(item, adSpaceItem);
+              });
             });
-          });
-        } else {
+          } else {
+            this.$nextTick(() => {
+              row.chooseNum = oldValue;
+            });
+            this.$message.warning("点位数量增加失败");
+          }
+        }).catch(() => {
           this.$nextTick(() => {
             row.chooseNum = oldValue;
           });
-          this.$message.warning("点位数量增加失败");
-        }
+        })
       } else {
         const arr = this.shopingList.filter((item) => {
           return (
@@ -7016,12 +7031,19 @@ export default {
 
     // 保存配点
     savePoint(arr) {
-      for (let info of arr) {
-        this.isHaveDiffPush(info);
-      }
-      this.judgeByselect();
-      this.dialogVisible();
-      this.pointTableShow = false;
+      this.handleHasOtherPoint().then(() => {
+        for (let info of arr) {
+          this.isHaveDiffPush(info);
+        }
+        this.judgeByselect();
+        this.dialogVisible();
+        this.pointTableShow = false;
+      }).catch(() => {
+        this.dialogVisible();
+        this.pointTableShow = false;
+      })
+
+
     },
 
     // 重新配点
@@ -7187,6 +7209,39 @@ export default {
       } else {
         this.tradingAreaList = [];
       }
+    },
+
+    handleHasOtherPoint () {      
+      return new Promise((resolve, reject) => {
+        if (this.isFirstIntoPage && this.shopingList.length) {
+          const h = this.$createElement;
+          this.$msgbox({
+            title: "",
+            message: h("p", null, [
+              h("span", null, "当前购物车中有其他配点逻辑选入的点位，若在原客户配点需求上继续补充点位请点击【继续添加】，若是客户配点需求发生了变更，建议点击【暂不添加】，先前往购物车对点位清空再进行配点 ")
+            ]),
+            type: "warning",
+            showClose: false,
+            showCancelButton: true,
+            distinguishCancelAndClose: true,
+            confirmButtonText: "继续添加",
+            cancelButtonText: "暂不添加",
+            closeOnClickModal: false,
+            beforeClose: (action, instance, done) => {
+              this.isFirstIntoPage = false
+              if (action === "confirm") {
+                resolve()
+                done();
+              } else {
+                reject()
+                done();
+              }
+            },
+          })
+        } else {
+          resolve()
+        }
+      })
     }
   },
 };

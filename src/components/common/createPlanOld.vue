@@ -330,7 +330,7 @@
                       </el-dropdown-item>
                       <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
-                        :disabled="getAdsParamsData.chooseType === 0"
+                        :disabled="getAdsParamsData.chooseType !== 0"
                       >
                         导入点位
                       </el-dropdown-item>
@@ -3358,13 +3358,9 @@ export default {
             this.importInfoData = importInfo;
 
             this.importInfoData.successList = importInfo.successList.map((item) => {
-              const date = item.date.split('-')
               return {
                 ...item,
-                pbStar: date[0],
-                pbEnd: date[1],
-                origin: item.district,
-                rName: item.district
+                origin: item.rName,
               };
             });
 

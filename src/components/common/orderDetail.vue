@@ -520,7 +520,7 @@
                   class="input-with-select"
                 ></el-input>
               </el-col>
-              <el-col class="el-col-box" v-if="sessionData.uType == 'ADN_MD_COUNTRY'">
+              <el-col class="el-col-box">
                 <span>媒体位ID：</span>
                 <el-select
                     filterable multiple collapse-tags clearable
@@ -535,7 +535,7 @@
                     </el-option>
                 </el-select>
               </el-col>
-              <el-col class="el-col-box" v-if="sessionData.uType == 'ADN_MD_COUNTRY'">
+              <el-col class="el-col-box">
                 <span>媒体名称：</span>
                 <el-select
                     filterable multiple collapse-tags clearable

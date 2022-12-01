@@ -4525,6 +4525,7 @@ export default {
           asLab: key.asLab,
           buildingName: key.buildingName,
           unitName: key.unitName,
+          chooseNum: key.chooseNum
         };
         if (this.getAdsParamsData.chooseType !== 0) {
           adObj.pointCount =

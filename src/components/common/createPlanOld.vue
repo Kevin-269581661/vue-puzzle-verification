@@ -2959,12 +2959,6 @@ export default {
 
     "getAdsParamsData.chooseType": {
       handler(nVal) {
-        if (nVal === 1 || nVal === 2 || nVal === 3) {
-          const index = this.currentColumn.findIndex((item) => {
-            return item.prop === "mediaName";
-          });
-          this.currentColumn.splice(index, 1);
-        }
         let pointCountType = "";
         if (nVal === 1) {
           pointCountType = "unitId";
@@ -2974,7 +2968,6 @@ export default {
           pointCountType = "resID";
         }
         this.pointCountType = pointCountType;
-        this.getAdList();
       },
     },
   },
@@ -4525,7 +4518,8 @@ export default {
           asLab: key.asLab,
           buildingName: key.buildingName,
           unitName: key.unitName,
-          chooseNum: key.chooseNum
+          chooseNum: key.chooseNum,
+          unitCount: key.unitCount
         };
         if (this.getAdsParamsData.chooseType !== 0) {
           adObj.pointCount =

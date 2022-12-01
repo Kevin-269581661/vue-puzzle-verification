@@ -2191,7 +2191,6 @@ export default {
           pointCountType = "resID";
         }
         this.pointCountType = pointCountType;
-        this.getAdList();
       },
     },
   },

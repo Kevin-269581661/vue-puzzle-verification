@@ -1562,15 +1562,17 @@ export default {
   },
   created () {
     const timeRange = this.$route.query.timeRange
-    this.timeRange = timeRange.replace(',', ' - ')
+    if(timeRange){
+      this.timeRange = timeRange.replace(',', ' - ')
+    }
 
     const {mediaType, mediaTypeId} = this.$route.query
     if (mediaType) {
       this.queryMediaType = mediaType
       this.queryMediaTypeId  = mediaTypeId
     }
-
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
+    console.log(this.adListParams, 'this.adListParamsthis.adListParamsthis.adListParamsthis.adListParams')
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
       mapConfig.apiVar.mapApi = this.apiVar.mapApi;

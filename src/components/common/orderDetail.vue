@@ -63,7 +63,6 @@
                 value="换 点"
                 placeholder="换 点"
                 class="change-point-select"
-                :disabled="isPointDisable"
               >
                 <el-option
                   label="更改排期"
@@ -1430,7 +1429,7 @@ export default {
       mTitleList: [],
       siteOrientationList: [],
       mTypeList: [],
-      isPointDisable: false
+      // isPointDisable: false
     };
   },
   created () {
@@ -1994,11 +1993,12 @@ export default {
           if(this.sessionData.uType == 'ADN_MD') {
             let mTypes = this.materialInfoJson.mediaTypeName
             console.log(this.materialInfoJson);
-            if(mTypes.length === 1 && mTypes[0] === '单元门禁灯箱') {
-                this.isPointDisable = true
-            } else {
-                this.isPointDisable = false
-            }
+            // 针对地方销售，单元门禁灯箱换点灰显
+            // if(mTypes.length === 1 && mTypes[0] === '单元门禁灯箱') {
+            //     this.isPointDisable = true
+            // } else {
+            //     this.isPointDisable = false
+            // }
           }
         }else{
           this.$message({
@@ -2339,7 +2339,7 @@ export default {
           (item) => {
             for (const key in params) {
                 if (typeof params[key] === 'string') {
-                    if(item[key].indexOf(params[key]) == -1) {
+                    if(item[key] === params[key]) {
                         return false
                     }
                 }

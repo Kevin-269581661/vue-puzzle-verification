@@ -10,7 +10,9 @@
             v-for="(item, index) in mediaPermissionList"
             :label="item"
             :key="index"
-            v-if="showNdwBtn">{{item}}
+            v-if="(item !== '点位' && showNdwBtn)"
+          >
+            {{item}}
           </el-radio>
         </el-radio-group>
       </el-col>
@@ -103,7 +105,7 @@ export default {
       sessionData: {},
       // 空位导出信息
       downLoadInfo: {
-        loadType: "1",
+        loadType: "",
         city: [],
         dateType: "1",
         mediaTypeIds: '',
@@ -153,25 +155,41 @@ export default {
       }
       this.tempMediaTypes = tempMediaTypes
       this.mediaPermissionList = tempPermiision
-
     },
-    cancelDown () {
+    cancelDown() {
+      this.resetDownloadInfo()
       this.messageFun("info", "取消此操作");
       this.$emit("cancelClick", false);
     },
+    // 重置空位导出信息
+    resetDownloadInfo() {
+      const info = this.downLoadInfo
+      info.loadType = '',
+      info.city = [],
+      info.dateType = '1'
+      info.mediaTypeIds = ''
+      info.daterange = []
+    },
     confirmDown () {
-        let { loadType, city, daterange, dateType } = this.downLoadInfo;
-        // if (!city.length) {
-        //     Message.warning("请选择城市!");
-        //     return;
-        // }
+      let { loadType, city, daterange, dateType, mediaTypeIds } = this.downLoadInfo;
+        if (!loadType) {
+            Message.warning("请选择选点纬度!");
+            return;
+        }
+        if (!city.length) {
+            Message.warning("请选择城市!");
+            return;
+        }
         if (dateType == "2") {
             if (!daterange || !daterange.length) {
             this.messageFun("warning", "请先选择日期");
             return;
             }
         }
-
+        if (!mediaTypeIds.length) {
+            Message.warning("请选择媒体类型!");
+            return;
+        }
         switch(loadType) {
             // 按小区
             case "小区": this.getExcelData('exportVacancyByCommunity', '小区'); break;
@@ -209,16 +227,6 @@ export default {
           }
         });
     },
-    // 个人权限公司下媒体类型列表
-    // getAllMediaTypes() {
-    //   api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
-    //     if (res.data.SysCode == 200200) {
-    //       this.allMediaTypes = res.data.data || []
-    //     } else {
-    //       this.messageFun('warning', res.data.MSG);
-    //     }
-    //   })
-    // },
     // 获取城市中文名称
     getCityName (rids) {
         let citys = [];
@@ -296,8 +304,12 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn () {
-      return !(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
+      return !(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) &&
+        this.sessionData.customPermission.proposalPermission == 1)
     },
+    // ka销售或地方销售的空位导出
+    // 开启了选点模式2.0的公司，选点维度只显示小区
+    // 没有开启选点模式2.0的公司，选点维度显示除点位以外的
   },
 };
 </script>

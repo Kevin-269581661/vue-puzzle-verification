@@ -6,6 +6,14 @@
       </el-col>
       <el-col :span="18">
         <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
+          <!-- <el-radio
+            v-for="(item, index) in mediaPermissionList"
+            :label="item"
+            :key="index"
+            v-if="!(item == '点位' && showNdwBtn)"
+          >
+            {{item}}
+          </el-radio> -->
           <el-radio
             v-for="(item, index) in mediaPermissionList"
             :label="item"
@@ -143,6 +151,10 @@ export default {
         })
       }
       tempPermiision = [...new Set(tempPermiision)]
+      let order = ['点位', '单元', '楼栋', '小区']
+      tempPermiision = tempPermiision.sort((a, b) => {
+        return order.indexOf(a) - order.indexOf(b)
+      })
       if(tempPermiision.length) {
         let list
         tempPermiision.forEach(item => {

@@ -2711,26 +2711,26 @@ a {
 
       &.ad {
         background: #E6F7FF;
-        border-color: #91D5FF;
         color: #1890FF;
+        border: 1px solid #91D5FF;
       }
 
       &.unit-access {
         background: #F6FFED;
-        border-color: #B7EB8F;
         color: #52C41A;
+        border: 1px solid #B7EB8F;
       }
 
       &.light-box {
         background: #E6FFFB;
-        border-color: #87E8DE;
         color: #13C2C2;
+        border: 1px solid #87E8DE;
       }
 
       &.brake {
         background: #f9f0ff;
-        border-color: #D3ADF7;
         color: #722ED1;
+        border: 1px solid #D3ADF7;
       }
 
       .icon {

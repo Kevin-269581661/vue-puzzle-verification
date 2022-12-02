@@ -359,8 +359,7 @@
                       :disabled="
                         scope.row.apState == 0 ||
                         scope.row.apState == 5 ||
-                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) ||
-                        (!['ADN_MD_COUNTRY'].includes(role) && scope.row.mediaTypeNames === '单元门禁灯箱')
+                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
                       "
                       @click.native.prevent="changePoint(scope.row)"
                       class="update"

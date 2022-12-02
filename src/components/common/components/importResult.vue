@@ -25,7 +25,7 @@
         <div class="myCheckbox" v-if="!isPointSetting">
           <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
         </div>
-        <el-table border :data="successList" style="width: 100%">
+        <el-table border :data="successList" style="width: 100%" :key="Math.random()">
           <el-table-column width="120px" class-name="el-table-column-checkbox" v-if="!isPointSetting">
             <template slot-scope="scope">
               <div class="space-group">
@@ -127,8 +127,10 @@
 
           <el-table-column prop="buildCount" label="覆盖楼栋数" min-width="55" v-if="isPointSetting">
           </el-table-column>
+
           <el-table-column prop="unitCount" label="覆盖单元数" min-width="55" v-if="isPointSetting">
           </el-table-column>
+
           <el-table-column prop="actualAdsCnt" label="可投面数" min-width="55" v-if="isPointSetting">
           </el-table-column>
 

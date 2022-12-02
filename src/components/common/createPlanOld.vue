@@ -3352,9 +3352,15 @@ export default {
             this.importInfoData = importInfo;
 
             this.importInfoData.successList = importInfo.successList.map((item) => {
+              if (item.date) {
+                const date = item.date.split('-')
+                item.pbStar = date[0]
+                item.pbEnd = date[1]
+              }
               return {
                 ...item,
-                origin: item.rName,
+                origin: item.rName ? item.rName : item.district,
+                rName: item.rName ? item.rName : item.district
               };
             });
 

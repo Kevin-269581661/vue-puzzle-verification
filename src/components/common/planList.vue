@@ -277,7 +277,7 @@
                             {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
                           </template>
                           <template v-else>
-                            {{ m.mediaTypeName }}
+                            {{ m.mediaTypeName || '--' }}
                           </template>
                         </div>
 
@@ -2699,7 +2699,6 @@ a {
       align-items: center;
       height: 22px;
       padding: 0 8px;
-      border: 1px solid;
       border-radius: 2px;
       font-family: 'Roboto';
       font-size: 12px;

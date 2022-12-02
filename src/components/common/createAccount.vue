@@ -444,13 +444,12 @@ export default {
                     let _newData = [];
                     if (_data.length > 0) {
                         _data.forEach((item) => {
-                            const children = []
-                            item.child.forEach((v) => {
-                                children.push({
+                            const children = item.child.map((v) => {
+                                return ({
                                     label: v.chooseTypeName,
                                     value: v.chooseType
                                 })
-                            })
+                            }).sort((a,b) => a.value - b.value)
                             _newData.push({
                                 label: item.mediaTypeName,
                                 value: item.mediaTypeId,

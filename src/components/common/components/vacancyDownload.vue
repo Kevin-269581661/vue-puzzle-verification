@@ -10,7 +10,7 @@
             v-for="(item, index) in mediaPermissionList"
             :label="item"
             :key="index"
-            v-if="(item !== '点位' && showNdwBtn)"
+            v-if="!(item == '点位' && showNdwBtn)"
           >
             {{item}}
           </el-radio>
@@ -304,12 +304,9 @@ export default {
   computed: {
     //显示导点位
     showNdwBtn () {
-      return !(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) &&
+      return (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) &&
         this.sessionData.customPermission.proposalPermission == 1)
     },
-    // ka销售或地方销售的空位导出
-    // 开启了选点模式2.0的公司，选点维度只显示小区
-    // 没有开启选点模式2.0的公司，选点维度显示除点位以外的
   },
 };
 </script>

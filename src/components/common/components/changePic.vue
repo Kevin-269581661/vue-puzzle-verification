@@ -15,7 +15,7 @@
                     <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
                 </el-form-item>
                 <el-form-item label="资源名称:" class="tag-overflow">
-                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
+                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>publicChangeSelect(arr, 'allhouse', 'allResource')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
                                 :value="item.value"></el-option>
@@ -36,13 +36,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="投放排期:" class="tag-overflow">
-                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>publicChangeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option class="date_range_class" label="全部" value="全部"></el-option>
                         <el-option class="date_range_class" v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="物料备注:" class="tag-overflow">
-                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
+                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>publicChangeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
                     </el-select>
@@ -55,14 +55,14 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="媒体名称:" class="tag-overflow">
-                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>changeSelect(arr, 'mTitles', 'mTitleList')">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>publicChangeSelect(arr, 'mTitles', 'mTitleList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="媒体位ID:" class="tag-overflow">
-                    <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>changeSelect(arr, 'assetTags', 'assetTagList')">
+                    <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>publicChangeSelect(arr, 'assetTags', 'assetTagList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
@@ -138,6 +138,27 @@
                             <el-option label="全部" value="全部"></el-option>
                             <el-option label="已拍照" value="1"></el-option>
                             <el-option label="未拍照" value="0"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="媒体名称:" class="tag-overflow">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="searchInfo.mTitles" @change="arr=>changeSelect(arr, 'mTitles', 'mTitleList')">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="媒体位ID:" class="tag-overflow">
+                        <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="searchInfo.assetTags" @change="arr=>changeSelect(arr, 'assetTags', 'assetTagList')">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
+                                    :value="item.itemValue"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="位置朝向:">
+                        <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="searchInfo.siteOrientation">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
+                                    :value="item.itemValue"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
@@ -718,7 +739,13 @@
                             label: "未上传",
                             value: 2
                         }
-                    ]
+                  ],
+                  // 媒体位ID
+                  assetTags: ['全部'],
+                  // 媒体名称
+                  mTitles: ['全部'],
+                  // 位置朝向
+                  siteOrientation: '全部',
                 },
                 // 分页信息
                 pageInfo: {
@@ -1047,10 +1074,6 @@
                             };
                         });
                         this.allResource = result;
-                        /* result.unshift({
-                            value: "全部",
-                            label: "全部"
-                        }) */
                         this.searchInfo.resArr = result;
                     } else {
                         sessFun.messageFun(res.data.MSG);
@@ -1103,7 +1126,7 @@
                     this.pageInfo.paginationShow = true;
                 });
             },
-            changeSelect(arr=[], target, optionsArr) {
+            publicChangeSelect(arr=[], target, optionsArr) {
                 let allIndex = arr.indexOf('全部')
                 if(allIndex!==-1 && arr.length>1) {
                   if(allIndex == 0){
@@ -1114,6 +1137,19 @@
                   }
                 } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
                     this.publishSearchInfo[target] = ['全部']
+                }
+            },
+            changeSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                  if(allIndex == 0){
+                     this.searchInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.searchInfo[target] = ['全部']
+                  }
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                    this.searchInfo[target] = ['全部']
                 }
             },
             // 搜索数据格式化
@@ -1156,7 +1192,6 @@
                 if (!allhouse.includes('全部')) {
                     info.resid = allhouse;
                 }
-                console.log('type---', info);
                 return info;
             },
             //重置
@@ -1358,7 +1393,6 @@
                     let areaId = city[1];
                     this.getResArr(cityId, areaId);
                 }
-                // this.search();
             },
             // 搜索
             search() {
@@ -1372,8 +1406,7 @@
             },
             // 搜索换画列表条件
             searchPointFormat() {
-                console.log(this.painList, this.activePainIndex, 'point--active--');
-                let {mediaType, city, resName, status, prStatus} = this.searchInfo;
+              let { mediaType, city, resName, status, prStatus, mTitles, assetTags, siteOrientation } = this.searchInfo;
                 let {currPage, pageSize2} = this.pageInfo;
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
@@ -1381,13 +1414,11 @@
                     prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize2,
-                    mediaTypeId: mediaType
-                    // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
-                    // ...(city.length && {districtId: city[1]}),
-                    // ...(resName && {resIds: [resName]}),
-                    // ...(status && {reportStatus: status == 1 ? 1 : 0})
+                    mediaTypeId: mediaType,
+                    mTitles: mTitles.includes('全部') ? null : mTitles,
+                    assetTags: assetTags.includes('全部') ? null : assetTags,
+                    siteOrientation: siteOrientation=='全部' ? null : siteOrientation,
                 };
-                console.log(mediaType, city, resName, status);
 
                 if (city[0]!='全部') {
                     info.districtId = city[1]
@@ -1793,7 +1824,6 @@
                 };
                 this.pointArr = [];
                 this.searchInfoFun();
-                // console.log(this.dialogInfo, this.dialogPage);
             },
             // 查看图片
             previewImg(file) {
@@ -2221,7 +2251,6 @@
                     let type = this.type;
                     if (type == 1 || type == 2) {
                         // 上下刊报告列表
-                        // this.searchFun();
                         this.getAdsUploadImgCnt();
                     } else if (type == 3) {
                         // 换画报告列表
@@ -2422,7 +2451,6 @@
                             let type = this.type;
                             if (type == 1 || type == 2) {
                                 // 上下刊报告列表
-                                // this.searchFun();
                                 this.getAdsUploadImgCnt();
                             } else if (type == 3) {
                                 // 换画报告列表

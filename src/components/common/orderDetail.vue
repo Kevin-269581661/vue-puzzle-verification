@@ -2339,7 +2339,7 @@ export default {
           (item) => {
             for (const key in params) {
                 if (typeof params[key] === 'string') {
-                    if(item[key].indexOf(params[key]) == -1) {
+                    if(item[key] === params[key]) {
                         return false
                     }
                 }

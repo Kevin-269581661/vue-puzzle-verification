@@ -4062,6 +4062,12 @@ export default {
       let mediaType =
         mediaTypeArr[0].name === "单元门禁灯箱" ? mediaTypeArr[0].name : "";
 
+      if (mediaType) {
+        this.isPointSetting = true;
+      } else {
+        this.isPointSetting = false;
+      }
+
       let url = `${window.location.protocol}//${
         window.location.host
       }/ADResourceMap/chooseRes?city=${
@@ -4072,10 +4078,6 @@ export default {
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();
-
-      if (mediaType) {
-        this.isPointSetting = true;
-      }
     },
     // 模态框中的确认按钮
     oneKeyPointBtn(item) {

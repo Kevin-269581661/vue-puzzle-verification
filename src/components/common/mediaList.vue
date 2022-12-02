@@ -757,34 +757,25 @@
         this.rowSpace = size;
       },
 
+      // 获取该账号的媒体权限
       getMediaTypes() {
-        let _this = this;
-        function requestMediaType() {
-          const { ascType, uType } = _this.sessionData;
-          if (ascType == 0 && (uType == "ADN_SA" || uType == "ADN_SM")) {
-            return api.getApi("/addsp/api/v1/mediaTypes");
-          }
-          return api.getApi("/addsp/api/v1/company/mediaTypes", {
-            companyIds: _this.sessionData.asrID,
-          });
-        }
-        requestMediaType()
+        api
+          .getApi("/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes")
           .then((res) => {
-            if (res.data.SysCode == 200200) {
-              this.mediaTypes = (res.data.data || []).map((item) => {
-                return {
+            let _res = res.data
+            if (_res.SysCode == 200200) {
+              _res.data.forEach(item => {
+                this.mediaTypes.push({
                   text: item.name,
-                  value: item.id,
-                };
-              });
+                  value: item.id
+                })
+              })
             } else {
-              sessFun.messageFun("warning", res.data.MSG || "媒体类型获取失败！");
+              this.messageFun("warning", res.data.MSG);
             }
-          })
-          .catch((err) => {
-            console.error(err);
           });
       },
+
       requestIsPay() {
         api
           .getApi("/addsp/api/v1/company/isPay", {

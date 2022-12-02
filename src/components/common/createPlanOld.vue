@@ -932,6 +932,7 @@
               <el-radio-group
                 v-model="getAdsParamsData.chooseType"
                 class="chooseType-radio"
+                @change="handleChooseType"
               >
                 <el-radio-button
                   v-for="item in tabChooseTypeList"
@@ -2957,19 +2958,19 @@ export default {
       },
     },
 
-    "getAdsParamsData.chooseType": {
-      handler(nVal) {
-        let pointCountType = "";
-        if (nVal === 1) {
-          pointCountType = "unitId";
-        } else if (nVal === 2) {
-          pointCountType = "buildingId";
-        } else if (nVal === 3) {
-          pointCountType = "resID";
-        }
-        this.pointCountType = pointCountType;
-      },
-    },
+    // "getAdsParamsData.chooseType": {
+    //   handler(nVal) {
+    //     let pointCountType = "";
+    //     if (nVal === 1) {
+    //       pointCountType = "unitId";
+    //     } else if (nVal === 2) {
+    //       pointCountType = "buildingId";
+    //     } else if (nVal === 3) {
+    //       pointCountType = "resID";
+    //     }
+    //     this.pointCountType = pointCountType;
+    //   },
+    // },
   },
   computed: {
     nowPointNum() {
@@ -7210,6 +7211,20 @@ export default {
       } else {
         this.tradingAreaList = [];
       }
+    },
+
+    handleChooseType (nVal) {
+      console.log(nVal, 'nVal')
+      let pointCountType = "";
+      if (nVal === 1) {
+        pointCountType = "unitId";
+      } else if (nVal === 2) {
+        pointCountType = "buildingId";
+      } else if (nVal === 3) {
+        pointCountType = "resID";
+      }
+      this.pointCountType = pointCountType;
+      this.getAdList();
     }
   },
   // 页面销毁

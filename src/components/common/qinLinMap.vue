@@ -1572,7 +1572,7 @@ export default {
       this.queryMediaTypeId  = mediaTypeId
     }
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
-    console.log(this.adListParams, 'this.adListParamsthis.adListParamsthis.adListParamsthis.adListParams')
+    console.log(this.apiVar.mapApi, 'this.adListParamsthis.adListParamsthis.adListParamsthis.adListParams')
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
       mapConfig.apiVar.mapApi = this.apiVar.mapApi;
@@ -4394,7 +4394,7 @@ export default {
             // ADResourcesMap/shareRes
             if (this.systemSource === 0) {
               this.shareUrl =
-                this.apiVar.qadnUrl +
+              this.apiVar.qadnUrl +
                 "/ADResourcesMap/shareRes?city=" +
                 this.routeQuery.city +
                 "&code=" +

@@ -113,7 +113,7 @@
                                             scope.row[item.dayOfMonth].status == 0 &&
                                             scope.row.occupyingPlanList[scope.row[item.dayOfMonth].adPlanIndex].ka
                                         ">
-                                            <p class="propmt_message_p">全国单预锁/全国单占用</p>
+                                            <p class="propmt_message_p">全国单占用</p>
                                         </div>
                                         <div v-else>
                                             <p class="propmt_message_p">

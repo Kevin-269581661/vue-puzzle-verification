@@ -6,7 +6,7 @@
       </p>
     </div>
     <div class="mediaList_wrap">
-      <div class="mediaList_head"> 
+      <div class="mediaList_head">
         <h2>订单列表</h2>
       </div>
       <div class="mediaList_container">
@@ -252,6 +252,18 @@
               </template>
             </el-table-column>
             <el-table-column
+              prop="mediaTypeNames"
+              label="媒体类型"
+              width="150px"
+              column-key="mediaTypeNames"
+              :filters="mediaTypesList"
+              :filter-multiple="true"
+            >
+                <template slot-scope="scope">
+                    <span>{{ scope.row.mediaTypeNames || '--' }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column
               prop="realName"
               label="所有人"
               min-width="6.1%"
@@ -439,6 +451,8 @@ export default {
         orderby: "",
         // 升序降序0/1
         desc: "",
+        // 媒体类型id
+        mediaTypeIds: "",
       },
       // 公司列表
       companyData: [],
@@ -486,6 +500,7 @@ export default {
       priceData: "",
       currApid: "",
       handleTime: "",
+      mediaTypesList: [], // 媒体类型筛选字段
     };
   },
   created() {
@@ -502,8 +517,30 @@ export default {
     }
     // 获得初始数据
     this.searchFun();
+    // 获取媒体类型
+    this.getMediaTypes()
   },
   methods: {
+    // 获取媒体类型筛选字段
+    getMediaTypes() {
+        api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes')
+        .then((res) => {
+            if(res.data.SysCode === 200200) {
+                const _data = res.data.data
+                if(_data.length) {
+                    _data.forEach((item) => {
+                        this.mediaTypesList.push({
+                            text: item.name,
+                            value: item.id
+                        })
+                    })
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    },
     //获取下级销售列表
     getSubSaleList() {
       api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
@@ -644,6 +681,7 @@ export default {
         orderby,
         desc,
         dateType,
+        mediaTypeIds,
       } = this.searchInfo;
       info = {
         ...info,
@@ -658,6 +696,7 @@ export default {
         ...(orderby && { orderby }),
         ...(desc !== "" && desc >= 0 && { desc }),
         ...(rangeDate && { timeType: dateType }),
+        ...(mediaTypeIds && { mediaTypeIds }),
       };
       return info;
     },
@@ -693,8 +732,15 @@ export default {
     },
     // 搜索(优化)
     search() {
-      let { keyword, rangeDate, company, cityWord, status, dateType } =
-        this.searchInfo;
+      let {
+        keyword,
+        rangeDate,
+        company,
+        cityWord,
+        status,
+        dateType,
+        mediaTypeIds
+      } =this.searchInfo;
       this.isSearch = false;
       let timer = setTimeout(() => {
         this.isSearch = true;
@@ -707,7 +753,8 @@ export default {
         cityWord ||
         status > 0 ||
         status === 0 ||
-        dateType
+        dateType ||
+        mediaTypeIds
       ) {
         this.currentOrder = [];
         this.loading = true;
@@ -747,6 +794,7 @@ export default {
         planMode: item.planMode,
         relatedApName: item.relatedApName || "",
         relatedApId: item.relatedApId || "",
+        mediaTypeNames: item.mediaTypeNames || "",
       };
       for (let data of item.companyList) {
         let objItem = {
@@ -1014,21 +1062,15 @@ export default {
     },
     // 重置
     reset() {
-      this.searchInfo = {
-        // 搜索的select框
-        select: "1",
-        // 关键字
-        keyword: "",
-        // 时间范围
-        rangeDate: "",
-        // 公司搜索
-        company: "",
-        // 城市筛选
-        cityWord: "",
-        // 状态筛选
-        status: "",
-        dateType: "1",
-      };
+      let info = this.searchInfo
+      info.select = "1" // 搜索的select框
+      info.keyword = "" // 关键字
+      info.rangeDate = "" // 时间范围
+      info.company = "" // 公司搜索
+      info.cityWord = "" // 城市筛选
+      info.status = "" // 状态筛选
+      info.dateType = "1"
+
       this.currPage = 1;
       this.currentOrder = [];
       this.isReset = false;
@@ -1056,11 +1098,24 @@ export default {
       console.log("RESULT---------", result_);
       return result_;
     },
-    //表头筛选投放状态
+    //表头筛选
     filterChange(filters){
-        console.log('filters',filters)
-        let {apState}  = filters
-        this.searchInfo.status = apState[0]
+        for (let key in filters) {
+            if (key === "apState") {
+                if (filters[key].length) {
+                    this.searchInfo.status = filters[key][0]
+                } else {
+                    this.searchInfo.status = "";
+                }
+            }
+            else if (key === "mediaTypeNames") {
+                if (filters[key].length) {
+                    this.searchInfo.mediaTypeIds = filters[key].join(',');
+                } else {
+                    this.searchInfo.mediaTypeIds = "";
+                }
+            }
+        }
         this.search()
     },
   },
@@ -1262,3 +1317,16 @@ a {
   background: #1890ff;
 }
 </style>
+
+<!-- <style lang="scss">
+/deep/.el-table-filter {
+  .el-table-filter__bottom {
+    button {
+      padding: 2px 6px !important;
+      margin-right: 10px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 4px !important;
+    }
+  }
+}
+</style> -->

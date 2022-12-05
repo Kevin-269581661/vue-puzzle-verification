@@ -35,19 +35,26 @@
 <script>
 import { addLocalCache, getLocalCache } from "@/utils/user.js";
 export default {
+  props: {
+    cacheKey: {
+        type: String,
+        default: () => ''
+    }
+  },
   data() {
     return {
       size: "medium",
     };
   },
   mounted() {
-    const size = getLocalCache("rowSpace");
+    const size = getLocalCache(`${this.cacheKey}-rowSpace`);
     this.size = size || "medium";
+    this.$emit("spaceSetting", this.size);
   },
   methods: {
     handleCommand(command) {
-      addLocalCache("rowSpace", command);
-      const size = getLocalCache("rowSpace");
+      addLocalCache(`${this.cacheKey}-rowSpace`, command);
+      const size = getLocalCache(`${this.cacheKey}-rowSpace`);
       this.size = size || "medium";
       this.size = command;
       this.$emit("spaceSetting", command);

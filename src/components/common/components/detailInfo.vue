@@ -14,6 +14,11 @@ export default {
         companyList: {
             type: Array,
             default: () => []
+        },
+
+        isSimpleRight: {
+            type:Number,
+            default: 1
         }
     },
     data(){
@@ -71,8 +76,8 @@ export default {
 <template>
     <div>
         <slot>
-            <div class="plan-detail">
-                <div class="plan-detail-left">
+            <div class="plan-detail" :class="{'isSimpleRight': isSimpleRight === 0}">
+                <div class="plan-detail-left" v-if="isSimpleRight === 1">
                     <ul>
                         <li>
                             <span>公司名称：</span>
@@ -116,7 +121,7 @@ export default {
                         </li>
                     </ul>
                 </div>
-                <div class="plan-detail-right">
+                <div class="plan-detail-right" :class="{'isSimpleRight': isSimpleRight === 0}">
                     <dl>
                         <dt>状态</dt>
                         <dd>
@@ -124,7 +129,7 @@ export default {
                             {{stateToText(detail.apState).text}}
                         </dd>
                     </dl>
-                    <dl v-if="role != 'ADN_EP'">
+                    <dl v-if="role != 'ADN_EP' && isSimpleRight === 1">
                         <dt>
                             <el-tooltip v-if="detail.remark !== undefined" placement="top" width="200" trigger="hover" effect="dark" style="margin-left:-16px;">
                                 <div slot="content">
@@ -166,6 +171,9 @@ export default {
     font-size: 14px;
     color: #333333;
     padding-left: 41px;
+    &.isSimpleRight {
+        justify-content: flex-end;
+    }
 }
 
 .plan-detail-left {
@@ -219,6 +227,9 @@ export default {
     justify-content: space-between;
     width: 21%;
     float: right;
+    &.isSimpleRight {
+        width: auto;
+    }
 }
 
 .plan-detail-right dl {

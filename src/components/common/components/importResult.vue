@@ -1,6 +1,6 @@
 <template>
   <div class="import_result">
-    <div class="car-title">
+    <div class="car-title" v-if="!isPointSetting && !forMap">
       <i class="el-icon-info" style="color: #1890ff"></i>
       <h4>
         已成功导入小区<span>{{ successRes }}</span
@@ -15,20 +15,18 @@
     <p>
       <el-radio-group v-model="activeType" size="small" class="marin10">
         <el-radio-button :label="1">成功小区</el-radio-button>
-        <el-radio-button :label="2">失败小区</el-radio-button>
+        <el-radio-button :label="2" v-if="!isPointSetting && !forMap">失败小区</el-radio-button>
       </el-radio-group>
-      <span
-        >提示：已选择 <b>{{ resNum }}</b> 个社区，<b>{{ pointNum }}</b>
-        个点位</span
-      >
+      <span v-if="!isPointSetting && !forMap">提示：已选择 <b>{{ resNum }}</b> 个社区，<b>{{ pointNum }}</b>
+        个点位</span>
     </p>
     <template v-if="activeType == 1">
       <div class="adsTable">
-        <div class="myCheckbox">
+        <div class="myCheckbox" v-if="!isPointSetting">
           <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
         </div>
-        <el-table border :data="successList" style="width: 100%">
-          <el-table-column width="120px" class-name="el-table-column-checkbox">
+        <el-table border :data="successList" style="width: 100%" :key="Math.random()">
+          <el-table-column width="120px" class-name="el-table-column-checkbox" v-if="!isPointSetting">
             <template slot-scope="scope">
               <div class="space-group">
                 <div
@@ -118,14 +116,24 @@
           </el-table-column>
           <el-table-column label="资源名称" min-width="140" prop="resName">
           </el-table-column>
-          <el-table-column prop="mediaName" label="媒体名称" min-width="130">
+          <el-table-column prop="mediaName" label="媒体名称" min-width="130" v-if="!isPointSetting">
           </el-table-column>
           <el-table-column prop="city" label="城市" min-width="85">
           </el-table-column>
           <el-table-column prop="origin" label="区域" min-width="85">
           </el-table-column>
-          <el-table-column prop="assetTag" label="资产编号" min-width="130">
+          <el-table-column prop="assetTag" label="资产编号" min-width="130" v-if="!isPointSetting">
           </el-table-column>
+
+          <el-table-column prop="buildCount" label="覆盖楼栋数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+
+          <el-table-column prop="unitCount" label="覆盖单元数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+
+          <el-table-column prop="actualAdsCnt" label="可投面数" min-width="55" v-if="isPointSetting">
+          </el-table-column>
+
           <el-table-column prop="schedules" label="排期" min-width="160">
             <template slot-scope="scope">
               <el-tooltip
@@ -138,7 +146,7 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <template v-if="customPermission.patrolPermission">
+          <template v-if="customPermission.patrolPermission && !isPointSetting">
             <el-table-column prop="feedback" label="巡点问题" min-width="130">
             </el-table-column>
             <el-table-column
@@ -148,7 +156,7 @@
             >
             </el-table-column>
             <el-table-column
-              v-if="customPermission.patrolPermission == 2"
+              v-if="customPermission.patrolPermission == 2 && !isPointSetting"
               prop="electrifyState"
               label="通电情况"
               min-width="130"
@@ -192,7 +200,8 @@
     </template>
     <p class="button_box">
       <el-button @click="cancelImport()" size="small">取 消</el-button>
-      <el-button type="primary" @click="confirmImport()" size="small"
+      <el-button type="primary" v-if="isPointSetting" @click="handlePointSetting">配点</el-button>
+      <el-button v-else type="primary" @click="confirmImport()" size="small"
         >确 定</el-button
       >
     </p>
@@ -219,6 +228,16 @@ export default {
       type: Object,
       default: () => {},
     },
+
+    isPointSetting: {
+      type: Boolean,
+      default: false
+    },
+
+    forMap: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -341,6 +360,9 @@ export default {
           trafficState: key.trafficState || "",
           electrifyState: key.electrifyState || "",
           feedback: key.feedback || "",
+          buildCount: key.buildCount, // 覆盖楼栋数
+          actualAdsCnt: key.actualAdsCnt, // 实际可投面数
+          unitCount: key.unitCount, // 覆盖单元数
         };
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
@@ -582,6 +604,12 @@ export default {
     confirmImport() {
       this.$emit("confirmImport", this.shopList);
     },
+
+    // 配点
+    handlePointSetting () {
+      this.$emit("cancel");
+      this.$emit('handlePointSetting')
+    }
   },
 };
 </script>

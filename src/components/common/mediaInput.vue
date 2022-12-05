@@ -571,15 +571,7 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                        <el-form-item label="位置类型" prop="site"
-                            :rules="[
-                                {
-                                    required: true,
-                                    message: '请选择位置类型!',
-                                    trigger: ['blur', 'change']
-                                },
-                            ]"
-                        >
+                        <el-form-item label="位置类型" prop="site">
                           <el-select
                             v-model="mediaItem.mediaForm.site"
                             placeholder="请选择位置类型"
@@ -999,7 +991,7 @@ export default {
         supportingFacilities: "", // 周边配套
         transportation: "", // 交通状况
         doorwayNum: "", // 出入口数
-        liveRate: "", // 入住率#
+        liveRate: "", // 入住率
         liftType: "", // 配套电梯
         carNumber: "", // 车位数
         notPush: [], // 广告限制
@@ -1110,7 +1102,7 @@ export default {
           },
         ],
         // 楼盘介绍
-        description: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: "blur" }],
+        description: [{ required: false, max: 1000, message: "最多只能输入1000个字符!", trigger: "blur" }],
 
         // 2、画像信息
         // 楼盘类型
@@ -1131,9 +1123,7 @@ export default {
             { validator: validatePrice, trigger: "change" },
         ],
         // 单元数量
-        unitCount: [
-            { validator: validatePrice, trigger: "change" },
-        ],
+        unitCount: [{ required: false, validator: validatePrice, trigger: ["blur"] },],
         // 入住年份
         liveTime: [ { required: true, message: "请选择年份!", trigger: "change" }],
         // 商圈
@@ -1148,17 +1138,17 @@ export default {
           },
         ],
         // 周边配套
-        supportingFacilities: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: ["blur", "change"] }],
+        supportingFacilities: [{ required: false, max: 1000, message: "最多只能输入1000个字符!", trigger: ["blur", "change"] }],
         // 交通情况
         transportation: [{ required: false, max: 250, message: "最多只能输入250个字符!", trigger: ["blur", "change"] }],
         // 出入口数
         doorwayNum: [{ required: false, validator: validatePrice, trigger: ["blur", "change"] }],
         // 入住率
-        liveRate: [{ validator: validateGreenP, trigger: ["blur", "change"] }],
+        liveRate: [{  required: false, validator: validateGreenP, trigger: ["blur", "change"] }],
         // 配套电梯
         liftType: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: ["blur", "change"] }],
         // 车位数
-        carNumber: [{ validator: validatePrice, trigger: ["blur", "change"] }],
+        carNumber: [{ required: false, validator: validatePrice, trigger: ["blur"] }],
         // 广告限制
 
         // 3、物业信息
@@ -2008,6 +1998,7 @@ export default {
     },
     //添加资源媒体
     createRes() {
+      const addressAlias  = this.recForm.addressAlias || ''
       this.recForm.uid = this.sessionData.uID;
       this.recForm.latlng = this.recForm.lat + ";" + this.recForm.lng;
       let recObj = {
@@ -2015,39 +2006,39 @@ export default {
         rid: Number(this.recForm.region),
         // 基本信息
         resname: this.recForm.resName, // 资源名称
-        resAlias: this.recForm.resAlias, // 资源别名
+        resAlias: this.recForm.resAlias || '', // 资源别名
         city: this.resAddres.city, // 城市
         district: this.resAddres.area, // 区域
-        street: this.recForm.street, // 街道
+        street: this.recForm.street || '', // 街道
         resaddr: this.recForm.resaddr, // 地址
-        addressAlias: this.recForm.addressAlias, // 地址描述
+        addressAlias: addressAlias, // 地址描述
         // 这里的lat为经度、lng为纬度(与生活中的lng*lat经纬度字符标识刚好相反)
         latlng: this.recForm.latlng, // 经纬度 重庆:9.61;106.47  北京:116.46;39.92 广州: 113.27;23.13  上海:121.29;31.11 深圳:113.46;22.27
-        description: this.recForm.description, // 楼盘介绍
+        description: this.recForm.description || '', // 楼盘介绍
         // 画像信息
         ct: this.recForm.floorType, //楼盘类型
         hp: (this.recForm.buildingPrice * 100).toFixed(0), // 楼盘价格
         hn: this.recForm.households, // 住户数量
         fn: this.recForm.buildingNum, // 楼栋数量
         cd: this.recForm.liveTime, // 入住年份 '2017'
-        ta: this.recForm.business, // 商圈
-        unitCount: this.recForm.unitCount, // 单元数量
-        supportingFacilities: this.recForm.supportingFacilities, // 周边配套
-        transportation: this.recForm.transportation, // 交通状况
-        dn: this.recForm.doorwayNum, // 出入口数
-        liveRate: this.recForm.liveRate, // 入住率
-        liftType: this.recForm.liftType, // 配套电梯
-        parkSpaceNum: this.recForm.carNumber, //车位数
+        ta: this.recForm.business || '', // 商圈
+        unitCount: this.recForm.unitCount || 0, // 单元数量
+        supportingFacilities: this.recForm.supportingFacilities || '', // 周边配套
+        transportation: this.recForm.transportation || '', // 交通状况
+        dn: this.recForm.doorwayNum || 0, // 出入口数
+        liveRate: this.recForm.liveRate || 0, // 入住率
+        liftType: this.recForm.liftType || '', // 配套电梯
+        parkSpaceNum: this.recForm.carNumber || 0, //车位数
         // peopleFlow: this.recForm.peopleFlowrate, //人流量
         // carFlow: this.recForm.carFlowrate, // 车流量
-        notPush: this.recForm.notPush.join(','), // 广告限制
+        notPush: this.recForm.notPush.join(',') || '', // 广告限制
         // 物业信息
-        developer: this.recForm.developer, // 开发商
-        pmc: this.recForm.pmc, // 物业公司
-        propertyContacts: this.recForm.pc, // 物业联系人
-        propertyContactsPhone: this.recForm.pcp, // 物业联系电话
+        developer: this.recForm.developer || '', // 开发商
+        pmc: this.recForm.pmc || '', // 物业公司
+        propertyContacts: this.recForm.pc || '', // 物业联系人
+        propertyContactsPhone: this.recForm.pcp || '', // 物业联系电话
         // 小区全貌图
-        fullViewUrl: this.recForm.fullViewUrl, // 资源图片
+        fullViewUrl: this.recForm.fullViewUrl || '', // 资源图片
 
 
         // buildingType: this.recForm.buildingType, // 建筑类型
@@ -2075,7 +2066,6 @@ export default {
         token: this.sessionData.token,
         data: recObj,
       };
-      console.log(recObj);
       api
         .postApi_new(this.apiVar.Media, params)
         .then((res) => {
@@ -2118,6 +2108,7 @@ export default {
         mediaTypeIndex++
       ) {
         let mediaTypeItem = this.mediaTypeList[mediaTypeIndex];
+        // console.log(mediaTypeItem);
         let tempMediaList = mediaTypeItem.mediaList;
         let mediaLength = tempMediaList.length;
         mediaTop: for (
@@ -2140,6 +2131,7 @@ export default {
               adViewSizeWidth,
               adViewSizeHeight,
               id: adSpaceId,
+              siteOrientation
             } = adSpaceItem;
             if (
               adSizeWidth &&
@@ -2154,7 +2146,7 @@ export default {
                 adSizeHeight,
                 adViewSizeWidth,
                 adViewSizeHeight,
-                siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                siteOrientation
               });
             } else {
               break mediaTop;
@@ -2172,7 +2164,7 @@ export default {
               mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
-              notPush: tempMediaForm.adLimit.join('、'),
+              notPush: tempMediaForm.adLimit.join(','),
               mac: tempMediaForm.mac || "",
               buildingName: tempMediaForm.buildingName || "",
               unitName: tempMediaForm.unitName || "",
@@ -2450,12 +2442,12 @@ export default {
         let tempObj = {
           // 基本信息
           resName: recObj.resName,
-          resAlias: recObj.resAlias, // 资源别名
+          resAlias: recObj.resAlias || "", // 资源别名
           city: this.recForm.city, // 城市
           region: recObj.rid.toString(), // 区域
-          street: recObj.street, // 街道
+          street: recObj.street || "", // 街道
           resaddr: recObj.resAddress, // 地址
-          addressAlias: recObj.addressAlias, // 地址描述
+          addressAlias: recObj.addressAlias || "", // 地址描述
           lat: "", // 经度
           lng: "", // 纬度
           description: recObj.description || "", // 楼盘介绍
@@ -2465,22 +2457,22 @@ export default {
           households: recObj.HouseNum, // 住户数量
           buildingNum: recObj.buildingNum, // 楼栋数量
           liveTime: recObj.joinTime, // 入住年份
-          business: recObj.tradingArea, // 商圈
-          unitCount: recObj.unitCount, // 单元数量
+          business: recObj.tradingArea || "", // 商圈
+          unitCount: recObj.unitCount || '', // 单元数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
-          doorwayNum: recObj.EntryExitNum || "", // 出入口数
-          liveRate: recObj.liveRate, // 入住率
-          liftType: recObj.liftType, // 配套电梯
-          carNumber: recObj.carNumber, // 车位数
-          peopleFlowrate: recObj.peopleFlowrate, // 人流量
-          carFlowrate: recObj.carFlowrate, // 车流量
+          doorwayNum: recObj.EntryExitNum || '', // 出入口数
+          liveRate: recObj.liveRate || '', // 入住率
+          liftType: recObj.liftType || '', // 配套电梯
+          carNumber: recObj.carNumber || '', // 车位数
+        //   peopleFlowrate: recObj.peopleFlowrate, // 人流量
+        //   carFlowrate: recObj.carFlowrate, // 车流量
           notPush: recObj.notPush ? recObj.notPush.split(',') : [], // 广告限制
           // 物业信息
           developer: recObj.developer || "", // 开发商
           pmc: recObj.pmc, // 物业公司
-          pc: recObj.propertyContacts, // 物业联系人
-          pcp: recObj.propertyContactsPhone, // 物业联系电话
+          pc: recObj.propertyContacts || "", // 物业联系人
+          pcp: recObj.propertyContactsPhone || "", // 物业联系电话
           // 小区全貌图
           fullViewUrl: recObj.fullViewUrl || "", // 资源图片
 
@@ -2516,14 +2508,14 @@ export default {
         this.recForm = tempObj;
         //设置媒体信息
         let mediaTypeObj = JSON.parse(sessionStorage.getItem("mediaTypeObj"));
+        console.log(mediaTypeObj);
         for (let i = 0; i < this.mediaTypeList.length; i++) {
           let tempMediaTypeItem = this.mediaTypeList[i];
           // 将媒体详情中已有类型的媒体合并至mediaTypeList对应的媒体类型下
           if (mediaTypeObj[tempMediaTypeItem.id]) {
             let mediaTypeItemDetail = mediaTypeObj[tempMediaTypeItem.id];
             // 标记原有媒体个数
-            this.mediaTypeList[i].editMediaLength =
-              mediaTypeItemDetail.mediaList.length;
+            this.mediaTypeList[i].editMediaLength = mediaTypeItemDetail.mediaList.length;
             mediaTypeItemDetail.mediaList.forEach((mediaItem) => {
               let tempAdSpaceInfos = (mediaItem.adSpaceInfos || []).map(
                 (adSpaceItem) => {
@@ -2561,7 +2553,7 @@ export default {
                 floor: mediaItem.floor || "", // 楼层
                 mImg: mediaItem.mImg || "",
                 updataImg: [],
-                adLimit: mediaItem.notPush ? mediaItem.notPush.split('、') : []
+                adLimit: mediaItem.notPush ? mediaItem.notPush.split(',') : []
               };
               if (mediaItem.mImg) {
                 let imgArr = [];
@@ -2675,9 +2667,9 @@ export default {
         resName: recObj.resName,
         resAlias: recObj.resAlias || "", // 资源别名
         rid: "", // 地区id
-        street: recObj.street, // 街道
+        street: recObj.street || "", // 街道
         resaddr: recObj.resaddr, // 地址
-        addressAlias: recObj.addressAlias, // 地址描述
+        addressAlias: recObj.addressAlias || "", // 地址描述
         latlng: recObj.lat + ";" + recObj.lng, // 经纬度
         resid: this.resData.resID,
         description: recObj.description || "", // 楼盘介绍
@@ -2687,22 +2679,22 @@ export default {
         hn: recObj.households, // 住户数量
         fn: recObj.buildingNum, // 楼栋数量
         cd: recObj.liveTime, // 入住年份
-        ta: recObj.business, // 商圈
-        unitCount: recObj.unitCount, // 单元数量
+        ta: recObj.business || "", // 商圈
+        unitCount: recObj.unitCount || 0, // 单元数量
         supportingFacilities: recObj.supportingFacilities || "", // 周边配套
         transportation: recObj.transportation || "", // 交通状况
-        dn: recObj.doorwayNum, // 出入口数
-        liveRate: recObj.liveRate, // 入住率
-        liftType: recObj.liftType, // 配套电梯
-        parkSpaceNum: recObj.carNumber, // 车位数
+        dn: recObj.doorwayNum || 0, // 出入口数
+        liveRate: recObj.liveRate || "", // 入住率
+        liftType: recObj.liftType || '', // 配套电梯
+        parkSpaceNum: recObj.carNumber || 0, // 车位数
         // peopleFlow: recObj.peopleFlowrate, // 人流量
         // carFlow: recObj.carFlowrate, // 车流量
         notPush: recObj.notPush ? recObj.notPush.join(',') : '', // 广告限制
         // 物业信息
         developer: recObj.developer || "", // 开发商
-        pmc: recObj.pmc, // 物业公司
-        propertyContacts: recObj.pc, // 物业联系人
-        propertyContactsPhone: recObj.pcp, // 物业联系电话
+        pmc: recObj.pmc || "", // 物业公司
+        propertyContacts: recObj.pc || "", // 物业联系人
+        propertyContactsPhone: recObj.pcp || "", // 物业联系电话
         // 小区全貌图
         fullViewUrl: recObj.fullViewUrl || "", // 资源图片
 
@@ -2792,6 +2784,7 @@ export default {
                 adViewSizeWidth,
                 adViewSizeHeight,
                 asId,
+                siteOrientation
               } = adSpaceItem;
               if (
                 adSizeWidth &&
@@ -2806,7 +2799,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                  siteOrientation
                 });
               } else {
                 break mediaTop;
@@ -2824,13 +2817,12 @@ export default {
                 site: tempMediaForm.site || "",
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                notPush: tempMediaForm.adLimit.join('、'),
-                mac: tempMediaForm.mac || "",
-                buildingName: tempMediaForm.buildingName || "",
-                unitName: tempMediaForm.unitName || "",
-                floor: tempMediaForm.floor || "",
+                buildingName: tempMediaForm.buildingName,
+                unitName: tempMediaForm.unitName,
+                floor: tempMediaForm.floor,
+                mac: tempMediaForm.mac,
+                notPush: tempMediaForm.adLimit.join(','),
               };
-              console.log(obj.unitName);
               editMediaParams.push(obj);
             }
           } else {
@@ -2848,6 +2840,7 @@ export default {
                 adViewSizeWidth,
                 adViewSizeHeight,
                 id: adSpaceId,
+                siteOrientation
               } = adSpaceItem;
               if (
                 adSizeWidth &&
@@ -2862,7 +2855,7 @@ export default {
                   adSizeHeight,
                   adViewSizeWidth,
                   adViewSizeHeight,
-                  siteOrientation: tempMediaForm.adSpaceInfo[0].siteOrientation
+                  siteOrientation
                 });
               } else {
                 break mediaTop;
@@ -2880,17 +2873,12 @@ export default {
                 mRemark: tempMediaForm.mRemark || "",
                 site: tempMediaForm.site || "",
                 adSpaceInfo: tempAdSpaceInfo,
-                mac: tempMediaForm.mac || "",
-                buildingName: tempMediaForm.buildingName || "",
-                unitName: tempMediaForm.unitName || "",
-                floor: tempAdSpaceInfo.floor || "",
               };
               newMediaParams.push(obj);
             }
           }
         }
       }
-      console.log('editMediaParams', editMediaParams);
       if (editMediaParams.length) {
         this.batchUpdateApi(editMediaParams);
       } else {

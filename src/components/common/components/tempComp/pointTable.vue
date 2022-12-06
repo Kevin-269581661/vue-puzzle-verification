@@ -78,7 +78,7 @@
     </div>
   </el-dialog>
 </template>
-  
+
 <script>
 import FileSaver from 'file-saver';
 
@@ -237,9 +237,6 @@ export default {
     },
 
     downLoadExcel() {
-      if (this.adResMatchSpaceVos.length === 0) {
-        return this.$message.warning("数据为空！");
-      }
       const sess = this.sessionData
       const params = {
         uid: sess.uID,
@@ -284,7 +281,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped lang="scss">
 .car-title {
   background: #e6f7ff;
@@ -330,7 +327,7 @@ export default {
 }
 
 .yxxq {
- margin-bottom: 16px; 
+ margin-bottom: 16px;
  font-size: 15px;
 }
 .padd {
@@ -339,11 +336,10 @@ export default {
 
 .adsTable /deep/ .el-table__body-wrapper {
   overflow-x: scroll!important;
-} 
+}
 
-.adsTable /deep/ .el-table__body-wrapper, 
-.adsTable /deep/ .el-table__empty-block { 
+.adsTable /deep/ .el-table__body-wrapper,
+.adsTable /deep/ .el-table__empty-block {
   min-height: auto!important;;
 }
 </style>
-  

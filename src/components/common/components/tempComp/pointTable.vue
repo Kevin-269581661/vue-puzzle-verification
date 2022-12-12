@@ -69,7 +69,7 @@
 
       <p class="button_box">
         <el-button @click="resetPoint" size="small" class="padd"
-          >重新配点({{ importData.adResMatchSpaceVos.length }})</el-button
+          >重新配点</el-button
         >
         <el-button type="primary" @click="savePoint" size="small"
           >保存配点</el-button

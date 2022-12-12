@@ -281,19 +281,18 @@ export default {
   },
   created() {
     this.getSessionData();
-    console.log("createdd-----1");
     if (this.importData.successList) {
       this.initData();
-      console.log("createdd-----2");
     }
   },
   watch: {
-    importData() {
-      console.log("createdd-----3");
-      if (this.importData.successList) {
-        this.initData();
-        console.log("createdd-----4");
-      }
+    importData: {
+      handler () {
+        if (this.importData.successList) {
+          this.initData();
+        }
+      },
+      deep: true
     },
   },
   methods: {

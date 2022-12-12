@@ -4793,7 +4793,7 @@ export default {
       );
       let mediaType =
         mediaTypeArr[0].name === "单元门禁灯箱" ? mediaTypeArr[0].name : "";
-      
+
       if (mediaType) {
         this.isPointSetting = true;
       } else {
@@ -6923,6 +6923,10 @@ export default {
 
     // 点位数量变化
     async handlePointCountChange(currentValue, oldValue, row) {
+      if(!currentValue) {
+        currentValue = oldValue
+        row.chooseNum = 0
+      }
       let addNum = currentValue - oldValue;
       if (+currentValue > +oldValue) {
         const point = await this.handlePointRequest(addNum, row);
@@ -6945,7 +6949,11 @@ export default {
             this.crossSchedules(item.schedules)
           );
         });
-        const delArr = arr.slice(0, oldValue - currentValue) || [];
+        let reduceCount = oldValue - currentValue
+        if(!reduceCount) {
+          reduceCount = oldValue
+        }
+        const delArr = arr.slice(0, reduceCount) || [];
         delArr.forEach((item) => {
           this.deleteRow(item);
         });

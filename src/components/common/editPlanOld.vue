@@ -6872,6 +6872,10 @@ export default {
     // 点位数量变化
     async handlePointCountChange(currentValue, oldValue, row) {
       let addNum = currentValue - oldValue;
+      if(!currentValue) {
+        currentValue = oldValue
+        row.chooseNum = 0
+      }
       if (+currentValue > +oldValue) {
         this.handleHasOtherPoint().then(async () => {
           const point = await this.handlePointRequest(addNum, row);
@@ -6901,7 +6905,11 @@ export default {
             this.crossSchedules(item.schedules)
           );
         });
-        const delArr = arr.slice(0, oldValue - currentValue) || [];
+        let reduceCount = oldValue - currentValue
+        if(!reduceCount) {
+          reduceCount = oldValue
+        }
+        const delArr = arr.slice(0, reduceCount) || [];
         delArr.forEach((item) => {
           this.deleteRow(item);
         });
@@ -7219,7 +7227,7 @@ export default {
       }
     },
 
-    handleHasOtherPoint () {      
+    handleHasOtherPoint () {
       return new Promise((resolve, reject) => {
         if (this.isFirstIntoPage && this.shopingList.length) {
           const h = this.$createElement;

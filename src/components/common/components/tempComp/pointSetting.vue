@@ -39,7 +39,7 @@
             >
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="总投放点位数：" prop="pdNum">
+        <el-form-item label="总投放点位数：" prop="pdNum" v-if="params.pdNumFirstFlag">
           <el-input-number
             v-model="params.pdNum"
             size="small"
@@ -348,13 +348,13 @@ export default {
         siteOrientationRate: 50, // 朝外比例上限
 
         pdNum: "", // 投放总数
-        resChooseSpaceCount: "", // 小区配点数量上限 -1-全部
+        resChooseSpaceCount: '', // 小区配点数量上限 -1-全部
 
-        floorMaxCount: "", // 楼栋数量上限 -1-全部
-        floorChooseSpaceMax: "", // 楼栋配点数量上限 -1-全部
+        floorMaxCount: '', // 楼栋数量上限 -1-全部
+        floorChooseSpaceMax: undefined, // 楼栋配点数量上限 -1-全部
 
-        unitMaxCount: "", // 单元数量上限 -1-全部
-        unitChooseSpaceMax: "", // 单元配点数量上限 -1-全部
+        unitMaxCount: '', // 单元数量上限 -1-全部
+        unitChooseSpaceMax: undefined, // 单元配点数量上限 -1-全部
 
         matchMediaCacheKey: "", // 导入媒体缓存
         matchResCacheKey: "", // 导入小区媒体
@@ -369,7 +369,7 @@ export default {
       sessionData: "", // 登录信息
 
       succeedVisible: false,
-      
+
       adResMatch: {
         adResMatchSummaryVO: {},
         adResMatchSummaryVO: {}
@@ -451,9 +451,9 @@ export default {
       params.pdNum = "";
       params.resChooseSpaceCount = "";
       params.floorMaxCount = "";
-      params.floorChooseSpaceMax = "";
+      params.floorChooseSpaceMax = undefined;
       params.unitMaxCount = "";
-      params.unitChooseSpaceMax = "";
+      params.unitChooseSpaceMax = undefined;
       (this.isAllRes = true),
         (this.isAllBuild = true),
         (this.isAllBuildSpace = true),
@@ -495,20 +495,16 @@ export default {
           resChooseSpaceCount: this.isAllRes
             ? -1
             : Number(info.resChooseSpaceCount), // 每个小区配点数
-          floorChooseSpaceMax: this.isAllRes ? -1 : info.floorChooseSpaceMax, // 每栋楼配点上限
-          unitChooseSpaceMax: this.isAllRes ? -1 : info.unitChooseSpaceMax, // 每单元配点上限
+          floorChooseSpaceMax: this.isAllRes ? -1 : (info.floorChooseSpaceMax ? Number(info.floorChooseSpaceMax) : -1), // 每栋楼配点上限
+          unitChooseSpaceMax: this.isAllRes ? -1 : (info.unitChooseSpaceMax ? Number(info.unitChooseSpaceMax) : -1), // 每单元配点上限
         };
       }
       // 按楼栋
       else if (this.mediaChooseConfig === 2) {
         tempInfo = {
           floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
-          floorChooseSpaceMax: this.isAllBuildSpace
-            ? -1
-            : info.floorChooseSpaceMax, // 每楼栋配点数
-          unitChooseSpaceMax: this.isAllBuildSpace
-            ? -1
-            : info.unitChooseSpaceMax, // 每单元配点上限
+          floorChooseSpaceMax: this.isAllBuildSpace ? -1 : (info.floorChooseSpaceMax ? Number(info.floorChooseSpaceMax) : -1), // 每楼栋配点数
+          unitChooseSpaceMax: this.isAllBuildSpace ? -1 : (info.unitChooseSpaceMax ? Number(info.unitChooseSpaceMax) : -1), // 每单元配点上限
         };
       }
       // 按单元
@@ -516,9 +512,7 @@ export default {
         tempInfo = {
           floorMaxCount: this.isAllBuild ? -1 : Number(info.floorMaxCount), // 投放楼栋数
           unitMaxCount: this.isAllUnit ? -1 : Number(info.unitMaxCount), // 投放单元数
-          unitChooseSpaceMax: this.isAllUnitSpace
-            ? -1
-            : Number(info.unitChooseSpaceMax), // 每单元配点数
+          unitChooseSpaceMax: this.isAllUnitSpace ? -1 : (info.unitChooseSpaceMax ? info.unitChooseSpaceMax : -1), // 每单元配点数
         };
       }
       let params = {

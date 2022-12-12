@@ -1583,15 +1583,13 @@
     }
 
     const {mediaType, mediaTypeId} = this.$route.query
-    if (mediaType) {
-      this.queryMediaType = mediaType
-      this.queryMediaTypeId  = mediaTypeId
-    }
+    this.queryMediaType = mediaType ? mediaType : ''
+    this.queryMediaTypeId  = mediaTypeId ? mediaTypeId : ''
+
     this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
     if (this.adListParams != null) {
       this.timeRange = this.adListParams.ls + "-" + this.adListParams.le;
     }
-    console.log(this.apiVar.mapApi, 'this.adListParamsthis.adListParamsthis.adListParamsthis.adListParams')
     if (mapConfig.system === 0) {
       mapConfig.apiVar.Media = this.apiVar.Media;
       mapConfig.apiVar.mapApi = this.apiVar.mapApi;
@@ -2005,6 +2003,7 @@
     },
     // 获取小区数据
     getResList () {
+      console.log(this.queryMediaType, 'this.queryMediaType')
       this.mapLoading = true;
       let params = {
         startTime: this.adListParams.ls,
@@ -2024,7 +2023,8 @@
         tradingArea: this.selectTradingArea,
         adLimit: this.selectLimits.join(","),
         mType: this.selectDoorType,
-        mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType,
+        // mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType,
+        mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType,
         grade: this.selectMediaLevel,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,

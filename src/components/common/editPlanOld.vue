@@ -3585,66 +3585,67 @@ export default {
           province: key.province, //省份
           city: key.city, //城市
           origin: key.rName, //区域
-          street: key.street, //街道
-          tradingArea: key.tradingArea || "", //商圈
+          street: key.street || "--", //街道
+          tradingArea: key.tradingArea || "--", //商圈
           resName: key.resName, // 资源名称
           address: key.resAddress || "", //详细地址
-          houseNum: key.hNum, //楼栋数量
-          liveYear: key.chDay, //入住年份
-          notPush: key.notPush, //广告限制
-          unitCount: key.unitCount,
+          houseNum: key.hNum || "--", //楼栋数量
+          liveYear: key.chDay || "--", //入住年份
+          notPush: key.notPush || "--", //广告限制
+          unitCount: key.unitCount || "--",
           adsList: key.adsList || [], // 所属公司id
           alias: key.alias, //资源别名
-          description: key.description, //楼盘介绍
+          description: key.description || "--", //楼盘介绍
           supportingFacilities: key.supportingFacilities, //周边配套
           dNum: key.dNum || "", //出入口数
-          liveRate: key.liveRate, //入住率
-          liftType: key.liftType, //配套电梯
-          parkSpaceNum: key.parkSpaceNum, //车位数
-          mediaTypeName: key.mediaTypeName, // 媒体类型
+          liveRate: key.liveRate || "--", //入住率
+          liftType: key.liftType || "--", //配套电梯
+          parkSpaceNum: key.parkSpaceNum || "--", //车位数
+          mediaTypeName: key.mediaTypeName || "--", // 媒体类型
           mRemark: key.mRemark, //备注
-          lng: key.lng, //经度
-          lat: key.lat, //纬度
-          carFlow: key.carFlow, //车流量
-          peopleFlow: key.peopleFlow, //人流量
+          lng: key.lng || "--", //经度
+          lat: key.lat || "--", //纬度
+          carFlow: key.carFlow || "--", //车流量
+          peopleFlow: key.peopleFlow || "--", //人流量
           mapCenter: key.reference || "", // 地图中心点
 
           rid: this.city[this.activeIndex].rid,
-          buildType: key.cType,
+          buildType: key.cType || "--",
           buildPrice: key.hPrice / 100,
-          mediaName: key.mTitle || "",
+          mediaName: key.mTitle || "--",
           mediaTypeId: key.mediaTypeId, // 媒体类型
           mediaRemark: key.mRemark || "--",
-          buildNum: key.fNum,
+          buildNum: key.fNum || "--",
           schedules: this.dateInput[0] + "-" + this.dateInput[1],
-          assetTag: key.assetTag || "",
-          adLimit: key.notPush || "",
+          assetTag: key.assetTag || "--",
+          adLimit: key.notPush || "--",
           mState:
             key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
-          adSize: key.adSize || "",
+          adSize: key.adSize || "--",
           // picSize: key.picSize || "",
-          connID: key.connID || "", // 连排门id
+          connID: key.connID || "--", // 连排门id
           industryInfos: key.industryInfos, // 同行业资源、媒体回避
-          mediaLevel: key.grade || "",
-          asName: key.asName || "", // 点位所属公司名称
+          mediaLevel: key.grade || "--",
+          asName: key.asName || "--", // 点位所属公司名称
           asrID: key.asrID,
-          remark: key.remark,
-          trafficState: key.trafficState,
-          electrifyState: key.electrifyState,
+          remark: key.remark || "--",
+          trafficState: key.trafficState || "--",
+          electrifyState: key.electrifyState || "--",
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
-          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          actualAdsCnt: key.actualAdsCnt || "--", // 最多可添加点位数量
           asID: key.asID,
-          asLab: key.asLab,
-          buildingName: key.buildingName,
-          unitName: key.unitName,
-          chooseNum: key.chooseNum,
+          asLab: key.asLab || "--",
+          buildingName: key.buildingName || "--",
+          unitName: key.unitName || "--",
+          chooseNum: key.chooseNum || "--",
+          site: key.site || "--",
+          siteOrientation: key.siteOrientation || "--",
         };
 
         // if(this.getAdsParamsData.chooseType !== 0){
         //   adObj.pointCount = this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0
         // }
-
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
         } else {
@@ -6509,43 +6510,43 @@ export default {
             for (let key of dataArr) {
               let AD_data = {
                 mID: key.mID,
-                resType: key.resType,
+                resType: key.resType || "",
                 resID: key.resID,
                 asIDs: key.asID,
-                asLabs: key.asLab,
-                resName: key.resName,
-                city: key.cityName,
-                origin: key.quName,
-                buildType: key.cType,
-                houseNum: key.hNum,
+                asLabs: key.asLab || "--",
+                resName: key.resName || "--",
+                city: key.cityName || "--",
+                origin: key.quName || "--",
+                buildType: key.cType || "--",
+                houseNum: key.hNum || "--",
                 buildPrice: key.hPrice / 100,
-                mediaName: key.mTitle,
-                buildNum: key.fNum,
+                mediaName: key.mTitle || "",
+                buildNum: key.fNum || "--",
                 schedules: this.dateInput[0] + "-" + this.dateInput[1],
                 tradingArea: key.tradingArea || "",
-                assetTag: key.assetTag || "",
-                liveYear: key.chDay,
-                adLimit: key.notPush || "",
+                assetTag: key.assetTag || "--",
+                liveYear: key.chDay || "--",
+                adLimit: key.notPush || "--",
                 mediaRemark: key.mRemark || "--",
                 mState:
                   key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "",
                 adSize: key.adSize || "",
-                apName: key.apName, // 被占方案名称
-                lStar: key.lStar, // 被占排期lStar，lEnd
-                lEnd: key.lEnd,
-                lState: key.lState, //点位状态 1被占，2强制停止  0 锁点
+                apName: key.apName || "--", // 被占方案名称
+                lStar: key.lStar || "--", // 被占排期lStar，lEnd
+                lEnd: key.lEnd || "--",
+                lState: key.lState || "--", //点位状态 1被占，2强制停止  0 锁点
                 mediaLevel: key.grade || "",
-                province: key.province,
-                notPush: key.notPush,
-                parkSpaceNum: key.parkSpaceNum,
-                peopleFlow: key.peopleFlow,
-                carFlow: key.carFlow,
+                province: key.province || "--",
+                notPush: key.notPush || "--",
+                parkSpaceNum: key.parkSpaceNum || "--",
+                peopleFlow: key.peopleFlow || "--",
+                carFlow: key.carFlow || "--",
                 unitId: key.unitId, // 单元ID
                 buildingId: key.buildingId, // 楼栋ID
-                actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
-                chooseNum: key.chooseNum,
-                buildingName: key.buildingName,
-                unitName: key.unitName,
+                actualAdsCnt: key.actualAdsCnt || "--", // 最多可添加点位数量
+                chooseNum: key.chooseNum || "--",
+                buildingName: key.buildingName || "--",
+                unitName: key.unitName || "--",
               };
               arr.push(AD_data);
             }

@@ -4241,62 +4241,64 @@ export default {
           resType: key.resType,
           resID: key.resID,
           province: key.province, //省份
-          city: key.city, //城市
-          origin: key.rName, //区域
-          street: key.street, //街道
+          city: key.city || "--", //城市
+          origin: key.rName || "--", //区域
+          street: key.street || "--", //街道
           tradingArea: key.tradingArea || "", //商圈
-          resName: key.resName, // 资源名称
-          address: key.resAddress || "", //详细地址
-          houseNum: key.hNum, //楼栋数量
-          liveYear: key.chDay, //入住年份
-          notPush: key.notPush, //广告限制
-          unitCount: key.unitCount,
+          resName: key.resName || "--", // 资源名称
+          address: key.resAddress || "--", //详细地址
+          houseNum: key.hNum || "--", //楼栋数量
+          liveYear: key.chDay || "--", //入住年份
+          notPush: key.notPush || "--", //广告限制
+          unitCount: key.unitCount || "--",
           adsList: key.adsList || [], // 所属公司id
-          alias: key.alias, //资源别名
-          description: key.description, //楼盘介绍
-          supportingFacilities: key.supportingFacilities, //周边配套
+          alias: key.alias || "--", //资源别名
+          description: key.description || "--", //楼盘介绍
+          supportingFacilities: key.supportingFacilities || "--", //周边配套
           dNum: key.dNum || "", //出入口数
-          liveRate: key.liveRate, //入住率
-          liftType: key.liftType, //配套电梯
-          parkSpaceNum: key.parkSpaceNum, //车位数
-          mediaTypeName: key.mediaTypeName, // 媒体类型
-          mRemark: key.mRemark, //备注
-          lng: key.lng, //经度
-          lat: key.lat, //纬度
-          carFlow: key.carFlow, //车流量
-          peopleFlow: key.peopleFlow, //人流量
+          liveRate: key.liveRate || "--", //入住率
+          liftType: key.liftType || "--", //配套电梯
+          parkSpaceNum: key.parkSpaceNum || "--", //车位数
+          mediaTypeName: key.mediaTypeName || "--", // 媒体类型
+          mRemark: key.mRemark || "--", //备注
+          lng: key.lng || "--", //经度
+          lat: key.lat || "--", //纬度
+          carFlow: key.carFlow || "--", //车流量
+          peopleFlow: key.peopleFlow || "--", //人流量
           mapCenter: key.reference || "", // 地图中心点
           rid: this.city[this.activeIndex].rid,
-          buildType: key.cType,
+          buildType: key.cType || "--",
           buildPrice: key.hPrice / 100,
-          mediaName: key.mTitle || "",
+          mediaName: key.mTitle || "--",
           mediaTypeId: key.mediaTypeId, // 媒体类型
           mediaRemark: key.mRemark || "--",
           buildNum: key.fNum,
           schedules: this.dateInput[0] + "-" + this.dateInput[1],
-          assetTag: key.assetTag || "",
-          adLimit: key.notPush || "",
+          assetTag: key.assetTag || "--",
+          adLimit: key.notPush || "--",
           mState:
             key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
-          adSize: key.adSize || "",
+          adSize: key.adSize || "--",
           // picSize: key.picSize || "",
           connID: key.connID || "", // 连排门id
-          industryInfos: key.industryInfos, // 同行业资源、媒体回避
-          mediaLevel: key.grade || "",
-          asName: key.asName || "", // 点位所属公司名称
+          industryInfos: key.industryInfos || "--", // 同行业资源、媒体回避
+          mediaLevel: key.grade || "--",
+          asName: key.asName || "--", // 点位所属公司名称
           asrID: key.asrID,
-          remark: key.remark,
-          trafficState: key.trafficState,
-          electrifyState: key.electrifyState,
+          remark: key.remark || "--",
+          trafficState: key.trafficState || "--",
+          electrifyState: key.electrifyState || "--",
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
-          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
+          actualAdsCnt: key.actualAdsCnt || "--", // 最多可添加点位数量
           asID: key.asID,
-          asLab: key.asLab,
-          buildingName: key.buildingName,
-          unitName: key.unitName,
-          chooseNum: key.chooseNum,
-          unitCount: key.unitCount
+          asLab: key.asLab || "--",
+          buildingName: key.buildingName || "--",
+          unitName: key.unitName || "--",
+          chooseNum: key.chooseNum || "--",
+          unitCount: key.unitCount || "--",
+          site: key.site || "--",
+          siteOrientation: key.siteOrientation || "--",
         };
         if (this.getAdsParamsData.chooseType !== 0) {
           adObj.pointCount =

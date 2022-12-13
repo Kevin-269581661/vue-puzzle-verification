@@ -91,6 +91,33 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
+    id: 27,
+    label: "位置类型",
+    prop: "site",
+    width: "120",
+    isChecked: true,
+    fix: "not",
+    showTooltip: false,
+  },
+  {
+    id: 28,
+    label: "位置朝向",
+    prop: "siteOrientation",
+    width: "120",
+    isChecked: true,
+    fix: "not",
+    showTooltip: false,
+  },
+  {
+    id: 29,
+    label: "媒体位ID",
+    prop: "assetTag",
+    width: "200",
+    isChecked: true,
+    fix: "not",
+    showTooltip: false,
+  },
+  {
 		id: 11,
 		label: "楼栋号",
 		prop: "buildingName",
@@ -803,6 +830,6 @@ export const UNIT_ARR = [
 
 
 // 生成唯一ID
-// function uniquenId (randomLength = 6) {
-//   return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
-// }
+function uniquenId (randomLength = 6) {
+  return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
+}

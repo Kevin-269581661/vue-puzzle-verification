@@ -1732,7 +1732,7 @@ export default {
         adcID: item.adcID,
         apID: item.apID,
         apName: item.apName || "--",
-        apState: item.apState || "--",
+        apState: item.apState,
         planMode: item.planMode || 0,
         apTotal: item.apTotal || 0,
         apcTime: item.apcTime || "--",

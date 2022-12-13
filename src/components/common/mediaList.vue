@@ -159,7 +159,7 @@
                       <el-table-column
                           v-if="item.isChecked"
                           :label="item.label"
-                          :width="item.width"
+                          :min-width="item.width"
                           :show-overflow-tooltip="true"
                           :fixed="item.fix === 'left' ? true : false"
                       >
@@ -179,7 +179,7 @@
                           column-key="mVehicle"
                           prop="mVehicle"
                           :label="item.label"
-                          :width="item.width"
+                          :min-width="item.width"
                           :show-overflow-tooltip="true"
                           :filters="mediaTypes"
                           :filter-multiple="false"
@@ -193,7 +193,7 @@
                           column-key="asState"
                           :prop="item.prop"
                           :label="item.label"
-                          :width="item.width"
+                          :min-width="item.width"
                           :filters="[
                               { text: '正常', value: 1 },
                               { text: '待安装', value: 2 },
@@ -216,7 +216,7 @@
                           column-key="asSaleState"
                           :prop="item.prop"
                           :label="item.label"
-                          :width="item.width"
+                          :min-width="item.width"
                           :filters="[
                               { text: '可售卖', value: 1 },
                               { text: '不可售卖', value: 2 },
@@ -236,7 +236,7 @@
                       <el-table-column
                       v-if="showNewBtn"
                       :label="item.label"
-                      :width="item.width"
+                      :min-width="item.width"
                       :fixed="item.fix"
                       >
                       <template slot-scope="scope">
@@ -291,7 +291,7 @@
                           v-if="item.isChecked"
                           :prop="item.prop"
                           :label="item.label"
-                          :width="item.width"
+                          :min-width="item.width"
                           :show-overflow-tooltip="true"
                           :fixed="item.fix === 'left' ? true : false"
                       >
@@ -1428,6 +1428,7 @@
   </script>
 
   <style lang="scss" scoped>
+  @import '../../assets/component.scss';
   /deep/ .el-table-filter {
     height: 400px !important;
     overflow-y: auto !important;
@@ -1518,23 +1519,6 @@
     border-bottom-left-radius: 4px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-  }
-
-  /deep/ .el-table__fixed,
-  /deep/ .el-table__fixed-right {
-      height: auto !important; // 让固定列的高自适应
-      bottom: 12px !important; // 固定列默认设置了定位
-      right: 0px !important;
-  }
-
-  /*滚动条*/
-  /deep/ .el-table__body-wrapper {
-    min-height: 530px;
-    overflow-y: auto;
-  }
-
-  /deep/ .error_media .el-table__body-wrapper {
-    min-height: 420px;
   }
 
   /*筛选*/

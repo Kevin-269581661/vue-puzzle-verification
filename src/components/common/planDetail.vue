@@ -120,16 +120,13 @@
                     :size="rowSpace"
                     :key="itemKey"
                   >
-                    <el-table-column type="expand">
+                    <el-table-column type="expand" fixed="left">
                       <template slot-scope="props">
                         <el-form
                           label-position="left"
                           inline
                           class="demo-table-expand"
                         >
-                          <el-form-item label="商圈：">
-                            <span>{{ props.row.tradingArea }}</span>
-                          </el-form-item>
                           <el-form-item label="楼栋数量：">
                             <span>{{ props.row.fNum }}</span>
                           </el-form-item>
@@ -185,10 +182,10 @@
                     <template v-for="item in currentColumn">
                       <template v-if="item.label === '资源名称'">
                         <el-table-column
-                          
                           show-overflow-tooltip
                           :prop="item.prop"
                           :label="item.label"
+                          :min-width="item.width"
                           v-if="item.isChecked"
                           :fixed="item.fix === 'left' ? true : false"
                         >
@@ -201,6 +198,7 @@
                           :filter-method="filterCity"
                           :prop="item.prop"
                           :label="item.label"
+                          :min-width="item.width"
                           v-if="item.isChecked"
                           :fixed="item.fix === 'left' ? true : false"
                         >
@@ -213,55 +211,10 @@
                           :filter-method="filterOrigin"
                           :prop="item.prop"
                           :label="item.label"
+                          :min-width="item.width"
                           v-if="item.isChecked"
                           :fixed="item.fix === 'left' ? true : false"
                         >
-                        </el-table-column>
-                      </template>
-
-                      <template v-else-if="item.label === '楼盘类型'">
-                        <el-table-column
-                          :prop="item.prop"
-                          :label="item.label"
-                          v-if="item.isChecked"
-                          :fixed="item.fix === 'left' ? true : false"
-                        >
-                          <template slot-scope="scope">
-                            <span>{{ scope.row.cType || '--' }}</span>
-                          </template>
-                        </el-table-column>
-                      </template>
- 
-                      <template v-else-if="item.label === '小区户数'">
-                        <el-table-column
-                          align="right"
-                          :prop="item.prop"
-                          :label="item.label"
-                          v-if="item.isChecked"
-                          :fixed="item.fix === 'left' ? true : false"
-                        >
-                          <template slot-scope="scope">
-                            <span>{{ priceToFormat(scope.row.hNum) }}</span>
-                          </template>
-                        </el-table-column>
-                      </template>
-
-                      <template v-else-if="item.label === '楼盘价格'">
-                        <el-table-column
-                          align="right"
-                          :label="item.label"
-                          v-if="item.isChecked"
-                          :fixed="item.fix === 'left' ? true : false"
-                        >
-                          <template slot-scope="scope">
-                            <span
-                              >&yen;{{
-                                scope.row.hPrice
-                                  ? priceFormat(scope.row.hPrice / 100)
-                                  : 0
-                              }}</span
-                            >
-                          </template>
                         </el-table-column>
                       </template>
 
@@ -271,8 +224,9 @@
                           :filter-method="filterTimeRange"
                           :prop="item.prop"
                           :label="item.label"
+                          :min-width="item.width"
                           v-if="item.isChecked"
-                          :fixed="item.fix === 'left' ? true : false"
+                          :fixed="item.fix"
                         >
                           <template slot-scope="scope">
                             <template v-if="scope.row.lState == 2">
@@ -293,13 +247,14 @@
                         <el-table-column
                           :prop="item.prop"
                           :label="item.label"
+                          :min-width="item.width"
                           v-if="item.isChecked"
                           :fixed="item.fix === 'left' ? true : false"
                         >
                         </el-table-column>
                       </template>
                     </template>
-                    
+
                   </el-table>
                   <el-pagination
                     background
@@ -536,7 +491,9 @@
           AdDoor: {},
           barrier: {},
         },
-        // 选点排期
+        // 选点排期列表的数据
+        setPointDataList: [],
+        // 选点排期的全部数据
         setpointArr: [],
         // 报价单详情
         priceSheet: [],
@@ -570,25 +527,21 @@
 
         // 表头数据
         currentColumn: [
-          { id: 0, label: "资源名称", prop: "resName", isChecked: true, fix: "not" },
-          { id: 5, label: "媒体名称", prop: "mTitle", isChecked: true, fix: "not" },
-          { id: 7, label: "媒体类型", prop: "mediaTypeName", isChecked: true, fix: "not" },
-          { id: 12, label: "投放面", prop: "asLab", isChecked: true, fix: "not" },
-          { id: 1, label: "城市", prop: "city", isChecked: true, fix: "not" },
-          { id: 2, label: "区域", prop: "rName", isChecked: true, fix: "not" },
-          { id: 9, label: "楼盘类型", prop: "cType", isChecked: true, fix: "not" },
-          { id: 17, label: "小区户数", prop: "hNum", isChecked: true, fix: "not" },
-          { id: 16, label: "楼盘价格", prop: "hPrice", isChecked: true, fix: "not" },
-          { id: 18, label: "排期", prop: "timeRange", isChecked: true, fix: "left" },
-          { id: 3, label: "街道", prop: "street", isChecked: false, fix: "not" },
-          { id: 4, label: "商圈", prop: "tradingArea", isChecked: false, fix: "not" },
-          { id: 10, label: "单元", prop: "unitName", isChecked: false, fix: "not" },
-          { id: 6, label: "媒体位ID", prop: "assetTag", isChecked: false, fix: "not" },
-          { id: 8, label: "位置类型", prop: "siteType", isChecked: false, fix: "not" },
-          { id: 11, label: "位置朝向", prop: "siteOrientation", isChecked: false, fix: "not" },
-          { id: 13, label: "媒体状态", prop: "asState", isChecked: false, fix: "not" },
-          { id: 14, label: "售卖状态", prop: "asSaleState", isChecked: false, fix: "not" },
-          { id: 15, label: "创建日期", prop: "createTime", isChecked: false, fix: "not" },
+          { id: 0, label: "资源名称", prop: "resName", width:"150", isChecked: true, fix: "not" },
+          { id: 1, label: "媒体名称", prop: "mTitle", width:"150", isChecked: true, fix: "not" },
+          { id: 2, label: "媒体类型", prop: "mediaTypeName", width:"150", isChecked: true, fix: "not" },
+          { id: 3, label: "投放面", prop: "asLab", width:"150", isChecked: true, fix: "not" },
+          { id: 4, label: "位置朝向", prop: "siteOrientation", width:"150", isChecked: false, fix: "not" },
+          { id: 5, label: "城市", prop: "city", width:"150", isChecked: true, fix: "not" },
+          { id: 6, label: "区域", prop: "rName", width:"150", isChecked: true, fix: "not" },
+          { id: 7, label: "媒体位ID", prop: "assetTag", width:"150", isChecked: false, fix: "not" },
+          { id: 8, label: "街道", prop: "street", width:"150", isChecked: false, fix: "not" },
+          { id: 9, label: "商圈", prop: "tradingArea", width:"150", isChecked: false, fix: "not" },
+          { id: 10, label: "设备类型", prop: "mType", width:"150", isChecked: false, fix: "not" },
+          { id: 11, label: "位置类型", prop: "site", width:"150", isChecked: false, fix: "not" },
+          { id: 12, label: "楼栋", prop: "buildingName", width:"150", isChecked: false, fix: "not" },
+          { id: 13, label: "单元", prop: "unitName", width:"150", isChecked: false, fix: "not" },
+          { id: 14, label: "排期", prop: "timeRange", width:"200", isChecked: true, fix: "right" },
         ],
         itemKey: '',
         rowSpace: ''
@@ -607,8 +560,8 @@
     },
     computed: {
       currentPagination () {
-        this.totalNum = this.setpointArr.length;
-        return this.setpointArr.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        this.totalNum = this.setPointDataList.length;
+        return this.setPointDataList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
       }
     },
     methods: {
@@ -942,7 +895,9 @@
               this.filterCityData = filterFormat(resInfo, "city");
               this.filtersArea = filterFormat(resInfo, "rName");
               this.filtersData = filterFormat(resInfo, "timeRange");
-              // 选点排期
+              // 选点排期列表数据处理
+              this.setPointDataList = this.setPointDataFormat(resInfo)
+              // 选点排期全部数据
               this.setpointArr = resInfo;
               this.loading = false;
               this.maLoading = false;
@@ -960,7 +915,31 @@
             console.log(res);
           });
       },
-
+      // 选点排期数据处理
+      setPointDataFormat(data) {
+        let dataArr = []
+        for (const info of data) {
+          let obj = {
+            resName: info.resName || "--",
+            mTitle: info.mTitle || "--",
+            mediaTypeName: info.mediaTypeName || "--",
+            asLab: info.asLab || "--",
+            siteOrientation: info.siteOrientation || "--",
+            city: info.city || "--",
+            rName: info.rName || "--",
+            assetTag: info.assetTag || "--",
+            street: info.street || "--",
+            tradingArea: info.tradingArea || "--",
+            mType: info.mType || "--",
+            site: info.site || "--",
+            buildingName: info.buildingName || "--",
+            unitName: info.unitName || "--",
+            timeRange: info.timeRange || "--"
+          }
+          dataArr.push(obj)
+        }
+        return dataArr
+      },
       // 获取物料新接口
       getMaterialInfo (){
         let apID = sessionStorage.getItem("plan_apid");
@@ -1265,6 +1244,7 @@
   </script>
 
   <style lang="scss" scoped>
+  @import '../../assets/component.scss';
   .ellipsis-td {
     width: 132px;
     overflow: hidden;
@@ -1549,5 +1529,9 @@
       border-radius: 2px;
       color: #FFFFFF;
     }
+  }
+
+  /deep/ .el-table td .cell {
+    font-size: 14px;
   }
   </style>

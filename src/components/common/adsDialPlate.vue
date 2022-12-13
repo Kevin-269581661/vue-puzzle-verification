@@ -77,7 +77,7 @@
                         <template v-for="item in adsColumn">
                             <template v-if="item.label === '媒体状态'">
                                 <el-table-column v-if="item.isChecked" column-key="asState" :prop="item.prop"
-                                    :label="item.label" :width="item.width" :fixed="item.fix === 'left' ? true : false">
+                                    :label="item.label" :min-width="item.width" :fixed="item.fix === 'left' ? true : false">
                                     <template slot-scope="scope">
                                         <point-state :state-text="stateToText(scope.row.asState).text"
                                             :color="stateToText(scope.row.asState).color"></point-state>
@@ -86,7 +86,7 @@
                             </template>
                             <template v-else-if="item.label === '售卖状态'">
                                 <el-table-column v-if="item.isChecked" column-key="asSaleState" :prop="item.prop"
-                                    :label="item.label" :width="item.width" :fixed="item.fix === 'left' ? true : false">
+                                    :label="item.label" :min-width="item.width" :fixed="item.fix === 'left' ? true : false">
                                     <template slot-scope="scope">
                                         <point-state :state-text="stateToSellText(scope.row.asSaleState).text"
                                             :color="stateToSellText(scope.row.asSaleState).color"></point-state>
@@ -191,16 +191,16 @@ export default {
         return {
             adsColumn: [
                 { id: 0, label: "资源名称", prop: "resName", width: "120", isChecked: true, fix: "left" },
-                { id: 1, label: "媒体名称", prop: "mTitle", width: "80", isChecked: true, fix: "left" },
+                { id: 1, label: "媒体名称", prop: "mTitle", width: "180", isChecked: true, fix: "left" },
                 { id: 2, label: "城市", prop: "cityName", width: "80", isChecked: false, fix: "not" },
-                { id: 3, label: "区域", prop: "districtName", width: "80", isChecked: true, fix: "left" },
-                { id: 4, label: "街道", prop: "street", width: "100", isChecked: false, fix: "not" },
+                { id: 3, label: "区域", prop: "districtName", width: "120", isChecked: true, fix: "left" },
+                { id: 4, label: "街道", prop: "street", width: "150", isChecked: false, fix: "not" },
                 { id: 5, label: "商圈", prop: "tradingArea", width: "120", isChecked: false, fix: "not" },
                 { id: 6, label: "媒体位ID", prop: "assetTag", width: "180", isChecked: false, fix: "not" },
-                { id: 7, label: "设备类型", prop: "mediaModel", width: "80", isChecked: false, fix: "not" },
-                { id: 8, label: "位置类型", prop: "siteType", width: "80", isChecked: false, fix: "not" },
-                { id: 9, label: "楼栋", prop: "buildingName", width: "80", isChecked: false, fix: "not" },
-                { id: 10, label: "单元", prop: "unitName", width: "80", isChecked: false, fix: "not" },
+                { id: 7, label: "设备类型", prop: "mediaModel", width: "100", isChecked: false, fix: "not" },
+                { id: 8, label: "位置类型", prop: "siteType", width: "120", isChecked: false, fix: "not" },
+                { id: 9, label: "楼栋", prop: "buildingName", width: "100", isChecked: false, fix: "not" },
+                { id: 10, label: "单元", prop: "unitName", width: "100", isChecked: false, fix: "not" },
                 { id: 11, label: "投放面", prop: "asLab", width: "80", isChecked: true, fix: "left" },
                 { id: 12, label: "位置朝向", prop: "siteOrientation", width: "80", isChecked: true, fix: "left" },
                 { id: 13, label: "媒体状态", prop: "asState", width: "100", isChecked: false, fix: "not" },

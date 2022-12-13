@@ -129,7 +129,7 @@
             <template v-for="item in currentPlanColumn">
 
               <template v-if="item.label === '方案名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="14.9%" v-if="item.isChecked"
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" v-if="item.isChecked"
                   :fixed="item.fix === 'left' ? true : false">
                   <template slot-scope="scope">
                     <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
@@ -141,19 +141,19 @@
               </template>
 
               <template v-if="item.label === '客户名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="12.6%" show-overflow-tooltip
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" show-overflow-tooltip
                   v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
                 </el-table-column>
               </template>
 
               <template v-if="item.label === '品牌名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="7.6%" show-overflow-tooltip
+                <el-table-column :prop="item.prop" :label="item.label" min-width="120px" show-overflow-tooltip
                   v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
                 </el-table-column>
               </template>
 
               <template v-if="item.label === '方案价格'">
-                <el-table-column :prop="item.prop" :label="item.label" sortable="custom" width="120px" align="right"
+                <el-table-column :prop="item.prop" :label="item.label" sortable="custom" min-width="150px"
                   v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
                   <template slot-scope="scope">
                     <span v-if="scope.row.apState == '-1'">--</span>
@@ -165,12 +165,12 @@
               </template>
 
               <template v-if="item.label === '所有人'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="8.1%"
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px"
                   v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked"
                   show-overflow-tooltip :fixed="item.fix === 'left' ? true : false">
                 </el-table-column>
 
-                <el-table-column :prop="item.prop" :label="item.label" min-width="8.1%"
+                <el-table-column :prop="item.prop" :label="item.label" min-width="120px"
                   v-if="['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked" show-overflow-tooltip
                   :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true"
                   :fixed="item.fix === 'left' ? true : false">
@@ -178,7 +178,7 @@
               </template>
 
               <template v-if="item.label === '投放城市(点位面数,排期)'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="25.8%" v-if="item.isChecked"
+                <el-table-column :prop="item.prop" :label="item.label" min-width="350px" v-if="item.isChecked"
                   :fixed="item.fix === 'left' ? true : false">
                   <template slot-scope="scope">
                     <template v-if="isAll">
@@ -257,7 +257,7 @@
               </template>
 
               <template v-if="item.label === '媒体类型'">
-                <el-table-column :prop="item.prop" :label="item.label" width="250px" show-overflow-tooltip
+                <el-table-column :prop="item.prop" :label="item.label" min-width="250px" show-overflow-tooltip
                   column-key="mediaTypeNames"
                   v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
                   :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList">
@@ -288,7 +288,7 @@
               </template>
 
               <template v-if="item.label === '创建日期'">
-                <el-table-column :prop="item.prop" :label="item.label" width="100px" sortable="custom"
+                <el-table-column :prop="item.prop" :label="item.label" min-width="200px" sortable="custom"
                   show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
                   <template slot-scope="scope">
                     <span>{{ formatTime(scope.row.apcTime) }}</span>
@@ -297,7 +297,7 @@
               </template>
 
               <template v-if="item.label === '状态'">
-                <el-table-column class="tac" :prop="item.prop" :label="item.label" min-width="6.1%"
+                <el-table-column class="tac" :prop="item.prop" :label="item.label" min-width="100px"
                   show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
                   <template slot-scope="scope">
                     <point-state :state-text="stateToText(scope.row.apState).text"
@@ -307,9 +307,9 @@
               </template>
 
               <template v-if="item.label === '操作'">
-                <el-table-column :label="item.label" width="100px"
+                <el-table-column :label="item.label" min-width="100px"
                   v-if="!(role == 'ADN_OP' || role == 'AD') && item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false">
+                  :fixed="item.fix">
                   <template slot-scope="scope">
                     <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
                       <span class="el-dropdown-link">
@@ -2143,6 +2143,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import '../../assets/component.scss';
+
 a {
   color: #108ee9;
 }

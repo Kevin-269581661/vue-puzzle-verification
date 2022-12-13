@@ -2733,6 +2733,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/component.scss';
 .ellipsis-td {
   width: 132px;
   overflow: hidden;

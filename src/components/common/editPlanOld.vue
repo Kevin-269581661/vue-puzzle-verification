@@ -921,7 +921,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -934,7 +934,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -951,7 +951,7 @@
                       "
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -963,7 +963,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 1"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -975,7 +975,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -991,7 +991,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1011,7 +1011,7 @@
                       "
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1031,7 +1031,7 @@
                       "
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1051,7 +1051,7 @@
                       "
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1066,7 +1066,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1081,7 +1081,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1100,7 +1100,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1115,7 +1115,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1131,7 +1131,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1144,7 +1144,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1159,7 +1159,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1175,7 +1175,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >
@@ -1190,7 +1190,7 @@
                       align="right"
                       v-if="item.isChecked"
                       :label="item.label"
-                      :width="item.width"
+                      :min-width="item.width"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
@@ -1205,7 +1205,7 @@
                     <el-table-column
                       v-if="item.isChecked && getAdsParamsData.chooseType !== 0"
                       :label="item.label"
-                      :width="item.width"
+                      :min-width="item.width"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
@@ -1220,7 +1220,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
-                      :width="item.width"
+                      :min-width="item.width"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
@@ -1234,7 +1234,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :prop="item.prop"
-                      :width="item.width"
+                      :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
                     >

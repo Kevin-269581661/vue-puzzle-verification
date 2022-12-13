@@ -946,7 +946,7 @@
                 space
                 filter
                 :columns="currentColumn"
-                cacheKey="editPlan"
+                cacheKey="createPlan"
                 @filterColumn="filterColumn"
                 @refreshTable="refreshTable"
                 @spaceSetting="spaceSetting"
@@ -2184,6 +2184,8 @@ import TableSetting from "./components/TableSetting";
 import PointSetting from "./components/tempComp/pointSetting.vue";
 import PointTable from "./components/tempComp/pointTable.vue";
 
+import { POINT_ARR, RES_ARR, BUILD_ARR, UNIT_ARR } from '../common/configs/planTableConfig'
+
 export default {
   name: "createPlanOld",
   components: {
@@ -2602,251 +2604,7 @@ export default {
       totalNum: 0,
 
       // 表头数据
-      currentColumn: [
-        {
-          id: 1,
-          label: "资源名称",
-          prop: "resName",
-          width: "200",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 2,
-          label: "媒体名称",
-          prop: "mediaName",
-          width: "140",
-          isChecked: true,
-          fix: "left",
-          showTooltip: true,
-        },
-        {
-          id: 3,
-          label: "楼栋号",
-          prop: "buildingName",
-          width: "140",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 4,
-          label: "单元号",
-          prop: "unitName",
-          width: "140",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 5,
-          label: "城市",
-          prop: "city",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 6,
-          label: "区域",
-          prop: "origin",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 7,
-          label: "商圈",
-          prop: "tradingArea",
-          width: "120",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 8,
-          label: "媒体备注",
-          prop: "mediaRemark",
-          width: "140",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 9,
-          label: "巡点问题",
-          prop: "remark",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 10,
-          label: "通行情况",
-          prop: "trafficState",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 11,
-          label: "通电情况",
-          prop: "electrifyState",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 12,
-          label: "资产编号",
-          prop: "assetTag",
-          width: "160",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 13,
-          label: "媒体等级",
-          prop: "mediaLevel",
-          width: "120",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 14,
-          label: "广告限制",
-          prop: "adLimit",
-          width: "130",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 15,
-          label: "楼盘类型",
-          prop: "buildType",
-          width: "100",
-          isChecked: true,
-          fix: "not",
-          showTooltip: true,
-        },
-        {
-          id: 16,
-          label: "媒体状态",
-          prop: "mState",
-          width: "100",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 17,
-          label: "楼盘价格",
-          prop: "buildPrice",
-          width: "110",
-          isChecked: true,
-          showTooltip: false,
-          fix: "not",
-        },
-        {
-          id: 18,
-          label: "楼栋数量",
-          prop: "buildNum",
-          width: "100",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 19,
-          label: "单元数量",
-          prop: "unitCount",
-          width: "100",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 20,
-          label: "入住年份",
-          prop: "liveYear",
-          width: "90",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 21,
-          label: "小区户数",
-          prop: "houseNum",
-          width: "90",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 22,
-          label: "人流量",
-          prop: "peopleFlow",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 23,
-          label: "车位数",
-          prop: "parkSpaceNum",
-          width: "90",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 24,
-          label: "车流量",
-          prop: "carFlow",
-          width: "110",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 25,
-          label: "车位数",
-          prop: "parkSpaceNum",
-          width: "90",
-          isChecked: true,
-          fix: "not",
-          showTooltip: false,
-        },
-        {
-          id: 26,
-          label: "可投数量",
-          prop: "actualAdsCnt",
-          width: "90",
-          isChecked: true,
-          fix: "right",
-          showTooltip: false,
-        },
-        {
-          id: 27,
-          label: "排期",
-          prop: "schedules",
-          width: "190",
-          isChecked: true,
-          fix: "right",
-          showTooltip: false,
-        },
-      ],
+      currentColumn:POINT_ARR,
       itemKey: "",
       rowSpace: "",
 
@@ -2956,7 +2714,20 @@ export default {
         this.getOpportunityList();
       },
     },
-
+    "getAdsParamsData.chooseType": {
+      handler(nVal) {
+        this.filterColumn()
+        if (nVal === 1) {
+          this.currentColumn = UNIT_ARR
+        } else if (nVal === 2) {
+          this.currentColumn = BUILD_ARR
+        } else if (nVal === 3) {
+          this.currentColumn = RES_ARR
+        } else {
+          this.currentColumn = POINT_ARR
+        }
+      },
+    },
     // "getAdsParamsData.chooseType": {
     //   handler(nVal) {
     //     let pointCountType = "";
@@ -7229,8 +7000,8 @@ export default {
       }
     },
 
-    handleChooseType (nVal) {
-      console.log(nVal, 'nVal')
+    handleChooseType(nVal) {
+      console.log(this.getAdsParamsData);
       let pointCountType = "";
       if (nVal === 1) {
         pointCountType = "unitId";

@@ -103,9 +103,6 @@ export default {
             notFixList: [],
             // 右侧固定数组
             rightFixList: [],
-            // 默认设置
-            defaultLeftList: [],
-            defaultList: [],
             // 重置设置
             initList: [],
             initLeftList: [],
@@ -137,10 +134,24 @@ export default {
     },
     watch: {
         columns(oldCol, newCol) {
-            this.delColsType()
+            // 判断是否更新
+            const isUpdate = this.isArrDifferent(oldCol, newCol)
+            if (isUpdate) {
+                this.delColsType()
+            }
         }
     },
     methods: {
+        // 判断两个数组是否相同
+        isArrDifferent(arr1, arr2) {
+            const a = arr1.filter(x => !arr2.some(y => y.id === x.id))
+            const b = arr2.filter(x => !arr1.some(y => y.id === x.id))
+            if (a.length || b.length) {
+                return true
+            } else {
+                return false
+            }
+        },
         // 列字段类型处理
         delColsType() {
             // 获取本地缓存
@@ -173,9 +184,7 @@ export default {
             // 判断是否存在配置
             if(allColumnList) {
                 // 判断是否更新
-                const arr1 = this.columns.filter(x => !allColumnList.some(y => y.id === x.id))
-                const arr2 = allColumnList.filter(x => !this.columns.some(y => y.id === x.id))
-                if(arr1.length || arr2.length) {
+                if (this.isArrDifferent(allColumnList, this.columns)) {
                     updateColumns()
                 }
                 else {

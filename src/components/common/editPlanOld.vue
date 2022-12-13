@@ -2184,7 +2184,6 @@ export default {
   watch: {
     "getAdsParamsData.chooseType": {
       handler(nVal) {
-        console.log(nVal)
         this.filterColumn()
         if (nVal === 1) {
           this.currentColumn = UNIT_ARR
@@ -2195,7 +2194,6 @@ export default {
         } else {
           this.currentColumn = POINT_ARR
         }
-
       },
     },
   },

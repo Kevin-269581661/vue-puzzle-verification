@@ -1,7 +1,7 @@
 // 点位
 export const POINT_ARR = [
 	{
-		id:uniquenId(),
+		id: 1001,
 		label: "资源名称",
 		prop: "resName",
 		width: "200",
@@ -10,7 +10,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 2,
 		label: "媒体名称",
 		prop: "mediaName",
 		width: "140",
@@ -19,7 +19,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 3,
 		label: "城市",
 		prop: "city",
 		width: "110",
@@ -28,7 +28,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 4,
 		label: "区域",
 		prop: "origin",
 		width: "110",
@@ -37,7 +37,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 5,
 		label: "街道",
 		prop: "street",
 		width: "110",
@@ -46,7 +46,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 6,
 		label: "商圈",
 		prop: "tradingArea",
 		width: "120",
@@ -55,7 +55,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 7,
 		label: "媒体备注",
 		prop: "mediaRemark",
 		width: "140",
@@ -64,7 +64,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 8,
 		label: "巡点问题",
 		prop: "remark",
 		width: "110",
@@ -73,7 +73,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 9,
 		label: "通行情况",
 		prop: "trafficState",
 		width: "110",
@@ -82,7 +82,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 10,
 		label: "通电情况",
 		prop: "electrifyState",
 		width: "110",
@@ -91,7 +91,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 11,
 		label: "楼栋号",
 		prop: "buildingName",
 		width: "140",
@@ -100,7 +100,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 12,
 		label: "单元号",
 		prop: "unitName",
 		width: "140",
@@ -109,7 +109,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 13,
 		label: "楼盘类型",
 		prop: "buildType",
 		width: "100",
@@ -118,7 +118,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 14,
 		label: "楼盘价格",
 		prop: "buildPrice",
 		width: "110",
@@ -127,7 +127,7 @@ export const POINT_ARR = [
 		fix: "not",
 	},
   {
-		id:uniquenId(),
+		id: 15,
 		label: "小区户数",
 		prop: "houseNum",
 		width: "90",
@@ -136,7 +136,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 16,
 		label: "楼栋数量",
 		prop: "buildNum",
 		width: "100",
@@ -145,7 +145,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 17,
 		label: "单元数量",
 		prop: "unitCount",
 		width: "100",
@@ -154,7 +154,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 18,
 		label: "入住年份",
 		prop: "liveYear",
 		width: "90",
@@ -163,7 +163,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 19,
 		label: "广告限制",
 		prop: "adLimit",
 		width: "130",
@@ -172,7 +172,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 20,
 		label: "出入口数",
 		prop: "dNum",
 		width: "140",
@@ -181,7 +181,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 21,
 		label: "入住率",
 		prop: "liveRate",
 		width: "140",
@@ -190,7 +190,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 22,
 		label: "车位数",
 		prop: "parkSpaceNum",
 		width: "90",
@@ -199,7 +199,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 23,
 		label: "人流量",
 		prop: "peopleFlow",
 		width: "110",
@@ -208,7 +208,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 24,
 		label: "车流量",
 		prop: "carFlow",
 		width: "110",
@@ -217,7 +217,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 25,
 		label: "可投数量",
 		prop: "actualAdsCnt",
 		width: "90",
@@ -226,7 +226,7 @@ export const POINT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 26,
 		label: "排期",
 		prop: "schedules",
 		width: "190",
@@ -240,7 +240,7 @@ export const POINT_ARR = [
 // 小区
 export const RES_ARR = [
 	{
-		id:uniquenId(),
+		id: 1101,
 		label: "资源名称",
 		prop: "resName",
 		width: "200",
@@ -249,7 +249,7 @@ export const RES_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 2,
 		label: "城市",
 		prop: "city",
 		width: "110",
@@ -258,7 +258,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 3,
 		label: "区域",
 		prop: "origin",
 		width: "110",
@@ -267,7 +267,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 4,
 		label: "街道",
 		prop: "street",
 		width: "110",
@@ -276,7 +276,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 5,
 		label: "楼栋号",
 		prop: "buildingName",
 		width: "140",
@@ -285,7 +285,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 6,
 		label: "商圈",
 		prop: "tradingArea",
 		width: "120",
@@ -294,7 +294,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 7,
 		label: "楼盘类型",
 		prop: "buildType",
 		width: "100",
@@ -303,7 +303,7 @@ export const RES_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 8,
 		label: "楼盘价格",
 		prop: "buildPrice",
 		width: "110",
@@ -312,7 +312,7 @@ export const RES_ARR = [
 		fix: "not",
 	},
   {
-		id:uniquenId(),
+		id: 9,
 		label: "小区户数",
 		prop: "houseNum",
 		width: "90",
@@ -322,7 +322,7 @@ export const RES_ARR = [
 	},
 
 	{
-		id:uniquenId(),
+		id: 10,
 		label: "楼栋数量",
 		prop: "buildNum",
 		width: "100",
@@ -331,7 +331,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 11,
 		label: "单元数量",
 		prop: "unitCount",
 		width: "100",
@@ -340,7 +340,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 12,
 		label: "入住年份",
 		prop: "liveYear",
 		width: "90",
@@ -349,7 +349,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 13,
 		label: "广告限制",
 		prop: "adLimit",
 		width: "130",
@@ -358,7 +358,7 @@ export const RES_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 14,
 		label: "出入口数",
 		prop: "dNum",
 		width: "140",
@@ -367,7 +367,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 15,
 		label: "入住率",
 		prop: "liveRate",
 		width: "140",
@@ -376,7 +376,7 @@ export const RES_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 16,
 		label: "车位数",
 		prop: "parkSpaceNum",
 		width: "90",
@@ -385,7 +385,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 17,
 		label: "人流量",
 		prop: "peopleFlow",
 		width: "110",
@@ -394,7 +394,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 18,
 		label: "车流量",
 		prop: "carFlow",
 		width: "110",
@@ -403,7 +403,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 19,
 		label: "可投数量",
 		prop: "actualAdsCnt",
 		width: "90",
@@ -412,7 +412,7 @@ export const RES_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 20,
 		label: "排期",
 		prop: "schedules",
 		width: "190",
@@ -425,7 +425,7 @@ export const RES_ARR = [
 // 楼栋
 export const BUILD_ARR = [
 	{
-		id:uniquenId(),
+		id: 1201,
 		label: "资源名称",
 		prop: "resName",
 		width: "200",
@@ -434,7 +434,7 @@ export const BUILD_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 2,
 		label: "楼栋号",
 		prop: "buildingName",
 		width: "140",
@@ -443,7 +443,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 3,
 		label: "城市",
 		prop: "city",
 		width: "110",
@@ -452,7 +452,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 4,
 		label: "区域",
 		prop: "origin",
 		width: "110",
@@ -461,7 +461,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 5,
 		label: "街道",
 		prop: "street",
 		width: "110",
@@ -470,7 +470,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 6,
 		label: "商圈",
 		prop: "tradingArea",
 		width: "120",
@@ -479,7 +479,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 7,
 		label: "楼盘类型",
 		prop: "buildType",
 		width: "100",
@@ -488,7 +488,7 @@ export const BUILD_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 8,
 		label: "楼盘价格",
 		prop: "buildPrice",
 		width: "110",
@@ -497,7 +497,7 @@ export const BUILD_ARR = [
 		fix: "not",
 	},
   {
-		id:uniquenId(),
+		id: 9,
 		label: "小区户数",
 		prop: "houseNum",
 		width: "90",
@@ -507,7 +507,7 @@ export const BUILD_ARR = [
 	},
 
 	{
-		id:uniquenId(),
+		id: 10,
 		label: "楼栋数量",
 		prop: "buildNum",
 		width: "100",
@@ -516,7 +516,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 11,
 		label: "单元数量",
 		prop: "unitCount",
 		width: "100",
@@ -525,7 +525,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 12,
 		label: "入住年份",
 		prop: "liveYear",
 		width: "90",
@@ -534,7 +534,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 13,
 		label: "广告限制",
 		prop: "adLimit",
 		width: "130",
@@ -543,7 +543,7 @@ export const BUILD_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 14,
 		label: "出入口数",
 		prop: "dNum",
 		width: "140",
@@ -552,7 +552,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 15,
 		label: "入住率",
 		prop: "liveRate",
 		width: "140",
@@ -561,7 +561,7 @@ export const BUILD_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 16,
 		label: "车位数",
 		prop: "parkSpaceNum",
 		width: "90",
@@ -570,7 +570,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 17,
 		label: "人流量",
 		prop: "peopleFlow",
 		width: "110",
@@ -579,7 +579,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 18,
 		label: "车流量",
 		prop: "carFlow",
 		width: "110",
@@ -588,7 +588,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 19,
 		label: "可投数量",
 		prop: "actualAdsCnt",
 		width: "90",
@@ -597,7 +597,7 @@ export const BUILD_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 20,
 		label: "排期",
 		prop: "schedules",
 		width: "190",
@@ -610,7 +610,7 @@ export const BUILD_ARR = [
 // 单元
 export const UNIT_ARR = [
 	{
-		id:uniquenId(),
+		id: 1401,
 		label: "资源名称",
 		prop: "resName",
 		width: "200",
@@ -619,7 +619,7 @@ export const UNIT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 2,
 		label: "楼栋号",
 		prop: "buildingName",
 		width: "140",
@@ -628,7 +628,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 3,
 		label: "单元号",
 		prop: "unitName",
 		width: "140",
@@ -637,7 +637,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 4,
 		label: "城市",
 		prop: "city",
 		width: "110",
@@ -646,7 +646,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 5,
 		label: "区域",
 		prop: "origin",
 		width: "110",
@@ -655,7 +655,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 6,
 		label: "街道",
 		prop: "street",
 		width: "110",
@@ -664,7 +664,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 7,
 		label: "商圈",
 		prop: "tradingArea",
 		width: "120",
@@ -673,7 +673,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 8,
 		label: "楼盘类型",
 		prop: "buildType",
 		width: "100",
@@ -682,7 +682,7 @@ export const UNIT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 9,
 		label: "楼盘价格",
 		prop: "buildPrice",
 		width: "110",
@@ -691,7 +691,7 @@ export const UNIT_ARR = [
 		fix: "not",
 	},
   {
-		id:uniquenId(),
+		id: 10,
 		label: "小区户数",
 		prop: "houseNum",
 		width: "90",
@@ -701,7 +701,7 @@ export const UNIT_ARR = [
 	},
 
 	{
-		id:uniquenId(),
+		id: 11,
 		label: "楼栋数量",
 		prop: "buildNum",
 		width: "100",
@@ -710,7 +710,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 12,
 		label: "单元数量",
 		prop: "unitCount",
 		width: "100",
@@ -719,7 +719,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 13,
 		label: "入住年份",
 		prop: "liveYear",
 		width: "90",
@@ -728,7 +728,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
   {
-		id:uniquenId(),
+		id: 14,
 		label: "广告限制",
 		prop: "adLimit",
 		width: "130",
@@ -737,7 +737,7 @@ export const UNIT_ARR = [
 		showTooltip: true,
 	},
 	{
-		id:uniquenId(),
+		id: 15,
 		label: "出入口数",
 		prop: "dNum",
 		width: "140",
@@ -746,7 +746,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 16,
 		label: "入住率",
 		prop: "liveRate",
 		width: "140",
@@ -755,7 +755,7 @@ export const UNIT_ARR = [
 		showTooltip: true,
 	},
   {
-		id:uniquenId(),
+		id: 17,
 		label: "车位数",
 		prop: "parkSpaceNum",
 		width: "90",
@@ -764,7 +764,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 18,
 		label: "人流量",
 		prop: "peopleFlow",
 		width: "110",
@@ -773,7 +773,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 19,
 		label: "车流量",
 		prop: "carFlow",
 		width: "110",
@@ -782,7 +782,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 20,
 		label: "可投数量",
 		prop: "actualAdsCnt",
 		width: "90",
@@ -791,7 +791,7 @@ export const UNIT_ARR = [
 		showTooltip: false,
 	},
 	{
-		id:uniquenId(),
+		id: 21,
 		label: "排期",
 		prop: "schedules",
 		width: "190",
@@ -803,6 +803,6 @@ export const UNIT_ARR = [
 
 
 // 生成唯一ID
-function uniquenId (randomLength = 6) {
-  return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
-}
+// function uniquenId (randomLength = 6) {
+//   return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
+// }

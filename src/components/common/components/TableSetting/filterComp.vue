@@ -119,51 +119,7 @@ export default {
         }
     },
     mounted() {
-        // 获取本地缓存
-        const allColumnList = getLocalCache(`${this.cacheKey}-allColumnList`)
-        const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
-        const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
-        const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
-
-        // 列字段类型处理
-        const initList = this.columns.filter(v => v.fix === 'not')
-        const initLeftList = this.columns.filter(v => v.fix === 'left')
-        const initRightList = this.columns.filter( v => v.fix === 'right')
-
-        // 备份初始设置
-        this.initList = JSON.parse(JSON.stringify(initList))
-        this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
-        this.initRightList = JSON.parse(JSON.stringify(initRightList))
-
-        // 更新列字段
-        const updateColumns = () => {
-            this.notFixList = JSON.parse(JSON.stringify(initList))
-            this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
-            this.rightFixList = JSON.parse(JSON.stringify(initRightList))
-            addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
-            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
-            addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
-            // 缓存总的列字段，用于比较是否更新
-            addLocalCache(`${this.cacheKey}-allColumnList`, this.columns)
-        }
-
-        // 判断是否存在配置
-        if(allColumnList) {
-            // 判断是否更新
-            const arr1 = this.columns.filter(x => !allColumnList.some(y => y.id === x.id))
-            const arr2 = allColumnList.filter(x => !this.columns.some(y => y.id === x.id))
-            if(arr1.length || arr2.length) {
-                updateColumns()
-            }
-            else {
-                this.notFixList = notFixList
-                this.leftFixList = leftFixList
-                this.rightFixList = rightFixList
-            }
-        }
-        else {
-            updateColumns()
-        }
+        this.delColsType()
         this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
         this.isCheckAll()
     },
@@ -179,7 +135,59 @@ export default {
             return arr
         }
     },
+    watch: {
+        columns(oldCol, newCol) {
+            this.delColsType()
+        }
+    },
     methods: {
+        // 列字段类型处理
+        delColsType() {
+            // 获取本地缓存
+            const allColumnList = getLocalCache(`${this.cacheKey}-allColumnList`)
+            const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
+            const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
+            const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
+
+            // 列字段类型处理
+            const initList = this.columns.filter(v => v.fix === 'not')
+            const initLeftList = this.columns.filter(v => v.fix === 'left')
+            const initRightList = this.columns.filter(v => v.fix === 'right')
+
+            // 备份初始设置
+            this.initList = JSON.parse(JSON.stringify(initList))
+            this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
+            this.initRightList = JSON.parse(JSON.stringify(initRightList))
+
+            // 更新列字段
+            const updateColumns = () => {
+                this.notFixList = JSON.parse(JSON.stringify(initList))
+                this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
+                this.rightFixList = JSON.parse(JSON.stringify(initRightList))
+                addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
+                addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
+                addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
+                // 缓存总的列字段，用于比较是否更新
+                addLocalCache(`${this.cacheKey}-allColumnList`, this.columns)
+            }
+            // 判断是否存在配置
+            if(allColumnList) {
+                // 判断是否更新
+                const arr1 = this.columns.filter(x => !allColumnList.some(y => y.id === x.id))
+                const arr2 = allColumnList.filter(x => !this.columns.some(y => y.id === x.id))
+                if(arr1.length || arr2.length) {
+                    updateColumns()
+                }
+                else {
+                    this.notFixList = notFixList
+                    this.leftFixList = leftFixList
+                    this.rightFixList = rightFixList
+                }
+            }
+            else {
+                updateColumns()
+            }
+        },
         // 刷新列表
         toInit() {
             addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)

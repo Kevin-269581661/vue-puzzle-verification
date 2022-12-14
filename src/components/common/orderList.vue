@@ -328,6 +328,7 @@
             </el-table-column>
             <el-table-column
               label="操作"
+              fixed="right"
               width="80px"
               v-if="
                 !['ADN_OP', 'AD', 'ADN_BD_KA', 'ADN_BD', 'ADN_EP'].includes(role)
@@ -1123,6 +1124,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/component.scss';
+
 a {
   color: #108ee9;
 }

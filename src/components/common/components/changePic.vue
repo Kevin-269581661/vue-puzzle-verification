@@ -55,23 +55,23 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="媒体名称:" class="tag-overflow">
-                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>publicChangeSelect(arr, 'mTitles', 'mTitleList')">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>publicChangeSelect(arr, 'mTitles', `mTitleList['default']`)">
                         <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
+                        <el-option v-for="(item, index) of mTitleList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="媒体位ID:" class="tag-overflow">
-                    <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>publicChangeSelect(arr, 'assetTags', 'assetTagList')">
+                    <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>publicChangeSelect(arr, 'assetTags', `assetTagList['default']`)">
                         <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
+                        <el-option v-for="(item, index) of assetTagList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="位置朝向:">
                     <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation">
                         <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
+                        <el-option v-for="(item, index) of siteOrientationList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
@@ -141,23 +141,23 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="媒体名称:" class="tag-overflow">
-                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="searchInfo.mTitles" @change="arr=>changeSelect(arr, 'mTitles', 'mTitleList')">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="searchInfo.mTitles" @change="arr=>changeSelect(arr, 'mTitles', `mTitleList['change']`)">
                         <el-option label="全部" value="全部"></el-option>
-                        <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
+                        <el-option v-for="(item, index) of mTitleList['change']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="媒体位ID:" class="tag-overflow">
-                        <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="searchInfo.assetTags" @change="arr=>changeSelect(arr, 'assetTags', 'assetTagList')">
+                        <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="searchInfo.assetTags" @change="arr=>changeSelect(arr, 'assetTags', `assetTagList['change']`)">
                             <el-option label="全部" value="全部"></el-option>
-                            <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
+                            <el-option v-for="(item, index) of assetTagList['change']" :key="index" :label="item.itemValue"
                                     :value="item.itemValue"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="位置朝向:">
                         <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="searchInfo.siteOrientation">
                             <el-option label="全部" value="全部"></el-option>
-                            <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
+                            <el-option v-for="(item, index) of siteOrientationList['change']" :key="index" :label="item.itemValue"
                                     :value="item.itemValue"></el-option>
                         </el-select>
                     </el-form-item>
@@ -332,7 +332,7 @@
                   <el-row type="flex"  align='middle'>
                     <span>媒体名称：</span>
                     <el-select v-model="dialogInfo.mTitles" placeholder="请选择媒体名称" size="small" filterable multiple collapse-tags>
-                      <el-option v-for="(item, index) of mTitleList" :key="index" :label="item.itemValue"
+                      <el-option v-for="(item, index) of mTitleList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                   </el-row>
@@ -343,7 +343,7 @@
                   <el-row type="flex"  align='middle'>
                     <span>媒体位ID：</span>
                     <el-select v-model="dialogInfo.assetTags" placeholder="请选择媒体位ID" size="small" filterable multiple collapse-tags>
-                      <el-option v-for="(item, index) of assetTagList" :key="index" :label="item.itemValue"
+                      <el-option v-for="(item, index) of assetTagList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                   </el-row>
@@ -352,7 +352,7 @@
                   <el-row type="flex"  align='middle'>
                     <span>设备型号：</span>
                     <el-select v-model="dialogInfo.mTypes" placeholder="请选择设备型号" size="small" filterable multiple collapse-tags>
-                      <el-option v-for="(item, index) of mTypeList" :key="index" :label="item.itemValue"
+                      <el-option v-for="(item, index) of mTypeList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                   </el-row>
@@ -361,7 +361,7 @@
                   <el-row type="flex"  align='middle'>
                     <span>位置朝向：</span>
                     <el-select v-model="dialogInfo.siteOrientation" placeholder="请选择位置朝向" size="small" filterable>
-                      <el-option v-for="(item, index) of siteOrientationList" :key="index" :label="item.itemValue"
+                      <el-option v-for="(item, index) of siteOrientationList['default']" :key="index" :label="item.itemValue"
                                 :value="item.itemValue"></el-option>
                     </el-select>
                   </el-row>
@@ -860,10 +860,22 @@
                 regionAreaList:[],//换画区域城市
                 launchDateList:[], //换画排期筛选列表launchDateList
 
-                assetTagList: [], //媒体位id数据
-                mTitleList: [], //媒体名称数据
-                siteOrientationList: [], //位置朝向数据
-                mTypeList: [], //设备型号数据
+                assetTagList: {
+                    default: [],
+                    change:[]
+                }, //媒体位id数据
+                mTitleList: {
+                    default: [],
+                    change:[]
+                }, //媒体名称数据
+                siteOrientationList: {
+                    default: [],
+                    change:[]
+                }, //位置朝向数据
+                mTypeList: {
+                    default: [],
+                    change:[]
+                }, //设备型号数据
             };
         },
         mounted() {
@@ -884,6 +896,7 @@
                 console.log(newVal, oldVal, 'fromtype---watch---');
                 this.getPainList().then(res => {
                     this.isShowPic = true
+                    this.getPlanDetails('default')
                     this.editReport(false);
 
                 });
@@ -892,11 +905,22 @@
 
         methods: {
             // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
-            getPlanDetails(mid) {
-                let info = {
-                    apID:sessionStorage.getItem('order_apid'),
-                    mediaTypeId: mid ? mid : ''
+            // type: 'default'-上下刊，'change'-换画
+            getPlanDetails(type, mid) {
+                let info = {}
+                if (type === 'default') {
+                    info = {
+                        apID: sessionStorage.getItem('order_apid'),
+                        mediaTypeId: mid ? mid : '',
+                    }
                 }
+                else if (type === 'change') {
+                    info = {
+                        apID: sessionStorage.getItem('order_apid'),
+                        replaceRecordId: mid ? mid : '',
+                    }
+                }
+
                 for (let i = 1; i < 5; i++) {
                     api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: i})
                         .then((res) => {
@@ -904,16 +928,16 @@
                                 const _data = res.data.data
                                 switch (i) {
                                     case 1:
-                                        this.assetTagList = _data
+                                        this.assetTagList[type] = _data
                                         break;
                                     case 2:
-                                        this.mTitleList = _data
+                                        this.mTitleList[type] = _data
                                         break;
                                     case 3:
-                                        this.siteOrientationList = _data
+                                        this.siteOrientationList[type] = _data
                                         break;
                                     case 4:
-                                        this.mTypeList = _data
+                                        this.mTypeList[type] = _data
                                 }
                             }
                         })
@@ -1121,7 +1145,7 @@
                 }
                 // info.pageSize = 6
                 this.getImgInfo(info);
-                this.getPlanDetails(info.mediaTypeId)
+                this.getPlanDetails('default', info.mediaTypeId)
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
@@ -1324,7 +1348,6 @@
                                 };
                             });
                             this.getMediaTypes();
-                            this.getPlanDetails()
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1379,6 +1402,7 @@
                     }
                     this.pageInfo.loading = false;
                 });
+                this.getPlanDetails('change', params.replaceRecordId)
             },
             // 城市区域变化
             painCityChange() {
@@ -1999,6 +2023,7 @@
                 this.isShowPic = false;
                 this.shoplist = [];
                 this.selectList = [];
+                this.resetPoint()
                 this.$emit('hidePainModal','false');
             }
             ,
@@ -2015,6 +2040,7 @@
                 } else {
                     sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
+                this.resetPoint()
             },
             addPainReport() {
                 let that = this

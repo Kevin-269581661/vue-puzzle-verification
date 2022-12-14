@@ -1,102 +1,106 @@
 <template>
   <div class="vacancy_box">
-    <el-row>
-      <el-col :span="6">
-        <span>导出空位:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
-          <!-- <el-radio
-            v-for="(item, index) in mediaPermissionList"
-            :label="item"
-            :key="index"
-            v-if="!(item == '点位' && showNdwBtn)"
-          >
-            {{item}}
-          </el-radio> -->
-          <el-radio
-            v-for="(item, index) in mediaPermissionList"
-            :label="item"
-            :key="index"
-            v-if="!(item == '点位' && showNdwBtn)"
-          >
-            {{item}}
-          </el-radio>
-        </el-radio-group>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>选择城市:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-select
-          v-model="downLoadInfo.city"
-          placeholder="请选择城市"
-          multiple
-          size="small"
-          collapse-tags
-          filterable
-        >
-          <el-option
-            v-for="item in cityList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>媒体类型:</span>
-      </el-col>
-      <el-col :span="18">
+    <template v-if="!(mediaPermissionList[0] === '点位' && showNdwBtn)">
+      <el-row>
+        <el-col :span="6">
+          <span>导出空位:</span>
+        </el-col>
+        <el-col :span="18">
+          <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
+            <!-- <el-radio
+              v-for="(item, index) in mediaPermissionList"
+              :label="item"
+              :key="index"
+              v-if="!(item == '点位' && showNdwBtn)"
+            >
+              {{item}}
+            </el-radio> -->
+            <el-radio
+              v-for="(item, index) in mediaPermissionList"
+              :label="item"
+              :key="index"
+              v-if="!(item === '点位' && showNdwBtn)"
+            >
+              {{item}}
+            </el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>选择城市:</span>
+        </el-col>
+        <el-col :span="18">
           <el-select
-            size="small"
-            class="m_ehicle_class"
+            v-model="downLoadInfo.city"
+            placeholder="请选择城市"
             multiple
+            size="small"
             collapse-tags
-            v-model="downLoadInfo.mediaTypeIds"
-            placeholder="请选择媒体类型"
+            filterable
           >
-            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.mediaTypeName" :value="item.mediaTypeId"></el-option>
+            <el-option
+              v-for="item in cityList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
           </el-select>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>选择日期:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-radio-group v-model="downLoadInfo.dateType">
-          <el-radio label="1">默认半年日期</el-radio>
-          <el-radio label="2">自定义日期</el-radio>
-        </el-radio-group>
-      </el-col>
-    </el-row>
-    <el-row v-if="downLoadInfo.dateType == '2'">
-      <el-col :span="18" :offset="6">
-        <el-date-picker
-          v-model="downLoadInfo.daterange"
-          type="daterange"
-          size="small"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy/MM/dd"
-          format="yyyy/MM/dd"
-          :picker-options="pickerOptions"
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>媒体类型:</span>
+        </el-col>
+        <el-col :span="18">
+            <el-select
+              size="small"
+              class="m_ehicle_class"
+              multiple
+              collapse-tags
+              v-model="downLoadInfo.mediaTypeIds"
+              placeholder="请选择媒体类型"
+            >
+              <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.mediaTypeName" :value="item.mediaTypeId"></el-option>
+            </el-select>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>选择日期:</span>
+        </el-col>
+        <el-col :span="18">
+          <el-radio-group v-model="downLoadInfo.dateType">
+            <el-radio label="1">默认半年日期</el-radio>
+            <el-radio label="2">自定义日期</el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+      <el-row v-if="downLoadInfo.dateType == '2'">
+        <el-col :span="18" :offset="6">
+          <el-date-picker
+            v-model="downLoadInfo.daterange"
+            type="daterange"
+            size="small"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy/MM/dd"
+            format="yyyy/MM/dd"
+            :picker-options="pickerOptions"
+          >
+          </el-date-picker>
+        </el-col>
+      </el-row>
+      <p class="button_box">
+        <el-button @click="cancelDown()" size="small">取 消</el-button>
+        <el-button type="primary" @click="confirmDown()" size="small"
+          >确 定</el-button
         >
-        </el-date-picker>
-      </el-col>
-    </el-row>
-    <p class="button_box">
-      <el-button @click="cancelDown()" size="small">取 消</el-button>
-      <el-button type="primary" @click="confirmDown()" size="small"
-        >确 定</el-button
-      >
-    </p>
+      </p>
+    </template>
+    <el-result v-else icon="info" title="该账号暂无空位导出权限" subTitle="不存在可以导出的选点维度">
+    </el-result>
   </div>
 </template>
 
@@ -338,6 +342,11 @@ export default {
 }
 /deep/.vacancy_box .el-range-editor--mini .el-range-separator {
   line-height: 30px;
+}
+
+/deep/.vacancy_box .el-result {
+  padding: 0;
+    padding-bottom: 50px;
 }
 .button_box {
   text-align: right;

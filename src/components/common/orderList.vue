@@ -141,7 +141,7 @@
           >
             <el-table-column
               label="订单名称"
-              min-width="12.6%"
+              min-width="120px"
               class-name="custom-column-order"
             >
               <template slot-scope="scope">
@@ -168,14 +168,14 @@
             <el-table-column
               prop="cName"
               label="客户名称"
-              min-width="12.6%"
+              min-width="150px"
               show-overflow-tooltip
             >
             </el-table-column>
             <el-table-column
               prop="bTitle"
               label="品牌名称"
-              min-width="8%"
+              min-width="100px"
               show-overflow-tooltip
             >
             </el-table-column>
@@ -205,7 +205,7 @@
             <el-table-column
               label="投放城市(点位面数，排期)"
               prop="cityArea"
-              min-width="25.8%"
+              min-width="330px"
               show-overflow-tooltip
             >
               <template slot-scope="scope">
@@ -266,7 +266,7 @@
             <el-table-column
               prop="realName"
               label="所有人"
-              min-width="6.1%"
+              min-width="100px"
               show-overflow-tooltip
               :filters="filterRealName"
               :filter-method="filterRealNameFun"
@@ -277,7 +277,7 @@
             <el-table-column
               prop="realName"
               label="所有人"
-              min-width="6.1%"
+              min-width="100px"
               show-overflow-tooltip
               v-if="role === 'ADN_EP'"
             >
@@ -301,7 +301,7 @@
             <el-table-column
               prop="appTime"
               label="发布日期"
-              width="120px"
+              min-width="120px"
               sortable="custom"
               show-overflow-tooltip
             >
@@ -314,7 +314,7 @@
               column-key="apState"
               prop="apState"
               label="状态"
-              min-width="6%"
+              min-width="80px"
               show-overflow-tooltip
               :filters="stateList"
               :filter-multiple="false"

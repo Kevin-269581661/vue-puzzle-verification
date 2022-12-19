@@ -411,7 +411,7 @@
                   // 储存行业信息
                   // 埋点
                   const aegis = new Aegis({
-                      id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                      id: '8lZw7Sojz5m46qw32K', // 上报 id
                       uin: userMsg.uID, // 用户唯一 ID（可选）
                       reportApiSpeed: true, // 接口测速
                       reportAssetSpeed: true, // 静态资源测速
@@ -555,7 +555,7 @@
           ) {
             // 埋点
             const aegis = new Aegis({
-                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                id: '8lZw7Sojz5m46qw32K', // 上报 id
                 uin: isLogin.uID, // 用户唯一 ID（可选）
                 reportApiSpeed: true, // 接口测速
                 reportAssetSpeed: true, // 静态资源测速
@@ -714,7 +714,7 @@
               let userInfo = data.data;
               // 埋点
               const aegis = new Aegis({
-                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                id: '8lZw7Sojz5m46qw32K', // 上报 id
                 uin: userInfo.uID, // 用户唯一 ID（可选）
                 reportApiSpeed: true, // 接口测速
                 reportAssetSpeed: true, // 静态资源测速
@@ -747,7 +747,7 @@
               let userInfo = data.data;
               // 埋点
               const aegis = new Aegis({
-                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                id: '8lZw7Sojz5m46qw32K', // 上报 id
                 uin: userInfo.uID, // 用户唯一 ID（可选）
                 reportApiSpeed: true, // 接口测速
                 reportAssetSpeed: true, // 静态资源测速

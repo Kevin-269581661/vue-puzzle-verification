@@ -250,6 +250,8 @@
   import { addRoutes } from "../../router";
   import { emitCustomEvent } from "../../commonFun/matomoRule";
   import RetrievePassword from "./components/retrievePassword.vue";
+  import Aegis from 'aegis-web-sdk';
+
   export default {
     name: "login",
     components: {
@@ -407,6 +409,14 @@
                 } else {
                   // 绑定了继续执行下面的流程
                   // 储存行业信息
+                  // 埋点
+                  const aegis = new Aegis({
+                      id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                      uin: userMsg.uID, // 用户唯一 ID（可选）
+                      reportApiSpeed: true, // 接口测速
+                      reportAssetSpeed: true, // 静态资源测速
+                      spa: true, // spa 应用页面跳转的时候开启 pv 计算
+                  });
                   this.getIndustry();
                   userMsg.username = name;
                   sessionStorage.setItem("session_data", JSON.stringify(userMsg));
@@ -543,6 +553,14 @@
             !isLogin.SysCode &&
             isLogin.IsLogin !== false
           ) {
+            // 埋点
+            const aegis = new Aegis({
+                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                uin: isLogin.uID, // 用户唯一 ID（可选）
+                reportApiSpeed: true, // 接口测速
+                reportAssetSpeed: true, // 静态资源测速
+                spa: true, // spa 应用页面跳转的时候开启 pv 计算
+            });
             this.isLogin = true;
             this.websock.close(); // 关闭websocket连接
             this.getIndustry(); //  储存行业信息
@@ -694,6 +712,14 @@
             let { data } = res;
             if (data.SysCode == 200200 && data.data) {
               let userInfo = data.data;
+              // 埋点
+              const aegis = new Aegis({
+                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                uin: userInfo.uID, // 用户唯一 ID（可选）
+                reportApiSpeed: true, // 接口测速
+                reportAssetSpeed: true, // 静态资源测速
+                spa: true, // spa 应用页面跳转的时候开启 pv 计算
+              });
               this.getIndustry();
               sessionStorage.setItem("session_data", JSON.stringify(userInfo));
               utils.setLocalData(userInfo)
@@ -719,6 +745,14 @@
           .then(({ data }) => {
             if (data.SysCode == 200200 && data.data) {
               let userInfo = data.data;
+              // 埋点
+              const aegis = new Aegis({
+                id: 'j4GkmcL0JqZDlG141Q', // 上报 id
+                uin: userInfo.uID, // 用户唯一 ID（可选）
+                reportApiSpeed: true, // 接口测速
+                reportAssetSpeed: true, // 静态资源测速
+                spa: true, // spa 应用页面跳转的时候开启 pv 计算
+              });
               this.getIndustry();
               sessionStorage.setItem("session_data", JSON.stringify(userInfo));
               utils.setLocalData(userInfo)

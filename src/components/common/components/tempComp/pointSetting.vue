@@ -243,7 +243,7 @@
         <el-form-item label="朝外比例不高于：">
           <div class="m-inputnum">
             <el-input-number
-              :disabled="!sessionData.uType === 'ADN_MD'"
+              :disabled="sessionData.uType === 'ADN_BD' || sessionData.uType === 'ADN_BD_COUNTRY' "
               v-model="params.siteOrientationRate"
               size="small"
               controls-position="right"
@@ -401,6 +401,9 @@ export default {
           value: item.label
         }
       }).sort((a, b) => b.value - a.value)
+
+      this.mediaChooseConfig = currentList[0].value
+
       return currentList
     }
   },

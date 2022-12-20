@@ -4300,11 +4300,6 @@ export default {
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
         };
-        if (this.getAdsParamsData.chooseType !== 0) {
-          adObj.pointCount =
-            this[`${this.pointCountType}Map`][key[this.pointCountType]] || 0;
-        }
-
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
         } else {

@@ -36,7 +36,6 @@
                             </el-select>
                         </el-form-item>
                         <!-- 媒介或销售 -->
-                        <!-- :disabled="Boolean((sessionData.uType === 'ADN_SM' && !accountForm.company))" -->
                         <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
                                 <el-cascader
@@ -379,7 +378,7 @@ export default {
     },
     methods: {
         // 媒介/销售 媒体权限默认勾选/取消勾选
-        MD_BD_MediaPermissionChange(arr) {
+      MD_BD_MediaPermissionChange(arr) {
             let nodeList = this.$refs.userMediaRef.getCheckedNodes()
             const curLength = nodeList.length
             const tempLength = this.tempNodes.length
@@ -392,20 +391,66 @@ export default {
                     let cVals = []
                     node.children.forEach(child => cVals.push(child.value))
                     let minVal = Math.min(...cVals)
-                    // 点击的是单元门禁灯箱
-                    if(node.label === '单元门禁灯箱' && this.accountForm.role == 'BD') {
+
+                  if (node.label === '单元门禁灯箱') {
+                    // 销售+单元门禁灯箱
+                    if (this.accountForm.role == 'BD') {
+                      // 系统管理员：默认勾选单元，否则选择最小纬度
+                      if (this.sessionData.uType === 'ADN_SA') {
                         index = node.children.findIndex((child) => child.label === '单元')
                         if(index === -1) {
                             index = node.children.findIndex(child => child.value === minVal)
                         }
+                        node.children[index].checked = true
+                        arr.push([node.value, node.children[index].value])
+                      }
+                      // 超级管理员：默认勾选单元、楼栋、小区，否则选择最小纬度
+                      else if (this.sessionData.uType === 'ADN_SM') {
+                        const tempArr = []
+                        const i1 = node.children.findIndex((child) => child.label === '点位')
+                        const i2 = node.children.findIndex((child) => child.label === '单元')
+                        const i3 = node.children.findIndex((child) => child.label === '楼栋')
+                        const i4 = node.children.findIndex((child) => child.label === '小区')
+                        tempArr.push(i1, i2, i3, i4)
+                        if (tempArr.every(i => i === -1)) {
+                          index = node.children.findIndex(child => child.value === minVal)
+                        } else {
+                          tempArr.forEach(i => {
+                            if (i !== -1) {
+                              node.children[i].checked = true
+                              arr.push([node.value, node.children[i].value])
+                            }
+                          })
+                        }
+                      }
                     }
-                    else {
-                        index = node.children.findIndex(child => child.value === minVal)
+                    // 媒介+单元门禁灯箱
+                    else if (this.accountForm.role == 'MD') {
+                      // 系统管理员：默认勾选单元，否则选择最小纬度
+                      if (this.sessionData.uType === 'ADN_SA') {
+                        index = node.children.findIndex((child) => child.label === '点位')
+                        if (index === -1) {
+                          index = node.children.findIndex(child => child.value === minVal)
+                        }
+                          node.children[index].checked = true
+                          arr.push([node.value, node.children[index].value])
+                      }
+                      // 超级管理员：默认勾选全部
+                      else {
+                        node.children.forEach(child => {
+                          child.checked = true
+                          arr.push([node.value, child.value])
+                        })
+                      }
                     }
-                    node.checked = false
+                  }
+                  else {
+                    index = node.children.findIndex(child => child.value === minVal)
                     node.children[index].checked = true
-                    nodeList = this.$refs.userMediaRef.getCheckedNodes()
                     arr.push([node.value, node.children[index].value])
+                  }
+                  node.checked = false
+                  nodeList = this.$refs.userMediaRef.getCheckedNodes()
                 }
             }
             // 当前取消选中项
@@ -435,38 +480,42 @@ export default {
 
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermission(val) {
-            let info = {
-                companyIds: val
-            }
-            api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
-                if (res.data.SysCode == 200200) {
-                    let _data = res.data.data;
-                    let _newData = [];
-                    if (_data.length > 0) {
-                        _data.forEach((item) => {
-                            const children = item.child.map((v) => {
-                                return ({
-                                    label: v.chooseTypeName,
-                                    value: v.chooseType
-                                })
-                            }).sort((a,b) => a.value - b.value)
-                            _newData.push({
-                                label: item.mediaTypeName,
-                                value: item.mediaTypeId,
-                                children: children
-                            })
-                        })
-                    }
-                    this.MD_BD_MediaPermissionArr = _newData;
-                } else {
-                    this.$message({
-                        message: res.data.MSG,
-                        type: 'error'
-                    });
-                }
-            }).catch((err) => {
-                console.log(err);
-            })
+          const uType = this.sessionData.uType
+          const isDisabled = uType === 'ADM_SA' ? false : uType === 'ADN_SM' ? true : false
+          console.log(uType,isDisabled);
+          let info = {
+              companyIds: val
+          }
+          api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
+              if (res.data.SysCode == 200200) {
+                  let _data = res.data.data;
+                  let _newData = [];
+                  if (_data.length > 0) {
+                      _data.forEach((item) => {
+                          const children = item.child.map((v) => {
+                              return ({
+                                  label: v.chooseTypeName,
+                                  value: v.chooseType,
+                                  disabled: isDisabled
+                              })
+                          }).sort((a,b) => a.value - b.value)
+                          _newData.push({
+                              label: item.mediaTypeName,
+                              value: item.mediaTypeId,
+                              children: children
+                          })
+                      })
+                  }
+                  this.MD_BD_MediaPermissionArr = _newData;
+              } else {
+                  this.$message({
+                      message: res.data.MSG,
+                      type: 'error'
+                  });
+              }
+          }).catch((err) => {
+              console.log(err);
+          })
         },
 
         // 获取媒体权限数据
@@ -634,7 +683,8 @@ export default {
             if (this.accountForm.role == "BD") {
                 this.getRoleCity();
             }
-            // this.getMD_BD_MediaPermission()
+            this.accountForm.MD_BD_MediaPermission = []
+            this.tempNodes.length = 0
         },
         // 选择工程类型
         engineerCategorySelect(val) { },
@@ -672,6 +722,7 @@ export default {
             }
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []
+            this.tempNodes.length = 0
             this.getMD_BD_MediaPermission(val);
         },
         lazyFunction(fn, timeout) {

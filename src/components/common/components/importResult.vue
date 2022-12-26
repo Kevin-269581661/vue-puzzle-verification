@@ -11,7 +11,6 @@
         ></span>
       </h4>
     </div>
-
     <p>
       <el-radio-group v-model="activeType" size="small" class="marin10">
         <el-radio-button :label="1">成功小区</el-radio-button>
@@ -293,7 +292,7 @@ export default {
         }
       },
       deep: true
-    },
+    }
   },
   methods: {
     getSessionData() {

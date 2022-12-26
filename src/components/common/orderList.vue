@@ -360,7 +360,8 @@
                       :disabled="
                         scope.row.apState == 0 ||
                         scope.row.apState == 5 ||
-                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
+                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) ||
+                        isDisableChangePoint(scope.row.mediaTypeNames)
                       "
                       @click.native.prevent="changePoint(scope.row)"
                       class="update"
@@ -1119,6 +1120,16 @@ export default {
         }
         this.search()
     },
+
+    // 针对媒体类型仅含有“单元门禁灯箱”的订单，地方媒介的【更换点位】按钮灰显
+    isDisableChangePoint (row) {
+      const arr = row.split(',')
+      if(this.role === 'ADN_MD' && arr.length === 1 && arr[0] === '单元门禁灯箱'){
+        return true
+      } else {
+        return false
+      }
+    }
   },
 };
 </script>

@@ -3633,12 +3633,12 @@ export default {
           electrifyState: key.electrifyState || "--",
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
-          actualAdsCnt: key.actualAdsCnt || "--", // 最多可添加点位数量
+          actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
           asID: key.asID,
           asLab: key.asLab || "--",
           buildingName: key.buildingName || "--",
           unitName: key.unitName || "--",
-          chooseNum: key.chooseNum || "--",
+          chooseNum: key.chooseNum || 0,
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
         };
@@ -5199,8 +5199,8 @@ export default {
         lat: mediaInfo.lat,
         unitId: mediaInfo.unitId, // 单元ID
         buildingId: mediaInfo.buildingId, // 楼栋ID
-        actualAdsCnt: mediaInfo.actualAdsCnt, // 最多可添加点位数量
-        chooseNum: mediaInfo.chooseNum,
+        actualAdsCnt: mediaInfo.actualAdsCnt || 0, // 最多可添加点位数量
+        chooseNum: mediaInfo.chooseNum || 0,
         buildingName: mediaInfo.buildingName,
         unitName: mediaInfo.unitName,
       };
@@ -5549,8 +5549,8 @@ export default {
           carFlow: key.carFlow,
           unitId: key.unitId, // 单元ID
           buildingId: key.buildingId, // 楼栋ID
-          actualAdsCnt: key.actualAdsCnt, // 最多可添加点位数量
-          chooseNum: key.chooseNum,
+          actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
+          chooseNum: key.chooseNum || 0,
           buildingName: key.buildingName,
           unitName: key.unitName,
           buildingName: key.buildingName,
@@ -6267,7 +6267,7 @@ export default {
                   street: data.street,
                   unitId: data.unitId, // 单元ID
                   buildingId: data.buildingId, // 楼栋ID
-                  actualAdsCnt: data.actualAdsCnt, // 最多可添加点位数量
+                  actualAdsCnt: data.actualAdsCnt || 0, // 最多可添加点位数量
                   buildingName: data.buildingName,
                   unitName: data.unitName,
                 };
@@ -6539,8 +6539,8 @@ export default {
                 carFlow: key.carFlow || "--",
                 unitId: key.unitId, // 单元ID
                 buildingId: key.buildingId, // 楼栋ID
-                actualAdsCnt: key.actualAdsCnt || "--", // 最多可添加点位数量
-                chooseNum: key.chooseNum || "--",
+                actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
+                chooseNum: key.chooseNum || 0,
                 buildingName: key.buildingName || "--",
                 unitName: key.unitName || "--",
               };

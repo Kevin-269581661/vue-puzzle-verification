@@ -231,6 +231,18 @@ export default {
         } else {
           adObj.adPrice = 0;
         }
+
+        if (key.centerInfos && key.centerInfos.length) {
+          for (let item of key.centerInfos) {
+            adObj.mapCenter +=
+              item.centerName +
+              "-" +
+              item.centerAddress +
+              "-" +
+              item.distance +
+              "米,";
+          }
+        }
         result.push(adObj);
       }
       return result;

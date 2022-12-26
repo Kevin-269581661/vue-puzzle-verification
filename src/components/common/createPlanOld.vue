@@ -5536,8 +5536,9 @@ export default {
             this.allCheckboxUpdata();
             this.computeMedia_AD();
             sessFun.messageFun("success", "删除成功");
-            this.resetPlanList(); // 重置planList的勾选
+            this.getAdList();
             this.saveApInfo();
+            this.isFirstIntoPage = false
           })
           .catch(() => {
             sessFun.messageFun("info", "已取消删除");

@@ -4045,7 +4045,8 @@
                     suID: this.adListParams.suID,
                     asrIDs: this.adListParams.asrIDs.join(","),
                     resIDList: arr,
-                    mVehicle: this.adListParams.mVehicle
+                    mVehicle: this.adListParams.mVehicle,
+                    mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType
                 };
                 if (this.selectExcludeType) {
                     switch (this.selectExcludeType) {

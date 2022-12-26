@@ -6895,16 +6895,17 @@ export default {
             this.mapAdsList = res.data.data.successList;
             this.importType = "1";
             this.forMap = true;
-            this.importInfoData.successList = res.data.data.successList.map((item) => {
+            const successList = res.data.data.successList.map((item) => {
               const date = item.date.split('-')
-              return {
-                ...item,
-                pbStar: date[0],
-                pbEnd: date[1],
-                origin: item.district,
-                rName: item.district
-              };
+                return {
+                  ...item,
+                  pbStar: date[0],
+                  pbEnd: date[1],
+                  origin: item.district,
+                  rName: item.district
+                };
             });
+            this.$set(this.importInfoData, 'successList', successList)
             this.mapBtn = true;
             this.dialogTableVisible = false;
             this.showUploadFail = true;

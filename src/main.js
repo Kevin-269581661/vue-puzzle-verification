@@ -4,7 +4,7 @@ import Vue from 'vue'
 import {router} from './router'
 import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
-import {emitRouteEvent} from './commonFun/matomoRule'
+// import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
 import 'default-passive-events'
 Vue.config.productionTip = false;
@@ -82,7 +82,7 @@ import './components/common/map/MarkerClusterer.js'
 
 router.beforeEach((to, from, next) => {
 	console.log('process.env---', process.env);
-	emitRouteEvent(to, from);
+	// emitRouteEvent(to, from);
 	// 路由发生变化修改页面title
 	if (to.meta.title) {
 			document.title = to.meta.title

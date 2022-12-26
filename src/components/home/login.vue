@@ -248,7 +248,7 @@
   import utils from "../../commonFun/utils.js";
   import api from "../../api/api";
   import { addRoutes } from "../../router";
-  import { emitCustomEvent } from "../../commonFun/matomoRule";
+  // import { emitCustomEvent } from "../../commonFun/matomoRule";
   import RetrievePassword from "./components/retrievePassword.vue";
   import Aegis from 'aegis-web-sdk';
 
@@ -850,7 +850,7 @@
             this.initWebsocket();
           }
         }
-        emitCustomEvent({ uType, asName, username }, loginType);
+        // emitCustomEvent({ uType, asName, username }, loginType);
       },
     },
     beforeDestroy() {

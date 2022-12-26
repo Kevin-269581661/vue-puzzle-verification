@@ -978,6 +978,7 @@ export default {
                                         MD_BD_MediaPermission.push([item.mediaTypeId, item.chooseType])
                                     })
                                 }
+
                                 let editInfo = {
                                     uID: result.uID,
                                     account: result.sName,
@@ -1009,9 +1010,10 @@ export default {
                                         : 0,
                                     MD_BD_MediaPermission: MD_BD_MediaPermission || []
                                 };
-                                // console.log('this.accountForm.MD_BD_MediaPermission', this.accountForm.MD_BD_MediaPermission);
                                 this.companyChange(editInfo.company);
-                                this.accountForm = editInfo;
+                                this.$nextTick(() => {
+                                  this.accountForm = editInfo;
+                                })
                                 this.roleSelect(editInfo.role);
                             } else {
                                 this.$message.warning(res.data.MSG);

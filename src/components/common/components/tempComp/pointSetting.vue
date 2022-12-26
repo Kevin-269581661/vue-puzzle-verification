@@ -45,7 +45,6 @@
             size="small"
             controls-position="right"
             :min="0"
-            :max="100"
             class="input-number"
           >
           </el-input-number>

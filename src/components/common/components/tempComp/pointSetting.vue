@@ -401,7 +401,7 @@ export default {
         }
       }).sort((a, b) => b.value - a.value)
 
-      this.mediaChooseConfig = currentList[0].value
+      this.mediaChooseConfig = currentList[0] ? currentList[0].value : 3
 
       return currentList
     }

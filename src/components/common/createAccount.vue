@@ -38,16 +38,19 @@
                         <!-- 媒介或销售 -->
                         <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
-                                <el-cascader
-                                    popper-class="cascader-checkbox"
-                                    ref="userMediaRef" size="small"
-                                    clearable
-                                    v-model="accountForm.MD_BD_MediaPermission"
-                                    :options="MD_BD_MediaPermissionArr"
-                                    :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
-                                    @change="MD_BD_MediaPermissionChange"
-                                >
-                                </el-cascader>
+                                <div class="cascader-box">
+                                    <el-cascader
+                                      popper-class="cascader-checkbox"
+                                      ref="userMediaRef" size="small"
+                                      clearable
+                                      v-model="accountForm.MD_BD_MediaPermission"
+                                      :options="MD_BD_MediaPermissionArr"
+                                      :props="{ expandTrigger: 'hover', multiple: true, checkStrictly: true }"
+                                      @change="MD_BD_MediaPermissionChange"
+                                  >
+                                  </el-cascader>
+                                  <el-button type="text" @click="clearMD_BD_MediaPermission" v-if="accountForm.MD_BD_MediaPermission.length">清空</el-button>
+                                </div>
                             </el-form-item>
                         </template>
                         <!-- 开发楼盘人员 -->
@@ -362,6 +365,7 @@ export default {
             tempNodeArr: []
         };
     },
+
     mounted() {
         this.getSession();
         this.getCompany();
@@ -407,11 +411,12 @@ export default {
                       // 超级管理员：默认勾选单元、楼栋、小区，否则选择最小纬度
                       else if (this.sessionData.uType === 'ADN_SM') {
                         const tempArr = []
-                        const i1 = node.children.findIndex((child) => child.label === '点位')
+                        // const i1 = node.children.findIndex((child) => child.label === '点位')
                         const i2 = node.children.findIndex((child) => child.label === '单元')
                         const i3 = node.children.findIndex((child) => child.label === '楼栋')
                         const i4 = node.children.findIndex((child) => child.label === '小区')
-                        tempArr.push(i1, i2, i3, i4)
+                        tempArr.push(i2, i3, i4)
+
                         if (tempArr.every(i => i === -1)) {
                           index = node.children.findIndex(child => child.value === minVal)
                         } else {
@@ -478,6 +483,11 @@ export default {
             this.tempNodes = nodeList
         },
 
+        clearMD_BD_MediaPermission () {
+          this.accountForm.MD_BD_MediaPermission = []
+          this.tempNodes = []
+        },
+
         // 获取角色为媒介或销售的媒体纬度
         getMD_BD_MediaPermission(val) {
           const uType = this.sessionData.uType
@@ -499,6 +509,7 @@ export default {
                                   disabled: isDisabled
                               })
                           }).sort((a,b) => a.value - b.value)
+
                           _newData.push({
                               label: item.mediaTypeName,
                               value: item.mediaTypeId,
@@ -685,6 +696,8 @@ export default {
             }
             this.accountForm.MD_BD_MediaPermission = []
             this.tempNodes.length = 0
+
+            this.getMD_BD_MediaPermission(this.accountForm.company)
         },
         // 选择工程类型
         engineerCategorySelect(val) { },
@@ -1149,6 +1162,11 @@ export default {
     height: 20px;
     margin-left: 5px;
     filter: brightness(0.8);
+}
+
+.cascader-box {
+  display: flex;
+  align-items: center;
 }
 </style>
 <style lang="scss">

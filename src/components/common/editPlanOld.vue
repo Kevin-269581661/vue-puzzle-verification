@@ -6803,6 +6803,7 @@ export default {
     // 保存配点
     savePoint(arr) {
       this.handleHasOtherPoint().then(() => {
+        console.log(arr, 'arrarr')
         for (let info of arr) {
           this.isHaveDiffPush(info);
         }

@@ -8,7 +8,7 @@
       :before-close="handleClose"
       :close-on-click-modal="false"
       custom-class="custom-dialog-wrapper registration-media"
-      width="65%"
+      width="75%"
     >
       <div class="handel_ul">
         <li class="handel_ul_li">
@@ -278,7 +278,6 @@ export default {
   },
   data() {
     return {
-      currentApID: '',
       auditImageVisible: false,
       tableData: [],
       auditImageID: '',
@@ -336,29 +335,24 @@ export default {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
     getAdPlanDetailsList() {
-        if (this.currentApID !== this.reportImageApID) {
-            // this.$nextTick(() => {
-                this.currentApID = this.reportImageApID;
-                for (let i = 1; i < 7; i++) {
-                    const data = {
-                    type: i,
-                    apID: this.reportImageApID,
-                };
-                api
-                    .postApi_json("/addsp/api/v1/audit/imageDetailsIndexItem", data)
-                    .then((res) => {
-                        if (res.data.SysCode) {
-                        const resData = res.data.data;
-                        this.searchParamsList[i] = resData;
-                        } else {
-                        console.log(res.data.MSG);
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                }
-            // })
+        for (let i = 1; i < 7; i++) {
+            const data = {
+                type: i,
+                apID: this.reportImageApID,
+            };
+            api
+                .postApi_json("/addsp/api/v1/audit/imageDetailsIndexItem", data)
+                .then((res) => {
+                    if (res.data.SysCode) {
+                    const resData = res.data.data;
+                    this.searchParamsList[i] = resData;
+                    } else {
+                    console.log(res.data.MSG);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         };
         for (let key in this.searchParams) {
             if (this.searchParams[key] === "") {

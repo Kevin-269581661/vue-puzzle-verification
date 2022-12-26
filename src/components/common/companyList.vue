@@ -205,6 +205,22 @@
           ></el-option>
         </el-select>
       </p>
+      <p class="conpany-form-item">
+        <span class="conpany-form__label">全国单拆单：</span>
+        <el-select
+          v-model="companyInfo.acceptSpiltOrderStatus"
+          collapse-tags
+          placeholder="请选择"
+          size="small"
+        >
+          <el-option
+            v-for="item of splitOrderOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </p>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="isShowNew = false">取 消</el-button>
         <el-button type="primary" @click="handleCompany()">确 定</el-button>
@@ -286,6 +302,16 @@ export default {
           value: false
         }
       ],
+      splitOrderOptions: [
+        {
+            label: '不可拆单',
+            value: false
+        },
+        {
+            label: '可拆单',
+            value: true
+        }
+      ],
       // 表格数据
       companyList: [],
       // 新增公司信息
@@ -294,6 +320,7 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
+        acceptSpiltOrderStatus: false
       },
       isShowNew: false,
       // 是否可新建公司
@@ -363,7 +390,8 @@ export default {
               type: item.ascType >= 0 ? item.ascType : "",
               mediaTypeList: item.mediaTypeList || [],
               createTime: item.createTime || "",
-              openStatus: item.openStatus
+              openStatus: item.openStatus,
+              acceptSpiltOrderStatus: item.acceptSpiltOrderStatus,
             }
           })
           this.loading = false;
@@ -441,6 +469,7 @@ export default {
         type: 1,
         mediaTypeIds: [],
         systemEnableStatus: '',
+        acceptSpiltOrderStatus: false,
       };
       this.isAdd = true;
       this.isShowNew = true;
@@ -450,12 +479,13 @@ export default {
       // 新增
       if (this.companyInfo.keyword) {
         if (this.isAdd) {
-          let { keyword, type, mediaTypeIds, systemEnableStatus } = this.companyInfo;
+          let { keyword, type, mediaTypeIds, systemEnableStatus, acceptSpiltOrderStatus } = this.companyInfo;
           let info = {
             name: keyword,
             type,
             mediaTypeIds,
-            openStatus:systemEnableStatus
+            openStatus:systemEnableStatus,
+            acceptSpiltOrderStatus
           };
           api
             .postApi_json(
@@ -476,13 +506,14 @@ export default {
             });
         } else {
           // 编辑
-          let { keyword, type, asrID, mediaTypeIds, systemEnableStatus } = this.companyInfo;
+          let { keyword, type, asrID, mediaTypeIds, systemEnableStatus, acceptSpiltOrderStatus } = this.companyInfo;
           let info = {
             id: asrID * 1,
             name: keyword,
             type,
             mediaTypeIds,
-            openStatus:systemEnableStatus
+            openStatus:systemEnableStatus,
+            acceptSpiltOrderStatus
           };
           api
             .postApi_json(
@@ -588,7 +619,8 @@ export default {
         type: row.type - 0,
         asrID: row.asrID,
         mediaTypeIds: row.mediaTypeList.map(item => item.mediaTypeId),
-        systemEnableStatus: row.openStatus
+        systemEnableStatus: row.openStatus,
+        acceptSpiltOrderStatus: row.acceptSpiltOrderStatus
       };
     },
   },

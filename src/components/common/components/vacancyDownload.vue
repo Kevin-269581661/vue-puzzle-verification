@@ -1,90 +1,106 @@
 <template>
   <div class="vacancy_box">
-    <el-row>
-      <el-col :span="6">
-        <span>导出空位:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-radio-group v-model="downLoadInfo.loadType">
-          <el-radio label="1">按小区</el-radio>
-          <el-radio label="2">按楼栋</el-radio>
-          <el-radio label="3">按单元</el-radio>
-          <el-radio label="4" v-if="showNdwBtn">按点位</el-radio>
-        </el-radio-group>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>选择城市:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-select
-          v-model="downLoadInfo.city"
-          placeholder="请选择城市"
-          multiple
-          size="small"
-          collapse-tags
-          filterable
-        >
-          <el-option
-            v-for="item in cityList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>媒体类型:</span>
-      </el-col>
-      <el-col :span="18">
+    <template v-if="!(mediaPermissionList[0] === '点位' && showNdwBtn)">
+      <el-row>
+        <el-col :span="6">
+          <span>导出空位:</span>
+        </el-col>
+        <el-col :span="18">
+          <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
+            <!-- <el-radio
+              v-for="(item, index) in mediaPermissionList"
+              :label="item"
+              :key="index"
+              v-if="!(item == '点位' && showNdwBtn)"
+            >
+              {{item}}
+            </el-radio> -->
+            <el-radio
+              v-for="(item, index) in mediaPermissionList"
+              :label="item"
+              :key="index"
+              v-if="!(item === '点位' && showNdwBtn)"
+            >
+              {{item}}
+            </el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>选择城市:</span>
+        </el-col>
+        <el-col :span="18">
           <el-select
-            size="small"
-            class="m_ehicle_class"
+            v-model="downLoadInfo.city"
+            placeholder="请选择城市"
             multiple
+            size="small"
             collapse-tags
-            v-model="downLoadInfo.mediaTypeIds"
-            placeholder="请选择媒体类型"
+            filterable
           >
-            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id"></el-option>
+            <el-option
+              v-for="item in cityList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
           </el-select>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="6">
-        <span>选择日期:</span>
-      </el-col>
-      <el-col :span="18">
-        <el-radio-group v-model="downLoadInfo.dateType">
-          <el-radio label="1">默认半年日期</el-radio>
-          <el-radio label="2">自定义日期</el-radio>
-        </el-radio-group>
-      </el-col>
-    </el-row>
-    <el-row v-if="downLoadInfo.dateType == '2'">
-      <el-col :span="18" :offset="6">
-        <el-date-picker
-          v-model="downLoadInfo.daterange"
-          type="daterange"
-          size="small"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy/MM/dd"
-          format="yyyy/MM/dd"
-          :picker-options="pickerOptions"
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>媒体类型:</span>
+        </el-col>
+        <el-col :span="18">
+            <el-select
+              size="small"
+              class="m_ehicle_class"
+              multiple
+              collapse-tags
+              v-model="downLoadInfo.mediaTypeIds"
+              placeholder="请选择媒体类型"
+            >
+              <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.mediaTypeName" :value="item.mediaTypeId"></el-option>
+            </el-select>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6">
+          <span>选择日期:</span>
+        </el-col>
+        <el-col :span="18">
+          <el-radio-group v-model="downLoadInfo.dateType">
+            <el-radio label="1">默认半年日期</el-radio>
+            <el-radio label="2">自定义日期</el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+      <el-row v-if="downLoadInfo.dateType == '2'">
+        <el-col :span="18" :offset="6">
+          <el-date-picker
+            v-model="downLoadInfo.daterange"
+            type="daterange"
+            size="small"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy/MM/dd"
+            format="yyyy/MM/dd"
+            :picker-options="pickerOptions"
+          >
+          </el-date-picker>
+        </el-col>
+      </el-row>
+      <p class="button_box">
+        <el-button @click="cancelDown()" size="small">取 消</el-button>
+        <el-button type="primary" @click="confirmDown()" size="small"
+          >确 定</el-button
         >
-        </el-date-picker>
-      </el-col>
-    </el-row>
-    <p class="button_box">
-      <el-button @click="cancelDown()" size="small">取 消</el-button>
-      <el-button type="primary" @click="confirmDown()" size="small"
-        >确 定</el-button
-      >
-    </p>
+      </p>
+    </template>
+    <el-result v-else icon="info" title="该账号暂无空位导出权限" subTitle="不存在可以导出的选点维度">
+    </el-result>
   </div>
 </template>
 
@@ -101,13 +117,14 @@ export default {
       sessionData: {},
       // 空位导出信息
       downLoadInfo: {
-        loadType: "1",
+        loadType: "",
         city: [],
         dateType: "1",
         mediaTypeIds: '',
         daterange: [],
       },
       allMediaTypes: [],
+      tempMediaTypes: [],
       // 城市列表
       cityList: [],
       pickerOptions: {
@@ -115,19 +132,66 @@ export default {
           return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
+      mediaPermissionList: [],
+      mediaTypeList: [],
     };
   },
   methods: {
+    // 导出类型对应媒体类型
+    loadTypeChange(type) {
+        const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
+        this.allMediaTypes = this.tempMediaTypes[index].mediaTypeList
+    },
     // 获取session数据
     getSessionData () {
       this.sessionData = sessFun.getSess();
+      // 处理导点纬度
+      let permissionList = this.sessionData.userMediaChooseConfigs || []
+      let tempPermiision = []
+      let tempMediaTypes = []
+      if(permissionList.length) {
+        permissionList.forEach(per => {
+            tempPermiision.push(per.chooseTypeName)
+        })
+      }
+      tempPermiision = [...new Set(tempPermiision)]
+      let order = ['点位', '单元', '楼栋', '小区']
+      tempPermiision = tempPermiision.sort((a, b) => {
+        return order.indexOf(a) - order.indexOf(b)
+      })
+      if(tempPermiision.length) {
+        let list
+        tempPermiision.forEach(item => {
+            list = permissionList.filter(v => v.chooseTypeName === item)
+            tempMediaTypes.push({
+                chooseTypeName: item,
+                mediaTypeList: list
+            })
+        })
+      }
+      this.tempMediaTypes = tempMediaTypes
+      this.mediaPermissionList = tempPermiision
     },
-    cancelDown () {
+    cancelDown() {
+      this.resetDownloadInfo()
       this.messageFun("info", "取消此操作");
       this.$emit("cancelClick", false);
     },
+    // 重置空位导出信息
+    resetDownloadInfo() {
+      const info = this.downLoadInfo
+      info.loadType = '',
+      info.city = [],
+      info.dateType = '1'
+      info.mediaTypeIds = ''
+      info.daterange = []
+    },
     confirmDown () {
-        let { loadType, city, daterange, dateType } = this.downLoadInfo;
+      let { loadType, city, daterange, dateType, mediaTypeIds } = this.downLoadInfo;
+        if (!loadType) {
+            Message.warning("请选择选点纬度!");
+            return;
+        }
         if (!city.length) {
             Message.warning("请选择城市!");
             return;
@@ -138,16 +202,19 @@ export default {
             return;
             }
         }
-
+        if (!mediaTypeIds.length) {
+            Message.warning("请选择媒体类型!");
+            return;
+        }
         switch(loadType) {
             // 按小区
-            case "1": this.getExcelData('exportVacancyByCommunity', '小区'); break;
+            case "小区": this.getExcelData('exportVacancyByCommunity', '小区'); break;
             // 按楼栋
-            case "2": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
+            case "楼栋": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
             // 按单元
-            case "3": this.getExcelData('exportVacancyByUnit', '单元'); break;
+            case "单元": this.getExcelData('exportVacancyByUnit', '单元'); break;
             // 按点位
-            case "4": this.getExcelData('exportVacancyByAds', '点位'); break;
+            case "点位": this.getExcelData('exportVacancyByAds', '点位'); break;
         }
     },
     // 获取城市
@@ -175,16 +242,6 @@ export default {
             Message.warning(res.data.MSG);
           }
         });
-    },
-    // 个人权限公司下媒体类型列表
-    getAllMediaTypes() {
-      api.getApi('/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes').then(res => {
-        if (res.data.SysCode == 200200) {
-          this.allMediaTypes = res.data.data || []
-        } else {
-          this.messageFun('warning', res.data.MSG);
-        }
-      })
     },
     // 获取城市中文名称
     getCityName (rids) {
@@ -258,12 +315,13 @@ export default {
   mounted () {
     this.getSessionData();
     this.getCity();
-    this.getAllMediaTypes();
+    // this.getAllMediaTypes();
   },
   computed: {
     //显示导点位
     showNdwBtn () {
-      return !(['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.sessionData.customPermission.proposalPermission == 1);
+      return (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) &&
+        this.sessionData.customPermission.proposalPermission == 1)
     },
   },
 };
@@ -284,6 +342,11 @@ export default {
 }
 /deep/.vacancy_box .el-range-editor--mini .el-range-separator {
   line-height: 30px;
+}
+
+/deep/.vacancy_box .el-result {
+  padding: 0;
+    padding-bottom: 50px;
 }
 .button_box {
   text-align: right;

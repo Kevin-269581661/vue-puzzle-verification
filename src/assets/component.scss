@@ -18,3 +18,22 @@
     height: 28px;
   }
 }
+
+// 滚动条的宽度
+/deep/ .el-table__body-wrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 12px;
+}
+
+// 滚动条的滑块
+/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 3px;
+}
+
+/deep/ .el-table__fixed,
+/deep/ .el-table__fixed-right {
+  height: auto !important; // 让固定列的高自适应
+  bottom: 12px !important; // 固定列默认设置了定位
+  right: 0px !important;
+}

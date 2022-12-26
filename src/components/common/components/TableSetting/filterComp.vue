@@ -1,6 +1,6 @@
 <template>
     <div style="margin-left: 8px;">
-        <el-popover popper-class="filter-popover" placement="bottom" :width="200" trigger="click">
+        <el-popover popper-class="filter-popover" placement="bottom" trigger="click">
             <div class="filter-box">
                 <div class="filter-box-title">
                     <el-checkbox v-model="allChecked" @change="checkAll">列展示</el-checkbox>
@@ -21,7 +21,7 @@
                         @end="onEnd"
                         :move="onMove"
                     >
-                        <span
+                        <div
                             class="inner-column-item"
                             v-for="item in leftFixList"
                             :key="item.id"
@@ -31,7 +31,7 @@
                             <span class="fix-icon" @click="notToFix(item)">
                                 <i class="el-icon-minus" style="font-size: 14px;"></i>
                             </span>
-                        </span>
+                        </div>
                     </draggable>
                     <!-- 不固定 -->
                     <span class="inner-fix">不固定</span>
@@ -103,9 +103,6 @@ export default {
             notFixList: [],
             // 右侧固定数组
             rightFixList: [],
-            // 默认设置
-            defaultLeftList: [],
-            defaultList: [],
             // 重置设置
             initList: [],
             initLeftList: [],
@@ -119,37 +116,7 @@ export default {
         }
     },
     mounted() {
-        const initList = this.columns.filter(v => v.fix === 'not')
-        const initLeftList = this.columns.filter(v => v.fix === 'left')
-        const initRightList = this.columns.filter( v => v.fix === 'right')
-        // 重置数据备份
-        this.initList = JSON.parse(JSON.stringify(initList))
-        this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
-        this.initRightList = JSON.parse(JSON.stringify(initRightList))
-
-        // 本地是否存在默认配置，有直接拿，没有则保存
-        const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
-        if(notFixList) {
-            this.notFixList = notFixList
-        } else {
-            this.notFixList = JSON.parse(JSON.stringify(initList))
-            addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
-        }
-        const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
-        if(leftFixList) {
-            this.leftFixList = leftFixList
-        } else {
-            this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
-            addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
-        }
-        const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
-        if(rightFixList) {
-            this.rightFixList = rightFixList
-        } else {
-            this.rightFixList = JSON.parse(JSON.stringify(initRightList))
-            addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
-        }
-
+        this.delColsType()
         this.$emit('filterColumn', [...this.leftFixList, ...this.notFixList, ...this.rightFixList])
         this.isCheckAll()
     },
@@ -165,7 +132,71 @@ export default {
             return arr
         }
     },
+    watch: {
+        columns(oldCol, newCol) {
+            // 判断是否更新
+            const isUpdate = this.isArrDifferent(oldCol, newCol)
+            if (isUpdate) {
+                this.delColsType()
+            }
+        }
+    },
     methods: {
+        // 判断两个数组是否相同
+        isArrDifferent(arr1, arr2) {
+            const a = arr1.filter(x => !arr2.some(y => y.id === x.id))
+            const b = arr2.filter(x => !arr1.some(y => y.id === x.id))
+            if (a.length || b.length) {
+                return true
+            } else {
+                return false
+            }
+        },
+        // 列字段类型处理
+        delColsType() {
+            // 获取本地缓存
+            const allColumnList = getLocalCache(`${this.cacheKey}-allColumnList`)
+            const notFixList = getLocalCache(`${this.cacheKey}-notFixList`)
+            const leftFixList = getLocalCache(`${this.cacheKey}-leftFixList`)
+            const rightFixList = getLocalCache(`${this.cacheKey}-rightFixList`)
+
+            // 列字段类型处理
+            const initList = this.columns.filter(v => v.fix === 'not')
+            const initLeftList = this.columns.filter(v => v.fix === 'left')
+            const initRightList = this.columns.filter(v => v.fix === 'right')
+
+            // 备份初始设置
+            this.initList = JSON.parse(JSON.stringify(initList))
+            this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
+            this.initRightList = JSON.parse(JSON.stringify(initRightList))
+
+            // 更新列字段
+            const updateColumns = () => {
+                this.notFixList = JSON.parse(JSON.stringify(initList))
+                this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
+                this.rightFixList = JSON.parse(JSON.stringify(initRightList))
+                addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
+                addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
+                addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
+                // 缓存总的列字段，用于比较是否更新
+                addLocalCache(`${this.cacheKey}-allColumnList`, this.columns)
+            }
+            // 判断是否存在配置
+            if(allColumnList) {
+                // 判断是否更新
+                if (this.isArrDifferent(allColumnList, this.columns)) {
+                    updateColumns()
+                }
+                else {
+                    this.notFixList = notFixList
+                    this.leftFixList = leftFixList
+                    this.rightFixList = rightFixList
+                }
+            }
+            else {
+                updateColumns()
+            }
+        },
         // 刷新列表
         toInit() {
             addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
@@ -217,7 +248,6 @@ export default {
         toFixLeft(item) {
             const index = this.notFixList.findIndex(v => v.id === item.id)
             this.notFixList[index].fix = 'left'
-            // this.leftFixList.splice(index, 0, this.notFixList[index])
             this.leftFixList.push(item)
             this.notFixList.splice(index, 1)
             this.toInit()
@@ -263,6 +293,29 @@ export default {
 
 .filter-box-outer {
     background-color: #fff;
+    min-height: 100px;
+    max-height: 500px;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+        border-radius: 0;
+        background: #fafafa;
+    }
+
     .filter-box-inner {
         .inner-fix {
             display: block;
@@ -275,7 +328,6 @@ export default {
         .inner-column-item {
             display: flex;
             align-items: center;
-            width: 200px;
             height: 24px;
 
             /deep/ i.el-icon-menu {
@@ -283,25 +335,26 @@ export default {
                 line-height: 20px;
                 color: #D6D6D6;
                 cursor: grab;
-                padding: 0 12px;
+                padding: 4px 12px 0 12px;
             }
 
             /deep/ label.el-checkbox {
-                width: 140px;
+                min-width: 130px;
+                max-width: 300px;
             }
 
             .fix-icon {
-                display: none;
+                visibility: hidden;
                 width: 28px;
                 color: #1890ff;
-                padding-right: 16px;
+                padding-left: 10px;
             }
 
             &:hover {
                 background: #E6F7FF;
 
                 .fix-icon {
-                    display: block;
+                    visibility: visible;
                 }
             }
 
@@ -312,8 +365,9 @@ export default {
 </style>
 <style lang="scss">
 .el-popover.filter-popover {
-    box-sizing: content-box;
+    box-sizing: border-box;
     padding: 0 !important;
     padding-bottom: 6px !important;
+    width: max-content;
 }
 </style>

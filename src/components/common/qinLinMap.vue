@@ -1568,207 +1568,227 @@
                 // 城市选择弹框
                 dialogCity: false,
 
-                // 投放排期
-                timeRange: []
-            };
-        },
-        created() {
-            this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
-            if (this.adListParams != null) {
-                this.timeRange = this.adListParams.ls + "-" + this.adListParams.le;
-            }
-            if (mapConfig.system === 0) {
-                mapConfig.apiVar.Media = this.apiVar.Media;
-                mapConfig.apiVar.mapApi = this.apiVar.mapApi;
-            } else if (mapConfig.system === 1) {
-                mapConfig.apiVar.Media = "/QFAD";
-                mapConfig.apiVar.mapApi = "/QFAD";
-                // 分享页不调用改函数
-                !this.$route.path.includes("shareRes") && this.selectedListToResList();
-            }
-        },
-        mounted() {
-            // this.userInfo = JSON.parse(sessionStorage.getItem(mapConfig.userInfo))
-            this.getSessionData();
-            window.onload = this.initMap();
-            if (this.$route.path.includes("shareRes")) {
-                this.isShare = true;
-                this.getShareResList();
-            } else {
-                this.isShare = false;
-                // 初始化鼠标绘制
-                this.initMouseDrawing();
-                if (this.systemSource === 1) {
-                    // QFAD可以切换省份，所以不以路由参数显示地图
-                    if (this.adListParams.rid) {
-                        this.adListParams.provinceId &&
-                        this.adListParams.rid &&
-                        (this.citySelect = [
-                            this.adListParams.provinceId,
-                            this.adListParams.rid,
-                        ]);
-                        // QFAD获取权限城市
-                        this.getAreaList();
-                        // 获取小区数据
-                        this.getResList();
-                        // 获取楼盘类型
-                        this.getBuildList();
-                        // 获取终端类型（eg:QLG19-C215）
-                        this.getMachineType();
-                        // 获取商圈list
-                        this.getTradingArea();
-                    } else {
-                        // QFAD获取权限城市
-                        this.getAreaList().then((res) => {
-                            res && (this.dialogCity = true);
-                        });
-                    }
-                } else if (this.systemSource === 0) {
-                    // 获取小区数据
-                    this.getResList();
-                    // 获取商圈list
-                    this.getTradingArea();
-                    // 获取设备类型(门类型)
-                    this.getDoorType();
-                    // 获取广告限制列表
-                    this.getADLimit();
-                    // 查找城市id下面所有的区
-                    this.areaList = areaPackage.findArea(this.adListParams.rid);
-                }
-            }
+      // 投放排期
+      timeRange: [],
 
-            //获取媒体类型
-            if (this.adListParams.planAdsCnt) {
-                //意向方案--媒体类型直接写死广告门
-                this.mediaTypes = [
-                    {id: 1, name: "广告门"}
-                ];
-                this.selectMediaType = 1;
-            } else {
-                //非意向方案
-                if (this.adListParams.asrIDs && this.adListParams.asrIDs.length > 0) {
-                    //存在公司id--根据公司id获取媒体类型
-                    this.getCompanyediaTypes();
-                } else {
-                    //不存在公司id--查询系统所有媒体类型
-                    this.getSystemMediaTypes();
-                }
-            }
-        },
-        computed: {
-            currentAreaArr: function () {
-                // val[0]: 省，val[1]: 市
-                let val = this.citySelect;
-                let res = [];
-                if (this.areaList.length > 0 && this.citySelect.length == 2) {
-                    let city = this.areaList.find((item) => item.value == val[0]);
-                    if (city) {
-                        let Area = city.children.find((item) => item.value == val[1]);
-                        Area && (res = Area.children);
-                    }
-                }
-                return res;
-            },
-        },
-        methods: {
-            //获取系统所有媒体类型列表
-            getSystemMediaTypes() {
-                api.getApi("/addsp/api/v1/mediaTypes").then((res) => {
-                    if (res.data.SysCode === 200200) {
-                        this.mediaTypes = res.data.data
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                })
-            },
-            //获取公司下媒体类型列表
-            getCompanyediaTypes() {
-                let params = {
-                    companyIds: this.adListParams.asrIDs.join(","),
-                }
-                api.getApi("/addsp/api/v1/company/mediaTypes", params).then((res) => {
-                    if (res.data.SysCode === 200200) {
-                        this.mediaTypes = res.data.data
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                })
-            },
-            // 将点位数据转换成小区数据，并去重,放入资源列表
-            selectedListToResList() {
-                let selectedListTemp = this.adListParams.selectedList;
-                if (Array.isArray(selectedListTemp) && selectedListTemp.length > 0) {
-                    let resSet = new Set();
-                    selectedListTemp.forEach((item) => {
-                        if (item.communityId && !resSet.has(item.communityId)) {
-                            resSet.add(item.communityId);
-                        }
-                    });
-                    Array.from(resSet).join(",");
-                    let params = {
-                        resIDs: Array.from(resSet).join(","),
-                        startTime: this.adListParams.ls,
-                        endTime: this.adListParams.le,
-                        playSecond: this.adListParams.playSecond,
-                        playCount: this.adListParams.playCount,
-                    };
-                    return new Promise((resolve, reject) => {
-                        api
-                            .getApi("/QFAD/getSelectedCommunity", params)
-                            .then((res) => {
-                                if (res.data.SysCode === 200200) {
-                                    // 地图外已选点位所在小区
-                                    let resListSelected = res.data.data || [];
-                                    console.log(res.data.data, 'res.data.datares.data.datares.data.datares.data.data')
-                                    // 异步情况下，资源列表可能存在数据
-                                    let resLisArr = this.selectResList.reduce(
-                                        (accumulator, currentValue) => {
-                                            accumulator.push(currentValue.resID || "");
-                                        },
-                                        []
-                                    );
-                                    resListSelected.forEach((item) => {
-                                        if (item.resID && !resLisArr.includes(item.resID)) {
-                                            this.selectResList.push(item);
-                                        }
-                                    });
-                                    this.showSelectList = true;
-                                } else {
-                                    sessFun.messageFun("warning", "已选资源获取异常！");
-                                    resolve(false);
-                                }
-                            })
-                            .catch(() => resolve(false));
-                    });
-                }
-            },
-            // 获取缓存数据
-            getSessionData() {
-                this.routeQuery = this.$route.query;
-                // 判断是否是超管访问，超管无提交资源权限
-                if (this.routeQuery.flag === "true") {
-                    this.isCommit = true;
-                } else {
-                    this.isCommit = false;
-                }
-            },
-            // 获取当前用户权限城市
-            getAreaList() {
-                let params = {
-                    uid: this.adListParams.suID,
-                };
-                return new Promise((resolve, reject) => {
-                    api
-                        .getApi("/QFAD/cityInfoList", params)
-                        .then((res) => {
-                            if (res.data.SysCode === 200200) {
-                                this.areaList = res.data.data;
-                                try {
-                                    this.areaListLevel2 = res.data.data.map((item) => {
-                                        let obj = {
-                                            label: item.label,
-                                            value: item.value,
-                                        };
+      // 跳转传过来的媒体类型
+      queryMediaType: '',
+      queryMediaTypeId: ''
+    };
+  },
+  created () {
+    const timeRange = this.$route.query.timeRange
+    if(timeRange){
+      this.timeRange = timeRange.replace(',', ' - ')
+    }
+
+    const {mediaType, mediaTypeId} = this.$route.query
+    this.queryMediaType = mediaType ? mediaType : ''
+    this.queryMediaTypeId  = mediaTypeId ? mediaTypeId : ''
+
+    this.adListParams = JSON.parse(localStorage.getItem(mapConfig.mapParams));
+    if (this.adListParams != null) {
+      this.timeRange = this.adListParams.ls + "-" + this.adListParams.le;
+    }
+    if (mapConfig.system === 0) {
+      mapConfig.apiVar.Media = this.apiVar.Media;
+      mapConfig.apiVar.mapApi = this.apiVar.mapApi;
+    } else if (mapConfig.system === 1) {
+      mapConfig.apiVar.Media = "/QFAD";
+      mapConfig.apiVar.mapApi = "/QFAD";
+      // 分享页不调用改函数
+      !this.$route.path.includes("shareRes") && this.selectedListToResList();
+    }
+  },
+  mounted () {
+    // this.userInfo = JSON.parse(sessionStorage.getItem(mapConfig.userInfo))
+    this.getSessionData();
+    window.onload = this.initMap();
+    if (this.$route.path.includes("shareRes")) {
+      this.isShare = true;
+      this.getShareResList();
+    } else {
+      this.isShare = false;
+      // 初始化鼠标绘制
+      this.initMouseDrawing();
+      if (this.systemSource === 1) {
+        // QFAD可以切换省份，所以不以路由参数显示地图
+        if (this.adListParams.rid) {
+          this.adListParams.provinceId &&
+            this.adListParams.rid &&
+            (this.citySelect = [
+              this.adListParams.provinceId,
+              this.adListParams.rid,
+            ]);
+          // QFAD获取权限城市
+          this.getAreaList();
+          // 获取小区数据
+          this.getResList();
+          // 获取楼盘类型
+          this.getBuildList();
+          // 获取终端类型（eg:QLG19-C215）
+          this.getMachineType();
+          // 获取商圈list
+          this.getTradingArea();
+        } else {
+          // QFAD获取权限城市
+          this.getAreaList().then((res) => {
+            res && (this.dialogCity = true);
+          });
+        }
+      } else if (this.systemSource === 0) {
+        // 获取小区数据
+        this.getResList();
+        // 获取商圈list
+        this.getTradingArea();
+        // 获取设备类型(门类型)
+        this.getDoorType();
+        // 获取广告限制列表
+        this.getADLimit();
+        // 查找城市id下面所有的区
+        this.areaList = areaPackage.findArea(this.adListParams.rid);
+      }
+    }
+
+    //获取媒体类型
+    if(this.adListParams.planAdsCnt){
+      //意向方案--媒体类型直接写死广告门
+      this.mediaTypes=[
+        {id: 1, name: "广告门"}
+      ];
+      this.selectMediaType=1;
+    }else{
+      //非意向方案
+      if(this.adListParams.asrIDs&&this.adListParams.asrIDs.length>0){
+        //存在公司id--根据公司id获取媒体类型
+        this.getCompanyediaTypes();
+      }else{
+        //不存在公司id--查询系统所有媒体类型
+        this.getSystemMediaTypes();
+      }
+    }
+  },
+  computed: {
+    currentAreaArr: function () {
+      // val[0]: 省，val[1]: 市
+      let val = this.citySelect;
+      let res = [];
+      if (this.areaList.length > 0 && this.citySelect.length == 2) {
+        let city = this.areaList.find((item) => item.value == val[0]);
+        if (city) {
+          let Area = city.children.find((item) => item.value == val[1]);
+          Area && (res = Area.children);
+        }
+      }
+      return res;
+    },
+  },
+  methods: {
+    //获取系统所有媒体类型列表
+    getSystemMediaTypes(){
+      api.getApi("/addsp/api/v1/mediaTypes").then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+        }
+        console.log(this.queryMediaType)
+        if (this.queryMediaType === '单元门禁灯箱') {
+          this.mediaTypes = this.mediaTypes.filter(item => item.name === this.queryMediaType)
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    //获取公司下媒体类型列表
+    getCompanyediaTypes(){
+      let params = {
+        companyIds: this.adListParams.asrIDs.join(","),
+      }
+      api.getApi("/addsp/api/v1/company/mediaTypes",params).then((res)=>{
+        if(res.data.SysCode === 200200){
+          this.mediaTypes=res.data.data
+          if (this.queryMediaType === '单元门禁灯箱') {
+            this.mediaTypes = this.mediaTypes.filter(item => item.name === this.queryMediaType)
+          }
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    // 将点位数据转换成小区数据，并去重,放入资源列表
+    selectedListToResList () {
+      let selectedListTemp = this.adListParams.selectedList;
+      if (Array.isArray(selectedListTemp) && selectedListTemp.length > 0) {
+        let resSet = new Set();
+        selectedListTemp.forEach((item) => {
+          if (item.communityId && !resSet.has(item.communityId)) {
+            resSet.add(item.communityId);
+          }
+        });
+        Array.from(resSet).join(",");
+        let params = {
+          resIDs: Array.from(resSet).join(","),
+          startTime: this.adListParams.ls,
+          endTime: this.adListParams.le,
+          playSecond: this.adListParams.playSecond,
+          playCount: this.adListParams.playCount,
+        };
+        return new Promise((resolve, reject) => {
+          api
+            .getApi("/QFAD/getSelectedCommunity", params)
+            .then((res) => {
+              if (res.data.SysCode === 200200) {
+                // 地图外已选点位所在小区
+                let resListSelected = res.data.data || [];
+                console.log(res.data.data, 'res.data.datares.data.datares.data.datares.data.data')
+                // 异步情况下，资源列表可能存在数据
+                let resLisArr = this.selectResList.reduce(
+                  (accumulator, currentValue) => {
+                    accumulator.push(currentValue.resID || "");
+                  },
+                  []
+                );
+                resListSelected.forEach((item) => {
+                  if (item.resID && !resLisArr.includes(item.resID)) {
+                    this.selectResList.push(item);
+                  }
+                });
+                this.showSelectList = true;
+              } else {
+                sessFun.messageFun("warning", "已选资源获取异常！");
+                resolve(false);
+              }
+            })
+            .catch(() => resolve(false));
+        });
+      }
+    },
+    // 获取缓存数据
+    getSessionData () {
+      this.routeQuery = this.$route.query;
+      // 判断是否是超管访问，超管无提交资源权限
+      if (this.routeQuery.flag === "true") {
+        this.isCommit = true;
+      } else {
+        this.isCommit = false;
+      }
+    },
+    // 获取当前用户权限城市
+    getAreaList () {
+      let params = {
+        uid: this.adListParams.suID,
+      };
+      return new Promise((resolve, reject) => {
+        api
+          .getApi("/QFAD/cityInfoList", params)
+          .then((res) => {
+            if (res.data.SysCode === 200200) {
+              this.areaList = res.data.data;
+              try {
+                this.areaListLevel2 = res.data.data.map((item) => {
+                  let obj = {
+                    label: item.label,
+                    value: item.value,
+                  };
 
                                         obj.children = item.children.map((childrenItem) => {
                                             return {
@@ -1899,450 +1919,452 @@
                     11
                 );
 
-                //开启鼠标滚轮缩放
-                this.resMap.enableScrollWheelZoom(true);
-                let mapStyleJson = [
-                    {
-                        featureType: "land",
-                        elementType: "geometry.stroke",
-                        stylers: {
-                            visibility: "off",
-                        },
-                    },
-                    {
-                        featureType: "point",
-                        elementType: "geometry.stroke",
-                        stylers: {
-                            visibility: "off",
-                        },
-                    },
-                    {
-                        featureType: "building",
-                        elementType: "geometry.stroke",
-                        stylers: {
-                            visibility: "off",
-                        },
-                    },
-                ];
-                this.resMap.setMapStyle({styleJson: mapStyleJson});
-                let that = this;
-                // 监听点击地图
-                this.resMap.addEventListener("click", (e) => {
-                    // console.log('监听点击地图---',e.point)
-                    if (this.isMouseLine) {
-                        if (!this.mouseLineStep) {
-                            this.resMap.addEventListener("mousemove", that.mapMouseMove, false);
-                        }
-                        this.LinePoints.push(e.point);
-                        this.drawingLine(e.point);
-                        this.mouseLineStep++;
-                    }
-                });
-                // 监听地图缩放
-                this.resMap.addEventListener("zoomend", (e) => {
-                    this.setMapZoom();
-                });
-                // 监听地图移动
-                this.resMap.addEventListener("moveend", (e) => {
-                    this.transfersShowOverlay();
-                });
-            },
-            // 城市边界
-            displayBoundary() {
-                if (this.systemSource === 1) {
-                    let json;
-                    for (let key of areaPackage.findArea(this.adListParams.rid)) {
-                        json = {color: "#F1627A", name: key.rName};
-                        this.getBoundary(json);
-                    }
-                } else if (this.systemSource === 0) {
-                    let json;
-                    for (let key of this.areaList) {
-                        json = {color: "#F1627A", name: key.rName};
-                        this.getBoundary(json);
-                    }
-                }
-            },
-            // 边界覆盖物
-            getBoundary(json) {
-                let _Boundary = new BMap.Boundary();
-                _Boundary.get(json.name, (rs) => {
-                    // 获取行政区域
-                    let count = rs.boundaries.length; // 行政区域的点有多少个
-                    for (let i = 0; i < count; i++) {
-                        let ply = new BMap.Polygon(rs.boundaries[0], {
-                            strokeWeight: 2,
-                            strokeOpacity: 1,
-                            strokeColor: json.color,
-                            fillColor: json.color, // 控制覆盖物的颜色
-                            fillOpacity: 0.000001, // 控制覆盖物的透明度
-                        }); //建立多边形覆盖物
-                        this.resMap.addOverlay(ply); // 添加覆盖物
-                    }
-                });
-            },
-            // 获取小区数据
-            getResList() {
-                this.mapLoading = true;
-                let params = {
-                    startTime: this.adListParams.ls,
-                    endTime: this.adListParams.le,
-                    cityId: this.adListParams.rid,
-                    suID: this.adListParams.suID, // 销售uid
-                    asrIDs: this.adListParams.asrIDs.join(","),
-                    resName: "",
-                    districtId: this.selectArea.join(","), // 区域，未选择区县时值为空
-                    cType: this.bType, // 楼盘类型
-                    minhPrice: this.buildPrice[0] * 100,
-                    maxhPrice: this.buildPrice[1] * 100,
-                    minhNum: this.houseNum[0],
-                    maxhNum: this.houseNum[1],
-                    minchDay: this.liveYear[0],
-                    maxchDay: this.liveYear[1],
-                    tradingArea: this.selectTradingArea,
-                    adLimit: this.selectLimits.join(","),
-                    mType: this.selectDoorType,
-                    mediaTypeId: this.selectMediaType,
-                    grade: this.selectMediaLevel,
-                    groupByDistrict: 1, // 1按地区分组
-                    distance: null, // 半径,
-                };
+      //开启鼠标滚轮缩放
+      this.resMap.enableScrollWheelZoom(true);
+      let mapStyleJson = [
+        {
+          featureType: "land",
+          elementType: "geometry.stroke",
+          stylers: {
+            visibility: "off",
+          },
+        },
+        {
+          featureType: "point",
+          elementType: "geometry.stroke",
+          stylers: {
+            visibility: "off",
+          },
+        },
+        {
+          featureType: "building",
+          elementType: "geometry.stroke",
+          stylers: {
+            visibility: "off",
+          },
+        },
+      ];
+      this.resMap.setMapStyle({ styleJson: mapStyleJson });
+      let that = this;
+      // 监听点击地图
+      this.resMap.addEventListener("click", (e) => {
+        // console.log('监听点击地图---',e.point)
+        if (this.isMouseLine) {
+          if (!this.mouseLineStep) {
+            this.resMap.addEventListener("mousemove", that.mapMouseMove, false);
+          }
+          this.LinePoints.push(e.point);
+          this.drawingLine(e.point);
+          this.mouseLineStep++;
+        }
+      });
+      // 监听地图缩放
+      this.resMap.addEventListener("zoomend", (e) => {
+        this.setMapZoom();
+      });
+      // 监听地图移动
+      this.resMap.addEventListener("moveend", (e) => {
+        this.transfersShowOverlay();
+      });
+    },
+    // 城市边界
+    displayBoundary () {
+      if (this.systemSource === 1) {
+        let json;
+        for (let key of areaPackage.findArea(this.adListParams.rid)) {
+          json = { color: "#F1627A", name: key.rName };
+          this.getBoundary(json);
+        }
+      } else if (this.systemSource === 0) {
+        let json;
+        for (let key of this.areaList) {
+          json = { color: "#F1627A", name: key.rName };
+          this.getBoundary(json);
+        }
+      }
+    },
+    // 边界覆盖物
+    getBoundary (json) {
+      let _Boundary = new BMap.Boundary();
+      _Boundary.get(json.name, (rs) => {
+        // 获取行政区域
+        let count = rs.boundaries.length; // 行政区域的点有多少个
+        for (let i = 0; i < count; i++) {
+          let ply = new BMap.Polygon(rs.boundaries[0], {
+            strokeWeight: 2,
+            strokeOpacity: 1,
+            strokeColor: json.color,
+            fillColor: json.color, // 控制覆盖物的颜色
+            fillOpacity: 0.000001, // 控制覆盖物的透明度
+          }); //建立多边形覆盖物
+          this.resMap.addOverlay(ply); // 添加覆盖物
+        }
+      });
+    },
+    // 获取小区数据
+    getResList () {
+      console.log(this.queryMediaType, 'this.queryMediaType')
+      this.mapLoading = true;
+      let params = {
+        startTime: this.adListParams.ls,
+        endTime: this.adListParams.le,
+        cityId: this.adListParams.rid,
+        suID: this.adListParams.suID, // 销售uid
+        asrIDs: this.adListParams.asrIDs.join(","),
+        resName: "",
+        districtId: this.selectArea.join(","), // 区域，未选择区县时值为空
+        cType: this.bType, // 楼盘类型
+        minhPrice: this.buildPrice[0] * 100,
+        maxhPrice: this.buildPrice[1] * 100,
+        minhNum: this.houseNum[0],
+        maxhNum: this.houseNum[1],
+        minchDay: this.liveYear[0],
+        maxchDay: this.liveYear[1],
+        tradingArea: this.selectTradingArea,
+        adLimit: this.selectLimits.join(","),
+        mType: this.selectDoorType,
+        // mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType,
+        mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType,
+        grade: this.selectMediaLevel,
+        groupByDistrict: 1, // 1按地区分组
+        distance: null, // 半径,
+      };
 
-                if (this.systemSource === 1) {
-                    // QFAD广告播放时长和次数
-                    params.playSecond = this.adListParams.playSecond;
-                    params.playCount = this.adListParams.playCount;
-                    // 设备类型多选
-                    params.deviceModels = this.selectMachineType.join(",");
-                }
-                if (this.selectExcludeType) {
-                    switch (this.selectExcludeType) {
-                        case "1":
-                            // 排除小区
-                            params.excludeIndType = 1;
-                            params.excludeInd = this.adListParams.adSystemId[
-                            this.adListParams.adSystemId.length - 1
-                                ];
-                            break;
-                        case "2":
-                            // 排除点位
-                            params.excludeIndType = 2;
-                            params.excludeInd = this.adListParams.adSystemId[
-                            this.adListParams.adSystemId.length - 1
-                                ];
-                            break;
-                    }
-                }
-                // QFAD || QADN
-                if (
-                    (this.systemSource === 1 && this.sessionData.userType === 1) ||
-                    (this.systemSource === 0 && this.sessionData.uType === "ADN_SM")
-                ) {
-                    delete params.suID;
-                }
-                for (let i in params) {
-                    if (!params[i]) {
-                        delete params[i];
-                    }
-                }
-                let url = "/resList";
-                if ("planAdsCnt" in this.adListParams) {
-                    params.planAdsCnt = this.adListParams.planAdsCnt;
-                    url = "/proposal/resList";
-                }
-                api
-                    .getApi(mapConfig.apiVar.mapApi + url, params)
-                    .then((res) => {
-                        this.resMap.clearOverlays();
-                        if (res.data.SysCode === 200200) {
-                            console.log(res.data.data, 'res.data.data')
-                            res.data.data.forEach(item => {
-                                item.resList.forEach(i => {
-                                    i.provinceName = item.provinceName
-                                })
-                            })
-                            this.resAreaList = res.data.data;
-                            this.creatAreaMarker();
-                            this.judgeByselect();
-                        } else {
-                            sessFun.messageFun("warning", res.data.MSG);
-                        }
-                        // 城市边界
-                        this.displayBoundary();
-                        let timer = setTimeout(() => {
-                            this.mapLoading = false;
-                            clearTimeout(timer);
-                        }, 800);
-                    })
-                    .catch((err) => {
-                        console.log("err", err);
-                        this.mapLoading = false;
-                        // sessFun.messageFun('warning','小区数据接口异常')
-                    });
-            },
-            // 根据购物车已有的resID判断勾选
-            judgeByselect() {
-                for (let key of this.selectResList) {
-                    for (let rKey of this.resInfo) {
-                        if (key.resID === rKey.resID) {
-                            // let point = new BMap.Point(key.lng, key.lat);
-                            // 圈起标识
-                            // this.createCircle(key.resID,point);
-                            // 修改label背景色
-                            this.changeLabel(key, 1);
-                            rKey.isSelect = true;
-                            break;
-                        }
-                    }
-                }
-                // console.log('selectResList',this.selectResList)
-            },
-            // 创建区域标注
-            creatAreaMarker() {
-                this.resInfo = [];
-                let markerList = [];
-                let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19, 25), {
-                    anchor: new BMap.Size(8, 8),
-                });
-                let lableList = [];
-                for (let key of this.resAreaList) {
-                    let label = new BMap.Label(
-                        key.districtName + `<br/>` + key.resList.length,
-                        {
-                            // offset:new BMap.Size(4,-18),
-                            offset: new BMap.Size(22, 2),
-                            position: new BMap.Point(key.averageLng, key.averageLat),
-                        }
-                    );
-                    label.setStyle({
-                        width: "64px",
-                        height: "44px",
-                        borderRadius: "50%",
-                        textAlign: "center",
-                        lineHeight: "20px",
-                        boxShadow: "0px 0px 6px 0px rgba(0,0,0,0.15)",
-                        border: "3px solid rgba(255, 255, 255, 0.3)",
-                        background: "#F56251",
-                        color: "rgba(255,255,255,1)",
-                        padding: "16px 4px",
-                        "box-sizing": "content-box",
-                        // cursor: 'pointer'
-                    });
-                    label.rid = key.districtId;
-                    label.addEventListener("click", (e) => {
-                        console.log("e", e);
-                        this.resMap.setCenter(e.target.point);
-                        this.resMap.setZoom(15);
-                        // 移除区域覆盖物
-                        this.removeAreaLabels();
-                        // 显示具体小区marker
-                        this.showResMarker(e.target);
-                    });
-                    lableList.push(label);
-                    this.resMap.addOverlay(label);
-                    // 预先标注-隐藏
-                    for (let resKey of key.resList) {
-                        let marker = this.creatMarker(resKey, myIcon);
-                        // 将标注添加到地图中
-                        this.resMap.addOverlay(marker);
-                        marker.hide();
-                        markerList.push(marker);
-                        this.resInfo.push(resKey);
-                    }
-                }
-                this.areaLables = lableList;
-                this.resMarkers = markerList;
-            },
-            creatMarker(resKey, myIcon) {
-                this.$set(resKey, "isSelect", false);
-                let point = new BMap.Point(Number(resKey.lng), Number(resKey.lat));
-                let marker = new BMap.Marker(point, {icon: myIcon}); // 创建标注
-                // let marker = new BMap.Marker(point);  // 创建标注
-                let label = this.setMarkerLabel(resKey.resName);
-                marker.setLabel(label);
-                marker.setTop(true);
-                // 自定义给maeker绑定inCircleNum、resID属性
-                marker.inCircleNum = 0;
-                marker.resID = resKey.resID;
-                marker.rid = resKey.districtId;
-                marker.addEventListener("click", () => {
-                    this.showInfo(resKey, point);
-                });
-                label.addEventListener("click", () => {
-                    this.showInfo(resKey, point);
-                });
-                return marker;
-            },
-            // 根据区域显示标注
-            showResMarker(target) {
-                for (let key of this.resMarkers) {
-                    if (target.rid === key.rid) {
-                        key.show();
-                    }
-                }
-            },
-            // 移除区域label
-            removeAreaLabels() {
-                for (let labelKey of this.areaLables) {
-                    this.resMap.removeOverlay(labelKey);
-                }
-            },
-            // 区域标注重新打上地图、隐藏具体点位标注
-            showAreaLabels() {
-                if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
-                    for (let labelKey of this.areaLables) {
-                        this.resMap.addOverlay(labelKey);
-                    }
-                    for (let key of this.resMarkers) {
-                        key.inCircleNum = 0;
-                        key.hide();
-                    }
-                }
-            },
-            // 设置标注到label
-            setMarkerLabel(labelName, temp) {
-                let label = new BMap.Label(labelName, {
-                    // offset:new BMap.Size(4,-18)
-                    offset: temp === "online" ? new BMap.Size(28, 2) : new BMap.Size(22, 2),
-                });
-                label.setStyle({
-                    borderRadius: "3px",
-                    boxShadow: "0px 0px 6px 0px rgba(0,0,0,0.15)",
-                    border: "none",
-                    background: "rgba(255,255,255,1)",
-                    color: "rgba(0,0,0,0.85)",
-                    padding: "4px 8px",
-                });
-                return label;
-            },
-            // 显示详情
-            showInfo(info, point) {
-                console.log(info, 'infoinfo--显示详情')
-                this.showResInfo = info;
-                let content = this.$refs.resInfoWindow;
-                let opts = {
-                    width: 180, // 信息窗口宽度
-                    height: 320, // 信息窗口高度
-                    title: "", // 信息窗口标题
-                    enableMessage: false, //设置允许信息窗发送短息
-                };
-                let infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
-                this.resMap.openInfoWindow(infoWindow, point); //开启信息窗口
-                // console.log('显示详情-----',info)
-                this.isShowInfo = true;
-            },
-            // 详情里选定按钮
-            addResFun(item) {
-                // 直接勾选小区没有地图中心点
-                this.$set(this.showResInfo, 'notOnline', true)
-                this.checkBoxFun(this.showResInfo);
-            },
-            // 获取指定资源到媒体列表
-            getMediaListByResID() {
-                // console.log('获取指定资源到媒体列表-----')
-                let params = {
-                    resID: this.showResInfo.resID,
-                    mediaTypeId: this.selectMediaType
-                };
-                if (this.isShare) {
-                    params.shareCode = this.routeQuery.code;
-                } else if (this.selectExcludeType) {
-                    params.startTime = this.adListParams.ls;
-                    params.endTime = this.adListParams.le;
-                    switch (this.selectExcludeType) {
-                        case "2":
-                            // 排除点位
-                            params.excludeIndType = 2;
-                            params.excludeInd = this.adListParams.adSystemId[
-                            this.adListParams.adSystemId.length - 1
-                                ];
-                            break;
-                    }
-                }
-                api
-                    .getApi(mapConfig.apiVar.mapApi + "/mediaByResID", params)
-                    .then((res) => {
-                        if (res.data.SysCode == 200200) {
-                            this.mediaList = res.data.data.map((item) => {
-                                if (item.mState === 1) {
-                                    item.stateUrl = require("../../assets/images/map/mstate1.png");
-                                } else if (item.mState === 2) {
-                                    item.stateUrl = require("../../assets/images/map/mstate2.png");
-                                } else if (item.mState === 3) {
-                                    item.stateUrl = require("../../assets/images/map/mstate3.png");
-                                }
-                                return item;
-                            });
-                            if (this.mediaList.length) {
-                                this.medieDialogVisible = true;
-                            } else {
-                                sessFun.messageFun("warning", "暂无可用媒体数据!");
-                            }
-                        } else {
-                            sessFun.messageFun("warning", "媒体详情获取异常!");
-                        }
-                    })
-                    .catch((err) => {
-                        sessFun.messageFun("warning", "接口异常!");
-                    });
-            },
-            // 媒体图片
-            showMediaImg(item) {
-                // console.log('媒体图片item----',item)
-                this.activeMediaPhotos = item.photoList || [];
-                this.medieImgDialogVisible = true;
-            },
-            // 中转显示
-            transfersShowOverlay() {
-                // 跟进地图等级进行显示
-                if (this.resMap.getZoom() >= 15 || !this.isClustererOpen) {
-                    this.removeAreaLabels();
-                    this.pointInBounds();
-                } else {
-                    this.showAreaLabels();
-                }
-            },
-            /**
-             * 鼠标绘制
-             * */
-            // 初始化鼠标绘制
-            initMouseDrawing() {
-                if (!this.drawingManager) {
-                    // 鼠标绘制控件
-                    let styleOptions = {
-                        strokeColor: "rgba(24,144,255,1)", //边线颜色。
-                        fillColor: "rgba(24,144,255,0.15)", //填充颜色。当参数为空时，圆形将没有填充效果。
-                        strokeWeight: 2, //边线的宽度，以像素为单位。
-                        strokeOpacity: 1, //边线透明度，取值范围0 - 1。
-                        fillOpacity: 1, //填充的透明度，取值范围0 - 1。
-                        strokeStyle: "solid", //边线的样式，solid或dashed。
-                    };
-                    //实例化鼠标绘制工具
-                    this.drawingManager = new BMapLib.DrawingManager(this.resMap, {
-                        isOpen: false, //是否开启绘制模式
-                        enableDrawingTool: false, //是否显示工具栏
-                        drawingToolOptions: {
-                            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
-                            offset: new BMap.Size(5, 5), //偏离值
-                            drawingModes: [
-                                // BMAP_DRAWING_MARKER,     // 画点
-                                BMAP_DRAWING_CIRCLE, // 画圆
-                                BMAP_DRAWING_POLYLINE, // 画线
-                                BMAP_DRAWING_POLYGON, // 画多边形
-                                BMAP_DRAWING_RECTANGLE, // 画矩形
-                            ],
-                        },
-                        enableCalculate: false, //计算绘制结果 当绘制线的时候返回距离、绘制多边形、圆、矩形时候返回面积，单位为米
-                        circleOptions: styleOptions, // 圆的样式
-                        polylineOptions: styleOptions, // 线的样式
-                        polygonOptions: styleOptions, // 多边形的样式
-                        rectangleOptions: styleOptions, // 矩形的样式
-                    });
-                    let that = this;
-                    //添加鼠标绘制工具监听事件，用于获取绘制结果
-                    this.drawingManager.addEventListener("overlaycomplete", function (e) {
-                        // console.log(e.overlay);
-                        // console.log(e.overlay.getPath());
+      if (this.systemSource === 1) {
+        // QFAD广告播放时长和次数
+        params.playSecond = this.adListParams.playSecond;
+        params.playCount = this.adListParams.playCount;
+        // 设备类型多选
+        params.deviceModels = this.selectMachineType.join(",");
+      }
+      if (this.selectExcludeType) {
+        switch (this.selectExcludeType) {
+          case "1":
+            // 排除小区
+            params.excludeIndType = 1;
+            params.excludeInd = this.adListParams.adSystemId[
+              this.adListParams.adSystemId.length - 1
+            ];
+            break;
+          case "2":
+            // 排除点位
+            params.excludeIndType = 2;
+            params.excludeInd = this.adListParams.adSystemId[
+              this.adListParams.adSystemId.length - 1
+            ];
+            break;
+        }
+      }
+      // QFAD || QADN
+      if (
+        (this.systemSource === 1 && this.sessionData.userType === 1) ||
+        (this.systemSource === 0 && this.sessionData.uType === "ADN_SM")
+      ) {
+        delete params.suID;
+      }
+      for (let i in params) {
+        if (!params[i]) {
+          delete params[i];
+        }
+      }
+      let url = "/resList";
+      if ("planAdsCnt" in this.adListParams) {
+        params.planAdsCnt = this.adListParams.planAdsCnt;
+        url = "/proposal/resList";
+      }
+      api
+        .getApi(mapConfig.apiVar.mapApi + url, params)
+        .then((res) => {
+          this.resMap.clearOverlays();
+          if (res.data.SysCode === 200200) {
+            console.log(res.data.data, 'res.data.data')
+            res.data.data.forEach(item => {
+              item.resList.forEach(i => {
+                i.provinceName = item.provinceName
+              })
+            })
+            this.resAreaList = res.data.data;
+            this.creatAreaMarker();
+            this.judgeByselect();
+          } else {
+            sessFun.messageFun("warning", res.data.MSG);
+          }
+          // 城市边界
+          this.displayBoundary();
+          let timer = setTimeout(() => {
+            this.mapLoading = false;
+            clearTimeout(timer);
+          }, 800);
+        })
+        .catch((err) => {
+          console.log("err", err);
+          this.mapLoading = false;
+          // sessFun.messageFun('warning','小区数据接口异常')
+        });
+    },
+    // 根据购物车已有的resID判断勾选
+    judgeByselect () {
+      for (let key of this.selectResList) {
+        for (let rKey of this.resInfo) {
+          if (key.resID === rKey.resID) {
+            // let point = new BMap.Point(key.lng, key.lat);
+            // 圈起标识
+            // this.createCircle(key.resID,point);
+            // 修改label背景色
+            this.changeLabel(key, 1);
+            rKey.isSelect = true;
+            break;
+          }
+        }
+      }
+      // console.log('selectResList',this.selectResList)
+    },
+    // 创建区域标注
+    creatAreaMarker () {
+      this.resInfo = [];
+      let markerList = [];
+      let myIcon = new BMap.Icon(this.markerIcon, new BMap.Size(19, 25), {
+        anchor: new BMap.Size(8, 8),
+      });
+      let lableList = [];
+      for (let key of this.resAreaList) {
+        let label = new BMap.Label(
+          key.districtName + `<br/>` + key.resList.length,
+          {
+            // offset:new BMap.Size(4,-18),
+            offset: new BMap.Size(22, 2),
+            position: new BMap.Point(key.averageLng, key.averageLat),
+          }
+        );
+        label.setStyle({
+          width: "64px",
+          height: "44px",
+          borderRadius: "50%",
+          textAlign: "center",
+          lineHeight: "20px",
+          boxShadow: "0px 0px 6px 0px rgba(0,0,0,0.15)",
+          border: "3px solid rgba(255, 255, 255, 0.3)",
+          background: "#F56251",
+          color: "rgba(255,255,255,1)",
+          padding: "16px 4px",
+          "box-sizing": "content-box",
+          // cursor: 'pointer'
+        });
+        label.rid = key.districtId;
+        label.addEventListener("click", (e) => {
+          console.log("e", e);
+          this.resMap.setCenter(e.target.point);
+          this.resMap.setZoom(15);
+          // 移除区域覆盖物
+          this.removeAreaLabels();
+          // 显示具体小区marker
+          this.showResMarker(e.target);
+        });
+        lableList.push(label);
+        this.resMap.addOverlay(label);
+        // 预先标注-隐藏
+        for (let resKey of key.resList) {
+          let marker = this.creatMarker(resKey, myIcon);
+          // 将标注添加到地图中
+          this.resMap.addOverlay(marker);
+          marker.hide();
+          markerList.push(marker);
+          this.resInfo.push(resKey);
+        }
+      }
+      this.areaLables = lableList;
+      this.resMarkers = markerList;
+    },
+    creatMarker (resKey, myIcon) {
+      this.$set(resKey, "isSelect", false);
+      let point = new BMap.Point(Number(resKey.lng), Number(resKey.lat));
+      let marker = new BMap.Marker(point, { icon: myIcon }); // 创建标注
+      // let marker = new BMap.Marker(point);  // 创建标注
+      let label = this.setMarkerLabel(resKey.resName);
+      marker.setLabel(label);
+      marker.setTop(true);
+      // 自定义给maeker绑定inCircleNum、resID属性
+      marker.inCircleNum = 0;
+      marker.resID = resKey.resID;
+      marker.rid = resKey.districtId;
+      marker.addEventListener("click", () => {
+        this.showInfo(resKey, point);
+      });
+      label.addEventListener("click", () => {
+        this.showInfo(resKey, point);
+      });
+      return marker;
+    },
+    // 根据区域显示标注
+    showResMarker (target) {
+      for (let key of this.resMarkers) {
+        if (target.rid === key.rid) {
+          key.show();
+        }
+      }
+    },
+    // 移除区域label
+    removeAreaLabels () {
+      for (let labelKey of this.areaLables) {
+        this.resMap.removeOverlay(labelKey);
+      }
+    },
+    // 区域标注重新打上地图、隐藏具体点位标注
+    showAreaLabels () {
+      if (!this.isMouseSearch && !this.isOnlineSearch && !this.isMultiPoint) {
+        for (let labelKey of this.areaLables) {
+          this.resMap.addOverlay(labelKey);
+        }
+        for (let key of this.resMarkers) {
+          key.inCircleNum = 0;
+          key.hide();
+        }
+      }
+    },
+    // 设置标注到label
+    setMarkerLabel (labelName, temp) {
+      let label = new BMap.Label(labelName, {
+        // offset:new BMap.Size(4,-18)
+        offset: temp === "online" ? new BMap.Size(28, 2) : new BMap.Size(22, 2),
+      });
+      label.setStyle({
+        borderRadius: "3px",
+        boxShadow: "0px 0px 6px 0px rgba(0,0,0,0.15)",
+        border: "none",
+        background: "rgba(255,255,255,1)",
+        color: "rgba(0,0,0,0.85)",
+        padding: "4px 8px",
+      });
+      return label;
+    },
+    // 显示详情
+    showInfo (info, point) {
+      console.log(info, 'infoinfo--显示详情')
+      this.showResInfo = info;
+      let content = this.$refs.resInfoWindow;
+      let opts = {
+        width: 180, // 信息窗口宽度
+        height: 320, // 信息窗口高度
+        title: "", // 信息窗口标题
+        enableMessage: false, //设置允许信息窗发送短息
+      };
+      let infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+      this.resMap.openInfoWindow(infoWindow, point); //开启信息窗口
+      // console.log('显示详情-----',info)
+      this.isShowInfo = true;
+    },
+    // 详情里选定按钮
+    addResFun (item) {
+      // 直接勾选小区没有地图中心点
+      this.$set(this.showResInfo, 'notOnline', true)
+      this.checkBoxFun(this.showResInfo);
+    },
+    // 获取指定资源到媒体列表
+    getMediaListByResID () {
+      // console.log('获取指定资源到媒体列表-----')
+      let params = {
+        resID: this.showResInfo.resID,
+        mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType
+      };
+      if (this.isShare) {
+        params.shareCode = this.routeQuery.code;
+      } else if (this.selectExcludeType) {
+        params.startTime = this.adListParams.ls;
+        params.endTime = this.adListParams.le;
+        switch (this.selectExcludeType) {
+          case "2":
+            // 排除点位
+            params.excludeIndType = 2;
+            params.excludeInd = this.adListParams.adSystemId[
+              this.adListParams.adSystemId.length - 1
+            ];
+            break;
+        }
+      }
+      api
+        .getApi(mapConfig.apiVar.mapApi + "/mediaByResID", params)
+        .then((res) => {
+          if (res.data.SysCode == 200200) {
+            this.mediaList = res.data.data.map((item) => {
+              if (item.mState === 1) {
+                item.stateUrl = require("../../assets/images/map/mstate1.png");
+              } else if (item.mState === 2) {
+                item.stateUrl = require("../../assets/images/map/mstate2.png");
+              } else if (item.mState === 3) {
+                item.stateUrl = require("../../assets/images/map/mstate3.png");
+              }
+              return item;
+            });
+            if (this.mediaList.length) {
+              this.medieDialogVisible = true;
+            } else {
+              sessFun.messageFun("warning", "暂无可用媒体数据!");
+            }
+          } else {
+            sessFun.messageFun("warning", "媒体详情获取异常!");
+          }
+        })
+        .catch((err) => {
+          sessFun.messageFun("warning", "接口异常!");
+        });
+    },
+    // 媒体图片
+    showMediaImg (item) {
+      // console.log('媒体图片item----',item)
+      this.activeMediaPhotos = item.photoList || [];
+      this.medieImgDialogVisible = true;
+    },
+    // 中转显示
+    transfersShowOverlay () {
+      // 跟进地图等级进行显示
+      if (this.resMap.getZoom() >= 15 || !this.isClustererOpen) {
+        this.removeAreaLabels();
+        this.pointInBounds();
+      } else {
+        this.showAreaLabels();
+      }
+    },
+    /**
+     * 鼠标绘制
+     * */
+    // 初始化鼠标绘制
+    initMouseDrawing () {
+      if (!this.drawingManager) {
+        // 鼠标绘制控件
+        let styleOptions = {
+          strokeColor: "rgba(24,144,255,1)", //边线颜色。
+          fillColor: "rgba(24,144,255,0.15)", //填充颜色。当参数为空时，圆形将没有填充效果。
+          strokeWeight: 2, //边线的宽度，以像素为单位。
+          strokeOpacity: 1, //边线透明度，取值范围0 - 1。
+          fillOpacity: 1, //填充的透明度，取值范围0 - 1。
+          strokeStyle: "solid", //边线的样式，solid或dashed。
+        };
+        //实例化鼠标绘制工具
+        this.drawingManager = new BMapLib.DrawingManager(this.resMap, {
+          isOpen: false, //是否开启绘制模式
+          enableDrawingTool: false, //是否显示工具栏
+          drawingToolOptions: {
+            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+            offset: new BMap.Size(5, 5), //偏离值
+            drawingModes: [
+              // BMAP_DRAWING_MARKER,     // 画点
+              BMAP_DRAWING_CIRCLE, // 画圆
+              BMAP_DRAWING_POLYLINE, // 画线
+              BMAP_DRAWING_POLYGON, // 画多边形
+              BMAP_DRAWING_RECTANGLE, // 画矩形
+            ],
+          },
+          enableCalculate: false, //计算绘制结果 当绘制线的时候返回距离、绘制多边形、圆、矩形时候返回面积，单位为米
+          circleOptions: styleOptions, // 圆的样式
+          polylineOptions: styleOptions, // 线的样式
+          polygonOptions: styleOptions, // 多边形的样式
+          rectangleOptions: styleOptions, // 矩形的样式
+        });
+        let that = this;
+        //添加鼠标绘制工具监听事件，用于获取绘制结果
+        this.drawingManager.addEventListener("overlaycomplete", function (e) {
+          // console.log(e.overlay);
+          // console.log(e.overlay.getPath());
 
                         that.mouseoverlay = e.overlay;
                         that.drawingManager.close();
@@ -4292,183 +4314,183 @@
                                 filterVal.push("asNames");
                             }
 
-                        }
-                        const list = resultArr;
-                        const data = this.formatJson(filterVal, list);
-                        export_json_to_excel(tHeader, data, name);
-                        this.isDown = false;
-                    });
+          }
+          const list = resultArr;
+          const data = this.formatJson(filterVal, list);
+          export_json_to_excel(tHeader, data, name);
+          this.isDown = false;
+        });
+      } else {
+        sessFun.messageFun("warning", "请选择社区");
+      }
+    },
+    formatJson (filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
+    },
+    // 获取分享资源
+    getShareResList () {
+      let params = {
+        shareCode: this.routeQuery.code,
+        districtId: this.selectArea.join(","), // 区域
+        cType: this.bType, // 楼盘类型
+        minhPrice: this.buildPrice[0] * 100,
+        maxhPrice: this.buildPrice[1] * 100,
+        minhNum: this.houseNum[0],
+        maxhNum: this.houseNum[1],
+        minchDay: this.liveYear[0],
+        maxchDay: this.liveYear[1],
+        tradingArea: this.tradingArea,
+        adLimit: this.selectLimits.join(","),
+        mType: this.selectDoorType,
+        mVehicle: this.selectMediaType,
+        grade: this.selectMediaLevel,
+        groupByDistrict: 1, // 1按地区分组
+      };
+      for (let i in params) {
+        if (!params[i]) {
+          delete params[i];
+        }
+      }
+      api
+        .postApi(mapConfig.apiVar.mapApi + "/shareAdsInfo", params)
+        .then((res) => {
+          // console.log('分享list',res)
+          if (res.data.SysCode === 200200) {
+            this.resAreaList = res.data.data.resList;
+            this.creatAreaMarker();
+            // this.resInfo = res.data.data.resList
+            // this.creatMarker()
+            if (this.systemSource === 0) {
+              this.setLimitsDoorTypeAndTradingArea(res.data.data);
+            }
+          } else {
+            sessFun.messageFun("warning", "数据获取异常");
+          }
+          // 城市边界
+          this.displayBoundary();
+          this.mapLoading = false;
+          // 初始化鼠标绘制
+          this.initMouseDrawing();
+        });
+    },
+    // 分享时设置广告限制、商圈、门体类型
+    setLimitsDoorTypeAndTradingArea (data) {
+      this.ADLimit = data.adLimits.map((item) => {
+        return {
+          value: item,
+          label: item,
+        };
+      });
+      this.tradingAreaList = data.tradingAreas.map((item) => {
+        return {
+          value: item,
+          label: item,
+        };
+      });
+      this.doorTypeList = data.mTypes.map((item) => {
+        return {
+          value: item,
+          label: item,
+        };
+      });
+    },
+    // 分享
+    resShare () {
+      if (!this.selectResList.length) {
+        sessFun.messageFun("warning", "请选择小区");
+        return;
+      }
+      let arr = this.selectResList.map((item) => {
+        return item.resID;
+      });
+      let params = {
+        resIDs: arr.join(","),
+      };
+      api
+        .postApi(mapConfig.apiVar.mapApi + "/shareCode", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            // ADResourcesMap/shareRes
+            if (this.systemSource === 0) {
+              this.shareUrl =
+              this.apiVar.qadnUrl +
+                "/ADResourcesMap/shareRes?city=" +
+                this.routeQuery.city +
+                "&code=" +
+                res.data.data;
+            } else if (this.systemSource === 1) {
+              this.shareUrl = `${window.location.protocol}//${window.location.host}/f_map/ADResourceMap/shareRes?city=${this.adListParams.city}&code=${res.data.data}`;
+            }
+            this.copyDialogVisible = true;
+          } else {
+            sessFun.messageFun("warning", res.data.MSG || "分享异常");
+          }
+        });
+    },
+    // 复制分享链接
+    copyUrl () {
+      let oInput = document.createElement("input");
+      oInput.value = this.shareUrl;
+      document.body.appendChild(oInput);
+      oInput.select(); // 选择对象
+      document.execCommand("Copy"); // 执行浏览器复制命令
+      oInput.style.display = "none";
+      sessFun.messageFun("success", "复制成功");
+      this.copyDialogVisible = false;
+    },
+    // 已选点位弹框列表（等同于qadn购物车）
+    getMapADList () {
+      // 亲邻地图
+      this.getMapLoading = this.$loading({
+        lock: true,
+        text: "数据获取中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      api
+        .getApi("/QFAD/adsListByUid", {})
+        .then((res) => {
+          if (res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
+            // let tempData = res.data.data.concat(this.adListParams.selectedList || []);
+            let tempData = res.data.data || [];
+            let idSet = new Set();
+            this.shopShowList = tempData.filter((item) => {
+              // 去重
+              if (!idSet.has(item.id)) {
+                idSet.add(item.id);
+                if (!item.areaString) {
+                  item.areaString =
+                    item.province + "-" + item.city + "-" + item.area;
+                }
+                if (
+                  Array.isArray(item.centerInfos) &&
+                  item.centerInfos.length > 0
+                ) {
+                  item.mapCenter = item.centerInfos.reduce((res, current) => {
+                    return `${res}${current.centerName || ""}-${current.centerAddress || ""
+                      }-${current.distance || ""}米;`;
+                  }, "");
+                }
+                return true;
+              }
+            });
+            this.getMapLoading.close();
+            // 清空已选点位弹框下拉状态
+            this.eventType = "";
+            this.dialogTableVisible = true;
+            this.$nextTick(() => {
+              this.shopShowList.forEach((row) => {
+                if (
+                  this.adListParams.selectedList.some(
+                    (item) => item.id === row.id
+                  )
+                ) {
+                  this.$refs.mapMultipleTable.toggleRowSelection(row, true);
                 } else {
-                    sessFun.messageFun("warning", "请选择社区");
+                  this.$refs.mapMultipleTable.toggleRowSelection(row, false);
                 }
-            },
-            formatJson(filterVal, jsonData) {
-                return jsonData.map((v) => filterVal.map((j) => v[j]));
-            },
-            // 获取分享资源
-            getShareResList() {
-                let params = {
-                    shareCode: this.routeQuery.code,
-                    districtId: this.selectArea.join(","), // 区域
-                    cType: this.bType, // 楼盘类型
-                    minhPrice: this.buildPrice[0] * 100,
-                    maxhPrice: this.buildPrice[1] * 100,
-                    minhNum: this.houseNum[0],
-                    maxhNum: this.houseNum[1],
-                    minchDay: this.liveYear[0],
-                    maxchDay: this.liveYear[1],
-                    tradingArea: this.tradingArea,
-                    adLimit: this.selectLimits.join(","),
-                    mType: this.selectDoorType,
-                    mVehicle: this.selectMediaType,
-                    grade: this.selectMediaLevel,
-                    groupByDistrict: 1, // 1按地区分组
-                };
-                for (let i in params) {
-                    if (!params[i]) {
-                        delete params[i];
-                    }
-                }
-                api
-                    .postApi(mapConfig.apiVar.mapApi + "/shareAdsInfo", params)
-                    .then((res) => {
-                        // console.log('分享list',res)
-                        if (res.data.SysCode === 200200) {
-                            this.resAreaList = res.data.data.resList;
-                            this.creatAreaMarker();
-                            // this.resInfo = res.data.data.resList
-                            // this.creatMarker()
-                            if (this.systemSource === 0) {
-                                this.setLimitsDoorTypeAndTradingArea(res.data.data);
-                            }
-                        } else {
-                            sessFun.messageFun("warning", "数据获取异常");
-                        }
-                        // 城市边界
-                        this.displayBoundary();
-                        this.mapLoading = false;
-                        // 初始化鼠标绘制
-                        this.initMouseDrawing();
-                    });
-            },
-            // 分享时设置广告限制、商圈、门体类型
-            setLimitsDoorTypeAndTradingArea(data) {
-                this.ADLimit = data.adLimits.map((item) => {
-                    return {
-                        value: item,
-                        label: item,
-                    };
-                });
-                this.tradingAreaList = data.tradingAreas.map((item) => {
-                    return {
-                        value: item,
-                        label: item,
-                    };
-                });
-                this.doorTypeList = data.mTypes.map((item) => {
-                    return {
-                        value: item,
-                        label: item,
-                    };
-                });
-            },
-            // 分享
-            resShare() {
-                if (!this.selectResList.length) {
-                    sessFun.messageFun("warning", "请选择小区");
-                    return;
-                }
-                let arr = this.selectResList.map((item) => {
-                    return item.resID;
-                });
-                let params = {
-                    resIDs: arr.join(","),
-                };
-                api
-                    .postApi(mapConfig.apiVar.mapApi + "/shareCode", params)
-                    .then((res) => {
-                        if (res.data.SysCode === 200200) {
-                            // ADResourcesMap/shareRes
-                            if (this.systemSource === 0) {
-                                this.shareUrl =
-                                    this.apiVar.qadnUrl +
-                                    "/ADResourcesMap/shareRes?city=" +
-                                    this.routeQuery.city +
-                                    "&code=" +
-                                    res.data.data;
-                            } else if (this.systemSource === 1) {
-                                this.shareUrl = `${window.location.protocol}//${window.location.host}/f_map/ADResourceMap/shareRes?city=${this.adListParams.city}&code=${res.data.data}`;
-                            }
-                            this.copyDialogVisible = true;
-                        } else {
-                            sessFun.messageFun("warning", res.data.MSG || "分享异常");
-                        }
-                    });
-            },
-            // 复制分享链接
-            copyUrl() {
-                let oInput = document.createElement("input");
-                oInput.value = this.shareUrl;
-                document.body.appendChild(oInput);
-                oInput.select(); // 选择对象
-                document.execCommand("Copy"); // 执行浏览器复制命令
-                oInput.style.display = "none";
-                sessFun.messageFun("success", "复制成功");
-                this.copyDialogVisible = false;
-            },
-            // 已选点位弹框列表（等同于qadn购物车）
-            getMapADList() {
-                // 亲邻地图
-                this.getMapLoading = this.$loading({
-                    lock: true,
-                    text: "数据获取中...",
-                    spinner: "el-icon-loading",
-                    background: "rgba(0, 0, 0, 0.7)",
-                });
-                api
-                    .getApi("/QFAD/adsListByUid", {})
-                    .then((res) => {
-                        if (res.data.SysCode === 200200 && Array.isArray(res.data.data)) {
-                            // let tempData = res.data.data.concat(this.adListParams.selectedList || []);
-                            let tempData = res.data.data || [];
-                            let idSet = new Set();
-                            this.shopShowList = tempData.filter((item) => {
-                                // 去重
-                                if (!idSet.has(item.id)) {
-                                    idSet.add(item.id);
-                                    if (!item.areaString) {
-                                        item.areaString =
-                                            item.province + "-" + item.city + "-" + item.area;
-                                    }
-                                    if (
-                                        Array.isArray(item.centerInfos) &&
-                                        item.centerInfos.length > 0
-                                    ) {
-                                        item.mapCenter = item.centerInfos.reduce((res, current) => {
-                                            return `${res}${current.centerName || ""}-${current.centerAddress || ""
-                                            }-${current.distance || ""}米;`;
-                                        }, "");
-                                    }
-                                    return true;
-                                }
-                            });
-                            this.getMapLoading.close();
-                            // 清空已选点位弹框下拉状态
-                            this.eventType = "";
-                            this.dialogTableVisible = true;
-                            this.$nextTick(() => {
-                                this.shopShowList.forEach((row) => {
-                                    if (
-                                        this.adListParams.selectedList.some(
-                                            (item) => item.id === row.id
-                                        )
-                                    ) {
-                                        this.$refs.mapMultipleTable.toggleRowSelection(row, true);
-                                    } else {
-                                        this.$refs.mapMultipleTable.toggleRowSelection(row, false);
-                                    }
-                                });
-                            });
+              });
+            });
 
                             // this.setMapAdsListInShopCar();
                             // localStorage.removeItem('qinlinMapCode')

@@ -108,6 +108,7 @@
 import FileSaver from 'file-saver';
 import api from "../../../api/api.js";
 import sessFun from "../../../commonFun/sessFun.js";
+import filterData from "../../../commonFun/filterTableData.js";
 import { Message } from "element-ui";
 
 export default {
@@ -169,6 +170,21 @@ export default {
             })
         })
       }
+
+      // 按小区导出不做限制
+      tempPermiision.push('小区')
+      const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
+        return {
+          mediaTypeId: item.value,
+          mediaTypeName: item.mediaTypeName
+        }
+      })
+
+      tempMediaTypes.push({
+        chooseTypeName: '小区',
+        mediaTypeList: resArr
+      })
+
       this.tempMediaTypes = tempMediaTypes
       this.mediaPermissionList = tempPermiision
     },

@@ -171,19 +171,21 @@ export default {
         })
       }
 
-      // 按小区导出不做限制
-      tempPermiision.push('小区')
-      const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
-        return {
-          mediaTypeId: item.value,
-          mediaTypeName: item.mediaTypeName
-        }
-      })
+      if (tempPermiision.indexOf('小区') === -1) {
+        // 按小区导出不做限制
+        tempPermiision.push('小区')
+        const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
+          return {
+            mediaTypeId: item.value,
+            mediaTypeName: item.mediaTypeName
+          }
+        })
 
-      tempMediaTypes.push({
-        chooseTypeName: '小区',
-        mediaTypeList: resArr
-      })
+        tempMediaTypes.push({
+          chooseTypeName: '小区',
+          mediaTypeList: resArr
+        })
+      }
 
       this.tempMediaTypes = tempMediaTypes
       this.mediaPermissionList = tempPermiision

@@ -1181,8 +1181,7 @@ export default {
           },
         ],
         buildingName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },],
-        unitName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },],
-        floor: [{ required: false, validator: validatePrice, trigger: ["blur", "change"] }]
+        unitName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },]
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片

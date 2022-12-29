@@ -391,7 +391,7 @@
                 </dd>
               </dl>
 
-              <dl v-if="getAdsParamsData.chooseType === 0">
+              <dl v-if="isShowSiteMtype">
                 <dt>设备型号：</dt>
                 <dd
                   v-for="(item, index) in mTypeList"
@@ -403,7 +403,7 @@
                 </dd>
               </dl>
 
-              <dl v-if="getAdsParamsData.chooseType === 0">
+              <dl v-if="isShowSiteMtype">
                 <dt>安装位置：</dt>
                 <dd
                   v-for="(item, index) in sites"
@@ -415,7 +415,7 @@
                 </dd>
               </dl>
 
-              <dl v-if="getAdsParamsData.chooseType === 0 && isShowSiteOrientation">
+              <dl v-if="isShowSiteOrientation">
                 <dt>位置朝向：</dt>
                 <dd
                   v-for="(item, index) in siteOrientations"
@@ -946,7 +946,7 @@
                 space
                 filter
                 :columns="currentColumn"
-                cacheKey="createPlan"
+                cacheKey="editPlan"
                 @filterColumn="filterColumn"
                 @refreshTable="refreshTable"
                 @spaceSetting="spaceSetting"
@@ -1415,7 +1415,7 @@
                       :min-width="item.width"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
-                      :fixed="item.fix === 'left' ? true : false"
+                      :fixed="item.fix"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.actualAdsCnt || 0 }}
@@ -2776,11 +2776,25 @@ export default {
         (item) => item.id === this.currentMediaType
       );
       if (mediaItem && mediaItem.name === "单元门禁灯箱") {
-        isShowSite = false;
-      } else {
         isShowSite = true;
+      } else {
+        isShowSite = false;
       }
-      return this.getAdsParamsData.chooseType === 0 && isShowSite
+      return isShowSite && this.getAdsParamsData.chooseType === 0
+    },
+
+    // 单元门禁灯箱时才展示安装位置 设备型号
+    isShowSiteMtype () {
+      let isShowSite = true
+      const mediaItem = this.mediaTypeObjectArr.find(
+        (item) => item.id === this.currentMediaType
+      );
+      if (mediaItem && mediaItem.name === "单元门禁灯箱") {
+        isShowSite = true;
+      } else {
+        isShowSite = false;
+      }
+      return isShowSite
     }
   },
   methods: {

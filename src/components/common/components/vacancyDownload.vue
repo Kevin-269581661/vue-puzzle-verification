@@ -140,6 +140,7 @@ export default {
   methods: {
     // 导出类型对应媒体类型
     loadTypeChange(type) {
+        this.downLoadInfo.mediaTypeIds = []
         const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
         this.allMediaTypes = this.tempMediaTypes[index].mediaTypeList
     },
@@ -152,7 +153,9 @@ export default {
       let tempMediaTypes = []
       if(permissionList.length) {
         permissionList.forEach(per => {
+          if(per.chooseTypeName !== '小区') {
             tempPermiision.push(per.chooseTypeName)
+          }
         })
       }
       tempPermiision = [...new Set(tempPermiision)]
@@ -171,21 +174,19 @@ export default {
         })
       }
 
-      if (tempPermiision.indexOf('小区') === -1) {
-        // 按小区导出不做限制
-        tempPermiision.push('小区')
-        const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
-          return {
-            mediaTypeId: item.value,
-            mediaTypeName: item.mediaTypeName
-          }
-        })
+      // 按小区导出不做限制
+      tempPermiision.push('小区')
+      const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
+        return {
+          mediaTypeId: item.value,
+          mediaTypeName: item.mediaTypeName
+        }
+      })
 
-        tempMediaTypes.push({
-          chooseTypeName: '小区',
-          mediaTypeList: resArr
-        })
-      }
+      tempMediaTypes.push({
+        chooseTypeName: '小区',
+        mediaTypeList: resArr
+      })
 
       this.tempMediaTypes = tempMediaTypes
       this.mediaPermissionList = tempPermiision

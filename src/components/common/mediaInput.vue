@@ -902,6 +902,21 @@ export default {
         }
       }
     };
+
+    let validateFloor = (rule, value, callback) => {
+      let reg = /^-?\d{1,3}(,\d{3})*(\.\d{1,2})?$/;
+      if (value !== "" && !reg.test(value)) {
+        console.error(rule, value);
+        callback(new Error("只能输入数字!"));
+      } else {
+        if (value > 9999999) {
+          callback(new Error("不得大于9999999!"));
+        } else {
+          callback();
+        }
+      }
+    }
+
     let validateLat = (rule, value, callback) => {
       let reg = /^\d+(\.\d+)?$/;
       if (value !== "" && !reg.test(value)) {
@@ -1181,7 +1196,8 @@ export default {
           },
         ],
         buildingName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },],
-        unitName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },]
+        unitName: [{ required: false, max: 40, message: "最多只能输入40个字符!", trigger: "blur" },],
+        floor: [{ required: false, validator: validateFloor, trigger: ["blur"] }]
       },
       recFormImg: "", // 资源图片
       mediaFormImg: "", // 媒体图片

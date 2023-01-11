@@ -15,7 +15,7 @@
                     <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
                 </el-form-item>
                 <el-form-item label="资源名称:" class="tag-overflow">
-                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>changeSelect(arr, 'allhouse', 'allResource')">
+                    <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>publicChangeSelect(arr, 'allhouse', 'allResource')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(item, index) of allResource" :key="index" :label="item.resName"
                                 :value="item.value"></el-option>
@@ -36,13 +36,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="投放排期:" class="tag-overflow">
-                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>changeSelect(arr, 'dateRange', 'scheduleList')">
+                    <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>publicChangeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option class="date_range_class" label="全部" value="全部"></el-option>
                         <el-option class="date_range_class" v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="物料备注:" class="tag-overflow">
-                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>changeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
+                    <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>publicChangeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
                     </el-select>
@@ -54,13 +54,33 @@
                         <el-option label="未拍照" value="0"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="媒体名称:" class="tag-overflow">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>publicChangeSelect(arr, 'mTitles', `mTitleList['default']`)">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of mTitleList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="媒体位ID:" class="tag-overflow">
+                    <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>publicChangeSelect(arr, 'assetTags', `assetTagList['default']`)">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of assetTagList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="位置朝向:">
+                    <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of siteOrientationList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="searchImg()">搜 索</el-button>
                     <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
                 </el-form-item>
             </el-form>
         </template>
-
 
         <!-- 换画报告 -->
         <template v-else>
@@ -118,6 +138,27 @@
                             <el-option label="全部" value="全部"></el-option>
                             <el-option label="已拍照" value="1"></el-option>
                             <el-option label="未拍照" value="0"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="媒体名称:" class="tag-overflow">
+                    <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="searchInfo.mTitles" @change="arr=>changeSelect(arr, 'mTitles', `mTitleList['change']`)">
+                        <el-option label="全部" value="全部"></el-option>
+                        <el-option v-for="(item, index) of mTitleList['change']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="媒体位ID:" class="tag-overflow">
+                        <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="searchInfo.assetTags" @change="arr=>changeSelect(arr, 'assetTags', `assetTagList['change']`)">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(item, index) of assetTagList['change']" :key="index" :label="item.itemValue"
+                                    :value="item.itemValue"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="位置朝向:">
+                        <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="searchInfo.siteOrientation">
+                            <el-option label="全部" value="全部"></el-option>
+                            <el-option v-for="(item, index) of siteOrientationList['change']" :key="index" :label="item.itemValue"
+                                    :value="item.itemValue"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
@@ -191,7 +232,7 @@
                         <el-upload class="upload_plus"
                                    :key="index+'-'+pageInfo.currPage+'-1'"
                                    @click.native="saveId(item)"
-                                   
+
                                    :class="{disabled:uploadDisabled(item.photoList)}"
                                    :action="doUpload"
                                    :http-request="uploadImg"
@@ -268,7 +309,7 @@
                   </el-row>
                 </el-col>
             </el-row>
-            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" >
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
                <el-col :span="8">
                   <el-row type="flex"  align='middle'>
                     <span>换画状态：</span>
@@ -287,6 +328,48 @@
                     </el-select>
                   </el-row>
                 </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>媒体名称：</span>
+                    <el-select v-model="dialogInfo.mTitles" placeholder="请选择媒体名称" size="small" filterable multiple collapse-tags>
+                      <el-option v-for="(item, index) of mTitleList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+            </el-row>
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>媒体位ID：</span>
+                    <el-select v-model="dialogInfo.assetTags" placeholder="请选择媒体位ID" size="small" filterable multiple collapse-tags>
+                      <el-option v-for="(item, index) of assetTagList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>设备型号：</span>
+                    <el-select v-model="dialogInfo.mTypes" placeholder="请选择设备型号" size="small" filterable multiple collapse-tags>
+                      <el-option v-for="(item, index) of mTypeList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row type="flex"  align='middle'>
+                    <span>位置朝向：</span>
+                    <el-select v-model="dialogInfo.siteOrientation" placeholder="请选择位置朝向" size="small" filterable>
+                      <el-option v-for="(item, index) of siteOrientationList['default']" :key="index" :label="item.itemValue"
+                                :value="item.itemValue"></el-option>
+                    </el-select>
+                  </el-row>
+                </el-col>
+            </el-row>
+            <el-row :gutter="32" justify="space-between" type="flex"  align='center' class="dialog_pic" style="margin-bottom:14px">
+                <el-col :span="8"></el-col>
+                <el-col :span="8"></el-col>
                 <el-col :span="8">
                   <el-row type="flex"  align='middle' justify="space-between">
                     <div class="btn_wrapper">
@@ -582,7 +665,13 @@
                     dateRange: ['全部'],
                     // 物料备注
                     materialRemark: ['全部'],
-                    prStatus: '全部'
+                    prStatus: '全部',
+                    // 媒体位ID
+                    assetTags: ['全部'],
+                    // 媒体名称
+                    mTitles: ['全部'],
+                    // 位置朝向
+                    siteOrientation: '全部',
                 },
                 // 资源列表
                 allResource: [],
@@ -650,7 +739,13 @@
                             label: "未上传",
                             value: 2
                         }
-                    ]
+                  ],
+                  // 媒体位ID
+                  assetTags: ['全部'],
+                  // 媒体名称
+                  mTitles: ['全部'],
+                  // 位置朝向
+                  siteOrientation: '全部',
                 },
                 // 分页信息
                 pageInfo: {
@@ -659,7 +754,7 @@
                     totalNum: 0,
                     // pageSize: 500,
                     loading: false,
-                    pageSize2: 6 
+                    pageSize2: 6
                 },
                 // 图片列表
                 imageArr: [],
@@ -693,7 +788,11 @@
                     // 地图中心点列表
                     mapArr: [],
                     districtIdList:[],//区域搜索列表
-                    schDateList:[]//排期搜索列表
+                    schDateList:[],//排期搜索列表
+                    mTitles: [],
+                    assetTags: [],
+                    mTypes: [],
+                    siteOrientation: '',
                 },
                 // 弹出框分页信息
                 dialogPage: {
@@ -760,6 +859,23 @@
                 isEdit:false,//是编辑或新增换画
                 regionAreaList:[],//换画区域城市
                 launchDateList:[], //换画排期筛选列表launchDateList
+
+                assetTagList: {
+                    default: [],
+                    change:[]
+                }, //媒体位id数据
+                mTitleList: {
+                    default: [],
+                    change:[]
+                }, //媒体名称数据
+                siteOrientationList: {
+                    default: [],
+                    change:[]
+                }, //位置朝向数据
+                mTypeList: {
+                    default: [],
+                    change:[]
+                }, //设备型号数据
             };
         },
         mounted() {
@@ -780,6 +896,7 @@
                 console.log(newVal, oldVal, 'fromtype---watch---');
                 this.getPainList().then(res => {
                     this.isShowPic = true
+                    this.getPlanDetails('default')
                     this.editReport(false);
 
                 });
@@ -787,10 +904,49 @@
         },
 
         methods: {
+            // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
+            // type: 'default'-上下刊，'change'-换画
+            getPlanDetails(type, mid) {
+                let info = {}
+                if (type === 'default') {
+                    info = {
+                        apID: sessionStorage.getItem('order_apid'),
+                        mediaTypeId: mid ? mid : '',
+                    }
+                }
+                else if (type === 'change') {
+                    info = {
+                        apID: sessionStorage.getItem('order_apid'),
+                        replaceRecordId: mid ? mid : '',
+                    }
+                }
+
+                for (let i = 1; i < 5; i++) {
+                    api.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {...info, type: i})
+                        .then((res) => {
+                            if(res.data.SysCode === 200200) {
+                                const _data = res.data.data
+                                switch (i) {
+                                    case 1:
+                                        this.assetTagList[type] = _data
+                                        break;
+                                    case 2:
+                                        this.mTitleList[type] = _data
+                                        break;
+                                    case 3:
+                                        this.siteOrientationList[type] = _data
+                                        break;
+                                    case 4:
+                                        this.mTypeList[type] = _data
+                                }
+                            }
+                        })
+                        .catch((err) => { console.log(err); })
+                }
+            },
             //获取媒体类型数据
             getMediaTypes(){
                 //如果当前换画组数据为空时，则不进行数据请求
-
                 if(this.painList.length <= 0) return;
                 let info = {
                     apID:sessionStorage.getItem('order_apid'),
@@ -816,8 +972,8 @@
                     console.log(err);
                 })
             },
-            //获取媒体类型及上下刊点位数量和上传图片数量
-            getAdsUploadImgCnt(){ 
+            // 获取媒体类型及上下刊点位数量和上传图片数量
+            getAdsUploadImgCnt(){
                 let _type
                 if(this.type==1){
                     _type =0;
@@ -866,7 +1022,6 @@
             changePainPage(page) {
                 this.dialogPage.currInfoPage = page;
                 this.searchInfoFun();
-
             },
             // 获取图片列表
             getImgArr() {
@@ -943,10 +1098,6 @@
                             };
                         });
                         this.allResource = result;
-                        /* result.unshift({
-                            value: "全部",
-                            label: "全部"
-                        }) */
                         this.searchInfo.resArr = result;
                     } else {
                         sessFun.messageFun(res.data.MSG);
@@ -994,11 +1145,12 @@
                 }
                 // info.pageSize = 6
                 this.getImgInfo(info);
+                this.getPlanDetails('default', info.mediaTypeId)
                 this.$nextTick(function () {
                     this.pageInfo.paginationShow = true;
                 });
             },
-            changeSelect(arr=[], target, optionsArr) {
+            publicChangeSelect(arr=[], target, optionsArr) {
                 let allIndex = arr.indexOf('全部')
                 if(allIndex!==-1 && arr.length>1) {
                   if(allIndex == 0){
@@ -1011,11 +1163,24 @@
                     this.publishSearchInfo[target] = ['全部']
                 }
             },
+            changeSelect(arr=[], target, optionsArr) {
+                let allIndex = arr.indexOf('全部')
+                if(allIndex!==-1 && arr.length>1) {
+                  if(allIndex == 0){
+                     this.searchInfo[target].splice(allIndex, 1)
+                  }else{
+                    //如果存在全部并且不是第0项
+                    this.searchInfo[target] = ['全部']
+                  }
+                } else if(allIndex===-1 && arr.length == this[optionsArr].length) {
+                    this.searchInfo[target] = ['全部']
+                }
+            },
             // 搜索数据格式化
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize2} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus, mTitles, assetTags, siteOrientation} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -1026,7 +1191,10 @@
                     mediaTypeId: mediaType,
                     time: dateRange.includes('全部')?'':dateRange,
                     materialRemark: materialRemark.includes('全部')?'':materialRemark,
-                    prStatus: prStatus=='全部'?'':prStatus
+                    prStatus: prStatus=='全部'?'':prStatus,
+                    mTitles: mTitles.includes('全部')?'':mTitles,
+                    assetTags: assetTags.includes('全部')?'':assetTags,
+                    siteOrientation: siteOrientation=='全部'?'':siteOrientation,
                 };
 
                 if (allPic == '2') {
@@ -1048,7 +1216,6 @@
                 if (!allhouse.includes('全部')) {
                     info.resid = allhouse;
                 }
-                console.log('type---', info);
                 return info;
             },
             //重置
@@ -1067,7 +1234,10 @@
                         dateRange: ['全部'],
                         // 物料备注
                         materialRemark: ['全部'],
-                        prStatus: "全部"
+                        prStatus: "全部",
+                        mTitles: ['全部'],
+                        assetTags: ['全部'],
+                        siteOrientation: '全部',
                     };
 
                 }else{
@@ -1077,7 +1247,10 @@
                         city: ['全部'],
                         resName: "全部",
                         status: "全部",
-                        prStatus: "全部"
+                        prStatus: "全部",
+                        mTitles: ['全部'],
+                        assetTags: ['全部'],
+                        siteOrientation: '全部',
                     }
                 }
                 this.getImgArr();
@@ -1088,7 +1261,7 @@
                 api.postApi(this.apiVar.Advertisement + "/GetImg", params)
                     .then(res => {
                         if (!res.data.SysCode) {
-                            console.log(res.data);
+                            // console.log('GetImg', res.data);
                             let dataInfo = res.data;
                             if (dataInfo.totalCount == 0) {
                                 sessFun.messageFun('warning', `${params.mVehicle || ''}暂无数据`);
@@ -1175,7 +1348,6 @@
                                 };
                             });
                             this.getMediaTypes();
-
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
                         }
@@ -1230,6 +1402,7 @@
                     }
                     this.pageInfo.loading = false;
                 });
+                this.getPlanDetails('change', params.replaceRecordId)
             },
             // 城市区域变化
             painCityChange() {
@@ -1244,7 +1417,6 @@
                     let areaId = city[1];
                     this.getResArr(cityId, areaId);
                 }
-                // this.search();
             },
             // 搜索
             search() {
@@ -1258,8 +1430,7 @@
             },
             // 搜索换画列表条件
             searchPointFormat() {
-                console.log(this.painList, this.activePainIndex, 'point--active--');
-                let {mediaType, city, resName, status, prStatus} = this.searchInfo;
+              let { mediaType, city, resName, status, prStatus, mTitles, assetTags, siteOrientation } = this.searchInfo;
                 let {currPage, pageSize2} = this.pageInfo;
                 let info = {
                     apId: sessionStorage.getItem('order_apid'),
@@ -1267,14 +1438,12 @@
                     prStatus: prStatus=='全部'?'':prStatus,
                     pageNum: currPage,
                     pageSize: pageSize2,
-                    mediaTypeId: mediaType
-                    // ...(mediaType && {mType: mediaType == 1 ? 0 : 1}),
-                    // ...(city.length && {districtId: city[1]}),
-                    // ...(resName && {resIds: [resName]}),
-                    // ...(status && {reportStatus: status == 1 ? 1 : 0})
+                    mediaTypeId: mediaType,
+                    mTitles: mTitles.includes('全部') ? null : mTitles,
+                    assetTags: assetTags.includes('全部') ? null : assetTags,
+                    siteOrientation: siteOrientation=='全部' ? null : siteOrientation,
                 };
-                console.log(mediaType, city, resName, status);
-              
+
                 if (city[0]!='全部') {
                     info.districtId = city[1]
                 }
@@ -1334,14 +1503,16 @@
                     currInfoPage: 1,
                     pageSize:500,
                 };
+                // console.log('before---dialogInfo', this.dialogInfo);
                 this.dialogInfo = {
                     ...this.dialogInfo,
                     resName: [],
                     picState: "",
                     mapName: "",
                     schDateList:[],
-                    districtIdList:[]
+                    districtIdList:[],
                 };
+                // console.log('after---dialogInfo', this.dialogInfo);
                 this.shoplist = [];
                 this.selectList = [];
                 this.selectNum = 0;
@@ -1369,7 +1540,7 @@
             // 搜索数据格式化
             searchDataFormat() {
                 console.log(this.isEdit);
-                let {resName, picState, mapName,districtIdList,schDateList} = this.dialogInfo;
+                let {resName, picState, mapName, districtIdList, schDateList, mTitles, assetTags, siteOrientation, mTypes} = this.dialogInfo;
                 let {currInfoPage, pageSize} = this.dialogPage;
                 let info = {
                     pageNum: currInfoPage,
@@ -1381,7 +1552,11 @@
                     ...(picState >= 0 && {replaceStatus: picState == 2 ? '' : picState}),
                     //后端要求查全部，就不传该字段
                     ...(districtIdList.length>1 && {districtIdList:[districtIdList[1]]}),
-                    ...((schDateList[0] != '全部'&& schDateList.length) && {schDateList})
+                    ...((schDateList[0] != '全部'&& schDateList.length) && {schDateList}),
+                    ...(mTitles.length && {mTitles}),
+                    ...(assetTags.length && {assetTags}),
+                    ...(mTypes.length && {mTypes}),
+                    ...(siteOrientation && {siteOrientation}),
                 };
                 info.replaceRecordId = !this.isEdit?'-1':this.painList[this.activePainIndex].id
                 return info;
@@ -1416,7 +1591,6 @@
                             };
                             // this.dialogPage.currInfoPage++;
                             this.selectioUpdate('all');
-
                         }
                     } else {
                         sessFun.messageFun('warning', res.data.MSG);
@@ -1607,7 +1781,7 @@
                                 value: item.mapCenterName
                             };
                         });
-                        console.log(this.dialogInfo.mapArr);
+                        // console.log(this.dialogInfo.mapArr);
                     } else {
                         sessFun.messageFun('warning', res.data.MSG);
                     }
@@ -1655,7 +1829,11 @@
                     picState: "",
                     mapName: "",
                     districtIdList:[],
-                    schDateList:[]
+                    schDateList:[],
+                    mTitles:[],
+                    assetTags:[],
+                    mTypes:[],
+                    siteOrientation:'',
                 };
                 this.dialogInfo = {
                     ...this.dialogInfo,
@@ -1670,7 +1848,6 @@
                 };
                 this.pointArr = [];
                 this.searchInfoFun();
-                console.log(this.dialogInfo, this.dialogPage);
             },
             // 查看图片
             previewImg(file) {
@@ -1846,6 +2023,7 @@
                 this.isShowPic = false;
                 this.shoplist = [];
                 this.selectList = [];
+                this.resetPoint()
                 this.$emit('hidePainModal','false');
             }
             ,
@@ -1862,6 +2040,7 @@
                 } else {
                     sessFun.messageFun('warning', '没有点位信息发生变更，请先对点位进行操作');
                 }
+                this.resetPoint()
             },
             addPainReport() {
                 let that = this
@@ -2098,7 +2277,6 @@
                     let type = this.type;
                     if (type == 1 || type == 2) {
                         // 上下刊报告列表
-                        // this.searchFun();
                         this.getAdsUploadImgCnt();
                     } else if (type == 3) {
                         // 换画报告列表
@@ -2299,7 +2477,6 @@
                             let type = this.type;
                             if (type == 1 || type == 2) {
                                 // 上下刊报告列表
-                                // this.searchFun();
                                 this.getAdsUploadImgCnt();
                             } else if (type == 3) {
                                 // 换画报告列表
@@ -2478,7 +2655,7 @@
         },
     }
     ;
- 
+
 </script>
 
 <style lang="scss" scoped>
@@ -3174,7 +3351,7 @@
               width:  16px;
             }
            }
-           
+
          }
          .ad_pagination{
            margin-top: 0;
@@ -3183,7 +3360,7 @@
            }
          }
        }
-      
+
      }
      .el-dialog__body{
        padding: 0 24px;
@@ -3192,5 +3369,9 @@
        border-top: 1px solid #E9E9E9;
        padding:11px 0;
      }
+    }
+
+    .dialog_pic span {
+        width: 75px;
     }
 </style>

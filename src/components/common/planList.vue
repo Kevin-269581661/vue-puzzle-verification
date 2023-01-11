@@ -2,509 +2,368 @@
   <div class="ad_mediaDetail_wrap clearfix">
     <div class="ad_mediaDetail_nav">
       <p class="clearfix" v-if="!isNation">
-        <a href="#" style="color: #999">方案管理</a><em> / </em
-        ><a href="#">方案列表</a>
+        <a href="#" style="color: #999">方案管理</a><em> / </em><a href="#">方案列表</a>
       </p>
       <p v-else><a href="#">方案管理</a></p>
     </div>
+
+    <div class="mediaList_wrap mediaList_search">
+      <el-row class="search_row" :gutter="24">
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>关键词：</span>
+            <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="u-select">
+              <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
+                <el-option label="方案名称" value="1"></el-option>
+                <el-option label="客户名称" value="2"></el-option>
+                <el-option label="品牌名称" value="3"></el-option>
+                <el-option v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" label="所属销售" value="4"></el-option>
+              </el-select>
+            </el-input>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>日期：</span>
+            <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择" class="u-date">
+              <el-option label="上刊日期" value="0"></el-option>
+              <el-option label="下刊日期" value="1"></el-option>
+              <el-option label="创建日期" value="2"></el-option>
+              <!--<el-option label="换画日期" value="2"></el-option>-->
+            </el-select>
+            <el-date-picker size="small" class="u-date-picker" v-model="searchInfo.rangeDate" type="daterange"
+              range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="选择日期"
+              end-placeholder="选择日期">
+            </el-date-picker>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>选择状态：</span>
+            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2">
+              <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>选择城市：</span>
+            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2">
+              <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text">
+              </el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item" v-if="isAll">
+            <span>选择公司：</span>
+            <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" class="u-select2">
+              <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="search-item">
+            <span>是否预锁：</span>
+            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2">
+              <el-option label="已预锁" value="2"></el-option>
+              <el-option label="未预锁" value="1"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
+          <div class="btn_wrapper">
+            <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索
+            </el-button>
+
+            <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
     <div class="mediaList_wrap">
-      <div class="mediaList_head">
-        <h2>方案列表</h2>
-      </div>
       <div class="mediaList_container">
-        <!-- flex_box search_row -->
-        <div class="">
-          <el-row class="search_row" :gutter="24">
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>关键词：</span>
-                <el-input
-                  placeholder="请输入内容"
-                  v-model="searchInfo.keyword"
-                  size="small"
-                  class="u-select"
-                >
-                  <el-select
-                    v-model="searchInfo.select"
-                    slot="prepend"
-                    placeholder="请选择"
-                  >
-                    <el-option label="方案名称" value="1"></el-option>
-                    <el-option label="客户名称" value="2"></el-option>
-                    <el-option label="品牌名称" value="3"></el-option>
-                    <el-option
-                      v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                      label="所属销售"
-                      value="4"
-                    ></el-option>
-                  </el-select>
-                </el-input>
-              </div>
-            </el-col>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>日期：</span>
-                <el-select
-                  size="small"
-                  v-model="searchInfo.dateType"
-                  placeholder="请选择"
-                  class="u-date"
-                >
-                  <el-option label="上刊日期" value="0"></el-option>
-                  <el-option label="下刊日期" value="1"></el-option>
-                  <el-option label="创建日期" value="2"></el-option>
-                  <!--<el-option label="换画日期" value="2"></el-option>-->
-                </el-select>
-                <el-date-picker
-                  size="small"
-                  class="u-date-picker"
-                  v-model="searchInfo.rangeDate"
-                  type="daterange"
-                  range-separator="-"
-                  format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd"
-                  start-placeholder="选择日期"
-                  end-placeholder="选择日期"
-                >
-                </el-date-picker>
-              </div>
-            </el-col>
+        <div class="mediaList_title">
+          <h2>方案列表</h2>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>选择状态：</span>
-                <el-select
-                  v-model="searchInfo.status"
-                  placeholder="请选择状态"
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of stateList"
-                    :key="item.value"
-                    :label="item.text"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
+          <div class="m-act">
+            <div class="btn_box">
+              <el-button plain @click.native.prevent="openRecycleBin" class="marginR">回收站</el-button>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>选择城市：</span>
-                <el-select
-                  v-model="searchInfo.cityWord"
-                  placeholder="请选择投放城市"
-                  filterable
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of filterCityData"
-                    :key="item.rID"
-                    :label="item.text"
-                    :value="item.text"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
+              <el-button plain v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && showExportBtns.includes(8)"
+                @click.native.prevent="allPointExportVisible = true" class="marginR">总点导出</el-button>
 
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item" v-if="isAll">
-                <span>选择公司：</span>
-                <el-select
-                  v-model="searchInfo.company"
-                  placeholder="请选择所属公司"
-                  filterable
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option
-                    v-for="item of companyData"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
-
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="search-item">
-                <span>是否预锁：</span>
-                <el-select
-                  v-model="searchInfo.Lock"
-                  placeholder="是否预锁"
-                  size="small"
-                  class="u-select2"
-                >
-                  <el-option label="已预锁" value="2"></el-option>
-                  <el-option label="未预锁" value="1"></el-option>
-                </el-select>
-              </div>
-            </el-col>
-
-            <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-              <div class="btn_wrapper">
-                <el-button
-                  type="primary"
-                  icon="el-icon-search"
-                  @click="search()"
-                  :disabled="!isSearch"
-                  class="marginR"
-                  >搜索
+              <template v-if="showNewBtn || !isNation">
+                <el-button plain @click="reset()" v-if="showExportBtns.includes(6)" @click.native.prevent="exportRes"
+                  class="marginR">门店导点</el-button>
+                <el-button plain v-if="showNewBtn" @click.native.prevent="isOpenDownload = true" class="marginR">空位导出
                 </el-button>
+              </template>
 
-                <el-button
-                  plain
-                  @click="reset()"
-                  :disabled="!isReset"
-                  class="marginR"
-                  >重置</el-button
-                >
+              <template v-if="showNewBtn || !isNation">
+                <el-button type="primary" icon="el-icon-plus" v-if="showNewBtn" @click="addOne()" class="marginR">新建
+                </el-button>
+              </template>
+            </div>
 
-                <template v-if="showNewBtn || !isNation">
-                  <el-button
-                    plain
-                    v-if="showNewBtn"
-                    @click="addOne()"
-                    class="marginR"
-                    >新建</el-button
-                  >
-                </template>
+            <!-- 列设置 -->
+            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="planList"
+              @filterColumn="filterColumn" @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+            </TableSetting>
 
-                <el-dropdown placement="bottom-start" class="u-dropdown-more">
-                  <el-button class="marginR u-more">
-                    更多<i class="el-icon-arrow-down el-icon--right"></i>
-                  </el-button>
-                  <el-dropdown-menu slot="dropdown" class="newDrop">
-                    <template v-if="showNewBtn || !isNation">
-                      <el-dropdown-item
-                        plain
-                        v-if="showNewBtn"
-                        @click.native.prevent="isOpenDownload = true"
-                        >空位导出</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        plain
-                        v-if="showExportBtns.includes(6)"
-                        @click.native.prevent="exportRes"
-                        >门店导点</el-dropdown-item
-                      >
-                    </template>
-                    <el-dropdown-item
-                      plain
-                      v-if="
-                        ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
-                        showExportBtns.includes(8)
-                      "
-                      @click.native.prevent="allPointExportVisible = true"
-                      >总点导出</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      plain
-                      @click.native.prevent="openRecycleBin"
-                      >回收站</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-            </el-col>
-          </el-row>
-
-          <!-- <el-row class="search_row" :gutter="24"> </el-row> -->
+          </div>
         </div>
         <div class="table_wrap">
-          <el-table
-            border
-            :data="currentPlan"
-            style="width: 100%"
-            @sort-change="sortChange"
-            v-loading="loading"
-            element-loading-text="玩命加载中.."
-            element-loading-spinner="el-icon-loading"
-          >
-            <el-table-column prop="apName" label="方案名称" min-width="14.9%">
-              <template slot-scope="scope">
-                <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
-                <span
-                  style="color: rgba(24, 144, 255, 1); cursor: pointer"
-                  @click="ToDetail(scope.row)"
-                  >{{ scope.row.apName }}</span
-                >
+          <el-table @filter-change="filterChange" :data="currentPlan" style="width: 100%" @sort-change="sortChange"
+            v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey"
+            :size="rowSpace">
+            <template v-for="item in currentPlanColumn">
+
+              <template v-if="item.label === '方案名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" v-if="item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
+                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">{{
+                        scope.row.apName
+                    }}</span>
+                  </template>
+                </el-table-column>
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="cName"
-              label="客户名称"
-              min-width="12.6%"
-              show-overflow-tooltip
-            >
-            </el-table-column>
-            <el-table-column
-              prop="bTitle"
-              label="品牌名称"
-              min-width="7.6%"
-              show-overflow-tooltip
-            >
-            </el-table-column>
-            <el-table-column
-              prop="apTotal"
-              label="方案价格"
-              sortable="custom"
-              width="120px"
-              align="right"
-            >
-              <template slot-scope="scope">
-                <span v-if="scope.row.apState == '-1'">--</span>
-                <span v-else
-                  >&yen;{{
-                    scope.row.apTotal ? priceFormat(scope.row.apTotal / 100) : 0
-                  }}</span
-                >
+
+              <template v-if="item.label === '客户名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" show-overflow-tooltip
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="realName"
-              label="所有人"
-              min-width="6.1%"
-              v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role)"
-              show-overflow-tooltip
-            >
-            </el-table-column>
-            <el-table-column
-              prop="realName"
-              label="所有人"
-              min-width="6.1%"
-              v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
-              show-overflow-tooltip
-              :filters="filterRealName"
-              :filter-method="filterRealNameFun"
-              :filter-multiple="true"
-            >
-            </el-table-column>
-            <el-table-column
-              label="投放城市(点位面数,排期)"
-              prop="cityArea"
-              min-width="25.8%"
-            >
-              <template slot-scope="scope">
-                <template v-if="isAll">
-                  <div
-                    v-for="(item, index) of scope.row.cityArea"
-                    :key="index"
-                    class="city_p"
-                  >
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="
-                        item.asName +
-                        ' ' +
-                        item.city +
-                        '(' +
-                        item.num +
-                        '面,' +
-                        formatTime(item.pdStar) +
-                        '至' +
-                        formatTime(item.pdEnd) +
-                        ')'
-                      "
-                      placement="top"
-                    >
-                      <div>
-                        <!-- <span v-if="item.isshow">{{ item.asName }}</span> -->
-                        <span>
-                          {{
-                            item.city +
-                            "(" +
-                            item.num +
-                            "面," +
-                            formatTime(item.pdStar) +
-                            "至" +
-                            formatTime(item.pdEnd) +
-                            ")"
-                          }}
-                        </span>
-                      </div>
-                    </el-tooltip>
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="'距离解锁还剩' + item.RemainDay + '天'"
-                      placement="top"
-                    >
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                          item.RemainDay
-                        }}</b>
-                      </span>
-                    </el-tooltip>
-                  </div>
-                </template>
-                <template v-else>
-                  <div
-                    v-for="item of scope.row.cityArea"
-                    :key="item.rid + '-' + item.asrID"
-                    class="city_p"
-                  >
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="
-                        item.asName +
-                        ' ' +
-                        item.city +
-                        '(' +
-                        item.num +
-                        '面,' +
-                        formatTime(item.pdStar) +
-                        '至' +
-                        formatTime(item.pdEnd) +
-                        ')'
-                      "
-                      placement="top"
-                    >
-                      <p v-if="item.apState == '-1'">
-                        {{
+
+              <template v-if="item.label === '品牌名称'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="120px" show-overflow-tooltip
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '方案价格'">
+                <el-table-column :prop="item.prop" :label="item.label" sortable="custom" min-width="150px"
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span v-if="scope.row.apState == '-1'">--</span>
+                    <span v-else>&yen;{{
+                        scope.row.apTotal ? priceFormat(scope.row.apTotal / 100) : 0
+                    }}</span>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '所有人'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="150px"
+                  v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked"
+                  show-overflow-tooltip :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+
+                <el-table-column :prop="item.prop" :label="item.label" min-width="120px"
+                  v-if="['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked" show-overflow-tooltip
+                  :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true"
+                  :fixed="item.fix === 'left' ? true : false">
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '投放城市(点位面数,排期)'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="350px" v-if="item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <template v-if="isAll">
+                      <div v-for="(item, index) of scope.row.cityArea" class="city_p">
+                        <el-tooltip class="item" effect="dark" :content="
+                          item.asName +
+                          ' ' +
                           item.city +
-                          "(" +
-                          "--面," +
-                          formatTime(item.pdStar) +
-                          "至" +
-                          formatTime(item.pdEnd) +
-                          ")"
-                        }}
-                      </p>
-                      <p v-else>
-                        {{
-                          item.city +
-                          "(" +
+                          '(' +
                           item.num +
-                          "面," +
+                          '面,' +
                           formatTime(item.pdStar) +
-                          "至" +
+                          '至' +
                           formatTime(item.pdEnd) +
-                          ")"
-                        }}
-                      </p>
-                    </el-tooltip>
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      :content="'距离解锁还剩' + item.RemainDay + '天'"
-                      placement="top"
-                    >
-                      <span v-show="item.RemainDay" class="lock-icon">
-                        <!--预锁:剩<b :style="item.RemainDay<=3?'color:red;':''">{{item.RemainDay}}</b>天-->
-                        <b :class="item.RemainDay <= 3 ? 'red' : 'blue'">{{
-                          item.RemainDay
-                        }}</b>
+                          ')'
+                        " placement="top">
+                          <div>
+                            <span>
+                              {{
+                                  item.city +
+                                  "(" +
+                                  item.num +
+                                  "面," +
+                                  formatTime(item.pdStar) +
+                                  "至" +
+                                  formatTime(item.pdEnd) +
+                                  ")"
+                              }}
+                            </span>
+                          </div>
+                        </el-tooltip>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div v-for="item of scope.row.cityArea" :key="item.adcID" class="city_p">
+                        <el-tooltip class="item" effect="dark" :content="
+                          item.asName +
+                          ' ' +
+                          item.city +
+                          '(' +
+                          item.num +
+                          '面,' +
+                          formatTime(item.pdStar) +
+                          '至' +
+                          formatTime(item.pdEnd) +
+                          ')'
+                        " placement="top">
+                          <p v-if="item.apState == '-1'">
+                            {{
+                                item.city +
+                                "(" +
+                                "--面," +
+                                formatTime(item.pdStar) +
+                                "至" +
+                                formatTime(item.pdEnd) +
+                                ")"
+                            }}
+                          </p>
+                          <p v-else>
+                            {{
+                                item.city +
+                                "(" +
+                                item.num +
+                                "面," +
+                                formatTime(item.pdStar) +
+                                "至" +
+                                formatTime(item.pdEnd) +
+                                ")"
+                            }}
+                          </p>
+                        </el-tooltip>
+                      </div>
+                    </template>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '媒体类型'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="250px" show-overflow-tooltip
+                  column-key="mediaTypeNames"
+                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
+                  :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList">
+                  <template slot-scope="scope">
+                    <div class="media-box">
+                      <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
+                        <div class="tag"
+                          :class="m.mediaTypeName === '广告门' ? 'ad' :
+                                m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
+                                m.mediaTypeName === '灯箱' ? 'light-box' :
+                                m.mediaTypeName === '道闸' ? 'brake' : ''">
+                          <template v-if="m.RemainDay">
+                            <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
+                              placement="top">
+                              <i class="el-icon-lock icon"></i>
+                            </el-tooltip>
+                            {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                          </template>
+                          <template v-else>
+                            {{ m.mediaTypeName || '--' }}
+                          </template>
+                        </div>
+
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '创建日期'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="200px" sortable="custom"
+                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <span>{{ formatTime(scope.row.apcTime) }}</span>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '状态'">
+                <el-table-column class="tac" :prop="item.prop" :label="item.label" min-width="100px"
+                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <point-state :state-text="stateToText(scope.row.apState).text"
+                      :color="stateToText(scope.row.apState).color"></point-state>
+                  </template>
+                </el-table-column>
+              </template>
+
+              <template v-if="item.label === '操作'">
+                <el-table-column :label="item.label" min-width="100px"
+                  v-if="!(role == 'ADN_OP' || role == 'AD') && item.isChecked"
+                  :fixed="item.fix">
+                  <template slot-scope="scope">
+                    <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
+                      <span class="el-dropdown-link">
+                        操作<i class="el-icon-arrow-down el-icon--right"></i>
                       </span>
-                    </el-tooltip>
-                    <!--<i v-if="item.RemainDay>=0" class="fa fa-lock fa-lg" style="color:#999;"></i>-->
-                    <!--<i v-else></i>-->
-                  </div>
-                </template>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
+                          :disabled="isDisable || scope.row.apState !== -1">配点
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
+                          scope.row.isdfmj ||
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState == 1 && !scope.row.canLock)
+                        ">预锁
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
+                          scope.row.isdfmj ||
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState != 1 &&
+                            scope.row.apControlLevel !== 1)
+                        ">发布
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
+                          scope.row.isdfmj ||
+                          isDisable ||
+                          scope.row.apState !== 1 ||
+                          (scope.row.apState == 1 && !scope.row.unLock)
+                        ">解除预锁
+                        </el-dropdown-item>
+
+                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
+                          scope.row.apControlLevel === 2 &&
+                          ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
+                        ">
+                          拆单
+                        </el-dropdown-item>
+                        <el-dropdown-item :disabled="
+                          scope.row.apState !== 1 && scope.row.apState !== -1
+                        " @click.native.prevent="deleteAdPlan(scope.row)">
+                          删除
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </template>
+                </el-table-column>
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="apcTime"
-              label="创建日期"
-              width="100px"
-              sortable="custom"
-              show-overflow-tooltip
-            >
-              <template slot-scope="scope">
-                <span>{{ formatTime(scope.row.apcTime) }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              class="tac"
-              prop="apState"
-              label="状态"
-              min-width="6.1%"
-              show-overflow-tooltip
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="stateToText(scope.row.apState).text"
-                  :color="stateToText(scope.row.apState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="操作"
-              width="100px"
-              v-if="!(role == 'ADN_OP' || role == 'AD')"
-            >
-              <template slot-scope="scope">
-                <el-dropdown
-                  size="small"
-                  trigger="click"
-                  placement="bottom-start"
-                  :hide-on-click="false"
-                >
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      @click.native.prevent="addPoint(scope.row)"
-                      :disabled="isDisable || scope.row.apState !== -1"
-                      >配点
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="preload(scope.row)"
-                      :disabled="
-                        isDisable ||
-                        scope.row.apState !== 1 ||
-                        (scope.row.apState == 1 && !scope.row.canLock)
-                      "
-                      >预锁
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="release(scope.row)"
-                      :disabled="
-                        isDisable ||
-                        scope.row.apState !== 1 ||
-                        (scope.row.apState != 1 &&
-                          scope.row.apControlLevel !== 1)
-                      "
-                      >发布
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="clearLock(scope.row)"
-                      :disabled="
-                        isDisable ||
-                        scope.row.apState !== 1 ||
-                        (scope.row.apState == 1 && !scope.row.unLock)
-                      "
-                      >解除预锁
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="splitAdPlan(scope.row)"
-                      v-if="
-                        scope.row.apControlLevel === 2 &&
-                        ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
-                      "
-                    >
-                      拆单
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      :disabled="
-                        scope.row.apState !== 1 && scope.row.apState !== -1
-                      "
-                      @click.native.prevent="deleteAdPlan(scope.row)"
-                    >
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
+
+            </template>
+
             <div slot="empty">
               <no-search-result></no-search-result>
             </div>
@@ -512,66 +371,18 @@
 
           <div class="ad_pagination">
             <p>注：<span>3</span>表示预锁天数</p>
-            <el-pagination
-              background
-              v-if="paginationShow"
-              @size-change="sizeChange"
-              @current-change="changePage"
-              :current-page.sync="currPage"
-              :page-sizes="pageSizes"
-              :page-size="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="totalNum"
-            >
+            <el-pagination background v-if="paginationShow" @size-change="sizeChange" @current-change="changePage"
+              :current-page.sync="currPage" :page-sizes="pageSizes" :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper" :total="totalNum">
             </el-pagination>
           </div>
         </div>
       </div>
     </div>
-    <!-- 预锁公司 -->
-    <el-dialog
-      :title="isLock ? '请选择预锁公司' : '请选择解锁公司'"
-      :visible.sync="dialogVisible"
-      width="35%"
-      center
-    >
-      <el-checkbox-group v-model="cityChoose">
-        <template v-if="isLock">
-          <el-checkbox
-            :label="item.asrID"
-            v-for="item of cityList"
-            :key="item.rid"
-            border
-            :disabled="item.RemainDay >= 0"
-            size="mini"
-            >{{ item.asName }}
-          </el-checkbox>
-        </template>
-        <template v-else>
-          <el-checkbox
-            :label="item.asrID"
-            v-for="item of cityList"
-            :key="item.rid"
-            border
-            :disabled="item.RemainDay == undefined || item.RemainDay == null"
-            size="mini"
-            >{{ item.asName }}
-          </el-checkbox>
-        </template>
-      </el-checkbox-group>
-      <span slot="footer" class="dialog-footer">
-        <el-button plain @click="cancelLock">取 消</el-button>
-        <el-button type="primary" @click="confirmLock">确 定</el-button>
-      </span>
-    </el-dialog>
+
     <!--存在异常未完成的方案-->
-    <el-dialog
-      title="您有一个新方案未完成保存，是否继续编辑？"
-      :visible.sync="unfinishedDialogVisible"
-      width="400px"
-      custom-class="unfinished_plan_dialog"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="您有一个新方案未完成保存，是否继续编辑？" :visible.sync="unfinishedDialogVisible" width="400px"
+      custom-class="unfinished_plan_dialog" :close-on-click-modal="false">
       <div>
         <ul>
           <li class="unfinished_plan_li">
@@ -600,49 +411,29 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="cancelEdit">放 弃</el-button>
-        <el-button type="primary" class="u-btn" @click="continueEdit"
-          >继续编辑</el-button
-        >
+        <el-button type="primary" class="u-btn" @click="continueEdit">继续编辑</el-button>
       </span>
     </el-dialog>
 
     <!-- 导出空点 -->
     <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-      <download-vacancy
-        @cancelClick="isOpenDownload = false"
-      ></download-vacancy>
+      <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
     </el-dialog>
     <!-- 总点导出 -->
-    <el-dialog
-      title="总点导出"
-      :visible.sync="allPointExportVisible"
-      width="300px"
-    >
-      <All-Point-Export
-        @cancelClick="allPointExportVisible = false"
-      ></All-Point-Export>
+    <el-dialog title="总点导出" :visible.sync="allPointExportVisible" width="300px">
+      <All-Point-Export @cancelClick="allPointExportVisible = false"></All-Point-Export>
     </el-dialog>
 
     <!--发布方案-->
-    <el-dialog
-      title="发布方案"
-      :visible.sync="publishPlanDialog"
-      :close-on-click-modal="false"
-      custom-class="publish_dialog"
-      :show-close="false"
-      width="368px"
-    >
+    <el-dialog title="发布方案" :visible.sync="publishPlanDialog" :close-on-click-modal="false"
+      custom-class="publish_dialog" :show-close="false" width="368px">
       <span class="comment">完善以下信息后提交，即可完成发布</span>
       <el-form label-position="top">
         <el-form-item label="合同编号" label-width="80px">
           <el-input size="small" v-model="QCinfo"></el-input>
         </el-form-item>
         <el-form-item label="订单类型" label-width="80px">
-          <el-select
-            v-model="planType"
-            size="small"
-            placeholder="请选择活动区域"
-          >
+          <el-select v-model="planType" size="small" placeholder="请选择活动区域">
             <el-option label="常规" value="0"></el-option>
             <el-option label="续刊" value="1"></el-option>
             <el-option label="补刊" value="2"></el-option>
@@ -650,174 +441,116 @@
             <el-option label="赠送" value="4"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item
-          v-if="planType == 1 || planType == 2"
-          :label="`${['常规', '续刊', '补刊', '空刊', '赠送'][planType]}订单`"
-          label-width="80px"
-        >
-          <el-select
-            v-model="relatedApId"
-            size="small"
-            :placeholder="`请选择${
-              ['常规', '续刊', '补刊', '空刊', '赠送'][planType]
-            }的订单`"
-            filterable
-            :clearable="true"
-          >
-            <el-option
-              v-for="item in apList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
+        <el-form-item v-if="planType == 1 || planType == 2" :label="`${['常规', '续刊', '补刊', '空刊', '赠送'][planType]}订单`"
+          label-width="80px">
+          <el-select v-model="relatedApId" size="small" :placeholder="`请选择${['常规', '续刊', '补刊', '空刊', '赠送'][planType]
+          }的订单`" filterable :clearable="true">
+            <el-option v-for="item in apList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="publishPlanDialog = false">取 消</el-button>
-        <el-button type="primary" @click="commitRelease" class="u-new-btn"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="commitRelease" class="u-new-btn">确 定</el-button>
       </div>
     </el-dialog>
 
     <!--周边小区导出-->
-    <el-dialog
-      :title="`门店导点(` + exportResStep + `/3)`"
-      :visible.sync="isResExport"
-      :close-on-click-modal="false"
-      custom-class="Import_dialog"
-      :show-close="false"
-      width="448px"
-    >
+    <el-dialog :title="`门店导点(` + exportResStep + `/3)`" :visible.sync="isResExport" :close-on-click-modal="false"
+      custom-class="Import_dialog" :show-close="false" width="448px">
       <p class="info_box" v-show="isShowExportTag">
         <i class="el-icon-warning" style="color: #1890ff"></i>
         {{
-          exportResStep === 1
-            ? "第一步：填写导出的基本参数"
-            : exportResStep === 2
-            ? "第二步：下载模板，指定周边越多，需要导出时间越长"
-            : "第三步：上传填写好的表格，并点击提交"
+            exportResStep === 1
+              ? "第一步：填写导出的基本参数"
+              : exportResStep === 2
+                ? "第二步：下载模板，指定周边越多，需要导出时间越长"
+                : "第三步：上传填写好的表格，并点击提交"
         }}
         <!--                    <i class="el-icon-close" @click="isShowExportTag = false"></i>-->
       </p>
       <ul class="export_ul" v-show="exportResStep === 1">
         <li>
           <span>投放排期：</span>
-          <el-date-picker
-            v-model="exportInfo.date"
-            size="small"
-            type="daterange"
-            range-separator="⇀"
-            align="right"
-            value-format="yyyy-MM-dd"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          >
+          <el-date-picker v-model="exportInfo.date" size="small" type="daterange" range-separator="⇀" align="right"
+            value-format="yyyy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
           </el-date-picker>
         </li>
         <li>
           <span>媒体类型：</span>
-          <el-select
-            size="small"
-            class="m_ehicle_class"
-            multiple
-            collapse-tags
-            v-model="exportInfo.mediaTypeIds"
-            placeholder="请选择媒体类型"
-          >
-            <el-option
-              v-for="(item, index) in allMediaTypes"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
+          <el-select size="small" class="m_ehicle_class" multiple collapse-tags v-model="exportInfo.mediaTypeIds"
+            placeholder="请选择媒体类型">
+            <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.name" :value="item.id">
+            </el-option>
           </el-select>
         </li>
         <li>
           <span>匹配范围：</span>
-          <el-input
-            size="small"
-            class="radius_input"
-            placeholder="请输入1 ~ 10000的整数"
-            v-model="exportInfo.radius"
-          >
+          <el-input size="small" class="radius_input" placeholder="请输入1 ~ 10000的整数" v-model="exportInfo.radius">
             <template slot="append">米</template>
           </el-input>
         </li>
         <li>
           <span>导出模板：</span>
-          <el-select
-            v-model="exportInfo.type"
-            size="small"
-            filterable
-            placeholder="请选择导出类型"
-          >
+          <el-select v-model="exportInfo.type" size="small" filterable placeholder="请选择导出类型">
             <el-option label="模板A：1小区/1门店(有距离)" value="1"></el-option>
-            <el-option
-              label="模板B：1小区/多门店(无距离)"
-              value="2"
-            ></el-option>
+            <el-option label="模板B：1小区/多门店(无距离)" value="2"></el-option>
           </el-select>
         </li>
       </ul>
       <div class="export_step_box" v-show="exportResStep === 2">
         <img src="../../assets/images/export.png" alt="" />
         《QADN-数据导入-模板》
-        <a
-          :href="apiVar.qadnUrl + '/importTemplate/broundData.xlsx'"
-          download="数据导入模板.xlsx"
-          class="downloag_btn"
-          >点击下载<i class="el-icon-download"></i
-        ></a>
+        <a :href="apiVar.qadnUrl + '/importTemplate/broundData.xlsx'" download="数据导入模板.xlsx" class="downloag_btn">点击下载<i
+            class="el-icon-download"></i></a>
       </div>
       <div v-show="exportResStep === 3">
-        <el-upload
-          ref="exportRes"
-          class="upload-demo"
-          drag
-          :action="exportAction"
-          :file-list="exportFileData"
-          :show-file-list="true"
-          :http-request="exportUploadFile"
-          :on-remove="exportFileRemove"
-          :multiple="false"
-        >
+        <el-upload ref="exportRes" class="upload-demo" drag :action="exportAction" :file-list="exportFileData"
+          :show-file-list="true" :http-request="exportUploadFile" :on-remove="exportFileRemove" :multiple="false">
           <img src="../../assets/images/export.png" alt="" />
           <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
         </el-upload>
       </div>
       <div slot="footer">
-        <el-button size="small" plain @click="isResExport = false"
-          >取 消</el-button
-        >
-        <el-button
-          size="small"
-          plain
-          v-show="exportResStep > 1"
-          @click="exportResStep > 1 ? exportResStep-- : (exportResStep = 1)"
-          >上一步</el-button
-        >
-        <el-button
-          size="small"
-          type="primary"
-          @click="nextExportRes"
-          :loading="isBroundImport"
-        >
+        <el-button size="small" plain @click="isResExport = false">取 消</el-button>
+        <el-button size="small" plain v-show="exportResStep > 1"
+          @click="exportResStep > 1 ? exportResStep-- : (exportResStep = 1)">上一步</el-button>
+        <el-button size="small" type="primary" @click="nextExportRes" :loading="isBroundImport">
           {{
-            isBroundImport ? "导出中.." : exportResStep >= 3 ? "确定" : "下一步"
+              isBroundImport ? "导出中.." : exportResStep >= 3 ? "确定" : "下一步"
           }}
         </el-button>
       </div>
     </el-dialog>
 
     <!-- 回收站 -->
-    <recycleBinDialog
-      :visible.sync="isShowRecycleBin"
-      v-if="isShowRecycleBin"
-      @confirm="reset"
-    />
+    <recycleBinDialog :visible.sync="isShowRecycleBin" v-if="isShowRecycleBin" @confirm="reset" />
+
+
+    <div class="media-type-dialog">
+      <el-dialog :visible.sync="mediaDialogVisible" width="280px" :show-close="false">
+        <h2 class="title"><img src="@/assets/images/question-circle.png" class="icon" /> 确认锁定该方案的点位吗？</h2>
+        <div class="ctn" v-if="mediaDialogVisible">
+          <h3>请选择要预锁的媒体类型</h3>
+          <el-checkbox-group v-model="mediaTypeChecks">
+            <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
+              <el-checkbox
+                :label="item.value"
+                :disabled="!item.authMediaFlag || item.RemainDay !== ''"
+                :checked="item.RemainDay !== ''"
+              >{{ item.label }}
+              </el-checkbox>
+            </div>
+          </el-checkbox-group>
+          <div class="btn-box">
+            <el-button class="btn" @click="handleMediaTypeCancel">取 消</el-button>
+            <el-button type="primary" @click="handleMediaTypeCommit">确 定</el-button>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
+
   </div>
 </template>
 
@@ -834,12 +567,15 @@ import downloadVacancy from "../../components/common/components/vacancyDownload.
 import AllPointExport from "../../components/common/components/allPointExport.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
+// 表格设置
+import TableSetting from "./components/TableSetting/index.vue";
 
 // 回收站
 import recycleBinDialog from "./components/recycleBinDialog.vue";
 // 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
 import timeFormat from "../../commonFun/timeFormat.js";
+import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 export default {
   name: "projectList",
   components: {
@@ -848,6 +584,7 @@ export default {
     pointState,
     recycleBinDialog,
     AllPointExport,
+    TableSetting
   },
   data() {
     return {
@@ -873,6 +610,8 @@ export default {
         orderby: "",
         // 升序降序0/1
         desc: "",
+        // 媒体类型ids
+        mediaTypeIds: ""
       },
       // 公司列表
       companyData: [],
@@ -897,12 +636,7 @@ export default {
       //加载中
       loading: true,
       currentItem: {},
-      // 解锁还是预锁
-      isLock: false,
-      // 预锁弹出框
-      dialogVisible: false,
-      // 选择要预锁的城市
-      cityChoose: [],
+
       // 预锁的城市列表
       cityList: [],
       // 状态列表
@@ -963,6 +697,33 @@ export default {
 
       // 是否展示回收站
       isShowRecycleBin: false,
+
+      // 预锁媒体类型窗口
+      mediaDialogVisible: false,
+      // 媒体类型
+      currentMediaType: [],
+      // 预锁的公司在这个方案中勾选的媒体类型
+      mediaTypeChecks: [],
+
+      // 表头数据
+      currentPlanColumn: [
+        { id: 0, label: "方案名称", prop: "apName", isChecked: true, fix: "not" },
+        { id: 1, label: "客户名称", prop: "cName", isChecked: true, fix: "not" },
+        { id: 2, label: "品牌名称", prop: "bTitle", isChecked: true, fix: "not" },
+        { id: 3, label: "方案价格", prop: "apTotal", isChecked: true, fix: "not" },
+        { id: 4, label: "所有人", prop: "realName", isChecked: true, fix: "not" },
+        { id: 5, label: "投放城市(点位面数,排期)", prop: "cityArea", isChecked: true, fix: "not" },
+        { id: 6, label: "媒体类型", prop: "mediaTypeDetails", isChecked: true, fix: "not" },
+        { id: 7, label: "创建日期", prop: "apcTime", isChecked: true, fix: "not" },
+        { id: 8, label: "状态", prop: "apState", isChecked: true, fix: "not" },
+        { id: 9, label: "操作", isChecked: true, fix: "right" },
+      ],
+      // 行距
+      rowSpace: "",
+      itemKey: '',
+
+      // 媒体类型筛选字段
+      mediaTypeFilterList: [],
     };
   },
   created() {
@@ -977,9 +738,12 @@ export default {
       this.getSubSaleList();
     }
   },
+
   mounted() {
     this.getCustomConfig();
+    this.getAllMediaTypes();
   },
+
   methods: {
     // 导出周边资源
     getCustomConfig() {
@@ -997,16 +761,18 @@ export default {
     // 切换页码
     changePage(page) {
       this.currPage = page;
-      console.log("page----", page);
+      // console.log("page----", page);
       this.searchFun();
     },
+
     // 每页条数切换
     sizeChange(val) {
-      console.log("val----", val);
+      // console.log("val----", val);
       this.pageSize = val;
       this.currPage = 1;
       this.searchFun();
     },
+
     // 获取公司
     getCompany() {
       let sess = this.sessionData;
@@ -1060,6 +826,7 @@ export default {
           });
       }
     },
+
     // 滚动加载获取数据(无搜索数据)
     getData(params) {
       api
@@ -1069,6 +836,7 @@ export default {
             let dataInfo = res.data;
             this.totalNum = dataInfo.total;
             this.currentPlan = this.funcData(dataInfo.list);
+            console.log('currentPlan', this.currentPlan);
             this.loading = false;
             if (dataInfo.totalpage == 0) {
               this.messageFun("warning", "暂无数据");
@@ -1078,6 +846,7 @@ export default {
           }
         });
     },
+
     //获取下级销售列表
     getSubSaleList() {
       api.getApi(this.apiVar.Advertisement + "/GetSubSaleList").then((res) => {
@@ -1088,9 +857,11 @@ export default {
         }
       });
     },
+
     filterRealNameFun(value, row) {
       return row.realName === value;
     },
+
     // 数据处理
     funcData(dataArr) {
       let result = [];
@@ -1101,6 +872,7 @@ export default {
       }
       return result;
     },
+
     // 获取session数据
     getSessionData() {
       this.sessionData = sessFun.getSess();
@@ -1112,6 +884,7 @@ export default {
         this.isAll = false;
       }
     },
+
     // 获取城市
     getFanCity() {
       let info = {
@@ -1138,6 +911,7 @@ export default {
           }
         });
     },
+
     // 判断角色是否有新建按钮(媒介和销售有)
     getRole() {
       let role = this.sessionData.uType;
@@ -1156,7 +930,7 @@ export default {
       }
       if (
         !["ADN_BD_KA", "ADN_BD"].includes(role) &&
-        !["ADN_MD_COUNTRY", "ADN_MD"].includes(role)
+        !["ADN_MD"].includes(role)
       ) {
         this.showNewBtn = false;
       }
@@ -1164,6 +938,7 @@ export default {
         this.isDisable = true;
       }
     },
+
     // 状态转换成文本
     stateToText(val) {
       let state = [
@@ -1180,17 +955,20 @@ export default {
         }
       }
     },
+
     // 时间格式规范预锁
     formatTime(val) {
       return dateFormat.toDate(val, "/");
     },
+
     // 价格加上逗号
     priceFormat(price) {
       return commaFormat.init(price);
     },
+
     // 价格时间排序(请求后台接口进行排序)
     sortChange(column) {
-      console.log("columm---", column);
+      // console.log("columm---", column);
       if (column.order == "ascending") {
         this.searchInfo.orderby = column.prop;
         this.searchInfo.desc = 0;
@@ -1201,6 +979,7 @@ export default {
       this.currPage = 1;
       this.searchFun();
     },
+
     routeSelect() {
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
@@ -1214,15 +993,17 @@ export default {
         this.$router.push("./createPlanOld");
       }
     },
+
     //新增意向方案查询意向方案草稿箱
     getProposalAdBackUp(params) {
       api
         .getApi(this.apiVar.AddspProposal + "/getAdBackUp", params)
         .then((res) => {
           console.log("获取意向方案缓存", res);
+          console.log(JSON.parse(res.data.data))
           this.continueEditLoading.close();
           if (res.data.SysCode == 200200) {
-            console.log("获取意向方案缓存成功", res.data);
+            // console.log("获取意向方案缓存成功", res.data);
             let data = res.data.data;
             if (JSON.stringify(data) === "{}" || !data) {
               this.$router.push("./createPlan");
@@ -1251,6 +1032,7 @@ export default {
           }
         });
     },
+
     // 新建方案
     addOne() {
       this.continueEditLoading = this.$loading({
@@ -1272,7 +1054,7 @@ export default {
             console.log("获取方案缓存", res);
             this.continueEditLoading.close();
             if (res.data.SysCode == 200200) {
-              console.log("获取缓存成功", res.data);
+              // console.log("获取缓存成功", res.data);
               if (JSON.stringify(res.data.data) === "{}") {
                 this.routeSelect();
               } else {
@@ -1300,11 +1082,13 @@ export default {
           });
       }
     },
+
     // 点位表盘
     goToDiaPlate() {
-      console.log("this.$router", this.$router);
+      // console.log("this.$router", this.$router);
       this.$router.push("./adsDialPlate");
     },
+
     //显示意向方案缓存信息
     showProposalCookeAdPlan(adPlan) {
       this.planInfo = {
@@ -1315,12 +1099,17 @@ export default {
       };
       this.unfinishedDialogVisible = true;
     },
+
     // 显示缓存方案的信息
     showCookeAdPlan(adPlan) {
       // this.planForm.realNamesName
+      if (adPlan.planData.isEdit) {
+        this.$router.push("./createPlanOld");
+        return
+      }
       let ownerSales =
         ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
-        adPlan.planData.baseInfo.realNamesName
+          adPlan.planData.baseInfo.realNamesName
           ? adPlan.planData.baseInfo.realNamesName
           : adPlan.planData.baseInfo.ownerSales;
       this.planInfo = {
@@ -1341,6 +1130,7 @@ export default {
       result = result + "00" + Math.round(Math.random() * 9);
       return result;
     },
+
     // 获取方案列表
     getPlanList(apID, suID) {
       return new Promise((resolve, reject) => {
@@ -1380,6 +1170,7 @@ export default {
           });
       });
     },
+
     // 发布
     release(row) {
       // 1)	全国媒介可发布全部销售的方案
@@ -1415,7 +1206,7 @@ export default {
         api
           .getApi(this.apiVar.Advertisement + "/GetFanganInfo", info)
           .then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             if (res.data.SysCode == 200200) {
               let text = res.data.data;
               if (text.apQC) {
@@ -1434,6 +1225,7 @@ export default {
         this.messageFun("warning", "您没有权限发布该方案");
       }
     },
+
     // 提交
     commitRelease() {
       if (/^[^\u4e00-\u9fa5]{0,}$/.test(this.QCinfo)) {
@@ -1448,6 +1240,7 @@ export default {
         this.messageFun("warning", "只能输入数字,字母,字符");
       }
     },
+
     // 保存合同编号
     saveContractNo(contractNo, planType, relatedApId) {
       // uid         int【必填】     当前账户UserID
@@ -1474,13 +1267,12 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/SetAdPlan", info)
         .then((res) => {
-          console.log(res, "reeeeeeeeeeeeee");
           if (res.data.SysCode == 300200) {
             // 查看是否被锁
             api
               .postApi(this.apiVar.Advertisement + "/CheckLock", info)
               .then((res) => {
-                console.log(res.data);
+                // console.log(res.data);
                 if (!res.data.SysCode) {
                   if (!res.data.IsLock) {
                     this.releaseFun();
@@ -1499,6 +1291,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     releaseFun() {
       let reseleInfo = {
         uid: this.sessionData.uID,
@@ -1509,12 +1302,12 @@ export default {
       };
       this.releaseFangan(reseleInfo);
     },
+
     // 发布方案(优化后的接口)
     releaseFangan(info) {
       api
         .postApi(this.apiVar.Advertisement + "/SetFangan", info)
         .then((res) => {
-          console.log(res.data);
           if (res.data.SysCode == 300200) {
             this.messageFun("success", res.data.MSG);
             for (let data of this.currentPlan) {
@@ -1540,6 +1333,7 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     // 跳转到详情页面
     ToDetail(row) {
       sessionStorage.setItem("plan_apid", row.apID);
@@ -1554,6 +1348,7 @@ export default {
         this.$router.push("./planDetail");
       }
     },
+
     // 跳转到编辑页面
     ToEdit(row) {
       sessionStorage.setItem("plan_apid", row.apID);
@@ -1566,10 +1361,12 @@ export default {
         this.$router.push("./editPlanOld");
       }
     },
+
     // 比较两个时间大小
     compareTime(arr, sField, eField) {
       return dateFormat.compareTime(arr, sField, eField);
     },
+
     // 意向方案配点（直营媒介配点）
     addPoint(row) {
       if (
@@ -1581,6 +1378,7 @@ export default {
         this.$message.warning("暂无权限！");
       }
     },
+
     //预锁
     preload(row) {
       this.$confirm(
@@ -1595,6 +1393,16 @@ export default {
       )
         .then(() => {
           this.currentItem = row;
+          this.currentMediaType = row.details.map(item => {
+            return {
+              label: item.mediaTypeName,
+              value: item.mediaTypeId,
+              mediaTypeName: item.mediaTypeName,
+              authMediaFlag: item.authMediaFlag,
+              RemainDay: item.RemainDay || ""
+            }
+          })
+          console.log(this.currentMediaType);
           let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
           let date = timeFormat.toDate(new Date(), "/");
           if (startObj.startTime <= date) {
@@ -1604,29 +1412,7 @@ export default {
             );
             return;
           }
-          this.cityList = this.getCityList(row.cityArea);
-          if (this.cityList.length) {
-            this.cityChoose = [];
-            this.isLock = true;
-          } else {
-            this.messageFun("warning", "方案权限城市内您没有可以预锁的城市");
-          }
-          if (this.isNation) {
-            this.dialogVisible = true;
-          } else {
-            //地方媒介
-            this.Ctrlloading = this.$loading({
-              text: "请耐心等待...",
-              spinner: "el-icon-loading",
-              background: "rgba(0, 0, 0, 0.7)",
-            });
-            if (this.isLock) {
-              this.LockCity(this.cityList, "L");
-            } else {
-              this.noLockCity(this.cityList);
-            }
-            this.dialogVisible = false;
-          }
+          this.mediaDialogVisible = true
         })
         .catch(() => {
           this.$message({
@@ -1635,6 +1421,7 @@ export default {
           });
         });
     },
+
     // 获取权限城市内的城市,进行勾选
     getCityList(arr) {
       // 1)	全国媒介可发布全部销售的方案
@@ -1662,6 +1449,7 @@ export default {
       }
       return resultInfo;
     },
+
     // 解除预锁
     clearLock(row) {
       this.$confirm(
@@ -1675,26 +1463,20 @@ export default {
         }
       )
         .then(() => {
-          this.cityChoose = [];
-          this.isLock = false;
           this.currentItem = row;
-          this.cityList = this.getCityList(row.cityArea);
-          if (this.isNation) {
-            this.dialogVisible = true;
-          } else {
-            //地方媒介
-            this.Ctrlloading = this.$loading({
-              text: "请耐心等待...",
-              spinner: "el-icon-loading",
-              background: "rgba(0, 0, 0, 0.7)",
-            });
-            if (this.isLock) {
-              this.LockCity(this.cityList, "L");
-            } else {
-              this.noLockCity(this.cityList);
+          this.currentMediaType = row.details.map(item => {
+            return {
+              label: item.mediaTypeName,
+              value: item.mediaTypeId,
+              mediaTypeName: item.mediaTypeName
             }
-            this.dialogVisible = false;
-          }
+          })
+          this.Ctrlloading = this.$loading({
+            text: "请耐心等待...",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          this.noLockCity(row);
         })
         .catch(() => {
           this.$message({
@@ -1703,6 +1485,7 @@ export default {
           });
         });
     },
+
     // 检查当前拆分方案是否有点位被删除
     checkPoin(row) {
       let params = {
@@ -1739,6 +1522,7 @@ export default {
           });
       });
     },
+
     // KA方案拆分
     splitAdPlan(row) {
       if (row.planMode == 1) {
@@ -1773,65 +1557,20 @@ export default {
                 });
             }
           })
-          .catch((error) => {});
+          .catch((error) => { });
       }
     },
-    cancelLock() {
-      this.dialogVisible = false;
-      this.$message({
-        type: "info",
-        message: "已取消操作",
-      });
-    },
-    // 确定预锁
-    confirmLock() {
-      console.log(this.cityChoose);
-      if (this.cityChoose.length) {
-        this.Ctrlloading = this.$loading({
-          text: "请耐心等待...",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)",
-        });
-        let arr = [];
-        for (let select of this.cityChoose) {
-          for (let data of this.cityList) {
-            if (data.asrID == select) {
-              arr.push(data);
-              break;
-            }
-          }
-        }
 
-        if (this.isLock) {
-          this.LockCity(arr, "L");
-        } else {
-          this.noLockCity(arr);
-        }
-        this.dialogVisible = false;
-      } else {
-        if (this.isLock) {
-          this.messageFun("warning", "请选择预锁公司！");
-        } else {
-          this.messageFun("warning", "请选择解锁公司！");
-        }
-      }
-    },
     // 预锁
-    LockCity(arr, act) {
-      console.log("lockcity----", arr);
-      let asrIDs = [];
-      for (let data of arr) {
-        asrIDs.push(data.asrID);
-      }
-      let apid = arr[0].apID;
+    LockCity(act) {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         act: act,
-        apid: apid,
-        asrIDs: asrIDs.join(","),
+        apid: this.currentItem.apID,
+        mediaTypeIds: this.mediaTypeChecks
       };
-      console.log(info);
+
       api
         .postApi(this.apiVar.Advertisement + "/SetFangan", info)
         .then((res) => {
@@ -1849,30 +1588,32 @@ export default {
             this.messageFun("warning", res.data.MSG);
           }
           this.Ctrlloading.close();
+          this.mediaDialogVisible = false
         })
         .catch((err) => {
           console.log(err);
           this.Ctrlloading.close();
+          this.mediaDialogVisible = false
         });
     },
+
     // 解锁
-    noLockCity(arr) {
-      let asrIDs = [];
-      for (let data of arr) {
-        asrIDs.push(data.asrID);
-      }
-      let apid = arr[0].apID;
+    noLockCity(row) {
+      let mediaTypeIds = []
+      row.mediaTypeDetails.map(item => {
+        if (item.authMediaFlag) {
+          mediaTypeIds.push(item.mediaTypeId)
+        }
+      })
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
-        apId: apid,
-        asrIDs: asrIDs,
+        apId: row.apID,
+        mediaTypeIds
       };
-      console.log(info);
       api
         .postApi(this.apiVar.Advertisement + "/ClFangan", info)
         .then((res) => {
-          console.log(res.data);
           this.Ctrlloading.close();
           this.searchFun();
           this.messageFun("success", res.data.MSG);
@@ -1882,13 +1623,15 @@ export default {
           this.Ctrlloading.close();
         });
     },
+
     // 7天以上显示7天,否则显示相隔天数
     countDay(time) {
       let dayA = Math.abs(timeFormat.getDayBetween(time, new Date()));
-      console.log("dayA-----", dayA);
+      // console.log("dayA-----", dayA);
       let RemainDay = dayA > 7 ? 7 : dayA;
       return RemainDay;
     },
+
     // 弹出框修改路径
     changeRoute() {
       this.$confirm(`存在点位被占，是否修改方案？`, "提示", {
@@ -1906,9 +1649,10 @@ export default {
           });
         });
     },
+
     // 搜索（优化）
     search() {
-      let { keyword, rangeDate, status, company, cityWord, Lock, dateType } =
+      let { keyword, rangeDate, status, company, cityWord, Lock, dateType, mediaTypeIds } =
         this.searchInfo;
       this.isSearch = false;
       let timer = setTimeout(() => {
@@ -1922,7 +1666,8 @@ export default {
         company ||
         cityWord ||
         Lock ||
-        dateType
+        dateType ||
+        mediaTypeIds
       ) {
         this.currentPlan = [];
         this.loading = true;
@@ -1932,6 +1677,7 @@ export default {
         this.messageFun("warning", "请输入搜索条件");
       }
     },
+
     searchFun() {
       this.paginationShow = false;
       this.loading = true;
@@ -1941,6 +1687,7 @@ export default {
         this.paginationShow = true;
       });
     },
+
     // 搜索数据格式化
     searchFormat() {
       let info = {
@@ -1960,6 +1707,7 @@ export default {
         orderby,
         desc,
         dateType,
+        mediaTypeIds
       } = this.searchInfo;
       info = {
         ...info,
@@ -1972,36 +1720,69 @@ export default {
         ...(orderby && { orderby }),
         ...(desc !== "" && desc >= 0 && { desc }),
         ...(rangeDate && { timeType: dateType }),
+        ...(mediaTypeIds && { mediaTypeIds }),
       };
       return info;
     },
+
     // 设置表格数据
     setTableData(item) {
       let obj = {
         apSrc: item.src,
         adcID: item.adcID,
         apID: item.apID,
-        apName: item.apName || "",
-        apState: item.apState || "",
+        apName: item.apName || "--",
+        apState: item.apState,
         planMode: item.planMode || 0,
-        apTotal: item.apTotal || "",
-        apcTime: item.apcTime || "",
+        apTotal: item.apTotal || 0,
+        apcTime: item.apcTime || "--",
         bTitle: item.bTitle || "--",
-        cName: item.cName || "",
-        realName: item.realName || "",
+        cName: item.cName || "--",
+        realName: item.realName || "--",
         cityArea: [],
         // isKA: item.isKA,     // 1：ka销售方案，不可发布及预锁
-        apControlLevel: item.apControlLevel, // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
+        apControlLevel: item.apControlLevel || "--", // 1:可预锁、发布 2：可拆单、不可预锁和发布 3.表示KA销售单已拆，不可（拆单、预锁、发布）
+        details: item.details || "",
+        mediaTypeDetails: [], // 媒体类型详细数据（包括预锁）
+        mediaTypeNames: item.mediaTypeNames || "", // 媒体类型
+        mediaTypeIds: item.mediaTypeIds || "", // 媒体类型id
       };
+      // 处理媒体类型数据
+      let mediaTypeNames = obj.mediaTypeNames.split(',')
+      mediaTypeNames.forEach(type => {
+        const index = obj.details.findIndex(item => item.mediaTypeName === type)
+        if (index > -1) {
+          obj.mediaTypeDetails.push(obj.details[index])
+        } else {
+          obj.mediaTypeDetails.push({
+            mediaTypeName: type
+          })
+        }
+      })
+      // 针对地方媒介的预锁逻辑：
+      // 仅含单元门禁灯箱，不可预锁/解锁/发布
+      // 含有其他媒体类型，仅针对单元门禁灯箱灰显
+      let mLength = mediaTypeNames.length
+      if (["ADN_MD"].includes(this.role) && mediaTypeNames.includes('单元门禁灯箱')) {
+        if (mLength > 1) {
+          obj.isdfmj = false
+        } else {
+          obj.isdfmj = true
+        }
+      } else {
+        obj.isdfmj = false
+      }
+
       item.details.sort((a, b) => {
         return a.asrID - b.asrID;
       });
       let asrIDarr = [];
+      // RemainDay-预锁时间，没有的时候，就说明方案没有被预锁
       obj.canLock = item.details.some(function (item, index) {
         return !item.RemainDay;
       });
       obj.unLock = item.details.some(function (item, index) {
-        return item.RemainDay;
+        return item.RemainDay && item.authMediaFlag;
       });
       for (let data of item.details) {
         data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--
@@ -2015,21 +1796,21 @@ export default {
       obj.cityArea = item.details;
       return obj;
     },
+
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
+
     // 重置
     reset() {
-      this.searchInfo = {
-        select: "1",
-        keyword: "",
-        rangeDate: "",
-        status: "",
-        company: "",
-        cityWord: "",
-        Lock: "",
-        dateType: "0",
-      };
+      let info = this.searchInfo
+      info.select = "1",
+        info.keyword = "",
+        info.rangeDate = "",
+        info.status = "",
+        info.company = "",
+        info.Lock = "",
+        info.dateType = "0"
 
       this.currPage = 1;
       this.currentPlan = [];
@@ -2040,6 +1821,7 @@ export default {
       }, 1000);
       this.searchFun();
     },
+
     // 操作提示统一方法
     messageFun(mesType, mes) {
       this.$message({
@@ -2048,6 +1830,7 @@ export default {
         showClose: true,
       });
     },
+
     //清除意向方案缓存
     clearProposalAdPlanBackups(params) {
       api
@@ -2063,6 +1846,7 @@ export default {
       cacheAdPlan.removeData(this.sessionData.uID);
       this.routeSelect();
     },
+
     // 放弃继续编辑
     cancelEdit() {
       this.$confirm("放弃后将清除该方案信息!", "提示", {
@@ -2103,6 +1887,7 @@ export default {
           });
         });
     },
+
     // 继续创建
     continueEdit() {
       this.continueEditLoading = this.$loading({
@@ -2119,6 +1904,7 @@ export default {
 
       this.unfinishedDialogVisible = false;
     },
+
     /**
      * 周边小区导出
      * */
@@ -2133,31 +1919,42 @@ export default {
       };
       this.exportFileData = [];
       this.isResExport = true;
-      this.getAllMediaTypes();
+      getAllMediaTypes()
     },
+
     // 个人权限公司下媒体类型列表
     getAllMediaTypes() {
       api
         .getApi("/addsp/api/v1/mediaTypes/getPersonalAuthMediaTypes")
         .then((res) => {
-          if (res.data.SysCode == 200200) {
-            this.allMediaTypes = res.data.data || [];
+          let _res = res.data
+          if (_res.SysCode == 200200) {
+            this.allMediaTypes = _res.data || [];
+            _res.data.forEach(item => {
+              this.mediaTypeFilterList.push({
+                text: item.name,
+                value: item.id
+              })
+            })
           } else {
             this.messageFun("warning", res.data.MSG);
           }
         });
     },
+
     exportUploadFile(params) {
       this.exportFileData = [];
       let fileObj = params.file;
       this.exportFileData.push(fileObj);
-      console.log("上传周边", params);
+      // console.log("上传周边", params);
     },
+
     // 文件删除
     exportFileRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
       this.exportFileData = fileList;
     },
+
     //周边小区导出下一步
     nextExportRes() {
       if (this.exportResStep === 1) {
@@ -2185,7 +1982,7 @@ export default {
       } else if (this.exportResStep < 3) {
         this.exportResStep += 1;
       } else {
-        console.log("exportFileData", this.exportFileData);
+        // console.log("exportFileData", this.exportFileData);
         this.isBroundImport = true;
         if (this.exportFileData.length) {
           sessFun.messageFun("warning", "导出excel可能需要一分钟甚至更长时间!");
@@ -2196,6 +1993,7 @@ export default {
         }
       }
     },
+
     // 导出周边小区
     importBroundRes() {
       let formData = new FormData();
@@ -2240,8 +2038,8 @@ export default {
 
     // 删除方案
     deleteAdPlan(row) {
-      console.log(this.apiVar, "this.apiVar");
-      console.log(row);
+      // console.log(this.apiVar, "this.apiVar");
+      // console.log(row);
 
       if (row.apState == 1 && !row.canLock) {
         return sessFun.messageFun(
@@ -2276,23 +2074,83 @@ export default {
     // 回收站
     openRecycleBin() {
       this.isShowRecycleBin = true;
-      console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
+      // console.log(this.isShowRecycleBin, "this.isShowRecycleBin");
     },
+
+    // 列表筛选
+    filterChange(filters) {
+      for (let key in filters) {
+        if (key === "mediaTypeNames") {
+          if (filters[key].length) {
+            this.searchInfo.mediaTypeIds = filters[key].join(',');
+          } else {
+            this.searchInfo.mediaTypeIds = "";
+          }
+        }
+      }
+      this.search()
+    },
+
+    // 关闭预锁媒体类型弹窗
+    handleMediaTypeCancel() {
+      this.mediaTypeChecks = []
+      this.mediaDialogVisible = false
+    },
+
+    // 对媒体类型选择进行预锁
+    handleMediaTypeCommit() {
+      this.Ctrlloading = this.$loading({
+        text: "请耐心等待...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      this.LockCity("L");
+      this.mediaTypeChecks = []
+    },
+
+    // 媒体类型操作权限判断：仅针对地方媒介对单元门禁灯箱进行灰显
+    // medaiTypePermissions(item) {
+    //   if (item.mediaTypeName === '单元门禁灯箱' && ["ADN_MD"].includes(this.role)) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // },
+
+    // 列展示
+    filterColumn(columns) {
+      this.currentPlanColumn = columns
+      this.itemKey = Math.random()
+    },
+
+    // 刷新列表
+    refreshTable() {
+      this.search();
+    },
+
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
+
   },
+
   beforeDestroy() {
     if (this.continueEditLoading) {
       this.continueEditLoading.close();
     }
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>
+@import '../../assets/component.scss';
+
 a {
   color: #108ee9;
 }
 
 /*筛选*/
-/deep/ .el-checkbox-group .el-checkbox + .el-checkbox {
+/deep/ .el-checkbox-group .el-checkbox+.el-checkbox {
   margin-left: 0;
 }
 
@@ -2362,7 +2220,7 @@ a {
 }
 
 .marginR {
-  margin-right: 8px;
+  margin-right: 4px;
   margin-bottom: 16px;
 }
 
@@ -2377,6 +2235,7 @@ a {
   margin-left: 2px;
   position: relative;
 }
+
 /deep/ .search_row .el-input__inner {
   width: 185px;
 }
@@ -2411,7 +2270,7 @@ a {
   margin: 0 auto 16px;
 }
 
-.el-button + .el-button {
+.el-button+.el-button {
   margin-left: 0;
   font-size: 14px;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2547,64 +2406,81 @@ a {
   cursor: pointer;
   color: rgba(102, 102, 102, 1);
 }
+
 /deep/ .publish_dialog {
   .el-dialog__header {
     padding: 16px 24px 6px;
   }
+
   .el-dialog__body {
     padding: 0 24px 4px;
+
     .comment {
       display: block;
       color: rgba(0, 0, 0, 0.45);
       line-height: 24px;
       margin-bottom: 16px;
     }
+
     .el-form-item {
       margin-bottom: 12px;
     }
+
     .el-form-item__label {
       padding-bottom: 4px;
       line-height: 24px;
     }
+
     .el-input__inner {
       padding: 0 12px;
     }
+
     .el-input--small,
     .el-select--small {
       width: 100%;
     }
   }
+
   .el-dialog__footer {
     padding-top: 0;
-    .el-button + .el-button {
+
+    .el-button+.el-button {
       margin-left: 10px;
     }
   }
 }
+
 /deep/ .Import_dialog {
   border-radius: 4px;
+
   .el-dialog__header {
     padding: 12px 24px 16px;
   }
+
   .el-dialog__body {
     padding: 0 24px 24px;
+
     input::-webkit-input-placeholder {
       font-size: 14px;
     }
   }
+
   .el-dialog__footer {
     padding: 0 24px 24px;
     text-align: center;
   }
+
   .el-upload-list__item {
     width: 100%;
   }
+
   .el-upload-dragger {
     padding-top: 9%;
     width: 408px;
     height: 135px;
     background: rgba(0, 0, 0, 0.06);
   }
+
   .el-upload-dragger img {
     width: 28px;
     height: 30px;
@@ -2616,6 +2492,7 @@ a {
     color: rgba(102, 102, 102, 1);
     font-size: 15px;
     position: relative;
+
     img {
       width: 24px;
       height: 27px;
@@ -2628,31 +2505,37 @@ a {
       display: flex;
       align-items: center;
       margin-bottom: 16px;
+
       .el-select,
       .el-date-editor--daterange,
       .radius_input.el-input-group {
         width: calc(100% - 70px);
       }
+
       .radius_input .el-input-group__append {
         padding: 0 12px;
         font-size: 14px;
       }
-      & > span {
+
+      &>span {
         width: 70px;
         text-align: right;
         display: inline-block;
       }
     }
+
     li:last-child {
       margin-bottom: 0;
     }
   }
+
   .m_ehicle_class {
     input {
       font-size: 14px;
     }
   }
 }
+
 .u-bk-btn {
   padding: 0 3px;
   width: 30px;
@@ -2679,9 +2562,11 @@ a {
   margin-bottom: 16px;
   display: flex;
   align-items: center;
+
   &:nth-child(4) {
     margin-right: 0;
   }
+
   span {
     display: inline-block;
     width: 70px;
@@ -2695,14 +2580,18 @@ a {
   }
 
   .u-select {
-    min-width: 302px;
+    min-width: 338px;
+
     /deep/ .el-input__inner {
-      width: 203px;
+      width: 232px;
     }
+
     /deep/ .el-select {
       width: 98px;
       padding: 0;
       box-sizing: border-box;
+      color: rgba(0, 0, 0, 0.85);
+
       .el-input__inner {
         width: 100%;
       }
@@ -2713,12 +2602,14 @@ a {
     width: 98px;
     padding: 0;
     box-sizing: border-box;
+
     /deep/ .el-input {
       font-size: 14px;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: rgba(0, 0, 0, 0.65);
     }
+
     /deep/ .el-input__inner {
       width: 100%;
       padding: 0 10px;
@@ -2737,7 +2628,8 @@ a {
   }
 
   .u-select2 {
-    width: 302px;
+    width: 338px;
+
     /deep/ .el-input__inner {
       width: 100%;
     }
@@ -2764,10 +2656,160 @@ a {
   color: #fff;
 }
 
+.mediaList_search {
+  padding: 24px 24px 8px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.mediaList_title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    height: 24px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .btn_box {
+    height: 32px;
+  }
+
+  .m-act {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.media-box {
+  display: flex;
+  flex-wrap: wrap;
+
+  .media-tag {
+    margin: 4px 8px 4px 0;
+
+    .tag {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 2px;
+      font-family: 'Roboto';
+      font-size: 12px;
+      margin-right: 8px;
+      line-height: normal;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+
+      &.ad {
+        background: #E6F7FF;
+        color: #1890FF;
+        border: 1px solid #91D5FF;
+      }
+
+      &.unit-access {
+        background: #F6FFED;
+        color: #52C41A;
+        border: 1px solid #B7EB8F;
+      }
+
+      &.light-box {
+        background: #E6FFFB;
+        color: #13C2C2;
+        border: 1px solid #87E8DE;
+      }
+
+      &.brake {
+        background: #f9f0ff;
+        color: #722ED1;
+        border: 1px solid #D3ADF7;
+      }
+
+      .icon {
+        cursor: pointer;
+        display: block;
+        width: 10px;
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+.media-type-dialog {
+  /deep/ .el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+
+    .el-dialog__body {
+      padding: 26px 24px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 9px;
+      font-weight: 600;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+
+      .icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+        margin-right: 16px;
+        line-height: normal;
+      }
+    }
+
+    .ctn {
+      padding-left: 40px;
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+
+      .checkbox-item {
+        margin-bottom: 4px;
+
+        .el-checkbox {
+          display: block;
+          margin-right: 0;
+        }
+      }
+
+      .btn-box {
+        margin-top: 23px;
+        padding-left: 24px;
+
+        .btn {
+          margin-right: 14px;
+        }
+      }
+    }
+
+  }
+}
+
+
+
 @media only screen and (min-width: 1200px) {
   .btn_wrapper {
     .marginR {
       margin-right: 4px;
+
       &:last-of-type {
         margin-right: 0;
       }
@@ -2780,4 +2822,18 @@ a {
 .newDrop {
   padding: 0 !important;
 }
+.el-table-filter .el-table-filter__bottom button:first-child{
+  color: #fff;
+  background-color: #1890FF;
+  border-color: #1890FF;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+.el-table-filter .el-table-filter__bottom button.is-disabled {
+  background: transparent;
+  border: none;
+  color: #C0C4CC;
+  padding: 0 3px;
+}
+
 </style>

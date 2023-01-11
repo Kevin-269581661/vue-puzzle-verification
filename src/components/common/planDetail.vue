@@ -25,7 +25,7 @@
                   planDetail.apName
                 }}
               </h4>
-              <div class="handleBtn">
+              <div class="handleBtn" v-if="planDetail.isSimpleRight === 1">
                 <el-tooltip
                   v-if="
                     ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
@@ -83,7 +83,7 @@
               </div>
             </div>
             <div>
-              <detail :detail="planDetail" v-if="isShow"></detail>
+              <detail :detail="planDetail"  :isSimpleRight="planDetail.isSimpleRight"  v-if="isShow"></detail>
             </div>
           </div>
         </div>
@@ -93,6 +93,22 @@
               <schedule-alter :detailData="planDetail" />
               <div class="first-wrap box-wrap">
                 <div class="table_wrap">
+                  <div class="table-setting">
+                    <el-button
+                      plain
+                      type="default"
+                      icon="el-icon-download"
+                      class="searchBtn"
+                      v-if="planPanel == 'first'"
+                      @click="export2Excel(planDetail.apName)"
+                      :disabled="isDown"
+                      >导出</el-button
+                    >
+                    <!-- 列设置 -->
+                    <TableSetting refresh space filter :columns="currentColumn" cacheKey="planDetail" @filterColumn="filterColumn"
+                      @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+                    </TableSetting>
+                  </div>
                   <el-table
                     :data="currentPagination"
                     :default-sort="{prop: 'recName', order: 'descending'}"
@@ -100,17 +116,17 @@
                     style="width: 100%"
                     v-loading="loading" element-loading-text="玩命加载中.."
                     max-height="500"
-                    element-loading-spinner="el-icon-loading">
-                    <el-table-column type="expand">
+                    element-loading-spinner="el-icon-loading"
+                    :size="rowSpace"
+                    :key="itemKey"
+                  >
+                    <el-table-column type="expand" fixed="left">
                       <template slot-scope="props">
                         <el-form
                           label-position="left"
                           inline
                           class="demo-table-expand"
                         >
-                          <el-form-item label="商圈：">
-                            <span>{{ props.row.tradingArea }}</span>
-                          </el-form-item>
                           <el-form-item label="楼栋数量：">
                             <span>{{ props.row.fNum }}</span>
                           </el-form-item>
@@ -162,93 +178,83 @@
                         </el-form>
                       </template>
                     </el-table-column>
-                    <el-table-column
-                      label="资源名称"
-                      min-width="16.1%"
-                      prop="resName"
-                      show-overflow-tooltip
-                    >
-                    </el-table-column>
-                    <el-table-column
-                      prop="mTitle"
-                      label="媒体名称"
-                      min-width="10.3%"
-                    >
-                    </el-table-column>
-                    <el-table-column prop="mediaTypeName" label="媒体类型" min-width="10.3%">
-                    </el-table-column>
-                    <el-table-column prop="asLab" label="投放面" min-width="8.8%">
-                    </el-table-column>
-                    <el-table-column
-                      prop="city"
-                      label="城市"
-                      min-width="6%"
-                      :filters="filterCityData"
-                      :filter-method="filterCity"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                      prop="rName"
-                      label="区域"
-                      min-width="7.4%"
-                      :filters="filtersArea"
-                      :filter-method="filterOrigin"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                      prop="cType"
-                      label="楼盘类型"
-                      min-width="8.8%"
-                    >
-                      <template slot-scope="scope">
-                        <span>{{ scope.row.cType || '--' }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      prop="hNum"
-                      label="小区户数"
-                      min-width="6.0%"
-                      align="right"
-                    >
-                      <template slot-scope="scope">
-                        <span>{{ priceToFormat(scope.row.hNum) }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="楼盘价格"
-                      min-width="9.0%"
-                      align="right"
-                    >
-                      <template slot-scope="scope">
-                        <span
-                          >&yen;{{
-                            scope.row.hPrice
-                              ? priceFormat(scope.row.hPrice / 100)
-                              : 0
-                          }}</span
+
+                    <template v-for="item in currentColumn">
+                      <template v-if="item.label === '资源名称'">
+                        <el-table-column
+                          show-overflow-tooltip
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          v-if="item.isChecked"
+                          :fixed="item.fix === 'left' ? true : false"
                         >
+                        </el-table-column>
                       </template>
-                    </el-table-column>
-                    <el-table-column
-                      prop="timeRange"
-                      label="排期"
-                      min-width="14.2%"
-                      :filters="filtersData"
-                      :filter-method="filterTimeRange"
-                    >
-                      <template slot-scope="scope">
-                        <template v-if="scope.row.lState == 2">
-                          <span>{{ scope.row.finishTimeRange }}</span>
-                          <el-tooltip placement="top">
-                            <div slot="content">
-                              <span>{{ scope.row.timeRange }}</span>
-                            </div>
-                            <i class="el-icon-question"> </i>
-                          </el-tooltip>
-                        </template>
-                        <span v-else>{{ scope.row.timeRange }}</span>
+
+                      <template v-else-if="item.label === '城市'">
+                        <el-table-column
+                          :filters="filterCityData"
+                          :filter-method="filterCity"
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          v-if="item.isChecked"
+                          :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
                       </template>
-                    </el-table-column>
+
+                      <template v-else-if="item.label === '区域'">
+                        <el-table-column
+                          :filters="filtersArea"
+                          :filter-method="filterOrigin"
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          v-if="item.isChecked"
+                          :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
+                      </template>
+
+                      <template v-else-if="item.label === '排期'">
+                        <el-table-column
+                          :filters="filtersData"
+                          :filter-method="filterTimeRange"
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          v-if="item.isChecked"
+                          :fixed="item.fix"
+                        >
+                          <template slot-scope="scope">
+                            <template v-if="scope.row.lState == 2">
+                              <span>{{ scope.row.finishTimeRange }}</span>
+                              <el-tooltip placement="top">
+                                <div slot="content">
+                                  <span>{{ scope.row.timeRange }}</span>
+                                </div>
+                                <i class="el-icon-question"> </i>
+                              </el-tooltip>
+                            </template>
+                            <span v-else>{{ scope.row.timeRange }}</span>
+                          </template>
+                        </el-table-column>
+                      </template>
+
+                      <template v-else>
+                        <el-table-column
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          v-if="item.isChecked"
+                          :fixed="item.fix === 'left' ? true : false"
+                        >
+                        </el-table-column>
+                      </template>
+                    </template>
+
                   </el-table>
                   <el-pagination
                     background
@@ -265,7 +271,7 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="物料信息" name="third">
+            <el-tab-pane label="物料信息" name="third" v-if="planDetail.isSimpleRight === 1">
               <material
                 :materialInfoData="materialInfoJson"
                 :loading="maLoading"
@@ -276,16 +282,6 @@
           </el-tabs>
         </div>
         <div class="content_bottom_btn">
-          <el-button
-            plain
-            type="default"
-            icon="el-icon-download"
-            class="searchBtn"
-            v-if="planPanel == 'first'"
-            @click="export2Excel(planDetail.apName)"
-            :disabled="isDown"
-            >导出</el-button
-          >
           <el-button plain class="cancel" @click="goBack()">返回</el-button>
         </div>
         <el-dialog
@@ -427,13 +423,17 @@
   // 时间格式化
   import dateFormat from "../../commonFun/timeFormat.js";
   import sessFun from "../../commonFun/sessFun.js";
+  import { getLocalCache } from "@/utils/user.js";
+
   // 报价单
   import material from "./components/materialInfo.vue";
   import detail from "./components/detailInfo.vue";
   import addPoint from './components/addPoint.vue';
+  import TableSetting from "./components/TableSetting";
+
   import {
     Message,
-    MessageBox
+    MessageBox,
   } from "element-ui";
   import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 
@@ -443,12 +443,8 @@
       material,
       detail,
       addPoint,
-      ScheduleAlter
-      // elTable: Table,
-      // elTableColumn: TableColumn,
-      // elTabs: Tabs,
-      // elTabPane: TabPane,
-      // elButton: Button,
+      ScheduleAlter,
+      TableSetting
     },
     data () {
       let validatPrice = (rule, value, callback) => {
@@ -495,7 +491,9 @@
           AdDoor: {},
           barrier: {},
         },
-        // 选点排期
+        // 选点排期列表的数据
+        setPointDataList: [],
+        // 选点排期的全部数据
         setpointArr: [],
         // 报价单详情
         priceSheet: [],
@@ -525,7 +523,28 @@
           cash: [{ validator: validatPrice, trigger: "blur" }],
           displace: [{ validator: validatPrice, trigger: "blur" }],
           other: [{ validator: validatPrice, trigger: "blur" }]
-        }
+        },
+
+        // 表头数据
+        currentColumn: [
+          { id: 0, label: "资源名称", prop: "resName", width:"150", isChecked: true, fix: "not" },
+          { id: 1, label: "媒体名称", prop: "mTitle", width:"150", isChecked: true, fix: "not" },
+          { id: 2, label: "媒体类型", prop: "mediaTypeName", width:"150", isChecked: true, fix: "not" },
+          { id: 3, label: "投放面", prop: "asLab", width:"150", isChecked: true, fix: "not" },
+          { id: 4, label: "位置朝向", prop: "siteOrientation", width:"150", isChecked: false, fix: "not" },
+          { id: 5, label: "城市", prop: "city", width:"150", isChecked: true, fix: "not" },
+          { id: 6, label: "区域", prop: "rName", width:"150", isChecked: true, fix: "not" },
+          { id: 7, label: "媒体位ID", prop: "assetTag", width:"150", isChecked: false, fix: "not" },
+          { id: 8, label: "街道", prop: "street", width:"150", isChecked: false, fix: "not" },
+          { id: 9, label: "商圈", prop: "tradingArea", width:"150", isChecked: false, fix: "not" },
+          { id: 10, label: "设备类型", prop: "mType", width:"150", isChecked: false, fix: "not" },
+          { id: 11, label: "位置类型", prop: "site", width:"150", isChecked: false, fix: "not" },
+          { id: 12, label: "楼栋", prop: "buildingName", width:"150", isChecked: false, fix: "not" },
+          { id: 13, label: "单元", prop: "unitName", width:"150", isChecked: false, fix: "not" },
+          { id: 14, label: "排期", prop: "timeRange", width:"200", isChecked: true, fix: "right" },
+        ],
+        itemKey: '',
+        rowSpace: ''
       };
     },
     created () {
@@ -538,12 +557,11 @@
       this.getMatchCnt(sessionStorage.getItem("plan_apid"));
       this.getADLimit()       // 获取广告限制列表
 
-
     },
     computed: {
       currentPagination () {
-        this.totalNum = this.setpointArr.length;
-        return this.setpointArr.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        this.totalNum = this.setPointDataList.length;
+        return this.setPointDataList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
       }
     },
     methods: {
@@ -770,6 +788,7 @@
                   pdSendFee: this.priceFormat(info.barrier.adSendFee / 100),
                   pdOtherFee: this.priceFormat(info.barrier.adOtherFee / 100),
                 },
+                isSimpleRight: info.isSimpleRight
               };
               // 选点排期
               !updateDetail && this.getSetPoint();
@@ -876,7 +895,9 @@
               this.filterCityData = filterFormat(resInfo, "city");
               this.filtersArea = filterFormat(resInfo, "rName");
               this.filtersData = filterFormat(resInfo, "timeRange");
-              // 选点排期
+              // 选点排期列表数据处理
+              this.setPointDataList = this.setPointDataFormat(resInfo)
+              // 选点排期全部数据
               this.setpointArr = resInfo;
               this.loading = false;
               this.maLoading = false;
@@ -894,7 +915,31 @@
             console.log(res);
           });
       },
-
+      // 选点排期数据处理
+      setPointDataFormat(data) {
+        let dataArr = []
+        for (const info of data) {
+          let obj = {
+            resName: info.resName || "--",
+            mTitle: info.mTitle || "--",
+            mediaTypeName: info.mediaTypeName || "--",
+            asLab: info.asLab || "--",
+            siteOrientation: info.siteOrientation || "--",
+            city: info.city || "--",
+            rName: info.rName || "--",
+            assetTag: info.assetTag || "--",
+            street: info.street || "--",
+            tradingArea: info.tradingArea || "--",
+            mType: info.mType || "--",
+            site: info.site || "--",
+            buildingName: info.buildingName || "--",
+            unitName: info.unitName || "--",
+            timeRange: info.timeRange || "--"
+          }
+          dataArr.push(obj)
+        }
+        return dataArr
+      },
       // 获取物料新接口
       getMaterialInfo (){
         let apID = sessionStorage.getItem("plan_apid");
@@ -1178,11 +1223,28 @@
       filterTimeRange (value, row) {
         return row.timeRange === value;
       },
+
+      // 列展示
+      filterColumn(columns) {
+        this.currentColumn = columns
+        this.itemKey = Math.random()
+      },
+
+      // 刷新列表
+      refreshTable() {
+        this.search();
+      },
+
+      // 更改列表行距
+      spaceSetting(size) {
+        this.rowSpace = size;
+      },
     },
   };
   </script>
 
   <style lang="scss" scoped>
+  @import '../../assets/component.scss';
   .ellipsis-td {
     width: 132px;
     overflow: hidden;
@@ -1452,5 +1514,24 @@
   }
   #pane-second {
     margin-bottom: 32px;
+  }
+
+  .table-setting {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    .searchBtn {
+      margin-right: 8px;
+      background: #1890FF;
+      border: 1px solid #1890FF;
+      box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+      border-radius: 2px;
+      color: #FFFFFF;
+    }
+  }
+
+  /deep/ .el-table td .cell {
+    font-size: 14px;
   }
   </style>

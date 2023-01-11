@@ -13,7 +13,7 @@
               status-icon
               :rules="planRules"
               ref="planForm"
-              label-width="100px"
+              label-width="110px"
               class="demo-ruleForm"
             >
               <el-form-item label="方案名称：" prop="planName">
@@ -172,7 +172,7 @@
               </el-form-item>
               <el-form-item
                 v-if="isPay && BDData.uType === 'ADN_BD'"
-                label="媒体类型："
+                label="意向投放媒体："
                 prop="customerMediaType"
               >
                 <el-select
@@ -266,6 +266,10 @@
                         :key="item.value"
                         :label="item.value"
                         :value="item.value"
+                        :disabled="
+                          (item.value === '资产编号' && isDiableSearchOpt) ||
+                          (item.value === '被占查询' && isDiableSearchOpt)
+                        "
                       ></el-option>
                     </el-select>
                   </el-input>
@@ -311,7 +315,10 @@
                     >地图
                   </el-button>
                   <el-dropdown>
-                    <el-button type="success" class="importXle">
+                    <el-button
+                      type="success"
+                      class="importXle"
+                    >
                       导入<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
@@ -322,6 +329,7 @@
                       </el-dropdown-item>
                       <el-dropdown-item
                         @click.native.prevent="importFanan('ads')"
+                        :disabled="getAdsParamsData.chooseType !== 0"
                       >
                         导入点位
                       </el-dropdown-item>
@@ -330,7 +338,14 @@
                   <el-button type="primary" @click="importFanan('copy')"
                     >复制方案
                   </el-button>
-                  <el-button plain @click="dialogOneKeyPoint = true"
+                  <el-button
+                    v-if="
+                      !['ADN_BD', 'ADN_BD_COUNTRY', 'ADN_BD_KA'].includes(
+                        sessionData.uType
+                      )
+                    "
+                    plain
+                    @click="dialogOneKeyPoint = true"
                     >一键选点
                   </el-button>
                 </el-col>
@@ -375,6 +390,93 @@
                   {{ item.rName }}
                 </dd>
               </dl>
+
+              <dl v-if="isShowSiteMtype">
+                <dt>设备型号：</dt>
+                <dd
+                  v-for="(item, index) in mTypeList"
+                  :key="index"
+                  :class="mediaMType === item.dictValue ? 'active' : ''"
+                  @click="activeMtype(item.dictValue)"
+                >
+                  {{ item.dictDesc }}
+                </dd>
+              </dl>
+
+              <dl v-if="isShowSiteMtype">
+                <dt>安装位置：</dt>
+                <dd
+                  v-for="(item, index) in sites"
+                  :key="index"
+                  :class="site === item.dictValue ? 'active' : ''"
+                  @click="activeSite(item.dictValue)"
+                >
+                  {{ item.dictDesc }}
+                </dd>
+              </dl>
+
+              <dl v-if="isShowSiteOrientation">
+                <dt>位置朝向：</dt>
+                <dd
+                  v-for="(item, index) in siteOrientations"
+                  :key="index"
+                  :class="siteOrientation === item.dictValue ? 'active' : ''"
+                  @click="activeSiteOrientation(item.dictValue)"
+                >
+                  {{ item.dictDesc }}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>开发商：</dt>
+                <dd style="margin-left: 11px;">
+                  <el-select
+                    v-model="developer"
+                    placeholder="请输入开发商"
+                    size="small"
+                    :class="developer !== '' ? 'otherSelectActive' : ''"
+                    class="otherSelect input-hover"
+                    filterable
+                    remote
+                    :remote-method="developerSearch"
+                    @change="tableHeaderFilter_developer"
+                  >
+                    <el-option
+                      v-for="item in developerList"
+                      :key="item.dictValue"
+                      :label="item.dictDesc"
+                      :value="item.dictValue"
+                    >
+                    </el-option>
+                  </el-select>
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>商圈：</dt>
+                <dd style="margin-left: 24px;">
+                  <el-select
+                    v-model="tradingArea"
+                    placeholder="请输入商圈"
+                    size="small"
+                    :class="tradingArea !== '' ? 'otherSelectActive' : ''"
+                    class="otherSelect input-hover"
+                    filterable
+                    remote
+                    :remote-method="tradingAreaSearch"
+                    @change="tableHeaderFilter_tradingArea"
+                  >
+                    <el-option
+                      v-for="item in tradingAreaList"
+                      :key="item.dictValue"
+                      :label="item.dictDesc"
+                      :value="item.dictValue"
+                    >
+                    </el-option>
+                  </el-select>
+                </dd>
+              </dl>
+
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
@@ -424,6 +526,7 @@
                     <el-option label="B级" value="B"></el-option>
                     <el-option label="C级" value="C"></el-option>
                   </el-select>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -455,6 +558,48 @@
                       住户数量
                     </el-button>
                   </el-popover>
+
+                   <!-- 楼栋数量 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'floorNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="floorNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="floorNum[1]"
+                      />
+                      <el-button @click="emptyFun('floorNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByFloor()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.floorNum ? 'otherBtnActive' : ''"
+                    >
+                      楼栋数量
+                    </el-button>
+                  </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -494,6 +639,7 @@
                       楼盘价格
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -525,6 +671,89 @@
                       入住年份
                     </el-button>
                   </el-popover>
+
+                  <!-- 出入口数 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'doorNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="doorNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="doorNum[1]"
+                      />
+                      <el-button @click="emptyFun('doorNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByDoorNum()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.doorNum ? 'otherBtnActive' : ''"
+                    >
+                    出入口数
+                    </el-button>
+                  </el-popover>
+
+                  <!-- 入住率 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'liveRateNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="liveRateNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="liveRateNum[1]"
+                      />
+                      <el-button @click="emptyFun('liveRateNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByLiveRate()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.liveRateNum ? 'otherBtnActive' : ''"
+                    >
+                      入住率
+                    </el-button>
+                  </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -564,6 +793,7 @@
                       人流量
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -595,6 +825,7 @@
                       车流量
                     </el-button>
                   </el-popover>
+
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -634,6 +865,48 @@
                       车位数
                     </el-button>
                   </el-popover>
+
+                  <!-- 可投数量 -->
+                  <el-popover
+                    placement="bottom-start"
+                    width="155"
+                    trigger="click"
+                    popper-class="other-dd-popper"
+                  >
+                    <div
+                      class="input-wrap"
+                      :class="HSearch === 'actualAdsCntNum' ? 'focus' : ''"
+                    >
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="actualAdsCntNum[0]"
+                      />
+                      -
+                      <input
+                        type="text"
+                        class="input"
+                        v-model="actualAdsCntNum[1]"
+                      />
+                      <el-button @click="emptyFun('actualAdsCntNum')" class="input-wrap-Btn"
+                        >清 除
+                      </el-button>
+                      <el-button
+                        type="primary"
+                        class="input-wrap-Btn"
+                        @click="tableHeaderFilterByActualAdsCntNum()"
+                        >确 定
+                      </el-button>
+                    </div>
+                    <el-button
+                      slot="reference"
+                      class="otherBtn"
+                      :class="filterData.actualAdsCntNum ? 'otherBtnActive' : ''"
+                    >
+                      可投数量
+                    </el-button>
+                  </el-popover>
+
                 </dd>
               </dl>
             </div>
@@ -653,6 +926,34 @@
                 {{ tag.name }}
               </el-tag>
             </div>
+            <!-- 表格控件 -->
+            <div class="table-set">
+              <el-radio-group
+                v-model="getAdsParamsData.chooseType"
+                class="chooseType-radio"
+                @change="handleChooseType"
+              >
+                <el-radio-button
+                  v-for="item in tabChooseTypeList"
+                  :label="item.label"
+                  :key="item.label"
+                  >{{ item.name }}</el-radio-button
+                >
+              </el-radio-group>
+
+              <TableSetting
+                refresh
+                space
+                filter
+                :columns="currentColumn"
+                cacheKey="editPlan"
+                @filterColumn="filterColumn"
+                @refreshTable="refreshTable"
+                @spaceSetting="spaceSetting"
+              >
+              </TableSetting>
+            </div>
+
             <!--提示-->
             <div class="tip">
               <i class="el-icon-info"></i>
@@ -663,10 +964,19 @@
             </div>
             <!--表格-->
             <div class="table_wrap adsTable">
-              <div class="myCheckbox" v-if="isOccupied">
+              <div
+                class="myCheckbox"
+                v-if="isOccupied && getAdsParamsData.chooseType === 0"
+              >
                 <el-checkbox v-model="IsAll" @change="allCheckboxAds"
                   >全选本页</el-checkbox
                 >
+              </div>
+              <div
+                class="myCheckbox pointNum"
+                v-if="getAdsParamsData.chooseType !== 0"
+              >
+                点位数量
               </div>
               <el-table
                 v-loading="loading"
@@ -680,274 +990,463 @@
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :size="rowSpace"
+                :key="itemKey"
               >
                 <el-table-column
-                  fixed
-                  width="180px"
                   class-name="el-table-column-checkbox"
+                  width="180"
+                  :show-overflow-tooltip="getAdsParamsData.chooseType === 0"
+                  fixed="left"
                 >
                   <template slot-scope="scope">
-                    <div v-if="isOccupied" class="space-group">
-                      <div
-                        v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList"
-                        :key="adSpaceIndex"
-                        class="space-item"
+                    <div
+                      v-if="getAdsParamsData.chooseType !== 0"
+                      class="pointCount-box"
+                    >
+                      <el-input-number
+                        v-model="scope.row.chooseNum"
+                        :min="0"
+                        :max="scope.row.actualAdsCnt"
+                        size="mini"
+                        class="pointCount-input"
+                        @change="
+                          (currentValue, oldValue) =>
+                            handlePointCountChange(
+                              currentValue,
+                              oldValue,
+                              scope.row
+                            )
+                        "
                       >
-                        <!-- 点位状态和点位售卖状态确定是否可选 -->
-                        <el-checkbox
-                          v-if="adSpaceItem.checkFlag"
-                          v-model="adSpaceItem.checkBox"
-                          :label="adSpaceItem.asLab || '--'"
-                          @change="changeCheckBox(scope.row, adSpaceItem)"
+                      </el-input-number>
+                    </div>
+                    <template v-else>
+                      <div
+                        v-if="isOccupied && getAdsParamsData.chooseType === 0"
+                        class="space-group"
+                      >
+                        <div
+                          v-for="(adSpaceItem, adSpaceIndex) in scope.row
+                            .adsList"
+                          :key="adSpaceIndex"
+                          class="space-item"
                         >
-                        </el-checkbox>
-                        <el-popover
-                          v-else
-                          placement="top-start"
-                          width="310"
-                          trigger="hover"
-                        >
-                          <span v-if="scope.row.adlInfo === ''"
-                            >暂无被占信息</span
-                          >
-                          <ul v-else>
-                            <li
-                              v-for="(item, itemIndex) in scope.row.adlInfo"
-                              :key="itemIndex"
-                            >
-                              <template v-if="item.lState == null">
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333"
-                                    >该点位：{{ item.asState }}中</span
-                                  >
-                                </p>
-                                <div style="margin-bottom: 5px">
-                                  <span style="color: #333">状态原因：</span>
-                                  <span
-                                    style="color: #333"
-                                    v-for="(u, i) in item.unSaleableReason"
-                                    :key="i"
-                                  >
-                                    <template
-                                      v-if="item.unSaleableReason.length > 1"
-                                      >{{ i + 1 }}.</template
-                                    >
-                                    {{ u }}
-                                  </span>
-                                </div>
-                              </template>
-                              <template v-else>
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333">占点方案：</span>
-                                  <span>
-                                    <span style="font-weight: bold">
-                                      {{
-                                        ["ADN_MD_COUNTRY", "ADN_MD"].includes(
-                                          sessionData.uType
-                                        )
-                                          ? item.beOccupieApName
-                                          : "******"
-                                      }}
-                                    </span>
-                                    方案（{{
-                                      item.lState == 0
-                                        ? "预锁"
-                                        : item.lState == 1
-                                        ? "被占"
-                                        : "强制停止"
-                                    }}）
-                                  </span>
-                                </p>
-                                <p style="margin-bottom: 5px">
-                                  <span style="color: #333">占点排期：</span
-                                  >{{ item.schedules }}
-                                </p>
-                              </template>
-                            </li>
-                          </ul>
+                          <!-- 点位状态和点位售卖状态确定是否可选 -->
                           <el-checkbox
-                            slot="reference"
+                            v-if="adSpaceItem.checkFlag"
                             v-model="adSpaceItem.checkBox"
                             :label="adSpaceItem.asLab || '--'"
-                            :disabled="true"
+                            @change="changeCheckBox(scope.row, adSpaceItem)"
                           >
                           </el-checkbox>
-                        </el-popover>
+                          <el-popover
+                            v-else
+                            placement="top-start"
+                            width="310"
+                            trigger="hover"
+                          >
+                            <span v-if="scope.row.adlInfo === ''"
+                              >暂无被占信息</span
+                            >
+                            <ul v-else>
+                              <li
+                                v-for="(item, itemIndex) in scope.row.adlInfo"
+                                :key="itemIndex"
+                              >
+                                <template v-if="item.lState == null">
+                                  <p style="margin-bottom: 5px">
+                                    <span style="color: #333"
+                                      >该点位：{{ item.asState }}中</span
+                                    >
+                                  </p>
+                                  <div style="margin-bottom: 5px">
+                                    <span style="color: #333">状态原因：</span>
+                                    <span
+                                      style="color: #333"
+                                      v-for="(u, i) in item.unSaleableReason"
+                                      :key="i"
+                                    >
+                                      <template
+                                        v-if="item.unSaleableReason.length > 1"
+                                        >{{ i + 1 }}.</template
+                                      >
+                                      {{ u }}
+                                    </span>
+                                  </div>
+                                </template>
+                                <template v-else>
+                                  <p style="margin-bottom: 5px">
+                                    <span style="color: #333">占点方案：</span>
+                                    <span>
+                                      <span style="font-weight: bold">
+                                        {{
+                                          ["ADN_MD_COUNTRY", "ADN_MD"].includes(
+                                            sessionData.uType
+                                          )
+                                            ? item.beOccupieApName
+                                            : "******"
+                                        }}
+                                      </span>
+                                      方案（{{
+                                        item.lState == 0
+                                          ? "预锁"
+                                          : item.lState == 1
+                                          ? "被占"
+                                          : "强制停止"
+                                      }}）
+                                    </span>
+                                  </p>
+                                  <p style="margin-bottom: 5px">
+                                    <span style="color: #333">占点排期：</span
+                                    >{{ item.schedules }}
+                                  </p>
+                                </template>
+                              </li>
+                            </ul>
+                            <el-checkbox
+                              slot="reference"
+                              v-model="adSpaceItem.checkBox"
+                              :label="adSpaceItem.asLab || '--'"
+                              :disabled="true"
+                            >
+                            </el-checkbox>
+                          </el-popover>
+                        </div>
                       </div>
-                    </div>
-                    <div v-else>
-                      {{
-                        scope.row.asLabs
-                      }}
-                    </div>
+                      <div v-else>
+                        {{ scope.row.asLabs }}
+                      </div>
+                    </template>
                   </template>
                 </el-table-column>
-                <el-table-column
-                  fixed
-                  class-name="el-table-column-resName"
-                  label="资源名称"
-                  width="200"
-                  prop="resName"
-                >
-                </el-table-column>
-                <el-table-column
-                  fixed
-                  class-name="el-table-column-mediaName"
-                  prop="mediaName"
-                  label="媒体名称"
-                  width="140"
-                  :show-overflow-tooltip="true"
-                >
-                </el-table-column>
-                <el-table-column prop="city" label="城市" min-width="110">
-                </el-table-column>
-                <el-table-column prop="origin" label="区域" min-width="110">
-                </el-table-column>
-                <el-table-column label="商圈" min-width="130">
-                  <template slot-scope="scope">
-                    {{ scope.row.tradingArea || "--" }}
+
+                <template v-for="item in currentColumn">
+                  <template v-if="item.label === '资源名称'">
+                    <el-table-column
+                      class-name="el-table-column-resName"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="媒体备注"
-                  min-width="140"
-                  prop="mediaRemark"
-                  class-name="el-table-column-mediaRemark"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.mediaRemark || "--" }}</span>
+
+                  <template v-else-if="item.label === '媒体名称'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="巡点问题"
-                  align="right"
-                  min-width="110"
-                  show-overflow-tooltip
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.remark || "--" }}
+
+                  <template v-else-if="item.label === '楼栋号'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="
+                        item.isChecked &&
+                        (getAdsParamsData.chooseType === 1 ||
+                          getAdsParamsData.chooseType === 2)
+                      "
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission"
-                  label="通行情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.trafficState || "--" }}
+                  <template v-else-if="item.label === '单元号'">
+                    <el-table-column
+                      class-name="el-table-column-mediaName"
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 1"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  v-if="customPermission.patrolPermission == 2"
-                  label="通电情况"
-                  align="right"
-                  min-width="110"
-                >
-                  <template slot-scope="scope">
-                    {{ scope.row.electrifyState || "--" }}
+
+                  <template v-else-if="item.label === '商圈'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.tradingArea || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="资产编号"
-                  min-width="160"
-                  prop="assetTag"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.assetTag || "--" }}</span>
+
+                  <template v-else-if="item.label === '媒体备注'">
+                    <el-table-column
+                      class-name="el-table-column-mediaRemark"
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.mediaRemark || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="媒体等级"
-                  min-width="120"
-                  prop="mediaLevel"
-                >
-                  <template slot-scope="scope">
-                    {{
-                      scope.row.mediaLevel !== ""
-                        ? scope.row.mediaLevel + "级"
-                        : "--"
-                    }}
+
+                  <template v-else-if="item.label === '巡点问题'">
+                    <el-table-column
+                      align="right"
+                      v-if="
+                        item.isChecked &&
+                        customPermission.patrolPermission &&
+                        getAdsParamsData.chooseType === 0
+                      "
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.remark || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="广告限制"
-                  min-width="130"
-                  prop="adLimit"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.adLimit || "--" }}</span>
+
+                  <template v-else-if="item.label === '通行情况'">
+                    <el-table-column
+                      align="right"
+                      v-if="
+                        item.isChecked &&
+                        customPermission.patrolPermission &&
+                        getAdsParamsData.chooseType === 0
+                      "
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.trafficState || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  label="楼盘类型"
-                  min-width="100"
-                  prop="buildType"
-                  :show-overflow-tooltip="true"
-                >
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.buildType || "--" }}</span>
+
+                  <template v-else-if="item.label === '通电情况'">
+                    <el-table-column
+                      align="right"
+                      v-if="
+                        item.isChecked &&
+                        customPermission.patrolPermission == 2 &&
+                        getAdsParamsData.chooseType === 0
+                      "
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.electrifyState || "--" }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  prop="mState"
-                  label="媒体状态"
-                  min-width="90"
-                  class="tar"
-                >
-                </el-table-column>
-                <el-table-column label="楼盘价格" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    <span>&yen;{{ scope.row.buildPrice }}</span>
+
+                  <template v-else-if="item.label === '资产编号'">
+                    <el-table-column
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.assetTag || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  prop="buildNum"
-                  label="楼栋数量"
-                  align="right"
-                  min-width="100"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="liveYear"
-                  align="right"
-                  label="入住年份"
-                  min-width="90"
-                >
-                </el-table-column>
-                <el-table-column
-                  prop="houseNum"
-                  align="right"
-                  label="小区户数"
-                  min-width="90"
-                >
-                </el-table-column>
-                <el-table-column label="人流量" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.peopleFlow || "--" }}
+
+                  <template v-else-if="item.label === '媒体等级'">
+                    <el-table-column
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{
+                          scope.row.mediaLevel !== ""
+                            ? scope.row.mediaLevel + "级"
+                            : "--"
+                        }}
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column label="车位数" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.parkSpaceNum || "--" }}
+
+                  <template v-else-if="item.label === '广告限制'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.adLimit || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column label="车流量" align="right" min-width="110">
-                  <template slot-scope="scope">
-                    {{ scope.row.carFlow || "--" }}
+
+                  <template v-else-if="item.label === '楼盘类型'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.buildType || "--" }}</span>
+                      </template>
+                    </el-table-column>
                   </template>
-                </el-table-column>
-                <el-table-column
-                  fixed="right"
-                  prop="schedules"
-                  label="排期"
-                  min-width="190"
-                >
-                </el-table-column>
+
+                  <template v-else-if="item.label === '媒体状态'">
+                    <el-table-column
+                      class="tar"
+                      v-if="item.isChecked && getAdsParamsData.chooseType === 0"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '楼盘价格'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>&yen;{{ scope.row.buildPrice }}</span>
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '人流量'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.peopleFlow || "--" }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '车位数'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.parkSpaceNum || "--" }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '车流量'">
+                    <el-table-column
+                      align="right"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :min-width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.carFlow || "--" }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '可投数量'">
+                    <el-table-column
+                      v-if="item.isChecked && getAdsParamsData.chooseType !== 0"
+                      :label="item.label"
+                      :min-width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix"
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.actualAdsCnt || 0 }}
+                      </template>
+                    </el-table-column>
+                  </template>
+
+                  <template v-else-if="item.label === '排期'">
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :min-width="item.width"
+                      :prop="item.prop"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix"
+                    >
+                    </el-table-column>
+                  </template>
+
+                  <template v-else>
+                    <el-table-column
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                    </el-table-column>
+                  </template>
+                </template>
               </el-table>
               <div class="ad_pagination" v-if="total">
                 <el-pagination
@@ -999,7 +1498,15 @@
                         >
                       </span>
                       <el-dropdown size="small" type="primary">
-                        <el-button type="primary" style="padding: 0 8px">
+                        <el-button
+                          type="primary"
+                          style="padding: 0 8px"
+                          v-if="
+                            ['ADN_MD_COUNTRY', 'ADN_MD'].includes(
+                              sessionData.uType
+                            )
+                          "
+                        >
                           快捷配点<i
                             class="el-icon-arrow-down el-icon--right"
                           ></i>
@@ -1192,7 +1699,7 @@
                       <template slot-scope="scope">
                         <span
                           style="cursor: pointer; color: #1890ff"
-                          @click="deleteRow(scope.row)"
+                          @click="deleteRow(scope.row, true)"
                         >
                           <i
                             class="el-icon-delete"
@@ -1527,8 +2034,11 @@
           :importData="importInfoData"
           :name="planForm.planName"
           :customPermission="customPermission"
+          :isPointSetting="isPointSetting"
+          :forMap="forMap"
           @cancel="cancelImport"
           @confirmImport="confirmImport"
+          @handlePointSetting="handlePointSetting"
         ></import-result>
       </template>
       <template v-if="importType == '2'">
@@ -1607,6 +2117,26 @@
         >
       </span>
     </el-dialog>
+
+    <!-- 导入小区弹窗 -->
+    <PointSetting
+      :visible.sync="pointSettingShow"
+      :rejectAdPlan="rejectAdPlan"
+      :mTypeList="mTypeList"
+      :sites="sites"
+      :matchKeys="pointMatchKeys"
+      :tagList="tabChooseTypeList"
+      @handleDetails="handlePointDetails"
+    >
+    </PointSetting>
+    <PointTable
+      :visible.sync="pointTableShow"
+      :importData="adResMatch"
+      :matchKeys="pointMatchKeys"
+      @savePoint="savePoint"
+      @resetPoint="resetPoint"
+    >
+    </PointTable>
   </div>
 </template>
 
@@ -1647,6 +2177,15 @@ import cacheAdPlan from "../../commonFun/cacheAdPlan";
 // 方案导入结果
 import importResult from "./components/importResult.vue";
 
+// 表格控件
+import TableSetting from "./components/TableSetting";
+
+// 导入小区设置
+import PointSetting from "./components/tempComp/pointSetting.vue";
+import PointTable from "./components/tempComp/pointTable.vue";
+
+import { POINT_ARR, RES_ARR, BUILD_ARR, UNIT_ARR } from '../common/configs/planTableConfig'
+
 export default {
   name: "createPlanOld",
   components: {
@@ -1669,6 +2208,9 @@ export default {
     elCheckbox: Checkbox,
     elInputNumber: InputNumber,
     importResult,
+    TableSetting,
+    PointSetting,
+    PointTable,
   },
   data() {
     let validateSales = (rule, value, callback) => {
@@ -1719,7 +2261,7 @@ export default {
     };
     return {
       isPay: 0,
-      cacheAsrID: '',  //缓存的公司id
+      cacheAsrID: "", //缓存的公司id
       // doUpload: 'https://beta.qinlinad.com/Advertisement/AnalysisExcelAdBaseInfo',
       doUpload: "/advertisement/AnalysisExcelAdBaseInfo",
       active: 0, // 当前步骤step
@@ -1922,6 +2464,12 @@ export default {
       peopleFlow: ["", ""], // 表头搜索人流量
       carFlow: ["", ""], // 表头搜索车位数
       parkSpaceNum: ["", ""], // 表头搜索车流量
+
+      floorNum: ['', ''], // 表头搜索楼栋数量
+      liveRateNum: ['', ''], // 表头搜索入住率
+      doorNum: ['', ''], // 表头搜索出入口数量
+      actualAdsCntNum: ['', ''], // 表头搜索可投数量
+
       filterData: {
         // 记录判断含有哪些表头的过滤条件
         hNum: false,
@@ -1931,6 +2479,11 @@ export default {
         pFlow: false,
         cFlow: false,
         pSNum: false,
+
+        floorNum: false,
+        liveRateNum: false,
+        doorNum: false,
+        actualAdsCntNum: false
       },
       loadSign: true, // table滚轮
       shopMedia_ADNum: {
@@ -2014,12 +2567,14 @@ export default {
       pageNo: 1, // 页码
       total: 1, // 总页数
       pageSize: 20, //每页条数
-      getAdsParamsData: {}, //　获取点位列表的参数data
+      getAdsParamsData: {
+        chooseType: 0,
+      }, //　获取点位列表的参数data
       apMinTime: "", // 方案创建的开始时间
       ADLimitActiveName: "1",
       isShowAll: false, // 控制表头显示时的过渡效果
       searchBtnAbled: false, // 搜索按钮禁止
-    //   isCityPrice: false, // 判断城市最大价格是否大于2000w
+      //   isCityPrice: false, // 判断城市最大价格是否大于2000w
       connectAdDialogVisible: false, // 连排门模态框
       ActiveConnectADList: {}, // 购物车 - 当前点击行的连排门信息
       mediaLevelNum: { ALevel: 0, BLevel: 0, CLevel: 0, ANum: 0, BNum: 0 },
@@ -2047,12 +2602,83 @@ export default {
       cartPageSize: 500,
       currentPage: 1,
       totalNum: 0,
+
+      // 表头数据
+      currentColumn:POINT_ARR,
+      itemKey: "",
+      rowSpace: "",
+
+      tabChooseTypeList: [
+        {
+          label: 0,
+          name: "点位",
+        },
+        {
+          label: 1,
+          name: "单元",
+        },
+        {
+          label: 2,
+          name: "楼栋",
+        },
+        {
+          label: 3,
+          name: "小区",
+        },
+      ],
+
+      // 设备型号
+      mTypeList: [],
+      mediaMType: "",
+
+      // 安装位置
+      sites: [],
+      site: "",
+
+      // 位置朝向
+      siteOrientations: [
+        {
+          id: 1,
+          name: "内",
+        },
+        {
+          id: 2,
+          name: "外",
+        },
+      ],
+      siteOrientation: "",
+
+      pointCountType: "",
+
+      // 楼栋数量map
+      buildingIdMap: {},
+      // 单元数量map
+      unitIdMap: {},
+      // 小区数量map
+      resIDMap: {},
+      // 小区导入设置弹窗
+      pointSettingShow: false,
+
+      // 是否要配点
+      isPointSetting: false,
+      // 配点匹配数据
+      pointMatchKeys: {},
+      // 配点成功数据
+      adResMatch: {},
+      pointTableShow: false,
+      forMap: false,
+
+      developerList: [], // 开发商
+      developer: '',
+
+      tradingAreaList: [], // 商圈
+      tradingArea: ''
     };
   },
   created() {
     this.getsessionData(); // 获取session中的数据
-    this.requestIsPay()
-    this.getCustomerMediaTypeList()
+    this.requestIsPay();
+    this.getCustomerMediaTypeList();
   },
   mounted() {
     this.areaCity = areaArr.cityArea();
@@ -2064,7 +2690,6 @@ export default {
     if (this.routePath.indexOf("unfinishedPlan") !== -1) {
       this.setPlanInfo();
     }
-
     // console.log("this.cityOptions", this.cityOptions);
   },
   watch: {
@@ -2081,10 +2706,41 @@ export default {
       handler: function () {
         this.planForm.opportunityId = undefined;
         this.opportunityList = [];
-        if (!this.planForm.companyBrand &&  typeof this.planForm.companyBrand !== 'number') return;
+        if (
+          !this.planForm.companyBrand &&
+          typeof this.planForm.companyBrand !== "number"
+        )
+          return;
         this.getOpportunityList();
       },
     },
+    "getAdsParamsData.chooseType": {
+      handler(nVal) {
+        this.filterColumn()
+        if (nVal === 1) {
+          this.currentColumn = UNIT_ARR
+        } else if (nVal === 2) {
+          this.currentColumn = BUILD_ARR
+        } else if (nVal === 3) {
+          this.currentColumn = RES_ARR
+        } else {
+          this.currentColumn = POINT_ARR
+        }
+      },
+    },
+    // "getAdsParamsData.chooseType": {
+    //   handler(nVal) {
+    //     let pointCountType = "";
+    //     if (nVal === 1) {
+    //       pointCountType = "unitId";
+    //     } else if (nVal === 2) {
+    //       pointCountType = "buildingId";
+    //     } else if (nVal === 3) {
+    //       pointCountType = "resID";
+    //     }
+    //     this.pointCountType = pointCountType;
+    //   },
+    // },
   },
   computed: {
     nowPointNum() {
@@ -2105,16 +2761,53 @@ export default {
         this.currentPage * this.cartPageSize
       );
     },
+
+    // 仅当当前所选媒体类型在该账号选点纬度的权限中配有“点位”时可点击“资产编号”，否则灰显不可选中；
+    // 仅当当前所选媒体类型在该账号选点纬度权限有“点位”时可点击“被占查询”，其余权限则灰显不可选中；
+    // 当当前所选的媒体类型其账号选点纬度权限不为“点位”时，【导入点位】功能灰显不可选中使用；
+    isDiableSearchOpt() {
+      return !this.tabChooseTypeList.some((item) => item.name === "点位");
+    },
+
+    // 单元门禁灯箱点位纬度时才展示位置朝向
+    isShowSiteOrientation () {
+      let isShowSite = true
+      const mediaItem = this.mediaTypeObjectArr.find(
+        (item) => item.id === this.currentMediaType
+      );
+      if (mediaItem && mediaItem.name === "单元门禁灯箱") {
+        isShowSite = true;
+      } else {
+        isShowSite = false;
+      }
+      return isShowSite && this.getAdsParamsData.chooseType === 0
+    },
+
+    // 单元门禁灯箱时才展示安装位置 设备型号
+    isShowSiteMtype () {
+      let isShowSite = true
+      const mediaItem = this.mediaTypeObjectArr.find(
+        (item) => item.id === this.currentMediaType
+      );
+      if (mediaItem && mediaItem.name === "单元门禁灯箱") {
+        isShowSite = true;
+      } else {
+        isShowSite = false;
+      }
+      return isShowSite
+    }
   },
   methods: {
     requestIsPay() {
-      api.getApi('/addsp/api/v1/company/isPay', {
-          asrID: this.sessionData.asrID
-      }).then(res => {
+      api
+        .getApi("/addsp/api/v1/company/isPay", {
+          asrID: this.sessionData.asrID,
+        })
+        .then((res) => {
           if (res.data.SysCode === 200200 && res.data.data === true) {
             this.isPay = 1;
           }
-      })
+        });
     },
     handleSizeChange(val) {
       this.cartPageSize = val;
@@ -2164,7 +2857,7 @@ export default {
       if (inputPath.indexOf("from=index") !== -1) {
         this.setDataByIndex();
       }
-    //   console.log("this.dateInput", this.dateInput);
+      //   console.log("this.dateInput", this.dateInput);
     },
     // 动态设置购物车动画起点位置
     setShopAnimate() {
@@ -2262,38 +2955,37 @@ export default {
     },
     // 获取销售crm的媒体类型列表
     getCustomerMediaTypeList() {
-      api
-        .getApi("/addsp/api/v1/adPlan/listCustomerMediaType")
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            this.customerMediaTypeList = res.data.data || [];
-          } else {
-            sessFun.messageFun("warning", res.data.MSG);
-          }
-        });
+      api.getApi("/addsp/api/v1/adPlan/listCustomerMediaType").then((res) => {
+        if (res.data.SysCode === 200200) {
+          this.customerMediaTypeList = res.data.data || [];
+        } else {
+          sessFun.messageFun("warning", res.data.MSG);
+        }
+      });
     },
     // 下一步
     next() {
       if (this.active === 0) {
+        this.initMediaTag();
         this.submitForm("planForm");
       } else if (this.active === 1) {
         if (this.shopingList.length !== 0) {
           this.getBand(); // 获取公司品牌
           // 防多次点击创建
-            if (!this.creating) {
-                this.creating = true;
-                let timer = setTimeout(() => {
-                    this.creating = false;
-                    this.ADloading = this.$loading({
-                        lock: true,
-                        text: "加急创建中...",
-                        spinner: "el-icon-loading",
-                        background: "rgba(0, 0, 0, 0.7)",
-                    });
-                    this.creatAdPlan();
-                    clearTimeout(timer);
-                }, 500);
-            }
+          if (!this.creating) {
+            this.creating = true;
+            let timer = setTimeout(() => {
+              this.creating = false;
+              this.ADloading = this.$loading({
+                lock: true,
+                text: "加急创建中...",
+                spinner: "el-icon-loading",
+                background: "rgba(0, 0, 0, 0.7)",
+              });
+              this.creatAdPlan();
+              clearTimeout(timer);
+            }, 500);
+          }
         } else {
           return sessFun.messageFun("warning", "请选择点位");
         }
@@ -2324,12 +3016,20 @@ export default {
     },
     // 导入方案弹出框
     importFanan(type) {
-        // 小区
+      // 小区
       if (type == "res") {
         this.importType = "1";
         this.doUpload = "/advertisement/AdPlanResImport";
+        const mediaItem = this.mediaTypeObjectArr.find(
+          (item) => item.id === this.currentMediaType
+        );
+        if (mediaItem.name === "单元门禁灯箱") {
+          this.isPointSetting = true;
+        } else {
+          this.isPointSetting = false;
+        }
       }
-        // 点位
+      // 点位
       else if (type == "ads") {
         this.importType = "2";
         this.doUpload = "/advertisement/AnalysisExcelAdBaseInfo";
@@ -2346,13 +3046,13 @@ export default {
     // 自定义上传
     uploadFile(params) {
       this.fileData = [];
-    //   console.log(params);
+      //   console.log(params);
       let fileObj = params.file;
       this.fileData.push(fileObj);
     },
     // 文件删除
     fileRemove(file, fileList) {
-    //   console.log(file, fileList);
+      //   console.log(file, fileList);
       this.fileData = fileList;
     },
     // 导入模版下载
@@ -2368,11 +3068,13 @@ export default {
       if (this.fileData.length) {
         let rids = this.planForm.throwCity.join(",");
         let sess = this.sessionData;
+
         let info = `?uid=${sess.uID}&token=${sess.token}&suId=${
           this.BDData.uid
         }&rids=${rids}&excludedApId=${
           this.activeAdPlan ? this.activeAdPlan : ""
-        }&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}`;
+        }&asrIDs=${this.planForm.pointOfAsrIDs.join(",")}&mediaTypeId=${this.currentMediaType}`;
+
         let formData = new FormData();
         formData.append("file", this.fileData[0]);
         if (this.importType == "2") {
@@ -2414,7 +3116,7 @@ export default {
           }
         })
         .catch((res) => {
-        //   console.log(res);
+          //   console.log(res);
         });
     },
     // 小区导入
@@ -2432,6 +3134,26 @@ export default {
           if (res.data.SysCode == 200200) {
             let importInfo = res.data.data;
             this.importInfoData = importInfo;
+
+            this.importInfoData.successList = importInfo.successList.map((item) => {
+              if (item.date) {
+                const date = item.date.split('-')
+                item.pbStar = date[0]
+                item.pbEnd = date[1]
+              }
+              return {
+                ...item,
+                origin: item.rName ? item.rName : item.district,
+                rName: item.rName ? item.rName : item.district
+              };
+            });
+
+            // 配点匹配数据
+            this.pointMatchKeys = {
+              matchMediaCacheKey: importInfo.successSpaceKey, //导入媒体缓存
+              matchResCacheKey: importInfo.successResKey, //导入小区媒体
+              matchOriginType: 0,
+            };
             this.showUploadFail = true;
           } else {
             sessFun.messageFun("warning", res.data.MSG);
@@ -2439,7 +3161,7 @@ export default {
           Loading.close();
         })
         .catch((res) => {
-        //   console.log(res);
+          //   console.log(res);
           Loading.close();
         });
     },
@@ -2638,7 +3360,7 @@ export default {
     },
     // 导入excel后台返回的问题点位
     questionPoint(arr, successArr) {
-    //   console.log("导出excel");
+      //   console.log("导出excel");
       let resultarr = [
         {
           sheetName: "问题点位",
@@ -2997,18 +3719,17 @@ export default {
             break;
           }
         }
-
       }
       // 获取媒体数量
-    //   for (let dateArrItem of dateArr) {
-    //     for (let showListItem of dateArrItem.showList) {
-    //       for (let mIDitem of mIDArr) {
-    //         if (showListItem.resID == mIDitem.resID) {
-    //           showListItem.actualMediaCnt = mIDitem.mID.length;
-    //         }
-    //       }
-    //     }
-    //   }
+      //   for (let dateArrItem of dateArr) {
+      //     for (let showListItem of dateArrItem.showList) {
+      //       for (let mIDitem of mIDArr) {
+      //         if (showListItem.resID == mIDitem.resID) {
+      //           showListItem.actualMediaCnt = mIDitem.mID.length;
+      //         }
+      //       }
+      //     }
+      //   }
 
       for (let data of dateArr) {
         for (let obj of data.showList) {
@@ -3018,7 +3739,7 @@ export default {
         data.sheetName = data.sheetName.replace(/[/]/g, ".");
       }
 
-      console.log('datearrr-----', dateArr);
+      console.log("datearrr-----", dateArr);
       return dateArr;
     },
     // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
@@ -3053,7 +3774,7 @@ export default {
     },
     // 非全国，移除城市
     removeCity(val) {
-    //   console.log("非全国，移除城市val", val, this.planForm.throwCity);
+      //   console.log("非全国，移除城市val", val, this.planForm.throwCity);
       if (this.indexData.rid == val) {
         sessFun.messageFun(
           "warning",
@@ -3106,7 +3827,7 @@ export default {
     },
     // 选择所属销售
     changeSaler(val) {
-    //   console.log("选择所属销售", val);
+      //   console.log("选择所属销售", val);
       // 重新输入账号时，初始化部分数据
       this.planForm.companyName = "";
       this.planForm.companyBrand = "";
@@ -3205,7 +3926,7 @@ export default {
     GetBrandByCid(val) {
       this.planForm.companyBrand = "";
       this.planForm.ownerBU = "";
-    //   console.log("所选公司的ID", val);
+      //   console.log("所选公司的ID", val);
       let cidParams = {
         cid: val,
         token: this.sessionData.token,
@@ -3213,7 +3934,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/GetBrand", cidParams)
         .then((res) => {
-        //   console.log("公司品牌", res.data);
+          //   console.log("公司品牌", res.data);
           if (res.data.SysCode === 200200) {
             let CBrand = res.data.data;
             let BrandList = [];
@@ -3259,7 +3980,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-        //   console.log("表单验证this.throwCity", this.throwCity);
+          //   console.log("表单验证this.throwCity", this.throwCity);
           // 初始化
           this.initStep2Data();
           this.active++;
@@ -3302,6 +4023,7 @@ export default {
           }
         }
         this.shopingList = arr;
+        this.initPointCounts(arr);
       } else {
         this.shopingList = []; // 购物车
       }
@@ -3318,16 +4040,19 @@ export default {
     getMediaTypesByCompany() {
       let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
       if (!selectedAsrIds) {
-        selectedAsrIds = this.BDData.asrID?(this.BDData.asrID + ""):this.cacheAsrID;
+        selectedAsrIds = this.BDData.asrID
+          ? this.BDData.asrID + ""
+          : this.cacheAsrID;
       }
       api
         .getApi("/addsp/api/v1/company/mediaTypes", {
-          companyIds: selectedAsrIds,
+          companyIds: selectedAsrIds || this.sessionData.asrID,
         })
         .then((res) => {
           if (res.data.SysCode == 200200) {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
+              this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData);
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
               // 获取选点列表
               this.getAdList();
@@ -3348,7 +4073,7 @@ export default {
       api
         .getApi(this.apiVar.Advertisement + "/getSalesProject", params)
         .then((res) => {
-        //   console.log("销售所属方案", res);
+          //   console.log("销售所属方案", res);
           if (res.data.SysCode == 200200) {
             let resData = res.data.data;
             let tempList = [];
@@ -3411,10 +4136,10 @@ export default {
           }
         }
         if (j >= throwCityList.length - 1) {
-        //   console.log("cityArr", cityArr);
+          //   console.log("cityArr", cityArr);
           this.city = cityArr;
           this.city.sort(this.compareFun);
-        //   console.log("this.city ", this.city);
+          //   console.log("this.city ", this.city);
           this.activeCityData = this.city[0]; // 设置初始选中城市信息
           this.activeRName = this.activeCityData.rName;
           for (let n = 0; n < this.city.length; n++) {
@@ -3446,7 +4171,6 @@ export default {
                       };
                       areaArr.push(myArea);
                       if (n >= areaChild.length - 1) {
-                        console.log("areaArr", areaArr);
                         this.area.push(areaArr);
                         this.area.sort(this.compareArea);
                       }
@@ -3454,9 +4178,9 @@ export default {
                   }
                 }
               }
-            //   if (i >= city_arr.length - 1) {
-            //     console.log("this.area", this.area);
-            //   }
+              //   if (i >= city_arr.length - 1) {
+              //     console.log("this.area", this.area);
+              //   }
             }
           }
         }
@@ -3468,7 +4192,6 @@ export default {
         this.$message.warning("媒体类型不能为空！");
         return;
       }
-    //   console.log("当前页码", this.pageNo, "当前时间", this.dateInput);
       this.loading = true;
       (this.getAdsParamsData.prID = this.city[this.activeIndex].rid),
         (this.getAdsParamsData.act = 1),
@@ -3479,6 +4202,9 @@ export default {
       this.getAdsParamsData.pageSize = this.pageSize;
       this.getAdsParamsData.uid = this.BDData.uid;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+      this.getAdsParamsData.mType = this.mediaMType || "";
+      this.getAdsParamsData.site = this.site || "";
+      this.getAdsParamsData.siteOrientation = this.siteOrientation || "";
       for (let i in this.getAdsParamsData) {
         if (
           this.getAdsParamsData[i] === "" ||
@@ -3520,67 +4246,74 @@ export default {
       }, 0);
     },
     // 接口数据转成table
-    setTableDataADDoor(ADSdata) {
-    //   console.log("接口数据转成table当前时间", this.dateInput);
-        console.log('接口数据ADSdata', ADSdata);
+    setTableDataADDoor(ADSdata, isGetDataADDoor = false) {
       let i = 0;
+      let list = [];
       for (let key of ADSdata) {
         let adObj = {
           mID: key.mID,
           resType: key.resType,
           resID: key.resID,
           province: key.province, //省份
-          city: key.city, //城市
-          origin: key.rName, //区域
-          street: key.street, //街道
+          city: key.city || "--", //城市
+          origin: key.rName || "--", //区域
+          street: key.street || "--", //街道
           tradingArea: key.tradingArea || "", //商圈
-          resName: key.resName, // 资源名称
-          address: key.resAddress || "", //详细地址
-          houseNum: key.hNum, //楼栋数量
-          liveYear: key.chDay, //入住年份
-          notPush: key.notPush, //广告限制
-          unitCount: key.unitCount,
+          resName: key.resName || "--", // 资源名称
+          address: key.resAddress || "--", //详细地址
+          houseNum: key.hNum || "--", //楼栋数量
+          liveYear: key.chDay || "--", //入住年份
+          notPush: key.notPush || "--", //广告限制
+          unitCount: key.unitCount || "--",
           adsList: key.adsList || [], // 所属公司id
-          alias: key.alias, //资源别名
-          description: key.description, //楼盘介绍
-          supportingFacilities: key.supportingFacilities, //周边配套
+          alias: key.alias || "--", //资源别名
+          description: key.description || "--", //楼盘介绍
+          supportingFacilities: key.supportingFacilities || "--", //周边配套
           dNum: key.dNum || "", //出入口数
-          liveRate: key.liveRate, //入住率
-          liftType: key.liftType, //配套电梯
-          parkSpaceNum: key.parkSpaceNum, //车位数
-          mediaTypeName: key.mediaTypeName, // 媒体类型
-          mRemark: key.mRemark, //备注
-          lng: key.lng, //经度
-          lat: key.lat, //纬度
-          carFlow: key.carFlow, //车流量
-          peopleFlow: key.peopleFlow, //人流量
+          liveRate: key.liveRate || "--", //入住率
+          liftType: key.liftType || "--", //配套电梯
+          parkSpaceNum: key.parkSpaceNum || "--", //车位数
+          mediaTypeName: key.mediaTypeName || "--", // 媒体类型
+          mRemark: key.mRemark || "--", //备注
+          lng: key.lng || "--", //经度
+          lat: key.lat || "--", //纬度
+          carFlow: key.carFlow || "--", //车流量
+          peopleFlow: key.peopleFlow || "--", //人流量
           mapCenter: key.reference || "", // 地图中心点
           rid: this.city[this.activeIndex].rid,
-          buildType: key.cType,
+          buildType: key.cType || "--",
           buildPrice: key.hPrice / 100,
-          mediaName: key.mTitle || "",
+          mediaName: key.mTitle || "--",
           mediaTypeId: key.mediaTypeId, // 媒体类型
           mediaRemark: key.mRemark || "--",
           buildNum: key.fNum,
           schedules: this.dateInput[0] + "-" + this.dateInput[1],
-          assetTag: key.assetTag || "",
-          adLimit: key.notPush || "",
+          assetTag: key.assetTag || "--",
+          adLimit: key.notPush || "--",
           mState:
             key.mState === 1 ? "正常" : key.mState === 2 ? "待安装" : "--",
-          adSize: key.adSize || "",
+          adSize: key.adSize || "--",
           // picSize: key.picSize || "",
           connID: key.connID || "", // 连排门id
-          industryInfos: key.industryInfos, // 同行业资源、媒体回避
-          mediaLevel: key.grade || "",
-          asName: key.asName || "", // 点位所属公司名称
+          industryInfos: key.industryInfos || "--", // 同行业资源、媒体回避
+          mediaLevel: key.grade || "--",
+          asName: key.asName || "--", // 点位所属公司名称
           asrID: key.asrID,
-          remark: key.remark,
-          trafficState: key.trafficState,
-          electrifyState: key.electrifyState,
+          remark: key.remark || "--",
+          trafficState: key.trafficState || "--",
+          electrifyState: key.electrifyState || "--",
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
+          actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
+          asID: key.asID,
+          asLab: key.asLab || "--",
+          buildingName: key.buildingName || "--",
+          unitName: key.unitName || "--",
+          chooseNum: key.chooseNum || 0,
+          unitCount: key.unitCount || "--",
+          site: key.site || "--",
+          siteOrientation: key.siteOrientation || "--",
         };
-        // if (key.mediaTypeName === '道闸') {
-        //     adObj.adPrice = key.asPrice / 100
-        // } else {
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
         } else {
@@ -3594,7 +4327,6 @@ export default {
             adObj.adPrice = 0;
           }
         }
-        // }
         adObj.adsList.forEach((adSpace) => {
           adSpace.checkBox = false;
           //本页可选点位
@@ -3621,10 +4353,17 @@ export default {
         } else {
           adObj.adlInfo = "";
         }
-        this.planList.push(adObj);
+        if (!isGetDataADDoor) {
+          this.planList.push(adObj);
+        } else {
+          list.push(adObj);
+        }
       }
-      this.currPageAsLength = i;
-      this.loadScroll = true;
+      if (!isGetDataADDoor) {
+        this.currPageAsLength = i;
+        this.loadScroll = true;
+      }
+      return list;
     },
     setPageNoAndTableData() {
       this.IsAll = false;
@@ -3641,7 +4380,7 @@ export default {
     //step2搜索按钮
     searchFun() {
       this.searchBtnAbled = true;
-    //   console.log("搜索排期时间", this.dateInput);
+      //   console.log("搜索排期时间", this.dateInput);
       this.areaName = "全市";
       if (this.selectValue === "被占查询") {
         this.beOccupiedGetList(); // 获取被占列表接口
@@ -3660,7 +4399,7 @@ export default {
           this.getAdList();
           this.beforeDate = this.dateInput;
         } else if (!this.dateInput) {
-          sessFun.messageFun('warning', '搜索时间不能为空！');
+          sessFun.messageFun("warning", "搜索时间不能为空！");
           this.searchBtnAbled = false;
         } else {
           this.searchBtnAbled = false;
@@ -3686,7 +4425,7 @@ export default {
     },
     // 当搜索框为空的时候进行重置显示
     initData(val) {
-    //   console.log("搜索框变化的值", val);
+      //   console.log("搜索框变化的值", val);
       if (!this.searchInput && this.selectValue !== "被占查询") {
         this.isOccupied = true;
         this.getAdsParamsData.tradingArea = "";
@@ -3723,10 +4462,10 @@ export default {
     },
     //  查询被占点位
     beOccupiedGetList() {
-      if(!(Array.isArray(this.dateInput) && this.dateInput.length === 2)) {
-          sessFun.messageFun('warning', '搜索时间不能为空！');
-          this.searchBtnAbled = false;
-          return;
+      if (!(Array.isArray(this.dateInput) && this.dateInput.length === 2)) {
+        sessFun.messageFun("warning", "搜索时间不能为空！");
+        this.searchBtnAbled = false;
+        return;
       }
       let starTime = this.dateInput[0];
       let endTime = this.dateInput[1];
@@ -3784,6 +4523,12 @@ export default {
                 parkSpaceNum: key.parkSpaceNum,
                 peopleFlow: key.peopleFlow,
                 carFlow: key.carFlow,
+                unitId: key.unitId, // 单元ID
+                buildingId: key.buildingId, // 楼栋ID
+                actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
+                chooseNum: key.chooseNum || 0,
+                buildingName: key.buildingName,
+                unitName: key.unitName,
               };
               arr.push(AD_data);
             }
@@ -3802,11 +4547,16 @@ export default {
         ls: this.dateInput[0],
         le: this.dateInput[1],
       };
-      let _asrIDs=null;
-      if(this.planForm.pointOfAsrIDs&&this.planForm.pointOfAsrIDs.length>0){
-        _asrIDs=this.planForm.pointOfAsrIDs;
-      }else{
-        _asrIDs=this.BDData.asrID?this.BDData.asrID.split(" "):this.cacheAsrID.split(",");
+      let _asrIDs = null;
+      if (
+        this.planForm.pointOfAsrIDs &&
+        this.planForm.pointOfAsrIDs.length > 0
+      ) {
+        _asrIDs = this.planForm.pointOfAsrIDs;
+      } else {
+        _asrIDs = this.BDData.asrID
+          ? this.BDData.asrID.split(" ")
+          : this.cacheAsrID.split(",");
       }
       localStorage.setItem(
         "mapParams",
@@ -3816,15 +4566,29 @@ export default {
           le: this.dateInput[1],
           adSystemId: [this.industryID],
           suID: this.BDData.uid,
-          asrIDs: _asrIDs
+          asrIDs: _asrIDs,
         })
       );
-      let url = `${window.location.protocol}//${window.location.host}/ADResourceMap/chooseRes?city=${this.mapParams.city}&flag=true&timeRange=${String(this.dateInput)}`;
-      /* if(window.location.hostname == 'localhost') {
-                    url = window.location.host + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                } else {
-                    url = this.apiVar.qadnUrl + '/ADResourceMap/chooseRes?city=' + this.mapParams.city + '&flag=' + true
-                } */
+      const mediaTypeArr = this.mediaTypeObjectArr.filter(
+        (item) => item.id === this.currentMediaType
+      );
+      let mediaType =
+        mediaTypeArr[0].name === "单元门禁灯箱" ? mediaTypeArr[0].name : "";
+
+      if (mediaType) {
+        this.isPointSetting = true;
+      } else {
+        this.isPointSetting = false;
+      }
+
+      let url = `${window.location.protocol}//${
+        window.location.host
+      }/ADResourceMap/chooseRes?city=${
+        this.mapParams.city
+      }&flag=true&timeRange=${String(
+        this.dateInput
+      )}&mediaType=${mediaType}&mediaTypeId=${mediaTypeArr[0].id}`;
+
       window.open(url);
       this.mapBtn = false;
       this.dialogVisible();
@@ -3855,7 +4619,7 @@ export default {
     },
     //一键选点
     oneKeySelectPoint() {
-    //   console.log("一键选点");
+      //   console.log("一键选点");
       let oneKeyPointLoading = this.$loading({
         lock: true,
         text: "快马加鞭选点中...",
@@ -4003,14 +4767,28 @@ export default {
     },
     //媒体类型切换
     activeMediaType(mType) {
-    //   console.log("媒体类型", mType);
+       console.log("媒体类型", mType);
+      this.forMap = false
+      const arr = this.sessionData.userMediaChooseConfigs.filter(
+        (item) => item.mediaTypeId === mType
+      );
+      this.tabChooseTypeList = arr
+        .map((item) => {
+          return {
+            name: item.chooseTypeName,
+            label: item.chooseType,
+          };
+        })
+        .sort((a, b) => a.label - b.label);
+      this.getAdsParamsData.chooseType = this.tabChooseTypeList[0].label;
+
       this.setPageNoAndTableData();
       this.currentMediaType = mType;
       this.getAdList();
     },
     // tab切换城市
     activeCity(item, index) {
-    //   console.log("item", item, "index", index);
+      //   console.log("item", item, "index", index);
       this.activeIndex = index;
       this.activeRName = item.rName;
       this.activeCityData = item;
@@ -4033,7 +4811,7 @@ export default {
     },
     // 选点表格头部过滤条件tab删除方法
     filterTagCloseFun(tab, index) {
-    //   console.log("tab", tab, "index", index);
+      //   console.log("tab", tab, "index", index);
       if (tab.condition === "mstate") {
         // 媒体状态
         this.getAdsParamsData.mState = "";
@@ -4091,6 +4869,42 @@ export default {
         this.filterData.pSNum = false;
         this.getAdsParamsData.parkSpaceNumMin = "";
         this.getAdsParamsData.parkSpaceNumMax = "";
+      } else if (tab.condition === "floorNum") {
+        // 楼栋数量
+        this.floorNum[0] = "";
+        this.floorNum[1] = "";
+        this.filterData.floorNum = false;
+        this.getAdsParamsData.floorNumMin = "";
+        this.getAdsParamsData.floorNumMax = "";
+      } else if (tab.condition === "liveRateNum") {
+        // 入住率
+        this.liveRateNum[0] = "";
+        this.liveRateNum[1] = "";
+        this.filterData.liveRateNum = false;
+        this.getAdsParamsData.liveRateMin = "";
+        this.getAdsParamsData.liveRateMax = "";
+      } else if (tab.condition === "doorNum") {
+        // 出入口数量
+        this.doorNum[0] = "";
+        this.doorNum[1] = "";
+        this.filterData.doorNum = false;
+        this.getAdsParamsData.doorNumMin = "";
+        this.getAdsParamsData.doorNumMax = "";
+      } else if (tab.condition === "actualAdsCntNum") {
+        // 可投数量
+        this.actualAdsCntNum[0] = "";
+        this.actualAdsCntNum[1] = "";
+        this.filterData.actualAdsCntNum = false;
+        this.getAdsParamsData.actualAdsCntMin = "";
+        this.getAdsParamsData.actualAdsCntMax = "";
+      } else if (tab.condition === "developer") {
+        // 开发商
+        this.developer = '';
+        this.getAdsParamsData.developer = "";
+      } else if (tab.condition === "tradingArea") {
+        // 商圈
+        this.tradingArea = '';
+        this.getAdsParamsData.tradingArea = "";
       }
       this.filterCondition.splice(index, 1);
       this.setPageNoAndTableData();
@@ -4098,7 +4912,7 @@ export default {
     },
     // 判断是否存在该条件的tag
     isHaveThisTag(letter, tagName) {
-    //   console.log("letter", letter, "tagName", tagName);
+      //   console.log("letter", letter, "tagName", tagName);
       let isHave = false;
       for (let i in this.filterCondition) {
         if (this.filterCondition[i].condition === letter) {
@@ -4138,7 +4952,7 @@ export default {
     },
     // 媒体等级过滤
     gradeChange(data) {
-    //   console.log("媒体等级过滤", data);
+      //   console.log("媒体等级过滤", data);
       this.isHaveThisTag("grade", data + "级");
       this.getAdsParamsData.grade = this.activeGrade;
       this.setPageNoAndTableData();
@@ -4146,7 +4960,7 @@ export default {
     },
     // 广告限制切换
     activeADLimit(limit) {
-    //   console.log("广告限制limit", limit); // 保险,恶俗医疗
+      //   console.log("广告限制limit", limit); // 保险,恶俗医疗
       let limitText = limit.join(",");
       let stateName = "广告限制：" + limit.join("/");
       if (limit.length > 0) {
@@ -4208,7 +5022,7 @@ export default {
     },
     // 楼盘类型过滤
     tableHeaderFilter_cType(data) {
-    //   console.log("楼盘类型过滤", data);
+      //   console.log("楼盘类型过滤", data);
       this.isHaveThisTag("cType", data);
       if (data === "全部") {
         this.getAdsParamsData.buildType = "";
@@ -4220,7 +5034,7 @@ export default {
     },
     //人流量过滤
     tableHeaderFilterByPeopleFlow() {
-      if (this.peopleFlow[0] == "" || this.peopleFlow[1] == "") {
+      if (this.peopleFlow[0] === "" || this.peopleFlow[1] === "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
         let tagName = "人流量:" + this.peopleFlow[0] + "-" + this.peopleFlow[1];
@@ -4234,7 +5048,7 @@ export default {
     },
     // 车流量过滤
     tableHeaderFilterByCarFlow() {
-      if (this.carFlow[0] == "" || this.carFlow[1] == "") {
+      if (this.carFlow[0] === "" || this.carFlow[1] === "") {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
         let tagName = "车流量:" + this.carFlow[0] + "-" + this.carFlow[1];
@@ -4248,7 +5062,7 @@ export default {
     },
     // 车位数过滤
     tableHeaderFilterByParkSpaceNum() {
-      if (this.parkSpaceNum[0] == "" || this.parkSpaceNum[1]) {
+      if (this.parkSpaceNum[0] === "" || this.parkSpaceNum[1] === '') {
         sessFun.messageFun("warning", "数据区间填写有误");
       } else {
         let tagName =
@@ -4261,6 +5075,71 @@ export default {
         this.getAdList();
       }
     },
+
+    // 楼栋数过滤
+    tableHeaderFilterByFloor() {
+      if (this.floorNum[0] === "" || this.floorNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "楼栋数:" + this.floorNum[0] + "-" + this.floorNum[1];
+        this.isHaveThisTag("floorNum", tagName);
+        this.filterData.floorNum = true;
+        this.getAdsParamsData.floorNumMin = this.floorNum[0];
+        this.getAdsParamsData.floorNumMax = this.floorNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
+    // 入住率过滤
+    tableHeaderFilterByLiveRate () {
+      if (this.liveRateNum[0] === "" || this.liveRateNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "入住率:" + this.liveRateNum[0] + "-" + this.liveRateNum[1];
+        this.isHaveThisTag("liveRateNum", tagName);
+        this.filterData.liveRateNum = true;
+        this.getAdsParamsData.liveRateMin = this.liveRateNum[0];
+        this.getAdsParamsData.liveRateMax = this.liveRateNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
+    // 出入口数
+    tableHeaderFilterByDoorNum () {
+      if (this.doorNum[0] === "" || this.doorNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "出入口数:" + this.doorNum[0] + "-" + this.doorNum[1];
+        this.isHaveThisTag("doorNum", tagName);
+        this.filterData.doorNum = true;
+        this.getAdsParamsData.doorNumMin = this.doorNum[0];
+        this.getAdsParamsData.doorNumMax = this.doorNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
+    // 可投数量
+    tableHeaderFilterByActualAdsCntNum () {
+      if (this.actualAdsCntNum[0] === "" || this.actualAdsCntNum[1] === '') {
+        sessFun.messageFun("warning", "数据区间填写有误!");
+      } else {
+        let tagName =
+          "出入口数:" + this.actualAdsCntNum[0] + "-" + this.actualAdsCntNum[1];
+        this.isHaveThisTag("actualAdsCntNum", tagName);
+        this.filterData.actualAdsCntNum = true;
+        this.getAdsParamsData.actualAdsCntMin = this.actualAdsCntNum[0];
+        this.getAdsParamsData.actualAdsCntMax = this.actualAdsCntNum[1];
+        this.setPageNoAndTableData();
+        this.getAdList();
+      }
+    },
+
     emptyFun(letter) {
       // 清空
       if (letter === "H") {
@@ -4326,6 +5205,7 @@ export default {
     resetPlanList() {
       for (let i = 0; i < this.planList.length; i++) {
         this.planList[i].adsList.forEach((item) => (item.checkBox = false));
+        this.planList[i].pointCount = 0;
       }
     },
     //点位有时间交叉
@@ -4395,6 +5275,7 @@ export default {
       if (adSpaceItem.checkBox) {
         this.shopShow_hide(); // 动画效果
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
+        // this.addAdspaceToshopCart(row);
       } else {
         // A、B都勾选的时候
         this.IsAll = false;
@@ -4435,16 +5316,21 @@ export default {
     },
     // 购物车-获取地图选择的点位列表（亲邻地图）
     getMapADList() {
-    //   console.log("触发获取地图选点信息click");
+      //   console.log("触发获取地图选点信息click");
       this.getMapLoading = this.$loading({
         lock: true,
         text: "数据获取中...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      api
+
+      if(this.isPointSetting){
+        this.pointMatchKeys.matchOriginType = 1
+        this.getMapImportResult()
+      } else {
+        api
         .getApi(this.apiVar.mapApi + "/adsListByUid", {
-          asrIDs: this.planForm.pointOfAsrIDs.join(","),
+          asrIDs: this.planForm.pointOfAsrIDs ? this.planForm.pointOfAsrIDs.join(",") : '',
           suID: this.BDData.uid,
         })
         .then((res) => {
@@ -4461,6 +5347,8 @@ export default {
           this.getMapLoading.close();
           sessFun.messageFun("warning", "数据接口异常");
         });
+      }
+
     },
     // 根据地图选点返回的数据，设置成购物车所需的数据格式（亲邻地图）
     setMapAdsListInShopCar() {
@@ -4512,7 +5400,16 @@ export default {
           parkSpaceNum: key.parkSpaceNum,
           peopleFlow: key.peopleFlow,
           carFlow: key.carFlow,
+          unitId: key.unitId, // 单元ID
+          buildingId: key.buildingId, // 楼栋ID
+          actualAdsCnt: key.actualAdsCnt || 0, // 最多可添加点位数量
+          chooseNum: key.chooseNum || 0,
+          buildingName: key.buildingName,
+          unitName: key.unitName,
+          buildingName: key.buildingName,
+          unitName: key.unitName,
         };
+
         if (key.centerInfos && key.centerInfos.length) {
           for (let item of key.centerInfos) {
             adInfo.mapCenter +=
@@ -4528,10 +5425,10 @@ export default {
           tempArr.push(adInfo);
         }
       }
-    //   console.log(
-    //     "根据地图选点返回的数据，设置成购物车所需的数据格式",
-    //     tempArr
-    //   );
+      //   console.log(
+      //     "根据地图选点返回的数据，设置成购物车所需的数据格式",
+      //     tempArr
+      //   );
       if (this.shopingList.length !== 0) {
         for (let key of tempArr) {
           this.shopingList.push(key);
@@ -4614,7 +5511,7 @@ export default {
           if (letter === "media") {
             // 移除同行媒体点位
             if (shopingData[i].connData.commentworkMedia !== "") {
-            //   console.log(i, "移除同行媒体点位", shopingData[i]);
+              //   console.log(i, "移除同行媒体点位", shopingData[i]);
               num++;
             } else {
               arr.push(shopingData[i]);
@@ -4646,11 +5543,15 @@ export default {
         })
           .then(() => {
             let arr = [];
+            // this.shopingList.forEach((item) => {
+            //   this.clearAdspaceShopCart(item);
+            // });
             this.getResultData(arr);
             this.allCheckboxUpdata();
             this.computeMedia_AD();
             sessFun.messageFun("success", "删除成功");
-            this.resetPlanList(); // 重置planList的勾选
+            this.getAdList();
+            this.saveApInfo();
           })
           .catch(() => {
             sessFun.messageFun("info", "已取消删除");
@@ -4665,7 +5566,7 @@ export default {
       let currTab = this.activeName;
       if (!this.typeShopList[currTab]) return;
       shopList = this.typeShopList[currTab].asidList;
-    //   console.log("购物车统计面数媒体数shopList", shopList);
+      //   console.log("购物车统计面数媒体数shopList", shopList);
       let mediaArr = [];
       let mediaAD = [];
       let resArr = [];
@@ -4715,7 +5616,7 @@ export default {
           resAsidArr.push(obj);
         }
       }
-    //   console.log("resAsidArr------", resAsidArr);
+      //   console.log("resAsidArr------", resAsidArr);
       this.shopMedia_ADNum.oneNum = this.getResAsidNum(1, resAsidArr);
       this.shopMedia_ADNum.twoNum = this.getResAsidNum(2, resAsidArr);
       this.shopMedia_ADNum.threeNum = this.getResAsidNum(3, resAsidArr);
@@ -4803,7 +5704,7 @@ export default {
     },
     // 事件选择
     changeEvent(val) {
-    //   console.log("val", val);
+      //   console.log("val", val);
       if (this.shopShowList.length) {
         switch (val) {
           case 1:
@@ -4944,7 +5845,7 @@ export default {
     // 移除A/B面
     removeAllType(type) {
       let resultArr = this.funToArr(this.shopShowList, "mID");
-    //   console.log("resultArr------------das---", resultArr);
+      //   console.log("resultArr------------das---", resultArr);
       let len = this.shopShowList.length;
       if (resultArr.length > 0) {
         resultArr = this.isEnoughMedia(type, resultArr);
@@ -5047,7 +5948,7 @@ export default {
           let commentWorkArr = shopData[i].industryInfos;
           for (let key of commentWorkArr) {
             if (this.industryID === key.piID) {
-            //   console.log("1");
+              //   console.log("1");
               if (shopData[i].connData.commentWorkRes === "") {
                 shopData[i].connData.commentWorkRes = key.piName;
               } else {
@@ -5086,7 +5987,7 @@ export default {
     },
     // 购物车行被点击
     shopRowClick(row, event, column) {
-    //   console.log("购物车行被点击row", row, column);
+      //   console.log("购物车行被点击row", row, column);
       if (row.lState !== undefined && row.lState.length > 0) {
         let dataArr = row.lState;
         console.log("row.asID", row.asID);
@@ -5130,7 +6031,6 @@ export default {
     },
     // 选点列表数据到购物车数据
     setShopingTable(mediaInfo, adSpaceInfo) {
-        console.log(mediaInfo, adSpaceInfo);
       let selectInfo = {
         rid: mediaInfo.rid,
         mID: mediaInfo.mID,
@@ -5188,7 +6088,17 @@ export default {
         mRemark: mediaInfo.mRemark,
         lng: mediaInfo.lng,
         lat: mediaInfo.lat,
+        unitId: mediaInfo.unitId, // 单元ID
+        buildingId: mediaInfo.buildingId, // 楼栋ID
+        actualAdsCnt: mediaInfo.actualAdsCnt || 0, // 最多可添加点位数量
+        chooseNum: mediaInfo.chooseNum || 0,
+        buildingName: mediaInfo.buildingName,
+        unitName: mediaInfo.unitName,
       };
+      // if (this.getAdsParamsData.chooseType !== 0) {
+      //   mediaInfo.pointCount =
+      //     this[`${this.pointCountType}Map`][mediaInfo[this.pointCountType]];
+      // }
       return selectInfo;
     },
     // 自定义购物车表头-清空
@@ -5208,7 +6118,7 @@ export default {
       );
     },
     // 购物车删除行
-    deleteRow(adSpaceRow) {
+    deleteRow(adSpaceRow, isRefresh) {
       if (
         this.planList.length > 0 &&
         adSpaceRow.city === this.planList[0].city
@@ -5221,6 +6131,14 @@ export default {
               }
             });
           }
+          // if (
+          //   adSpaceRow[this.pointCountType] ===
+          //   this.planList[i][this.pointCountType]
+          // ) {
+          //   // 点位表对应的点位数据减一
+          //   this.reduceAdspaceToshopCart(this.planList[i]);
+          //   this.planList[i].pointCount--;
+          // }
         }
       }
       for (let j = 0, len = this.shopingList.length; j < len; ) {
@@ -5238,13 +6156,18 @@ export default {
       this.getShowList();
       this.computeMedia_AD();
       this.allCheckboxUpdata();
-      event.stopPropagation();
+      if (event) {
+        event.stopPropagation();
+      }
+      if (isRefresh) {
+        this.getAdList();
+      }
     },
     //修改动画效果及显示隐藏
     shopShow_hide(all) {
       let R = this.shopXY.x;
       let T = this.shopXY.y;
-    //   console.log("Right:", R, ",Top:", T);
+      //   console.log("Right:", R, ",Top:", T);
       let shopAnimate = document.getElementsByClassName("shopAnimate")[0];
       let animateAll = document.getElementsByClassName("shopAnimateAll")[0];
 
@@ -5338,47 +6261,57 @@ export default {
     // 创建报价单结构
     creatAdPlan() {
       let mediaTypeList = [],
-          apMinTime = null;
+        apMinTime = null;
       for (let sKey of this.shopingList) {
-        if(!(sKey.asrID && sKey.rid && sKey.mediaTypeId)) continue;
+        if (!(sKey.asrID && sKey.rid && sKey.mediaTypeId)) continue;
         let isHad = false;
-        let tempSchedules = sKey.schedules.split('-');
+        let tempSchedules = sKey.schedules.split("-");
         if (apMinTime > tempSchedules[0]) {
-            apMinTime = tempSchedules[0]
+          apMinTime = tempSchedules[0];
         }
         for (let aKey of mediaTypeList) {
-          if (aKey.asrID == sKey.asrID && aKey.rID == sKey.rid && aKey.mediaTypeId == sKey.mediaTypeId) {
+          if (
+            aKey.asrID == sKey.asrID &&
+            aKey.rID == sKey.rid &&
+            aKey.mediaTypeId == sKey.mediaTypeId
+          ) {
             isHad = true;
-            tempSchedules[0]<aKey.pdStar && (aKey.pdStar=tempSchedules[0]);
-            tempSchedules[1]>aKey.pdEnd && (aKey.pdEnd=tempSchedules[1]);
+            tempSchedules[0] < aKey.pdStar && (aKey.pdStar = tempSchedules[0]);
+            tempSchedules[1] > aKey.pdEnd && (aKey.pdEnd = tempSchedules[1]);
             aKey.pdNum++;
-            aKey.pdDays += (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1;
+            aKey.pdDays +=
+              (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0])) /
+                (3600 * 24 * 1000) +
+              1;
             break;
           }
         }
         if (!isHad) {
-            let tempObj = {
-                asrID: sKey.asrID,
-                rID: sKey.rid,
-                city: sKey.city,
-                mediaTypeId: sKey.mediaTypeId,
-                pdStar: tempSchedules[0],
-                pdEnd: tempSchedules[1],
-                //总投放天数
-                pdDays: (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1,
-                pdNum: 1,
-                pdRemark: "",
-                // 赠送面*天
-                pdFreeNum: 0,
-                // 广告费用
-                pdAdFee: 0,
-                // 实计制作费用
-                pdAdMake: 0,
-                pdTotal: 0,
-                pdSendFee: 0,
-                pdOtherFee: 0,
-            };
-            mediaTypeList.push(tempObj)
+          let tempObj = {
+            asrID: sKey.asrID,
+            rID: sKey.rid,
+            city: sKey.city,
+            mediaTypeId: sKey.mediaTypeId,
+            pdStar: tempSchedules[0],
+            pdEnd: tempSchedules[1],
+            //总投放天数
+            pdDays:
+              (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0])) /
+                (3600 * 24 * 1000) +
+              1,
+            pdNum: 1,
+            pdRemark: "",
+            // 赠送面*天
+            pdFreeNum: 0,
+            // 广告费用
+            pdAdFee: 0,
+            // 实计制作费用
+            pdAdMake: 0,
+            pdTotal: 0,
+            pdSendFee: 0,
+            pdOtherFee: 0,
+          };
+          mediaTypeList.push(tempObj);
         }
       }
       let params = {
@@ -5393,20 +6326,22 @@ export default {
       if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         delete params.suid;
       }
-      if(this.isPay && this.BDData.uType === 'ADN_BD') {
-        if(this.planForm.opportunityId) {
-          const tempOpportunity = this.opportunityList.find(opportunity =>
-            opportunity.opportunityId === this.planForm.opportunityId
+      if (this.isPay && this.BDData.uType === "ADN_BD") {
+        if (this.planForm.opportunityId) {
+          const tempOpportunity = this.opportunityList.find(
+            (opportunity) =>
+              opportunity.opportunityId === this.planForm.opportunityId
           );
           params.opportunityId = this.planForm.opportunityId;
-          params.opportunityName = (tempOpportunity && tempOpportunity.opportunityName) || '';
+          params.opportunityName =
+            (tempOpportunity && tempOpportunity.opportunityName) || "";
         }
         params.customerMediaType = this.planForm.customerMediaType || null;
       }
       api
         .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)
         .then((res) => {
-        //   console.log("创建方案", res);
+          //   console.log("创建方案", res);
           if (res.data.SysCode == 200200) {
             this.FAData.apID = res.data.Data[0].apID;
             this.PushADBFun(res.data.Data);
@@ -5414,17 +6349,17 @@ export default {
             sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
             let tempSet = new Set();
             let cityArea = [];
-            mediaTypeList.forEach(item => {
-                let asrIDAndRid = `${item.asrID}&&${item.rid}`;
-                if(!tempSet.has(asrIDAndRid)) {
-                    cityArea.push({
-                        asrID: item.asrID,
-                        city: item.city,
-                        rid: item.rID
-                    })
-                    tempSet.add(asrIDAndRid)
-                }
-            })
+            mediaTypeList.forEach((item) => {
+              let asrIDAndRid = `${item.asrID}&&${item.rid}`;
+              if (!tempSet.has(asrIDAndRid)) {
+                cityArea.push({
+                  asrID: item.asrID,
+                  city: item.city,
+                  rid: item.rID,
+                });
+                tempSet.add(asrIDAndRid);
+              }
+            });
             sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
           } else {
             this.ADloading.close();
@@ -5451,11 +6386,15 @@ export default {
         cityArr.push(cityObj);
       }
       let pbSetTime = this.timestampToTime(Date.parse(new Date()));
-    //   console.log("当前日期时间", pbSetTime);
+      //   console.log("当前日期时间", pbSetTime);
       let arr = [];
       for (let key of this.shopingList) {
         for (let cKey of cityArr) {
-          if (key.city == cKey.city && key.asrID == cKey.asrID && cKey.mediaTypeId == key.mediaTypeId) {
+          if (
+            key.city == cKey.city &&
+            key.asrID == cKey.asrID &&
+            cKey.mediaTypeId == key.mediaTypeId
+          ) {
             let adsInfo = {
               uID: this.sessionData.uID,
               apID: cKey.apID,
@@ -5520,7 +6459,7 @@ export default {
                   params
                 )
                 .then((res) => {
-                //   console.log("清空缓存的方案", res);
+                  //   console.log("清空缓存的方案", res);
                   if (res.data.SysCode === 200200) {
                     // console.log("缓存方案清除成功");
                   } else {
@@ -5550,7 +6489,7 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/CreateShareCode", params)
         .then((res) => {
-        //   console.log("生成协同选点aiCode", res);
+          //   console.log("生成协同选点aiCode", res);
           this.apAicode = res.data.aiCode; // 协同选点 aiCode
           this.shareADUrl =
             this.apiVar.qadnUrl +
@@ -5591,13 +6530,15 @@ export default {
       //获取当前选择的公司id
       let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
       if (!selectedAsrIds) {
-        selectedAsrIds = this.BDData.asrID?(this.BDData.asrID + ""):this.cacheAsrID;
+        selectedAsrIds = this.BDData.asrID
+          ? this.BDData.asrID + ""
+          : this.cacheAsrID;
       }
       let planInfo = {
         uid: this.sessionData.uID,
         setTime: this.timestampToTime(Date.parse(new Date())),
         planData: {
-          asrID: selectedAsrIds,   //缓存公司id
+          asrID: selectedAsrIds, //缓存公司id
           suid: this.BDData.uid, // 销售uid,如果是销售自己创建方案则uid与suid相同
           uType: this.BDData.uType, // 销售权限
           baseInfo: this.planForm,
@@ -5606,10 +6547,10 @@ export default {
           companyBrand: this.companyBrand,
         },
       };
-    //   console.log(
-    //     "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
-    //     planInfo
-    //   );
+      //   console.log(
+      //     "方案异常时，存储当前方案基本数据及购物车点位等临时信息",
+      //     planInfo
+      //   );
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -5618,14 +6559,13 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/createAdPlanBackups", params)
         .then((res) => {
-        //   console.log("res创建方案缓存", res);
           if (res.data.SysCode == 200200) {
+            cacheAdPlan.setData(planInfo);
           } else {
             // 后台缓存异常，则前台缓存到localStorage
             // cacheAdPlan.setData(planInfo)
           }
         });
-      cacheAdPlan.setData(planInfo);
     },
     // 设置方案信息
     async setPlanInfo() {
@@ -5655,6 +6595,7 @@ export default {
         this.active = 1;
         // console.log("设置方案信息returnData", returnData);
         // 设置城市及对应的区域
+        this.initMediaTag();
         this.getAreaFun();
         this.getMediaTypesByCompany();
         this.getRejectPlanList(); // 获取排斥方案列表
@@ -5682,11 +6623,413 @@ export default {
         date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(); //date.getSeconds();
       return Y + M + D + h + m + s;
     },
+
+    // 列展示
+    filterColumn(columns) {
+      this.currentColumn = columns;
+      this.itemKey = Math.random();
+    },
+    // 刷新列表
+    refreshTable() {
+      this.getAdList();
+    },
+    // 更改列表行距
+    spaceSetting(size) {
+      this.rowSpace = size;
+    },
+
+    // 设备型号筛选
+    activeMtype(value) {
+      this.mediaMType = value;
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+    // 安装位置筛选
+    activeSite(value) {
+      this.site = value;
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+    // 位置朝向
+    activeSiteOrientation(value) {
+      this.siteOrientation = value;
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 选点媒体信息标签
+    getMediaTag(tagName) {
+      let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
+      if (!selectedAsrIds) {
+        selectedAsrIds = this.BDData.asrID
+          ? this.BDData.asrID + ""
+          : this.cacheAsrID;
+      }
+      const params = {
+        companyIds: selectedAsrIds || this.sessionData.asrID,
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        tagName,
+      };
+      return new Promise((resolve, reject) => {
+        api
+          .getApi("/addsp/api/v1/media/company/mediaTag", params)
+          .then((res) => {
+            resolve(res.data.data);
+          })
+          .catch((error) => {
+            reject(error);
+            console.log(error, "error---getMediaTag");
+          });
+      });
+    },
+
+    async initMediaTag() {
+      // 设备型号
+      this.mTypeList = [
+        { dictDesc: "全部", dictValue: "" },
+        ...(await this.getMediaTag("media_mType")),
+      ];
+      // 安装位置
+      this.sites = [
+        { dictDesc: "全部", dictValue: "" },
+        ...(await this.getMediaTag("media_site")),
+      ];
+      // 位置朝向
+      this.siteOrientations = [
+        { dictDesc: "全部", dictValue: "" },
+        ...(await this.getMediaTag("media_siteOrientation")),
+      ];
+    },
+
+    // 点位数量变化
+    async handlePointCountChange(currentValue, oldValue, row) {
+      if(!currentValue) {
+        currentValue = oldValue
+        row.chooseNum = 0
+      }
+      let addNum = currentValue - oldValue;
+      if (+currentValue > +oldValue) {
+        const point = await this.handlePointRequest(addNum, row);
+        if (point) {
+          this.shopShow_hide(); // 动画效果
+          point.forEach((item) => {
+            item.adsList.forEach((adSpaceItem) => {
+              this.AddShopingInfo(item, adSpaceItem);
+            });
+          });
+        } else {
+          row.chooseNum = oldValue;
+          this.$message.warning("点位数量增加失败");
+        }
+      } else {
+        const arr = this.shopingList.filter((item) => {
+          return (
+            item[this.pointCountType] === row[this.pointCountType] &&
+            item.mediaTypeId === this.currentMediaType &&
+            this.crossSchedules(item.schedules)
+          );
+        });
+        let reduceCount = oldValue - currentValue
+        if(!reduceCount) {
+          reduceCount = oldValue
+        }
+        const delArr = arr.slice(0, reduceCount) || [];
+        delArr.forEach((item) => {
+          this.deleteRow(item);
+        });
+      }
+    },
+
+    // 添加点位数请求
+    handlePointRequest(addNum, row) {
+      let paramsData = {
+        prID: this.city[this.activeIndex].rid,
+        mediaTypeId: this.currentMediaType,
+        dateTimeBegin: this.dateInput[0],
+        dateTimeEnd: this.dateInput[1],
+        uid: this.BDData.uid,
+        asrIDs: this.BDData.asrIDs || "",
+        chooseType: this.getAdsParamsData.chooseType,
+        resID: row.resID,
+        [this.pointCountType]: row[this.pointCountType],
+        addNum,
+      };
+
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        service: "AddShopCartItem",
+        data: paramsData,
+      };
+      return api.postApi_new(this.apiVar.Media, params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          if (Array.isArray(res.data.data.list)) {
+            let list = this.setTableDataADDoor(res.data.data.list, true);
+            return Promise.resolve(list);
+          }
+        }
+      });
+    },
+
+    // 减少点位到购物车，更新楼栋，小区，单元数量统计
+    reduceAdspaceToshopCart(adApaceInfo) {
+      if (Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)) {
+        this.buildingIdMap[adApaceInfo.buildingId] -= 1;
+      }
+
+      if (Reflect.has(this.unitIdMap, adApaceInfo.unitId)) {
+        this.unitIdMap[adApaceInfo.unitId] -= 1;
+      }
+
+      if (Reflect.has(this.resIDMap, adApaceInfo.resID)) {
+        this.resIDMap[adApaceInfo.resID] -= 1;
+      }
+    },
+
+    clearAdspaceShopCart(adApaceInfo) {
+      if (Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)) {
+        this.buildingIdMap[adApaceInfo.buildingId] = 0;
+      }
+
+      if (Reflect.has(this.unitIdMap, adApaceInfo.unitId)) {
+        this.unitIdMap[adApaceInfo.unitId] = 0;
+      }
+
+      if (Reflect.has(this.resIDMap, adApaceInfo.resID)) {
+        this.resIDMap[adApaceInfo.resID] = 0;
+      }
+    },
+
+    // 增加点位到购物车，更新楼栋，小区，单元数量统计
+    addAdspaceToshopCart(adApaceInfo) {
+      if (Reflect.has(this.buildingIdMap, adApaceInfo.buildingId)) {
+        this.buildingIdMap[adApaceInfo.buildingId] += 1;
+      } else {
+        this.buildingIdMap[adApaceInfo.buildingId] = 1;
+      }
+
+      if (Reflect.has(this.unitIdMap, adApaceInfo.unitId)) {
+        this.unitIdMap[adApaceInfo.unitId] += 1;
+      } else {
+        this.unitIdMap[adApaceInfo.unitId] = 1;
+      }
+
+      if (Reflect.has(this.resIDMap, adApaceInfo.resID)) {
+        this.resIDMap[adApaceInfo.resID] += 1;
+      } else {
+        this.resIDMap[adApaceInfo.resID] = 1;
+      }
+    },
+
+    // 初始化点位数量
+    initPointCounts(arr) {
+      const buildingIdMap = {};
+      const unitIdMap = {};
+      const resIDMap = {};
+      arr.forEach((item) => {
+        if (buildingIdMap[item.buildingId]) {
+          buildingIdMap[item.buildingId]++;
+        } else {
+          buildingIdMap[item.buildingId] = 1;
+        }
+        if (unitIdMap[item.unitId]) {
+          unitIdMap[item.unitId]++;
+        } else {
+          unitIdMap[item.unitId] = 1;
+        }
+        if (resIDMap[item.resID]) {
+          resIDMap[item.resID]++;
+        } else {
+          resIDMap[item.resID] = 1;
+        }
+      });
+
+      this.buildingIdMap = buildingIdMap;
+      this.unitIdMap = unitIdMap;
+      this.resIDMap = resIDMap;
+    },
+
+    // 判断购物车里是否有已选点位，计算点位数
+    shopingCarHasPoint(type, typeId) {
+      const pointCount = this.shopingList.filter(
+        (item) => item[type] === typeId
+      );
+      return pointCount.length || 0;
+    },
+
+    // 配点弹窗
+    handlePointSetting() {
+      this.pointSettingShow = true;
+    },
+
+    // 查看配点详情
+    handlePointDetails(data) {
+      this.pointTableShow = true;
+      this.adResMatch = data;
+      this.pointMatchKeys.matchResultKey = data.matchResultKey
+    },
+
+    // 保存配点
+    savePoint(arr) {
+      for (let info of arr) {
+        this.isHaveDiffPush(info);
+      }
+      this.judgeByselect();
+      this.dialogVisible();
+      this.pointTableShow = false;
+    },
+    // 重新配点
+    resetPoint() {
+      this.pointTableShow = false;
+      this.pointSettingShow = true;
+    },
+
+    // 根据账号配置过滤媒体类型
+    getUserMediaChooseConfigs(sessionData) {
+      let hash = {};
+      let arr = sessionData.userMediaChooseConfigs.reduce((item, next) => {
+        hash[next.mediaTypeName]
+          ? ""
+          : (hash[next.mediaTypeName] = true && item.push(next));
+        return item;
+      }, []);
+      return arr.map((item) => {
+        return {
+          name: item.mediaTypeName,
+          id: item.mediaTypeId,
+        };
+      });
+    },
+
+    // 地图导入结果
+    getMapImportResult() {
+      const sess = this.sessionData;
+      const params = {
+        uid: sess.uID,
+        token: sess.token,
+      };
+      api
+        .postApi("/addsp/api/v2/adPlan/getMapImportResult", params)
+        .then((res) => {
+          if (res.data.SysCode === 200200) {
+            console.log(res.data.data, "res.data.datares.data.data");
+            this.mapAdsList = res.data.data.successList;
+            this.importType = "1";
+            this.forMap = true;
+            const successList = res.data.data.successList.map((item) => {
+              const date = item.date.split('-')
+              return {
+                ...item,
+                pbStar: date[0],
+                pbEnd: date[1],
+                origin: item.district,
+                rName: item.district
+              };
+            });
+            this.$set(this.importInfoData, 'successList', successList)
+            this.mapBtn = true;
+            this.dialogTableVisible = false;
+            this.showUploadFail = true;
+            this.getMapLoading.close();
+          } else {
+            this.getMapLoading.close();
+            sessFun.messageFun("warning", res.data.MSG || "数据获取异常");
+          }
+        })
+        .catch((err) => {
+          this.getMapLoading.close();
+          sessFun.messageFun("warning", "数据接口异常");
+        });
+    },
+
+    // 选点小区信息搜索
+    getResInfoTag (tagName, keyword) {
+      let selectedAsrIds = this.planForm.pointOfAsrIDs.join(",");
+      if (!selectedAsrIds) {
+        selectedAsrIds = this.BDData.asrID
+          ? this.BDData.asrID + ""
+          : this.cacheAsrID;
+      }
+      let params = {
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        companyIds: selectedAsrIds,
+        tagName,
+        keyword
+      };
+      return api.getApi('/addsp/api/v1/media/company/ResInfoTag', params).then((res) => {
+        if (res.data.SysCode === 200200) {
+          return Promise.resolve(res.data.data)
+        }
+      });
+    },
+
+    // 开发商过滤
+    tableHeaderFilter_developer(data) {
+      console.log(data);
+      let stateName = "开发商：" + data;
+      this.isHaveThisTag("developer", stateName);
+      if (data === "") {
+        this.getAdsParamsData.developer = "";
+      } else {
+        this.getAdsParamsData.developer = this.developer;
+      }
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 商圈过滤
+    tableHeaderFilter_tradingArea (data) {
+      let stateName = "开发商：" + data;
+      this.isHaveThisTag("tradingArea", stateName);
+      if (data === "") {
+        this.getAdsParamsData.tradingArea = "";
+      } else {
+        this.getAdsParamsData.tradingArea = this.tradingArea;
+      }
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    // 开发商搜索
+    async developerSearch (query ) {
+      if (query !== '') {
+        const res = await this.getResInfoTag('developer', query)
+        this.developerList = res
+      } else {
+        this.developerList = [];
+      }
+    },
+
+    // 商圈搜索
+    async tradingAreaSearch (query ) {
+      if (query !== '') {
+        const res = await this.getResInfoTag('tradingArea', query)
+        this.tradingAreaList = res
+      } else {
+        this.tradingAreaList = [];
+      }
+    },
+
+    handleChooseType(nVal) {
+      console.log(this.getAdsParamsData);
+      let pointCountType = "";
+      if (nVal === 1) {
+        pointCountType = "unitId";
+      } else if (nVal === 2) {
+        pointCountType = "buildingId";
+      } else if (nVal === 3) {
+        pointCountType = "resID";
+      }
+      this.pointCountType = pointCountType;
+      this.getAdList();
+    }
   },
   // 页面销毁
   destroyed() {
     if (this.active == 1 || this.active == 2) {
-    //   console.log("页面销毁----");
+      //   console.log("页面销毁----");
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -5694,10 +7037,10 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/AddCreatePlanLog", params)
         .then((res) => {
-        //   console.log("上报成功-----", res);
+          //   console.log("上报成功-----", res);
         })
         .catch((err) => {
-        //   console.log("上报失败-----", err);
+          //   console.log("上报失败-----", err);
         });
     }
   },
@@ -5743,7 +7086,7 @@ export default {
     flex-flow: row wrap;
     overflow: auto;
     .space-item {
-        margin-right: 12px;
+      margin-right: 12px;
     }
   }
 }
@@ -6323,7 +7666,7 @@ export default {
 }
 
 /deep/ .el-form-item__label {
-  padding: 0 0 0 12px;
+  padding: 0 0 0 0px;
 }
 
 /deep/ .selectAdsTable .el-table__body-wrapper {
@@ -6836,6 +8179,71 @@ export default {
 
 .ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
   width: 45px;
+}
+
+.table-set {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.chooseType-radio {
+  height: 32px;
+  /deep/ .el-radio-button {
+    height: 32px;
+    .el-radio-button__inner {
+      padding: 0 16px;
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+}
+.pointNum {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.pointCount-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.pointCount-input {
+  width: 108px;
+  overflow: hidden;
+  /deep/ .el-input__inner {
+    width: 108px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+  }
+  /deep/ span.el-input-number__decrease {
+    height: 24px !important;
+  }
+  /deep/ span.el-input-number__increase {
+    height: 24px !important;
+  }
+}
+
+.input-hover {
+  /deep/ .el-input__inner {
+    &:hover {
+      cursor: text;
+    }
+  }
+
+  /deep/ .el-input__suffix {
+    &:hover {
+      cursor: text;
+    }
+  }
 }
 </style>
 <style>

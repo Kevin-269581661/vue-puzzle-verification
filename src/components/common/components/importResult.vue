@@ -24,7 +24,7 @@
         <div class="myCheckbox" v-if="!isPointSetting">
           <el-checkbox v-model="isAll" @change="allCheckboxAds"></el-checkbox>
         </div>
-        <el-table border :data="successList" style="width: 100%" :key="Math.random()">
+        <el-table border :data="successList" style="width: 100%" :key="Math.random()" ref="table">
           <el-table-column width="120px" class-name="el-table-column-checkbox" v-if="!isPointSetting">
             <template slot-scope="scope">
               <div class="space-group">
@@ -412,6 +412,7 @@ export default {
     // 选中A、B面的时候
     changeCheckBox(row, adSpaceItem) {
       if (adSpaceItem.checkBox) {
+        this.refreshTable()
         this.AddShopingInfo(row, adSpaceItem); // 添加到购物车
       } else {
         this.deleteShopRow(row, adSpaceItem);
@@ -607,6 +608,13 @@ export default {
     handlePointSetting () {
       this.$emit("cancel");
       this.$emit('handlePointSetting')
+    },
+
+    refreshTable() {
+      const beforeScrollTop = this.$refs.table.$el.querySelector('div.el-table__body-wrapper').scrollTop
+      this.$nextTick(() => {
+        this.$refs.table.$el.querySelector('div.el-table__body-wrapper').scrollTop = beforeScrollTop
+      })
     }
   },
 };

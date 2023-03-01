@@ -2921,6 +2921,7 @@
                     suID: this.adListParams.suID,
                     centerInfoList: this.setCenterInfos(),
                     asrIDs: this.adListParams.asrIDs.join(","),
+                    mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType
                 };
                 // QFAD || QADN
                 if (

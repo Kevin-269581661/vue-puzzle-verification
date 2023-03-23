@@ -331,6 +331,11 @@
         min-height: 626px;
     }
 
+    .tempPic > div.find {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
     .tempPic img {
         width: 100%;
         height: auto;

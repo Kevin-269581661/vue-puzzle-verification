@@ -19,6 +19,11 @@
                        @visible-change="filterArea">
                 <el-option v-for="item in areaList" :key="item.rID" :label="item.rName" :value="item.rID"></el-option>
             </el-select>
+             <!--资源类型-->
+             <el-select v-model="selectResType" size="small" placeholder="请选择" @change="filterResType">
+                <el-option v-for="item in resTypeList" :key="item.value" :label="item.label"
+                           :value="item.value"></el-option>
+            </el-select>
         </div>
         <!--右上角选择-->
         <div class="right-top radio-group">
@@ -176,11 +181,11 @@
                 scale: '5公里',
                 cityList: '',
                 areaList: '',
-                /* resTypeList: [
-                    {label: '全部资源', value: 0},
-                    {label: '社区', value: 1},
-                    {label: '写字楼', value: 2}
-                ], */
+                resTypeList: [
+                  {label: '全部资源', value: 0},
+                  {label: '社区', value: 1},
+                  {label: '写字楼', value: 2}
+                ],
                 selectCity: '',
                 selectArea: [],
                 selectResType: 0,
@@ -389,6 +394,27 @@
                 });
                 return promise;
 
+            },
+            //选择资源类型
+            filterResType() {
+                let that = this
+                this.clearMarkers()
+                if (this.flagSwitch) {
+                    this.getOverlapData(this.flagCompany)
+                    this.companyCheckbox = [1, this.flagCompany]
+                } else {
+                    if (this.companyCheckbox.length > 0) {
+                        for (let data of this.companyCheckbox) {
+                            if (data != 1) {
+                                this.getData(data)
+                            } else {
+                                setTimeout(() => {
+                                    that.getData(data)
+                                }, 300)
+                            }
+                        }
+                    }
+                }
             },
             //选择公司
             chooseCompany(e, id) {

@@ -1430,7 +1430,7 @@ export default {
       let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
       let params = {
         ...(districtId && { cityId: districtId[0] }),
-        ...(districtId.length > 1 && { districtId: districtId[1] }),
+        ...(districtId.length > 1 && { districtId: districtId[1] }), 
         ...(type && { type: type }),
         ...(assetTag && { assetTag: assetTag }),
         ...(resName && { resName: resName }),
@@ -1445,7 +1445,7 @@ export default {
       if (this.sessionData.customPermission.patrolPermission) {
         params.isCustom = 1;
       }
-      api.getApi_file('/mediaService/api/v2/exportRMList', params).then(res => {
+      api.getApi_file('http://192.168.1.19:8006/mediaService/api/v2/exportRMList', params).then(res => {
         let blob = new Blob([res.data], { type: 'application/ms-download;charset=utf-8' });
         let downloadElement = document.createElement('a');
         let href = window.URL.createObjectURL(blob);    //创建下载的链接

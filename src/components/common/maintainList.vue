@@ -105,8 +105,203 @@
             >
             </el-date-picker>
           </el-col>
-
+          <el-col :span="6" v-if="customPermission.patrolPermission === 3">
+            <span>通行情况:</span>
+            <div class="text" v-if="showtrafficInput === 0">其他</div>
+            <el-select
+              v-model="trafficSituation"
+              placeholder="请选择通行情况"
+              filterable
+              multiple
+              clearable
+              @change="changetraffic"
+              v-if="showtrafficInput === 1"
+            >
+              <el-option
+                v-for="item of trafficSituationArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <el-input 
+              v-model.trim="trafficValue"
+              v-if="showtrafficInput === 0"
+              @change="trafficChange"
+              placeholder="请输入"
+              >
+              <el-select
+                v-model="trafficSituation"
+                slot="prepend"
+                multiple
+                @change="changetrafficInput"
+              >
+                <el-option
+                  v-for="item of trafficSituationArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </el-col>
+          <el-col :span="6" v-if="customPermission.patrolPermission !== 3">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              @click="search()"
+              :disabled="!isSearch"
+              >搜索
+            </el-button>
+            <el-button @click="reset()">重置</el-button>
+            <el-button @click="downLoad()">一键导出</el-button>
+          </el-col>
+        </el-row>
+        <el-row v-if="customPermission.patrolPermission === 3">
           <el-col :span="6">
+            <span>媒介情况:</span>
+            <div class="text" v-if="showMediaInput === 0">其他</div>
+            <el-select
+              v-model="mediaSituation"
+              multiple
+              filterable
+              placeholder="请选择媒介情况"
+              @change="changeMedia"
+              v-if="showMediaInput === 1"
+            >
+              <el-option
+                v-for="item of mediaSituationArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <el-input 
+              v-model.trim="mediaValue"
+              v-if="showMediaInput === 0"
+              @change="mediaChange"
+              placeholder="请输入"
+              >
+              <el-select
+                v-model="mediaSituation"
+                slot="prepend"
+                multiple
+                @change="changeMediaInput"
+              >
+                <el-option
+                  v-for="item of mediaSituationArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </el-col>
+          <el-col :span="6" class="device">
+            <span>设备问题:</span>
+            <div class="text text1" v-if="showDeviceInput === 0">其他设备异常</div>
+            <div class="text text1" v-if="showDeviceInput === 2">具体异常说明</div>
+            <el-select
+              v-model="deviceQuestion"
+              placeholder="请选择设备问题"
+              filterable
+              clearable
+              multiple
+              @change="changeDevice"
+              v-if="showDeviceInput === 1"
+            >
+              <el-option
+                v-for="item of deviceQuestionArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <el-input 
+              v-model.trim="deviceValue1"
+              v-if="showDeviceInput === 0"
+              @change="deviceChange1"
+              placeholder="请输入"
+              >
+              <el-select
+                v-model="deviceQuestion"
+                slot="prepend"
+                multiple
+                @change="changeDeviceInput"
+                class="device-select"
+              >
+                <el-option
+                  v-for="item of deviceQuestionArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+            <el-input 
+              v-model.trim="deviceValue2"
+              v-if="showDeviceInput === 2"
+              @change="deviceChange2"
+              placeholder="请输入"
+              >
+              <el-select
+                v-model="deviceQuestion"
+                slot="prepend"
+                multiple
+                @change="changeDeviceInput"
+                class="device-select"
+              >
+                <el-option
+                  v-for="item of deviceQuestionArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </el-col>
+          <el-col :span="6">
+            <span>问题反馈:</span>
+            <div class="text" v-if="showQuestionInput === 0">其他</div>
+            <el-select
+              v-model="questionReply"
+              placeholder="请选择问题反馈"
+              filterable
+              clearable
+              multiple
+              @change="changeQuestion"
+              v-if="showQuestionInput === 1"
+            >
+              <el-option
+                v-for="item of questionReplyArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <el-input 
+              v-model.trim="questionValue"
+              v-if="showQuestionInput === 0"
+              @change="questionChange"
+              placeholder="请输入"
+              >
+              <el-select
+                v-model="questionReply"
+                slot="prepend"
+                multiple
+                @change="changeQuestionInput"
+              >
+                <el-option
+                  v-for="item of questionReplyArr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+          </el-col>
+
+           <el-col :span="6">
             <el-button
               type="primary"
               icon="el-icon-search"
@@ -133,6 +328,7 @@
               label="维护类型"
               min-width="100"
               :show-overflow-tooltip="true"
+              :fixed = 'fixedLeft'
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.mtType }}</span>
@@ -145,6 +341,7 @@
               label="资源"
               :show-overflow-tooltip="true"
               min-width="160"
+              :fixed = 'fixedLeft'
             >
               <template slot-scope="scope">
                 <span> {{ scope.row.resName || '--' }}</span>
@@ -205,18 +402,6 @@
               </template>
             </el-table-column>
 
-            <el-table-column
-              prop="trafficState"
-              label="通行情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.trafficState || '--' }}</span>
-              </template>
-            </el-table-column>
 
             <el-table-column
               prop="electrifyState"
@@ -224,10 +409,23 @@
               min-width="170"
               class="tar"
               :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission == 2"
+              v-if="customPermission.patrolPermission == 2  || customPermission.patrolPermission == 3"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.electrifyState || '--' }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="trafficState"
+              label="通行情况"
+              min-width="170"
+              class="tar"
+              :show-overflow-tooltip="true"
+              v-if="customPermission.patrolPermission && customPermission.patrolPermission !== 3"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.trafficState || '--' }}</span>
               </template>
             </el-table-column>
 
@@ -237,6 +435,7 @@
               min-width="170"
               class="tar"
               :show-overflow-tooltip="true"
+              v-if="customPermission.patrolPermission !== 3"
             >
               <template slot-scope="scope">
                 <template v-if=" Array.isArray(scope.row.issueRecord)">
@@ -247,6 +446,101 @@
                 </template>
                 <template v-else>
                   <span>{{scope.row.issueRecord}}</span>
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              label="媒体品相"
+              prop="mediaAppearance"
+              min-width="100"
+              :show-overflow-tooltip="true"
+              v-if="customPermission.patrolPermission === 3"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.mediaAppearance }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="trafficState"
+              label="通行情况"
+              min-width="170"
+              class="tar customized"
+              v-if="customPermission.patrolPermission === 3"
+            >
+              <template slot-scope="scope">
+                <template v-if="scope.row.trafficState !== '--'">
+                  <span v-for="(item, index) in scope.row.trafficState.split('、')" :key="index" class="tag">
+                    {{item}}
+                  </span>
+                </template>
+                <template v-else>
+                  <span>{{ scope.row.trafficState }}</span>
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="mediumState"
+              label="媒介情况"
+              min-width="170"
+              class="tar"
+              v-if="customPermission.patrolPermission === 3"
+            >
+              <template slot-scope="scope">
+                <template v-if="scope.row.mediumState !== '--'">
+                  <span v-for="(item, index) in scope.row.mediumState.split('、')" :key="index" class="tag">
+                    {{item}}
+                  </span>
+                </template>
+                <template v-else>
+                  <span>{{ scope.row.mediumState }}</span>
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="deviceProblem"
+              label="设备问题"
+              min-width="170"
+              class="tar"
+              v-if="customPermission.patrolPermission === 3"
+            >
+              <template slot-scope="scope">
+                <template v-if="scope.row.deviceProblem !== '--'">
+                  <span v-for="(item, index) in scope.row.deviceProblem.split('、')" :key="index" class="tag">
+                    {{item}}
+                  </span>
+                </template>
+                <template v-else>
+                  <span>{{ scope.row.deviceProblem }}</span>
+                </template>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="issueRecord"
+              label="问题反馈"
+              min-width="170"
+              class="tar"
+              v-if="customPermission.patrolPermission === 3"
+            >
+              <template slot-scope="scope" class="customized">
+                <template v-if=" Array.isArray(scope.row.issueRecord)">
+                  <span
+                    v-for="(item, index) in scope.row.issueRecord" 
+                    :key="index" 
+                    class="tag"
+                    >
+                    {{item}}
+                  </span>
+                </template>
+                <template v-else-if="scope.row.issueRecord === '--'">
+                  <span>{{scope.row.issueRecord}}</span>
+                </template>
+                <template v-else>
+                  <span v-for="(item, index) in scope.row.issueRecord.split('、')" :key="index"  class="tag">{{item}}</span>
                 </template>
               </template>
             </el-table-column>
@@ -479,6 +773,196 @@ export default {
       currPage: 1,
       pageSize: 10,
       totalSize: 0,
+      trafficSituation: [],  // 通行情况下拉框数据
+      // 通行情况类型
+      trafficSituationArr: [
+        // {
+        //   label: '正常通行',
+        //   value: 1
+        // },
+        // {
+        //   label: '门常开',
+        //   value: 2
+        // },
+        // {
+        //   label: '白天常开',
+        //   value: 3
+        // },
+        // {
+        //   label: '夜间启用',
+        //   value: 4
+        // },
+        // {
+        //   label: '夜间锁门',
+        //   value: 5
+        // },
+        // {
+        //   label: '常闭',
+        //   value: 6
+        // },
+        // {
+        //   label: '锁门旁边通行',
+        //   value: 7
+        // },
+        // {
+        //   label: '锁门没人走能正常拍照',
+        //   value: 8
+        // },
+        // {
+        //   label: '小区改造',
+        //   value: 9
+        // },
+        // {
+        //   label: '疫情暂停使用',
+        //   value: 10
+        // },
+        // {
+        //   label: '其他',
+        //   value: 11
+        // }
+      ],
+      showtrafficInput: 1,  // 展示同行情况输入框
+      trafficValue: '',  // 通行情况输入框内容
+
+      showMediaInput: 1,  // 展示媒介情况输入框
+      mediaSituation: [],  // 媒介情况下拉框数据
+      mediaValue:'',  // 媒介情况输入框内容
+      // 媒介情况类型
+      mediaSituationArr: [
+        // {
+        //   label: 'AB面正常展示',
+        //   value: 1
+        // },
+        // {
+        //   label: '社区城管管控A面',
+        //   value: 2
+        // },
+        // {
+        //   label: '社区城管管控B面',
+        //   value: 3
+        // },
+        // {
+        //   label: '社区城管管控AB面',
+        //   value: 4
+        // },
+        // {
+        //   label: '拆门调点',
+        //   value: 5
+        // },
+        // {
+        //   label: '常闭',
+        //   value: 6
+        // },
+        // {
+        //   label: '其他',
+        //   value: 7
+        // },
+      ],
+
+      showDeviceInput: 1,  // 展示设备问题输入框
+      deviceQuestion: [], // 设备问题下拉框数据
+      // 设备问题输入框内容
+      deviceValue1:'',  
+      deviceValue2:'',
+      // 设备问题类型
+      deviceQuestionArr: [
+        // {
+        //   label: '设备正常使用',
+        //   value: 1
+        // },
+        // {
+        //   label: '门禁设备异常',
+        //   value: 2
+        // },
+        // {
+        //   label: '立柱设备异常',
+        //   value: 3
+        // },
+        // {
+        //   label: '护栏设备异常',
+        //   value: 4
+        // },
+        // {
+        //   label: '通电设备异常',
+        //   value: 5
+        // },
+        // {
+        //   label: '防护设备异常',
+        //   value: 6
+        // },
+        // {
+        //   label: '锁门旁边通行',
+        //   value: 7
+        // },
+        // {
+        //   label: '人脸设备异常',
+        //   value: 8
+        // },
+        // {
+        //   label: '刷卡器设备异常',
+        //   value: 9
+        // },
+        // {
+        //   label: '其他设备异常',
+        //   value: 10
+        // },
+        // {
+        //   label: '具体异常说明',
+        //   value: 11
+        // }
+      ],
+
+      showQuestionInput: 1,  // 展示问题反溃输入框
+      questionReply: [],  // 问题反馈下拉框数据
+      questionValue:'',  // 问题反馈输入框内容
+      // 问题反馈类型
+      questionReplyArr: [
+        // {
+        //   label: '正常通行',
+        //   value: 1
+        // },
+        // {
+        //   label: '门常开',
+        //   value: 2
+        // },
+        // {
+        //   label: '白天常开',
+        //   value: 3
+        // },
+        // {
+        //   label: '夜间启用',
+        //   value: 4
+        // },
+        // {
+        //   label: '夜间锁门',
+        //   value: 5
+        // },
+        // {
+        //   label: '常闭',
+        //   value: 6
+        // },
+        // {
+        //   label: '锁门旁边通行',
+        //   value: 7
+        // },
+        // {
+        //   label: '锁门没人走能正常拍照',
+        //   value: 8
+        // },
+        // {
+        //   label: '小区改造',
+        //   value: 9
+        // },
+        // {
+        //   label: '疫情暂停使用',
+        //   value: 10
+        // },
+        // {
+        //   label: '其他',
+        //   value: 11
+        // }
+      ],
+
       // 登录信息
       sessionData: {},
       //加载中
@@ -544,6 +1028,10 @@ export default {
         status: '',
         date: '',
         userId: '',
+        trafficArr: [],
+        mediaArr: [],
+        deviceArr: [],
+        questionArr: []
       },
       // 处理弹出框
       isShowHandle: false,
@@ -582,6 +1070,7 @@ export default {
     this.getCity();
     this.getComUser();
     this.searchFun();
+    this.getpartrolList()
   },
   methods: {
     //选择区域
@@ -766,7 +1255,8 @@ export default {
       this.customPermission = this.sessionData.customPermission;
     },
     // 搜索数据格式化
-    searchFormat () {
+    searchFormat() {
+      this.changeInput()
       let session = this.sessionData;
       let info = {
         uid: session.uID,
@@ -779,6 +1269,14 @@ export default {
         pageNum: this.currPage,
         pageSize: this.pageSize,
       };
+      let remark = this.searchInfo.questionArr.length < 2 ? null : JSON.stringify(this.searchInfo.questionArr)
+      let deviceProblem = this.searchInfo.deviceArr.length < 2 ? null : JSON.stringify(this.searchInfo.deviceArr)
+      let mediumState = this.searchInfo.mediaArr.length < 2 ? null : JSON.stringify(this.searchInfo.mediaArr)
+      let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
+      console.log('remark',remark);
+      console.log('deviceProblem',deviceProblem);
+      console.log('mediumState',mediumState);
+      console.log('trafficState',trafficState);
       data = {
         ...data,
         ...(districtId && { cityId: districtId[0] }),
@@ -789,7 +1287,12 @@ export default {
         ...(status && { status: status }),
         ...(date && { startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-') }),
         ...(userId && { userId: userId }),
+        ...(remark && {remark: remark}),
+        ...(deviceProblem && {deviceProblem: deviceProblem}),
+        ...(mediumState && {mediumState: mediumState}),
+        ...(trafficState && {trafficState: trafficState})
       };
+      console.log('data',data);
       info.data = data;
       return info;
     },
@@ -798,7 +1301,7 @@ export default {
       this.getData(info);
     },
     // 滚动加载获取数据(无搜索数据)
-    getData (params) {
+    getData(params) {
       api.postApi_new(this.apiVar.Media, params).then(res => {
         console.log(res.data);
         if (res.data.SysCode == 200200) {
@@ -873,8 +1376,11 @@ export default {
         cityName: item.cityName,
         area: item.districtName,
         trafficState: item.trafficState || '--',
+        mediaAppearance: item.mediaAppearance || '--',
         electrifyState: item.electrifyState || '--',
         issueRecord: item.remark ? item.remark : '--',
+        mediumState: item.mediumState ? item.mediumState : '--',
+        deviceProblem: item.deviceProblem ? item.deviceProblem : '--',
         feedback: item.feedback ? item.feedback : '--',
         updateTime: item.updateTime ? item.updateTime : '---',
         createTime: item.createTime ? item.createTime : '---',
@@ -914,9 +1420,14 @@ export default {
     formatTime (time) {
       return dateFormat.toDate(time);
     },
-    // 导出
-    downLoad () {
+    // 导出-
+    downLoad() {
+      this.changeInput()
       let { resName, assetTag, type, districtId, status, date, userId } = this.searchInfo;
+      let remark = this.searchInfo.questionArr.length < 2 ? null : JSON.stringify(this.searchInfo.questionArr)
+      let deviceProblem = this.searchInfo.deviceArr.length < 2 ? null : JSON.stringify(this.searchInfo.deviceArr)
+      let mediumState = this.searchInfo.mediaArr.length < 2 ? null : JSON.stringify(this.searchInfo.mediaArr)
+      let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
       let params = {
         ...(districtId && { cityId: districtId[0] }),
         ...(districtId.length > 1 && { districtId: districtId[1] }),
@@ -926,6 +1437,10 @@ export default {
         ...(status && { status: status }),
         ...(date && { startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-') }),
         ...(userId && { userId: userId }),
+        ...(remark && {remark: remark}),
+        ...(deviceProblem && {deviceProblem: deviceProblem}),
+        ...(mediumState && {mediumState: mediumState}),
+        ...(trafficState && {trafficState: trafficState})
       };
       if (this.sessionData.customPermission.patrolPermission) {
         params.isCustom = 1;
@@ -943,7 +1458,7 @@ export default {
       });
     },
     // 重置
-    reset () {
+    reset() {
       this.searchInfo = {
         resName: '',
         assetTag: '',
@@ -953,6 +1468,19 @@ export default {
         date: '',
         userId: '',
       };
+      this.searchInfo.questionArr =[]
+      this.searchInfo.mediaArr =[]
+      this.searchInfo.trafficArr =[]
+      this.searchInfo.deviceArr =[]
+      this.trafficSituation = [],
+      this.trafficValue = [],
+      this.mediaSituation = [],
+      this.mediaValue = [],
+      this.deviceQuestion = [],
+      this.deviceValue1 = [],
+      this.deviceValue2 = [],
+      this.questionReply = []
+      this.questionValue = []
       this.currPage = 1;
       console.log(this.searchInfo);
       this.currentPlan = [];
@@ -962,6 +1490,7 @@ export default {
         clearTimeout(timer);
       }, 1000);
       this.searchFun();
+      this.getpartrolList()
     },
     // 新建按钮
     newClient () {
@@ -1072,6 +1601,261 @@ export default {
         console.log(err);
       });
 
+    },
+    /**
+     * 获取下拉列表
+     */
+    getpartrolList() {
+      api.getPartrolPoint(this.apiVar.partrolApi).then(res => {
+        let arr1 = res.data.data[0].items
+        let arr2 = res.data.data[1].items
+        let arr3 = res.data.data[2].items
+        let arr4 = res.data.data[3].items
+        // 赋值问题反馈下拉列表
+        for (let i = 0; i < arr1.length; i++){
+          let obj = {}
+          obj.value = arr1[i].title
+          this.questionReplyArr.push(obj)
+        }
+        // 赋值设备问题下拉列表
+        for (let i = 0; i < arr2.length; i++){
+          let obj = {}
+          obj.value = arr2[i].title
+          this.deviceQuestionArr.push(obj)
+        }
+        // 赋值媒介情况下拉列表
+        for (let i = 0; i < arr3.length; i++){
+          let obj = {}
+          obj.value = arr3[i].title
+          this.mediaSituationArr.push(obj)
+        }
+        // 赋值通行情况下拉列表
+        for (let i = 0; i < arr4.length; i++){
+          let obj = {}
+          obj.value = arr4[i].title
+          this.trafficSituationArr.push(obj)
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    },
+    /**
+     * 转换 输入框中的数据
+     */
+    changeInput() {
+      // 将通行情况中的输入框数据转换
+      if (this.trafficValue !== '') {
+        this.searchInfo.trafficArr = this.trafficSituation.slice()
+        let index = this.searchInfo.trafficArr.indexOf('其他(' + this.trafficValue + ')')
+        this.searchInfo.trafficArr.splice(index, 1)
+        this.searchInfo.trafficArr.push(this.trafficValue)
+      }
+      // 将媒介情况中的输入框数据转换
+      if (this.mediaValue !== '') {
+        this.searchInfo.mediaArr = this.mediaSituation.slice()
+        let index = this.searchInfo.mediaArr.indexOf('其他(' + this.mediaValue + ')')
+        this.searchInfo.mediaArr.splice(index, 1)
+        this.searchInfo.mediaArr.push(this.mediaValue)
+        console.log('this.searchInfo.mediaArr',this.searchInfo.mediaArr);
+      }
+      // 将设备问题中的输入框数据转换
+      if (this.deviceValue1 !== '') {
+        this.searchInfo.deviceArr = this.deviceQuestion.slice()
+        let index = this.searchInfo.deviceArr.indexOf('其他设备异常(' + this.deviceValue1 + ')')
+        this.searchInfo.deviceArr.splice(index, 1)
+        this.searchInfo.deviceArr.push(this.deviceValue1)
+        console.log('this.searchInfo.deviceArr',this.searchInfo.deviceArr);
+      }
+      if (this.deviceValue2 !== '') {
+        this.searchInfo.deviceArr = this.deviceQuestion.slice()
+        let index = this.searchInfo.deviceArr.indexOf('具体异常说明(' + this.deviceValue2 + ')')
+        this.searchInfo.deviceArr.splice(index, 1)
+        this.searchInfo.deviceArr.push(this.deviceValue2)
+        console.log('this.searchInfo.deviceArr',this.searchInfo.mediaArdeviceArrr);
+      }
+      // 将问题反馈中的输入框数据转换
+      if (this.questionValue !== '') {
+        this.searchInfo.questionArr = this.questionReply.slice()
+        let index = this.searchInfo.questionArr.indexOf('其他(' + this.questionValue + ')')
+        this.searchInfo.questionArr.splice(index, 1)
+        this.searchInfo.questionArr.push(this.questionValue)
+        console.log('this.searchInfo.questionArr',this.searchInfo.questionArr);
+      }
+    },
+    /**
+     * 通行情况下拉框切换输入框
+     * @param {Array} val 
+     */
+    changetraffic(val) {
+      let index = this.trafficSituationArr.length-1 
+      if (val[val.length - 1] === this.trafficSituationArr[index].value) {
+        this.showtrafficInput = 0
+      }
+    },
+    /**
+     * 通行情况输入框切换下拉框
+     */
+    changetrafficInput() {
+      let index = this.trafficSituationArr.length-1
+      if (this.trafficValue === '') {
+        let index1 = this.trafficSituation.indexOf(this.trafficSituationArr[index].value)
+        this.trafficSituation.splice(index1, 1)
+      }
+      this.showtrafficInput = 1
+    },
+    /**
+     * 通行情况输入框失焦
+     */
+    trafficChange() {
+      let index = this.trafficSituationArr.length - 1
+      let index1 = this.trafficSituation.length -1
+      if (this.trafficValue === '') {
+        this.trafficSituationArr[index].value = '其他(请输入)'
+      } else {
+        this.trafficSituationArr[index].value = '其他('+ this.trafficValue + ')'
+        this.trafficSituation[index1]= '其他('+ this.trafficValue + ')'
+        this.showtrafficInput = 1
+      }
+    },
+    /**
+     * 媒介情况下拉框切换输入框
+     * @param {Array} val 
+     */
+    changeMedia(val) {
+      let index = this.mediaSituationArr.length-1
+      if (val[val.length - 1] === this.mediaSituationArr[index].value) {
+        this.showMediaInput = 0
+      }
+    },
+    /**
+     * 媒介情况输入框切换下拉框
+     */
+    changeMediaInput() {
+      let index = this.mediaSituationArr.length-1
+      if (this.mediaValue === '') {
+        let index1 = this.mediaSituation.indexOf(this.mediaSituationArr[index].value)
+        this.mediaSituation.splice(index1, 1)
+      }
+      this.showMediaInput = 1
+    },
+    /**
+     * 媒介情况输入框失焦
+     */
+    mediaChange() {
+      let index = this.mediaSituationArr.length - 1
+      let index1 = this.mediaSituation.length -1
+      if (this.mediaValue === '') {
+        this.mediaSituationArr[index].value = '其他(请输入)'
+      } else {
+        this.mediaSituationArr[index].value = '其他('+ this.mediaValue + ')'
+        this.mediaSituation[index1] = '其他('+ this.mediaValue + ')'
+        this.showMediaInput = 1
+      }
+    },
+    /**
+     * 设备问题下拉框切换输入框
+     * @param {Arrary} val 
+     */
+    changeDevice(val) {
+      let index = this.deviceQuestionArr.length-1
+      if (val[val.length - 1] === this.deviceQuestionArr[index-1].value) {
+        this.showDeviceInput = 0
+      }else if(val[val.length - 1] === this.deviceQuestionArr[index].value){
+        this.showDeviceInput = 2
+      }
+    },
+    /**
+     * 设备问题输入框切换下拉框
+     * @param {Arrary} val 
+     */
+    changeDeviceInput(val) {
+      let index = this.deviceQuestionArr.length-1
+      if (val[val.length - 1] === this.deviceQuestionArr[index-1].value) {
+        this.showDeviceInput = 0
+      } else if(val[val.length - 1] === this.deviceQuestionArr[index].value){
+        this.showDeviceInput = 2
+      } else {
+        this.showDeviceInput = 1
+      }
+      if (val[val.length - 2] === this.deviceQuestionArr[index-1].value) {
+        if (this.deviceValue1 === '') {
+          let index1 = this.deviceQuestion.indexOf(this.deviceQuestionArr[index-1].value)
+          this.deviceQuestion.splice(index1, 1)
+        }
+      } else if (val[val.length - 2] === this.deviceQuestionArr[index].value) {
+        if (this.deviceValue2 === '') {
+          let index2 = this.deviceQuestion.indexOf(this.deviceQuestionArr[index].value)
+          this.deviceQuestion.splice(index2, 1)
+        }
+      }
+    },
+    /**
+     * 设备问题 其他设备异常 输入框失焦
+     */
+    deviceChange1() {
+      let index = this.deviceQuestionArr.length-2
+      let index1 = this.deviceQuestion.length-1
+      if (this.deviceValue1 === '') {
+        this.deviceQuestionArr[index].value = '其他设备异常(请输入)'
+      } else {
+        this.deviceQuestionArr[index].value = '其他设备异常('+ this.deviceValue1 + ')'
+        this.deviceQuestion[index1] ='其他设备异常('+ this.deviceValue1 + ')'
+        this.showDeviceInput = 1
+      }
+    },
+    /**
+     * 设备问题 具体异常说明输入框失焦
+     */
+    deviceChange2() {
+      let index = this.deviceQuestionArr.length-1
+      let index1 = this.deviceQuestion.length-1
+      if (this.deviceValue2 === '') {
+        this.deviceQuestionArr[index].value = '具体异常说明(请输入)'
+      } else {
+        this.deviceQuestionArr[index].value ='具体异常说明('+ this.deviceValue2 + ')'
+        this.deviceQuestion[index1] ='具体异常说明('+ this.deviceValue2 + ')'
+        this.showDeviceInput = 1
+      }
+    },
+    /**
+     * 问题反馈下拉框切换输入框
+     * @param {Arrary} val 
+     */
+    changeQuestion(val) {
+      let index = this.questionReplyArr.length-1
+      if (val[val.length - 1] === this.questionReplyArr[index].value) {
+        this.showQuestionInput = 0
+      }
+    },
+    /**
+     * 问题反馈输入框切换下拉框
+     */
+    changeQuestionInput() {
+      let index = this.questionReplyArr.length-1
+      if (this.questionValue === '') {
+        let index1 = this.questionReply.indexOf(this.questionReplyArr[index].value1)
+        this.questionReply.splice(index1, 1)
+      }
+      this.showQuestionInput = 1
+    },
+    /**
+     * 问题反馈输入框失焦
+     */
+    questionChange() {
+      let index = this.questionReplyArr.length-1
+      let index1 = this.questionReply.length-1
+      if (this.questionValue === '') {
+        this.questionReplyArr[index].value = '其他(请输入)'
+      } else {
+        this.questionReplyArr[index].value = this.questionValue
+        this.questionReply[index1] = this.questionValue
+        this.showQuestionInput = 1
+      }
+    },
+  },
+  computed: {
+    fixedLeft() {
+      return this.customPermission.patrolPermission ===3 ? 'left' : 'false'
     }
   }
 };
@@ -1100,9 +1884,44 @@ export default {
 /deep/ .mediaList_container .el-col .el-cascader {
   width: 100%;
 }
-
+/deep/ .mediaList_container .el-col {
+  position: relative;
+}
+.text{
+  position: absolute;
+  width: 55px;
+  height: 30px;
+  line-height: 30px;
+  left: 67px;
+  z-index: 999;
+  color: #909399;
+  background-color: #f4f4f5;
+  text-align: center;
+  font-size: 12px;
+}
+.text1{
+  width: 85px;
+}
 /deep/ .el-select {
   width: 100%;
+}
+/deep/ .el-select .el-select__tags{
+  margin-top: 1px;
+  height: 30px;
+  overflow: auto;
+}
+
+/deep/ .el-input{
+  position: relative;
+}
+/deep/ .el-input .el-input__inner{
+  height: 34px !important;
+}
+/deep/ .el-input .el-select{
+  width: 80px !important;
+}
+.device .device-select{
+  width: 110px !important
 }
 
 /deep/ .el-col .el-date-editor .el-range__close-icon {
@@ -1118,14 +1937,15 @@ export default {
   color: rgba(0, 0, 0, 0.45);
 }
 
-/deep/ .table_dt .el-table__row .cell span {
-  overflow: hidden;
+/deep/ .table_dt .cell{
+  text-overflow: clip;
 }
 
 /deep/ .mediaList_container .el-input,
 /deep/ .mediaList_container .el-input__inner {
   height: 32px;
 }
+
 
 /deep/ .mediaList_container .el-col-6 {
   display: flex;
@@ -1281,4 +2101,22 @@ export default {
 /deep/ .el-dialog__footer {
   padding: 10px 24px 24px;
 } 
+/deep/ .el-input .el-input-group__prepend{
+  padding: 0;
+  width: 80px;
+}
+/deep/ .el-input .el-input-group__prepend .el-select{
+  margin: 0;
+}
+.tag{
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  padding: 0 8px;
+  background: linear-gradient(0deg, #E6F7FF, #E6F7FF),linear-gradient(0deg, #91D5FF, #91D5FF);
+  border: 1px solid #91D5FF ;
+  margin-right: 8px;
+  font-size: 12px;
+  color: #1890FF;
+}
 </style>

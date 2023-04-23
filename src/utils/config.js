@@ -64,6 +64,7 @@ const apiVar = {
     image: '/image',
     // 自研地图相关
     mapApi: '/map',
+    partrolApi:'/addsp/patrolPoint/web/getFilterFields',
     wuYouMap: wuYouMap,
     shareWUYouMap: shareWUYouMap,
     jsonLink: jsonLink,

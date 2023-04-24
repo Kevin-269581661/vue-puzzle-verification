@@ -10,7 +10,10 @@
                         <span v-if="item.type!='拆除'" class="handleBtn" @click="toHandle(item)">处理</span>
                     </p>
                     <div class= "content" >
-                        <p v-if="item.text">{{item.text}}</p>
+                        <p v-if="item.text.trafficState">通行情况：{{item.text.trafficState}}</p>
+                        <p v-if="item.text.mediumState">媒介情况：{{item.text.mediumState}}</p>
+                        <p v-if="item.text.deviceProblem">设备问题：{{item.text.deviceProblem}}</p>
+                        <p v-if="item.text.remark">问题反馈：{{item.text.remark}}</p>
                         <p v-if="item.type=='巡点'"><i class="el-icon-location-outline"></i>{{item.address}}</p>
                     </div>
                 </div>
@@ -31,6 +34,9 @@ export default {
         return {
 
         }
+    },
+    mounted() {
+        console.log(this.list);
     },
     methods:{
         getcolor(type){

@@ -1273,10 +1273,6 @@ export default {
       let deviceProblem = this.searchInfo.deviceArr.length < 2 ? null : JSON.stringify(this.searchInfo.deviceArr)
       let mediumState = this.searchInfo.mediaArr.length < 2 ? null : JSON.stringify(this.searchInfo.mediaArr)
       let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
-      console.log('remark',remark);
-      console.log('deviceProblem',deviceProblem);
-      console.log('mediumState',mediumState);
-      console.log('trafficState',trafficState);
       data = {
         ...data,
         ...(districtId && { cityId: districtId[0] }),
@@ -1577,7 +1573,12 @@ export default {
           for (let data of res.data.data.list) {
             let a = {
               time: data.createTime,
-              text: data.remark,
+              text: {
+                remark: data.remark,
+                trafficState: data.trafficState,
+                mediumState: data.mediumState,
+                deviceProblem: data.deviceProblem
+              },
               address: data.resAddress,
               recordId: data.recordId,
               mID: data.mID,

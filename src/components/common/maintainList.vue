@@ -451,18 +451,6 @@
             </el-table-column>
 
             <el-table-column
-              label="媒体品相"
-              prop="mediaAppearance"
-              min-width="100"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mediaAppearance }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
               prop="trafficState"
               label="通行情况"
               min-width="170"

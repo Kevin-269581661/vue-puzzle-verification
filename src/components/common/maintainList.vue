@@ -1891,7 +1891,7 @@ export default {
 .text{
   position: absolute;
   width: 55px;
-  height: 30px;
+  height: 34px;
   line-height: 30px;
   left: 67px;
   z-index: 999;
@@ -1915,9 +1915,9 @@ export default {
 /deep/ .el-input{
   position: relative;
 }
-/deep/ .el-input .el-input__inner{
-  height: 34px !important;
-}
+// /deep/ .el-input .el-input__inner{
+//   height: 34px !important;
+// }
 /deep/ .el-input .el-select{
   width: 80px !important;
 }
@@ -1942,10 +1942,9 @@ export default {
   text-overflow: clip;
 }
 
-/deep/ .mediaList_container .el-input,
-/deep/ .mediaList_container .el-input__inner {
-  height: 32px;
-}
+// /deep/ .mediaList_container .el-input__inner {
+//   height: 32px;
+// }
 
 
 /deep/ .mediaList_container .el-col-6 {

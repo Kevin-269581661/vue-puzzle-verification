@@ -455,6 +455,7 @@
               label="通行情况"
               min-width="170"
               class="tar customized"
+              :show-overflow-tooltip="true"
               v-if="customPermission.patrolPermission === 3"
             >
               <template slot-scope="scope">
@@ -474,6 +475,7 @@
               label="媒介情况"
               min-width="170"
               class="tar"
+              :show-overflow-tooltip="true"
               v-if="customPermission.patrolPermission === 3"
             >
               <template slot-scope="scope">
@@ -493,6 +495,7 @@
               label="设备问题"
               min-width="170"
               class="tar"
+              :show-overflow-tooltip="true"
               v-if="customPermission.patrolPermission === 3"
             >
               <template slot-scope="scope">
@@ -512,6 +515,7 @@
               label="问题反馈"
               min-width="170"
               class="tar"
+              :show-overflow-tooltip="true"
               v-if="customPermission.patrolPermission === 3"
             >
               <template slot-scope="scope" class="customized">

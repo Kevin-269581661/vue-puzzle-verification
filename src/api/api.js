@@ -85,6 +85,16 @@ export const api = {
         }).then(res => res).catch(err =>{
             console.log('Export--error', err);
         });
+    },
+    // get请求获取下拉列表
+    getPartrolPoint(url, data) {
+        return axios({
+            method: 'get',
+            url,
+            data
+        }).then(res => res).catch(err => {
+            console.log('getPartorl---error',err);
+        })
     }
 }
 export default api

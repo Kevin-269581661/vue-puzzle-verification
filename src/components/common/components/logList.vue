@@ -10,7 +10,11 @@
                         <span v-if="item.type!='拆除'" class="handleBtn" @click="toHandle(item)">处理</span>
                     </p>
                     <div class= "content" >
-                        <p v-if="item.text">{{item.text}}</p>
+                        <p 
+                        v-for="item1 in item.patrolPointFields" 
+                        :key="item1.code"
+                        v-if="item1.value !== ''"
+                        >{{item1.key}}：{{item1.value}}</p>
                         <p v-if="item.type=='巡点'"><i class="el-icon-location-outline"></i>{{item.address}}</p>
                     </div>
                 </div>
@@ -31,6 +35,9 @@ export default {
         return {
 
         }
+    },
+    mounted() {
+        console.log(this.list);
     },
     methods:{
         getcolor(type){
@@ -126,9 +133,13 @@ export default {
         height: auto;
         margin-bottom: 2px;
     }
+    .content p{
+        margin-bottom: 10px;
+    }
     .content p:last-child{
         font-size: 12px;
         margin-top: 5px;
+        margin-bottom: 0;
     }
     .timeline_item:last-child .line_tail{
         display: none;

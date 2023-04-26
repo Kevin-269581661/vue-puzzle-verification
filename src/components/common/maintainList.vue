@@ -636,7 +636,7 @@
     </div>
 
     <!-- 照片弹出框 -->
-    <el-dialog title="巡点照片" :visible.sync="isShowImg" width="60%">
+    <el-dialog title="巡点照片" :visible.sync="isShowImg" width="60%" @closed="clearImg">
       <div style="display: flex; justify-content: center">
         <p
           v-for="(item, index) of imgUrls"
@@ -866,7 +866,7 @@ export default {
       remark: '',
       // 图片弹出框
       isShowImg: false,
-      imgUrls: '',
+      imgUrls: [],
       // 问题列表
       logList: {
         resName: '',
@@ -1001,10 +1001,12 @@ export default {
     // 展示图片
     showPhoto (item) {
       console.log(item);
-      this.imgUrls = JSON.parse(item.picUrl);
-      setTimeout(() => {
-        this.isShowImg = true;
-      },500)
+      try {
+        this.imgUrls = JSON.parse(item.picUrl);
+      } catch (error) {
+        this.imgUrls = item.picUrl || []
+      }
+      this.isShowImg = true;
     },
     //历史记录
     showHistory (item) {
@@ -1320,6 +1322,10 @@ export default {
     showDetail (data) {
       sessionStorage.setItem("customerId", data.uID);
       this.$router.push("./clientDetail");
+    },
+
+    clearImg() {
+      this.imgUrls = []
     },
 
     // 媒体点位的售卖状态记录

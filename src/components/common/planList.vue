@@ -266,6 +266,7 @@
                       <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
                         <div class="tag"
                           :class="m.mediaTypeName === '广告门' ? 'ad' :
+                                m.mediaTypeName === '框架' ? 'ad' :
                                 m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
                                 m.mediaTypeName === '灯箱' ? 'light-box' :
                                 m.mediaTypeName === '道闸' ? 'brake' : ''">
@@ -2733,6 +2734,12 @@ a {
         background: #f9f0ff;
         color: #722ED1;
         border: 1px solid #D3ADF7;
+      }
+
+      &.framework{
+        background: linear-gradient(0deg, #FFFBE6, #FFFBE6),linear-gradient(0deg, #FFE58F, #FFE58F);
+        color: #FAAD14;
+        border: 1px solid #FFE58F;
       }
 
       .icon {

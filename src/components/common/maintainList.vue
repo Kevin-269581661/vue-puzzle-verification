@@ -497,6 +497,7 @@
               class="tar"
               :show-overflow-tooltip="true"
               v-if="customPermission.patrolPermission === 3"
+              @change="deviceChange"
             >
               <template slot-scope="scope">
                 <template v-if="scope.row.deviceProblem !== '--'">
@@ -604,10 +605,6 @@
                       v-if="scope.row.mtType == '巡点'"
                       >照片
                     </el-dropdown-item>
-                    <!-- <el-dropdown-item @click.native.prevent="toHandle(scope.row)"
-                                                          v-if="scope.row.mtType!='拆除'"
-                                                          >处理
-                                        </el-dropdown-item> -->
                     <el-dropdown-item
                       @click.native.prevent="showHistory(scope.row)"
                       >历史记录
@@ -767,52 +764,7 @@ export default {
       totalSize: 0,
       trafficSituation: [],  // 通行情况下拉框数据
       // 通行情况类型
-      trafficSituationArr: [
-        // {
-        //   label: '正常通行',
-        //   value: 1
-        // },
-        // {
-        //   label: '门常开',
-        //   value: 2
-        // },
-        // {
-        //   label: '白天常开',
-        //   value: 3
-        // },
-        // {
-        //   label: '夜间启用',
-        //   value: 4
-        // },
-        // {
-        //   label: '夜间锁门',
-        //   value: 5
-        // },
-        // {
-        //   label: '常闭',
-        //   value: 6
-        // },
-        // {
-        //   label: '锁门旁边通行',
-        //   value: 7
-        // },
-        // {
-        //   label: '锁门没人走能正常拍照',
-        //   value: 8
-        // },
-        // {
-        //   label: '小区改造',
-        //   value: 9
-        // },
-        // {
-        //   label: '疫情暂停使用',
-        //   value: 10
-        // },
-        // {
-        //   label: '其他',
-        //   value: 11
-        // }
-      ],
+      trafficSituationArr: [],
       showtrafficInput: 1,  // 展示同行情况输入框
       trafficValue: '',  // 通行情况输入框内容
 
@@ -820,36 +772,7 @@ export default {
       mediaSituation: [],  // 媒介情况下拉框数据
       mediaValue:'',  // 媒介情况输入框内容
       // 媒介情况类型
-      mediaSituationArr: [
-        // {
-        //   label: 'AB面正常展示',
-        //   value: 1
-        // },
-        // {
-        //   label: '社区城管管控A面',
-        //   value: 2
-        // },
-        // {
-        //   label: '社区城管管控B面',
-        //   value: 3
-        // },
-        // {
-        //   label: '社区城管管控AB面',
-        //   value: 4
-        // },
-        // {
-        //   label: '拆门调点',
-        //   value: 5
-        // },
-        // {
-        //   label: '常闭',
-        //   value: 6
-        // },
-        // {
-        //   label: '其他',
-        //   value: 7
-        // },
-      ],
+      mediaSituationArr: [],
 
       showDeviceInput: 1,  // 展示设备问题输入框
       deviceQuestion: [], // 设备问题下拉框数据
@@ -857,103 +780,13 @@ export default {
       deviceValue1:'',  
       deviceValue2:'',
       // 设备问题类型
-      deviceQuestionArr: [
-        // {
-        //   label: '设备正常使用',
-        //   value: 1
-        // },
-        // {
-        //   label: '门禁设备异常',
-        //   value: 2
-        // },
-        // {
-        //   label: '立柱设备异常',
-        //   value: 3
-        // },
-        // {
-        //   label: '护栏设备异常',
-        //   value: 4
-        // },
-        // {
-        //   label: '通电设备异常',
-        //   value: 5
-        // },
-        // {
-        //   label: '防护设备异常',
-        //   value: 6
-        // },
-        // {
-        //   label: '锁门旁边通行',
-        //   value: 7
-        // },
-        // {
-        //   label: '人脸设备异常',
-        //   value: 8
-        // },
-        // {
-        //   label: '刷卡器设备异常',
-        //   value: 9
-        // },
-        // {
-        //   label: '其他设备异常',
-        //   value: 10
-        // },
-        // {
-        //   label: '具体异常说明',
-        //   value: 11
-        // }
-      ],
+      deviceQuestionArr: [],
 
       showQuestionInput: 1,  // 展示问题反溃输入框
       questionReply: [],  // 问题反馈下拉框数据
       questionValue:'',  // 问题反馈输入框内容
       // 问题反馈类型
-      questionReplyArr: [
-        // {
-        //   label: '正常通行',
-        //   value: 1
-        // },
-        // {
-        //   label: '门常开',
-        //   value: 2
-        // },
-        // {
-        //   label: '白天常开',
-        //   value: 3
-        // },
-        // {
-        //   label: '夜间启用',
-        //   value: 4
-        // },
-        // {
-        //   label: '夜间锁门',
-        //   value: 5
-        // },
-        // {
-        //   label: '常闭',
-        //   value: 6
-        // },
-        // {
-        //   label: '锁门旁边通行',
-        //   value: 7
-        // },
-        // {
-        //   label: '锁门没人走能正常拍照',
-        //   value: 8
-        // },
-        // {
-        //   label: '小区改造',
-        //   value: 9
-        // },
-        // {
-        //   label: '疫情暂停使用',
-        //   value: 10
-        // },
-        // {
-        //   label: '其他',
-        //   value: 11
-        // }
-      ],
+      questionReplyArr: [],
 
       // 登录信息
       sessionData: {},
@@ -1261,10 +1094,10 @@ export default {
         pageNum: this.currPage,
         pageSize: this.pageSize,
       };
-      let remark = this.searchInfo.questionArr.length < 2 ? null : JSON.stringify(this.searchInfo.questionArr)
-      let deviceProblem = this.searchInfo.deviceArr.length < 2 ? null : JSON.stringify(this.searchInfo.deviceArr)
-      let mediumState = this.searchInfo.mediaArr.length < 2 ? null : JSON.stringify(this.searchInfo.mediaArr)
-      let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
+      let remark = JSON.stringify(this.searchInfo.questionArr)
+      let deviceProblem = JSON.stringify(this.searchInfo.deviceArr)
+      let mediumState = JSON.stringify(this.searchInfo.mediaArr)
+      let trafficState = JSON.stringify(this.searchInfo.trafficArr)
       data = {
         ...data,
         ...(districtId && { cityId: districtId[0] }),
@@ -1412,10 +1245,10 @@ export default {
     downLoad() {
       this.changeInput()
       let { resName, assetTag, type, districtId, status, date, userId } = this.searchInfo;
-      let remark = this.searchInfo.questionArr.length < 2 ? null : JSON.stringify(this.searchInfo.questionArr)
-      let deviceProblem = this.searchInfo.deviceArr.length < 2 ? null : JSON.stringify(this.searchInfo.deviceArr)
-      let mediumState = this.searchInfo.mediaArr.length < 2 ? null : JSON.stringify(this.searchInfo.mediaArr)
-      let trafficState = this.searchInfo.trafficArr.length < 2 ? null : JSON.stringify(this.searchInfo.trafficArr)
+      let remark = this.searchInfo.questionArr.length === 0 ? null : JSON.stringify(this.searchInfo.questionArr)
+      let deviceProblem = this.searchInfo.deviceArr.length === 0 ? null : JSON.stringify(this.searchInfo.deviceArr)
+      let mediumState = this.searchInfo.mediaArr.length === 0 ? null : JSON.stringify(this.searchInfo.mediaArr)
+      let trafficState = this.searchInfo.trafficArr.length === 0 ? null : JSON.stringify(this.searchInfo.trafficArr)
       let params = {
         ...(districtId && { cityId: districtId[0] }),
         ...(districtId.length > 1 && { districtId: districtId[1] }), 
@@ -1447,6 +1280,7 @@ export default {
     },
     // 重置
     reset() {
+      this.changeInput()
       this.searchInfo = {
         resName: '',
         assetTag: '',
@@ -1456,10 +1290,6 @@ export default {
         date: '',
         userId: '',
       };
-      this.searchInfo.questionArr =[]
-      this.searchInfo.mediaArr =[]
-      this.searchInfo.trafficArr =[]
-      this.searchInfo.deviceArr =[]
       this.trafficSituation = [],
       this.trafficValue = [],
       this.mediaSituation = [],
@@ -1565,12 +1395,7 @@ export default {
           for (let data of res.data.data.list) {
             let a = {
               time: data.createTime,
-              text: {
-                remark: data.remark,
-                trafficState: data.trafficState,
-                mediumState: data.mediumState,
-                deviceProblem: data.deviceProblem
-              },
+              patrolPointFields: data.patrolPointFields,
               address: data.resAddress,
               recordId: data.recordId,
               mID: data.mID,
@@ -1604,30 +1429,38 @@ export default {
         let arr2 = res.data.data[1].items
         let arr3 = res.data.data[2].items
         let arr4 = res.data.data[3].items
+        let questionArr = []
+        let mediaArr = []
+        let deviceArr = []
+        let trafficArr = []
         // 赋值问题反馈下拉列表
         for (let i = 0; i < arr1.length; i++){
           let obj = {}
           obj.value = arr1[i].title
-          this.questionReplyArr.push(obj)
+          questionArr.push(obj)
         }
+        this.questionReplyArr = questionArr
         // 赋值设备问题下拉列表
         for (let i = 0; i < arr2.length; i++){
           let obj = {}
           obj.value = arr2[i].title
-          this.deviceQuestionArr.push(obj)
+          deviceArr.push(obj)
         }
+        this.deviceQuestionArr = deviceArr
         // 赋值媒介情况下拉列表
         for (let i = 0; i < arr3.length; i++){
           let obj = {}
           obj.value = arr3[i].title
-          this.mediaSituationArr.push(obj)
+          mediaArr.push(obj)
         }
+        this.mediaSituationArr = mediaArr
         // 赋值通行情况下拉列表
         for (let i = 0; i < arr4.length; i++){
           let obj = {}
           obj.value = arr4[i].title
-          this.trafficSituationArr.push(obj)
+          trafficArr.push(obj)
         }
+        this.trafficSituationArr = trafficArr
       }).catch(err => {
         console.log(err);
       });
@@ -1638,41 +1471,67 @@ export default {
     changeInput() {
       // 将通行情况中的输入框数据转换
       if (this.trafficValue !== '') {
+        console.log(this.trafficSituation,'1');
         this.searchInfo.trafficArr = this.trafficSituation.slice()
         let index = this.searchInfo.trafficArr.indexOf('其他(' + this.trafficValue + ')')
-        this.searchInfo.trafficArr.splice(index, 1)
-        this.searchInfo.trafficArr.push(this.trafficValue)
+        if (index !== -1) {
+          this.searchInfo.trafficArr.splice(index, 1)
+          this.searchInfo.trafficArr.push(this.trafficValue)
+        }
+      } else {
+        this.searchInfo.trafficArr = this.trafficSituation.slice()
       }
       // 将媒介情况中的输入框数据转换
       if (this.mediaValue !== '') {
         this.searchInfo.mediaArr = this.mediaSituation.slice()
         let index = this.searchInfo.mediaArr.indexOf('其他(' + this.mediaValue + ')')
-        this.searchInfo.mediaArr.splice(index, 1)
-        this.searchInfo.mediaArr.push(this.mediaValue)
-        console.log('this.searchInfo.mediaArr',this.searchInfo.mediaArr);
+        if (index !== -1) {
+          this.searchInfo.mediaArr.splice(index, 1)
+          this.searchInfo.mediaArr.push(this.mediaValue)
+        }
+      } else {
+        this.searchInfo.mediaArr = this.mediaSituation.slice()
       }
       // 将设备问题中的输入框数据转换
-      if (this.deviceValue1 !== '') {
+      if (this.deviceValue1 !== '' && this.deviceValue2 !== '') {
+        this.searchInfo.deviceArr = this.deviceQuestion.slice()
+        let index1 = this.searchInfo.deviceArr.indexOf('其他设备异常(' + this.deviceValue1 + ')')
+        if (index1 !== -1) {
+          this.searchInfo.deviceArr.splice(index1, 1)
+          this.searchInfo.deviceArr.push(this.deviceValue1)
+        }
+        let index2 = this.searchInfo.deviceArr.indexOf('具体异常说明(' + this.deviceValue2 + ')')
+        if (index2 !== -1) {
+          this.searchInfo.deviceArr.splice(index2, 1)
+          this.searchInfo.deviceArr.push(this.deviceValue2)
+        }
+      } else if (this.deviceValue1 !== '') {
         this.searchInfo.deviceArr = this.deviceQuestion.slice()
         let index = this.searchInfo.deviceArr.indexOf('其他设备异常(' + this.deviceValue1 + ')')
-        this.searchInfo.deviceArr.splice(index, 1)
-        this.searchInfo.deviceArr.push(this.deviceValue1)
-        console.log('this.searchInfo.deviceArr',this.searchInfo.deviceArr);
-      }
-      if (this.deviceValue2 !== '') {
+        if (index !== -1) {
+          this.searchInfo.deviceArr.splice(index, 1)
+          this.searchInfo.deviceArr.push(this.deviceValue1)
+        }
+      } else if (this.deviceValue2 !== '') {
         this.searchInfo.deviceArr = this.deviceQuestion.slice()
         let index = this.searchInfo.deviceArr.indexOf('具体异常说明(' + this.deviceValue2 + ')')
-        this.searchInfo.deviceArr.splice(index, 1)
-        this.searchInfo.deviceArr.push(this.deviceValue2)
-        console.log('this.searchInfo.deviceArr',this.searchInfo.mediaArdeviceArrr);
+        if (index !== -1) {
+          this.searchInfo.deviceArr.splice(index, 1)
+          this.searchInfo.deviceArr.push(this.deviceValue2)
+        }
+      } else {
+        this.searchInfo.deviceArr = this.deviceQuestion.slice()
       }
       // 将问题反馈中的输入框数据转换
       if (this.questionValue !== '') {
         this.searchInfo.questionArr = this.questionReply.slice()
         let index = this.searchInfo.questionArr.indexOf('其他(' + this.questionValue + ')')
-        this.searchInfo.questionArr.splice(index, 1)
-        this.searchInfo.questionArr.push(this.questionValue)
-        console.log('this.searchInfo.questionArr',this.searchInfo.questionArr);
+        if (index !== -1) {
+          this.searchInfo.questionArr.splice(index, 1)
+          this.searchInfo.questionArr.push(this.questionValue)
+        }
+      } else {
+        this.searchInfo.questionArr = this.questionReply.slice()
       }
     },
     /**
@@ -1680,7 +1539,7 @@ export default {
      * @param {Array} val 
      */
     changetraffic(val) {
-      let index = this.trafficSituationArr.length-1 
+      let index = this.trafficSituationArr.length - 1 
       if (val[val.length - 1] === this.trafficSituationArr[index].value) {
         this.showtrafficInput = 0
       }
@@ -1715,7 +1574,7 @@ export default {
      * @param {Array} val 
      */
     changeMedia(val) {
-      let index = this.mediaSituationArr.length-1
+      let index = this.mediaSituationArr.length - 1
       if (val[val.length - 1] === this.mediaSituationArr[index].value) {
         this.showMediaInput = 0
       }
@@ -1750,7 +1609,8 @@ export default {
      * @param {Arrary} val 
      */
     changeDevice(val) {
-      let index = this.deviceQuestionArr.length-1
+      console.log(val,'val');
+      let index = this.deviceQuestionArr.length - 1
       if (val[val.length - 1] === this.deviceQuestionArr[index-1].value) {
         this.showDeviceInput = 0
       }else if(val[val.length - 1] === this.deviceQuestionArr[index].value){
@@ -1815,7 +1675,7 @@ export default {
      * @param {Arrary} val 
      */
     changeQuestion(val) {
-      let index = this.questionReplyArr.length-1
+      let index = this.questionReplyArr.length - 1
       if (val[val.length - 1] === this.questionReplyArr[index].value) {
         this.showQuestionInput = 0
       }

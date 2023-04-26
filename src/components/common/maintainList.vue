@@ -1002,7 +1002,9 @@ export default {
     showPhoto (item) {
       console.log(item);
       this.imgUrls = JSON.parse(item.picUrl);
-      this.isShowImg = true;
+      setTimeout(() => {
+        this.isShowImg = true;
+      },500)
     },
     //历史记录
     showHistory (item) {

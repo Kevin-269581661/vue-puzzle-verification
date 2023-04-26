@@ -643,7 +643,7 @@
           :key="index"
           style="margin: 0px 10px; text-align: center"
         >
-          <img :src="item.url" alt="" style="width: 360px; height: 480px" />
+          <img :src="item.url" alt="" style="width: 240px; height: 360px" />
           <span style="width: 100%; display: inline-block; text-align: center">
             <span class="img_span_style">{{
               item.uploadType == 'album' ? '相册上传' : '手机拍摄'

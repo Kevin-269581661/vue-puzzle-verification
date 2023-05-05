@@ -1093,15 +1093,43 @@ export default {
         service: 'GetMediaMaintenanceListAction',
         data: {}
       };
-      let { resName, assetTag, type, districtId, status, date, userId } = this.searchInfo;
+      let { resName, assetTag, type, districtId, status, date, userId,questionArr,deviceArr,mediaArr,trafficArr } = this.searchInfo;
       let data = {
         pageNum: this.currPage,
         pageSize: this.pageSize,
       };
-      let remark = JSON.stringify(this.searchInfo.questionArr)
-      let deviceProblem = JSON.stringify(this.searchInfo.deviceArr)
-      let mediumState = JSON.stringify(this.searchInfo.mediaArr)
-      let trafficState = JSON.stringify(this.searchInfo.trafficArr)
+      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
+      deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
+      mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
+      trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
+      let remark = '',
+        deviceProblem = '',
+        mediumState = '',
+        trafficState = ''
+      if (questionArr !== null) {
+        questionArr.forEach(item => {
+          remark +=`${item}、`
+        })
+        remark = remark.slice(0,-1) 
+      }
+      if (deviceArr !== null) {
+        deviceArr.forEach(item => {
+          deviceProblem +=`${item}、`
+        })
+        deviceProblem = deviceProblem.slice(0,-1) 
+      }
+      if (mediaArr !== null) {
+        mediaArr.forEach(item => {
+          mediumState +=`${item}、`
+        })
+        mediumState = mediumState.slice(0,-1) 
+      }
+      if (trafficArr !== null) {
+        trafficArr.forEach(item => {
+          trafficState +=`${item}、`
+        })
+        trafficState = trafficState.slice(0,-1) 
+      }
       data = {
         ...data,
         ...(districtId && { cityId: districtId[0] }),
@@ -1248,11 +1276,39 @@ export default {
     // 导出-
     downLoad() {
       this.changeInput()
-      let { resName, assetTag, type, districtId, status, date, userId } = this.searchInfo;
-      let remark = this.searchInfo.questionArr.length === 0 ? null : JSON.stringify(this.searchInfo.questionArr)
-      let deviceProblem = this.searchInfo.deviceArr.length === 0 ? null : JSON.stringify(this.searchInfo.deviceArr)
-      let mediumState = this.searchInfo.mediaArr.length === 0 ? null : JSON.stringify(this.searchInfo.mediaArr)
-      let trafficState = this.searchInfo.trafficArr.length === 0 ? null : JSON.stringify(this.searchInfo.trafficArr)
+      let { resName, assetTag, type, districtId, status, date, userId,questionArr,deviceArr,mediaArr,trafficArr } = this.searchInfo;
+      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
+      deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
+      mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
+      trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
+      let remark = '',
+        deviceProblem = '',
+        mediumState = '',
+        trafficState = ''
+      if (questionArr !== null) {
+        questionArr.forEach(item => {
+          remark +=`${item}、`
+        })
+        remark = remark.slice(0,-1) 
+      }
+      if (deviceArr !== null) {
+        deviceArr.forEach(item => {
+          deviceProblem +=`${item}、`
+        })
+        deviceProblem = deviceProblem.slice(0,-1) 
+      }
+      if (mediaArr !== null) {
+        mediaArr.forEach(item => {
+          mediumState +=`${item}、`
+        })
+        mediumState = mediumState.slice(0,-1) 
+      }
+      if (trafficArr !== null) {
+        trafficArr.forEach(item => {
+          trafficState +=`${item}、`
+        })
+        trafficState = trafficState.slice(0,-1) 
+      }
       let params = {
         ...(districtId && { cityId: districtId[0] }),
         ...(districtId.length > 1 && { districtId: districtId[1] }), 
@@ -1262,11 +1318,12 @@ export default {
         ...(status && { status: status }),
         ...(date && { startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-') }),
         ...(userId && { userId: userId }),
-        ...(remark && {remark: remark}),
-        ...(deviceProblem && {deviceProblem: deviceProblem}),
-        ...(mediumState && {mediumState: mediumState}),
-        ...(trafficState && {trafficState: trafficState})
+        ...(remark && {remark: remark }),
+        ...(deviceProblem && {deviceProblem: deviceProblem }),
+        ...(mediumState && {mediumState: mediumState }),
+        ...(trafficState && {trafficState: trafficState })
       };
+      console.log(params);
       if (this.sessionData.customPermission.patrolPermission) {
         params.isCustom = 1;
       }

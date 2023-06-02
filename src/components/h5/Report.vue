@@ -422,6 +422,19 @@
               >
                 <el-option value="0" label="通用模板"></el-option>
                 <el-option value="1" label="定制模板"></el-option>
+                <!-- 南宁定制，亲粤邻定制 -->
+                <el-option
+                  v-if="
+                    customPermission.pptPermission &&
+                    (
+                      customPermission.pptPermission.gxnnPermission ||
+                      customPermission.pptPermission.gzqylPermission
+                    )
+                  "
+                  value="2"
+                  label="审核模板"
+                >
+                </el-option>
               </el-select>
             </li>
             <!-- 判断是否已开通定制模板 -->
@@ -671,6 +684,8 @@ export default {
       pptxLoading: false,
       pptLoading: false,
       pdfLoading: false,
+      // 定制导出的权限
+      customPermission: {}
     };
   },
   computed: {
@@ -712,6 +727,7 @@ export default {
     }
   },
   created () {
+    this.getCustomPermission()
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();
@@ -723,6 +739,12 @@ export default {
     this.templateType = localStorage.getItem('templateType');
   },
   methods: {
+    /**
+     * 获取定制导出权限
+     */
+    getCustomPermission() {
+      this.customPermission = sessFun.getSess() ? sessFun.getSess().customPermission : {};
+    },
     //获取媒体类型
     getMediaType () {
       let apID = sessionStorage.getItem("order_apid");

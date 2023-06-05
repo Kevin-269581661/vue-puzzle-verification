@@ -908,9 +908,15 @@ export default {
         if (this.checkPeriodArr.length > 0) {
           info.periods = this.checkPeriodArr.join(",");
         }
-        (info.exportType = 1),
-          (info.customizeCode =
-            this.templateType == 1 ? this.customizeCode : 0);
+        info.exportType = 1
+        // 此处处理因为 templateType 多增加了一项，导致 customizeCode 传值错误
+        if (this.templateType == 3) {
+          info.customizeCode = 3
+        } else if (this.templateType == 1) {
+          info.customizeCode = this.customizeCode
+        } else {
+          info.customizeCode = 0
+        }
         info.exportAllPoint = this.pptxFilter.indexOf('0') !== -1 ? 0 : 1;
         info.splitFlag = this.pptxFilter.indexOf('splitFlag') !== -1 ? 1 : 0;
         // customizeCode: 2 亲粤邻定制模板

@@ -1902,7 +1902,7 @@ export default {
             // 对比数据库资产id
             let flag = this.filterAssetId(resData, value);
             if (flag) {
-              callback(new Error(" "));
+              callback(new Error("已存在重复的媒体位id"));
             } else {
               callback();
             }

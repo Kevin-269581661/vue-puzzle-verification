@@ -419,11 +419,18 @@
                 placeholder="请选择"
                 @change="templateChange"
               >
-                <el-option value="0" label="通用模板"></el-option>
-                <el-option value="1" label="定制模板"></el-option>
+                <el-option :value="0" label="通用模板"></el-option>
+                <el-option :value="1" label="定制模板"></el-option>
+                <!-- 南宁定制，亲粤邻 显示 审核模板 -->
+                <el-option
+                  v-if="hasAuthTemplate"
+                  :value="3"
+                  label="审核模板"
+                >
+                </el-option>
               </el-select>
             </li>
-            <!-- 判断是否已开通定制模板 -->
+            <!-- 未开通定制模板，提示开通 -->
             <li v-if="!isCustomize && templateType > 0">
               <el-alert
                 type="warning"
@@ -442,15 +449,8 @@
                 </div>
               </el-alert>
             </li>
-            <!-- 南宁定制不用选择导出排版 -->
-            <!-- 亲粤邻定制 -->
-            <li
-              v-if="
-                templateType !== null &&
-                templateType == 1 &&
-                customizeCode == '2'
-              "
-            >
+            <!-- 亲粤邻定制的模板-选择导出排版 -->
+            <li v-if="templateType == 1 && customizeCode == 2">
               <span class="form-label">导出排版：</span>
               <el-select
                 size="small"
@@ -464,8 +464,8 @@
                 <el-option value="2pointPerPage" label="2点位/页"></el-option>
               </el-select>
             </li>
-            <!-- 通用模板 -->
-            <li v-if="templateType !== null && templateType == 0">
+            <!-- 通用模板、审核模板-选择导出排版 -->
+            <li v-if="templateType == 0 || templateType == 3">
               <span class="form-label">导出排版：</span>
               <el-select
                 size="small"
@@ -611,8 +611,11 @@ export default {
       routeParams: {},
       mediaTypeList: [], //媒体类型
       isCustomize: false, //是否开通自定义模板，
-      customizeCode: 0, //为0时为普通模板，大于0自定义模板
-      templateType: null, //模板类型
+      customizeCode: null, //为0时为普通模板，大于0自定义模板
+      // 选择的模板类型：0 普通模板，1 定制模板，2 审核模板
+      templateType: 0,
+      // 是否有‘审核模板’
+      hasAuthTemplate: false,
       pptxType: "2", //导出pptx排版类型
       pptxFilter: [], //导出pptx条件
       checkAllDate: true, //全部档期
@@ -671,6 +674,8 @@ export default {
       pptxLoading: false,
       pptLoading: false,
       pdfLoading: false,
+      // 定制导出的权限
+      customPermission: {}
     };
   },
   computed: {
@@ -678,7 +683,7 @@ export default {
       if (
         this.pptxType == "2pointPerPage" ||
         !this.isCustomize ||
-        this.templateType < 1
+        [0, 3].includes(this.templateType)
       ) {
         this.pptxFilter = this.pptxFilter.filter((item) => {
           return item === '0' || item === 'splitFlag';
@@ -716,6 +721,7 @@ export default {
     },
   },
   created() {
+    this.getCustomPermission()
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();
@@ -724,9 +730,15 @@ export default {
   },
   mounted() {
     // 缓存不存在时为null
-    this.templateType = localStorage.getItem("templateType");
+    this.templateType = Number(localStorage.getItem("templateType")) || 0;
   },
   methods: {
+    /**
+     * 获取定制导出权限
+     */
+     getCustomPermission() {
+      this.customPermission = sessFun.getSess() ? sessFun.getSess().customPermission : {};
+    },
     //获取媒体类型
     getMediaType() {
       const { apID, companyId, replaceRecordId } = this.routeParams;
@@ -777,6 +789,7 @@ export default {
     // 缓存模板选项
     templateChange(value) {
       localStorage.setItem("templateType", value);
+      this.pptxType = ''
     },
     //获取排期
     getPeriod() {
@@ -817,21 +830,28 @@ export default {
       api
         .getApi("/national/api/v1/powerPoint/getCustomizeReports")
         .then((res) => {
-          if (res.data.SysCode === 200200) {
-            if (!!res.data.customList && Array.isArray(res.data.customList)) {
-              // 公司下面有不同的定制模板，通过code来区分,
-              if (
-                res.data.customList.length == 0 ||
-                res.data.customList[0].code < 1
-              ) {
-                _this.isCustomize = false;
+          const { data } = res
+          if (data.SysCode === 200200) {
+            const { customList } = data
+            if (customList && Array.isArray(customList)) {
+              // 公司下面有不同的定制模板，通过code来区分
+              if (!customList.length) {
+                this.isCustomize = false
               } else {
-                _this.isCustomize = true;
-                _this.customizeCode = res.data.customList[0].code;
+                // 先判断是否有 审核模板
+                const CUSTOM_AUTH_CODE = 3
+                let hasIndex = customList.findIndex(item => item.code == CUSTOM_AUTH_CODE)
+                this.hasAuthTemplate = hasIndex > -1
+                if (this.hasAuthTemplate) customList.splice(hasIndex, 1)
+                if (customList.length) {
+                  this.isCustomize = true
+                  // 第一个是定制的模板 code
+                  this.customizeCode = customList[0].code
+                }
               }
             }
           } else {
-            Message.warning(res.data.MSG);
+            Message.warning(data.MSG);
           }
         })
         .catch((err) => {
@@ -841,27 +861,32 @@ export default {
     // 获取pptx
     getPTTx() {
       // 定制模板导出时未开通提示
-      if (this.templateType > 0 && this.isCustomize == false) {
+      if (![0, 3].includes(this.templateType) && this.isCustomize == false) {
         this.$message({
           showClose: true,
           message: "贵司尚未定制专属模板，不能导出",
           type: "error",
         });
-        return;
-      } else if (this.templateType === null) {
+        return
+      }
+      if (this.templateType === null || this.templateType === '') {
         this.$message.error("请选择模板!");
         return;
       }
-
-      if (!this.checkAllDate && this.checkPeriodArr.length == 0) {
-        this.$message.error("请选择一个排期选项!");
-      } else {
-        this.getApiFun(
-          "/national/api/v1/powerPoint/getPPTXReport",
-          this.pptLoading,
-          "pptx"
-        );
+      // 如果选择了定制模板，但是定制模板id 未获取到
+      if (![0, 3].includes(this.templateType) && this.customizeCode === null) {
+        this.$message.error('未获取到定制模板数据，请刷新页面重试！')
+        return
       }
+      if (!this.checkAllDate && this.checkPeriodArr.length == 0) {
+        this.$message.error("请选择一个排期选项!")
+        return
+      }
+      this.getApiFun(
+        "/national/api/v1/powerPoint/getPPTXReport",
+        this.pptLoading,
+        "pptx"
+      );
     },
     // 获取pdf
     getPDF() {
@@ -886,13 +911,13 @@ export default {
         if (this.checkPeriodArr.length > 0) {
           info.periods = this.checkPeriodArr.join(",");
         }
-        (info.exportType = 1),
-          (info.customizeCode =
-            this.templateType == 1 ? this.customizeCode : 0);
+        info.exportType = 1
+        // 只有选择定制模板才传 customizeCode
+        info.customizeCode = this.templateType == 1 ? this.customizeCode : this.templateType
         info.exportAllPoint = this.pptxFilter.indexOf('0') !== -1 ? 0 : 1;
         info.splitFlag = this.pptxFilter.indexOf('splitFlag') !== -1 ? 1 : 0;
-        // customizeCode: 2 亲粤邻定制模板
-        this.customizeCode == "2" &&
+        // 【导出条件】：推荐理由、楼盘信息（亲粤邻定制模板才有）
+        this.customizeCode == 2 &&
           (info.customCondition = this.pptxFilter.reduce(
             (accumulator, currentValue) => {
               if (currentValue*1 > 0) {
@@ -942,9 +967,7 @@ export default {
               fileInfo.periods = this.checkPeriodArr.join(",");
             }
             fileInfo.exportType = 1;
-            fileInfo.customizeCode =
-              this.templateType == 1 ? this.customizeCode : 0;
-
+            fileInfo.customizeCode = this.templateType == 1 ? this.customizeCode : this.templateType
             if (this.pptxType == "2pointPerPage") {
               // 定制2点位/页
               fileInfo.pagePointCnt = 2;
@@ -954,7 +977,7 @@ export default {
             }
             fileInfo.exportAllPoint = this.pptxFilter.indexOf('0') !== -1 ? 0 : 1;
             fileInfo.splitFlag = this.pptxFilter.indexOf('splitFlag') !== -1 ? 1 : 0;
-            this.customizeCode == "2" &&
+            this.customizeCode == 2 &&
               (fileInfo.customCondition = this.pptxFilter.reduce(
                 (accumulator, currentValue) => {
                   if (currentValue*1 > 0) {

@@ -1013,6 +1013,9 @@ export default {
                                 this.companyChange(editInfo.company);
                                 this.$nextTick(() => {
                                   this.accountForm = editInfo;
+                                  if (this.accountForm.role == "BD") {
+                                    this.getRoleCity();
+                                  }
                                 })
                                 this.roleSelect(editInfo.role);
                             } else {

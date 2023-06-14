@@ -372,7 +372,7 @@
                     state: '',
                     company: ''
                 };
-                this.currPage = 1;
+                this.currPage = 1;https://test-qadn.qinlindmp.com/portrait/api/v1/ascrInfo/getAscrList?uid=10549&token=d3a6f197-0279-4b6a-aaa9-3d7b7ed0be83
                 this.currAccount = [];
                 this.isReset = false;
                 let timer = setTimeout(()=>{
@@ -387,9 +387,9 @@
             },
             // 开通或者禁用：
             isForbidden(row) {
-                // console.log(row);
+                console.log('row', row);
                 MessageBox.confirm(
-                    `是否${row.uState ? "禁用" : "开通"}该角色?`,
+                    `是否${row.uState === 1  ? "禁用" : "开通"}该角色?`,
                     "提示",
                     {
                         confirmButtonText: "确定",

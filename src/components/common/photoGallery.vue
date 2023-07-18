@@ -9,84 +9,88 @@
       <div class="mediaList_wrap">
         <el-tabs v-model="activeName" @tab-click="handleClick()">
           <!--搜索框-->
-          <div v-if="activeName == 'first' || activeName == 'second'">
-            <el-row :gutter="32">
-              <el-col :span="6">
-                <span>资源名称：</span>
+          <template v-if="activeName == 'first' || activeName == 'second'">
+
+            <div class="search_bar">
+              <div class="search_item">
+                <span class="item_title">资源名称：</span>
                 <el-input
                   v-model="searchInfo.resName"
                   size="small"
                   placeholder="请输入资源名称"
+                  class="item_content"
                 ></el-input>
-              </el-col>
-              <el-col :span="6">
-                <span>方案名称：</span>
+              </div>
+
+              <div class="search_item">
+                <span class="item_title">方案名称：</span>
                 <el-input
                   v-model="searchInfo.apName"
                   size="small"
                   placeholder="请输入方案名称"
+                  class="item_content"
                 ></el-input>
-              </el-col>
+              </div>
 
-              <el-col :span="6" v-if="activeName == 'first'">
-                <span>资产编号：</span>
+              <div v-if="activeName == 'first'" class="search_item">
+                <span class="item_title">资产编号：</span>
                 <el-input
                   v-model="searchInfo.assetNumber"
                   size="small"
                   placeholder="请输入资产编号"
+                  class="item_content"
                 ></el-input>
-              </el-col>
+              </div>
 
-              <el-col :span="6">
-                <span>城市区域：</span>
+              <div class="search_item">
+                <span class="item_title">城市区域：</span>
                 <el-cascader
                   :options="citys"
                   v-model="searchInfo.citySelect"
                   :show-all-levels="false"
                   size="small"
-                  class="plan-select"
                   placeholder="选择地区"
                   :clearable="true"
                   @change="handleCity"
                   change-on-select
                   filterable
+                  class="item_content"
                 >
                 </el-cascader>
-              </el-col>
+              </div>
 
-              <el-col :span="6" v-if="activeName == 'second'">
-                <span>行业类型：</span>
+              <div v-if="activeName == 'second'" class="search_item">
+                <span class="item_title">行业类型：</span>
                 <el-cascader
                   :options="bussiness"
                   size="small"
-                  class="plan-select"
                   v-model="searchInfo.industryIdArr"
                   :clearable="true"
                   change-on-select
                   @change="handleChange"
                   filterable
+                  class="item_content"
                 >
                 </el-cascader>
-              </el-col>
-            </el-row>
-            <el-row :gutter="32">
-              
-              <el-col :span="6" v-if="activeName == 'first'">
-                <span>行业类型：</span>
+              </div>
+
+              <div v-if="activeName == 'first'" class="search_item">
+                <span class="item_title">行业类型：</span>
                 <el-cascader
                   :options="bussiness"
                   size="small"
-                  class="plan-select"
                   v-model="searchInfo.industryIdArr"
                   :clearable="true"
                   change-on-select
                   @change="handleChange"
                   filterable
+                  class="item_content"
                 >
                 </el-cascader>
-              </el-col>
-              <el-col :span="6">
-                <span>投放日期：</span>
+              </div>
+
+              <div class="search_item">
+                <span class="item_title">投放日期：</span>
                 <el-date-picker
                   size="small"
                   v-model="searchInfo.date"
@@ -97,66 +101,77 @@
                   value-format="yyyy-MM-dd"
                   start-placeholder="投放日期"
                   end-placeholder="投放日期"
+                  class="item_content"
                 >
                 </el-date-picker>
-              </el-col>
-              <el-col :span="6">
-                <span
-                  style="display: inline-block; width: 70px; text-align: right"
-                  >上下刊：</span
-                >
+              </div>
+
+              <div class="search_item">
+                <span class="item_title">上下刊：</span>
                 <el-select
                   v-model="searchInfo.publish"
                   placeholder="请选择"
-                  class="plan-select"
                   size="small"
+                  class="item_content"
                 >
                   <el-option label="上刊" value="SK"></el-option>
                   <el-option label="下刊" value="XK"></el-option>
                   <el-option label="换画" value="HH"></el-option>
                 </el-select>
-              </el-col>
-              <el-col :span="6">
-                <span
-                  style="display: inline-block; width: 70px; text-align: right"
-                  >媒体类型：</span
-                >
+              </div>
+
+              <div class="search_item">
+                <span class="item_title">媒体类型：</span>
                 <el-select
                   v-model="searchInfo.mediaTypeIds"
                   placeholder="请选择"
-                  class="plan-select"
                   size="small"
                   multiple
                   collapse-tags
                   clearable
+                  class="item_content"
                 >
                   <el-option v-for="(mediaTypeItem, mediaTypeIndex) in mediaTypes" :key="mediaTypeIndex" :label="mediaTypeItem.name" :value="mediaTypeItem.id"></el-option>
                 </el-select>
-              </el-col>
-            </el-row>
+              </div>
 
-            <el-row>
-              <el-col :span="6">
-                <el-button
-                  type="primary"
-                  icon="el-icon-search"
-                  class="searchBtn"
-                  @click="searchPic()"
-                  :disabled="!isSearch"
-                  >搜索
-                </el-button>
-                <el-button plain @click="reset()" :disabled="!isSearch"
-                  >重置</el-button
+              <div class="search_item">
+                <span class="item_title">投放面：</span>
+                <el-select
+                  v-model="searchInfo.asLab"
+                  clearable
+                  placeholder="请选择"
+                  size="small"
+                  class="item_content"
                 >
-                <el-button
-                  plain
-                  @click="allDownLoad()"
-                  v-show="activeName == 'first'"
-                  >一键导出</el-button
-                >
-              </el-col>
+                  <el-option label="A面" value="A"></el-option>
+                  <el-option label="B面" value="B"></el-option>
+                </el-select>
+              </div>
+            </div>
+
+              <el-row>
+                <el-col :span="6">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    class="searchBtn"
+                    @click="searchPic()"
+                    :disabled="!isSearch"
+                    >搜索
+                  </el-button>
+                  <el-button plain @click="reset()" :disabled="!isSearch"
+                    >重置</el-button
+                  >
+                  <el-button
+                    plain
+                    @click="allDownLoad()"
+                    v-show="activeName == 'first'"
+                    >一键导出</el-button
+                  >
+                </el-col>
             </el-row>
-          </div>
+          </template>
           <el-tab-pane
             label="案例库"
             name="first"
@@ -310,7 +325,9 @@ export default {
         mediaTypeIds: [],        // 媒体类型搜索
         industryIdArr: [],      // 搜索行业
         publish: 'SK',          // 上下刊
-        assetNumber: ''         // 资产编号
+        assetNumber: '',         // 资产编号
+        // 投放面
+        asLab: null
       },
       // 上下刊下拉
       publish: 'SK',
@@ -335,7 +352,9 @@ export default {
         publish: 'SK',
         pageNum: 1,
         pageSize: 10,
-        totalpageNum: 0
+        totalpageNum: 0,
+        // 投放面
+        asLab: null
       },
       // 收藏夹分页
       collectPageData: {
@@ -356,7 +375,9 @@ export default {
         publish: 'SK',
         pageNum: 1,
         pageSize: 10,
-        totalpageNum: 0
+        totalpageNum: 0,
+        // 投放面
+        asLab: null
       }
     };
   },
@@ -515,6 +536,7 @@ export default {
           assetNumber: this.searchInfo.assetNumber,
           mediaTypeIds: this.searchInfo.mediaTypeIds.join(','),
           // asLab: this.searchInfo.LabSelect,
+          asLab: this.searchInfo.asLab,
           prid: '',
           pageNum: this.galleryPageData.pageNum,
           pageSize: this.galleryPageData.pageSize,
@@ -542,7 +564,7 @@ export default {
           resourceName: this.searchInfo.resName,
           assetNumber: this.searchInfo.assetNumber,
           mediaTypeIds: this.searchInfo.mediaTypeIds.join(','),
-          // asLabel: this.searchInfo.LabSelect,
+          asLabel: this.searchInfo.asLab,
           pageNo: this.collectPageData.pageNum,
           pageSize: this.collectPageData.pageSize,
         };
@@ -564,11 +586,11 @@ export default {
     getImgList (params) {
       this.firstBodyLoading = true
       for (let i in params) {
-        console.log(params[i])
         if (!params[i]) {
           delete params[i]
         }
       }
+      console.log('getImgList ===>', params)
       api.getApi(this.apiVar.Advertisement + "/GetImgListV2", params).then(res => {
         console.log('案例库res', res)
         if (res.data.SysCode === 200200) {
@@ -1091,5 +1113,27 @@ export default {
 
 /deep/ #tab-roadGate {
   margin-left: 18px;
+}
+.search_bar {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  .search_item {
+    margin-bottom: 16px;
+    width: 25%;
+    display: inline-flex;
+    align-items: center;
+    padding-right: 24px;
+    box-sizing: border-box;
+    .item_title {
+      margin-right: 14px;
+      white-space: nowrap;
+      width: 90px;
+      text-align: right;
+    }
+    .item_content {
+      flex: 1;
+    }
+  }
 }
 </style>

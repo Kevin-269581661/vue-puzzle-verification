@@ -16,8 +16,8 @@ if (process.env.NODE_ENV == 'development') {
   jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
 const apiRoot = {
-  devURL: '"https://test-qadn.qinlindmp.com/"',
-  // devURL: '"/devURL/"',
+  // devURL: '"https://test-qadn.qinlindmp.com/"',
+  devURL: '"/devURL/"',
   // testURL: '"http://192.168.1.239/"',
   testURL: '"https://test-qadn.qinlindmp.com/"',
   // 对外灰度域名
@@ -69,6 +69,7 @@ const apiVar = {
   shareWUYouMap: shareWUYouMap,
   jsonLink: jsonLink,
   wsUrl: wsUrl,
+  excelExport: '/addsp/api/v1/excel/export',
   qadnUrl: process.env.API_ROOT ? process.env.API_ROOT.substr(0, process.env.API_ROOT.length - 1) : ''
 };
 

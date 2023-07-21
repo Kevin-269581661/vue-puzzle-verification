@@ -11,40 +11,40 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {},
-   proxyTable: {
-    //   '/devURL/UCAPI/': {  //使用"/api"来代替
-    //     target: 'http://192.168.1.177:8010/', //源地址
-    //     changeOrigin: true, //改变源
-    //     pathRewrite: {
-    //       '^/devURL': '' //路径重写
-    //     }
-    //   },
-    //   '/devURL/national/': {  //使用"/api"来代替
-    //     target: 'http://192.168.1.177:8040/', //源地址
-    //     changeOrigin: true, //改变源
-    //     pathRewrite: {
-    //       '^/devURL': '' //路径重写
-    //     }
-    //   },
-    //   '/devURL/addsp/': {  //使用"/api"来代替
-    //     target: 'http://192.168.1.106:8026/', //源地址
-    //     changeOrigin: true, //改变源
-    //     pathRewrite: {
-    //       '^/devURL': '' //路径重写
-    //     }
-    //   },
-    //   '/devURL/': {  //使用"/api"来代替
-    //     target: 'https://test-qadn.qinlindmp.com/', //源地址
-    //     changeOrigin: true, //改变源
-    //     pathRewrite: {
-    //       '^/devURL': '' //路径重写
-    //     }
-    //  }
+    proxyTable: {
+      //   '/devURL/UCAPI/': {  //使用"/api"来代替
+      //     target: 'http://192.168.1.177:8010/', //源地址
+      //     changeOrigin: true, //改变源
+      //     pathRewrite: {
+      //       '^/devURL': '' //路径重写
+      //     }
+      //   },
+      //   '/devURL/national/': {  //使用"/api"来代替
+      //     target: 'http://192.168.1.177:8040/', //源地址
+      //     changeOrigin: true, //改变源
+      //     pathRewrite: {
+      //       '^/devURL': '' //路径重写
+      //     }
+      //   },
+      //   '/devURL/addsp/': {  //使用"/api"来代替
+      //     target: 'http://192.168.1.106:8026/', //源地址
+      //     changeOrigin: true, //改变源
+      //     pathRewrite: {
+      //       '^/devURL': '' //路径重写
+      //     }
+      //   },
+      '/devURL': {  //使用"/api"来代替
+        target: 'https://test-qadn.qinlindmp.com', //源地址
+        changeOrigin: true, //改变源
+        pathRewrite: {
+          '^/devURL': '' //路径重写
+        }
+      }
     },
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
-    
-    host:'0.0.0.0',
+
+    host: '0.0.0.0',
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

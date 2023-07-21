@@ -4,6 +4,7 @@
             <img class="cell-img" :src="item.imgurl" alt="" >
             <a class="cell-text">{{item.title}}</a>
         </div>
+
         <!-- 地图选点选择条件弹出框 -->
         <el-dialog
             title="地图选点"
@@ -47,6 +48,7 @@
                 <el-button type="primary" @click="confirmMap">确 定</el-button>
             </div>
         </el-dialog>
+
         <!-- 销售确认已提交地图点位框 -->
         <el-dialog
             title="提示"
@@ -62,16 +64,14 @@
             </div>
         </el-dialog>
 
-        <!-- 导出空点 -->
-        <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-            <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
-        </el-dialog>
+      <!-- 导出空点 -->
+      <VacancyDownload ref="vacancyDownload" ></VacancyDownload>
     </div>
 </template>
 
 <script>
     import api from '../../../api/api'
-    import downloadVacancy from "../../../components/common/components/vacancyDownload.vue"
+    import VacancyDownload from "../../../components/common/components/vacancyDownload/vacancyDownload.vue"
     import sessFun from "../../../commonFun/sessFun.js";
     export default {
         props:{
@@ -81,7 +81,7 @@
             }
         },
         components:{
-            downloadVacancy,
+          VacancyDownload,
         },
         data(){
             return{
@@ -105,8 +105,6 @@
                 citySelectLoading: true,   // 城市下拉选项loading
                 // 确认销售地图选点是否已提交
                 confirmVisible: false,
-                // 空位导出
-                isOpenDownload: false,
                 // 地图类型
                 isMapKind: false,
                 ActiveMapType: 2,
@@ -120,7 +118,7 @@
                 if(item.title === '地图选点') {
                     this.showMapModel()
                 } else if(item.title === '导出空位') {
-                    this.isOpenDownload=true
+                  this.$refs.vacancyDownload && this.$refs.vacancyDownload.open()
                 } else {
                     // document.location.href=item.link
                     this.$router.push(item.link);

@@ -105,7 +105,7 @@
               <template v-if="showNewBtn || !isNation">
                 <el-button plain @click="reset()" v-if="showExportBtns.includes(6)" @click.native.prevent="exportRes"
                   class="marginR">门店导点</el-button>
-                <el-button plain v-if="showNewBtn" @click.native.prevent="isOpenDownload = true" class="marginR">空位导出
+                <el-button plain v-if="showNewBtn" @click.native.prevent="openVacancyDownloadDialog" class="marginR">空位导出
                 </el-button>
               </template>
 
@@ -417,9 +417,8 @@
     </el-dialog>
 
     <!-- 导出空点 -->
-    <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-      <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
-    </el-dialog>
+    <VacancyDownload ref="vacancyDownload" ></VacancyDownload>
+
     <!-- 总点导出 -->
     <el-dialog title="总点导出" :visible.sync="allPointExportVisible" width="300px">
       <All-Point-Export @cancelClick="allPointExportVisible = false"></All-Point-Export>
@@ -564,7 +563,7 @@ import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 // 方案缓存
 import cacheAdPlan from "../../commonFun/cacheAdPlan";
-import downloadVacancy from "../../components/common/components/vacancyDownload.vue";
+import VacancyDownload from "../../components/common/components/vacancyDownload/vacancyDownload.vue";
 import AllPointExport from "../../components/common/components/allPointExport.vue";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
@@ -580,7 +579,7 @@ import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 export default {
   name: "projectList",
   components: {
-    downloadVacancy,
+    VacancyDownload,
     noSearchResult,
     pointState,
     recycleBinDialog,
@@ -665,8 +664,6 @@ export default {
       planInfo: "",
       // 继续编辑未完成方案跳转时的loading
       continueEditLoading: "",
-      // 空位导出
-      isOpenDownload: false,
       // 总点导出弹框显示
       allPointExportVisible: false,
       // 判断是否为全国媒介
@@ -746,6 +743,12 @@ export default {
   },
 
   methods: {
+    /**
+     * 打开导出空位弹框
+     */
+    openVacancyDownloadDialog () {
+      this.$refs.vacancyDownload && this.$refs.vacancyDownload.open()
+    },
     // 导出周边资源
     getCustomConfig() {
       api

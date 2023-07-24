@@ -420,7 +420,8 @@
                 placeholder="请选择"
                 @change="templateChange"
               >
-                <el-option :value="0" label="通用模板"></el-option>
+                <el-option :value="0" label="通用模板（亲邻）"></el-option>
+                <el-option :value="99" label="通用模板（皓邻）"></el-option>
                 <el-option :value="1" label="定制模板"></el-option>
                 <!-- 南宁定制，亲粤邻 显示 审核模板 -->
                 <el-option
@@ -432,7 +433,7 @@
               </el-select>
             </li>
             <!-- 未开通定制模板，提示开通 -->
-            <li v-if="!isCustomize && templateType > 0">
+            <li v-if="!isCustomize && templateType == 1">
               <el-alert
                 type="warning"
                 show-icon
@@ -466,7 +467,7 @@
               </el-select>
             </li>
             <!-- 通用模板、审核模板-选择导出排版 -->
-            <li v-if="templateType == 0 || templateType == 3">
+            <li v-if="templateType == 0 || templateType == 3 || templateType == 99">
               <span class="form-label">导出排版：</span>
               <el-select
                 size="small"
@@ -681,7 +682,7 @@ export default {
   },
   computed: {
     conditionArr () {
-      if (this.pptxType == '2pointPerPage' || !this.isCustomize || this.templateType == 0 || this.templateType == 3) {
+      if (this.pptxType == '2pointPerPage' || !this.isCustomize || this.templateType == 0 || this.templateType == 3 || this.templateType == 99) {
         this.pptxFilter = this.pptxFilter.filter((item) => {
           return item === '0' || item === 'splitFlag';
         });
@@ -869,7 +870,7 @@ export default {
      */
     getPTTx () {
       // 定制模板导出时未开通提示
-      if (![0, 3].includes(this.templateType) && this.isCustomize == false) {
+      if (![0, 3, 99].includes(this.templateType) && this.isCustomize == false) {
         this.$message({
           showClose: true,
           message: '贵司尚未定制专属模板，不能导出',
@@ -882,7 +883,7 @@ export default {
         return
       }
       // 如果选择了定制模板，但是定制模板id 未获取到
-      if (![0, 3].includes(this.templateType) && this.customizeCode === null) {
+      if (![0, 3, 99].includes(this.templateType) && this.customizeCode === null) {
         this.$message.error('未获取到定制模板数据，请刷新页面重试！')
         return
       }

@@ -1815,6 +1815,7 @@ export default {
         info.company = "",
         info.Lock = "",
         info.dateType = "0"
+        info.cityWord = ""
 
       this.currPage = 1;
       this.currentPlan = [];

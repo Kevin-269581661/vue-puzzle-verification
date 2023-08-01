@@ -1,14 +1,22 @@
 <template>
   <div>
     <el-dialog title="收藏管理" :visible.sync="visible" width="80%" top="10vh">
-      <el-table :data="collectList" v-loading="tableLoading" height="700" style="width: 100%"  element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading">
+      <el-table
+        :data="collectList"
+        v-loading="tableLoading"
+        height="700"
+        style="width: 100%"
+        element-loading-text="玩命加载中.."
+        element-loading-spinner="el-icon-loading"
+        highlight-current-row
+      >
 
         <el-table-column label="序号" type="index" width="80"></el-table-column>
-        <el-table-column label="名称" prop="name"></el-table-column>
-        <el-table-column label="空位类型" prop="vacancy"></el-table-column>
-        <el-table-column label="城市" prop="cityDisplayStr"></el-table-column>
-        <el-table-column label="媒体类型" prop="mediaTypeDisplayStr"></el-table-column>
-        <el-table-column label="日期" >
+        <el-table-column label="名称" prop="name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="空位类型" prop="vacancy" show-overflow-tooltip></el-table-column>
+        <el-table-column label="城市" prop="cityDisplayStr" show-overflow-tooltip></el-table-column>
+        <el-table-column label="媒体类型" prop="mediaTypeDisplayStr" show-overflow-tooltip></el-table-column>
+        <el-table-column label="日期" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="scope.row.defaultTimeFlag">默认半年日期</span>
             <span v-else>{{ scope.row.startTime || '---' }} 至 {{ scope.row.endTime || '---' }}</span>

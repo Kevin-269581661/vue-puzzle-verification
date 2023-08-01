@@ -269,6 +269,7 @@ export default {
       info.dateType = '1'
       info.mediaTypeIds = ''
       info.daterange = []
+      this.collectSelection = null
     },
     confirmDown () {
       let { loadType, city, daterange, dateType, mediaTypeIds } = this.downLoadInfo;
@@ -317,7 +318,7 @@ export default {
             for (let data of resinfo) {
               let obj = {
                 label: data.rName,
-                value: data.rID.toString(),
+                value: data.rID,
               };
               result.push(obj);
             }
@@ -510,9 +511,9 @@ export default {
      * 一键筛选
      */
     collectChange(val) {
-      // console.log('collectChange ===>', val)
       if (this.collectSelection) {
         const itemData = this.collectList.find(item => item.id === val)
+        // console.log('collectChange itemData===>', itemData)
         if (itemData) {
           let { cityIds: city = [], vacancy: loadType, mediaTypeIds = [], startTime, endTime, defaultTimeFlag } = itemData
           // 导出空位的处理
@@ -522,14 +523,27 @@ export default {
           // 选择城市的处理
           const cityIdList = this.cityList.map(item => item.value)
           city = city.filter(item => cityIdList.includes(item))
+          // console.log('collectChange city===>', city)
           // 媒体类型的处理
+          // console.log('tempMediaTypes ===', this.tempMediaTypes)
+          if (loadType) this.loadTypeChange(loadType)
+          // console.log('allMediaTypes ===', this.allMediaTypes)
+
           const allMediaTypeIdList = this.allMediaTypes.map(item => item.mediaTypeId)
+          // console.log('allMediaTypeIdList ===', allMediaTypeIdList)
+          // console.log('collectChange mediaTypeIds===>', JSON.stringify(mediaTypeIds))
+
+
           mediaTypeIds = mediaTypeIds.filter(item => allMediaTypeIdList.includes(item))
+          // console.log('collectChange mediaTypeIds===>', mediaTypeIds)
+
           // 选择日期的处理
           let daterange = []
-          if (defaultTimeFlag === '2' && startTime && endTime) {
+          if (!defaultTimeFlag && startTime && endTime) {
             daterange = [startTime, endTime]
           }
+          // console.log('collectChange daterange===>', daterange)
+
           this.downLoadInfo = {
             city,
             loadType,

@@ -14,7 +14,7 @@
                         <el-col :span="12" v-for="(data, index) of item.children" :key="index" class="link_chil">
                             <span v-if="data.title === '--'" style="color: rgba(0,0,0,0.45)">{{data.title}}</span>
                             <span v-else-if="data.title === '地图选点'" class="link_chil_map" @click="showMapModel">{{data.title}}</span>
-                            <span v-else-if="data.title === '导出空位'" class="link_chil_map" @click="isOpenDownload=true">{{data.title}}</span>
+                            <span v-else-if="data.title === '导出空位'" class="link_chil_map" @click="openVacancyDownloadDialog">{{data.title}}</span>
                             <a v-else :href="data.link" class="link">{{data.title}}</a>
                         </el-col>
                     </el-row>
@@ -79,15 +79,14 @@
         </el-dialog>
 
         <!-- 导出空点 -->
-        <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="30%">
-            <download-vacancy @cancelClick="isOpenDownload = false"></download-vacancy>
-        </el-dialog>
+        <VacancyDownload ref="vacancyDownload" ></VacancyDownload>
+
     </div>
 </template>
 
 <script>
     import api from '../../../api/api'
-    import downloadVacancy from "../../../components/common/components/vacancyDownload.vue"
+    import VacancyDownload from "../../../components/common/components/vacancyDownload/vacancyDownload.vue"
     import sessFun from "../../../commonFun/sessFun.js";
     export default {
         props:{
@@ -97,7 +96,7 @@
             }
         },
         components:{
-            downloadVacancy,
+          VacancyDownload,
         },
         data(){
             return{
@@ -115,8 +114,6 @@
                 citySelectLoading: true,   // 城市下拉选项loading
                 // 确认销售地图选点是否已提交
                 confirmVisible: false,
-                // 空位导出
-                isOpenDownload: false,
                 // 地图类型
                 isMapKind: false,
                 ActiveMapType: 2,
@@ -126,6 +123,12 @@
             this.getsessionData()
         },
         methods:{
+          /**
+           * 打开导出空位弹框
+           */
+          openVacancyDownloadDialog () {
+            this.$refs.vacancyDownload && this.$refs.vacancyDownload.open()
+          },
             toLink(link){
                 this.$router.push(link);
             },

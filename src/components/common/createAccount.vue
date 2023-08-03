@@ -496,25 +496,42 @@ export default {
           let info = {
               companyIds: val
           }
-          api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
-              if (res.data.SysCode == 200200) {
+            api.getApi("/addsp/api/v1/company/mediaChooseConfig", info).then(res => {
+            console.log('res', res)
+                if (res.data.SysCode == 200200) {
                   let _data = res.data.data;
                   let _newData = [];
                   if (_data.length > 0) {
                       _data.forEach((item) => {
+                        if (item.mediaTypeName === '单元门禁灯箱') {
                           const children = item.child.map((v) => {
+                            return ({
+                                label: v.chooseTypeName,
+                                value: v.chooseType,
+                                disabled: isDisabled
+                            })
+                          }).sort((a, b) => a.value - b.value)
+                          
+                            _newData.push({
+                                disabled: isDisabled,
+                                label: item.mediaTypeName,
+                                value: item.mediaTypeId,
+                                children: children
+                          })
+                        } else {
+                            const children = item.child.map((v) => {
                               return ({
                                   label: v.chooseTypeName,
                                   value: v.chooseType,
-                                  disabled: isDisabled
                               })
-                          }).sort((a,b) => a.value - b.value)
+                            }).sort((a,b) => a.value - b.value)
 
-                          _newData.push({
-                              label: item.mediaTypeName,
-                              value: item.mediaTypeId,
-                              children: children
-                          })
+                            _newData.push({
+                                label: item.mediaTypeName,
+                                value: item.mediaTypeId,
+                                children: children
+                            })
+                        }
                       })
                   }
                   this.MD_BD_MediaPermissionArr = _newData;

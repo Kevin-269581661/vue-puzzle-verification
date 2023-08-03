@@ -387,9 +387,8 @@
             },
             // 开通或者禁用：
             isForbidden(row) {
-                // console.log(row);
                 MessageBox.confirm(
-                    `是否${row.uState ? "禁用" : "开通"}该角色?`,
+                    `是否${row.uState === 1  ? "禁用" : "开通"}该角色?`,
                     "提示",
                     {
                         confirmButtonText: "确定",

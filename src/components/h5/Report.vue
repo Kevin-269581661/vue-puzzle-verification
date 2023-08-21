@@ -1293,7 +1293,7 @@ export default {
       api.postApi(this.apiVar.Advertisement + "/GetImg", params)
         .then(res => {
           if (!res.data.SysCode) {
-            console.log(res.data);
+            // console.log(res.data);
             let dataInfo = res.data;
             this.totalUpNum = dataInfo.totalCount;
             for (let data of dataInfo.dataList) {
@@ -1308,7 +1308,6 @@ export default {
             if (dataInfo.totalCount == 0) {
               Message.warning('暂无数据');
             }
-            console.log(this.reportArr);
           } else {
             Message.warning(res.data.MSG);
           }

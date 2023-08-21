@@ -69,16 +69,19 @@
                     type="primary"
                     @click="edit()"
                     v-if="
-                      (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                      (
+                        ['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                         customPermission.proposalPermission == 0 &&
-                        planDetail.planMode != 1) ||
-                      (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                        planDetail.planMode != 1
+                      ) || (
+                        ['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                         customPermission.proposalPermission == 1 &&
-                        planDetail.planMode == 1) ||
-                      ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
+                        planDetail.planMode == 1
+                      ) || ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
                     "
-                    >编辑</el-button
-                  >
+                    >
+                    编辑
+                  </el-button>
                 </template>
               </div>
             </div>

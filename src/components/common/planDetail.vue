@@ -279,6 +279,14 @@
                 v-if="planPanel == 'third'"
               ></material>
             </el-tab-pane>
+            <el-tab-pane label="音频信息" name="fourth">
+              <audioList
+                :audioInfoData="materialInfoJson"
+                :loading="maLoading"
+                :isOrder="false"
+                v-if="planPanel == 'fourth'"
+              ></audioList>
+            </el-tab-pane>
           </el-tabs>
         </div>
         <div class="content_bottom_btn">
@@ -427,6 +435,7 @@
 
   // 报价单
   import material from "./components/materialInfo.vue";
+  import audioList from "./components/audioList.vue";
   import detail from "./components/detailInfo.vue";
   import addPoint from './components/addPoint.vue';
   import TableSetting from "./components/TableSetting";
@@ -443,6 +452,7 @@
       material,
       detail,
       addPoint,
+      audioList,
       ScheduleAlter,
       TableSetting
     },
@@ -736,6 +746,7 @@
           this.getSetPoint();
         } else if (this.planPanel == "second") {
         } else if (this.planPanel == "third") {
+        } else if (this.planPanel == "fourth") {
         }
       },
       // 获取选点排期列表数据

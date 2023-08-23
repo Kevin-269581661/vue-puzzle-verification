@@ -151,23 +151,17 @@
         <el-button type="primary" @click="confirmFailedAudio">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- <make-voice-dialog
-        ref="voiceDialog"
-    >
-    </make-voice-dialog> -->
   </div>
 </template>
 
 <script>
   import {Table, TableColumn, Message} from 'element-ui';
   import {api} from "../../../api/api.js";
-  import makeVoiceDialog from './makeVoiceDialog.vue';
 
   export default {
       components: {
           elTable: Table,
-          elTableColumn: TableColumn,
-          makeVoiceDialog
+          elTableColumn: TableColumn
       },
       props: {
           audioInfoData: {

@@ -61,6 +61,11 @@
                                 <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>
                             </template>
                         </el-table-column>
+                        <el-table-column prop="perssimon" label="状态" min-width="8.9%">
+                            <template slot-scope="scope">
+                                <point-state :state-text="stateToText(scope.row.uState).text" :color="stateToText(scope.row.uState).color"></point-state>
+                            </template>
+                        </el-table-column>
 
                         <el-table-column label="操作" width="100">
                             <template slot-scope="scope">

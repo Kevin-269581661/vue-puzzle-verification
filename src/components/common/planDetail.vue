@@ -282,6 +282,14 @@
                 v-if="planPanel == 'third'"
               ></material>
             </el-tab-pane>
+            <el-tab-pane label="音频信息" name="fourth" v-if="sessionData.permissions.includes('voiceAdvertisingBroadcast')">
+              <audioList
+                :audioInfoData="audioInfoList"
+                :loading="voLoading"
+                @getAudioList="getAudioList"
+                v-if="planPanel == 'fourth'"
+              ></audioList>
+            </el-tab-pane>
           </el-tabs>
         </div>
         <div class="content_bottom_btn">
@@ -430,6 +438,7 @@
 
   // 报价单
   import material from "./components/materialInfo.vue";
+  import audioList from "./components/audioList.vue";
   import detail from "./components/detailInfo.vue";
   import addPoint from './components/addPoint.vue';
   import TableSetting from "./components/TableSetting";
@@ -446,6 +455,7 @@
       material,
       detail,
       addPoint,
+      audioList,
       ScheduleAlter,
       TableSetting
     },
@@ -467,6 +477,7 @@
       };
       return {
         materialInfoJson:{},  //物料信息数据
+        audioInfoList:{},  //音频信息列表
         // 登录信息
         sessionData: {},
         addPointDialogVisible: false,
@@ -487,6 +498,7 @@
         //加载中
         loading: true,
         maLoading: true,
+        voLoading: true,
         role: "",
         customPermission: {},
         // 方案详情
@@ -553,6 +565,8 @@
     created () {
        //获取物料信息
       this.getMaterialInfo();
+      //获取音频信息
+      this.getAudioList();
       // 获取角色
       this.getRole();
       // 获取选点排期数据
@@ -739,6 +753,7 @@
           this.getSetPoint();
         } else if (this.planPanel == "second") {
         } else if (this.planPanel == "third") {
+        } else if (this.planPanel == "fourth") {
         }
       },
       // 获取选点排期列表数据
@@ -1242,6 +1257,22 @@
       spaceSetting(size) {
         this.rowSpace = size;
       },
+
+      getAudioList() {
+        let params = {
+          apId: sessionStorage.getItem("plan_apid")
+        }
+        api.getApi('/addsp/api/v1/voice/listVoiceByApId', params)
+          .then(res => {
+            console.log(res)
+            this.audioInfoList = res.data.data
+            this.voLoading =false
+          })
+          .catch(err => {
+            console.log(err)
+            this.voLoading =false
+          })
+      }
     },
   };
   </script>

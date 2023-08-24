@@ -2,7 +2,7 @@
   <div>
     <el-card class="workplace-card">
       <el-input
-        v-if="activeName !== 'orderImgCheck'"
+        v-if="activeName !== 'orderImgCheck' && activeName !== 'audioMaterialsCheck'"
         class="u-input"
         v-model="searchKeyword"
         size="mini"
@@ -455,8 +455,192 @@
             </template>
           </el-skeleton>
         </el-tab-pane>
+
+        <el-tab-pane
+          label="音频素材审核"
+          name="audioMaterialsCheck"
+          v-if="sessionData.permissions.includes('voiceAdvertisingBroadcast')"
+        >
+          <el-skeleton :loading="loading" animated>
+            <template slot="template">
+              <div style="padding: 14px">
+                <div
+                  v-for="i in 6"
+                  :key="i"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-items: space-between;
+                    margin-top: 8px;
+                    height: 32px;
+                  "
+                >
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="margin-right: 16px" />
+                  <el-skeleton-item variant="rect" style="width: 30%" />
+                </div>
+              </div>
+            </template>
+            <template>
+              <div class="handel_ul">
+                <li class="handel_ul_li">
+                  <span class="li-label">音频标题：</span>
+                  <el-input
+                    v-model="searchInfo.title"
+                    style="width: 236px"
+                    placeholder="请输入音频标题"
+                    class="input-with-select u-key"
+                    size="small"
+                  >
+                  </el-input>
+                </li>
+                <li class="handel_ul_li">
+                  <span class="li-label">订单名称：</span>
+                  <el-input
+                    v-model="searchInfo.apName"
+                    style="width: 236px"
+                    placeholder="请输入订单名称"
+                    class="input-with-select u-key"
+                    size="small"
+                  >
+                  </el-input>
+                </li>
+                <li class="handel_ul_li handel_ul_li_btn">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="toSearchParams()"
+                  >
+                    搜索</el-button
+                  >
+                  <el-button plain @click="toResetParams()">重置</el-button>
+                </li>
+              </div>
+              <el-table
+                :data="tableData"
+                style="width: 100%"
+                v-if="tableData.length >0"
+                >
+                <el-table-column
+                  fixed
+                  prop="title"
+                  label="音频标题"
+                  min-width="400"
+                  show-overflow-tooltip
+                  >
+                </el-table-column>
+                <el-table-column
+                  prop="apName"
+                  label="关联订单或方案名称"
+                  min-width="380"
+                  show-overflow-tooltip
+                  >
+                </el-table-column>
+                <el-table-column
+                  prop="createTime"
+                  label="创建日期"
+                  min-width="320">
+                </el-table-column>
+                <el-table-column
+                  prop="status"
+                  label="审批状态"
+                  min-width="250">
+                  <template slot-scope="scope">
+                    <div v-if="scope.row.status === 0">
+                        待审核
+                    </div>
+                    <div v-if="scope.row.status === 1">
+                        <span
+                          class="point success"
+                        ></span>
+                        审核通过
+                    </div>
+                    <div v-if="scope.row.status === 2">
+                        <span
+                          class="point warning"
+                        ></span>
+                        审核不通过
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  min-width="150">
+                  <template slot-scope="scope">
+                    <div style="width:100%; display: flex; justify-content: space-between;">
+                      <div class="checkAudio" @click="showAudio(scope.row)">
+                        <img src="../../assets/images/audioPlay.png">
+                        试听
+                      </div>
+                      <el-popconfirm
+                        title="确定通过吗？"
+                        @confirm="passAudio(scope.row)"
+                      >
+                        <div class="pass" slot="reference">通过</div>
+                      </el-popconfirm>
+                      <el-popconfirm
+                        title="确定不通过吗？"
+                        @confirm="failAudio(scope.row)"
+                      >
+                        <div class="unpass" slot="reference">不通过</div>
+                      </el-popconfirm>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-empty v-else :image-size="200"></el-empty>
+              <!-- :hide-on-single-page="true" -->
+              <el-pagination
+                background
+                @size-change="sizeChange"
+                @current-change="changePage"
+                :current-page.sync="currentPage"
+                :page-sizes="pageSizes"
+                :page-size.sync="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="paginationTotal"
+                style="margin-top: 14px; text-align: right"
+              >
+              </el-pagination>
+            </template>
+          </el-skeleton>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
+    
+    <el-dialog
+      title="试听"
+      :visible.sync="audioDialogVisible"
+      width="350px"
+      @close="pauseAudio"
+      top="300px">
+      <p class="audio-title">音频名称：{{ audioName }}</p>
+      <audio controls class="audio" id="audio">
+        <source :src="audioUrl" type="audio/mpeg">
+      </audio>
+    </el-dialog>
+
+    <el-dialog
+      title="审核不通过"
+      :visible.sync="failureDialogVisible"
+      width="350px"
+      top="250px"
+    >
+      <el-input
+        type="textarea"
+        :rows="5"
+        placeholder="请输入不通过原因"
+        v-model="failureReason">
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="failureReason = false">取 消</el-button>
+        <el-button type="primary" @click="confirmFailedAudio">确 定</el-button>
+      </span>
+    </el-dialog>
+
 
     <Registration-Media
       :dialogVisible.sync="registrationMediaVisible"
@@ -526,6 +710,16 @@ export default {
       reportImageVisible: false,
       reportImageApID: -1,
       reportImageType: -1,
+      audioDialogVisible: false,
+      failureDialogVisible: false,
+      audioName: '',
+      audioUrl:'',
+      failureReason: '',
+      row: {},
+      searchInfo: {
+        title: '',
+        apName:''
+      },
 
       searchPlaceholder: "项目名称/资产编号/合同编号",
     };
@@ -694,6 +888,121 @@ export default {
       this.reportImageVisible = true;
     },
 
+    // 获取音频审核列表
+    getAudioList() {
+      this.loading=true
+      let data = {
+        title: this.searchInfo.title === ''? null : this.searchInfo.title,
+        apName: this.searchInfo.apName === ''? null : this.searchInfo.apName,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      }
+      api.postApi_json('/addsp/api/v1/voice/listAudit', data)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.tableData = res.data || [];
+            this.paginationTotal = res.data.length || 0;
+          } else {
+            this.$message({
+              type: "warning",
+              message: res.data.MSG || "音频审核列表获取异常！",
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => {
+          this.loading=false
+        })
+    },
+
+    // 点击试听
+    showAudio(row) {
+      this.audioName = row.apName
+      let params = {
+        id: row.id
+      }
+      api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
+        .then(res => {
+          if (res.data.code === 200) {
+              this.audioUrl = res.data.data
+              this.audioDialogVisible = true
+          } else {
+              this.$message({
+                  type: "warning",
+                  message: res.data.MSG || "试听音频异常！",
+              });
+            } 
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+
+    // 音频审核通过
+    passAudio(row) {
+      this.row = row
+      let params = {
+        id: row.voiceId
+      }
+      api.postApi_json('/addsp/api/v1/voice/audit/pass', params)
+        .then(res => {
+          console.log(res)
+          this.$message({
+            type: "success",
+            message: "审核成功！",
+          });
+          this.getAudioList()
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            type: "warning",
+            message: res.data.MSG || "音频审核异常！",
+          });
+        })
+    },
+
+    // 弹出音频不通过弹窗
+    failAudio(row) {
+      this.row = row 
+      this.failureDialogVisible =true
+    },
+
+    //确认不通过音频
+    confirmFailedAudio() {
+      let params = {
+        id: this.row.id,
+        reason: this.failureReason
+      }
+      api.postApi_json('/addsp/api/v1/voice/audit/reject',params)
+        .then(res => {
+          console.log(res)
+          this.$message({
+            type: "success",
+            message: "审核成功！",
+          });
+          this.getAudioList()
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            type: "warning",
+            message: res.data.MSG || "音频审核异常！",
+          });
+        })
+        .finally(() => {
+          this.failureDialogVisible = false
+        })
+    },
+
+    // 暂停播放
+    pauseAudio() {
+      let audio = document.getElementById('audio')
+      audio.pause()
+    },
+
     toSearchParams() {
       if (this.aduitDate) {
         this.searchParams.startDate = this.aduitDate[0];
@@ -732,7 +1041,8 @@ export default {
 
         case "orderImgCheck":
           this.getOrderImgCheckList();
-
+        case "audioMaterialsCheck":
+          this.getAudioList();
         default:
           break;
       }
@@ -879,6 +1189,9 @@ export default {
       line-height: 22px;
       color: #1890ff;
       cursor: pointer;
+      p{
+        margin-left: 20px;
+      }
     }
   }
 }
@@ -894,5 +1207,37 @@ export default {
 /deep/ .el-dialog__title {
   font-weight: 600;
   color: #000;
+}
+
+.audio-title{
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+.audio{
+  outline: none;
+}
+
+.checkAudio{
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #FF8F49;
+  img{
+    width: 16px;
+    height: 16px;
+  }
+}
+.pass{
+  font-size: 14px;
+  cursor: pointer;
+  color: #1890FF;
+}
+.unpass{
+  font-size: 14px;
+  cursor: pointer;
+  color: #FF4D4F;
 }
 </style>

@@ -137,6 +137,11 @@
                             <el-input v-model="accountForm.email" placeholder="请输入邮箱" type="email" size="small">
                             </el-input>
                         </el-form-item>
+                        <el-form-item label="权限选择：" prop="permissions" v-if="permissionsData.length > 0">
+                            <el-checkbox-group v-model="permissions">
+                                <el-checkbox v-for="item in permissionsData" :key="item.permissionCode" :label="item.permissionId">{{item.permissionName}}</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
                     </el-form>
                 </div>
             </div>
@@ -362,7 +367,9 @@ export default {
             sessionData: "",
             haveEPPerssion: false,
             tempArr: [],
-            tempNodeArr: []
+            tempNodeArr: [],
+            permissionsData: [],
+            permissions:[]
         };
     },
 
@@ -379,6 +386,7 @@ export default {
                 value: "DEV",
             });
         }
+        console.log('sessionStorage.getItem("userId")', sessionStorage.getItem("userId"))
     },
     methods: {
         // 媒介/销售 媒体权限默认勾选/取消勾选
@@ -750,6 +758,7 @@ export default {
                     // this.accountForm.role = "";
                 }
             }
+            this.getPermissionList()
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []
             this.tempNodes.length = 0
@@ -806,6 +815,37 @@ export default {
                         });
                 }
             }
+        },
+        // 获取权限列表
+        getPermissionList(editInfo) {
+            let params = {}
+            let userId = sessionStorage.getItem("userId");
+            if (editInfo) {
+                params = {
+                    companyId : editInfo.company,
+                    userId
+                }
+            } else {
+                params = {
+                    companyId : this.accountForm.company,
+                    userId
+                }
+            }
+            
+                
+            api.getApi('/addsp/api/v1/user/getPermissions', params)
+                .then(res => {
+                    console.log(res)
+                    this.permissionsData = res.data.data
+                    res.data.data.forEach(item => {
+                        if (item.status === 1) {
+                        this.permissions.push(item.permissionId)
+                        }
+                    })
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         },
         handleSelect(item) {
             console.log(item);
@@ -867,6 +907,7 @@ export default {
                 utype: this.translateToUtype(actFrom.role),
                 division: actFrom.division,
                 position: actFrom.position,
+                permissions: this.permissions,
                 engineerLevel: actFrom.engineerLevel,
                 // devManageLevel: actFrom.devManageLevel,
                 phone: actFrom.phone,
@@ -1035,6 +1076,7 @@ export default {
                                   }
                                 })
                                 this.roleSelect(editInfo.role);
+                                this.getPermissionList(editInfo)
                             } else {
                                 this.$message.warning(res.data.MSG);
                             }
@@ -1049,6 +1091,7 @@ export default {
             } else {
                 this.isEdit = false;
                 sessionStorage.removeItem("account_detail");
+                sessionStorage.removeItem('userId')
             }
         },
         // 获取权限城市

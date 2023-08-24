@@ -146,7 +146,7 @@
     <el-dialog
       :title="isAdd ? '新建公司' : '编辑公司'"
       :visible.sync="isShowNew"
-      width="380px"
+      width="550px"
       class="company-dialog"
     >
       <p class="conpany-form-item">
@@ -220,6 +220,14 @@
             :value="item.value"
           ></el-option>
         </el-select>
+      </p>
+      <p class="conpany-form-item">
+        <template style="display:flex">
+          <span class="conpany-form__label" style="padding-right:30px;white-space:nowrap">权限选择：</span>
+          <el-checkbox-group v-model="permissions">
+            <el-checkbox v-for="item in permissionsData" :key="item.permissionCode" :label="item.permissionId">{{item.permissionName}}</el-checkbox>
+          </el-checkbox-group>
+        </template>
       </p>
       <span slot="footer" class="dialog-footer">
         <el-button plain @click="isShowNew = false">取 消</el-button>
@@ -328,6 +336,9 @@ export default {
       // 编辑或新建
       isAdd: false,
       loading: true,
+      permissionsData: [],
+      permissions:[],
+      companyId: null 
     };
   },
   methods: {
@@ -460,6 +471,7 @@ export default {
       };
       this.currPage = 1;
       this.companyList = [];
+      this.permissions = []
       this.searchFun();
     },
     // 新建
@@ -472,7 +484,28 @@ export default {
         acceptSpiltOrderStatus: false,
       };
       this.isAdd = true;
-      this.isShowNew = true;
+      this.getCompanyPerssion()
+      
+    },
+    //获取公司权限
+    getCompanyPerssion() {
+      let params = {
+        companyId:this.companyId
+      }
+      api.getApi('/addsp/api/v1/company/getPermissions', params)
+        .then(res => {
+          // console.log(res.data.data)
+          this.permissionsData = res.data.data
+          res.data.data.forEach(item => {
+            if (item.status === 1) {
+              this.permissions.push(item.permissionId)
+            }
+          })
+          this.isShowNew = true;
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     // 确认修改或新增
     handleCompany() {
@@ -485,7 +518,8 @@ export default {
             type,
             mediaTypeIds,
             openStatus:systemEnableStatus,
-            acceptSpiltOrderStatus
+            acceptSpiltOrderStatus,
+            permissions: this.permissions
           };
           api
             .postApi_json(
@@ -513,7 +547,8 @@ export default {
             type,
             mediaTypeIds,
             openStatus:systemEnableStatus,
-            acceptSpiltOrderStatus
+            acceptSpiltOrderStatus,
+            permissions: this.permissions
           };
           api
             .postApi_json(
@@ -525,6 +560,7 @@ export default {
                 Message.success(res.data.MSG);
                 this.isShowNew = false;
                 this.searchFun();
+                this.permissions = []
               } else {
                 Message.warning(res.data.MSG);
               }
@@ -614,6 +650,7 @@ export default {
       console.log('mediaTypeIds--', row)
       this.isShowNew = true;
       this.isAdd = false;
+      this.companyId =row.asrID
       this.companyInfo = {
         keyword: row.name,
         type: row.type - 0,
@@ -622,6 +659,7 @@ export default {
         systemEnableStatus: row.openStatus,
         acceptSpiltOrderStatus: row.acceptSpiltOrderStatus
       };
+      this.getCompanyPerssion()
     },
   },
   mounted() {

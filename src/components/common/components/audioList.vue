@@ -2,7 +2,7 @@
   <div class="third-wrap box-wrap">
       <div class="table_wrap" v-if="audioInfoData.length > 0">
           <p class="search-row">
-              <el-button type="primary" size="small" @click="addVoice()"
+              <el-button type="primary" size="small" @click="openAddVoiceDialog"
                 >添加音频
               </el-button>
           </p>
@@ -80,8 +80,8 @@
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="updateVoice(scope.row)" v-if="scope.row.auditStatus !== 2">编辑</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="updateVoice(scope.row)" v-else>重新提交</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row.scheduleId)" v-if="scope.row.auditStatus !== 2">编辑</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row.scheduleId)" v-else>重新提交</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="showAudio(scope.row)">试听</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="downLoadAudio(scope.row)">下载</el-dropdown-item>
                             <el-popconfirm title="确定通过吗？" @confirm="passAudio(scope.row)">
@@ -151,17 +151,22 @@
         <el-button type="primary" @click="confirmFailedAudio">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 添加音频 - 弹框组件 -->
+    <AddVoiceDialog ref="addVoiceDialogRef" />
   </div>
 </template>
 
 <script>
   import {Table, TableColumn, Message} from 'element-ui';
   import {api} from "../../../api/api.js";
+  import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 
   export default {
       components: {
           elTable: Table,
-          elTableColumn: TableColumn
+          elTableColumn: TableColumn,
+          AddVoiceDialog
       },
       props: {
           audioInfoData: {
@@ -188,11 +193,14 @@
           }
       },
       methods: {
-        addVoice() {
-        // this.$refs.voiceDialog.open()
-        },
-        updateVoice(row) {
-            console.log(row);
+        /**
+         * 打开添加音频弹框
+         */
+        openAddVoiceDialog(recordId = null) {
+          this.$refs.addVoiceDialogRef && this.$refs.addVoiceDialogRef.open({
+            apId: sessionStorage.getItem("plan_apid"),
+            recordId
+          })
         },
         // 点击试听
         showAudio(row) {

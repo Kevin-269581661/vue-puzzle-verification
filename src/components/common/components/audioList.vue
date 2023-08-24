@@ -2,7 +2,7 @@
   <div class="third-wrap box-wrap">
       <div class="table_wrap" v-if="audioInfoData.length > 0">
           <p class="search-row">
-              <el-button type="primary" size="small" @click="openAddVoiceDialog"
+              <el-button type="primary" size="small" @click="addVoice"
                 >添加音频
               </el-button>
           </p>
@@ -118,7 +118,7 @@
 
     <div class="table_wrap" v-else>
         <el-empty description="暂无可播放的音频，点击去添加">
-            <el-button type="primary" @click="uploadMater()">添加音频</el-button>
+            <el-button type="primary" @click="addVoice">添加音频</el-button>
         </el-empty>
     </div>
 
@@ -201,6 +201,9 @@
             apId: sessionStorage.getItem("plan_apid"),
             recordId
           })
+        },
+        addVoice() {
+          this.openAddVoiceDialog()
         },
         // 点击试听
         showAudio(row) {

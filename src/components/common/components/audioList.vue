@@ -7,11 +7,11 @@
               </el-button>
           </p>
 
-          <el-table 
+          <el-table
             :data="audioInfoData"
             style="margin-top:16px;"
             v-loading="loading"
-            element-loading-text="玩命加载中.." 
+            element-loading-text="玩命加载中.."
             class="table-wrap">
               <el-table-column label="状态" min-width="6%" align="center">
                 <template slot-scope="scope">
@@ -85,24 +85,24 @@
                             <el-dropdown-item @click.native.prevent="showAudio(scope.row)">试听</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="downLoadAudio(scope.row)">下载</el-dropdown-item>
                             <el-popconfirm title="确定通过吗？" @confirm="passAudio(scope.row)">
-                                <el-dropdown-item 
-                                    slot="reference" 
+                                <el-dropdown-item
+                                    slot="reference"
                                     v-if="scope.row.auditStatus === 0"
                                 >
                                     通过
                                 </el-dropdown-item>
                             </el-popconfirm>
                             <el-popconfirm title="确定不通过吗？" @confirm="failAudio(scope.row)">
-                                <el-dropdown-item 
-                                    slot="reference" 
+                                <el-dropdown-item
+                                    slot="reference"
                                     v-if="scope.row.auditStatus === 0"
                                 >
                                     不通过
                                 </el-dropdown-item>
                             </el-popconfirm>
                             <el-popconfirm title="确定删除吗？"  @confirm="deleteAudio(scope.row)">
-                                <el-dropdown-item 
-                                    slot="reference" 
+                                <el-dropdown-item
+                                    slot="reference"
                                     v-if=" scope.row.publishStatus === 0"
                                 >
                                     删除
@@ -175,7 +175,7 @@
           getAudioList: {
             type: Function
           }
-          
+
       },
       computed: {},
       data() {
@@ -201,7 +201,7 @@
                 id: row.voiceId
             }
             api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
-                .then(res => {     
+                .then(res => {
                     if (res.data.code === 200) {
                         this.audioUrl = res.data.data
                         this.audioDialogVisible = true
@@ -210,7 +210,7 @@
                             type: "warning",
                             message: res.data.MSG || "试听音频异常！",
                         });
-                    } 
+                    }
                 })
                 .catch(err => {
                     console.log(err)
@@ -281,7 +281,7 @@
                             type: "warning",
                             message: res.data.MSG || "音频审核异常！",
                         });
-                    } 
+                    }
                 })
                 .catch(err => {
                     console.log(err)
@@ -289,7 +289,7 @@
           },
         // 弹出音频不通过弹窗
         failAudio(row) {
-            this.row = row 
+            this.row = row
             this.failureDialogVisible =true
         },
 
@@ -312,10 +312,10 @@
                             type: "warning",
                             message: res.data.MSG || "音频审核异常！",
                         });
-                    } 
+                    }
                 })
                 .catch(err => {
-                    console.log(err)  
+                    console.log(err)
                 })
                 .finally(() => {
                     this.failureDialogVisible = false
@@ -339,10 +339,10 @@
                             type: "warning",
                             message: res.data.MSG || "删除音频失败·！",
                         });
-                    } 
+                    }
                 })
                 .catch(err => {
-                    console.log(err)      
+                    console.log(err)
                 })
         }
     },

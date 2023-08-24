@@ -192,6 +192,8 @@ const initPlayFormData = () => ({
   // 投放设备列表
   medias: [],
   isSelectAll: null,
+  //
+  // mediaIds: [],
 })
 
 export default {
@@ -236,17 +238,17 @@ export default {
           },
           trigger: 'blur'
         }],
-        publishDeviceType: [{
-          validator: (rule, value, callback) => {
-            const condition = this.playFormData.medias.length || this.playFormData.isSelectAll
-            if (this.playFormData.publishDeviceType === 2 && condition) {
-              callback()
-            } else {
-              callback(new Error('请选择投放设备'))
-            }
-          },
-          trigger: 'blur'
-        }],
+        // publishDeviceType: [{
+        //   validator: (rule, value, callback) => {
+        //     const condition = this.playFormData.medias.length || this.playFormData.isSelectAll
+        //     if (this.playFormData.publishDeviceType === 2 && condition) {
+        //       callback()
+        //     } else {
+        //       callback(new Error('请选择投放设备'))
+        //     }
+        //   },
+        //   trigger: 'blur'
+        // }],
         publishTimeRange: [{
           validator: (rule, value, callback) => {
             if (this.playFormData.publishTimeRange === 2 && (!this.playFormData.playTimes || !this.playFormData.playTimes.length)) {
@@ -439,7 +441,7 @@ export default {
       }
     },
     /**
-     * 获取记录数据
+     * 获取记录详情数据
      */
     getRecordData(id) {
       if (!id) return
@@ -451,7 +453,6 @@ export default {
             Message.error(message || '获取数据失败')
             return
           }
-          // this.voiceFormData = data
           const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes } = data
           this.voiceFormData = {
             ...this.voiceFormData,

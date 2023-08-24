@@ -425,3 +425,11 @@
         width: 100%;
     }
 }
+
+/* 修改 el-dialog样式，增加分割线 */
+.el-dialog .el-dialog__header {
+  border-bottom: 1px solid #D9D9D9;
+}
+.el-dialog .el-dialog__footer {
+  border-top: 1px solid #D9D9D9;
+}

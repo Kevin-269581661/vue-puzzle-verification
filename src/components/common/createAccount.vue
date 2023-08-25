@@ -511,22 +511,22 @@ export default {
                   let _newData = [];
                   if (_data.length > 0) {
                       _data.forEach((item) => {
-                        if (item.mediaTypeName === '单元门禁灯箱') {
-                          const children = item.child.map((v) => {
-                            return ({
-                                label: v.chooseTypeName,
-                                value: v.chooseType,
-                                disabled: isDisabled
-                            })
-                          }).sort((a, b) => a.value - b.value)
+                        // if (item.mediaTypeName === '单元门禁灯箱') {
+                        //   const children = item.child.map((v) => {
+                        //     return ({
+                        //         label: v.chooseTypeName,
+                        //         value: v.chooseType,
+                        //         disabled: isDisabled
+                        //     })
+                        //   }).sort((a, b) => a.value - b.value)
                           
-                            _newData.push({
-                                disabled: isDisabled,
-                                label: item.mediaTypeName,
-                                value: item.mediaTypeId,
-                                children: children
-                          })
-                        } else {
+                        //     _newData.push({
+                        //         disabled: isDisabled,
+                        //         label: item.mediaTypeName,
+                        //         value: item.mediaTypeId,
+                        //         children: children
+                        //   })
+                        // } else {
                             const children = item.child.map((v) => {
                               return ({
                                   label: v.chooseTypeName,
@@ -539,7 +539,7 @@ export default {
                                 value: item.mediaTypeId,
                                 children: children
                             })
-                        }
+                        // }
                       })
                   }
                   this.MD_BD_MediaPermissionArr = _newData;

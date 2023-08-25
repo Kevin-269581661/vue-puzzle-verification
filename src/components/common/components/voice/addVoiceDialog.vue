@@ -202,6 +202,7 @@ export default {
     MakeVoiceDialog,
     MediaTableDialog
   },
+  inject:['getAudioList'],
   data () {
     return {
       visible: false,
@@ -262,9 +263,8 @@ export default {
       },
       // 排期方式-单选按钮组
       scheduleBtnList: [
-        { label: '按订单投放日期', value: 1 },
         { label: '按工程完成上画任务后', value: 2 },
-        { label: '自定义', value: 3 },
+        { label: '时间自定义', value: 3 },
       ],
       // 投放设备-单选按钮组
       deviceBtnList: [
@@ -424,14 +424,15 @@ export default {
           } else {
             res = await api.postApi_json('/addsp/api/v1/voice/create', params)
           }
-          const { code, data, message } = res.data
+          const { code, data, MSG } = res.data
           if (code !== 200) {
-            Message.error(message || '提交表单数据失败')
+            Message.error(MSG || '提交表单数据失败')
             return
           }
         }
         else if (this.activeStep === 2) {
           this.close()
+          // this.getAudioList()
         }
         if (++this.activeStep > this.stepList.length - 1) this.activeStep = 0;
       } catch (err) {
@@ -489,6 +490,7 @@ export default {
         this.voiceFormData.id = recordId
         this.getRecordData(recordId)
       }
+      this.activeStep = 0 
       this.voiceFormData.apId = apId
       this.visible = true
     },
@@ -497,8 +499,11 @@ export default {
      */
     close() {
       this.activeStep = 0
+      this.recordId = null
       this.dialogLoading = false
       this.visible = false
+      this.voiceFormData = initVoiceFormData()
+      this.playFormData = initPlayFormData()
     },
   },
   mounted () {

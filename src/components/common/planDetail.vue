@@ -581,6 +581,11 @@
         return this.setPointDataList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
       }
     },
+    provide() {
+      return {
+        getAudioList: this.getAudioList  
+      }
+    },
     methods: {
       handleSizeChange (val) {
         this.pageSize = val;

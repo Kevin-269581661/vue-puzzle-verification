@@ -258,14 +258,14 @@
             console.log(row);
             let params = {
                 scheduleId: row.scheduleId,
-                status: row.status === false ? 0 : 1
+                status: row.status
             }
             api.postApi_json('/addsp/api/v1/voice/voice/schedule/setEnableStatus', params)
                 .then(res => {
-                    console.log(res);
+                    console.log(res)                   
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.log(err)
                 })
         },
         // 暂停播放
@@ -303,7 +303,7 @@
             this.row = row
             this.failureDialogVisible =true
         },
-
+        
         //确认不通过音频
         confirmFailedAudio() {
             let params = {

@@ -153,7 +153,7 @@
     </el-dialog>
 
     <!-- 添加音频 - 弹框组件 -->
-    <AddVoiceDialog ref="addVoiceDialogRef" />
+    <AddVoiceDialog ref="addVoiceDialogRef" @refreshList="() => $emit('getAudioList')"/>
   </div>
 </template>
 
@@ -262,7 +262,7 @@
             }
             api.postApi_json('/addsp/api/v1/voice/voice/schedule/setEnableStatus', params)
                 .then(res => {
-                    console.log(res)                   
+                    console.log(res)
                 })
                 .catch(err => {
                     console.log(err)
@@ -303,7 +303,7 @@
             this.row = row
             this.failureDialogVisible =true
         },
-        
+
         //确认不通过音频
         confirmFailedAudio() {
             let params = {

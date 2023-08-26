@@ -433,3 +433,19 @@
 .el-dialog .el-dialog__footer {
   border-top: 1px solid #D9D9D9;
 }
+/* 自定义 dialog 样式 */
+/*
+/deep/ .el-dialog .el-dialog__body {
+  padding: 0;
+}
+*/
+.custom_dialog_body {
+  padding: 30px 20px;
+}
+.custom_dialog_footer {
+  border-top: 1px solid #D9D9D9;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 20px 20px;
+}

@@ -197,7 +197,7 @@ export default {
     apId: {
       type: [String, Number],
       // required: true
-    }
+    },
   },
   emits: ['confirm'],
   data () {
@@ -227,6 +227,8 @@ export default {
       // 是否勾选全部媒体
       isCheckAll: false,
       isCheckAllCurrentPage: false,
+      // 已选的媒体
+      selectedMediaIdList: []
     };
   },
   mounted () {
@@ -236,7 +238,9 @@ export default {
     handleConfirm() {
       this.$emit('confirm', {
         list: this.tableSelectChangeList,
-        isCheckAll: this.isCheckAll
+        isCheckAll: this.isCheckAll,
+        total: this.pagination.total,
+        selectedMediaIdList: this.selectedMediaIdList
       })
       this.close()
     },
@@ -257,13 +261,12 @@ export default {
         const { code, data, message } = res
         if (code !== 200) return Message.error(message || '获取列表数据失败')
         const { list, total } = data
-        list.forEach(item => {
-          const hasIndex = this.tableSelectChangeList.findIndex(cell => cell.mId === item.mid)
-          if (hasIndex !== -1) {
-            item.selected = this.tableSelectChangeList[hasIndex].isSelect
+        this.tableList = list.map(item => {
+          return {
+            ...item,
+            selected: this.selectedMediaIdList.includes(item.mid)
           }
         })
-        this.tableList = list
         this.pagination.total = total
         this.isCheckAllCurrentPage = this.handleCheckAllPage()
       } catch (err) {
@@ -330,6 +333,12 @@ export default {
      * 勾选
      */
      handleSelect(isSelect, { mid: mId }) {
+      const hasOne = this.selectedMediaIdList.includes(mId)
+      if (hasOne && !isSelect) {
+        this.selectedMediaIdList.splice(this.selectedMediaIdList.indexOf(mId), 1)
+      } else if (!hasOne && isSelect) {
+        this.selectedMediaIdList.push(mId)
+      }
       // 记录改变的值，如果有重复，覆盖旧的
       let newList = this.tableSelectChangeList.filter(cell => cell.mId != mId)
       newList.push({ mId, isSelect })
@@ -341,8 +350,14 @@ export default {
      */
      handleSelectAll(isSelect) {
       let newList = []
+      let ids = []
       this.tableList.forEach(item => {
         item.selected = isSelect
+
+        ids = this.selectedMediaIdList.filter(mId => mId != item.mid)
+        if (isSelect) ids.push(item.mid)
+        this.selectedMediaIdList = ids
+        // 处理改变的数据
         newList = this.tableSelectChangeList.filter(cell => cell.mId != item.mid)
         newList.push({ mId: item.mid, isSelect })
         this.tableSelectChangeList = newList
@@ -352,8 +367,9 @@ export default {
      * 打开弹框
      * @param {*} recordId 此记录的Id，编辑才传
      */
-    open(recordId = null) {
-      this.searchData.id = recordId
+    open(mediaIds) {
+      if (Array.isArray(mediaIds)) this.selectedMediaIdList = JSON.parse(JSON.stringify(mediaIds))
+      // this.searchData.id = recordId
       this.handleSearch()
       this.visible = true
     },

@@ -131,6 +131,7 @@
                     {{ item.label }}
                   </el-radio-button>
                 </el-radio-group>
+                <span>已选{{ selectedMediasNum }}个</span>
                 <el-button type="text" size="small" style="margin-left: 60px;" @click="openMediaTableDialog">媒体列表</el-button>
               </el-form-item>
 
@@ -157,9 +158,12 @@
           </div>
         </div>
         <div class="custom_dialog_footer">
-          <el-button @click="close" size="small">取 消</el-button>
-          <el-button type="primary" @click="handleNextStep" size="small">
-            {{ activeStep !== 2 ? '下一步' : '确定' }}
+          <el-button @click="close" size="small">{{ activeStep < 2 ? '取 消' : '关 闭' }}</el-button>
+          <el-button v-if="activeStep === 1" type="primary" @click="handlePreStep" size="small">
+            上一步
+          </el-button>
+          <el-button v-if="activeStep < 2" type="primary" @click="handleNextStep" size="small">
+            {{ activeStep === 1 ? '提交' : '下一步' }}
           </el-button>
         </div>
       </div>
@@ -214,11 +218,9 @@ const initPlayFormData = () => ({
   publishTimeRange: 1,
   // 投放时间
   playTimes: [],
-  // 投放设备列表
+  // 投放设备列表改变的数据
   medias: [],
   isSelectAll: false,
-  //
-  // mediaIds: [],
 })
 
 export default {
@@ -310,8 +312,21 @@ export default {
         // data: {},
         // 上传的文件字段名
         name: 'file'
-      }
+      },
+      // 总的设备数量
+      totalMediasNum: 0,
+      // 已选的设备 mid 数组
+      selectedMediaIdList: []
     };
+  },
+  computed: {
+    // 已选的设备数量
+    selectedMediasNum() {
+      if (this.playFormData.isSelectAll) {
+        return this.totalMediasNum
+      }
+      return this.selectedMediaIdList.length
+    }
   },
   methods: {
     /**
@@ -362,7 +377,7 @@ export default {
      * 打开媒体列表选择弹框
      */
     openMediaTableDialog() {
-      this.$refs.mediaTableDialogRef && this.$refs.mediaTableDialogRef.open(this.voiceFormData.id)
+      this.$refs.mediaTableDialogRef && this.$refs.mediaTableDialogRef.open(this.selectedMediaIdList)
     },
     /**
      * 切换排期方式
@@ -427,9 +442,11 @@ export default {
     /**
      * 选择媒体设备回调
      */
-    confirmSelectMedia({ list, isCheckAll }) {
+    confirmSelectMedia({ list, isCheckAll, total, selectedMediaIdList }) {
       this.playFormData.isSelectAll = isCheckAll
       this.playFormData.medias = list
+      this.totalMediasNum = total
+      this.selectedMediaIdList = selectedMediaIdList
     },
     /**
      * 制作音频回调
@@ -446,6 +463,12 @@ export default {
       const voiceTitle = this.voiceFormData.title
       if (!voiceTitle) return Message.warning('请先填写音频标题')
       this.$refs.makeVoiceDialogRef && this.$refs.makeVoiceDialogRef.open(voiceTitle)
+    },
+    /**
+     * 上一步
+     */
+    handlePreStep() {
+      if (this.activeStep > 0) this.activeStep--
     },
     /**
      * 下一步
@@ -499,7 +522,7 @@ export default {
         const { data = {} } = await api.getApi('/addsp/api/v1/voice/getVoiceDetail', { id })
         const { code, data: res, message } = data
         if (code !== 200) return Message.error(message || '获取数据失败')
-        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl } = res
+        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl, mediaIds } = res
         this.voiceFormData = {
           ...this.voiceFormData,
           title,
@@ -516,6 +539,7 @@ export default {
           publishTimeRange,
           playTimes,
         }
+        this.selectedMediaIdList = mediaIds.map(item => item.mId)
       } catch (err) {
         Message.error(err || '获取数据失败')
         console.error('getRecordData error:', err)
@@ -544,6 +568,8 @@ export default {
      */
     close() {
       this.activeStep = 0
+      this.totalMediasNum = 0
+      this.selectedMediaIdList = []
       this.recordId = null
       this.dialogLoading = false
       this.voiceFormData = initVoiceFormData()

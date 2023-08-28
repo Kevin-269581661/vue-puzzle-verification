@@ -758,7 +758,7 @@ export default {
                     // this.accountForm.role = "";
                 }
             }
-            this.getPermissionList()
+            this.getPermissionList(val)
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []
             this.tempNodes.length = 0
@@ -817,12 +817,13 @@ export default {
             }
         },
         // 获取权限列表
-        getPermissionList(editInfo) {
+        getPermissionList(company) {
             let params = {}
             let userId = sessionStorage.getItem("userId");
-            if (editInfo) {
+            console.log('company', company);
+            if (company) {
                 params = {
-                    companyId : editInfo.company,
+                    companyId: company,
                     userId
                 }
             } else {
@@ -830,12 +831,9 @@ export default {
                     companyId : this.accountForm.company,
                     userId
                 }
-            }
-            
-                
+            }   
             api.getApi('/addsp/api/v1/user/getPermissions', params)
                 .then(res => {
-                    console.log(res)
                     this.permissionsData = res.data.data
                     res.data.data.forEach(item => {
                         if (item.status === 1) {
@@ -1076,7 +1074,7 @@ export default {
                                   }
                                 })
                                 this.roleSelect(editInfo.role);
-                                this.getPermissionList(editInfo)
+                                this.getPermissionList(editInfo.company)
                             } else {
                                 this.$message.warning(res.data.MSG);
                             }

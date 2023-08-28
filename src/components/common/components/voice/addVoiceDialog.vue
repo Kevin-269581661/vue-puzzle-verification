@@ -248,7 +248,7 @@ export default {
       voiceFormData: initVoiceFormData(),
       voiceFormRules: {
         title: [{ required: true, message: '请输入音频标题', trigger: 'blur'}],
-        voiceId: [{ required: true, message: '请选择音频素材', trigger: 'blur'}]
+        voiceId: [{ required: true, message: '请选择音频素材', trigger: 'change'}]
       },
       // 播放信息表单
       playFormData: initPlayFormData(),

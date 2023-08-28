@@ -103,7 +103,7 @@
                 size="small"
                 placeholder="请输入需要合成的文字，最多可以输入30个字符"
                 v-model="formData.text"
-                maxlength="30"
+                maxlength="100"
                 show-word-limit
                 clearable
                 :autosize="{ minRows: 3, maxRows: 6 }"
@@ -258,8 +258,8 @@ export default {
         }
         // 生成音频文件接口
         const { data = {} } = await api.postApi_json('addsp/api/v1/voice/template/create', params)
-        const { code, data: res, message } = data
-        if (code !== 200 || !res) return  Message.error('操作失败')
+        const { code, data: res, message, MSG } = data
+        if (code !== 200 || !res) return  Message.error(message || MSG || '操作失败')
         const { id: voiceId, url: voiceUrl } = res
         this.$emit('confirm', { voiceId, voiceUrl })
         this.close()
@@ -276,8 +276,8 @@ export default {
         if (JSON.stringify(this.formData) !== JSON.stringify(this.makeAudioData.params)) {
           // 试听音频接口（根据文本生成）
           const { data = {} } = await api.postApi_json('addsp/api/v1/voice/voice/audition', this.formData)
-          const { code, data: src, message } = data
-          if (code !== 200) return Message.error(message)
+          const { code, data: src, message, MSG } = data
+          if (code !== 200) return Message.error(message || MSG || '操作失败')
           this.makeAudioData = {
             src,
             params: JSON.parse(JSON.stringify(this.formData))

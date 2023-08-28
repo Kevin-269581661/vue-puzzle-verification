@@ -104,7 +104,7 @@
 
               <el-form-item label="排期方式：" prop="publishType">
                 <el-radio-group v-model="playFormData.publishType" @change="changePublishType">
-                  <el-radio-button v-for="(item, i) in scheduleBtnList" :key="i" :label="item.value">
+                  <el-radio-button v-for="(item, i) in publishTypeSelectList" :key="i" :label="item.value">
                     {{ item.label }}
                   </el-radio-button>
                 </el-radio-group>
@@ -117,7 +117,8 @@
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
-                  value-format="yyyy-MM-DD"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
                   align="right"
                   :disabled="playFormData.publishType !== 3"
                 >
@@ -126,7 +127,7 @@
 
               <el-form-item label="投放设备：" prop="publishDeviceType">
                 <el-radio-group v-model="playFormData.publishDeviceType">
-                  <el-radio-button v-for="(item, i) in deviceBtnList" :key="i" :label="item.value">
+                  <el-radio-button v-for="(item, i) in publishDeviceTypeSelectList" :key="i" :label="item.value">
                     {{ item.label }}
                   </el-radio-button>
                 </el-radio-group>
@@ -135,7 +136,7 @@
 
               <el-form-item label="投放时段：" prop="publishTimeRange">
                 <el-radio-group v-model="playFormData.publishTimeRange">
-                  <el-radio-button v-for="(item, i) in timeBtnList" :key="i" :label="item.value">
+                  <el-radio-button v-for="(item, i) in publishTimeRangeSelectList" :key="i" :label="item.value">
                     {{ item.label }}
                   </el-radio-button>
                 </el-radio-group>
@@ -247,7 +248,7 @@ export default {
       voiceFormData: initVoiceFormData(),
       voiceFormRules: {
         title: [{ required: true, message: '请输入音频标题', trigger: 'blur'}],
-        voiceId: [{ required: true, message: '请选择音频素材', trigger: 'blur'}]
+        voiceId: [{ required: true, message: '请选择音频素材', trigger: 'change'}]
       },
       // 播放信息表单
       playFormData: initPlayFormData(),
@@ -286,17 +287,17 @@ export default {
         }],
       },
       // 排期方式-单选按钮组
-      scheduleBtnList: [
+      publishTypeSelectList: [
         { label: '按工程完成上画任务后', value: 2 },
         { label: '时间自定义', value: 3 },
       ],
       // 投放设备-单选按钮组
-      deviceBtnList: [
+      publishDeviceTypeSelectList: [
         // { label: '全媒体', value: 1 },
         { label: '指定媒体', value: 2 },
       ],
       // 投放时段-单选按钮组
-      timeBtnList: [
+      publishTimeRangeSelectList: [
         { label: '全时段', value: 1 },
         { label: '指定时段', value: 2 },
       ],

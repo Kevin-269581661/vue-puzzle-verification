@@ -103,7 +103,7 @@
                 size="small"
                 placeholder="请输入需要合成的文字，最多可以输入30个字符"
                 v-model="formData.text"
-                maxlength="100"
+                maxlength="30"
                 show-word-limit
                 clearable
                 :autosize="{ minRows: 3, maxRows: 6 }"

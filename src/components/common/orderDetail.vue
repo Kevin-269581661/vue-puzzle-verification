@@ -437,6 +437,14 @@
               ></change-pic>
             </div>
           </el-tab-pane>
+          <el-tab-pane label="音频信息" name="seventh">
+              <audioList
+                :audioInfoData="audioInfoList"
+                :loading="voLoading"
+                @getAudioList="getAudioList"
+                v-if="planPanel == 'seventh'"
+              ></audioList>
+            </el-tab-pane>
         </el-tabs>
         <!--换画弹框-->
         <div class="changepic_box FIRSTTIME" v-if="showPainModal">
@@ -1194,6 +1202,7 @@ import changePic from "./components/changePic.vue";
 import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue";
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 import TableSetting from "./components/TableSetting";
+import audioList from "./components/audioList.vue";
 
 export default {
   name: "orderDetail",
@@ -1208,7 +1217,8 @@ export default {
     noSearchResult,
     changeProposalOrderPrice,
     ScheduleAlter,
-    TableSetting
+    TableSetting,
+    audioList
   },
   data () {
     return {
@@ -1236,7 +1246,8 @@ export default {
       ],
       companyId: null,  //公司ID
       mediaTypeList: [],  //媒体类型
-      materialInfoJson:{},  //物料信息数据
+      materialInfoJson: {},  //物料信息数据
+      audioInfoList:{},  //音频信息列表 
       // session信息
       sessionData: {},
       isDown: false,
@@ -1251,6 +1262,7 @@ export default {
       //加载中
       loading: true,
       maLoading: true,
+      voLoading: true,
       // 判断
       role: "",
       customPermission: {},
@@ -1448,6 +1460,8 @@ export default {
 
     //获取物料信息
     this.getMaterialInfo();
+    //获取音频信息
+    this.getAudioList();
 
     if (
       ['ADN_BD_KA', 'ADN_BD'].includes(this.role)
@@ -1464,6 +1478,11 @@ export default {
     currentPagination () {
       this.recommendationTotalNum = this.recommendationList.length;
       return this.recommendationList.slice((this.recommendationCurrentPage - 1) * this.recommendationPageSize, this.recommendationCurrentPage * this.recommendationPageSize);
+    }
+  },
+  provide() {
+    return {
+      getAudioList: this.getAudioList  
     }
   },
   methods: {
@@ -1862,6 +1881,8 @@ export default {
       } else if (this.planPanel == "fifth") {
         this.getAdMaterialRemarkList()
       } else if (this.planPanel == "sixth") {
+      } else if (this.planPanel == "seventh") {
+        this.getAudioList() 
       }
 
     },
@@ -2719,6 +2740,23 @@ export default {
       this.getInitData();
       sessFun.messageFun('success', '修改订单金额成功')
 
+    },
+
+    //获取音频信息列表
+    getAudioList() {
+      let params = {
+        apId: sessionStorage.getItem("order_apid")
+      }
+      api.getApi('/addsp/api/v1/voice/listVoiceByApId', params)
+        .then(res => {
+          console.log(res)
+          this.audioInfoList = res.data.data
+          this.voLoading =false
+        })
+        .catch(err => {
+          console.log(err)
+          this.voLoading =false
+        })
     },
 
     changePrice () {

@@ -552,13 +552,13 @@
                     <div v-if="scope.row.status === 0">
                         待审核
                     </div>
-                    <div v-if="scope.row.status === 1">
+                    <div v-if="scope.row.status === 1  && sessionData.permissions.includes('voiceAdvertisingBroadcast')">
                         <span
                           class="point success"
                         ></span>
                         审核通过
                     </div>
-                    <div v-if="scope.row.status === 2">
+                    <div v-if="scope.row.status === 2 && sessionData.permissions.includes('voiceAdvertisingBroadcast')">
                         <span
                           class="point warning"
                         ></span>
@@ -902,7 +902,7 @@ export default {
           console.log('res.data', res.data)
           if (res.data.code === 200) {
             this.tableData = res.data.data.list || [];
-            this.paginationTotal = res.data.length || 0;
+            this.paginationTotal = res.data.data.total || 0;
           } else {
             this.$message({
               type: "warning",

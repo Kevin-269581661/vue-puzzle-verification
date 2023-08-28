@@ -282,7 +282,7 @@
                 v-if="planPanel == 'third'"
               ></material>
             </el-tab-pane>
-            <el-tab-pane label="音频信息" name="fourth" v-if="sessionData.permissions.includes('voiceAdvertisingBroadcast')">
+            <el-tab-pane label="音频信息" name="fourth">
               <audioList
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"
@@ -1263,6 +1263,7 @@
         this.rowSpace = size;
       },
 
+      //获取音频信息列表
       getAudioList() {
         let params = {
           apId: sessionStorage.getItem("plan_apid")

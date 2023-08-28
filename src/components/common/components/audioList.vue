@@ -87,7 +87,7 @@
                             <el-popconfirm title="确定通过吗？" @confirm="passAudio(scope.row)">
                                 <el-dropdown-item
                                     slot="reference"
-                                    v-if="scope.row.auditStatus === 0"
+                                    v-if="scope.row.auditStatus === 0  && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
                                 >
                                     通过
                                 </el-dropdown-item>
@@ -95,7 +95,7 @@
                             <el-popconfirm title="确定不通过吗？" @confirm="failAudio(scope.row)">
                                 <el-dropdown-item
                                     slot="reference"
-                                    v-if="scope.row.auditStatus === 0"
+                                    v-if="scope.row.auditStatus === 0 && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
                                 >
                                     不通过
                                 </el-dropdown-item>
@@ -160,7 +160,8 @@
 <script>
   import {Table, TableColumn, Message} from 'element-ui';
   import {api} from "../../../api/api.js";
-  import AddVoiceDialog from "./voice/addVoiceDialog.vue";
+import AddVoiceDialog from "./voice/addVoiceDialog.vue";
+import sessFun from "../../../commonFun/sessFun.js";
 
   export default {
       components: {
@@ -189,8 +190,12 @@
             audioName: '',
             audioUrl: '',
             failureDialogVisible: false,
-            failureReason:''
+            failureReason: '',
+            sessionData:{}
           }
+    },
+    created() {
+        this.sessionData = sessFun.getSess();
       },
       methods: {
         /**

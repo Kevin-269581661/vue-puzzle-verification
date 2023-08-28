@@ -512,11 +512,11 @@
                   <el-button
                     type="primary"
                     icon="el-icon-search"
-                    @click="toSearchParams()"
+                    @click="getAudioList()"
                   >
                     搜索</el-button
                   >
-                  <el-button plain @click="toResetParams()">重置</el-button>
+                  <el-button plain @click="resetAudio()">重置</el-button>
                 </li>
               </div>
               <el-table
@@ -1001,6 +1001,11 @@ export default {
     pauseAudio() {
       let audio = document.getElementById('audio')
       audio.pause()
+    },
+    resetAudio() {
+      this.searchInfo.title = null
+      this.searchInfo.apName = null
+      this.getAudioList()
     },
 
     toSearchParams() {

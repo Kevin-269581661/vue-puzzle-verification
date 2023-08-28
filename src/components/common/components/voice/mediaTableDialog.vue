@@ -1,156 +1,166 @@
 <template>
   <div class="media_table_dialog">
     <!-- 媒体列表 - 弹框组件-->
-    <el-dialog title="媒体列表" :visible.sync="visible" width="80%" top="10vh">
-      <!-- 搜索条件 -->
-      <div class="search_bar">
-        <div class="search_item">
-          <span class="item_title">媒体ID：</span>
-          <el-input
-            v-model="searchData.resName"
-            placeholder="请输入资源名称"
-            clearable
-            size="small"
-            class="item_content"
-          ></el-input>
-        </div>
+    <el-dialog
+      title="媒体列表"
+      width="80%"
+      top="10vh"
+      :visible.sync="visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="true"
+    >
+      <div class="custom_dialog_body">
+        <!-- 搜索条件 -->
+        <div class="search_bar">
+          <div class="search_item">
+            <span class="item_title">媒体ID：</span>
+            <el-input
+              v-model="searchData.assetTag"
+              placeholder="请输入资源名称"
+              clearable
+              size="small"
+              class="item_content"
+            ></el-input>
+          </div>
 
-        <div class="search_item">
-          <span class="item_title">资源名称：</span>
-          <el-input
-            v-model="searchData.apName"
-            placeholder="请输入方案名称"
-            clearable
-            size="small"
-            class="item_content"
-          ></el-input>
-        </div>
+          <div class="search_item">
+            <span class="item_title">资源名称：</span>
+            <el-input
+              v-model="searchData.resName"
+              placeholder="请输入方案名称"
+              clearable
+              size="small"
+              class="item_content"
+            ></el-input>
+          </div>
 
-        <div class="search_item">
-          <span class="item_title">媒体名称：</span>
-          <el-input
-            v-model="searchData.assetNumber"
-            placeholder="请输入资产编号"
-            clearable
-            size="small"
-            class="item_content"
-          ></el-input>
-        </div>
+          <div class="search_item">
+            <span class="item_title">媒体名称：</span>
+            <el-input
+              v-model="searchData.mediaName"
+              placeholder="请输入资产编号"
+              clearable
+              size="small"
+              class="item_content"
+            ></el-input>
+          </div>
 
-        <div class="search_item">
-          <span class="item_title">位置类型：</span>
-          <el-input
-            v-model="searchData.siteType"
-            placeholder="请输入位置类型"
-            clearable
-            size="small"
-            class="item_content"
-          ></el-input>
-          <!-- <el-select
-            v-model="searchData.siteType"
-            placeholder="请选择"
-            multiple
-            collapse-tags
-            clearable
-            size="small"
-            class="item_content"
+          <div class="search_item">
+            <span class="item_title">位置类型：</span>
+            <el-input
+              v-model="searchData.siteType"
+              placeholder="请输入位置类型"
+              clearable
+              size="small"
+              class="item_content"
+            ></el-input>
+            <!-- <el-select
+              v-model="searchData.siteType"
+              placeholder="请选择"
+              multiple
+              collapse-tags
+              clearable
+              size="small"
+              class="item_content"
+            >
+              <el-option
+                v-for="(item, i) in preparedData.siteTypeSelectList"
+                :key="i"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select> -->
+          </div>
+
+          <div class="search_item">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="small"
+              @click="handleSearch"
+            >
+              搜索
+            </el-button>
+            <el-button plain @click="handleReset" size="small">重置</el-button>
+          </div>
+
+        </div>
+        <!-- 全部媒体 -->
+        <div class="check_all_box">
+          <el-checkbox v-model="isCheckAll" @change="handleCheckAll">全部媒体</el-checkbox>
+        </div>
+        <!-- 列表 -->
+        <div class="table_box">
+          <el-table
+            ref="tableRef"
+            :data="tableList"
+            v-loading="tableLoading"
+            height="500px"
+            row-key="mid"
+            style="width: 100%"
+            element-loading-text="玩命加载中.."
+            element-loading-spinner="el-icon-loading"
+            highlight-current-row
+            tooltip-effect="dark"
           >
-            <el-option
-              v-for="(item, i) in preparedData.siteTypeSelectList"
-              :key="i"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select> -->
-        </div>
 
-        <div class="search_item">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="small"
-            @click="handleSearch"
+            <!-- <el-table-column label="序号" type="index" width="80"></el-table-column> -->
+            <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+
+            <el-table-column v-if="!isCheckAll" width="55" key="selection">
+              <template slot="header" slot-scope="scope">
+                <el-checkbox v-model="isCheckAllCurrentPage" @change="handleSelectAll"></el-checkbox>
+              </template>
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row.selected" @change="val => handleSelect(val, scope.row)"></el-checkbox>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="媒体名称" prop="mtitle" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="资源名称" prop="resName" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="城市" prop="cityName" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="区域" prop="areaName" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="街道" prop="street" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="商圈" prop="tradingArea" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="媒体备注" prop="remark" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="位置类型" prop="siteType" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="位置朝向" prop="siteOrientation" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="媒体位ID" prop="assetTag" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="楼盘类型" prop="resType" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="楼盘价格" prop="price" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="小区户数" prop="houseCount" show-overflow-tooltip></el-table-column>
+
+          </el-table>
+        </div>
+        <!-- 分页 -->
+        <div class="pagination_box">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="pagination.sizes"
+            :current-page.sync="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @current-change="changePage"
+            @size-change="changeSize"
           >
-            搜索
-          </el-button>
-          <el-button plain @click="handleReset" size="small">重置</el-button>
+          </el-pagination>
         </div>
-
       </div>
-      <!-- 全部媒体 -->
-      <div class="check_all_box">
-        <el-checkbox v-model="isCheckAll" @change="handleCheckAll">全部媒体</el-checkbox>
-      </div>
-      <!-- 列表 -->
-      <div class="table_box">
-        <el-table
-          ref="tableRef"
-          :data="tableList"
-          v-loading="tableLoading"
-          height="500px"
-          row-key="mid"
-          style="width: 100%"
-          element-loading-text="玩命加载中.."
-          element-loading-spinner="el-icon-loading"
-          highlight-current-row
-          tooltip-effect="dark"
-        >
-
-          <!-- <el-table-column label="序号" type="index" width="80"></el-table-column> -->
-          <!-- <el-table-column type="selection" width="55"></el-table-column> -->
-
-          <el-table-column v-if="!isCheckAll" width="55" key="selection">
-            <template slot="header" slot-scope="scope">
-              <el-checkbox v-model="isCheckAllCurrentPage" @change="handleSelectAll"></el-checkbox>
-            </template>
-            <template slot-scope="scope">
-              <el-checkbox v-model="scope.row.selected" @change="val => handleSelect(val, scope.row)"></el-checkbox>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="媒体名称" prop="mtitle" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="资源名称" prop="resName" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="城市" prop="cityName" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="区域" prop="areaName" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="街道" prop="street" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="商圈" prop="tradingArea" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="媒体备注" prop="remark" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="位置类型" prop="siteType" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="位置朝向" prop="siteOrientation" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="媒体位ID" prop="assetTag" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="楼盘类型" prop="resType" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="楼盘价格" prop="price" show-overflow-tooltip></el-table-column>
-
-          <el-table-column label="小区户数" prop="houseCount" show-overflow-tooltip></el-table-column>
-
-        </el-table>
-      </div>
-      <!-- 分页 -->
-      <div class="pagination_box">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :page-sizes="pagination.sizes"
-          :current-page.sync="pagination.page"
-          :page-size="pagination.pageSize"
-          :total="pagination.total"
-          @current-change="changePage"
-          @size-change="changeSize"
-        >
-        </el-pagination>
-      </div>
-      <div slot="footer" class="dialog_footer">
+      <div class="custom_dialog_footer">
         <el-button @click="close" size="small">取 消</el-button>
         <el-button type="primary" @click="handleConfirm" size="small">
           确 定
@@ -164,7 +174,6 @@
 import { Message } from "element-ui";
 
 import api from "../../../../api/api.js";
-// import sessFun from "../../../../commonFun/sessFun.js";
 
 const initSearchData = () => ({
   // 订单ID
@@ -190,6 +199,7 @@ export default {
       // required: true
     }
   },
+  emits: ['confirm'],
   data () {
     return {
       visible: false,
@@ -233,40 +243,35 @@ export default {
     /**
      * 获取列表数据
      */
-    getTableList() {
-      // const { token, uID: uid } = sessFun.getSess() || {}
-      const { page: pageNum, pageSize } = this.pagination
-      this.tableLoading = true
-      api.postApi_json('/addsp/api/v1/voice/voice/listOrderMedia', {
-        ...this.searchCondition,
-        // 订单ID
-        apId: this.apId,
-        pageNum,
-        pageSize
-      })
-        .then(res => {
-          const { code, data, message } = res.data
-          if (code === 200) {
-            const { list, total } = data
-            list.forEach(item => {
-              const hasIndex = this.tableSelectChangeList.findIndex(cell => cell.mId === item.mid)
-              if (hasIndex !== -1) {
-                item.selected = this.tableSelectChangeList[hasIndex].isSelect
-              }
-            })
-            this.tableList = list
-            this.pagination.total = total
-            this.isCheckAllCurrentPage = this.handleCheckAllPage()
-          } else {
-            Message.error(message || '获取列表数据失败')
+    async getTableList() {
+      try {
+        const { page: pageNum, pageSize } = this.pagination
+        this.tableLoading = true
+        const { data: res = {} } = await api.postApi_json('/addsp/api/v1/voice/voice/listOrderMedia', {
+          ...this.searchCondition,
+          // 订单ID
+          apId: this.apId,
+          pageNum,
+          pageSize
+        })
+        const { code, data, message } = res
+        if (code !== 200) return Message.error(message || '获取列表数据失败')
+        const { list, total } = data
+        list.forEach(item => {
+          const hasIndex = this.tableSelectChangeList.findIndex(cell => cell.mId === item.mid)
+          if (hasIndex !== -1) {
+            item.selected = this.tableSelectChangeList[hasIndex].isSelect
           }
         })
-        .catch(err => {
-          console.error('getTableList error:', err)
-        })
-        .finally(() => {
-          this.tableLoading = false
-        })
+        this.tableList = list
+        this.pagination.total = total
+        this.isCheckAllCurrentPage = this.handleCheckAllPage()
+      } catch (err) {
+        Message.error(err || '获取列表数据失败')
+        console.error('getTableList error:', err)
+      } finally {
+        this.tableLoading = false
+      }
     },
     /**
      * 搜索
@@ -325,19 +330,16 @@ export default {
      * 勾选
      */
      handleSelect(isSelect, { mid: mId }) {
-      console.log('handleSelect isSelect ==== ', isSelect, mId)
       // 记录改变的值，如果有重复，覆盖旧的
       let newList = this.tableSelectChangeList.filter(cell => cell.mId != mId)
       newList.push({ mId, isSelect })
       this.tableSelectChangeList = newList
       this.isCheckAllCurrentPage = this.handleCheckAllPage()
-      console.log('handleSelect tableSelectChangeList ==== ', this.tableSelectChangeList)
     },
     /**
      * 勾选全页
      */
      handleSelectAll(isSelect) {
-      console.log('handleSelectAll isSelect ==== ', isSelect)
       let newList = []
       this.tableList.forEach(item => {
         item.selected = isSelect
@@ -345,7 +347,6 @@ export default {
         newList.push({ mId: item.mid, isSelect })
         this.tableSelectChangeList = newList
       })
-      console.log('handleSelect tableSelectChangeList ==== ', this.tableSelectChangeList)
     },
     /**
      * 打开弹框
@@ -375,7 +376,10 @@ export default {
 
 <style lang="scss" scoped>
 .media_table_dialog {
-  /deep/ .el-dialog__body {
+  /deep/ .el-dialog .el-dialog__body {
+    padding: 0;
+  }
+  .custom_dialog_body {
     padding-bottom: 15px;
   }
   .search_bar {

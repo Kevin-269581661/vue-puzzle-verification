@@ -7,141 +7,160 @@
       width="800px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      :show-close="false"
+      :show-close="true"
     >
       <div v-loading="dialogLoading" class="dialog_content">
-        <div class="step_bar">
-          <el-steps :active="activeStep" finish-status="success" align-center>
-            <el-step v-for="(item, i) in stepList" :key="i" :title="item.title"></el-step>
-          </el-steps>
-        </div>
-        <div v-if="stepList[activeStep].subTitle" class="step_title">{{ stepList[activeStep].subTitle }}</div>
-        <div class="form_wrapper">
-          <!-- 音频信息表单 -->
-          <el-form
-            v-if="activeStep === 0"
-            ref="voiceFormRef"
-            :model="voiceFormData"
-            :rules="voiceFormRules"
-            label-width="100px"
-            size="small"
-            class="voice_form"
-          >
+        <div class="custom_dialog_body">
+          <div class="step_bar">
+            <el-steps :active="activeStep" finish-status="success" align-center>
+              <el-step v-for="(item, i) in stepList" :key="i" :title="item.title"></el-step>
+            </el-steps>
+          </div>
+          <div v-if="stepList[activeStep].subTitle" class="step_title">{{ stepList[activeStep].subTitle }}</div>
+          <div class="form_wrapper">
+            <!-- 音频信息表单 -->
+            <el-form
+              v-if="activeStep === 0"
+              ref="voiceFormRef"
+              :model="voiceFormData"
+              :rules="voiceFormRules"
+              label-width="100px"
+              size="small"
+              class="voice_form"
+            >
 
-            <el-form-item label="音频标题：" prop="title">
-              <el-input v-model="voiceFormData.title" placeholder="请输入音频标题" class="form_item_width" maxlength="30"></el-input>
-            </el-form-item>
+              <el-form-item label="音频标题：" prop="title">
+                <el-input
+                v-model.trim="voiceFormData.title"
+                :disabled="!!voiceFormData.voiceId"
+                placeholder="请输入音频标题"
+                class="form_item_width"
+                maxlength="30"
+              ></el-input>
+              </el-form-item>
 
-            <el-form-item label="音频素材：" prop="voiceId">
-              <div class="radio_button_box">
-                <el-radio-group v-model="activeMaterialBtnVal">
-                  <el-radio-button v-for="(item, i) in materialBtnList" :key="i" :label="item.value">
+              <el-form-item label="音频素材：" prop="voiceId">
+                <!-- 选择的音频 -->
+                <div v-if="voiceFormData.voiceId" class="voice_show_box">
+                  <img src="../../../../assets//images/audio_icon.png"/>
+                  <div class="btn_box">
+                    <i class="el-icon-service listen_icon" @click="playSelectVioce"></i>
+                  </div>
+                  <i class="el-icon-error close_icon" @click="clearSelectVoice"></i>
+                </div>
+                <div class="radio_button_box">
+                  <el-radio-group v-model="activeMaterialBtnVal" :disabled="!voiceFormData.title">
+                    <el-radio-button v-for="(item, i) in materialBtnList" :key="i" :label="item.value">
+                      {{ item.label }}
+                    </el-radio-button>
+                  </el-radio-group>
+                </div>
+                <!-- 制作音频 -->
+                <div v-if="activeMaterialBtnVal === 0" class="make_voice_box" :class="{ disabled: !voiceFormData.title }">
+                  <div class="icon_box">
+                    <img src="../../../../assets//images/audio_icon.png"/>
+                  </div>
+                  <el-button type="primary" @click="handleMakeVoiceBtnClick" :disabled="!voiceFormData.title">制作音频</el-button>
+                </div>
+                <!-- 上传音频 -->
+                <el-upload
+                  v-else
+                  :action="uploadData.action"
+                  :headers="uploadData.headers"
+                  :data="{
+                    title: voiceFormData.title
+                  }"
+                  :name="uploadData.name"
+                  :show-file-list="false"
+                  :before-upload="handleBeforeUpload"
+                  :on-success="handleUploadSuccess"
+                  :on-error="handleUploadError"
+                  :disabled="!voiceFormData.title"
+                  drag
+                  class="upload_voice_box"
+                  :class="{ disabled: !voiceFormData.title }"
+                >
+                  <div class="icon_box">
+                    <img src="../../../../assets//images/audio_icon.png"/>
+                  </div>
+                  <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
+                  <div class="upload_tip" slot="tip">
+                    <span class="start_text">* </span>只能上传 WAV 格式音频文件，时长10-15秒且不超过3M
+                  </div>
+                </el-upload>
+              </el-form-item>
+
+            </el-form>
+            <!-- 播放信息表单 -->
+            <el-form
+              v-else-if="activeStep === 1"
+              ref="playFormRef"
+              :model="playFormData"
+              :rules="playFormRules"
+              label-width="100px"
+              size="small"
+              class="play_form"
+            >
+
+              <el-form-item label="排期方式：" prop="publishType">
+                <el-radio-group v-model="playFormData.publishType" @change="changePublishType">
+                  <el-radio-button v-for="(item, i) in scheduleBtnList" :key="i" :label="item.value">
                     {{ item.label }}
                   </el-radio-button>
                 </el-radio-group>
-              </div>
-              <!-- 制作音频 -->
-              <div v-if="activeMaterialBtnVal === 0" class="make_voice_box">
-                <div class="icon_box">
-                  <img src="../../../../assets//images/audio_icon.png"/>
+              </el-form-item>
+
+              <el-form-item v-if="playFormData.publishType == 3" label="日期：" prop="dateRange">
+                <el-date-picker
+                  v-model="playFormData.dateRange"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="yyyy-MM-DD"
+                  align="right"
+                  :disabled="playFormData.publishType !== 3"
+                >
+                </el-date-picker>
+              </el-form-item>
+
+              <el-form-item label="投放设备：" prop="publishDeviceType">
+                <el-radio-group v-model="playFormData.publishDeviceType">
+                  <el-radio-button v-for="(item, i) in deviceBtnList" :key="i" :label="item.value">
+                    {{ item.label }}
+                  </el-radio-button>
+                </el-radio-group>
+                <el-button type="text" size="small" style="margin-left: 60px;" @click="openMediaTableDialog">媒体列表</el-button>
+              </el-form-item>
+
+              <el-form-item label="投放时段：" prop="publishTimeRange">
+                <el-radio-group v-model="playFormData.publishTimeRange">
+                  <el-radio-button v-for="(item, i) in timeBtnList" :key="i" :label="item.value">
+                    {{ item.label }}
+                  </el-radio-button>
+                </el-radio-group>
+                <div v-if="playFormData.publishTimeRange === 2" class="time_select_box">
+                  <!-- 时段选择器 - 组件 -->
+                  <TimeFrameSelect ref="timeFrameSelectRef" v-model="playFormData.playTimes"/>
                 </div>
-                <el-button type="primary" @click="handleMakeVoiceBtnClick">制作音频</el-button>
-              </div>
-              <!-- 上传音频 -->
-              <el-upload
-                v-else
-                :action="uploadData.action"
-                :headers="uploadData.headers"
-                :data="{
-                  title: voiceFormData.title
-                }"
-                :name="uploadData.name"
-                :before-upload="handleBeforeUpload"
-                :on-success="handleUploadSuccess"
-                :on-error="handleUploadError"
-                drag
-                class="upload_voice_box"
-              >
-                <div class="icon_box">
-                  <img src="../../../../assets//images/audio_icon.png"/>
-                </div>
-                <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
-                <div class="upload_tip" slot="tip">
-                  <span class="start_text">* </span>只能上传 WAV 格式音频文件，时长10-15秒且不超过3M
-                </div>
-              </el-upload>
-            </el-form-item>
+              </el-form-item>
 
-          </el-form>
-          <!-- 播放信息表单 -->
-          <el-form
-            v-else-if="activeStep === 1"
-            ref="playFormRef"
-            :model="playFormData"
-            :rules="playFormRules"
-            label-width="100px"
-            size="small"
-            class="play_form"
-          >
+            </el-form>
+            <!-- 完成创建 -->
+            <div v-else-if="activeStep === 2" class="finish_box">
+              <i class="el-icon-success icon_font"></i>
+              <div class="title">创建成功</div>
+              <div class="date_text">创建日期：2018年3月18日</div>
+            </div>
 
-            <el-form-item label="排期方式：" prop="publishType">
-              <el-radio-group v-model="playFormData.publishType" @change="changePublishType">
-                <el-radio-button v-for="(item, i) in scheduleBtnList" :key="i" :label="item.value">
-                  {{ item.label }}
-                </el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item label="日期：" prop="dateRange">
-              <el-date-picker
-                v-model="playFormData.dateRange"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-DD"
-                align="right"
-                :disabled="playFormData.publishType !== 3"
-              >
-              </el-date-picker>
-            </el-form-item>
-
-            <el-form-item label="投放设备：" prop="publishDeviceType">
-              <el-radio-group v-model="playFormData.publishDeviceType">
-                <el-radio-button v-for="(item, i) in deviceBtnList" :key="i" :label="item.value">
-                  {{ item.label }}
-                </el-radio-button>
-              </el-radio-group>
-              <el-button type="text" size="small" style="margin-left: 60px;" @click="openMediaTableDialog">媒体列表</el-button>
-            </el-form-item>
-
-            <el-form-item label="投放时段：" prop="publishTimeRange">
-              <el-radio-group v-model="playFormData.publishTimeRange">
-                <el-radio-button v-for="(item, i) in timeBtnList" :key="i" :label="item.value">
-                  {{ item.label }}
-                </el-radio-button>
-              </el-radio-group>
-              <div v-if="playFormData.publishTimeRange === 2" class="time_select_box">
-                <!-- 时段选择器 - 组件 -->
-                <TimeFrameSelect ref="timeFrameSelectRef" v-model="playFormData.playTimes"/>
-              </div>
-            </el-form-item>
-
-          </el-form>
-          <!-- 完成创建 -->
-          <div v-else-if="activeStep === 2" class="finish_box">
-            <i class="el-icon-success icon_font"></i>
-            <div class="title">创建成功</div>
-            <div class="date_text">创建日期：2018年3月18日</div>
           </div>
-
         </div>
-      </div>
-      <div slot="footer" class="dialog_footer">
-        <el-button @click="close" size="small">取 消</el-button>
-        <el-button type="primary" @click="handleNextStep" size="small">
-          {{ activeStep !== 2 ? '下一步' : '确定' }}
-        </el-button>
+        <div class="custom_dialog_footer">
+          <el-button @click="close" size="small">取 消</el-button>
+          <el-button type="primary" @click="handleNextStep" size="small">
+            {{ activeStep !== 2 ? '下一步' : '确定' }}
+          </el-button>
+        </div>
       </div>
     </el-dialog>
 
@@ -150,6 +169,9 @@
 
     <!-- 媒体列表 - 弹框组件-->
     <MediaTableDialog ref="mediaTableDialogRef" :apId="voiceFormData.apId" @confirm="confirmSelectMedia"/>
+
+    <!-- 音频播放器 -->
+    <audio ref="audioRef" @error="handleAudioError"></audio>
   </div>
 </template>
 
@@ -174,12 +196,14 @@ const initVoiceFormData = () => ({
   // 音频标题
   title: '',
   // 音频文件ID
-  voiceId: ''
+  voiceId: '',
+  // 音频文件地址
+  voiceUrl: ''
 })
 
 const initPlayFormData = () => ({
   // 排期方式
-  publishType: 1,
+  publishType: 2,
   dateRange: [],
   startDate: null,
   endDate: null,
@@ -191,7 +215,7 @@ const initPlayFormData = () => ({
   playTimes: [],
   // 投放设备列表
   medias: [],
-  isSelectAll: null,
+  isSelectAll: false,
   //
   // mediaIds: [],
 })
@@ -202,7 +226,7 @@ export default {
     MakeVoiceDialog,
     MediaTableDialog
   },
-  inject:['getAudioList'],
+  emits: ['refreshList'],
   data () {
     return {
       visible: false,
@@ -290,6 +314,50 @@ export default {
   },
   methods: {
     /**
+     * 播放音频
+     */
+     playAudio(src) {
+      if (this.$refs.audioRef) {
+        this.$refs.audioRef.src = src
+        this.$refs.audioRef.play()
+      }
+    },
+    handleAudioError() {
+      Message.error('音频加载失败')
+    },
+    /**
+     * 播放已选的音频
+     */
+    playSelectVioce () {
+      this.playAudio(this.voiceFormData.voiceUrl)
+    },
+    /**
+     * 清除已选的音频
+     */
+    async clearSelectVoice () {
+      try {
+        await this.$confirm(`删除音频无法恢复，是否继续？`, '温馨提示', {
+          type: 'warning'
+        })
+      } catch (err) {
+        return
+      }
+      try {
+        const { voiceId: id } = this.voiceFormData
+        this.dialogLoading = true
+        const res = await api.postApi_json('addsp/api/v1/voice/voice/delete', { id })
+        const { code, data, message } = res.data
+        if (code !== 200) return Message.error(message)
+        this.voiceFormData.voiceUrl = ''
+        this.voiceFormData.voiceId = ''
+      } catch (err) {
+        Message.error('操作失败')
+        console.error('clearSelectVoice error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
+    },
+    /**
      * 打开媒体列表选择弹框
      */
     openMediaTableDialog() {
@@ -299,9 +367,9 @@ export default {
      * 切换排期方式
      */
     changePublishType() {
-      if (this.playFormData.publishType !== 3) {
-        this.playFormData.dateRange = []
-      }
+      // if (this.playFormData.publishType !== 3) {
+      //   this.playFormData.dateRange = []
+      // }
     },
     /**
      * 初始化上传数据
@@ -321,7 +389,6 @@ export default {
      * 上传音频 - 上传前校验
      */
     handleBeforeUpload(file) {
-      console.log('handleBeforeUpload file====', file);
       // 必须先填写音频标题
       const voiceTitle = this.voiceFormData.title
       if (!voiceTitle) {
@@ -344,14 +411,11 @@ export default {
      * 上传音频 - 上传成功
      */
     handleUploadSuccess(res) {
-      console.log('handleUploadSuccess res=====', res)
-      const { data: voiceId } = res || {}
-      if (voiceId) {
-        this.voiceFormData.voiceId = voiceId
-        Message.success('上传成功')
-      } else {
-        Message.error('上传失败')
-      }
+      if (!res || !res.data) return Message.error('上传失败')
+      const { id: voiceId, url: voiceUrl } = res.data
+      this.voiceFormData.voiceId = voiceId
+      this.voiceFormData.voiceUrl = voiceUrl
+      Message.success('上传成功')
     },
     /**
      * 上传音频 - 上传出错
@@ -363,16 +427,15 @@ export default {
      * 选择媒体设备回调
      */
     confirmSelectMedia({ list, isCheckAll }) {
-      console.log('confirmSelectMedia list====', list, isCheckAll);
       this.playFormData.isSelectAll = isCheckAll
       this.playFormData.medias = list
     },
     /**
      * 制作音频回调
      */
-    confirmMakeVoice(voiceId) {
-      console.log('confirmMakeVoice voiceId====', voiceId);
+    confirmMakeVoice({ voiceId, voiceUrl }) {
       this.voiceFormData.voiceId = voiceId
+      this.voiceFormData.voiceUrl = voiceUrl
     },
     /**
      * 点击制作音频
@@ -380,24 +443,14 @@ export default {
     handleMakeVoiceBtnClick () {
       // 必须先填写音频标题
       const voiceTitle = this.voiceFormData.title
-      if (!voiceTitle) {
-        Message.warning('请先填写音频标题')
-        return
-      }
+      if (!voiceTitle) return Message.warning('请先填写音频标题')
       this.$refs.makeVoiceDialogRef && this.$refs.makeVoiceDialogRef.open(voiceTitle)
     },
     /**
      * 下一步
      */
     async handleNextStep() {
-      console.log('voiceFormData ===', this.voiceFormData)
-      console.log('playFormData ===', this.playFormData)
       try {
-        // if (this.activeStep <= 1) {
-        //   const validRes = await this.$refs[this.activeStep ? 'playFormRef' : 'voiceFormRef'].validate()
-        //   if (!validRes) return false
-        // }
-
         if (this.activeStep === 0) {
           const validRes = await this.$refs['voiceFormRef'].validate()
           if (!validRes) return false
@@ -413,10 +466,6 @@ export default {
             startDate,
             endDate
           }
-
-          // console.log('handleNextStep params ===', params)
-          // return
-
           let res = null
           this.dialogLoading = true
           if (params.id) {
@@ -424,15 +473,13 @@ export default {
           } else {
             res = await api.postApi_json('/addsp/api/v1/voice/create', params)
           }
+          if (!res || !res.data) return Message.error('提交表单数据失败')
           const { code, data, MSG } = res.data
-          if (code !== 200) {
-            Message.error(MSG || '提交表单数据失败')
-            return
-          }
+          if (code !== 200) return Message.error(MSG || '提交表单数据失败')
+          this.$emit('refreshList')
         }
         else if (this.activeStep === 2) {
           this.close()
-          // this.getAudioList()
         }
         if (++this.activeStep > this.stepList.length - 1) this.activeStep = 0;
       } catch (err) {
@@ -444,39 +491,36 @@ export default {
     /**
      * 获取记录详情数据
      */
-    getRecordData(id) {
+    async getRecordData(id) {
       if (!id) return
-      this.dialogLoading = true
-      api.getApi('/addsp/api/v1/voice/getVoiceDetail', { id })
-        .then(res => {
-          const { code, data, message } = res.data
-          if (code !== 200) {
-            Message.error(message || '获取数据失败')
-            return
-          }
-          const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes } = data
-          this.voiceFormData = {
-            ...this.voiceFormData,
-            title,
-            voiceId
-          }
-          this.playFormData = {
-            ...this.playFormData,
-            publishType,
-            startDate,
-            endDate,
-            dateRange: [ startDate, endDate ],
-            publishDeviceType,
-            publishTimeRange,
-            playTimes,
-          }
-        })
-        .catch(err => {
-          console.error('getRecordData error:', err)
-        })
-        .finally(() => {
-          this.dialogLoading = false
-        })
+      try {
+        this.dialogLoading = true
+        const { data = {} } = await api.getApi('/addsp/api/v1/voice/getVoiceDetail', { id })
+        const { code, data: res, message } = data
+        if (code !== 200) return Message.error(message || '获取数据失败')
+        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl } = res
+        this.voiceFormData = {
+          ...this.voiceFormData,
+          title,
+          voiceId,
+          voiceUrl
+        }
+        this.playFormData = {
+          ...this.playFormData,
+          publishType,
+          startDate,
+          endDate,
+          dateRange: [ startDate, endDate ],
+          publishDeviceType,
+          publishTimeRange,
+          playTimes,
+        }
+      } catch (err) {
+        Message.error(err || '获取数据失败')
+        console.error('getRecordData error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
     },
     /**
      * 打开弹框
@@ -490,7 +534,7 @@ export default {
         this.voiceFormData.id = recordId
         this.getRecordData(recordId)
       }
-      this.activeStep = 0 
+      this.activeStep = 0
       this.voiceFormData.apId = apId
       this.visible = true
     },
@@ -501,9 +545,11 @@ export default {
       this.activeStep = 0
       this.recordId = null
       this.dialogLoading = false
-      this.visible = false
       this.voiceFormData = initVoiceFormData()
       this.playFormData = initPlayFormData()
+      this.$refs.voiceFormRef && this.$refs.voiceFormRef.clearValidate()
+      this.$refs.playFormRef && this.$refs.playFormRef.clearValidate()
+      this.visible = false
     },
   },
   mounted () {
@@ -521,6 +567,9 @@ export default {
   /deep/ .el-button.el-button--text span {
     position: relative;
     top: 0 !important;
+  }
+  /deep/ .el-dialog .el-dialog__body {
+    padding: 0;
   }
   .dialog_content {
     .step_bar {
@@ -544,6 +593,50 @@ export default {
     .radio_button_box {
       margin-bottom: 16px;
     }
+    .voice_show_box {
+      width: 50px;
+      height: 50px;
+      border-radius: 4px;
+      background: #f5f5f5;
+      margin-bottom: 10px;
+      margin-top: 10px;
+      position: relative;
+      &:hover .btn_box {
+        display: block;
+      }
+      .btn_box {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        text-align: center;
+        .listen_icon {
+          font-size: 26px;
+          color: #fff;
+          cursor: pointer;
+          line-height: 50px;
+        }
+      }
+      .close_icon {
+        font-size: 20px;
+        color: #F56C6C;
+        cursor: pointer;
+        position: absolute;
+        right: -10px;
+        top: -10px;
+        z-index: 20;
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
     .make_voice_box {
       width: 314px;
       height: 132px;
@@ -555,6 +648,9 @@ export default {
       // justify-content: center;
       flex-direction: column;
       box-sizing: border-box;
+      &.disabled {
+        opacity: 0.5;
+      }
       .icon_box {
         width: 32px;
         height: 32px;
@@ -566,6 +662,9 @@ export default {
       }
     }
     .upload_voice_box {
+      &.disabled {
+        opacity: 0.5;
+      }
       /deep/ .el-upload-dragger {
         width: 314px;
         height: 132px;

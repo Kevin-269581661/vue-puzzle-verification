@@ -7,10 +7,11 @@
       width="1300px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
-      :show-close="false"
+      :show-close="true"
     >
       <div v-loading="dialogLoading" class="dialog_content">
-        <el-form
+        <div class="custom_dialog_body">
+          <el-form
           ref="formRef"
           :model="formData"
           :rules="formRules"
@@ -20,109 +21,112 @@
         >
           <div class="step_title">第一步：选择音色</div>
 
-          <el-form-item label-width="0" prop="voiceType">
-            <!-- <div class="tone_box">
-              <el-radio-group v-model="activeToneBtnVal" size="small">
-                <el-radio-button
-                  v-for="(item, i) in toneBtnList"
-                  :key="i"
-                  :label="item.value"
-                  type="plain"
-                >
-                  {{ item.label }}
-                </el-radio-button>
-              </el-radio-group>
-              <span class="start_text">* </span><span class="text">精品音色基于更优质的算法进行合成，发音更加细腻流畅</span>
-            </div> -->
-            <!-- 音色选择列表 -->
-            <div class="tone_list_wrapper">
-              <div class="tone_list">
-                <div
-                  v-for="(item, i) in toneList"
-                  :key="i"
-                  class="tone_item"
-                  :class="{ active: formData.voiceType === item.voiceType }"
-                  @click="handleToneItemClick(item)"
-                >
-                  <div class="avatar_box">
-                    <img :src="item.icon || require('../../../../assets//images/default_avatar.png')" alt="">
-                  </div>
-                  <div class="info_box">
-                    <div class="name_box">
-                      <span class="text" :title="item.name">{{ item.name }}</span>
-                      <span class="tag_box">{{ item.tag }}</span>
+            <el-form-item label-width="0" prop="voiceType">
+              <!-- <div class="tone_box">
+                <el-radio-group v-model="activeToneBtnVal" size="small">
+                  <el-radio-button
+                    v-for="(item, i) in toneBtnList"
+                    :key="i"
+                    :label="item.value"
+                    type="plain"
+                  >
+                    {{ item.label }}
+                  </el-radio-button>
+                </el-radio-group>
+                <span class="start_text">* </span><span class="text">精品音色基于更优质的算法进行合成，发音更加细腻流畅</span>
+              </div> -->
+              <!-- 音色选择列表 -->
+              <div class="tone_list_wrapper">
+                <div class="tone_list">
+                  <div
+                    v-for="(item, i) in toneList"
+                    :key="i"
+                    class="tone_item"
+                    :class="{ active: formData.voiceType === item.voiceType }"
+                    @click="handleToneItemClick(item)"
+                  >
+                    <div class="avatar_box">
+                      <img :src="item.icon || require('../../../../assets//images/default_avatar.png')" alt="">
                     </div>
-                    <div class="desc_box">{{ item.title }}</div>
+                    <div class="info_box">
+                      <div class="name_box">
+                        <span class="text" :title="item.name">{{ item.name }}</span>
+                        <span class="tag_box">{{ item.tag }}</span>
+                      </div>
+                      <div class="desc_box">{{ item.title }}</div>
+                    </div>
+                    <!-- <div class="play_box" @click="playToneAudio(item)">
+                      <img src="../../../../assets/images/play_icon.png" alt="">
+                    </div> -->
                   </div>
-                  <!-- <div class="play_box" @click="playToneAudio(item)">
-                    <img src="../../../../assets/images/play_icon.png" alt="">
-                  </div> -->
                 </div>
               </div>
-            </div>
-          </el-form-item>
+            </el-form-item>
 
-          <!-- <div class="step_title">第二步：调节音量和语速</div>
+            <!-- <div class="step_title">第二步：调节音量和语速</div>
 
-          <el-form-item label-width="110px" label="语速" prop="title">
-            <div class="speed_box">
-              <el-slider v-model="formData.value"  :marks="marks"></el-slider>
-            </div>
-          </el-form-item> -->
-
-          <div class="step_title">第二步：输入需要合成的文字</div>
-
-          <!-- <el-form-item label="覆盖要求：" prop="title">
-            <el-radio-group v-model="formData.radio">
-              <el-radio v-for="item in coverRadioList" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
-            </el-radio-group>
-          </el-form-item> -->
-
-          <!-- <el-form-item label="合成文字：" prop="title">
-            <div class="compound_text_box">
-              <div class="textarea_box">
-                <textarea placeholder="请输入需要合成的文字，最多可以输入60个字符" maxlength="20000" class="input_box" />
+            <el-form-item label-width="110px" label="语速" prop="title">
+              <div class="speed_box">
+                <el-slider v-model="formData.value"  :marks="marks"></el-slider>
               </div>
-              <div class="footer">
-                <div class="left_box">
-                  <div class="try_listen_btn">
-                    <img src="../../../../assets/images/small_play_icon.png" alt="">
-                    <span>试听</span>
-                  </div>
-                  <span class="text">（仅可试听前100字）</span>
+            </el-form-item> -->
+
+            <div class="step_title">第二步：输入需要合成的文字</div>
+
+            <!-- <el-form-item label="覆盖要求：" prop="title">
+              <el-radio-group v-model="formData.radio">
+                <el-radio v-for="item in coverRadioList" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+              </el-radio-group>
+            </el-form-item> -->
+
+            <!-- <el-form-item label="合成文字：" prop="title">
+              <div class="compound_text_box">
+                <div class="textarea_box">
+                  <textarea placeholder="请输入需要合成的文字，最多可以输入60个字符" maxlength="20000" class="input_box" />
                 </div>
-                <div class="right_box">0/20000</div>
+                <div class="footer">
+                  <div class="left_box">
+                    <div class="try_listen_btn">
+                      <img src="../../../../assets/images/small_play_icon.png" alt="">
+                      <span>试听</span>
+                    </div>
+                    <span class="text">（仅可试听前100字）</span>
+                  </div>
+                  <div class="right_box">0/20000</div>
+                </div>
               </div>
-            </div>
-          </el-form-item> -->
+            </el-form-item> -->
 
-          <el-form-item label="合成文字：" prop="text">
-            <el-input
-              type="textarea"
-              size="small"
-              placeholder="请输入需要合成的文字，最多可以输入30个字符"
-              v-model="formData.text"
-              maxlength="30"
-              show-word-limit
-              clearable
-              :autosize="{ minRows: 3, maxRows: 6 }"
-              resize="none"
-              class="el_textarea_box"
-            >
-            </el-input>
-          </el-form-item>
+            <el-form-item label="合成文字：" prop="text">
+              <el-input
+                type="textarea"
+                size="small"
+                placeholder="请输入需要合成的文字，最多可以输入30个字符"
+                v-model="formData.text"
+                maxlength="30"
+                show-word-limit
+                clearable
+                :autosize="{ minRows: 3, maxRows: 6 }"
+                resize="none"
+                class="el_textarea_box"
+              >
+              </el-input>
+            </el-form-item>
 
-        </el-form>
+          </el-form>
+        </div>
+        <div class="custom_dialog_footer">
+          <el-button @click="close" size="small">取 消</el-button>
+          <el-button type="primary" @click="validateForm('tryListen')" size="small">
+            试 听
+          </el-button>
+          <el-button type="primary" @click="validateForm('makeVoice')" size="small">
+            生成音频
+          </el-button>
+        </div>
+
       </div>
-      <div slot="footer" class="dialog_footer">
-        <el-button @click="close" size="small">取 消</el-button>
-        <el-button type="primary" @click="validateForm('tryListen')" size="small">
-          试 听
-        </el-button>
-        <el-button type="primary" @click="validateForm('makeVoice')" size="small">
-          生成音频
-        </el-button>
-      </div>
+
     </el-dialog>
 
     <!-- 音频播放器 -->
@@ -217,10 +221,30 @@ export default {
       this.formData.voiceType = voiceType
     },
     /**
-     * 生成音频文件接口
+     * 获取音色列表数据
      */
-     createVoiceMaterial () {
-      return new Promise((resolve, reject) => {
+    async getToneList() {
+      try {
+        this.dialogLoading = true
+        const { data = {} } = await api.postApi_json('addsp/api/v1/voice/voice/templates')
+        const { code, data: res, message } = data
+        if (code !== 200) return Message.error(message)
+        this.toneList = res
+      } catch (err) {
+        Message.error('获取数据失败')
+        console.error('getToneList error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
+    },
+    handleAudioError() {
+      Message.error('音频加载失败')
+    },
+    /**
+     * 点击生成音频
+     */
+    async makeVoice() {
+      try {
         const { text, voiceType, voiceTitle: title } = this.formData
         const { realName: creatorName, uID: creatorId } = sessFun.getSess()
         const params = {
@@ -232,119 +256,28 @@ export default {
           creatorName,
           creatorId
         }
-        api.postApi_json('addsp/api/v1/voice/template/create', params)
-          .then((res) => {
-            const { code, data, message } = res.data
-            if (code === 200) {
-              resolve(data)
-            } else {
-              reject(message)
-            }
-          })
-          .catch((err) => {
-            reject(err)
-          })
-      })
-    },
-    /**
-     * 试听音频(根据文本生成)
-     */
-    createVoiceAudio () {
-      return new Promise((resolve, reject) => {
-        const { text, voiceType } = this.formData
-        const params = {
-          // 试听文本
-          text,
-          // 试听音色ID
-          voiceType
-        }
-        api.postApi_json('addsp/api/v1/voice/voice/audition', params )
-          .then((res) => {
-            const { code, data, message } = res.data
-            if (code === 200) {
-              resolve(data)
-            } else {
-              reject(message)
-            }
-          })
-          .catch((err) => {
-            reject(err)
-          })
-      })
-    },
-    /**
-     * 试听音频(根据音频ID)
-     */
-    // getAudioByToneId (id) {
-    //   return new Promise((resolve, reject) => {
-    //     api.getApi('addsp/api/v1/voice/voice/auditionVoiceTemplate', { id })
-    //     .then((res) => {
-    //       console.log('getAudioByToneId res:', res)
-    //       const { code, data, message } = res.data
-    //       if (code === 200) {
-    //         resolve(data)
-    //       } else {
-    //         reject(message)
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       reject(err)
-    //     })
-    //   })
-    // },
-    /**
-     * 获取音色列表数据
-     */
-    getToneList() {
-      this.dialogLoading = true
-      api.postApi_json('addsp/api/v1/voice/voice/templates')
-        .then((res) => {
-          console.log('getToneList res:', res)
-          const { code, data, message } = res.data
-          if (code === 200) {
-            this.toneList = data
-          } else {
-            Message.error(message)
-          }
-        })
-        .catch((err) => {
-          Message.error(err)
-          console.error('getToneList error:', err)
-        })
-        .finally(() => {
-          this.dialogLoading = false
-        })
-    },
-    handleAudioError() {
-      Message.error('音频加载失败')
-    },
-    /**
-     * 生成音频
-     */
-    async makeVoice() {
-      try {
-        const res = await this.createVoiceMaterial()
-        console.log('makeVoice res:', res)
-        const { code, data: voiceId, message } = res || {}
-        if (code === 0) {
-          this.$emit('confirm', voiceId)
-          this.close()
-        } else {
-          Message.error(message || '操作失败')
-        }
+        // 生成音频文件接口
+        const { data = {} } = await api.postApi_json('addsp/api/v1/voice/template/create', params)
+        const { code, data: res, message } = data
+        if (code !== 200 || !res) return  Message.error('操作失败')
+        const { id: voiceId, url: voiceUrl } = res
+        this.$emit('confirm', { voiceId, voiceUrl })
+        this.close()
       } catch (err) {
         Message.error(err || '操作失败')
       }
     },
     /**
-     * 试听
+     * 点击试听
      */
     async tryListen() {
       try {
         // 若生成过，读取缓存
         if (JSON.stringify(this.formData) !== JSON.stringify(this.makeAudioData.params)) {
-          const src = await this.createVoiceAudio()
-          console.log('validateForm src:', src)
+          // 试听音频接口（根据文本生成）
+          const { data = {} } = await api.postApi_json('addsp/api/v1/voice/voice/audition', this.formData)
+          const { code, data: src, message } = data
+          if (code !== 200) return Message.error(message)
           this.makeAudioData = {
             src,
             params: JSON.parse(JSON.stringify(this.formData))
@@ -410,6 +343,9 @@ export default {
   /deep/ .el-button.el-button--text span {
     position: relative;
     top: 0 !important;
+  }
+  /deep/ .el-dialog .el-dialog__body {
+    padding: 0;
   }
   .dialog_content {
     .step_title {
@@ -612,11 +548,6 @@ export default {
 
   }
 
-  .dialog_footer {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
 
 }
 

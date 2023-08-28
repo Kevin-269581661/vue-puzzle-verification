@@ -65,7 +65,6 @@ export default {
     value: {
       type: Array,
       require: true
-
     }
   },
   model: {
@@ -86,21 +85,8 @@ export default {
     }
   },
   watch: {
-    // value: {
-    //   handler (val) {
-    //     console.log('value === ', val)
-    //     if (!val || !val.length) {
-    //       this.selectDataList = initSelectDataList()
-    //     } else {
-    //       this.selectDataList = JSON.parse(JSON.stringify(val))
-    //     }
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // },
     selectDataList: {
       handler (val) {
-        console.log('selectDataList === ', val)
         this.handleSelectDataFormat()
         let newValue = []
         if (JSON.stringify(val) !== JSON.stringify(initSelectDataList())) {
@@ -153,7 +139,6 @@ export default {
           list = []
         }
       })
-      console.log('obj ====', obj)
       const newObj = {}
       Object.keys(obj).forEach(key => {
         newObj[key] = []
@@ -172,17 +157,13 @@ export default {
         })
         newObj[key] = newList
       })
-      console.log('newObj ====', newObj)
       this.selectFormatObj = newObj
     },
     handleTdClick (rowIndex, colIndex) {
-      // console.log('handleTdClick === ', rowIndex, colIndex)
       const newVal = this.selectDataList[rowIndex][colIndex] ? 0 : 1
       this.$set(this.selectDataList[rowIndex], colIndex, newVal)
-      // console.log('handleTdClick === ', this.selectDataList)
     },
     handleTdMouseDown (e, rowIndex, colIndex) {
-      // console.log('handleTdMouseDown === ', e, rowIndex, colIndex)
       let isClick = true
       let startX = e.clientX
       let startY = e.clientY
@@ -192,9 +173,6 @@ export default {
       let width = e.target.clientWidth + 1
       let height = e.target.clientHeight + 1
       let changeHistorySet = new Set()
-
-      console.log('handleTdMouseDown === ',e, startX, startY, startOffsetX, startOffsetY)
-
       let handleTdMouseMove =  (e) => {
         isClick = false
         let endX = e.clientX
@@ -203,7 +181,6 @@ export default {
         let endOffsetY = e.offsetY
         let distanceX = endX - startX
         let distanceY = endY - startY
-        console.log('handleTdMouseMove === ', distanceX, distanceY, endOffsetX, endOffsetY)
         let countX = 0
         let countY = 0
         let isRight = false
@@ -285,7 +262,6 @@ export default {
       let list = this.value.map(item => {
         return item.split('').map(cell => Number(cell))
       })
-      console.log('mounted list ===== ', list)
       this.selectDataList = list
     }
   },

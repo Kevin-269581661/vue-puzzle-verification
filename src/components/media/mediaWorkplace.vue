@@ -902,7 +902,7 @@ export default {
           console.log('res.data', res.data)
           if (res.data.code === 200) {
             this.tableData = res.data.data.list || [];
-            this.paginationTotal = res.data.length || 0;
+            this.paginationTotal = res.data.data.total || 0;
           } else {
             this.$message({
               type: "warning",

@@ -512,11 +512,11 @@
                   <el-button
                     type="primary"
                     icon="el-icon-search"
-                    @click="toSearchParams()"
+                    @click="getAudioList()"
                   >
                     搜索</el-button
                   >
-                  <el-button plain @click="toResetParams()">重置</el-button>
+                  <el-button plain @click="resetAudio()">重置</el-button>
                 </li>
               </div>
               <el-table
@@ -899,8 +899,9 @@ export default {
       }
       api.postApi_json('/addsp/api/v1/voice/listAudit', data)
         .then(res => {
+          console.log('res.data', res.data)
           if (res.data.code === 200) {
-            this.tableData = res.data || [];
+            this.tableData = res.data.data.list || [];
             this.paginationTotal = res.data.length || 0;
           } else {
             this.$message({
@@ -1002,6 +1003,11 @@ export default {
       let audio = document.getElementById('audio')
       audio.pause()
     },
+    resetAudio() {
+      this.searchInfo.title = null
+      this.searchInfo.apName = null
+      this.getAudioList()
+    },
 
     toSearchParams() {
       if (this.aduitDate) {
@@ -1062,7 +1068,7 @@ export default {
   },
   mounted() {
     this.sessionData = sessFun.getSess();
-    console.log(this.sessionData, "this.sessionDatathis.sessionData");
+    console.log(this.sessionData, "this.sessionData");
 
     this.getData();
   },

@@ -437,12 +437,12 @@
               ></change-pic>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="音频信息" name="fourth">
+          <el-tab-pane label="音频信息" name="seventh">
               <audioList
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"
                 @getAudioList="getAudioList"
-                v-if="planPanel == 'fourth'"
+                v-if="planPanel == 'seventh'"
               ></audioList>
             </el-tab-pane>
         </el-tabs>
@@ -1881,6 +1881,8 @@ export default {
       } else if (this.planPanel == "fifth") {
         this.getAdMaterialRemarkList()
       } else if (this.planPanel == "sixth") {
+      } else if (this.planPanel == "seventh") {
+        this.getAudioList() 
       }
 
     },
@@ -2743,7 +2745,7 @@ export default {
     //获取音频信息列表
     getAudioList() {
       let params = {
-        apId: sessionStorage.getItem("plan_apid")
+        apId: sessionStorage.getItem("order_apid")
       }
       api.getApi('/addsp/api/v1/voice/listVoiceByApId', params)
         .then(res => {

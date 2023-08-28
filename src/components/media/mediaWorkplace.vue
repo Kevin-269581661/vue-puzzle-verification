@@ -899,8 +899,9 @@ export default {
       }
       api.postApi_json('/addsp/api/v1/voice/listAudit', data)
         .then(res => {
+          console.log('res.data', res.data)
           if (res.data.code === 200) {
-            this.tableData = res.data || [];
+            this.tableData = res.data.data.list || [];
             this.paginationTotal = res.data.length || 0;
           } else {
             this.$message({
@@ -1067,7 +1068,7 @@ export default {
   },
   mounted() {
     this.sessionData = sessFun.getSess();
-    console.log(this.sessionData, "this.sessionDatathis.sessionData");
+    console.log(this.sessionData, "this.sessionData");
 
     this.getData();
   },

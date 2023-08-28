@@ -837,7 +837,9 @@ export default {
                     this.permissionsData = res.data.data
                     res.data.data.forEach(item => {
                         if (item.status === 1) {
-                        this.permissions.push(item.permissionId)
+                            if (this.permissions.indexOf(item.permissionId) === -1) {
+                                this.permissions.push(item.permissionId)  
+                            }
                         }
                     })
                 })

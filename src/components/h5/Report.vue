@@ -723,6 +723,7 @@ export default {
   },
   created () {
     this.getCustomPermission()
+    this.getPermission()
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();

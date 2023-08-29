@@ -308,6 +308,13 @@ import FileSaver from 'file-saver';
             api.postApi_json('/addsp/api/v1/voice/voice/schedule/setEnableStatus', params)
                 .then(res => {
                     console.log(res)
+                    if (res.data.code !== 200) {
+                        this.$message({
+                            type: "warning",
+                            message: res.data.MSG || "状态更改异常！",
+                        });
+                        row.status === 0 ? row.status = 1 : row.status = 0
+                    }
                 })
                 .catch(err => {
                     console.log(err)

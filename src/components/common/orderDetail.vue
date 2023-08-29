@@ -442,6 +442,7 @@
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"
                 @getAudioList="getAudioList"
+                :apId="apId"
                 v-if="planPanel == 'seventh'"
               ></audioList>
             </el-tab-pane>
@@ -1441,6 +1442,7 @@ export default {
       mTitleList: [],
       siteOrientationList: [],
       mTypeList: [],
+      apId:sessionStorage.getItem('order_apid')
       // isPointDisable: false
     };
   },

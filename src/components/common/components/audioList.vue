@@ -247,7 +247,7 @@ import FileSaver from 'file-saver';
                   } else {
                     this.$message({
                         type: "warning",
-                        message: res.data.MSG || "试听音频异常！",
+                        message: res.data.MSG || "操作失败！",
                     });
                   }
               })

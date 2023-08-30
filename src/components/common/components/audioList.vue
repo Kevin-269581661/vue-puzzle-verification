@@ -158,10 +158,12 @@
 </template>
 
 <script>
-  import {Table, TableColumn, Message} from 'element-ui';
-  import {api} from "../../../api/api.js";
+import axios from 'axios';
+import {Table, TableColumn, Message} from 'element-ui';
+import {api} from "../../../api/api.js";
 import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 import sessFun from "../../../commonFun/sessFun.js";
+import FileSaver from 'file-saver';
 
   export default {
       components: {
@@ -180,8 +182,11 @@ import sessFun from "../../../commonFun/sessFun.js";
           },
           getAudioList: {
             type: Function
+          },
+          apId: {
+            type: String,
+            default: ''
           }
-
       },
       computed: {},
       data() {
@@ -191,7 +196,8 @@ import sessFun from "../../../commonFun/sessFun.js";
             audioUrl: '',
             failureDialogVisible: false,
             failureReason: '',
-            sessionData:{}
+            sessionData: {},
+            isDownLoad: false
           }
     },
     created() {
@@ -203,7 +209,7 @@ import sessFun from "../../../commonFun/sessFun.js";
          */
         openAddVoiceDialog(recordId = null) {
           this.$refs.addVoiceDialogRef && this.$refs.addVoiceDialogRef.open({
-            apId: sessionStorage.getItem("plan_apid"),
+            apId: this.apId,
             recordId
           })
         },
@@ -212,51 +218,85 @@ import sessFun from "../../../commonFun/sessFun.js";
         },
         // 点击试听
         showAudio(row) {
-            this.audioName = row.title
-            let params = {
-                id: row.voiceId
-            }
-            api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
-                .then(res => {
-                    if (res.data.code === 200) {
-                        this.audioUrl = res.data.data
-                        this.audioDialogVisible = true
-                    } else {
-                        this.$message({
-                            type: "warning",
-                            message: res.data.MSG || "试听音频异常！",
-                        });
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
+            this.isDownLoad = false
+            this.getLoadAudio(row)
           },
-        // 下载音频
-        downLoadAudio(row) {
-            let params = {
-                id: row.voiceId
+        getLoadAudio(row) {
+          let params = {
+              id: row.voiceId
             }
-            api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
-                .then(res => {
-                    console.log(res);
-                    const blobUrl = window.URL.createObjectURL(new Blob([res.data.data]))
-                    const link = document.createElement('a')
-                    document.body.appendChild(link)
-                    link.style.display = 'none'
-                    link.href = blobUrl
-                    link.download = row.title +'.wav'
-                    link.click()
-                    document.body.removeChild(link)
-                    window.URL.revokeObjectURL(blobUrl)
-                })
-                .catch(err => {
-                    console.log(err)
+          this.audioName = row.title
+          api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
+              .then(res => {
+                  console.log(res.data.data)
+                  if (res.data.code === 200) {
+                    this.audioUrl = res.data.data
+                      if (this.isDownLoad) {
+                        this.downLoadAudioFile()
+                        // const link = document.createElement('a')
+                        // link.style.display = 'none'
+                        // link.href = this.audioUrl
+                        // link.download = `${this.audioName}.wav`
+                        // document.body.appendChild(link)
+                        // link.click()
+                        // document.body.removeChild(link)
+                        // window.URL.revokeObjectURL(blobUrl)
+                      } else {
+                        this.audioDialogVisible = true
+                      }
+                  } else {
                     this.$message({
                         type: "warning",
-                        message: res.data.MSG || "下载音频异常！",
+                        message: res.data.MSG || "试听音频异常！",
                     });
-                })
+                  }
+              })
+              .catch(err => {
+                  console.log(err)
+              })
+          },
+          downLoadAudioFile() {
+
+            FileSaver.saveAs(new File([this.audioUrl], {type: "audio/wav"}), `${this.audioName}.wav`)
+            //   axios.get(this.audioUrl, {
+            //       headers: {
+            //         responseType: 'blob'
+            //       }
+            //   })
+            //   .then(res => {
+            //       console.log(res)
+                //   if (res.data.code === 200) {
+                //       if (this.isDownLoad) {
+                //         let blobUrl = window.URL.createObjectURL(new Blob([res.data.data]))
+                //         console.log('blobUrl', blobUrl);
+                //         const link = document.createElement('a')
+                //         document.body.appendChild(link)
+                //         link.style.display = 'none'
+                //         link.href = res.data.data
+                //         link.href = blobUrl
+                //         link.download = `${this.audioName}.wav`
+                //         link.click()
+                //         document.body.removeChild(link)
+                //         window.URL.revokeObjectURL(blobUrl)
+                //       } else {
+                //         this.audioUrl = res.data.data
+                //         this.audioDialogVisible = true
+                //       }
+                //   } else {
+                //       this.$message({
+                //           type: "warning",
+                //           message: res.data.MSG || "试听音频异常！",
+                //       });
+                //   }
+            //   })
+            //   .catch(err => {
+            //       console.log(err)
+            //   })
+        },
+        // 下载音频
+        downLoadAudio(row) {
+            this.isDownLoad = true
+            this.getLoadAudio(row)
           },
         // 开启或关闭音频
         changeSwitch(row) {
@@ -268,6 +308,13 @@ import sessFun from "../../../commonFun/sessFun.js";
             api.postApi_json('/addsp/api/v1/voice/voice/schedule/setEnableStatus', params)
                 .then(res => {
                     console.log(res)
+                    if (res.data.code !== 200) {
+                        this.$message({
+                            type: "warning",
+                            message: res.data.MSG || "状态更改异常！",
+                        });
+                        row.status === 0 ? row.status = 1 : row.status = 0
+                    }
                 })
                 .catch(err => {
                     console.log(err)

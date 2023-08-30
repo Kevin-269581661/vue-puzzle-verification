@@ -287,6 +287,7 @@
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"
                 @getAudioList="getAudioList"
+                :apId="apId"
                 v-if="planPanel == 'fourth'"
               ></audioList>
             </el-tab-pane>
@@ -477,7 +478,7 @@
       };
       return {
         materialInfoJson:{},  //物料信息数据
-        audioInfoList:{},  //音频信息列表
+        audioInfoList:[],  //音频信息列表
         // 登录信息
         sessionData: {},
         addPointDialogVisible: false,
@@ -559,7 +560,8 @@
           { id: 14, label: "排期", prop: "timeRange", width:"200", isChecked: true, fix: "right" },
         ],
         itemKey: '',
-        rowSpace: ''
+        rowSpace: '',
+        apId: sessionStorage.getItem('plan_apid')
       };
     },
     created () {

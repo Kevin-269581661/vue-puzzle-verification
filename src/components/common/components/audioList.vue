@@ -259,25 +259,25 @@ import FileSaver from 'file-saver';
 
             // FileSaver.saveAs(new File([this.audioUrl], {type: "audio/wav"}), `${this.audioName}.wav`)
               axios.get(this.audioUrl, {
-                  headers: {
-                    responseType: 'blob'
-                  }
+                //   headers: {
+                //     responseType: 'blob'
+                //   }
               })
               .then(res => {
                   console.log(res)
                 //   if (res.data.code === 200) {
                 //       if (this.isDownLoad) {
-                //         let blobUrl = window.URL.createObjectURL(new Blob([res.data.data]))
-                //         console.log('blobUrl', blobUrl);
-                //         const link = document.createElement('a')
-                //         document.body.appendChild(link)
-                //         link.style.display = 'none'
-                //         link.href = res.data.data
-                //         link.href = blobUrl
-                //         link.download = `${this.audioName}.wav`
-                //         link.click()
-                //         document.body.removeChild(link)
-                //         window.URL.revokeObjectURL(blobUrl)
+                        // let blobUrl = window.URL.createObjectURL(new Blob([res]))
+                        // console.log('blobUrl', blobUrl);
+                        // const link = document.createElement('a')
+                        // document.body.appendChild(link)
+                        // link.style.display = 'none'
+                        // link.href = res.data.data
+                        // link.href = blobUrl
+                        // link.download = `${this.audioName}.wav`
+                        // link.click()
+                        // document.body.removeChild(link)
+                        // window.URL.revokeObjectURL(blobUrl)
                 //       } else {
                 //         this.audioUrl = res.data.data
                 //         this.audioDialogVisible = true

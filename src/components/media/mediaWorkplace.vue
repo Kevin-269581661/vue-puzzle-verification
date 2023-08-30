@@ -922,7 +922,7 @@ export default {
     showAudio(row) {
       this.audioName = row.apName
       let params = {
-        id: row.id
+        id: row.voiceId
       }
       api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
         .then(res => {

@@ -256,7 +256,6 @@ import FileSaver from 'file-saver';
               })
           },
           downLoadAudioFile() {
-            this.audioUrl = new Blob([this.audioUrl])
             axios.get(this.audioUrl, {
                 headers: {
                   responseType: 'blob'

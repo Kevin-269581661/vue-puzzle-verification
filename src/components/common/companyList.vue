@@ -221,7 +221,7 @@
           ></el-option>
         </el-select>
       </p>
-      <p class="conpany-form-item">
+      <p class="conpany-form-item" v-if="permissionsData.length > 0">
         <template style="display:flex">
           <span class="conpany-form__label" style="padding-right:30px;white-space:nowrap">权限选择：</span>
           <el-checkbox-group v-model="permissions">
@@ -498,7 +498,9 @@ export default {
           this.permissionsData = res.data.data
           res.data.data.forEach(item => {
             if (item.status === 1) {
-              this.permissions.push(item.permissionId)
+              if (this.permissions.indexOf(item.permissionId) === -1) {
+                this.permissions.push(item.permissionId)  
+              }
             }
           })
           this.isShowNew = true;

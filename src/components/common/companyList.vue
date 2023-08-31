@@ -610,7 +610,7 @@ export default {
     isForbidden(row) {
       console.log(row);
       MessageBox.confirm(
-        `是否${row.state == 1 ? "禁用" : "开通"}该角色?`,
+        `是否${row.state == 1 ? "禁用" : "开通"}该公司?`,
         "提示",
         {
           confirmButtonText: "确定",

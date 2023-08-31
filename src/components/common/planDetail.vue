@@ -264,7 +264,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
-                    :page-sizes="[50, 100, 200, 300]"
+                    :page-sizes="[10, 20, 50, 100]"
                     :page-size="pageSize"
                     style="text-align: right; margin-top: 10px"
                     layout="total, sizes, prev, pager, next, jumper"
@@ -290,6 +290,20 @@
                 :apId="apId"
                 v-if="planPanel == 'fourth'"
               ></audioList>
+              <div class="ad_pagination">
+                <el-pagination
+                    background
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[50, 100, 200, 300]"
+                    :page-size="pageSize"
+                    style="text-align: right; margin-top: 10px"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalNum"
+                  >
+                  </el-pagination>
+            </div>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -591,9 +605,11 @@
     methods: {
       handleSizeChange (val) {
         this.pageSize = val;
+        this.getAudioList()
       },
       handleCurrentChange (val) {
         this.currentPage = val;
+        this.getAudioList()
       },
       // 导出excel
       export2Excel (name) {
@@ -1267,13 +1283,16 @@
 
       //获取音频信息列表
       getAudioList() {
+        this.voLoading =true
         let params = {
-          apId: sessionStorage.getItem("plan_apid")
+          apId: sessionStorage.getItem("plan_apid"),
+          pageSize: this.pageSize,
+          pageNum: this.currentPage
         }
         api.getApi('/addsp/api/v1/voice/listVoiceByApId', params)
           .then(res => {
             console.log(res)
-            this.audioInfoList = res.data.data
+            this.audioInfoList = res.data.data.list
             this.voLoading =false
           })
           .catch(err => {

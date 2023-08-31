@@ -80,8 +80,8 @@
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row.scheduleId)" v-if="scope.row.auditStatus !== 2">编辑</el-dropdown-item>
-                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row.scheduleId)" v-else>重新提交</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row)" v-if="scope.row.auditStatus !== 2">编辑</el-dropdown-item>
+                            <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row)" v-else>重新提交</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="showAudio(scope.row)">试听</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="downLoadAudio(scope.row)">下载</el-dropdown-item>
                             <el-popconfirm title="确定通过吗？" @confirm="passAudio(scope.row)">
@@ -113,6 +113,7 @@
                 </template>
               </el-table-column>
           </el-table>
+          
       </div>
 
 
@@ -163,7 +164,6 @@ import {Table, TableColumn, Message} from 'element-ui';
 import {api} from "../../../api/api.js";
 import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 import sessFun from "../../../commonFun/sessFun.js";
-import FileSaver from 'file-saver';
 
   export default {
       components: {
@@ -207,11 +207,18 @@ import FileSaver from 'file-saver';
         /**
          * 打开添加音频弹框
          */
-        openAddVoiceDialog(recordId = null) {
-          this.$refs.addVoiceDialogRef && this.$refs.addVoiceDialogRef.open({
-            apId: this.apId,
-            recordId
-          })
+        openAddVoiceDialog(row) {
+            if (row.status) {
+                this.$message({
+                    type: "warning",
+                    message: "关闭音频后进入编辑状态",
+                });
+            } else {
+                this.$refs.addVoiceDialogRef && this.$refs.addVoiceDialogRef.open({
+                    apId: this.apId,
+                    recordId: row.scheduleId
+                })
+            }
         },
         addVoice() {
           this.openAddVoiceDialog()
@@ -405,7 +412,7 @@ import FileSaver from 'file-saver';
                 .catch(err => {
                     console.log(err)
                 })
-        }
+          }
     },
   }
 </script>
@@ -644,6 +651,9 @@ import FileSaver from 'file-saver';
 
   .change-pic-detail-modal /deep/ .el-dialog__body {
       padding: 5px 24px;
+  }
+  .el-tabs__content{
+    padding-bottom: 60px;
   }
 
   .el-dropdown-link{

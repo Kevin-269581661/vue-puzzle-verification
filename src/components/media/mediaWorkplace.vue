@@ -965,7 +965,8 @@ export default {
     // 弹出音频不通过弹窗
     failAudio(row) {
       this.row = row
-      this.failureDialogVisible =true
+      this.failureDialogVisible = true
+      this.failureReason = ''
     },
 
     //确认不通过音频

@@ -255,43 +255,18 @@ import FileSaver from 'file-saver';
                   console.log(err)
               })
           },
-          downLoadAudioFile() {
-
-            FileSaver.saveAs(new File([this.audioUrl], {type: "audio/wav"}), `${this.audioName}.wav`)
-            //   axios.get(this.audioUrl, {
-            //       headers: {
-            //         responseType: 'blob'
-            //       }
-            //   })
-            //   .then(res => {
-            //       console.log(res)
-                //   if (res.data.code === 200) {
-                //       if (this.isDownLoad) {
-                //         let blobUrl = window.URL.createObjectURL(new Blob([res.data.data]))
-                //         console.log('blobUrl', blobUrl);
-                //         const link = document.createElement('a')
-                //         document.body.appendChild(link)
-                //         link.style.display = 'none'
-                //         link.href = res.data.data
-                //         link.href = blobUrl
-                //         link.download = `${this.audioName}.wav`
-                //         link.click()
-                //         document.body.removeChild(link)
-                //         window.URL.revokeObjectURL(blobUrl)
-                //       } else {
-                //         this.audioUrl = res.data.data
-                //         this.audioDialogVisible = true
-                //       }
-                //   } else {
-                //       this.$message({
-                //           type: "warning",
-                //           message: res.data.MSG || "试听音频异常！",
-                //       });
-                //   }
-            //   })
-            //   .catch(err => {
-            //       console.log(err)
-            //   })
+        downLoadAudioFile() {
+          axios({
+            method: 'get',
+            url: this.audioUrl, // 请求地址
+            responseType: 'blob',
+          })
+          .then(res => {
+            FileSaver.saveAs(new Blob([res.data], { type: "audio/x-wav" }), `${this.audioName}.wav`)
+          })
+          .catch(err => {
+              console.log(err)
+          })
         },
         // 下载音频
         downLoadAudio(row) {

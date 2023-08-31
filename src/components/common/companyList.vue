@@ -148,6 +148,7 @@
       :visible.sync="isShowNew"
       width="550px"
       class="company-dialog"
+      @close="resetPermissions"
     >
       <p class="conpany-form-item">
         <span class="conpany-form__label">公司名称：</span>
@@ -353,6 +354,9 @@ export default {
       this.pageSize = val;
       this.currPage = 1;
       this.searchFun();
+    },
+    resetPermissions() {
+      this.permissions = []
     },
     // 判断角色是否有新建按钮(系统管理员和超级管理员有)
     getRole() {

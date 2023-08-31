@@ -241,15 +241,15 @@ import sessFun from "../../../commonFun/sessFun.js";
                   if (res.data.code === 200) {
                     this.audioUrl = res.data.data
                       if (this.isDownLoad) {
-                        // this.downLoadAudioFile()
-                        const link = document.createElement('a')
-                        link.style.display = 'none'
-                        link.href = URL.createObjectURL(this.audioUrl)
-                        link.download = `${this.audioName}.wav`
-                        document.body.appendChild(link)
-                        link.click()
-                        document.body.removeChild(link)
-                        URL.revokeObjectURL(this.audioUrl)
+                        this.downLoadAudioFile()
+                        // const link = document.createElement('a')
+                        // link.style.display = 'none'
+                        // link.href = URL.createObjectURL(this.audioUrl)
+                        // link.download = `${this.audioName}.wav`
+                        // document.body.appendChild(link)
+                        // link.click()
+                        // document.body.removeChild(link)
+                        // URL.revokeObjectURL(this.audioUrl)
                       } else {
                         this.audioDialogVisible = true
                       }
@@ -271,7 +271,16 @@ import sessFun from "../../../commonFun/sessFun.js";
             responseType: 'blob',
           })
           .then(res => {
-            FileSaver.saveAs(new Blob([res.data], { type: "audio/x-wav" }), `${this.audioName}.wav`)
+            let blob = new Blob([res.data])
+            // 创建一个临时的ur1指向blob对象
+            let url = window.URL.createobjectURL(blob)
+            //创建一个a标签，用来下载
+            let a = document.createElement("a")
+            a.href = url
+            a.download = `${this.audioName}.wav`
+            a.click()
+            // 释放这个临时的对象ur1
+            window.URL.revokeobjectURL(url)
           })
           .catch(err => {
               console.log(err)

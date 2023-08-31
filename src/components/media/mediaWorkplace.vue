@@ -610,7 +610,7 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
-    
+
     <el-dialog
       title="试听"
       :visible.sync="audioDialogVisible"
@@ -618,9 +618,7 @@
       @close="pauseAudio"
       top="300px">
       <p class="audio-title">音频名称：{{ audioName }}</p>
-      <audio controls class="audio" id="audio">
-        <source :src="audioUrl" type="audio/mpeg">
-      </audio>
+      <audio controls class="audio" id="audio" ref="audioRef"></audio>
     </el-dialog>
 
     <el-dialog
@@ -713,7 +711,6 @@ export default {
       audioDialogVisible: false,
       failureDialogVisible: false,
       audioName: '',
-      audioUrl:'',
       failureReason: '',
       row: {},
       searchInfo: {
@@ -921,20 +918,20 @@ export default {
     // 点击试听
     showAudio(row) {
       this.audioName = row.apName
+      this.audioDialogVisible = true
       let params = {
         id: row.voiceId
       }
       api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
         .then(res => {
           if (res.data.code === 200) {
-              this.audioUrl = res.data.data
-              this.audioDialogVisible = true
+              this.playAudio(res.data.data)
           } else {
               this.$message({
                   type: "warning",
                   message: res.data.MSG || "试听音频异常！",
               });
-            } 
+            }
         })
         .catch(err => {
           console.log(err)
@@ -967,7 +964,7 @@ export default {
 
     // 弹出音频不通过弹窗
     failAudio(row) {
-      this.row = row 
+      this.row = row
       this.failureDialogVisible =true
     },
 
@@ -1000,8 +997,14 @@ export default {
 
     // 暂停播放
     pauseAudio() {
-      let audio = document.getElementById('audio')
-      audio.pause()
+      this.$refs.audioRef && this.$refs.audioRef.pause()
+    },
+    // 暂停播放
+    playAudio(src) {
+      if (this.$refs.audioRef) {
+        this.$refs.audioRef.src = src
+        this.$refs.audioRef.play()
+      }
     },
     resetAudio() {
       this.searchInfo.title = null

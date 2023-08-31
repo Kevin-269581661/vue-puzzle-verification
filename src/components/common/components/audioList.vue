@@ -84,29 +84,25 @@
                             <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row)" v-else>重新提交</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="showAudio(scope.row)">试听</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="downLoadAudio(scope.row)">下载</el-dropdown-item>
-                            <el-popconfirm title="确定通过吗？" @confirm="passAudio(scope.row)">
-                                <el-dropdown-item
-                                    slot="reference"
-                                    v-if="scope.row.auditStatus === 0  && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
-                                >
-                                    通过
-                                </el-dropdown-item>
+                            <!-- 通过 -->
+                            <el-popconfirm
+                              v-if="scope.row.auditStatus === 0  && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
+                              title="确定通过吗？"
+                              @confirm="passAudio(scope.row)"
+                            >
+                              <el-dropdown-item slot="reference">通过</el-dropdown-item>
                             </el-popconfirm>
-                            <el-popconfirm title="确定不通过吗？" @confirm="failAudio(scope.row)">
-                                <el-dropdown-item
-                                    slot="reference"
-                                    v-if="scope.row.auditStatus === 0 && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
-                                >
-                                    不通过
-                                </el-dropdown-item>
+                            <!-- 不通过 -->
+                            <el-popconfirm
+                              v-if="scope.row.auditStatus === 0 && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
+                              title="确定不通过吗？"
+                              @confirm="failAudio(scope.row)"
+                            >
+                              <el-dropdown-item slot="reference">不通过</el-dropdown-item>
                             </el-popconfirm>
-                            <el-popconfirm title="确定删除吗？"  @confirm="deleteAudio(scope.row)">
-                                <el-dropdown-item
-                                    slot="reference"
-                                    v-if=" scope.row.publishStatus === 0"
-                                >
-                                    删除
-                                </el-dropdown-item>
+                            <!-- 删除 -->
+                            <el-popconfirm v-if=" scope.row.publishStatus === 0" title="确定删除吗？"  @confirm="deleteAudio(scope.row)">
+                                <el-dropdown-item slot="reference">删除</el-dropdown-item>
                             </el-popconfirm>
                         </el-dropdown-menu>
                     </el-dropdown>

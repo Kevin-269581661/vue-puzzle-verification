@@ -534,7 +534,7 @@ export default {
           publishType,
           startDate,
           endDate,
-          dateRange: [ startDate, endDate ],
+          dateRange: publishType == 2 ? [] : [ startDate, endDate ],
           publishDeviceType,
           publishTimeRange,
           playTimes,

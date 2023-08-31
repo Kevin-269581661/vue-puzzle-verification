@@ -75,7 +75,7 @@
               </el-table-column>
               <el-table-column prop="count" label="操作" min-width="12.7%" align="left">
                 <template slot-scope="scope">
-                    <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
+                    <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="true">
                         <span class="el-dropdown-link">
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
                         </span>

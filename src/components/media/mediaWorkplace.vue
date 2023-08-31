@@ -634,7 +634,7 @@
         v-model="failureReason">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="failureReason = false">取 消</el-button>
+        <el-button @click="failureDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmFailedAudio">确 定</el-button>
       </span>
     </el-dialog>
@@ -965,7 +965,8 @@ export default {
     // 弹出音频不通过弹窗
     failAudio(row) {
       this.row = row
-      this.failureDialogVisible =true
+      this.failureDialogVisible = true
+      this.failureReason = ''
     },
 
     //确认不通过音频

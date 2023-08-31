@@ -130,9 +130,7 @@
       @close="pauseAudio"
       top="300px">
       <p class="audio-title">音频名称：{{ audioName }}</p>
-      <audio controls class="audio" id="audio">
-        <source :src="audioUrl" type="audio/mpeg">
-      </audio>
+      <audio controls class="audio" id="audio" ref="audioRef"></audio>
     </el-dialog>
 
     <el-dialog
@@ -164,7 +162,7 @@ import {Table, TableColumn, Message} from 'element-ui';
 import {api} from "../../../api/api.js";
 import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 import sessFun from "../../../commonFun/sessFun.js";
-import FileSaver from 'file-saver'; 
+import FileSaver from 'file-saver';
 
   export default {
       components: {
@@ -194,7 +192,6 @@ import FileSaver from 'file-saver';
           return {
             audioDialogVisible: false,
             audioName: '',
-            audioUrl: '',
             failureDialogVisible: false,
             failureReason: '',
             sessionData: {},
@@ -229,31 +226,35 @@ import FileSaver from 'file-saver';
         // 点击试听
         showAudio(row) {
             this.isDownLoad = false
+            this.audioDialogVisible = true
+            this.audioName = row.title
             this.getLoadAudio(row)
           },
         getLoadAudio(row) {
           let params = {
-              id: row.voiceId
-            }
-          this.audioName = row.title
+            id: row.voiceId
+          }
+          const audioName = row.title
           api.getApi('/addsp/api/v1/voice/voice/auditionVoiceTemplate', params)
               .then(res => {
-                  console.log(res.data.data)
                   if (res.data.code === 200) {
-                    this.audioUrl = res.data.data
-                      if (this.isDownLoad) {
-                        this.downLoadAudioFile()
-                        // const link = document.createElement('a')
-                        // link.style.display = 'none'
-                        // link.href = URL.createObjectURL(this.audioUrl)
-                        // link.download = `${this.audioName}.wav`
-                        // document.body.appendChild(link)
-                        // link.click()
-                        // document.body.removeChild(link)
-                        // URL.revokeObjectURL(this.audioUrl)
-                      } else {
-                        this.audioDialogVisible = true
-                      }
+                    const audioUrl = res.data.data
+                    // 下载
+                    if (this.isDownLoad) {
+                      this.downLoadAudioFile(audioUrl, audioName)
+                      // const link = document.createElement('a')
+                      // link.style.display = 'none'
+                      // link.href = URL.createObjectURL(this.audioUrl)
+                      // link.download = `${this.audioName}.wav`
+                      // document.body.appendChild(link)
+                      // link.click()
+                      // document.body.removeChild(link)
+                      // URL.revokeObjectURL(this.audioUrl)
+                    }
+                    // 试听
+                    else {
+                      this.playAudio(audioUrl)
+                    }
                   } else {
                     this.$message({
                         type: "warning",
@@ -266,14 +267,14 @@ import FileSaver from 'file-saver';
               })
           },
         //下载音频
-        downLoadAudioFile() {
+        downLoadAudioFile(url, audioName) {
           axios({
             method: 'get',
-            url: this.audioUrl, // 请求地址
+            url, // 请求地址
             responseType: 'blob',
           })
           .then(res => {
-            FileSaver.saveAs(new Blob([res.data], { type: "audio/x-wav" }), `${this.audioName}.wav`)
+            FileSaver.saveAs(new Blob([res.data], { type: "audio/x-wav" }), `${audioName}.wav`)
           })
           .catch(err => {
               console.log(err)
@@ -308,9 +309,15 @@ import FileSaver from 'file-saver';
         },
         // 暂停播放
         pauseAudio() {
-            let audio = document.getElementById('audio')
-            audio.pause()
-          },
+          this.$refs.audioRef && this.$refs.audioRef.pause()
+        },
+        // 暂停播放
+        playAudio(src) {
+          if (this.$refs.audioRef) {
+            this.$refs.audioRef.src = src
+            this.$refs.audioRef.play()
+          }
+        },
         // 音频审核通过
         passAudio(row) {
             this.row = row

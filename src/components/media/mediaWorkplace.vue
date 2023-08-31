@@ -634,7 +634,7 @@
         v-model="failureReason">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="failureReason = false">取 消</el-button>
+        <el-button @click="failureDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmFailedAudio">确 定</el-button>
       </span>
     </el-dialog>

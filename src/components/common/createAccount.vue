@@ -758,6 +758,7 @@ export default {
                     // this.accountForm.role = "";
                 }
             }
+            this.permissions = []
             this.getPermissionList(val)
             this.getMediaPermission();
             this.accountForm.MD_BD_MediaPermission = []

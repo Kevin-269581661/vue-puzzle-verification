@@ -264,6 +264,7 @@ import sessFun from "../../../commonFun/sessFun.js";
                   console.log(err)
               })
           },
+        //下载音频
         downLoadAudioFile() {
           axios({
             method: 'get',
@@ -277,7 +278,7 @@ import sessFun from "../../../commonFun/sessFun.js";
               console.log(err)
           })
         },
-        // 下载音频
+        // 点击下载音频
         downLoadAudio(row) {
             this.isDownLoad = true
             this.getLoadAudio(row)

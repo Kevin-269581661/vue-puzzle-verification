@@ -164,6 +164,7 @@ import {Table, TableColumn, Message} from 'element-ui';
 import {api} from "../../../api/api.js";
 import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 import sessFun from "../../../commonFun/sessFun.js";
+import FileSaver from 'file-saver'; 
 
   export default {
       components: {

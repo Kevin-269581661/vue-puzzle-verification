@@ -437,7 +437,7 @@
               ></change-pic>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="音频信息" name="seventh">
+          <el-tab-pane label="音频信息" name="seventh" v-if="sessionData.permissions.includes('voiceAdvertisingBroadcastShow')">
               <audioList
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"

@@ -232,22 +232,22 @@ import FileSaver from 'file-saver';
                   if (res.data.code === 200) {
                     this.audioUrl = res.data.data
                       if (this.isDownLoad) {
-                        this.downLoadAudioFile()
-                        // const link = document.createElement('a')
-                        // link.style.display = 'none'
-                        // link.href = this.audioUrl
-                        // link.download = `${this.audioName}.wav`
-                        // document.body.appendChild(link)
-                        // link.click()
-                        // document.body.removeChild(link)
-                        // window.URL.revokeObjectURL(blobUrl)
+                        // this.downLoadAudioFile()
+                        const link = document.createElement('a')
+                        link.style.display = 'none'
+                        link.href = URL.createObjectURL(this.audioUrl)
+                        link.download = `${this.audioName}.wav`
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        URL.revokeObjectURL(this.audioUrl)
                       } else {
                         this.audioDialogVisible = true
                       }
                   } else {
                     this.$message({
                         type: "warning",
-                        message: res.data.MSG || "试听音频异常！",
+                        message: res.data.MSG || "操作失败！",
                     });
                   }
               })

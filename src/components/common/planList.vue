@@ -99,15 +99,15 @@
             <div class="btn_box">
               <el-button plain @click.native.prevent="openRecycleBin" class="marginR">回收站</el-button>
 
-              <el-button plain v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) && showExportBtns.includes(8)"
+              <el-button plain v-if="sessionData.permissions.includes('allSpaceExport')"
                 @click.native.prevent="allPointExportVisible = true" class="marginR">总点导出</el-button>
 
-              <template v-if="showNewBtn || !isNation">
-                <el-button plain @click="reset()" v-if="showExportBtns.includes(6)" @click.native.prevent="exportRes"
+              <!-- <template v-if="showNewBtn || !isNation"> -->
+                <el-button plain @click="reset()" v-if="sessionData.permissions.includes('storeExportSpace')" @click.native.prevent="exportRes"
                   class="marginR">门店导点</el-button>
                 <el-button plain v-if="showNewBtn" @click.native.prevent="openVacancyDownloadDialog" class="marginR">空位导出
                 </el-button>
-              </template>
+              <!-- </template> -->
 
               <template v-if="showNewBtn || !isNation">
                 <el-button type="primary" icon="el-icon-plus" v-if="showNewBtn" @click="addOne()" class="marginR">新建

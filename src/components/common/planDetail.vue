@@ -69,16 +69,19 @@
                     type="primary"
                     @click="edit()"
                     v-if="
-                      (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                      (
+                        ['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                         customPermission.proposalPermission == 0 &&
-                        planDetail.planMode != 1) ||
-                      (['ADN_BD_KA', 'ADN_BD'].includes(role) &&
+                        planDetail.planMode != 1
+                      ) || (
+                        ['ADN_BD_KA', 'ADN_BD'].includes(role) &&
                         customPermission.proposalPermission == 1 &&
-                        planDetail.planMode == 1) ||
-                      ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
+                        planDetail.planMode == 1
+                      ) || ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
                     "
-                    >编辑</el-button
-                  >
+                    >
+                    编辑
+                  </el-button>
                 </template>
               </div>
             </div>
@@ -261,7 +264,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
-                    :page-sizes="[50, 100, 200, 300]"
+                    :page-sizes="[10, 20, 50, 100]"
                     :page-size="pageSize"
                     style="text-align: right; margin-top: 10px"
                     layout="total, sizes, prev, pager, next, jumper"
@@ -278,6 +281,29 @@
                 :isOrder="false"
                 v-if="planPanel == 'third'"
               ></material>
+            </el-tab-pane>
+            <el-tab-pane label="音频信息" name="fourth">
+              <audioList
+                :audioInfoData="audioInfoList"
+                :loading="voLoading"
+                @getAudioList="getAudioList"
+                :apId="apId"
+                v-if="planPanel == 'fourth'"
+              ></audioList>
+              <div class="ad_pagination">
+                <el-pagination
+                    background
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[50, 100, 200, 300]"
+                    :page-size="pageSize"
+                    style="text-align: right; margin-top: 10px"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalNum"
+                  >
+                  </el-pagination>
+            </div>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -427,6 +453,7 @@
 
   // 报价单
   import material from "./components/materialInfo.vue";
+  import audioList from "./components/audioList.vue";
   import detail from "./components/detailInfo.vue";
   import addPoint from './components/addPoint.vue';
   import TableSetting from "./components/TableSetting";
@@ -443,6 +470,7 @@
       material,
       detail,
       addPoint,
+      audioList,
       ScheduleAlter,
       TableSetting
     },
@@ -464,6 +492,7 @@
       };
       return {
         materialInfoJson:{},  //物料信息数据
+        audioInfoList:[],  //音频信息列表
         // 登录信息
         sessionData: {},
         addPointDialogVisible: false,
@@ -484,6 +513,7 @@
         //加载中
         loading: true,
         maLoading: true,
+        voLoading: true,
         role: "",
         customPermission: {},
         // 方案详情
@@ -544,12 +574,15 @@
           { id: 14, label: "排期", prop: "timeRange", width:"200", isChecked: true, fix: "right" },
         ],
         itemKey: '',
-        rowSpace: ''
+        rowSpace: '',
+        apId: sessionStorage.getItem('plan_apid')
       };
     },
     created () {
        //获取物料信息
       this.getMaterialInfo();
+      //获取音频信息
+      this.getAudioList();
       // 获取角色
       this.getRole();
       // 获取选点排期数据
@@ -564,12 +597,19 @@
         return this.setPointDataList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
       }
     },
+    provide() {
+      return {
+        getAudioList: this.getAudioList  
+      }
+    },
     methods: {
       handleSizeChange (val) {
         this.pageSize = val;
+        this.getAudioList()
       },
       handleCurrentChange (val) {
         this.currentPage = val;
+        this.getAudioList()
       },
       // 导出excel
       export2Excel (name) {
@@ -736,6 +776,7 @@
           this.getSetPoint();
         } else if (this.planPanel == "second") {
         } else if (this.planPanel == "third") {
+        } else if (this.planPanel == "fourth") {
         }
       },
       // 获取选点排期列表数据
@@ -1239,6 +1280,26 @@
       spaceSetting(size) {
         this.rowSpace = size;
       },
+
+      //获取音频信息列表
+      getAudioList() {
+        this.voLoading =true
+        let params = {
+          apId: sessionStorage.getItem("plan_apid"),
+          pageSize: this.pageSize,
+          pageNum: this.currentPage
+        }
+        api.getApi('/addsp/api/v1/voice/listVoiceByApId', params)
+          .then(res => {
+            console.log(res)
+            this.audioInfoList = res.data.data.list
+            this.voLoading =false
+          })
+          .catch(err => {
+            console.log(err)
+            this.voLoading =false
+          })
+      }
     },
   };
   </script>

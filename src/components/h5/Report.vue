@@ -425,7 +425,7 @@
                 <el-option :value="1" label="定制模板"></el-option>
                 <!-- 南宁定制，亲粤邻 显示 审核模板 -->
                 <el-option
-                  v-if="hasAuthTemplate"
+                  v-if="permissions.includes('AIImageAudit')"
                   :value="3"
                   label="审核模板"
                 >
@@ -559,6 +559,7 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from '../../commonFun/sessFun.js';
 
+
 import noSearchResult from "../common/components/noSearchResult.vue";
 
 import {
@@ -677,7 +678,9 @@ export default {
       pptLoading: false,
       pdfLoading: false,
       // 定制导出的权限
-      customPermission: {}
+      customPermission: {},
+      // 审核模板权限
+      permissions:[]
     };
   },
   computed: {
@@ -720,6 +723,7 @@ export default {
   },
   created () {
     this.getCustomPermission()
+    this.getPermission()
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();
@@ -728,7 +732,7 @@ export default {
   },
   mounted () {
     // 缓存不存在时为null
-    this.templateType = Number(localStorage.getItem('templateType')) || 0;
+    // this.templateType = Number(localStorage.getItem('templateType')) || 0;
   },
   methods: {
     /**
@@ -736,6 +740,12 @@ export default {
      */
     getCustomPermission() {
       this.customPermission = sessFun.getSess() ? sessFun.getSess().customPermission : {};
+    },
+    /**
+     * 获取审核模板权限
+     */
+    getPermission() {
+      this.permissions = sessFun.getSess() ? sessFun.getSess().permissions : []
     },
     //获取媒体类型
     getMediaType () {
@@ -1293,7 +1303,7 @@ export default {
       api.postApi(this.apiVar.Advertisement + "/GetImg", params)
         .then(res => {
           if (!res.data.SysCode) {
-            console.log(res.data);
+            // console.log(res.data);
             let dataInfo = res.data;
             this.totalUpNum = dataInfo.totalCount;
             for (let data of dataInfo.dataList) {
@@ -1308,7 +1318,6 @@ export default {
             if (dataInfo.totalCount == 0) {
               Message.warning('暂无数据');
             }
-            console.log(this.reportArr);
           } else {
             Message.warning(res.data.MSG);
           }

@@ -284,7 +284,7 @@
                                       <div v-if="isOccupied" class="space-group">
                                           <div v-for="(adSpaceItem, adSpaceIndex) in scope.row.adsList" :key="adSpaceIndex" class="space-item">
                                               <!-- 点位状态和点位售卖状态确定是否可选 -->
-                                              <el-checkbox 
+                                              <el-checkbox
                                                   v-if="adSpaceItem.checkFlag"
                                                   v-model="adSpaceItem.checkBox" :label="adSpaceItem.asLab || '--'"
                                                   @change="changeCheckBox(scope.row, adSpaceItem)">
@@ -1364,7 +1364,7 @@
               } else {
                   // 方案未配点
                   this.addPointDialogVisible = true
-                  
+
               }
           },
           handleSizeChange(val) {
@@ -1620,6 +1620,7 @@
                   '区域',
                   '详细地址',
                   '媒介载体',
+                  "媒介ID",
                   '媒体名称',
                   '资产编号',
                   '投放面',
@@ -1798,23 +1799,23 @@
               let allHead = [
                   '资源名称',
                   '省份',
-                  '城市', 
+                  '城市',
                   '区域',
                   '详细地址',
                   '媒介载体',
                   '商圈',
-                  '楼栋数量', 
-                  '住户数量',	
-                  '楼盘价格',	
+                  '楼栋数量',
+                  '住户数量',
+                  '楼盘价格',
                   '楼盘类型',
-                  '入住时间',	
+                  '入住时间',
                   '广告限制',
                   '车位数',
                   '车流量',
                   '人流量',
                   '媒体数量（门）',
                   '可投数量（面）',
-                  '地图中心点', 
+                  '地图中心点',
                   '投放排期'
               ];
 
@@ -1883,7 +1884,7 @@
                   let mIDitem = mIDArr.find(item => {
                       return item.resID == data.resID
                   })
-                  
+
                   // 如果该资源存在
                   if (mIDitem) {
                       if (!mIDitem.mID.includes(data.mID)) {
@@ -2902,7 +2903,7 @@
                                       pdNum: 1,
                                       //总投放天数
                                       pdDays: (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0]))/(3600*24*1000)+1,
-                                      abList: [this.getSpaceInfo(sKey, tempPdID)],     
+                                      abList: [this.getSpaceInfo(sKey, tempPdID)],
                                   };
                                   asrIDs.push(tempObj)
                               }
@@ -5429,7 +5430,7 @@
       align-items: center;
       margin: 8px 0;
       font-size: 14px;
-      color:rgba(0,0,0,0.65); 
+      color:rgba(0,0,0,0.65);
   }
   .tip span{
       color: #1890FF;

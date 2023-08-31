@@ -2186,6 +2186,27 @@ import PointTable from "./components/tempComp/pointTable.vue";
 
 import { POINT_ARR, RES_ARR, BUILD_ARR, UNIT_ARR } from '../common/configs/planTableConfig'
 
+const initTabChooseTypeList = () => {
+  return [
+    {
+      label: 0,
+      name: "点位",
+    },
+    {
+      label: 1,
+      name: "单元",
+    },
+    {
+      label: 2,
+      name: "楼栋",
+    },
+    {
+      label: 3,
+      name: "小区",
+    },
+  ]
+}
+
 export default {
   name: "createPlanOld",
   components: {
@@ -2608,24 +2629,7 @@ export default {
       itemKey: "",
       rowSpace: "",
 
-      tabChooseTypeList: [
-        {
-          label: 0,
-          name: "点位",
-        },
-        {
-          label: 1,
-          name: "单元",
-        },
-        {
-          label: 2,
-          name: "楼栋",
-        },
-        {
-          label: 3,
-          name: "小区",
-        },
-      ],
+      tabChooseTypeList: initTabChooseTypeList(),
 
       // 设备型号
       mTypeList: [],
@@ -4769,9 +4773,14 @@ export default {
     activeMediaType(mType) {
        console.log("媒体类型", mType);
       this.forMap = false
-      const arr = this.sessionData.userMediaChooseConfigs.filter(
+      let arr = this.sessionData.userMediaChooseConfigs.filter(
         (item) => item.mediaTypeId === mType
       );
+      // 去重
+      arr = arr.reduce((pre, item) => {
+        let hasIndex = pre.findIndex((cell) => cell.chooseType === item.chooseType);
+        return hasIndex !== -1 ? pre : [...pre, item];
+      }, [])
       this.tabChooseTypeList = arr
         .map((item) => {
           return {

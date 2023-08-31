@@ -424,7 +424,7 @@
                 <el-option :value="1" label="定制模板"></el-option>
                 <!-- 南宁定制，亲粤邻 显示 审核模板 -->
                 <el-option
-                  v-if="hasAuthTemplate"
+                  v-if="permissions.includes('AIImageAudit')"
                   :value="3"
                   label="审核模板"
                 >
@@ -676,7 +676,9 @@ export default {
       pptLoading: false,
       pdfLoading: false,
       // 定制导出的权限
-      customPermission: {}
+      customPermission: {},
+      // 审核模板权限
+      permissions:[]
     };
   },
   computed: {
@@ -723,15 +725,17 @@ export default {
   },
   created() {
     this.getCustomPermission()
+    this.getPermission()
     this.getRouter();
     this.getReportInfo();
     this.getPeriod();
     this.getTemplateOptions();
     this.getMediaType();
+    this.getPermission();
   },
   mounted() {
     // 缓存不存在时为null
-    this.templateType = Number(localStorage.getItem("templateType")) || 0;
+    // this.templateType = Number(localStorage.getItem("templateType")) || 0;
   },
   methods: {
     /**
@@ -739,6 +743,12 @@ export default {
      */
      getCustomPermission() {
       this.customPermission = sessFun.getSess() ? sessFun.getSess().customPermission : {};
+    },
+    /**
+     * 获取审核模板权限
+     */
+     getPermission() {
+      this.permissions = sessFun.getSess() ? sessFun.getSess().permissions : []
     },
     //获取媒体类型
     getMediaType() {

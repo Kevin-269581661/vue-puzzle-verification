@@ -264,6 +264,7 @@ import sessFun from "../../../commonFun/sessFun.js";
                   console.log(err)
               })
           },
+        //下载音频
         downLoadAudioFile() {
           axios({
             method: 'get',
@@ -271,22 +272,19 @@ import sessFun from "../../../commonFun/sessFun.js";
             responseType: 'blob',
           })
           .then(res => {
-            let blob = new Blob([res.data])
-            // 创建一个临时的ur1指向blob对象
+            let blob = new Blob([res])
             let url = window.URL.createobjectURL(blob)
-            //创建一个a标签，用来下载
             let a = document.createElement("a")
             a.href = url
             a.download = `${this.audioName}.wav`
             a.click()
-            // 释放这个临时的对象ur1
             window.URL.revokeobjectURL(url)
           })
           .catch(err => {
               console.log(err)
           })
         },
-        // 下载音频
+        // 点击下载音频
         downLoadAudio(row) {
             this.isDownLoad = true
             this.getLoadAudio(row)

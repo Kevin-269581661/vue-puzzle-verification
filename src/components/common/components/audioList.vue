@@ -221,7 +221,9 @@ import sessFun from "../../../commonFun/sessFun.js";
             }
         },
         addVoice() {
-          this.openAddVoiceDialog()
+            this.$refs.addVoiceDialogRef && this.$refs.addVoiceDialogRef.open({
+                apId: this.apId
+            })
         },
         // 点击试听
         showAudio(row) {

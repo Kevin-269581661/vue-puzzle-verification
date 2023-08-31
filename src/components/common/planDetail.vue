@@ -282,7 +282,7 @@
                 v-if="planPanel == 'third'"
               ></material>
             </el-tab-pane>
-            <el-tab-pane label="音频信息" name="fourth">
+            <el-tab-pane label="音频信息" name="fourth" v-if="sessionData.permissions.includes('voiceAdvertisingBroadcastShow')">
               <audioList
                 :audioInfoData="audioInfoList"
                 :loading="voLoading"

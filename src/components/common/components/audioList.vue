@@ -654,7 +654,6 @@ import FileSaver from 'file-saver';
   .audio-title{
     font-size: 20px;
     font-weight: 600;
-    margin-top: -20px;
     margin-bottom: 20px;
     }
     .audio{

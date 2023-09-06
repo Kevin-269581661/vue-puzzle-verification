@@ -649,7 +649,7 @@
                 // 上下刊搜索
                 publishSearchInfo: {
                     // 媒体类型
-                    mediaType: null,
+                    mediaType: '',
                     // 城市选择
                     citySelect: ['全部'],
                     // 资源选择
@@ -708,7 +708,7 @@
                 activePainIndex: 0,
                 // 搜索信息
                 searchInfo: {
-                    mediaType: null,
+                    mediaType: '',
                     city: ['全部'],
                     resName: "全部",
                     status: "全部",
@@ -718,7 +718,7 @@
                     mediaTypeArr: [
                         {
                             label: '全部',
-                            value: null
+                            value: ''
                         }
                     ],
                     // 城市区域
@@ -957,7 +957,7 @@
                         let _data=res.data.data;
                         let _newData=[{
                             label: '全部',
-                            value: null
+                            value: ''
                         }];
                         _data.forEach((item)=>{
                             _newData.push({
@@ -966,7 +966,7 @@
                             })
                         })
                         this.searchInfo.mediaTypeArr=_newData;
-                        this.searchInfo.mediaType=null;
+                        this.searchInfo.mediaType='';
                     }
                 }).catch(err =>{
                     console.log(err);
@@ -988,8 +988,8 @@
                     if (res.data.SysCode == 200200) {
                         let _data=res.data.data;
                         this.mediaTypeList=_data;
-                        if(this.publishSearchInfo.mediaType === null) {
-                            this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: null;
+                        if(this.publishSearchInfo.mediaType === '') {
+                            this.publishSearchInfo.mediaType = _data[0]?_data[0].mediaTypeId: '';
                         }
                         // 获取报告列表
                         this.getImgArr();
@@ -1243,7 +1243,7 @@
                 }else{
                     this.searchInfo = {
                         ...this.searchInfo,
-                        mediaType: null,
+                        mediaType: '',
                         city: ['全部'],
                         resName: "全部",
                         status: "全部",

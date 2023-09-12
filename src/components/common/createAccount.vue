@@ -835,7 +835,7 @@ export default {
             }   
             api.getApi('/addsp/api/v1/user/getPermissions', params)
                 .then(res => {
-                    this.permissionsData = res.data.data
+                    this.permissionsData = res.data.data || []
                     res.data.data.forEach(item => {
                         if (item.status === 1) {
                             if (this.permissions.indexOf(item.permissionId) === -1) {

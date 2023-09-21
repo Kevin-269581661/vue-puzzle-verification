@@ -74,6 +74,24 @@
           </div>
 
           <div class="search_item">
+            <span class="item_title">位置朝向：</span>
+            <el-select
+              v-model="searchData.siteOrientation"
+              placeholder="请选择"
+              clearable
+              size="small"
+              class="item_content"
+            >
+              <el-option
+                v-for="(item, i) in preparedData.siteOrientationSelectList"
+                :key="i"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+
+          <div class="search_item">
             <el-button
               type="primary"
               icon="el-icon-search"
@@ -188,6 +206,8 @@ const initSearchData = () => ({
   mediaName: '',
   // 位置类型
   siteType: '',
+  // 位置朝向
+  siteOrientation: ''
 })
 
 export default {
@@ -222,7 +242,11 @@ export default {
         sizes: [10, 20, 50],
       },
       preparedData: {
-        siteTypeSelectList: []
+        siteTypeSelectList: [],
+        siteOrientationSelectList: [
+          { label: '朝内', value: '朝内' },
+          { label: '朝外', value: '朝外' },
+        ],
       },
       // 是否勾选全部媒体
       isCheckAll: false,

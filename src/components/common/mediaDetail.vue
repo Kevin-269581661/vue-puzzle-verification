@@ -751,7 +751,7 @@
               if (res.data.data.length === 0 || res.data.data === "") {
                 sessFun.messageFun("warning", "媒体资源信息为空!");
               } else {
-                console.log('mResData', res.data.data);
+                // console.log('mResData ===== ', res.data.data);
                 // classified--是否执行媒体分层 1启用 2关闭
                 this.mediasOfRes = res.data.data || [];
                 let mediaTypeObj = {};

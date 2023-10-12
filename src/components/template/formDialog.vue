@@ -129,9 +129,8 @@ export default {
       }
       try {
         this.dialogLoading = true
-        const { data = {} } = await this.$api.apiModule.saveOrUpdate(formData)
-        const { code, data: results, message } = data
-        if (code !== 200) return Message.error(message)
+        const { code, data, message } = await this.$api.apiModule.saveOrUpdate(formData) || {}
+        if (code !== 200) return Message.error(message || '操作失败')
         Message.success('操作成功')
         this.$emit('submitSuccess')
         this.close()
@@ -149,10 +148,9 @@ export default {
       if (!id) return console.error('getDetail error: id 不能为空')
       try {
         this.dialogLoading = true
-        const { data = {} } = await this.$api.apiModule.getById({ id })
-        const { code, data: results, message } = data
-        if (code !== 200) return Message.error(message)
-        this.formData = results
+        const { code, data, message } = await this.$api.apiModule.getById({ id }) || {}
+        if (code !== 200) return Message.error(message || '获取数据失败')
+        this.formData = data
       } catch (err) {
         Message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)

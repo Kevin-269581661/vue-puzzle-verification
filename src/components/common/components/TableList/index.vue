@@ -15,8 +15,8 @@
       tooltip-effect="dark"
     >
       <template v-for="col in columns">
-        <el-table-column v-if="col.type === 'index'" key="index" label="序号" type="index" width="80"></el-table-column>
-        <el-table-column v-else-if="col.type === 'selection'" key="selection" type="selection" width="55"></el-table-column>
+        <el-table-column v-if="col.type === 'index'" :key="col.key || 'index'" label="序号" type="index" width="80" fixed="left"></el-table-column>
+        <el-table-column v-else-if="col.type === 'selection'" :key="col.key || 'selection'" type="selection" width="55" fixed="left"></el-table-column>
         <el-table-column v-else-if="col.slot" :label="col.title" :key="col.key || col.dataIndex" :width="col.width" :min-width="col.minWidth" :fixed="col.fixed">
           <template slot-scope="scope">
             <slot :name="col.slot" :row="scope.row">

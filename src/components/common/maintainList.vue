@@ -124,7 +124,7 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input 
+            <el-input
               v-model.trim="trafficValue"
               v-if="showtrafficInput === 0"
               @change="trafficChange"
@@ -176,7 +176,7 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input 
+            <el-input
               v-model.trim="mediaValue"
               v-if="showMediaInput === 0"
               @change="mediaChange"
@@ -197,6 +197,7 @@
               </el-select>
             </el-input>
           </el-col>
+
           <el-col :span="6" class="device">
             <span>设备问题:</span>
             <div class="text text1" v-if="showDeviceInput === 0">其他设备异常</div>
@@ -209,6 +210,7 @@
               multiple
               @change="changeDevice"
               v-if="showDeviceInput === 1"
+              key='deviceQuestion_1'
             >
               <el-option
                 v-for="item of deviceQuestionArr"
@@ -217,11 +219,12 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input 
+            <el-input
               v-model.trim="deviceValue1"
               v-if="showDeviceInput === 0"
               @change="deviceChange1"
               placeholder="请输入"
+              key='deviceQuestion_2'
               >
               <el-select
                 v-model="deviceQuestion"
@@ -238,9 +241,10 @@
                 ></el-option>
               </el-select>
             </el-input>
-            <el-input 
+            <el-input
               v-model.trim="deviceValue2"
               v-if="showDeviceInput === 2"
+              key='deviceQuestion_3'
               @change="deviceChange2"
               placeholder="请输入"
               >
@@ -260,6 +264,7 @@
               </el-select>
             </el-input>
           </el-col>
+
           <el-col :span="6">
             <span>问题反馈:</span>
             <div class="text" v-if="showQuestionInput === 0">其他</div>
@@ -271,6 +276,7 @@
               multiple
               @change="changeQuestion"
               v-if="showQuestionInput === 1"
+              key='questionReply_4'
             >
               <el-option
                 v-for="item of questionReplyArr"
@@ -279,11 +285,12 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input 
+            <el-input
               v-model.trim="questionValue"
               v-if="showQuestionInput === 0"
               @change="questionChange"
               placeholder="请输入"
+              key='questionValue_5'
               >
               <el-select
                 v-model="questionReply"
@@ -316,308 +323,94 @@
       </div>
       <div class="table_wrap">
         <div class="table_dt">
-          <el-table
-            v-loading="loading"
-            element-loading-text="拼命加载中..."
-            element-loading-spinner="el-icon-loading"
-            border
-            :data="currentPlan"
-            style="width: 100%"
-          >
-            <el-table-column
-              label="维护类型"
-              min-width="100"
-              :show-overflow-tooltip="true"
-              :fixed = 'fixedLeft'
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mtType }}</span>
+          <!-- 动态配置表格 -->
+          <TableList :dataSource="tableList" :columns="tableColumns" :loading="tableLoading">
+
+            <!-- <template slot="issueRecord" slot-scope="slotProps">
+              <span>{{ slotProps.row.age }}</span>
+            </template> -->
+
+            <!-- 问题记录 -->
+            <template slot="issueRecord" slot-scope="scope">
+              <template v-if=" Array.isArray(scope.row.issueRecord)">
+                <span v-for="(item, index) in scope.row.issueRecord" :key="index">
+                  <template v-if="scope.row.issueRecord.length > 1">{{index + 1}}.</template>
+                  {{item}}<template v-if="scope.row.issueRecord.length > 1 && index !== scope.row.issueRecord.length - 1">，</template>
+                </span>
               </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="resName"
-              prop="resName"
-              label="资源"
-              :show-overflow-tooltip="true"
-              min-width="160"
-              :fixed = 'fixedLeft'
-            >
-              <template slot-scope="scope">
-                <span> {{ scope.row.resName || '--' }}</span>
+              <template v-else>
+                <span>{{scope.row.issueRecord}}</span>
               </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column
-              prop="cityName"
-              label="城市"
-              min-width="100"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.cityName || '--' }}</span>
+            <!-- 通行情况 -->
+            <template slot="trafficState" slot-scope="scope">
+              <template v-if="scope.row.trafficState !== '--'">
+                <span v-for="(item, index) in scope.row.trafficState.split('、')" :key="index" class="tag">
+                  {{item}}
+                </span>
               </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="area"
-              label="区域"
-              min-width="100"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.area || '--' }}</span>
+              <template v-else>
+                <span>{{ scope.row.trafficState }}</span>
               </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column
-              prop="mediaName"
-              label="媒体名称"
-              min-width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mediaName || '--' }}</span>
+            <!-- 媒介情况 -->
+            <template slot="mediumState" slot-scope="scope">
+              <template v-if="scope.row.mediumState !== '--'">
+                <span v-for="(item, index) in scope.row.mediumState.split('、')" :key="index" class="tag">
+                  {{item}}
+                </span>
               </template>
-            </el-table-column>
-
-            <el-table-column
-              label="媒体面"
-              min-width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.asLab || '--' }}</span>
+              <template v-else>
+                <span>{{ scope.row.mediumState }}</span>
               </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column
-              prop="assetTag"
-              label="资产编号"
-              min-width="150"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.assetTag || '--' }}
+            <!-- 设备问题 -->
+            <template slot="deviceProblem" slot-scope="scope">
+              <template v-if="scope.row.deviceProblem !== '--'">
+                <span v-for="(item, index) in scope.row.deviceProblem.split('、')" :key="index" class="tag">
+                  {{item}}
+                </span>
               </template>
-            </el-table-column>
-
-
-            <el-table-column
-              prop="electrifyState"
-              label="通电情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission == 2  || customPermission.patrolPermission == 3"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.electrifyState || '--' }}</span>
+              <template v-else>
+                <span>{{ scope.row.deviceProblem }}</span>
               </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column
-              prop="trafficState"
-              label="通行情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission && customPermission.patrolPermission !== 3"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.trafficState || '--' }}</span>
+            <!-- 问题反馈 -->
+            <template slot="issueRecord2" slot-scope="scope">
+              <template v-if=" Array.isArray(scope.row.issueRecord)">
+                <span
+                  v-for="(item, index) in scope.row.issueRecord"
+                  :key="index"
+                  class="tag"
+                  >
+                  {{item}}
+                </span>
               </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="issueRecord"
-              label="问题记录"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission !== 3"
-            >
-              <template slot-scope="scope">
-                <template v-if=" Array.isArray(scope.row.issueRecord)">
-                  <span v-for="(item, index) in scope.row.issueRecord" :key="index">
-                    <template v-if="scope.row.issueRecord.length > 1">{{index + 1}}.</template>
-                    {{item}}<template v-if="scope.row.issueRecord.length > 1 && index !== scope.row.issueRecord.length - 1">，</template>
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{scope.row.issueRecord}}</span>
-                </template>
+              <template v-else-if="scope.row.issueRecord === '--'">
+                <span>{{scope.row.issueRecord}}</span>
               </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="trafficState"
-              label="通行情况"
-              min-width="170"
-              class="tar customized"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.trafficState !== '--'">
-                  <span v-for="(item, index) in scope.row.trafficState.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.trafficState }}</span>
-                </template>
+              <template v-else>
+                <span v-for="(item, index) in scope.row.issueRecord.split('、')" :key="index"  class="tag">{{item}}</span>
               </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column
-              prop="mediumState"
-              label="媒介情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.mediumState !== '--'">
-                  <span v-for="(item, index) in scope.row.mediumState.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.mediumState }}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="deviceProblem"
-              label="设备问题"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-              @change="deviceChange"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.deviceProblem !== '--'">
-                  <span v-for="(item, index) in scope.row.deviceProblem.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.deviceProblem }}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="issueRecord"
-              label="问题反馈"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope" class="customized">
-                <template v-if=" Array.isArray(scope.row.issueRecord)">
-                  <span
-                    v-for="(item, index) in scope.row.issueRecord" 
-                    :key="index" 
-                    class="tag"
-                    >
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else-if="scope.row.issueRecord === '--'">
-                  <span>{{scope.row.issueRecord}}</span>
-                </template>
-                <template v-else>
-                  <span v-for="(item, index) in scope.row.issueRecord.split('、')" :key="index"  class="tag">{{item}}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createTime"
-              label="提交日期"
-              min-width="150"
-              class="tar"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createTime || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="updateTime"
-              label="处理日期"
-              min-width="150"
-              class="tar"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.updateTime || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createUserName"
-              label="提交者"
-              min-width="100"
-              class="tar"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createUserName }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="mState"
-              prop="mState"
-              label="状态"
-              fixed="right"
-              width="100"
-            >
-              <template slot-scope="scope">
-                <point-state
+            <!-- 状态 -->
+            <template slot="mState" slot-scope="slotProps">
+              <point-state
                   :state-text="scope.row.mState"
                   :color="stateToText(scope.row.mState).color"
                 ></point-state>
-              </template>
-            </el-table-column>
+            </template>
 
-            <el-table-column label="操作" width="100" fixed="right">
-              <template slot-scope="scope">
-                <el-dropdown
-                  size="small"
-                  trigger="click"
-                  placement="bottom-start"
-                  :hide-on-click="true"
-                >
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      @click.native.prevent="showPhoto(scope.row)"
-                      v-if="scope.row.mtType == '巡点'"
-                      >照片
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="showHistory(scope.row)"
-                      >历史记录
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
+            <template slot="action" slot-scope="slotProps">
+              <TableAction :actionList="getActionList(slotProps.row)" />
+            </template>
 
-            <div slot="empty">
-              <no-search-result></no-search-result>
-            </div>
-          </el-table>
+          </TableList>
         </div>
         <div class="ad_pagination" v-if="totalSize">
           <el-pagination
@@ -723,6 +516,8 @@ import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 import pointState from './components/pointState.vue';
 import noSearchResult from "./components/noSearchResult.vue";
+import TableList from "@/components/common/components/TableList/index.vue";
+import TableAction from "@/components/common/components/TableAction/index.vue";
 import {
   Row,
   Input,
@@ -753,7 +548,9 @@ export default {
     elDatePicker: DatePicker,
     elSelect: Select,
     elOption: Option,
-    sellList
+    sellList,
+    TableList,
+    TableAction
   },
   data () {
     return {
@@ -777,7 +574,7 @@ export default {
       showDeviceInput: 1,  // 展示设备问题输入框
       deviceQuestion: [], // 设备问题下拉框数据
       // 设备问题输入框内容
-      deviceValue1:'',  
+      deviceValue1:'',
       deviceValue2:'',
       // 设备问题类型
       deviceQuestionArr: [],
@@ -791,7 +588,7 @@ export default {
       // 登录信息
       sessionData: {},
       //加载中
-      loading: false,
+      tableLoading: false,
       // 状态 （-1-已删除，1-未处理,2-已处理）,
       stateArr: [
         {
@@ -832,7 +629,7 @@ export default {
       // 工程人员
       engineerArr: [],
       // 表格数据
-      currentPlan: [],
+      tableList: [],
       //所在区域
       areaArr: [],
       //处理对话框
@@ -886,7 +683,124 @@ export default {
       multipleSelection: '',//选中的表格数据
       customPermission: {},  //巡点权限
 
-      isSellList: false
+      isSellList: false,
+      tableLoading: false,
+      tableList: [
+        { name: '张三', age: 20, address: '上海市普陀区金沙江路 1518 弄'},
+        { name: '张三', age: 20, address: '上海市普陀区金沙江路 1518 弄'},
+        { name: '张三', age: 20, address: '上海市普陀区金沙江路 1518 弄'},
+      ],
+      tableColumns: [
+          {
+            title: '序号',
+            type: 'index',
+          },
+          {
+            title: '维护类型',
+            dataIndex: 'mtType',
+            minWidth: "100",
+            fixed: 'left',
+          },
+          {
+            title: '资源',
+            dataIndex: 'resName',
+            minWidth: "160",
+            fixed: 'left',
+          },
+          {
+            title: '城市',
+            dataIndex: 'cityName',
+            minWidth: "100",
+          },
+          {
+            title: '区域',
+            dataIndex: 'area',
+            minWidth: "100",
+          },
+          {
+            title: '媒体名称',
+            dataIndex: 'mediaName',
+            minWidth: "120",
+          },
+          {
+            title: '媒体面',
+            dataIndex: 'asLab',
+            minWidth: "120",
+          },
+          {
+            title: '资产编号',
+            dataIndex: 'assetTag',
+            minWidth: "150",
+          },
+          {
+            title: '通电情况',
+            dataIndex: 'electrifyState',
+            minWidth: "170",
+          },
+          {
+            title: '通行情况',
+            dataIndex: 'trafficState',
+            minWidth: "170",
+          },
+          // {
+          //   title: '问题记录',
+          //   slot: 'issueRecord',
+          //   key: 'issueRecordSlot',
+          //   minWidth: "170",
+          // },
+          // {
+          //   title: '通行情况',
+          //   slot: 'trafficState',
+          //   key: 'trafficStateSlot',
+          //   minWidth: "170",
+          // },
+          // {
+          //   title: '媒介情况',
+          //   slot: 'mediumState',
+          //   key: 'mediumState',
+          //   minWidth: "170",
+          // },
+          // {
+          //   title: '设备问题',
+          //   slot: 'deviceProblem',
+          //   key: 'deviceProblem',
+          //   minWidth: "170",
+          // },
+          // {
+          //   title: '问题反馈',
+          //   slot: 'issueRecord2',
+          //   key: 'issueRecord2',
+          //   minWidth: "170",
+          // },
+          {
+            title: '提交日期',
+            dataIndex: 'createTime',
+            minWidth: "160",
+          },
+          {
+            title: '处理日期',
+            dataIndex: 'updateTime',
+            minWidth: "160",
+          },
+          {
+            title: '提交者',
+            dataIndex: 'createUserName',
+            minWidth: "100",
+          },
+          // {
+          //   title: '状态',
+          //   slot: 'mState',
+          //   key: 'mState',
+          //   minWidth: "100",
+          //   fixed: 'right'
+          // },
+          {
+            title: '操作',
+            key: 'action',
+            slot: 'action',
+            fixed: 'right',
+          },
+        ]
     };
   },
 
@@ -1098,7 +1012,7 @@ export default {
         pageNum: this.currPage,
         pageSize: this.pageSize,
       };
-      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
+      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr
       deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
       mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
       trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
@@ -1110,25 +1024,25 @@ export default {
         questionArr.forEach(item => {
           remark +=`${item}、`
         })
-        remark = remark.slice(0,-1) 
+        remark = remark.slice(0,-1)
       }
       if (deviceArr !== null) {
         deviceArr.forEach(item => {
           deviceProblem +=`${item}、`
         })
-        deviceProblem = deviceProblem.slice(0,-1) 
+        deviceProblem = deviceProblem.slice(0,-1)
       }
       if (mediaArr !== null) {
         mediaArr.forEach(item => {
           mediumState +=`${item}、`
         })
-        mediumState = mediumState.slice(0,-1) 
+        mediumState = mediumState.slice(0,-1)
       }
       if (trafficArr !== null) {
         trafficArr.forEach(item => {
           trafficState +=`${item}、`
         })
-        trafficState = trafficState.slice(0,-1) 
+        trafficState = trafficState.slice(0,-1)
       }
       data = {
         ...data,
@@ -1161,7 +1075,7 @@ export default {
           let dataInfo = res.data.data;
           this.totalSize = dataInfo.total;
           let dataArr = dataInfo.list;
-          this.currentPlan = this.funcData(dataArr);
+          this.tableList = this.funcData(dataArr);
           if (dataInfo.total == 0) {
             Message.warning('暂无数据');
           }
@@ -1169,7 +1083,7 @@ export default {
           this.totalSize = 0
           Message.warning(res.data.MSG);
         }
-        this.loading = false;
+        this.tableLoading = false;
       });
     },
     // 数据处理
@@ -1189,8 +1103,8 @@ export default {
       setTimeout(() => {
         that.isSearch = true;
       }, 1000);
-      that.currentPlan = [];
-      that.loading = true;
+      that.tableList = [];
+      that.tableLoading = true;
       that.loading_point = false;
       that.currPage = 1;
       that.searchFun()
@@ -1277,7 +1191,7 @@ export default {
     downLoad() {
       this.changeInput()
       let { resName, assetTag, type, districtId, status, date, userId,questionArr,deviceArr,mediaArr,trafficArr } = this.searchInfo;
-      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
+      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr
       deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
       mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
       trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
@@ -1289,29 +1203,29 @@ export default {
         questionArr.forEach(item => {
           remark +=`${item}、`
         })
-        remark = remark.slice(0,-1) 
+        remark = remark.slice(0,-1)
       }
       if (deviceArr !== null) {
         deviceArr.forEach(item => {
           deviceProblem +=`${item}、`
         })
-        deviceProblem = deviceProblem.slice(0,-1) 
+        deviceProblem = deviceProblem.slice(0,-1)
       }
       if (mediaArr !== null) {
         mediaArr.forEach(item => {
           mediumState +=`${item}、`
         })
-        mediumState = mediumState.slice(0,-1) 
+        mediumState = mediumState.slice(0,-1)
       }
       if (trafficArr !== null) {
         trafficArr.forEach(item => {
           trafficState +=`${item}、`
         })
-        trafficState = trafficState.slice(0,-1) 
+        trafficState = trafficState.slice(0,-1)
       }
       let params = {
         ...(districtId && { cityId: districtId[0] }),
-        ...(districtId.length > 1 && { districtId: districtId[1] }), 
+        ...(districtId.length > 1 && { districtId: districtId[1] }),
         ...(type && { type: type }),
         ...(assetTag && { assetTag: assetTag }),
         ...(resName && { resName: resName }),
@@ -1362,7 +1276,7 @@ export default {
       this.questionValue = []
       this.currPage = 1;
       console.log(this.searchInfo);
-      this.currentPlan = [];
+      this.tableList = [];
       this.isReset = false;
       let timer = setTimeout(() => {
         this.isReset = true;
@@ -1423,7 +1337,7 @@ export default {
             asLab: item.asLab,
             list
           };
-          this.logList = obj 
+          this.logList = obj
         } else {
           Message.warning(res.data.MSG);
         }
@@ -1601,10 +1515,10 @@ export default {
     },
     /**
      * 通行情况下拉框切换输入框
-     * @param {Array} val 
+     * @param {Array} val
      */
     changetraffic(val) {
-      let index = this.trafficSituationArr.length - 1 
+      let index = this.trafficSituationArr.length - 1
       if (val[val.length - 1] === this.trafficSituationArr[index].value) {
         this.showtrafficInput = 0
       }
@@ -1636,7 +1550,7 @@ export default {
     },
     /**
      * 媒介情况下拉框切换输入框
-     * @param {Array} val 
+     * @param {Array} val
      */
     changeMedia(val) {
       let index = this.mediaSituationArr.length - 1
@@ -1671,7 +1585,7 @@ export default {
     },
     /**
      * 设备问题下拉框切换输入框
-     * @param {Arrary} val 
+     * @param {Arrary} val
      */
     changeDevice(val) {
       console.log(val,'val');
@@ -1684,7 +1598,7 @@ export default {
     },
     /**
      * 设备问题输入框切换下拉框
-     * @param {Arrary} val 
+     * @param {Arrary} val
      */
     changeDeviceInput(val) {
       let index = this.deviceQuestionArr.length-1
@@ -1737,7 +1651,7 @@ export default {
     },
     /**
      * 问题反馈下拉框切换输入框
-     * @param {Arrary} val 
+     * @param {Arrary} val
      */
     changeQuestion(val) {
       let index = this.questionReplyArr.length - 1
@@ -1770,6 +1684,25 @@ export default {
         this.showQuestionInput = 1
       }
     },
+    /**
+     * 列表操作按钮组
+     */
+     getActionList(row) {
+      let tableButtonList = [
+        {
+          text: '照片',
+          single: true,
+          visible: row.mtType == '巡点',
+          onClick: () => this.showPhoto(row),
+        },
+        {
+          text: '历史记录',
+          single: true,
+          onClick: () => this.showHistory(row),
+        },
+      ]
+      return tableButtonList
+    }
   },
   computed: {
     fixedLeft() {
@@ -2017,7 +1950,7 @@ export default {
 }
 /deep/ .el-dialog__footer {
   padding: 10px 24px 24px;
-} 
+}
 /deep/ .el-input .el-input-group__prepend{
   padding: 0;
   width: 80px;

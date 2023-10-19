@@ -27,14 +27,15 @@
 列表-搜索栏动态配置通用组件
 
   组件属性：
-    value: [Object] 搜索栏数据绑定的对象，必传
-    fileds: [Object] 表单配置对象，必传
-    labelWidth: [Number] 统一标签宽度，选传，默认自动适应
-    size: [String] 尺寸，可选值：medium / small / mini，默认 small
-    defaultCount: [Number] 折叠时显示的字段数量，默认 5
+    value: [Object] 必传 - 搜索栏数据绑定的对象
+    fileds: [Object] 必传 - 表单配置对象
+    labelWidth: [Number] 非必传（默认自动适应）- 统一标签宽度
+    size: [String] 非必传（可选值：medium / small / mini，默认 small）- 尺寸
+    defaultCount: [Number] 非必传（默认 5）- 折叠时显示的字段数量
 
   组件事件：
-    change: [Function] 搜索栏数据改变时触发，参数为 改变的字段 key
+    change: [Function(key)] 搜索栏数据改变时触发
+      参数: key - 改变的字段名
     search: [Function] 点击搜索按钮触发
     reset: [Function] 点击重置按钮触发
 
@@ -71,11 +72,28 @@
       searchFileds: {
         filedName: {
           title: string,
-          type: 'input' | 'select' | 'date' | 'time' | 'dateTime' | 'radio' | 'checkbox' | 'switch',
+          type: 'input' | 'select' | 'date' | 'date-picker' | 'date-picker-two' | 'input-two',
           // 组件属性: 默认带的属性: clearable: true
           props: {
 
           },
+          // 特殊属性
+          // type 类型为 select 时使用：必传 - 需要配置 options 属性
+          options: [
+            {
+              value: string | number,
+              label: string,
+              disabled: boolean, // 非必传（默认 false）- 是否禁用
+              render (h) { // 非必传 - 自定义渲染节点
+
+              }
+            }
+          ],
+          // type 类型为 select 时使用：非必传 - 配置 value、label 字段名
+          optionKey: {
+            value: 'value'
+            label: 'label'
+          }
           on: {
             change: (e) => {
               console.log('name组件 change  ===', e)
@@ -164,6 +182,8 @@ export default {
 
 <style lang="scss" scoped>
 .table_search_container {
+  padding: 12px 24px;
+  box-sizing: border-box;
   .el-button--text {
     padding-left: 0;
     padding-right: 0;

@@ -80,7 +80,8 @@ export default {
         this.singleButtonList = singleButtonList
         this.foldButtonList = foldButtonList
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   computed: {

@@ -2,8 +2,7 @@
   <div class="dialog_container">
     <!-- 弹框模板组件 -->
     <el-dialog
-      v-model="visible"
-      :append-to-body="true"
+      :visible.sync="visible"
       :show-close="true"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -28,11 +27,11 @@
                 />
               </el-select>
             </el-form-item>
-        </el-form>
+          </el-form>
         </div>
         <div class="custom_dialog_footer">
-          <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
           <el-button @click="close" size="small">取消</el-button>
+          <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
         </div>
       </div>
     </el-dialog>
@@ -68,6 +67,8 @@ vue2 通用弹窗组件模板
  */
 
 import { Message } from "element-ui";
+// import { cloneDeep } from "lodash";
+import sessFun from "@/commonFun/sessFun.js";
 
 /**
  * 初始化表单数据
@@ -94,6 +95,9 @@ export default {
   },
   data() {
     return {
+      visible: false,
+      dialogLoading: false,
+      isEdit: false,
       formData: initFormData(),
       formRules: {
         propOne: [{ required: true, message: '请输入示例一', trigger: 'blur' }],
@@ -111,9 +115,6 @@ export default {
           }
         ]
       },
-      dialogLoading: false,
-      isEdit: false,
-      visible: false
     }
   },
   methods: {
@@ -128,9 +129,15 @@ export default {
         return
       }
       try {
+        const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const { code, data, message } = await this.$api.apiModule.saveOrUpdate(formData) || {}
-        if (code !== 200) return Message.error(message || '操作失败')
+        const res = await this.$api.postApi_json('/addsp/patrolPoint/web/getList', {
+          ...this.formData,
+          uid,
+          token,
+        })
+        const { SysCode: code, MSG: message, data } = res.data
+        if (code !== 200200) return Message.error(message || '操作失败')
         Message.success('操作成功')
         this.$emit('submitSuccess')
         this.close()
@@ -148,8 +155,9 @@ export default {
       if (!id) return console.error('getDetail error: id 不能为空')
       try {
         this.dialogLoading = true
-        const { code, data, message } = await this.$api.apiModule.getById({ id }) || {}
-        if (code !== 200) return Message.error(message || '获取数据失败')
+        const res = await this.$api.getApi('/aaaa/bbbb', { id })
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return Message.error(message || '获取数据失败')
         this.formData = data
       } catch (err) {
         Message.error(String(err) || '获取数据失败')
@@ -159,7 +167,8 @@ export default {
       }
     },
     /**
-     * 打开弹框（弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
+     * 打开弹框
+     * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
      */
     open(row) {
       if (row) {
@@ -190,4 +199,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped="scoped"></style>
+<style lang="scss" scoped="scoped">
+.dialog_container {
+  /deep/ .el-dialog__body {
+    padding: 0;
+  }
+  .custom_dialog_footer{
+    padding: 10px 20px 20px;
+  }
+}
+</style>

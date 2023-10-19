@@ -134,16 +134,10 @@ export default {
      * el-select 组件的渲染方法
      */
     function selectRender(attrs, i) {
-      const options = computedOptions(attrs);
-      let width = "200px";
-      if (attrs.props && attrs.props.width) width = attrs.props.width + "px";
-      else width = getInputWidth(attrs.title);
+      const options = computedOptions(attrs, i);
       return h(
         "el-select",
         {
-          style: {
-            width: width,
-          },
           ...elModel(i, attrs, "change"),
         },
         options.map(optionRender)
@@ -152,30 +146,24 @@ export default {
     /**
      * el-option 组件的渲染方法
      */
-    function optionRender(attrs = {}) {
+    function optionRender({ label, value, disabled = false, render }) {
       return h(
         "el-option",
         {
           props: {
-            label: attrs.label,
-            value: attrs.value,
-            disabled: attrs.disabled || false,
+            label,
+            value,
+            disabled,
           },
         },
-        attrs.render ? attrs.render(h) : []
+        render ? render(h) : []
       );
     }
     /**
      * el-date-picker 组件的渲染方法
      */
     function datePickerRender(attrs, i) {
-      let width = "200px";
-      if (attrs.props && attrs.props.width) width = attrs.props.width + "px";
-      else width = getInputWidth(attrs.title);
       return h("el-date-picker", {
-        style: {
-          width: width,
-        },
         ...elModel(i, attrs, "input"),
       });
     }
@@ -199,30 +187,18 @@ export default {
     /**
      * 获取计算后的options
      */
-    function computedOptions(attrs) {
-      const options = attrs.options;
-      const {
-        value = "val",
-        label = "label",
-        type = String,
-      } = attrs.optionKey || {};
-      let results = [];
-      if (Array.isArray(options)) {
-        results = options.map((item) => {
-          return {
-            value: type(item[value]),
-            label: item[label],
-          };
-        });
-      } else {
-        for (const key in options) {
-          results.push({
-            value: type(key),
-            label: options[key],
-          });
-        }
+    function computedOptions({ options, optionKey = {} }, key) {
+      const { value = "value", label = "label" } = optionKey;
+      if (!Array.isArray(options)) {
+        return console.error(`searchFileds 配置的 ${key} 字段配置 中，缺少 options 数组参数`);
       }
-      return results;
+      return options.map((item) => {
+        return {
+          ...item,
+          value: item[value],
+          label: item[label],
+        };
+      });
     }
     /**
      * 搜索、重置控制按钮的渲染
@@ -344,18 +320,15 @@ export default {
           [type](e) {
             if (attrs.type === "date-picker") {
               // 日期组件的特殊处理
-              if (e === null) {
-                // 用于清空
-                context.props.value[key] = null;
-                return;
-              }
-              let dateType = "yyyy-MM-DD";
-              if (
-                attrs.props &&
-                attrs.props.valueFormat === "yyyy-MM-dd HH:mm:ss"
-              )
-                dateType = "yyyy-MM-DD HH:mm:ss";
-              if (moment(e).format(dateType) === e)
+              // let dateType = "yyyy-MM-DD";
+              // if (
+              //   attrs.props &&
+              //   attrs.props.valueFormat === "yyyy-MM-dd HH:mm:ss"
+              // )
+              //   dateType = "yyyy-MM-DD HH:mm:ss";
+              // if (moment(e).format(dateType) === e) {
+              //   context.props.value[key] = e;
+              // }
               context.props.value[key] = e;
             } else {
               context.props.value[key] = e;
@@ -520,11 +493,6 @@ export default {
 
 <style scoped>
 .table_search_header {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
   box-sizing: border-box;
 }
 

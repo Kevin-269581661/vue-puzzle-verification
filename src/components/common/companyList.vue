@@ -253,7 +253,7 @@ import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api.js";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
-import PatrolPointDialog from './components/meadiaList/patrolPointDialog.vue'
+import PatrolPointDialog from './components/companyList/patrolPointDialog.vue'
 
 export default {
   components: {

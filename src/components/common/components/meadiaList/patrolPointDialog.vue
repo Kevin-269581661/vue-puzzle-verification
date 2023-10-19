@@ -1,6 +1,6 @@
 <template>
   <div class="dialog_container">
-    <!-- 弹框模板组件 -->
+    <!-- 选点配置组件 -->
     <el-dialog
       :visible.sync="visible"
       :append-to-body="true"
@@ -37,32 +37,6 @@
 </template>
 
 <script>
-/*
-
-vue2 通用弹窗组件模板
-
-  使用方法：全部复制，粘贴，根据业务需求修改，多余的删掉
-
-  属性：
-    preparedData
-
-  事件：
-    @close // 当弹窗关闭
-    @submitSuccess // 当提交成功
-
-  父组件调用（采用调用方法的方式打开，保证数据传递及时性，以及方便控制打开时的初始化逻辑处理，且父组件无需维护多余子组件的变量）：
-
-    组件标签：
-    <FormDialog ref='formDialogRef' :preparedData="formDialogPreparedData" @close="onClose" @submitSuccess="onSubmitSuccess"/>
-
-    打开：
-    this.$refs.formDialogRef && this.$refs.formDialogRef.open() // 新增
-    this.$refs.formDialogRef && this.$refs.formDialogRef.open(row) // 编辑
-
-    关闭：
-    this.$refs.formDialogRef && this.$refs.formDialogRef.close()
-
- */
 
 import { Message } from "element-ui";
 import api from "../../../../api/api.js";
@@ -141,24 +115,7 @@ export default {
       }
     },
     /**
-     * 获取详情
-     */
-    async getDetail(id) {
-      if (!id) return console.error('getDetail error: id 不能为空')
-      try {
-        this.dialogLoading = true
-        const { code, data, message } = await this.$api.apiModule.getById({ id }) || {}
-        if (code !== 200) return Message.error(message || '获取数据失败')
-        this.formData = data
-      } catch (err) {
-        Message.error(String(err) || '获取数据失败')
-        console.error('getDetail error:', err)
-      } finally {
-        this.dialogLoading = false
-      }
-    },
-    /**
-     * 打开弹框（弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
+     * 打开弹框
      */
     open(row) {
       this.companyId = row.asrID

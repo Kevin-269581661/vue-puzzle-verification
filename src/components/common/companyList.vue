@@ -241,7 +241,7 @@
       </span>
     </el-dialog>
     <!-- 巡点配置弹出框 -->
-    <patrolPointDialog ref="patrolPointRef" @submitSuccess="searchFun"/>
+    <PatrolPointDialog ref="patrolPointRef" @submitSuccess="searchFun"/>
   </div>
 </template>
 
@@ -253,13 +253,13 @@ import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api.js";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
-import patrolPointDialog from './components/meadiaList/patrolPointDialog.vue'
+import PatrolPointDialog from './components/meadiaList/patrolPointDialog.vue'
 
 export default {
   components: {
     noSearchResult,
     pointState,
-    patrolPointDialog
+    PatrolPointDialog
   },
   data() {
     return {

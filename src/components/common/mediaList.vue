@@ -89,6 +89,17 @@
                   >
                   </el-input>
               </el-col>
+              <el-col v-if="isCollapse" class="handel_ul_li" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
+                  <span class="li-label">MAC编码：</span>
+                  <el-input
+                      placeholder="请输入MAC编码"
+                      v-model="macCode"
+                      class="input-with-select u-key"
+                      size="small"
+                      clearable
+                  >
+                  </el-input>
+              </el-col>
 
               <el-col class="handel_ul_li handel_ul_li_btn" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
                   <el-button
@@ -187,6 +198,24 @@
                       >
                       </el-table-column>
                   </template>
+                  <template v-else-if="item.label === '开门次数'">
+                      <el-table-column
+                          column-key="asState"
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          :filters="[
+                              { text: '昨日', value: 1 },
+                              { text: '上周', value: 2 },
+                              { text: '上月', value: 4 },
+                          ]"
+                          :filter-multiple="false"
+                      >
+                          <template slot-scope="scope">
+                              <p >{{ scope.row.openDoorCount }}</p>
+                          </template>
+                      </el-table-column>
+                  </template>
                   <template v-else-if="item.label === '媒体状态'">
                       <el-table-column
                           v-if="item.isChecked"
@@ -280,6 +309,20 @@
                               "
                               :disabled="scope.row.asState == 4"
                               >拆除</el-dropdown-item
+                              >
+                              <el-dropdown-item
+                              @click.native.prevent="
+                                  changeState('8', scope.$index, scope.row)
+                              "
+                              :disabled="scope.row.asState == 4"
+                              >关联设备</el-dropdown-item
+                              >
+                              <el-dropdown-item
+                              @click.native.prevent="
+                                  changeState('9', scope.$index, scope.row)
+                              "
+                              :disabled="scope.row.asState == 4"
+                              >取消关联</el-dropdown-item
                               >
                           </el-dropdown-menu>
                           </el-dropdown>
@@ -520,6 +563,85 @@
           @handleConfirm="getData"
           v-if="isVailableSell"
         ></vailable-sellDialog>
+
+        <!-- 关联设备弹窗 -->
+        <el-dialog
+          :visible.sync="associateDalogvisiable"
+          :close-on-click-modal="false"
+          width="480px"
+          custom-class="mStatueDialog"
+        >
+          <h3 slot="title" class="dismantle_title">
+            关联设备
+          </h3>
+          <div style="padding-top: 10px;display: flex;">
+            <!-- <p style="line-height: 28px">请输入MAC码</p> -->
+            <p style="width: 70px;line-height: 30px;">MAC码:</p>
+            <el-input
+              v-model.trim="macCodeInfo"
+              placeholder="请输入MAC码"
+            ></el-input>
+          </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button size="mini" @click="associateDalogvisiable = false"
+              >取 消</el-button
+            >
+            <el-button
+              size="mini"
+              type="primary"
+              style="margin-left: 35px"
+              @click="searchDevice"
+              >查 询</el-button
+            >
+          </div>
+        </el-dialog>
+        <!-- 关联设备详情弹窗 -->
+        <el-dialog
+          :visible.sync="associateDetailDalogvisiable"
+          :close-on-click-modal="false"
+          width="1000px"
+          custom-class="mStatueDialog"
+        >
+          <h3 slot="title" class="dismantle_title">
+            门禁名称：{{ controlDetail.doorName }}
+          </h3>
+          <div style="padding-top: 10px;">
+            <div class="control-detail">
+              <p>门禁类型：{{ controlDetail.doorType }}</p>
+              <p>位置类型：{{ controlDetail.position }}</p>
+              <p>门禁型号：{{ controlDetail.doorModel }}</p>
+              <p>状态：{{ controlDetail.status }}</p>
+              <p>Mac编码：{{ controlDetail.mac }}</p>
+              <p>ICCID：{{ controlDetail.iccid }}</p>
+              <p>创建时间：{{ controlDetail.createTime }}</p>
+              <p>运营公司：{{ controlDetail.operateCompanyName }}</p>
+              <p>创建人：{{ controlDetail.createUserName }}</p>
+            </div>
+            <p style="width: 70px;line-height: 30px; font-weight: 600;margin-top:10px;">小区信息</p>
+            <div class="associate-information">
+              <p>所属区域：{{ controlDetail.districtName }}</p>
+              <p>小区名称：{{ controlDetail.communityName }}</p>
+              <p>小区详细地址：{{ controlDetail.communityAddress }}</p>
+              <p>经纬坐标：{{ controlDetail.latitude }} - {{controlDetail.longitude }}</p>
+              <p>物业公司：{{ controlDetail.propertyName}}</p>
+              <p>物业电话：{{ controlDetail.propertyPhone }}</p>
+              <p>小区户数：{{ controlDetail.buildingNumber }}</p>
+              <p>街道：{{ controlDetail.streetName }}</p>
+            </div>
+          </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button size="mini" @click=" associateDetailDalogvisiable= false"
+              >取 消</el-button
+            >
+            <el-button
+              size="mini"
+              type="primary"
+              style="margin-left: 35px"
+              @click="setMediaDoorRel"
+              >确定</el-button
+            >
+          </div>
+        </el-dialog>
       </div>
     </div>
   </template>
@@ -552,6 +674,7 @@
     Select,
     Option,
   } from "element-ui";
+import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
 
   export default {
     name: "mediaList",
@@ -585,6 +708,8 @@
               { id: 3, label: "投放面", prop: "asLab", width: "120", isChecked: true, fix:"not" },
               { id: 4, label: "媒体位ID", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
               { id: 6, label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
+              { id: 19, label: "开门次数", prop: "openDoorCount", width: "120", isChecked: true, fix:"not" },
+              { id: 20, label: "MAC编码", prop: "macCode", width: "120", isChecked: true, fix:"not" },
               { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
               { id: 8, label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
               { id: 9, label: "创建日期", prop: "createTime", width: "140", isChecked: true, fix:"not" },
@@ -653,6 +778,8 @@
           rowIndex: "", // 修改媒体状态时的行下标
           selectState: "", // 修改到媒体状态
           ImportDialogVisible: false, // 媒体导入弹出框
+          associateDalogvisiable: false, // 关联设备弹出框
+          associateDetailDalogvisiable: false, // 关联设备详情弹出框
           importAsrID: "", // 导入媒体时所选择的公司id
           importSelectLoading: true, // 公司下拉选项
           companyList: [], // SA媒体导入时获取的公司列表
@@ -691,7 +818,6 @@
           dismantleVisible: false,
           // 拆除信息
           dismantleInfo: "",
-
           // 不可售卖弹窗
           isUnvailableSell: false,
           // 可售卖弹窗
@@ -711,6 +837,12 @@
           // 是否开通数字化权限
           isPay: 1,
           mediaTypes: [],
+          //MAC编码
+          macCode: '',
+          // 关联设备弹窗Mac编码
+          
+          macCodeInfo: '',
+          controlDetail: {}
       };
     },
     created() {
@@ -745,7 +877,7 @@
           this.currentPlanColumn = columns
           // console.log(columns.filter((item) => item.fix=='right'));
           // console.log(columns.filter((item) => item.fix=='not'));
-          // console.log(this.currentPlanColumn);
+          console.log(this.currentPlanColumn);
           this.itemKey = Math.random()
       },
       // 刷新列表
@@ -878,6 +1010,34 @@
         this.isShowTag = false;
       },
 
+      //查询关联设备
+      searchDevice() {
+        console.log(this.rowData);
+        api.getApi(`/addsp/api/v1/media/getDoorDetail?mac=${this.macCodeInfo}`).then(res => {
+            console.log(res);
+          this.controlDetail = res.data.data
+        })
+        this.associateDalogvisiable = false
+        this.associateDetailDalogvisiable = true;
+      },
+
+      // 设置关联
+      setMediaDoorRel() {
+        let params = {
+          mediaId: this.rowData.mID,
+          doorId: this.controlDetail.doorId,
+          mac: this.macCodeInfo
+        }
+        api.postApi_json('/addsp/api/v1/media/setMediaDoorRel', params).then(res => {
+          console.log(res); 
+          const { SysCode: code, MSG: message} = res.data
+          if (code !== 200200) return sessFun.messageFun("warning", `${message}`);
+          sessFun.messageFun("success", "绑定成功");
+          this.associateDetailDalogvisiable = false;
+          this.controlDetail = {}
+        })
+      },
+
       filterChange(filters) {
           for (let key in filters) {
               if (key === "asState") {
@@ -942,6 +1102,7 @@
                   mediaTypeIds: this.filterMediaType + "", // 媒体类型
                   buildingName: this.buildingName, // 楼栋
                   unitName: this.unitName, // 单元
+                  macCode: this.macCode //mac编码
               },
           };
           for (let i in params.data) {
@@ -956,6 +1117,7 @@
             if (RMList) {
               // 过滤列表数据
               let mediaList = [];
+              let ids = []
               // for (let key of RMList) {
               //   mediaList.push(key);
               // }
@@ -981,11 +1143,14 @@
                       asState: key.asState || '--', // 媒体状态
                       asSaleState: key.asSaleState || '--', // 售卖状态
                       unSaleableReason: key.unSaleableReason, // 不可售卖原因
-
+                      openDoorCount: key.openDoorCount || '--',
+                      mac: key.mac
                   }
                   mediaList.push(obj)
+                  ids.push(key.mID)
               }
               this.currentPlan = mediaList;
+              this.getMediaDoorMac(ids)
               // console.log('currentPlan', this.currentPlan);
               //正在加载
               this.loading = false;
@@ -1004,6 +1169,13 @@
           this.searchBtnAbled = false;
         });
         this.setCityAreaByUWho();
+      },
+
+      getMediaDoorMac(ids) {
+        // ids=JSON.stringify(ids)
+        api.getApi(`/addsp/api/v1/media/getMediaDoorMac?ids=${ids}`).then(res => {
+          console.log(res);
+        })
       },
 
       // 设置可搜索的区域
@@ -1090,6 +1262,9 @@
         } else if (selectState === "7") {
           console.log("不可售卖");
           this.isUnvailableSell = true;
+        }else if (selectState === "8") {
+          console.log("关联设备");
+          this.associateDalogvisiable = true;
         }
       },
 
@@ -1762,5 +1937,26 @@
   .delete_media_confirm .el-message-box__title {
     font-size: 16px;
     font-weight: 600;
+  }
+  .control-detail{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .control-detail p{
+    width: 280px;
+    line-height: 25px;
+    margin-right: 40px;
+    margin-top: 10px;
+  }
+
+  .associate-information{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .associate-information p{
+    width: 280px;
+    line-height: 25px;
+    margin-right: 40px;
+    margin-top: 10px;
   }
   </style>

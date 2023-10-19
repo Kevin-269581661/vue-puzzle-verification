@@ -95,6 +95,29 @@
 
         <el-row>
           <el-col :span="6">
+            <span>开门次数范围:</span>
+          </el-col>
+          <el-col :span="18">
+            <el-input v-model="downLoadInfo.minNumber" placeholder="最小值" style="width:120px"></el-input>
+            &nbsp;~&nbsp;
+           <el-input v-model="downLoadInfo.maxNumber" placeholder="最大值" style="width:120px"></el-input>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="6">
+            <span>是否支持语音播报:</span>
+          </el-col>
+          <el-col :span="18">
+            <el-radio-group v-model="downLoadInfo.isMedia">
+              <el-radio label="1">不限</el-radio>
+              <el-radio label="2">是</el-radio>
+              <el-radio label="3">否</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="6">
             <span>选择日期:</span>
           </el-col>
           <el-col :span="18">
@@ -171,6 +194,9 @@ export default {
         dateType: "1",
         // 自定义日期
         daterange: [],
+        minNumber: '',
+        maxNumber: '',
+        isMedia: '1'
       },
       allMediaTypes: [],
       tempMediaTypes: [],

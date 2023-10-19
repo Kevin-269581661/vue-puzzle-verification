@@ -3,6 +3,7 @@
     <!-- 弹框模板组件 -->
     <el-dialog
       :visible.sync="visible"
+      :append-to-body="true"
       :show-close="true"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -200,10 +201,12 @@ export default {
 </script>
 
 <style lang="scss" scoped="scoped">
+
+/deep/ .el-dialog__body {
+  padding: 0;
+}
+
 .dialog_container {
-  /deep/ .el-dialog__body {
-    padding: 0;
-  }
   .custom_dialog_footer{
     padding: 10px 20px 20px;
   }

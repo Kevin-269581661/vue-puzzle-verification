@@ -72,7 +72,7 @@ import { Message } from "element-ui";
 import sessFun from "@/commonFun/sessFun.js";
 
 /**
- * 初始化表单数据
+ * 初始化表单（提交）数据
  */
 const initFormData = () => {
   return {
@@ -85,11 +85,17 @@ export default {
   name: 'formDialog',
   emits: ['submitSuccess', 'close'],
   props: {
+    // 预加载数据（默认是由父组件传入，如果不是，则需要写在 data 里，并创建方法获取预加载数据）
     preparedData: {
       type: Object,
       default: () => {
         return {
-          propTwoSelectList: []
+          /*
+            字段名 test
+            预加载数据名 test + Options
+            获取预加载数据方法名 get + Test + Options
+           */
+          propTwoOptions: []
         }
       }
     }
@@ -101,7 +107,9 @@ export default {
       isEdit: false,
       formData: initFormData(),
       formRules: {
+        // 通用校验
         propOne: [{ required: true, message: '请输入示例一', trigger: 'blur' }],
+        // 特殊校验
         propTwo: [
           {
             required: true,
@@ -116,9 +124,10 @@ export default {
           }
         ]
       },
-      preparedData: {
-
-      }
+      // 预加载数据
+      // preparedData: {
+      //   propTwoOptions: []
+      // }
     }
   },
   methods: {
@@ -171,6 +180,23 @@ export default {
       }
     },
     /**
+     * 获取预加载数据
+     */
+     async getPropTwoOptions() {
+      try {
+        this.dialogLoading = true
+        const res = await this.$api.getApi('/aaaa/bbbb')
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return Message.error(message || '获取数据失败')
+        this.preparedData.propTwoOptions = data
+      } catch (err) {
+        Message.error(String(err) || '获取数据失败')
+        console.error('getDetail error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
+    },
+    /**
      * 打开弹框
      * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
      */
@@ -187,6 +213,7 @@ export default {
         this.isEdit = false
       }
       this.visible = true
+      // this.getPropTwoOptions()
     },
     /**
      * 关闭弹框

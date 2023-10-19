@@ -29,11 +29,6 @@
           </el-cascader>
         </template>
 
-        <!-- 测试组件 -->
-        <template slot="testList">
-          <CustomInputSelect v-model="searchData.testList" :options="searchFileds.testList.options"/>
-        </template>
-
         <!-- 问题反馈 -->
         <template v-if="searchFileds.remarkList" slot="remarkList">
           <CustomInputSelect v-model="searchData.remarkList" :options="searchFileds.remarkList.options"/>
@@ -137,20 +132,9 @@ const initSearchData = () => ({
   // 问题反馈
   remark: '',
   remarkList: [],
-  testList: [],
 })
 // 初始化搜索配置
 const initSearchFileds = () => ({
-  testList: {
-    title: '测试组件',
-    slotContent: 'testList',
-    options: [
-      { label: '巡点', value: 1 },
-      { label: '待维修', value: 2 },
-      { label: '拆除', value: 3 },
-      { label: '其他（请输入）', value: 4, isCustom: true },
-    ]
-  },
   resName: {
     title: '资源名称',
     type: 'input',
@@ -524,7 +508,7 @@ export default {
             slotContent: `${fieldName}List`,
             options: items.map(({title, type: optionType}) => ({
               label: title,
-              value: optionType === 'input' ? '' : title,
+              value: title,
               isCustom: optionType === 'input'
             }))
           }

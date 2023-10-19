@@ -15,10 +15,10 @@
         <div class="custom_dialog_body">
           <el-form ref="formRef" :model="formData" :rules="formRules" label-width="140px" size="small" class="form">
 
-            <el-form-item label="巡点表单配置：" prop="patrolPoint">
-              <el-select v-model="formData.patrolPoint" placeholder="请选择" filterable clearable>
+            <el-form-item label="巡点表单配置：" prop="templateId">
+              <el-select v-model="formData.templateId" placeholder="请选择" filterable clearable>
                 <el-option
-                  v-for="(cell, j) in formData.patrolPointList"
+                  v-for="(cell, j) in preparedData.patrolPointOptions"
                   :key="cell.id"
                   :value="cell.id"
                   :label="cell.name"
@@ -46,37 +46,28 @@ import api from "../../../../api/api.js";
  */
 const initFormData = () => {
   return {
-    patrolPoint:null,
-    patrolPointList: null
+    templateId: null,
+    companyId: null
   }
 }
 
 export default {
-  name: 'formDialog',
+  name: 'patrolPointDialog',
   emits: ['submitSuccess', 'close'],
   data() {
     return {
       formData: initFormData(),
       formRules: {
         patrolPoint: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: (rule, value, callback) => {
-              console.log(value);
-              if (!value) {
-                callback(new Error('请选择巡点表单配置'))
-              } else {
-                callback()
-              }
-            }
-          }
+          { required: true, trigger: 'blur', message: '请选择巡点表单配置' }
         ]
       },
       dialogLoading: false,
       isEdit: false,
       visible: false,
-      companyId: null,
+      preparedData: {
+        patrolPointOptions:[]
+      }
     }
   },
   methods: {
@@ -93,20 +84,12 @@ export default {
       }
       try {
         this.dialogLoading = true
-        let params = {
-          templateId: this.formData.patrolPoint,
-          companyId: this.companyId
-        }
-        api.postApi_json('/addsp/patrolPoint/web/setTemplateRel', params).then(res => {
-          console.log(res);
-          if (res.data.SysCode === 200200) {
-            Message.success('操作成功')
-            this.$emit('submitSuccess')
-            this.close()
-          } else {
-            Message.error(res.MSG || '操作失败')
-          }
-        })
+        const res = await api.postApi_json('/addsp/patrolPoint/web/setTemplateRel', this.formData)
+        const { SysCode: code, MSG: message} = res.data
+        if (code !== 200200) return Message.error(message || '操作失败')
+        Message.success('操作成功')
+        this.$emit('submitSuccess')
+        this.close()
       } catch (err) {
         Message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
@@ -115,15 +98,30 @@ export default {
       }
     },
     /**
+     * 获取详情
+     */
+     async getPatrolPointOptions() {
+      if (!this.formData.companyId) return console.error('getDetail error: id 不能为空')
+       try {
+        this.dialogLoading = true
+        const res = await api.getApi(`/addsp/patrolPoint/web/getTemplateList?companyId=${this.formData.companyId}`)
+        const { SysCode: code, MSG: message, data } = res.data
+        if (code !== 200200) return Message.error(message || '获取模板列表失败')
+        this.preparedData.patrolPointOptions = data.items
+        this.formData.templateId = data.id
+      } catch (err) {
+        Message.error(String(err) || '获取模板列表失败')
+        console.error('getDetail error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
+    },
+    /**
      * 打开弹框
      */
     open(row) {
-      this.companyId = row.asrID
-      api.getApi(`/addsp/patrolPoint/web/getTemplateList?companyId=${row.asrID}`).then(res => {
-        console.log(res.data)
-        this.formData.patrolPointList = res.data.data.items
-        this.formData.patrolPoint = res.data.data.id
-      })
+      this.formData.companyId = row.asrID
+      this.getPatrolPointOptions()
       this.visible = true
     },
     /**

@@ -1,6 +1,6 @@
 <template>
   <div class="dialog_container">
-    <!-- 选点配置组件 -->
+    <!-- 巡点配置组件 -->
     <el-dialog
       :visible.sync="visible"
       :append-to-body="true"

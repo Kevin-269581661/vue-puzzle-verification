@@ -332,7 +332,7 @@
                               "
                               >关联设备</el-dropdown-item
                               >
-                                <el-dropdown-item>
+                                <el-dropdown-item :disabled="scope.row.doorId === null">
                                   <el-popconfirm title="确定取消关联吗？" @confirm="changeState('9', scope.$index, scope.row)">
                                     <p slot="reference">取消关联</p>
                                   </el-popconfirm>
@@ -1032,8 +1032,10 @@
             this.controlDetail = data
             this.associateDalogvisiable = false
             this.associateDetailDalogvisiable = true;
-          } return sessFun.messageFun('warning', '查询数据为空')
-          
+            this.mac = ''
+          } else {
+              return sessFun.messageFun('warning', '查询数据为空')
+            }
         })
       },
 
@@ -1041,9 +1043,10 @@
       setMediaDoorRel() {
         let params = {
           mediaId: this.rowData.mID,
-          doorId: this.rowData.doorId,
+          doorId: this.controlDetail.doorId,
           mac: this.macCodeInfo
         }
+        console.log(params);
         api.postApi_json('/addsp/api/v1/media/setMediaDoorRel', params).then(res => {
           const { SysCode: code, MSG: message} = res.data
           if (code !== 200200) return sessFun.messageFun("warning", `${message}`);
@@ -1173,8 +1176,9 @@
                       asState: key.asState || '--', // 媒体状态
                       asSaleState: key.asSaleState || '--', // 售卖状态
                       unSaleableReason: key.unSaleableReason, // 不可售卖原因
-                      openDoorCount: key.openDoorCount || '--',
-                      mac: key.mac
+                      openDoorCount: key.openDoorCount || '--', //开门次数
+                      mac: key.mac, //mac编码
+                      doorId: key.doorId //门禁id
                   }
                   mediaList.push(obj)
                   ids.push(key.mID)

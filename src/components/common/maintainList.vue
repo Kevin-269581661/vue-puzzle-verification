@@ -58,8 +58,13 @@
         </TableSearch>
       </div>
       <div class="table_box">
-        <!-- 动态配置表格 -->
-        <TableList v-if="tableColumns.length" :dataSource="tableList" :columns="tableColumns" :loading="tableLoading">
+        <!-- 表格 -->
+        <TableList
+          :columns="tableColumns"
+          :dataSource="tableList"
+          :loading="tableLoading"
+          @refreshTable="getTableList"
+        >
 
           <!-- 自定义状态列 -->
           <template slot="statusDesc" slot-scope="slotProps">

@@ -93,7 +93,7 @@
                   <span class="li-label">MAC编码：</span>
                   <el-input
                       placeholder="请输入MAC编码"
-                      v-model="macCode"
+                      v-model="mac"
                       class="input-with-select u-key"
                       size="small"
                       clearable
@@ -200,7 +200,7 @@
                   </template>
                   <template v-else-if="item.label === '开门次数'">
                       <el-table-column
-                          column-key="asState"
+                          column-key="openDoorCount"
                           :prop="item.prop"
                           :label="item.label"
                           :min-width="item.width"
@@ -213,6 +213,22 @@
                       >
                           <template slot-scope="scope">
                               <p >{{ scope.row.openDoorCount }}</p>
+                          </template>
+                      </el-table-column>
+                  </template>
+                  <template v-else-if="item.label === 'MAC编码'">
+                      <el-table-column
+                          column-key="mac"
+                          :prop="item.prop"
+                          :label="item.label"
+                          :min-width="180"
+                      >
+                          <template slot-scope="scope">
+                              <span>{{ scope.row.mac }}</span>
+                              <el-tooltip class="item" effect="dark" content="该MAC在QIOT被修改，请确认" placement="right">
+                                <i class="el-icon-warning" v-if="scope.row.isShowMacTip"></i>
+                              </el-tooltip>
+                              <i class="el-icon-loading"  v-if="isMacLoading"></i>
                           </template>
                       </el-table-column>
                   </template>
@@ -314,16 +330,13 @@
                               @click.native.prevent="
                                   changeState('8', scope.$index, scope.row)
                               "
-                              :disabled="scope.row.asState == 4"
                               >关联设备</el-dropdown-item
                               >
-                              <el-dropdown-item
-                              @click.native.prevent="
-                                  changeState('9', scope.$index, scope.row)
-                              "
-                              :disabled="scope.row.asState == 4"
-                              >取消关联</el-dropdown-item
-                              >
+                                <el-dropdown-item>
+                                  <el-popconfirm title="确定取消关联吗？" @confirm="changeState('9', scope.$index, scope.row)">
+                                    <p slot="reference">取消关联</p>
+                                  </el-popconfirm>
+                                </el-dropdown-item>
                           </el-dropdown-menu>
                           </el-dropdown>
                       </template>
@@ -674,7 +687,6 @@
     Select,
     Option,
   } from "element-ui";
-import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
 
   export default {
     name: "mediaList",
@@ -709,7 +721,7 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
               { id: 4, label: "媒体位ID", prop: "assetTag", width: "210", isChecked: true, fix:"not" },
               { id: 6, label: "城市", prop: "city", width: "120", isChecked: true, fix:"not" },
               { id: 19, label: "开门次数", prop: "openDoorCount", width: "120", isChecked: true, fix:"not" },
-              { id: 20, label: "MAC编码", prop: "macCode", width: "120", isChecked: true, fix:"not" },
+              { id: 20, label: "MAC编码", prop: "mac", width: "150", isChecked: true, fix:"not" },
               { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
               { id: 8, label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
               { id: 9, label: "创建日期", prop: "createTime", width: "140", isChecked: true, fix:"not" },
@@ -838,11 +850,12 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
           isPay: 1,
           mediaTypes: [],
           //MAC编码
-          macCode: '',
+          mac: '',
           // 关联设备弹窗Mac编码
           
           macCodeInfo: '',
-          controlDetail: {}
+          controlDetail: {},
+          isMacLoading: true, //展示mac编码loading
       };
     },
     created() {
@@ -1012,29 +1025,46 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
 
       //查询关联设备
       searchDevice() {
-        console.log(this.rowData);
         api.getApi(`/addsp/api/v1/media/getDoorDetail?mac=${this.macCodeInfo}`).then(res => {
-            console.log(res);
-          this.controlDetail = res.data.data
+          const { SysCode: code, Msg: message, data } = res.data
+          if(code !== 200200) return sessFun.messageFun('warning', message)
+          if (data) {
+            this.controlDetail = data
+            this.associateDalogvisiable = false
+            this.associateDetailDalogvisiable = true;
+          } return sessFun.messageFun('warning', '查询数据为空')
+          
         })
-        this.associateDalogvisiable = false
-        this.associateDetailDalogvisiable = true;
       },
 
       // 设置关联
       setMediaDoorRel() {
         let params = {
           mediaId: this.rowData.mID,
-          doorId: this.controlDetail.doorId,
+          doorId: this.rowData.doorId,
           mac: this.macCodeInfo
         }
         api.postApi_json('/addsp/api/v1/media/setMediaDoorRel', params).then(res => {
-          console.log(res); 
           const { SysCode: code, MSG: message} = res.data
           if (code !== 200200) return sessFun.messageFun("warning", `${message}`);
-          sessFun.messageFun("success", "绑定成功");
+          sessFun.messageFun("success", "关联成功");
           this.associateDetailDalogvisiable = false;
           this.controlDetail = {}
+          this.getData()
+        })
+      },
+
+      //取消关联
+      removeMediaDoorRel() {
+        let params = {
+          mediaId: this.rowData.mID,
+          mac: this.macCodeInfo
+        }
+        api.postApi_json('/addsp/api/v1/media/removeMediaDoorRel', params).then(res => {
+          const { SysCode: code, MSG: message} = res.data
+          if (code !== 200200) return sessFun.messageFun("warning", `${message}`);
+          sessFun.messageFun("success", "取消关联成功");
+          this.getData()
         })
       },
 
@@ -1102,7 +1132,7 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
                   mediaTypeIds: this.filterMediaType + "", // 媒体类型
                   buildingName: this.buildingName, // 楼栋
                   unitName: this.unitName, // 单元
-                  macCode: this.macCode //mac编码
+                  mac: this.mac //mac编码
               },
           };
           for (let i in params.data) {
@@ -1151,7 +1181,6 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
               }
               this.currentPlan = mediaList;
               this.getMediaDoorMac(ids)
-              // console.log('currentPlan', this.currentPlan);
               //正在加载
               this.loading = false;
             } else {
@@ -1171,10 +1200,23 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
         this.setCityAreaByUWho();
       },
 
+      //获取mac编码是否同步
       getMediaDoorMac(ids) {
-        // ids=JSON.stringify(ids)
+        this.isMacLoading = true
         api.getApi(`/addsp/api/v1/media/getMediaDoorMac?ids=${ids}`).then(res => {
           console.log(res);
+          const { SysCode: code, Msg: message, data } = res.data
+          console.log('this.currentPlan', this.currentPlan);
+          for (let j = 0; j < data.length; j++){
+            for (let k = 0; k < this.currentPlan.length; k++){
+              if (data[j].mediaId === this.currentPlan[k].mID) {
+                if (data[j].mac !== this.currentPlan[k].mac) {
+                  this.currentPlan[k].isShowMacTip = true
+                }
+              }
+            }
+          }
+          this.isMacLoading = false
         })
       },
 
@@ -1265,6 +1307,9 @@ import { get } from "echarts-wordcloud/dist/echarts-wordcloud";
         }else if (selectState === "8") {
           console.log("关联设备");
           this.associateDalogvisiable = true;
+        }else if (selectState === "9") {
+          console.log("取消关联");
+          this.removeMediaDoorRel()
         }
       },
 

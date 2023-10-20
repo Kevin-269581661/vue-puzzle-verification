@@ -64,6 +64,7 @@ export const POINT_ARR = [
 		showTooltip: true,
 	},
 	{
+		id: 30,
 		label: '开门次数',
 		prop: 'openDoorCount',
 		width: '120',

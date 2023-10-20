@@ -7,54 +7,56 @@
     </div>
 
     <div v-loading="pageLoading" class="page_content">
-      <div class="page_title">维护列表</div>
       <!-- 列表搜索栏 -->
-      <TableSearch
-        :value="searchData"
-        :fileds="searchFileds"
-        @change="handleSeachChange"
-        @search="handleSearch"
-        @reset="handleReset"
-      >
-        <template slot="districtList">
-          <el-cascader
-            v-model="searchData.districtList"
-            :options="searchFileds.districtList.options"
-            clearable
-            change-on-select
-            size="small"
-            placeholder="请选择"
-            style="width: 100%"
-          >
-          </el-cascader>
-        </template>
+      <div class="page_content_top">
+        <div class="page_title">维护列表</div>
+        <TableSearch
+          :value="searchData"
+          :fileds="searchFileds"
+          @change="handleSeachChange"
+          @search="handleSearch"
+          @reset="handleReset"
+        >
+          <template slot="districtList">
+            <el-cascader
+              v-model="searchData.districtList"
+              :options="searchFileds.districtList.options"
+              clearable
+              change-on-select
+              size="small"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+            </el-cascader>
+          </template>
 
-        <!-- 问题反馈 -->
-        <template v-if="searchFileds.remarkList" slot="remarkList">
-          <CustomInputSelect v-model="searchData.remarkList" :options="searchFileds.remarkList.options"/>
-        </template>
+          <!-- 问题反馈 -->
+          <template v-if="searchFileds.remarkList" slot="remarkList">
+            <CustomInputSelect v-model="searchData.remarkList" :options="searchFileds.remarkList.options"/>
+          </template>
 
-        <!-- 通行情况 -->
-        <template v-if="searchFileds.trafficStateList" slot="trafficStateList">
-          <CustomInputSelect v-model="searchData.trafficStateList" :options="searchFileds.trafficStateList.options"/>
-        </template>
+          <!-- 通行情况 -->
+          <template v-if="searchFileds.trafficStateList" slot="trafficStateList">
+            <CustomInputSelect v-model="searchData.trafficStateList" :options="searchFileds.trafficStateList.options"/>
+          </template>
 
-        <!-- 媒介情况 -->
-        <template v-if="searchFileds.mediumStateList" slot="mediumStateList">
-          <CustomInputSelect v-model="searchData.mediumStateList" :options="searchFileds.mediumStateList.options"/>
-        </template>
+          <!-- 媒介情况 -->
+          <template v-if="searchFileds.mediumStateList" slot="mediumStateList">
+            <CustomInputSelect v-model="searchData.mediumStateList" :options="searchFileds.mediumStateList.options"/>
+          </template>
 
-        <!-- 设备问题 -->
-        <template v-if="searchFileds.deviceProblemList" slot="deviceProblemList">
-          <CustomInputSelect v-model="searchData.deviceProblemList" :options="searchFileds.deviceProblemList.options"/>
-        </template>
+          <!-- 设备问题 -->
+          <template v-if="searchFileds.deviceProblemList" slot="deviceProblemList">
+            <CustomInputSelect v-model="searchData.deviceProblemList" :options="searchFileds.deviceProblemList.options"/>
+          </template>
 
-        <!-- 导出 -->
-        <template slot="action">
-          <el-button type="plain" @click="handleExport">导出</el-button>
-        </template>
+          <!-- 导出 -->
+          <template slot="action">
+            <el-button type="plain" @click="handleExport">导出</el-button>
+          </template>
 
-      </TableSearch>
+        </TableSearch>
+      </div>
       <div class="table_box">
         <!-- 动态配置表格 -->
         <TableList v-if="tableColumns.length" :dataSource="tableList" :columns="tableColumns" :loading="tableLoading">
@@ -69,19 +71,19 @@
           </template>
 
         </TableList>
-      </div>
-      <div class="pagination_box">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :page-sizes="pagination.sizes"
-          :current-page.sync="pagination.page"
-          :page-size="pagination.pageSize"
-          :total="pagination.total"
-          @current-change="pageChange"
-          @size-change="pageSizeChange"
-        >
-        </el-pagination>
+        <div class="pagination_box">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="pagination.sizes"
+            :current-page.sync="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @current-change="pageChange"
+            @size-change="pageSizeChange"
+          >
+          </el-pagination>
+        </div>
       </div>
     </div>
 
@@ -377,7 +379,6 @@ export default {
           })
           return data
         })
-        console.log('tableList ====', this.tableList)
         this.pagination.total = pagerInfo.total
       } catch (err) {
         Message.error(err || '获取列表数据失败')
@@ -449,7 +450,6 @@ export default {
      * 列表搜索
      */
     handleSearch() {
-      console.log('列表搜索 ===', this.searchData)
       this.searchParamFormat();
       this.getTableList();
     },
@@ -457,7 +457,6 @@ export default {
      * 列表重置
      */
     handleReset() {
-      console.log('列表重置 ===')
       this.pagination.page = 1
       this.searchData = initSearchData()
       this.handleSearch()
@@ -542,7 +541,6 @@ export default {
         const res = await this.$api.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return Message.error(message || '获取列表字段和搜索字段配置数据失败')
-        console.log('getTableConfig ===', data)
         const { searchList, headerList } = data
         // 处理搜索栏字段配置数据
         let searchFileds = {}
@@ -556,7 +554,6 @@ export default {
             searchData[item.fieldName] = this.getFiledDefaultValue(item)
           }
         })
-        console.log('searchFileds ====', searchFileds)
         this.searchFileds = Object.assign(initSearchFileds(), searchFileds)
         this.searchData = Object.assign(initSearchData(), searchData)
         // 处理列表字段配置数据
@@ -586,7 +583,7 @@ export default {
           fixed: 'right',
         })
         this.tableColumns = tableColumns
-        console.log('tableColumns ====', this.tableColumns)
+        // console.log('tableColumns ====', this.tableColumns)
       } catch (err) {
         Message.error(String(err) || '获取列表字段和搜索字段配置数据失败')
         console.error('getTableConfig error:', err)

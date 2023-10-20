@@ -480,8 +480,7 @@ export default {
             flexWrap: 'wrap',
           },
           props: {
-            gutter: 20,
-            // justify: "start",
+            gutter: 16,
             align: "middle"
           }
         }, items)
@@ -497,9 +496,9 @@ export default {
 }
 
 .search_item {
-  padding-top: 8px;
   display: flex;
   align-items: center;
+  margin-bottom: 16px;
 }
 
 .search_item_title {
@@ -510,10 +509,10 @@ export default {
 }
 
 .control_btns {
-  padding-top: 8px;
   padding-left: 10px;
   padding-right: 10px;
   display: flex;
+  align-items: center;
 }
 
 .search_item_slot {

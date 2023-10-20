@@ -24,28 +24,38 @@
 }
 
 .page_content {
-  border-bottom: 1px solid #e6e7e9;
+  /* border-bottom: 1px solid #e6e7e9; */
+  /* background-color: #fff; */
+}
+
+.page_content_top {
   background-color: #fff;
-}
-
-.table_box {
-  margin: 24px 32px 0;
-}
-
-.pagination_box {
-  padding: 14px 24px;
-  display: flex;
-  justify-content: flex-end;
+  margin-bottom: 14px;
+  border: 1px solid #ebebeb;
 }
 
 .page_title {
   height: 24px;
   line-height: 24px;
   padding: 12px 24px;
-  border-bottom: 1px solid #e6e7e9;
+  border-bottom: 1px solid #ebebeb;
   font-size: 16px;
   color: #2c313c;
   font-weight: 700;
+  background-color: #fff;
+}
+
+.table_box {
+  padding: 20px 30px;
+  background-color: #fff;
+  box-sizing: border-box;
+  border: 1px solid #ebebeb;
+}
+
+.pagination_box {
+  padding: 14px 0;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* el-talbe 滚动条样式 */

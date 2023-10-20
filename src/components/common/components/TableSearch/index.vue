@@ -182,7 +182,7 @@ export default {
 
 <style lang="scss" scoped>
 .table_search_container {
-  padding: 12px 24px;
+  padding: 24px 24px 8px;
   box-sizing: border-box;
   .el-button--text {
     padding-left: 0;

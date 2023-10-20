@@ -225,8 +225,8 @@
                       >
                           <template slot-scope="scope">
                               <span>{{ scope.row.mac }}</span>
-                              <el-tooltip class="item" effect="dark" content="该MAC在QIOT被修改，请确认" placement="right">
-                                <i class="el-icon-warning" v-if="scope.row.isShowMacTip"></i>
+                              <el-tooltip class="item" effect="dark" content="该MAC在QIOT被修改，请确认" placement="right"  v-if="scope.row.isShowMacTip">
+                                <i class="el-icon-warning"></i>
                               </el-tooltip>
                               <i class="el-icon-loading"  v-if="isMacLoading"></i>
                           </template>

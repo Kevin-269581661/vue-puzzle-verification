@@ -438,6 +438,15 @@ export const RES_ARR = [
 		fix: "right",
 		showTooltip: false,
 	},
+	{
+		id: 30,
+		label: '开门次数',
+		prop: 'openDoorCount',
+		width: '120',
+		isChecked: true,
+		fix: "not",
+		showTooltip: false,
+	},
 ]
 
 // 楼栋
@@ -621,6 +630,15 @@ export const BUILD_ARR = [
 		width: "190",
 		isChecked: true,
 		fix: "right",
+		showTooltip: false,
+	},
+	{
+		id: 30,
+		label: '开门次数',
+		prop: 'openDoorCount',
+		width: '120',
+		isChecked: true,
+		fix: "not",
 		showTooltip: false,
 	},
 ]
@@ -815,6 +833,15 @@ export const UNIT_ARR = [
 		width: "190",
 		isChecked: true,
 		fix: "right",
+		showTooltip: false,
+	},
+	{
+		id: 30,
+		label: '开门次数',
+		prop: 'openDoorCount',
+		width: '120',
+		isChecked: true,
+		fix: "not",
 		showTooltip: false,
 	},
 ]

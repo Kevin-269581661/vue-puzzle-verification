@@ -36,7 +36,6 @@
       :size="size"
       multiple
       collapseTags
-      filterable
       clearable
       placeholder="请选择"
       style="width: 100%"

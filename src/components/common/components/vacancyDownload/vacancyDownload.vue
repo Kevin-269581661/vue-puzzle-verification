@@ -98,9 +98,9 @@
             <span>开门次数范围:</span>
           </el-col>
           <el-col :span="18">
-            <el-input v-model="downLoadInfo.minNumber" placeholder="最小值" style="width:120px"></el-input>
+            <el-input  type="number" v-model="downLoadInfo.openDoorMinCount" placeholder="最小值" style="width:120px" @change="handleChangeInput"></el-input>
             &nbsp;~&nbsp;
-           <el-input v-model="downLoadInfo.maxNumber" placeholder="最大值" style="width:120px"></el-input>
+           <el-input  type="number" v-model="downLoadInfo.openDoorMaxCount" placeholder="最大值" style="width:120px" @change="handleChangeInput"></el-input>
           </el-col>
         </el-row>
 
@@ -109,10 +109,10 @@
             <span>是否支持语音播报:</span>
           </el-col>
           <el-col :span="18">
-            <el-radio-group v-model="downLoadInfo.isMedia">
-              <el-radio label="1">不限</el-radio>
-              <el-radio label="2">是</el-radio>
-              <el-radio label="3">否</el-radio>
+            <el-radio-group v-model="downLoadInfo.supportVoice">
+              <el-radio :label="-1">不限</el-radio>
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="0">否</el-radio>
             </el-radio-group>
           </el-col>
         </el-row>
@@ -194,9 +194,9 @@ export default {
         dateType: "1",
         // 自定义日期
         daterange: [],
-        minNumber: '',
-        maxNumber: '',
-        isMedia: '1'
+        openDoorMinCount: '',
+        openDoorMaxCount: '',
+        supportVoice: -1
       },
       allMediaTypes: [],
       tempMediaTypes: [],
@@ -287,6 +287,15 @@ export default {
       this.resetDownloadInfo()
       this.close();
     },
+    //输入框校验
+    handleChangeInput() {
+      if (this.downLoadInfo.openDoorMinCount < 0 ) {
+        this.downLoadInfo.openDoorMinCount = ''
+      }
+      if (this.downLoadInfo.openDoorMaxCount < 0 ) {
+        this.downLoadInfo.openDoorMaxCount = ''
+      }
+    },
     // 重置空位导出信息
     resetDownloadInfo() {
       const info = this.downLoadInfo
@@ -296,9 +305,12 @@ export default {
       info.mediaTypeIds = ''
       info.daterange = []
       this.collectSelection = null
+      info.supportVoice = 1
+      info.openDoorMinCount = ''
+      info.openDoorMaxCount = ''
     },
     confirmDown () {
-      let { loadType, city, daterange, dateType, mediaTypeIds } = this.downLoadInfo;
+      let { loadType, city, daterange, dateType,openDoorMinCount,openDoorMaxCount,mediaTypeIds } = this.downLoadInfo;
         if (!loadType) {
             Message.warning("请选择选点纬度!");
             return;
@@ -307,11 +319,19 @@ export default {
             Message.warning("请选择城市!");
             return;
         }
+        if (openDoorMinCount !== '' && openDoorMaxCount === '') {
+          this.messageFun("warning", "请填写最大值");
+          return;
+        }
+        if (openDoorMaxCount !== '' && openDoorMinCount === '') {
+          this.messageFun("warning", "请填写最小值");
+          return;
+        }
         if (dateType == "2") {
-            if (!daterange || !daterange.length) {
+          if (!daterange || !daterange.length) {
             this.messageFun("warning", "请先选择日期");
             return;
-            }
+          }
         }
         if (!mediaTypeIds.length) {
             Message.warning("请选择媒体类型!");
@@ -386,10 +406,13 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
         });
-        let { city, mediaTypeIds, dateType, daterange } = this.downLoadInfo;
+        let { city, mediaTypeIds,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, daterange } = this.downLoadInfo;
         let params = {
             cityIds: city.join(','),
             mediaTypeIds: mediaTypeIds.join(','),
+            supportVoice,
+            openDoorMinCount: openDoorMinCount === ''? null : openDoorMinCount,
+            openDoorMaxCount: openDoorMaxCount === ''? null : openDoorMaxCount
         }
         // 自定义日期
         if(dateType === '2') {

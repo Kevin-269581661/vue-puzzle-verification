@@ -104,7 +104,7 @@
           // 自定义插槽（ title 有效）
           slotContent: 'filedName2'
         }
-      }
+      },
       // 搜索栏字段绑定数据源
       searchData: {
         filedName: '',

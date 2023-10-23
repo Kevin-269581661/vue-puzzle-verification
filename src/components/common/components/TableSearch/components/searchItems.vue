@@ -1,5 +1,7 @@
 <script>
 import moment from "dayjs";
+// 自定义组件
+import CustomInputSelect from '@/components/common/components/customInputSelect.vue'
 
 export default {
   name: "searchItems",
@@ -39,6 +41,8 @@ export default {
       "date-picker": datePickerRender,
       "date-picker-two": datePickerTwoRender,
       "input-two": inputTwoRender,
+      // 带自定义输入的选择器组件
+      "input-select": inputSelectRender,
     };
     // label 宽度
     const labelWidth = labelWidth || getLabelWidth()
@@ -142,6 +146,17 @@ export default {
         },
         options.map(optionRender)
       );
+    }
+    /**
+     * 带自定义输入的选择器组件
+     */
+    function inputSelectRender(attrs, i) {
+      return h(
+        CustomInputSelect,
+        {
+          ...elModel(i, attrs, "change"),
+        }
+      )
     }
     /**
      * el-option 组件的渲染方法

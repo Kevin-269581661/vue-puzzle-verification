@@ -30,26 +30,6 @@
             </el-cascader>
           </template>
 
-          <!-- 问题反馈 -->
-          <template v-if="searchFileds.remarkList" slot="remarkList">
-            <CustomInputSelect v-model="searchData.remarkList" :options="searchFileds.remarkList.options"/>
-          </template>
-
-          <!-- 通行情况 -->
-          <template v-if="searchFileds.trafficStateList" slot="trafficStateList">
-            <CustomInputSelect v-model="searchData.trafficStateList" :options="searchFileds.trafficStateList.options"/>
-          </template>
-
-          <!-- 媒介情况 -->
-          <template v-if="searchFileds.mediumStateList" slot="mediumStateList">
-            <CustomInputSelect v-model="searchData.mediumStateList" :options="searchFileds.mediumStateList.options"/>
-          </template>
-
-          <!-- 设备问题 -->
-          <template v-if="searchFileds.deviceProblemList" slot="deviceProblemList">
-            <CustomInputSelect v-model="searchData.deviceProblemList" :options="searchFileds.deviceProblemList.options"/>
-          </template>
-
           <!-- 导出 -->
           <template slot="action">
             <DownloadFileButton
@@ -114,7 +94,6 @@ import TableAction from "@/components/common/components/TableAction/index.vue";
 import TableSearch from "@/components/common/components/TableSearch/index.vue";
 import MaintainPicDialog from '@/components/common/components/maintainList/maintainPicDialog.vue'
 import MaintainHistoryDialog from '@/components/common/components/maintainList/maintainHistoryDialog.vue'
-import CustomInputSelect from "@/components/common/components/customInputSelect.vue";
 import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
 import { deserialize } from '@/utils/common'
 
@@ -135,16 +114,12 @@ const initSearchData = () => ({
   districtId: '',
   // 通行情况
   trafficState: '',
-  trafficStateList: [],
   // 媒介情况
   mediumState: '',
-  mediumStateList: [],
   // 设备问题
   deviceProblem: '',
-  deviceProblemList: [],
   // 问题反馈
   remark: '',
-  remarkList: [],
 })
 // 初始化搜索配置
 const initSearchFileds = () => ({
@@ -224,7 +199,6 @@ export default {
     TableList,
     TableAction,
     TableSearch,
-    CustomInputSelect,
     MaintainPicDialog,
     MaintainHistoryDialog,
     DownloadFileButton
@@ -350,22 +324,6 @@ export default {
         const [ cityId, districtId = null ] = params.districtList
         params.cityId = cityId
         params.districtId = districtId
-      }
-      // 处理通行情况
-      if (params.trafficStateList.length) {
-        params.trafficState = params.trafficStateList.join('、')
-      }
-      // 处理问题反馈
-      if (params.remarkList.length) {
-        params.remark = params.remarkList.join('、')
-      }
-      // 处理媒介情况
-      if (params.mediumStateList.length) {
-        params.mediumState = params.mediumStateList.join('、')
-      }
-      // 处理设备问题
-      if (params.deviceProblemList.length) {
-        params.deviceProblem = params.deviceProblemList.join('、')
       }
       params.uid = uid
       params.token = token
@@ -508,12 +466,14 @@ export default {
         case 'multiLabelInputSelect':
           obj = {
             title,
-            slotContent: `${fieldName}List`,
-            options: items.map(({title, type: optionType}) => ({
-              label: title,
-              value: title,
-              isCustom: optionType === 'input'
-            }))
+            type: 'input-select',
+            props: {
+              options: items.map(({title, type: optionType}) => ({
+                label: title,
+                value: title,
+                isCustom: optionType === 'input'
+              }))
+            },
           }
           break
         // 输入框
@@ -550,13 +510,8 @@ export default {
         let searchFileds = {}
         let searchData = {}
         searchList.forEach(item => {
-          if (item.type === 'multiLabelInputSelect') {
-            searchFileds[`${item.fieldName}List`] = this.createSearchItemConfig(item)
-            searchData[`${item.fieldName}List`] = []
-          } else {
-            searchFileds[item.fieldName] = this.createSearchItemConfig(item)
-            searchData[item.fieldName] = this.getFiledDefaultValue(item)
-          }
+          searchFileds[item.fieldName] = this.createSearchItemConfig(item)
+          searchData[item.fieldName] = this.getFiledDefaultValue(item)
         })
         this.searchFileds = Object.assign(initSearchFileds(), searchFileds)
         this.searchData = Object.assign(initSearchData(), searchData)

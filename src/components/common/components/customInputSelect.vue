@@ -58,10 +58,15 @@ import { cloneDeep } from 'lodash'
 export default {
   name: 'customInputSelect',
   props: {
-    // v-model 绑定的数据
+    // v-model 绑定的数据（splitChar 隔开的字符串）
     value: {
-      type: Array,
+      type: String,
       default: () => []
+    },
+    // 分隔字符
+    splitChar: {
+      type: String,
+      default: '、'
     },
     // 下拉数据
     options: {
@@ -113,7 +118,8 @@ export default {
     },
     value(newVal) {
       if (newVal && newVal.length) {
-        this.modelValue = newVal.map(item => {
+        const valueList = newVal.split(this.splitChar)
+        this.modelValue = valueList.map(item => {
           let currentItem = this.selectOptions.find(cell => cell.value === item)
           if (currentItem) return item
           currentItem = this.selectOptions.find(cell => cell.inputStr === item)
@@ -146,7 +152,7 @@ export default {
           return this.inputStr
         }
         return item
-      })
+      }).join(this.splitChar)
       this.$emit('change', newVal)
     },
     /**
@@ -175,7 +181,7 @@ export default {
           return this.inputStr
         }
         return item
-      })
+      }).join(this.splitChar)
       this.$emit('change', newVal)
     },
     /**

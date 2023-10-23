@@ -206,13 +206,16 @@
                           :min-width="item.width"
                           :filters="[
                               { text: '昨日', value: 1 },
-                              { text: '上周', value: 2 },
-                              { text: '上月', value: 4 },
+                              { text: '近七天', value: 2 },
+                              { text: '近三十天', value: 3 },
                           ]"
                           :filter-multiple="false"
                       >
                           <template slot-scope="scope">
-                              <p >{{ scope.row.openDoorCount }}</p>
+                              <p v-if=" openDoorCountType === 0">{{ scope.row.openDoorCount }}</p>
+                              <p v-if=" openDoorCountType === 1">{{ scope.row.yesterdayCnt }}</p>
+                              <p v-if=" openDoorCountType === 2">{{ scope.row.nearlySevenDaysCnt }}</p>
+                              <p v-if=" openDoorCountType === 3">{{ scope.row.nearlyThirtyDaysCnt }}</p>
                           </template>
                       </el-table-column>
                   </template>
@@ -852,10 +855,13 @@
           //MAC编码
           mac: '',
           // 关联设备弹窗Mac编码
-          
           macCodeInfo: '',
+          //门禁详情
           controlDetail: {},
-          isMacLoading: true, //展示mac编码loading
+           //展示mac编码loading
+          isMacLoading: true,
+          //开门次数时间类型 0 全部 1 昨日 2 近七日 3 近30日
+          openDoorCountType: 0
       };
     },
     created() {
@@ -1094,6 +1100,15 @@
                       this.filterMediaType = "";
                   }
               }
+                else if (key === 'openDoorCount') {
+                  console.log(filters[key][0]);
+                  if (filters[key][0]) {
+                    this.openDoorCountType = filters[key][0] 
+                  } else {
+                    this.openDoorCountType = 0
+                  }
+                  console.log('this.openDoorCountType', this.openDoorCountType);
+                }
           }
           this.pageData.pageNum = 1;
           this.getData();
@@ -1176,7 +1191,10 @@
                       asState: key.asState || '--', // 媒体状态
                       asSaleState: key.asSaleState || '--', // 售卖状态
                       unSaleableReason: key.unSaleableReason, // 不可售卖原因
-                      openDoorCount: key.openDoorCount || '--', //开门次数
+                      openDoorCount: key.openDoorCount || '--', //开门次数 全部
+                      yesterdayCnt: key.yesterdayCnt || '--', //开门次数 昨日
+                      nearlySevenDaysCnt: key.nearlySevenDaysCnt || '--', //开门次数 近七天
+                      nearlyThirtyDaysCnt: key.nearlyThirtyDaysCnt || '--', //开门次数 近三十天
                       mac: key.mac, //mac编码
                       doorId: key.doorId //门禁id
                   }
@@ -1469,6 +1487,7 @@
           this.filterMediaType = "";
           this.asSaleState = "";
           this.asState = "";
+          this.mac = ''
           this.$refs.tableEl.clearFilter();
           this.getData();
       },

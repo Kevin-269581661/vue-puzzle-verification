@@ -52,7 +52,12 @@
 
           <!-- 导出 -->
           <template slot="action">
-            <el-button type="plain" @click="handleExport">导出</el-button>
+            <DownloadFileButton
+              :requestApi="$api.getApi_file"
+              :requestParams="exportRequestParams"
+              requestUrl="/mediaService/api/v2/exportRMList"
+              downloadFileName="维护记录"
+            />
           </template>
 
         </TableSearch>
@@ -110,7 +115,8 @@ import TableSearch from "@/components/common/components/TableSearch/index.vue";
 import MaintainPicDialog from '@/components/common/components/maintainList/maintainPicDialog.vue'
 import MaintainHistoryDialog from '@/components/common/components/maintainList/maintainHistoryDialog.vue'
 import CustomInputSelect from "@/components/common/components/customInputSelect.vue";
-import { deserialize, downLoadFile } from '@/utils/common'
+import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
+import { deserialize } from '@/utils/common'
 
 // 初始化搜索绑定数据
 const initSearchData = () => ({
@@ -220,7 +226,8 @@ export default {
     TableSearch,
     CustomInputSelect,
     MaintainPicDialog,
-    MaintainHistoryDialog
+    MaintainHistoryDialog,
+    DownloadFileButton
   },
   data () {
     return {
@@ -256,6 +263,14 @@ export default {
         '未处理': 'rgba(250,173,20,1)',
       }
     };
+  },
+  computed: {
+    exportRequestParams() {
+      return {
+        ...this.searchCondition,
+        isCustom: this.sessionData.customPermission && this.sessionData.customPermission.patrolPermission ? 1 : null
+      }
+    }
   },
   methods: {
     /**
@@ -390,22 +405,6 @@ export default {
         console.error('getTableList error:', err)
       } finally {
         this.tableLoading = false
-      }
-    },
-    /**
-     * 列表导出
-     */
-    async handleExport() {
-      try {
-        const res = await this.$api.getApi_file('/mediaService/api/v2/exportRMList', {
-          ...this.searchCondition,
-          isCustom: this.sessionData.customPermission.patrolPermission ? 1 : null
-        })
-        const fileName = '维护记录-' + this.$moment().format('YYYY-MM-DD HH:mm:ss')
-        downLoadFile(res.data, fileName)
-      } catch (err) {
-        Message.error(err || '列表导出数据失败')
-        console.error('handleExport error:', err)
       }
     },
     /**

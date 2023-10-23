@@ -926,7 +926,7 @@
                     <!-- <hr/> -->
                     <div class="open-door-select">
                       <div class="open-door-date">
-                        <span class="demonstration">开门时间范围：</span>
+                        <span class="demonstration">自定义时间范围：</span>
                         <el-date-picker
                           v-model="openDoorDate"
                           type="daterange"
@@ -2447,7 +2447,7 @@ export default {
           value: 5
         },
         {
-          label: '按昨日',
+          label: '昨日',
           value: 1
         },
         {
@@ -5327,7 +5327,7 @@ export default {
     //开门时间范围更改（自定义选项下）
     tableHeaderFilterByOpenDoorDate() {
       if (this.openDoorTypeValue === 4) {
-        this.isHaveThisTag("openDoorDate", '开门次数时间范围：' + this.openDoorDate[0] + '~' + this.openDoorDate[1]);  
+        this.isHaveThisTag("openDoorDate", '自定义次数时间范围：' + this.openDoorDate[0] + '~' + this.openDoorDate[1]);  
         this.getAdsParamsData.openDoorBeginDate  = ''
         this.getAdsParamsData.openDoorEndDate  = ''
         this.setPageNoAndTableData();

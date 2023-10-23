@@ -8,7 +8,8 @@
       :size="size"
       placeholder="请输入"
       clearable
-      @change="inputChange"
+      @change.native.stop="inputChange"
+      @clear="inputChange"
     >
       <div slot="prepend" class="slot_wapper">
         <div class="label_box">{{ customItemLabel }}</div>
@@ -20,7 +21,7 @@
         >
           <el-option
             v-for="(item, index) of selectOptions"
-            :key="item.value"
+            :key="index"
             :label="item.label"
             :value="item.value"
             @click.native="(e) => selectOptionClick(index, e)"
@@ -43,7 +44,7 @@
     >
       <el-option
         v-for="(item, index) in selectOptions"
-        :key="item.value"
+        :key="index"
         :label="item.label"
         :value="item.value"
         @click.native="(e) => selectOptionClick(index, e)"
@@ -61,7 +62,6 @@ export default {
     // v-model 绑定的数据（splitChar 隔开的字符串）
     value: {
       type: String,
-      default: () => []
     },
     // 分隔字符
     splitChar: {
@@ -152,55 +152,39 @@ export default {
           return this.inputStr
         }
         return item
-      }).join(this.splitChar)
+      }).filter(item => item).join(this.splitChar)
       this.$emit('change', newVal)
     },
     /**
      * 选择改变
      */
     selectChange (val) {
-      const customValues = this.selectOptions.filter(item => item.isCustom).map(item => item.value)
+      let newVal = ''
       if (val.length) {
-        this.isShowCustomInput = customValues.includes(val[val.length - 1])
+        const currentVal = val[val.length - 1]
+        const currentItem = this.selectOptions.find(item => item.value === currentVal)
+        this.isShowCustomInput = !!currentItem.isCustom
+        if (this.isShowCustomInput && currentItem) {
+          this.inputStr = currentItem.inputStr
+          this.customItemLabel = currentItem.label.replace(/([\(（].*[\)）])/g, '')
+        } else {
+          this.inputStr = ''
+        }
+        newVal = val.map(item => {
+          if (item === currentItem.value && currentItem.isCustom) {
+            return this.inputStr
+          }
+          return item
+        }).filter(item => item).join(this.splitChar)
       } else {
         this.isShowCustomInput  = false
       }
-      const currentVal = val[val.length - 1]
-      const currentItem = this.selectOptions.find(item => item.value === currentVal)
-      if (this.isShowCustomInput) {
-        if (currentItem) {
-          this.inputStr = currentItem.inputStr
-          this.customItemLabel = currentItem.label.replace(/([\(（].*[\)）])/g, '')
-        }
-        this.$refs.inputRef && this.$refs.inputRef.focus()
-      } else {
-        this.inputStr = ''
-      }
-      let newVal = val.map(item => {
-        if (item === currentItem.value && currentItem.isCustom) {
-          return this.inputStr
-        }
-        return item
-      }).join(this.splitChar)
       this.$emit('change', newVal)
     },
     /**
      * 点击选项
      */
-    selectOptionClick (index, e) {
-      // console.log('selectOptionClick index ====', index, e.target.classList)
-
-      // const currentItem = this.selectOptions[index]
-      // // console.log('selectOptionClick index ==== this.modelValue', this.modelValue)
-
-      // let isCheck = false
-      // e.target.classList.forEach((item) => {
-      //   isCheck = item === 'selected'
-      // })
-
-      // console.log('selectOptionClick isCheck ====', isCheck)
-
-    }
+    selectOptionClick (index, e) {}
 
   }
 }

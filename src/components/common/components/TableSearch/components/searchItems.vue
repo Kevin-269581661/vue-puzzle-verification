@@ -333,6 +333,7 @@ export default {
           ...attrs.on,
           ...onFun,
           [type](e) {
+            // console.log('组件事件 e === ', e)
             if (attrs.type === "date-picker") {
               // 日期组件的特殊处理
               // let dateType = "yyyy-MM-DD";
@@ -361,6 +362,7 @@ export default {
           ...attrs.nativeOn,
           ...nativeOnFun,
           [type](e) {
+            // console.log('组件原生事件 e === ', e)
             if (attrs.type === "date-picker") {
               // 日期组件的特殊处理
               if (e === null) {

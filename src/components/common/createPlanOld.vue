@@ -2444,7 +2444,7 @@ export default {
       openDoorType: [
         {
           label: '截止至今',
-          value: 0
+          value: 5
         },
         {
           label: '按昨日',

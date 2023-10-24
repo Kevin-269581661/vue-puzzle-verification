@@ -12,10 +12,11 @@
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
-          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" size="small" class="form">
-            <el-form-item label="处理日期：" prop="updateTime">
+          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" size="small" class="form">
+            <el-form-item label="处理日期" prop="updateTime">
               <el-date-picker
                 v-model="formData.updateTime"
+                :picker-options="datePickerOptions"
                 type="date"
                 format="yyyy-MM-dd"
                 value-format="yyyy-MM-dd"
@@ -30,10 +31,14 @@
               <el-input
                 v-model="formData.feedback"
                 :autosize="{ minRows: 2, maxRows: 4 }"
+                :maxlength="100"
+                show-word-limit
                 type="textarea"
                 clearable
                 placeholder="请填处理说明"
-                style="width: 100%"
+                size="small"
+                resize="none"
+                class="textarea_box"
               ></el-input>
             </el-form-item>
           </el-form>
@@ -51,6 +56,7 @@
 
 import { Message } from "element-ui";
 import sessFun from "@/commonFun/sessFun.js";
+import dayjs from "dayjs";
 
 /**
  * 初始化表单数据
@@ -75,7 +81,10 @@ export default {
         updateTime: [{ required: true, message: '请选择出现时间', trigger: 'blur' }],
         feedback: [{ required: true, message: '请填处理说明', trigger: 'blur' }],
       },
-      typeName: ''
+      typeName: '',
+      datePickerOptions: {
+        disabledDate: (t) =>  dayjs().isBefore(t, 'day')
+      }
     }
   },
   computed: {
@@ -145,6 +154,10 @@ export default {
   }
   .custom_dialog_footer{
     padding: 10px 20px 20px;
+  }
+  .textarea_box {
+    width: 100%;
+    max-height: 100px;
   }
 }
 </style>

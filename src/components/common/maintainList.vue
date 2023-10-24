@@ -242,6 +242,9 @@ export default {
     exportRequestParams() {
       return {
         ...this.searchCondition,
+        // get 请求，处理数组参数（无用的置空）
+        dateList: null,
+        districtList: null,
         isCustom: this.sessionData.customPermission && this.sessionData.customPermission.patrolPermission ? 1 : null
       }
     }

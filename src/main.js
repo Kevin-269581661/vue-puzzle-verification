@@ -6,7 +6,11 @@ import sessFun from './commonFun/sessFun.js';
 import directives from "./commonFun/directives";
 // import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
+import moment from "dayjs";
+import api from "./api/api.js";
+
 import 'default-passive-events'
+
 Vue.config.productionTip = false;
 Vue.config.performance = true;
 
@@ -134,6 +138,9 @@ axios.interceptors.response.use(
 		return Promise.reject(err)
 	}
 );
+
+Vue.prototype.$moment = moment
+Vue.prototype.$api = api
 
 /* eslint-disable no-new */
 new Vue({

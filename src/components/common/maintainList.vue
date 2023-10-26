@@ -1,634 +1,76 @@
 <template>
-  <div class="ad_mediaDetail_wrap clearfix">
-    <div class="ad_mediaDetail_nav">
+  <div class="page_container">
+    <div class="page_navigation">
       <p class="clearfix">
         <a href="#">媒体管理</a><em> / </em><a href="#">媒体维护</a>
       </p>
     </div>
-    <div class="mediaList_wrap">
-      <div class="mediaList_head">
-        <h2>维护列表</h2>
-      </div>
-      <div class="mediaList_container">
-        <el-row>
-          <el-col :span="6">
-            <span>资源名称:</span>
-            <el-input
-              v-model="searchInfo.resName"
-              placeholder="请输入资源名称"
-            ></el-input>
-          </el-col>
-          <el-col :span="6">
-            <span>资产编号:</span>
-            <el-input
-              v-model="searchInfo.assetTag"
-              placeholder="请输入资产编号"
-            ></el-input>
-          </el-col>
-          <el-col :span="6">
-            <span>所在区域:</span>
+
+    <div v-loading="pageLoading" class="page_content">
+      <!-- 列表搜索栏 -->
+      <div class="page_content_top">
+        <div class="page_title">维护列表</div>
+        <TableSearch
+          :value="searchData"
+          :fileds="searchFileds"
+          @change="handleSeachChange"
+          @search="handleSearch"
+          @reset="handleReset"
+        >
+          <template slot="districtList">
             <el-cascader
-              placeholder="请选择所在区域"
-              v-model="searchInfo.districtId"
-              :options="areaArr"
-              :clearable="true"
+              v-model="searchData.districtList"
+              :options="searchFileds.districtList.options"
+              clearable
               change-on-select
-              @change="handleChange"
-            ></el-cascader>
-          </el-col>
-          <el-col :span="6">
-            <span>维护类型:</span>
-            <el-select
-              v-model="searchInfo.type"
-              placeholder="请选择维护类型"
-              clearable
+              size="small"
+              placeholder="请选择"
+              style="width: 100%"
             >
-              <el-option
-                v-for="item of typeArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <span>维护状态:</span>
-            <el-select
-              v-model="searchInfo.status"
-              placeholder="请选择维护状态"
-              clearable
-            >
-              <el-option
-                v-for="item of stateArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="6">
-            <span
-              style="
-                text-align: right;
-                padding-right: 6px;
-                box-sizing: border-box;
-              "
-              >提交者:</span
-            >
-            <el-select
-              v-model="searchInfo.userId"
-              placeholder="请选择提交者"
-              filterable
-              clearable
-            >
-              <el-option
-                v-for="item of engineerArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="6">
-            <span>巡点日期:</span>
-            <el-date-picker
-              class="input-with-select"
-              v-model="searchInfo.date"
-              type="daterange"
-              range-separator="-"
-              format="yyyy/MM/dd"
-              value-format="yyyy/MM/dd"
-              start-placeholder="巡点日期"
-              end-placeholder="巡点日期"
-            >
-            </el-date-picker>
-          </el-col>
-          <el-col :span="6" v-if="customPermission.patrolPermission === 3">
-            <span>通行情况:</span>
-            <div class="text" v-if="showtrafficInput === 0">其他</div>
-            <el-select
-              v-model="trafficSituation"
-              placeholder="请选择通行情况"
-              filterable
-              multiple
-              clearable
-              @change="changetraffic"
-              v-if="showtrafficInput === 1"
-            >
-              <el-option
-                v-for="item of trafficSituationArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input 
-              v-model.trim="trafficValue"
-              v-if="showtrafficInput === 0"
-              @change="trafficChange"
-              placeholder="请输入"
-              >
-              <el-select
-                v-model="trafficSituation"
-                slot="prepend"
-                multiple
-                @change="changetrafficInput"
-              >
-                <el-option
-                  v-for="item of trafficSituationArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-input>
-          </el-col>
-          <el-col :span="6" v-if="customPermission.patrolPermission !== 3">
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              @click="search()"
-              :disabled="!isSearch"
-              >搜索
-            </el-button>
-            <el-button @click="reset()">重置</el-button>
-            <el-button @click="downLoad()">一键导出</el-button>
-          </el-col>
-        </el-row>
-        <el-row v-if="customPermission.patrolPermission === 3">
-          <el-col :span="6">
-            <span>媒介情况:</span>
-            <div class="text" v-if="showMediaInput === 0">其他</div>
-            <el-select
-              v-model="mediaSituation"
-              multiple
-              filterable
-              placeholder="请选择媒介情况"
-              @change="changeMedia"
-              v-if="showMediaInput === 1"
-            >
-              <el-option
-                v-for="item of mediaSituationArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input 
-              v-model.trim="mediaValue"
-              v-if="showMediaInput === 0"
-              @change="mediaChange"
-              placeholder="请输入"
-              >
-              <el-select
-                v-model="mediaSituation"
-                slot="prepend"
-                multiple
-                @change="changeMediaInput"
-              >
-                <el-option
-                  v-for="item of mediaSituationArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-input>
-          </el-col>
-          <el-col :span="6" class="device">
-            <span>设备问题:</span>
-            <div class="text text1" v-if="showDeviceInput === 0">其他设备异常</div>
-            <div class="text text1" v-if="showDeviceInput === 2">具体异常说明</div>
-            <el-select
-              v-model="deviceQuestion"
-              placeholder="请选择设备问题"
-              filterable
-              clearable
-              multiple
-              @change="changeDevice"
-              v-if="showDeviceInput === 1"
-            >
-              <el-option
-                v-for="item of deviceQuestionArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input 
-              v-model.trim="deviceValue1"
-              v-if="showDeviceInput === 0"
-              @change="deviceChange1"
-              placeholder="请输入"
-              >
-              <el-select
-                v-model="deviceQuestion"
-                slot="prepend"
-                multiple
-                @change="changeDeviceInput"
-                class="device-select"
-              >
-                <el-option
-                  v-for="item of deviceQuestionArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-input>
-            <el-input 
-              v-model.trim="deviceValue2"
-              v-if="showDeviceInput === 2"
-              @change="deviceChange2"
-              placeholder="请输入"
-              >
-              <el-select
-                v-model="deviceQuestion"
-                slot="prepend"
-                multiple
-                @change="changeDeviceInput"
-                class="device-select"
-              >
-                <el-option
-                  v-for="item of deviceQuestionArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-input>
-          </el-col>
-          <el-col :span="6">
-            <span>问题反馈:</span>
-            <div class="text" v-if="showQuestionInput === 0">其他</div>
-            <el-select
-              v-model="questionReply"
-              placeholder="请选择问题反馈"
-              filterable
-              clearable
-              multiple
-              @change="changeQuestion"
-              v-if="showQuestionInput === 1"
-            >
-              <el-option
-                v-for="item of questionReplyArr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input 
-              v-model.trim="questionValue"
-              v-if="showQuestionInput === 0"
-              @change="questionChange"
-              placeholder="请输入"
-              >
-              <el-select
-                v-model="questionReply"
-                slot="prepend"
-                multiple
-                @change="changeQuestionInput"
-              >
-                <el-option
-                  v-for="item of questionReplyArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-input>
-          </el-col>
+            </el-cascader>
+          </template>
 
-           <el-col :span="6">
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              @click="search()"
-              :disabled="!isSearch"
-              >搜索
-            </el-button>
-            <el-button @click="reset()">重置</el-button>
-            <el-button @click="downLoad()">一键导出</el-button>
-          </el-col>
-        </el-row>
+          <!-- 导出 -->
+          <template slot="action">
+            <DownloadFileButton
+              :requestApi="$api.getApi_file"
+              :requestParams="exportRequestParams"
+              requestUrl="/mediaService/api/v2/exportRMList"
+              downloadFileName="维护记录"
+            />
+          </template>
+
+        </TableSearch>
       </div>
-      <div class="table_wrap">
-        <div class="table_dt">
-          <el-table
-            v-loading="loading"
-            element-loading-text="拼命加载中..."
-            element-loading-spinner="el-icon-loading"
-            border
-            :data="currentPlan"
-            style="width: 100%"
-          >
-            <el-table-column
-              label="维护类型"
-              min-width="100"
-              :show-overflow-tooltip="true"
-              :fixed = 'fixedLeft'
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mtType }}</span>
-              </template>
-            </el-table-column>
+      <div class="table_box">
+        <!-- 表格 -->
+        <TableList
+          :columns="tableColumns"
+          :dataSource="tableList"
+          :loading="tableLoading"
+          @refreshTable="getTableList"
+        >
 
-            <el-table-column
-              column-key="resName"
-              prop="resName"
-              label="资源"
-              :show-overflow-tooltip="true"
-              min-width="160"
-              :fixed = 'fixedLeft'
-            >
-              <template slot-scope="scope">
-                <span> {{ scope.row.resName || '--' }}</span>
-              </template>
-            </el-table-column>
+          <!-- 自定义状态列 -->
+          <template slot="statusDesc" slot-scope="slotProps">
+            <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
+          </template>
 
-            <el-table-column
-              prop="cityName"
-              label="城市"
-              min-width="100"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.cityName || '--' }}</span>
-              </template>
-            </el-table-column>
+          <template slot="action" slot-scope="slotProps">
+            <TableAction :actionList="getActionList(slotProps.row)" />
+          </template>
 
-            <el-table-column
-              prop="area"
-              label="区域"
-              min-width="100"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.area || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="mediaName"
-              label="媒体名称"
-              min-width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.mediaName || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              label="媒体面"
-              min-width="120"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.asLab || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="assetTag"
-              label="资产编号"
-              min-width="150"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.assetTag || '--' }}
-              </template>
-            </el-table-column>
-
-
-            <el-table-column
-              prop="electrifyState"
-              label="通电情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission == 2  || customPermission.patrolPermission == 3"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.electrifyState || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="trafficState"
-              label="通行情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission && customPermission.patrolPermission !== 3"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.trafficState || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="issueRecord"
-              label="问题记录"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission !== 3"
-            >
-              <template slot-scope="scope">
-                <template v-if=" Array.isArray(scope.row.issueRecord)">
-                  <span v-for="(item, index) in scope.row.issueRecord" :key="index">
-                    <template v-if="scope.row.issueRecord.length > 1">{{index + 1}}.</template>
-                    {{item}}<template v-if="scope.row.issueRecord.length > 1 && index !== scope.row.issueRecord.length - 1">，</template>
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{scope.row.issueRecord}}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="trafficState"
-              label="通行情况"
-              min-width="170"
-              class="tar customized"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.trafficState !== '--'">
-                  <span v-for="(item, index) in scope.row.trafficState.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.trafficState }}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="mediumState"
-              label="媒介情况"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.mediumState !== '--'">
-                  <span v-for="(item, index) in scope.row.mediumState.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.mediumState }}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="deviceProblem"
-              label="设备问题"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-              @change="deviceChange"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.deviceProblem !== '--'">
-                  <span v-for="(item, index) in scope.row.deviceProblem.split('、')" :key="index" class="tag">
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else>
-                  <span>{{ scope.row.deviceProblem }}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="issueRecord"
-              label="问题反馈"
-              min-width="170"
-              class="tar"
-              :show-overflow-tooltip="true"
-              v-if="customPermission.patrolPermission === 3"
-            >
-              <template slot-scope="scope" class="customized">
-                <template v-if=" Array.isArray(scope.row.issueRecord)">
-                  <span
-                    v-for="(item, index) in scope.row.issueRecord" 
-                    :key="index" 
-                    class="tag"
-                    >
-                    {{item}}
-                  </span>
-                </template>
-                <template v-else-if="scope.row.issueRecord === '--'">
-                  <span>{{scope.row.issueRecord}}</span>
-                </template>
-                <template v-else>
-                  <span v-for="(item, index) in scope.row.issueRecord.split('、')" :key="index"  class="tag">{{item}}</span>
-                </template>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createTime"
-              label="提交日期"
-              min-width="150"
-              class="tar"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createTime || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="updateTime"
-              label="处理日期"
-              min-width="150"
-              class="tar"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.updateTime || '--' }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="createUserName"
-              label="提交者"
-              min-width="100"
-              class="tar"
-            >
-              <template slot-scope="scope">
-                <span>{{ scope.row.createUserName }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              column-key="mState"
-              prop="mState"
-              label="状态"
-              fixed="right"
-              width="100"
-            >
-              <template slot-scope="scope">
-                <point-state
-                  :state-text="scope.row.mState"
-                  :color="stateToText(scope.row.mState).color"
-                ></point-state>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="操作" width="100" fixed="right">
-              <template slot-scope="scope">
-                <el-dropdown
-                  size="small"
-                  trigger="click"
-                  placement="bottom-start"
-                  :hide-on-click="true"
-                >
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      @click.native.prevent="showPhoto(scope.row)"
-                      v-if="scope.row.mtType == '巡点'"
-                      >照片
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      @click.native.prevent="showHistory(scope.row)"
-                      >历史记录
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </template>
-            </el-table-column>
-
-            <div slot="empty">
-              <no-search-result></no-search-result>
-            </div>
-          </el-table>
-        </div>
-        <div class="ad_pagination" v-if="totalSize">
+        </TableList>
+        <div class="pagination_box">
           <el-pagination
             background
             layout="total, sizes, prev, pager, next, jumper"
-            @current-change="changePage"
-            @size-change="sizeChange"
-            :page-sizes="[10, 20, 50]"
-            :current-page.sync="currPage"
-            :page-size="pageSize"
-            :total="totalSize"
+            :page-sizes="pagination.sizes"
+            :current-page.sync="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @current-change="pageChange"
+            @size-change="pageSizeChange"
           >
           </el-pagination>
         </div>
@@ -636,1404 +78,491 @@
     </div>
 
     <!-- 照片弹出框 -->
-    <el-dialog title="巡点照片" :visible.sync="isShowImg" width="60%" @closed="clearImg">
-      <div style="display: flex; justify-content: center">
-        <p
-          v-for="(item, index) of imgUrls"
-          :key="index"
-          style="margin: 0px 10px; text-align: center"
-        >
-          <img :src="item.url" alt="" style="width: 240px; height: 360px" />
-          <span style="width: 100%; display: inline-block; text-align: center">
-            <span class="img_span_style">{{
-              item.uploadType == 'album' ? '相册上传' : '手机拍摄'
-            }}</span>
-          </span>
-        </p>
-      </div>
-      <span slot="footer" class="dialog-footer"> </span>
-    </el-dialog>
+    <MaintainPicDialog ref="maintainPicDialogRef"/>
 
-    <!-- 处理弹出框 -->
-    <el-dialog
-      :title="handleModalTitle"
-      :visible.sync="isShowHandle"
-      width="470px"
-    >
-      <div class="block">
-        <span>处理日期：</span>
-        <el-date-picker
-          v-model="maintainForm.date"
-          type="date"
-          placeholder="请选择出现时间"
-        >
-        </el-date-picker>
-      </div>
-      <div class="remark">
-        <span
-          >{{
-            handleModalTitle == '维修处理' ? '处理说明' : '媒体备注'
-          }}：</span
-        >
-        <el-input
-          type="textarea"
-          v-model="maintainForm.reamrk"
-          :autosize="{ minRows: 2, maxRows: 4 }"
-          placeholder="请填处理说明"
-        ></el-input>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="isShowHandle = false">取 消</el-button>
-        <el-button type="primary" @click="handleRemark()">确 定</el-button>
-      </span>
-    </el-dialog>
     <!--历史记录弹出框-->
-    <el-dialog
-      class="logList-wrap"
-      title="历史记录"
-      :visible.sync="isShowHistory"
-      width="30%"
-    >
-      <div class="loglist_box">
-        <div class="title">
-          <p>{{ logList.resName }}</p>
-          <p>{{ logList.mTitle }}（{{ logList.assetTag }}）<template v-if="logList.asLab">· {{logList.asLab}}</template></p>
-        </div>
-
-        <log-list
-          :list="logList.list"
-          @toHandle="toHandle"
-          v-if="!isSellList"
-        ></log-list>
-
-        <!-- 售卖/可售卖历史记录 -->
-        <sell-list :list="logList.list" @toHandle="toHandle" v-else></sell-list>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="isShowHistory = false">关 闭</el-button>
-      </span>
-    </el-dialog>
+    <MaintainHistoryDialog ref="maintainHistoryDialogRef" @refresh="getTableList"/>
   </div>
 </template>
 
 <script>
-import api from "../../api/api.js";
-// 时间控件格式化
-import dateFormat from "../../commonFun/timeFormat.js";
+import { Message } from "element-ui";
 import sessFun from "../../commonFun/sessFun.js";
-import pointState from './components/pointState.vue';
-import noSearchResult from "./components/noSearchResult.vue";
-import {
-  Row,
-  Input,
-  Button,
-  Table,
-  TableColumn,
-  DatePicker,
-  Select,
-  Option,
-  Message,
-} from "element-ui";
-// 日志组件totalPage
-import logList from './components/logList.vue'
-import sellList from './components//sellList.vue'
-import timeFormat from '../../commonFun/timeFormat.js';
+import PointState from '@/components/common/components/pointState.vue';
+import TableList from "@/components/common/components/TableList/index.vue";
+import TableAction from "@/components/common/components/TableAction/index.vue";
+import TableSearch from "@/components/common/components/TableSearch/index.vue";
+import MaintainPicDialog from '@/components/common/components/maintainList/maintainPicDialog.vue'
+import MaintainHistoryDialog from '@/components/common/components/maintainList/maintainHistoryDialog.vue'
+import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
+import { deserialize } from '@/utils/common'
+
+// 初始化搜索绑定数据
+const initSearchData = () => ({
+  resName: '',
+  assetTag: '',
+  type: '',
+  status: '',
+  userId: '',
+  // 巡点日期
+  dateList: [],
+  startTime: '',
+  endTime: '',
+  // 所在区域
+  districtList: [],
+  cityId: '',
+  districtId: '',
+  // 通行情况
+  trafficState: '',
+  // 媒介情况
+  mediumState: '',
+  // 设备问题
+  deviceProblem: '',
+  // 问题反馈
+  remark: '',
+})
+// 初始化搜索配置
+const initSearchFileds = () => ({
+  resName: {
+    title: '资源名称',
+    type: 'input',
+    props: {
+      placeholder: '请输入',
+    },
+  },
+  assetTag: {
+    title: '资产编号',
+    type: 'input',
+    props: {
+      placeholder: '请输入',
+    },
+  },
+  districtList: {
+    title: '所在区域',
+    slotContent: 'districtList',
+    options: []
+  },
+  type: {
+    title: '维护类型',
+    type: 'select',
+    props: {
+      placeholder: '请选择',
+      filterable: true,
+    },
+    options: [
+      { label: '巡点', value: 1 },
+      // { label: '待维修', value: 2 },
+      { label: '拆除', value: 3 },
+      { label: '不可售卖', value: 4 },
+      // { label: '维修', value: 5 },
+    ]
+  },
+  status: {
+    title: '维护状态',
+    type: 'select',
+    props: {
+      placeholder: '请选择',
+      filterable: true,
+    },
+    options: [
+      { label: '未处理', value: 1 },
+      { label: '已处理', value: 2 },
+    ]
+  },
+  userId: {
+    title: '提交者',
+    type: 'select',
+    props: {
+      placeholder: '请选择',
+      filterable: true,
+    },
+    options: []
+  },
+  dateList: {
+    title: '巡点日期',
+    type: 'date-picker',
+    props: {
+      type: 'daterange',
+      rangeSeparator: '-',
+      format: 'yyyy-MM-dd',
+      valueFormat: 'yyyy-MM-dd',
+      startPlaceholder: "开始日期",
+      endPlaceholder: "结束日期"
+    },
+  },
+})
 
 export default {
-  name: "customList",
+  name: "maintainList",
   components: {
-    logList,
-    noSearchResult,
-    pointState,
-    elRow: Row,
-    elInput: Input,
-    elButton: Button,
-    elTable: Table,
-    elTableColumn: TableColumn,
-    elDatePicker: DatePicker,
-    elSelect: Select,
-    elOption: Option,
-    sellList
+    PointState,
+    TableList,
+    TableAction,
+    TableSearch,
+    MaintainPicDialog,
+    MaintainHistoryDialog,
+    DownloadFileButton
   },
   data () {
     return {
-      // 公司列表
-      companyArr: [],
-      currPage: 1,
-      pageSize: 10,
-      totalSize: 0,
-      trafficSituation: [],  // 通行情况下拉框数据
-      // 通行情况类型
-      trafficSituationArr: [],
-      showtrafficInput: 1,  // 展示同行情况输入框
-      trafficValue: '',  // 通行情况输入框内容
-
-      showMediaInput: 1,  // 展示媒介情况输入框
-      mediaSituation: [],  // 媒介情况下拉框数据
-      mediaValue:'',  // 媒介情况输入框内容
-      // 媒介情况类型
-      mediaSituationArr: [],
-
-      showDeviceInput: 1,  // 展示设备问题输入框
-      deviceQuestion: [], // 设备问题下拉框数据
-      // 设备问题输入框内容
-      deviceValue1:'',  
-      deviceValue2:'',
-      // 设备问题类型
-      deviceQuestionArr: [],
-
-      showQuestionInput: 1,  // 展示问题反溃输入框
-      questionReply: [],  // 问题反馈下拉框数据
-      questionValue:'',  // 问题反馈输入框内容
-      // 问题反馈类型
-      questionReplyArr: [],
-
+      pageLoading: false,
       // 登录信息
       sessionData: {},
-      //加载中
-      loading: false,
-      // 状态 （-1-已删除，1-未处理,2-已处理）,
-      stateArr: [
-        {
-          label: '已处理',
-          value: 2,
-        },
-        {
-          label: '未处理',
-          value: 1
-        }
-      ],
-      // 类型 1-巡点、2-待维修、3-拆除,
-      typeArr: [
-        {
-          label: '巡点',
-          value: 1,
-        },
-        // {
-        //     label: '待维修',
-        //     value: 2
-        // },
-        {
-          label: '不可售卖',
-          value: 4
-        },
-
-        {
-          label: '拆除',
-          value: 3
-        },
-
-        // {
-        //   label: '维修',
-        //   value: 5
-        // }
-
-      ],
-      // 工程人员
-      engineerArr: [],
+      // 搜索栏字段配置
+      searchFileds: initSearchFileds(),
+      // 搜索栏字段绑定数据
+      searchData: initSearchData(),
+      // 真正的搜索条件
+      searchCondition: {},
+      // 表格字段配置
+      tableColumns: [],
+      // 表格加载状态
+      tableLoading: false,
       // 表格数据
-      currentPlan: [],
-      //所在区域
-      areaArr: [],
-      //处理对话框
-      maintainForm: {
-        date: '',
-        reamrk: '',
+      tableList: [],
+      pagination: {
+        // 当前页码
+        page: 1,
+        // 每页条数
+        pageSize: 10,
+        // 总条数
+        total: 0,
+        // 每页条数选项
+        sizes: [10, 20, 50],
       },
-      // 是否滚动加载
-      loading_point: true,
-      isSearch: true,
-      isReset: true,
-      // 搜索信息
-      searchInfo: {
-        resName: '',
-        assetTag: '',
-        type: '',
-        districtId: [],
-        status: '',
-        date: '',
-        userId: '',
-        trafficArr: [],
-        mediaArr: [],
-        deviceArr: [],
-        questionArr: []
-      },
-      // 处理弹出框
-      isShowHandle: false,
-      handleModalTitle: '',
-      //历史记录弹出框
-      isShowHistory: false,
-      remark: '',
-      // 图片弹出框
-      isShowImg: false,
-      imgUrls: [],
-      // 问题列表
-      logList: {
-        resName: '',
-        mTitle: '',
-        assetTag: '',
-        list: [
-          {
-            id: 1,
-            time: '',
-            text: '',
-            address: '',
-            type: '',
-          },
-        ]
-      },
-      logsId: [],
-      multipleSelection: '',//选中的表格数据
-      customPermission: {},  //巡点权限
-
-      isSellList: false
+      // 预加载数据
+      // preparedData: {},
+      statusColorObj: {
+        '已处理': 'rgba(82,196,26,1)',
+        '未处理': 'rgba(250,173,20,1)',
+      }
     };
   },
-
-  mounted: function () {
-    this.getRole();
-    this.getCity();
-    this.getComUser();
-    this.searchFun();
-    this.getpartrolList()
+  computed: {
+    exportRequestParams() {
+      return {
+        ...this.searchCondition,
+        // get 请求，处理数组参数（无用的置空）
+        dateList: null,
+        districtList: null,
+        isCustom: this.sessionData.customPermission && this.sessionData.customPermission.patrolPermission ? 1 : null
+      }
+    }
   },
   methods: {
-    //选择区域
-    handleChange (value) {
-      console.log(value);
-    },
-    // 状态转换
-    stateToText (state) {
-      let arr = [
-        {
-          text: '已处理',
-          color: 'rgba(82,196,26,1)',
-        },
-        {
-          text: '未处理',
-          color: 'rgba(250,173,20,1)',
-        },
-
-      ];
-      for (let data of arr) {
-        if (data.text === state) {
-          return data;
-        }
-      }
-    },
-    //表格方法
-    toggleSelection (rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    handleSelectionChange (val) {
-      console.log(val)
-      this.multipleSelection = val;
-    },
-
-    // 权限城市数据
-    getCity () {
-      let info = {
-        "service": "GetCompanyCitiesAction",
-        "token": this.sessionData.token,
-        "uid": this.sessionData.uID
-      };
-      api.postApi_new(this.apiVar.Media, info).then(res => {
-        // console.log(res.data);
-        if (res.data.SysCode == 200200) {
-          let result = [];
-          for (let data of res.data.data) {
-            let obj = {
-              label: data.cityName,
-              value: data.cityId,
-              children: []
-            };
-            if (data.districtList) {
-              for (let data2 of data.districtList) {
-                let obj2 = {
-                  label: data2.districtName,
-                  value: data2.districtId,
-                }
-                obj.children.push(obj2)
-              }
-            }
-            result.push(obj);
-          }
-          this.areaArr = result;
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
-    },
-
-    // 获取公司人员
-    getComUser () {
-      let info = {
-        "token": this.sessionData.token,
-        "uid": this.sessionData.uID,
-      };
-      api.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', info).then(res => {
-        console.log(res);
-        if (res.data.SysCode == 200200) {
-          let result = [];
-          for (let data of res.data.data) {
-            let obj = {
-              label: data.realName,
-              value: data.uID
-            }
-            result.push(obj);
-          }
-          this.engineerArr = result;
-        } else {
-          // Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
-    },
-    // 展示图片
-    showPhoto (item) {
-      console.log(item);
+    /**
+     * 获取所在区域数据
+     */
+    async getDistrictOptions () {
       try {
-        this.imgUrls = JSON.parse(item.picUrl);
-      } catch (error) {
-        this.imgUrls = item.picUrl || []
+        const { token, uID: uid } = this.sessionData
+        const res = await this.$api.postApi_new(this.apiVar.Media, {
+          token, uid,
+          service: 'GetCompanyCitiesAction'
+        }) || {}
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return Message.error(message || '获取所在区域数据失败')
+        this.searchFileds['districtList'].options = data.map(item => {
+          const { cityName: label, cityId: value, districtList: children } = item
+          return {
+            label,
+            value,
+            children: children.map(cell => ({
+              label: cell.districtName,
+              value: cell.districtId
+            }))
+          }
+        })
+      } catch (err) {
+        Message.error(String(err) || '获取所在区域数据失败')
+        console.error('getDistrictOptions error:', err)
       }
-      this.isShowImg = true;
     },
-    //历史记录
+    /**
+     * 获取公司人员
+     */
+    async getUserOptions () {
+      try {
+        const { token, uID: uid } = this.sessionData
+        const res = await this.$api.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', {
+          token, uid
+        }) || {}
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return Message.error(message || '获取公司人员数据失败')
+        const list = data.map(item => ({
+          label: item.realName,
+          value: item.uID,
+        }))
+        this.searchFileds['userId'].options = list
+      } catch (err) {
+        Message.error(String(err) || '获取公司人员数据失败')
+        console.error('getUserOptions error:', err)
+      }
+    },
+    /**
+     * 点击历史记录
+     */
     showHistory (item) {
-      console.log(item)
-
-      this.isShowHistory = true
-      if (item.mtType === '不可售卖') {
-        console.log('111111')
-        this.isSellList = true
-        this.getSellList(item)
-      } else {
-        console.log('222222')
-        this.isSellList = false
-        this.getHistoryList(item)
-      }
-
-    },
-    // 处理
-    toHandle (item) {
-      console.log(item);
-      this.isShowHistory = false;
-      let info = {
-        uid: this.sessionData.uID,
-        token: this.sessionData.token,
-        service: "GetUntreatedPatrolPoint",
-        data: {
-          mID: item.mID
-        }
-      };
-      this.maintainForm = {
-        date: '',
-        reamrk: '',
-        recordId: item.recordId
-      }
-      this.isShowHandle = true;
-      this.handleModalTitle = item.mtType == '巡点' ? '巡点处理' : '维修处理'
-
-    },
-    // 确认处理
-    handleRemark () {
-      console.log(this.maintainForm.date);
-      if (this.maintainForm.date == '' || this.maintainForm.date == null) {
-        Message.warning('请填写处理日期')
-      } else {
-        let info = {
-          uid: this.sessionData.uID,
-          token: this.sessionData.token,
-          service: "UpdateMediaMaintenanceAction",
-          data: {
-            "updateTime": timeFormat.toDate(this.maintainForm.date, '-'),
-            "feedback": this.maintainForm.reamrk,
-            "recordId": this.maintainForm.recordId,
-          }
-        };
-        api.postApi_new(this.apiVar.Media, info).then(res => {
-          console.log('处理', res.data);
-          if (res.data.SysCode == 200200) {
-            Message.success(res.data.MSG);
-            this.searchFun();
-            this.isShowHandle = false;
-          } else if (res.data.SysCode == 200111) {
-            Message.warning('请填写处理日期')
-          } else {
-            Message.success(res.data.MSG);
-          }
-        }).catch(err => {
-          console.log(err);
-        });
-      }
-
-    },
-    // 判断角色是否有新建按钮(销售有)
-    getRole () {
-      this.sessionData = sessFun.getSess();
-      this.customPermission = this.sessionData.customPermission;
+      this.$refs.maintainHistoryDialogRef && this.$refs.maintainHistoryDialogRef.open(item);
     },
     // 搜索数据格式化
-    searchFormat() {
-      this.changeInput()
-      let session = this.sessionData;
-      let info = {
-        uid: session.uID,
-        token: session.token,
-        service: 'GetMediaMaintenanceListAction',
-        data: {}
-      };
-      let { resName, assetTag, type, districtId, status, date, userId,questionArr,deviceArr,mediaArr,trafficArr } = this.searchInfo;
-      let data = {
-        pageNum: this.currPage,
-        pageSize: this.pageSize,
-      };
-      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
-      deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
-      mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
-      trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
-      let remark = '',
-        deviceProblem = '',
-        mediumState = '',
-        trafficState = ''
-      if (questionArr !== null) {
-        questionArr.forEach(item => {
-          remark +=`${item}、`
-        })
-        remark = remark.slice(0,-1) 
-      }
-      if (deviceArr !== null) {
-        deviceArr.forEach(item => {
-          deviceProblem +=`${item}、`
-        })
-        deviceProblem = deviceProblem.slice(0,-1) 
-      }
-      if (mediaArr !== null) {
-        mediaArr.forEach(item => {
-          mediumState +=`${item}、`
-        })
-        mediumState = mediumState.slice(0,-1) 
-      }
-      if (trafficArr !== null) {
-        trafficArr.forEach(item => {
-          trafficState +=`${item}、`
-        })
-        trafficState = trafficState.slice(0,-1) 
-      }
-      data = {
-        ...data,
-        ...(districtId && { cityId: districtId[0] }),
-        ...(districtId.length > 1 && { districtId: districtId[1] }),
-        ...(type && { type: type }),
-        ...(assetTag && { assetTag: assetTag }),
-        ...(resName && { resName: resName }),
-        ...(status && { status: status }),
-        ...(date && { startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-') }),
-        ...(userId && { userId: userId }),
-        ...(remark && {remark: remark}),
-        ...(deviceProblem && {deviceProblem: deviceProblem}),
-        ...(mediumState && {mediumState: mediumState}),
-        ...(trafficState && {trafficState: trafficState})
-      };
-      console.log('data',data);
-      info.data = data;
-      return info;
-    },
-    searchFun () {
-      let info = this.searchFormat();
-      this.getData(info);
-    },
-    // 滚动加载获取数据(无搜索数据)
-    getData(params) {
-      api.postApi_new(this.apiVar.Media, params).then(res => {
-        console.log(res.data);
-        if (res.data.SysCode == 200200) {
-          let dataInfo = res.data.data;
-          this.totalSize = dataInfo.total;
-          let dataArr = dataInfo.list;
-          this.currentPlan = this.funcData(dataArr);
-          if (dataInfo.total == 0) {
-            Message.warning('暂无数据');
-          }
-        } else {
-          this.totalSize = 0
-          Message.warning(res.data.MSG);
+    searchParamFormat() {
+      const { token, uID: uid } = this.sessionData
+      let params = {}
+      Object.keys(this.searchData).forEach((key) => {
+        let val = this.searchData[key]
+        if (val === '' || val === void 0) {
+          val = null
         }
-        this.loading = false;
-      });
-    },
-    // 数据处理
-    funcData (dataArr) {
-      let result = [];
-      for (let data of dataArr) {
-        let tmpObj = '';
-        tmpObj = this.setTableData(data);
-        result.push(tmpObj);
+        params[key] = val
+      })
+      // 处理日期
+      if (params.dateList.length) {
+        const [ startTime, endTime ] = params.dateList
+        params.startTime = startTime
+        params.endTime = endTime
       }
-      return result;
-    },
-    // 搜索(优化)
-    search () {
-      let that = this
-      this.isSearch = false;
-      setTimeout(() => {
-        that.isSearch = true;
-      }, 1000);
-      that.currentPlan = [];
-      that.loading = true;
-      that.loading_point = false;
-      that.currPage = 1;
-      that.searchFun()
-    },
-    // 分页
-    changePage (val) {
-      // console.log('当前页',val)
-      this.currPage = val
-      this.searchFun();
-    },
-    // 每页条数切换
-    sizeChange (val) {
-      this.pageSize = val;
-      this.currPage = 1;
-      this.searchFun();
-    },
-    // 设置表格数据
-    setTableData (item) {
-      /*
-      *  mState: '已处理',
-          mtType: '巡点',
-          resName: '资源',
-          cityName: '城市',
-          area: '区域',
-          mediaName: '媒体名称',
-          assetTag: '资产编号',
-          issueRecord: '问题记录',
-      * */
-      let obj = {
-        id: item.id,
-        mID: item.mID,
-        mState: item.status == 1 ? '未处理' : '已处理',
-        resName: item.resName,
-        assetTag: item.assetTag,
-        mediaName: item.mTitle,
-        cityName: item.cityName,
-        area: item.districtName,
-        trafficState: item.trafficState || '--',
-        mediaAppearance: item.mediaAppearance || '--',
-        electrifyState: item.electrifyState || '--',
-        issueRecord: item.remark ? item.remark : '--',
-        mediumState: item.mediumState ? item.mediumState : '--',
-        deviceProblem: item.deviceProblem ? item.deviceProblem : '--',
-        feedback: item.feedback ? item.feedback : '--',
-        updateTime: item.updateTime ? item.updateTime : '---',
-        createTime: item.createTime ? item.createTime : '---',
-        createUserName: item.createUserName ? item.createUserName : '---',
-        status: item.status,
-        remark: item.remark,
-        mTitle: item.mTitle,
-        recordId: item.recordId,
-        picUrl: item.picUrl,
-        asLab: item.asLab
-      };
-      if (item.type == 1) {
-        obj.mtType = '巡点'
-      } else if (item.type == 2) {
-        obj.mtType = '待维修'
-      } else if (item.type == 3) {
-        obj.mtType = '拆除'
-      } else if (item.type == 4) {
-        obj.mtType = '不可售卖'
-        obj.issueRecord = JSON.parse(obj.issueRecord)
+      // 处理地区
+      if (params.districtList.length) {
+        const [ cityId, districtId = null ] = params.districtList
+        params.cityId = cityId
+        params.districtId = districtId
       }
-      if (item.patrolPointPics && item.patrolPointPics.length) {
-        let arr = [];
-        for (let data of item.patrolPointPics) {
-          let itemObj = {
-            type: data.uploadType == 'camera' ? 1 : 2,
-            url: data.url,
-            address: data.uploadAddress
-          };
-          arr.push(itemObj);
-        }
-        obj.urls = arr;
-      }
-      return obj;
+      params.uid = uid
+      params.token = token
+      // params.service = 'GetMediaMaintenanceListAction'
+      this.searchCondition = params
     },
-    // 时间格式化
-    formatTime (time) {
-      return dateFormat.toDate(time);
-    },
-    // 导出-
-    downLoad() {
-      this.changeInput()
-      let { resName, assetTag, type, districtId, status, date, userId,questionArr,deviceArr,mediaArr,trafficArr } = this.searchInfo;
-      questionArr = JSON.stringify(questionArr) == '[]' ? null :  questionArr 
-      deviceArr = JSON.stringify(deviceArr)== '[]' ? null :  deviceArr
-      mediaArr = JSON.stringify(mediaArr)== '[]' ? null : mediaArr
-      trafficArr = JSON.stringify(trafficArr) == '[]' ? null : trafficArr
-      let remark = '',
-        deviceProblem = '',
-        mediumState = '',
-        trafficState = ''
-      if (questionArr !== null) {
-        questionArr.forEach(item => {
-          remark +=`${item}、`
+    /**
+     * 获取列表数据
+     */
+    async getTableList() {
+      try {
+        const { token, uID: uid } = this.sessionData
+        const { page: pageNum, pageSize } = this.pagination
+        this.tableLoading = true
+        const res = await this.$api.postApi_json('/addsp/patrolPoint/web/getList', {
+          ...this.searchCondition,
+          uid,
+          token,
+          pageNum,
+          pageSize,
+          // asrID: null,
+          // mediaTypeIdList: null,
         })
-        remark = remark.slice(0,-1) 
-      }
-      if (deviceArr !== null) {
-        deviceArr.forEach(item => {
-          deviceProblem +=`${item}、`
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return Message.error(message || '获取列表数据失败')
+        const { values = [], pagerInfo } = data
+        this.tableList = values.map((item) => {
+          const data = {}
+          item.forEach((cell) => {
+            data[cell.fieldName] = deserialize(cell.value)
+          })
+          return data
         })
-        deviceProblem = deviceProblem.slice(0,-1) 
+        this.pagination.total = pagerInfo.total
+      } catch (err) {
+        Message.error(err || '获取列表数据失败')
+        console.error('getTableList error:', err)
+      } finally {
+        this.tableLoading = false
       }
-      if (mediaArr !== null) {
-        mediaArr.forEach(item => {
-          mediumState +=`${item}、`
-        })
-        mediumState = mediumState.slice(0,-1) 
-      }
-      if (trafficArr !== null) {
-        trafficArr.forEach(item => {
-          trafficState +=`${item}、`
-        })
-        trafficState = trafficState.slice(0,-1) 
-      }
-      let params = {
-        ...(districtId && { cityId: districtId[0] }),
-        ...(districtId.length > 1 && { districtId: districtId[1] }), 
-        ...(type && { type: type }),
-        ...(assetTag && { assetTag: assetTag }),
-        ...(resName && { resName: resName }),
-        ...(status && { status: status }),
-        ...(date && { startTime: timeFormat.toDate(date[0], '-'), endTime: timeFormat.toDate(date[1], '-') }),
-        ...(userId && { userId: userId }),
-        ...(remark && {remark: remark }),
-        ...(deviceProblem && {deviceProblem: deviceProblem }),
-        ...(mediumState && {mediumState: mediumState }),
-        ...(trafficState && {trafficState: trafficState })
-      };
-      console.log(params);
-      if (this.sessionData.customPermission.patrolPermission) {
-        params.isCustom = 1;
-      }
-      api.getApi_file('/mediaService/api/v2/exportRMList', params).then(res => {
-        let blob = new Blob([res.data], { type: 'application/ms-download;charset=utf-8' });
-        let downloadElement = document.createElement('a');
-        let href = window.URL.createObjectURL(blob);    //创建下载的链接
-        downloadElement.href = href;
-        downloadElement.download = '维护记录-' + new Date().getFullYear() + (new Date().getMonth() + 1) + new Date().getDate() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.xls'; //下载后文件名
-        document.body.appendChild(downloadElement);
-        downloadElement.click();                        //点击下载
-        document.body.removeChild(downloadElement);     //下载完成移除元素
-        window.URL.revokeObjectURL(href);               //释放掉blob对象
-      });
     },
-    // 重置
-    reset() {
-      this.changeInput()
-      this.searchInfo = {
-        resName: '',
-        assetTag: '',
-        type: '',
-        districtId: [],
-        status: '',
-        date: '',
-        userId: '',
-      };
-      this.trafficSituation = [],
-      this.trafficValue = [],
-      this.mediaSituation = [],
-      this.mediaValue = [],
-      this.deviceQuestion = [],
-      this.deviceValue1 = [],
-      this.deviceValue2 = [],
-      this.questionReply = []
-      this.questionValue = []
-      this.currPage = 1;
-      console.log(this.searchInfo);
-      this.currentPlan = [];
-      this.isReset = false;
-      let timer = setTimeout(() => {
-        this.isReset = true;
-        clearTimeout(timer);
-      }, 1000);
-      this.searchFun();
-      this.getpartrolList()
+    /**
+     * 打开照片弹框
+     */
+    openMaintainPicDialog({ picUrl }) {
+      this.$refs.maintainPicDialogRef && this.$refs.maintainPicDialogRef.open(picUrl);
     },
-    // 新建按钮
-    newClient () {
-      this.$router.push("./createClient");
-    },
-    // 查看按钮
-    showDetail (data) {
-      sessionStorage.setItem("customerId", data.uID);
-      this.$router.push("./clientDetail");
-    },
-
-    clearImg() {
-      this.imgUrls = []
-    },
-
-    // 媒体点位的售卖状态记录
-    getSellList (item) {
-
-      let info = {
-        data: {
-          recordId: item.recordId,
-          pageNum: 1,
-          pageSize: 80,
+    /**
+     * 列表操作按钮组
+     */
+     getActionList(row) {
+      return [
+        {
+          text: '照片',
+          visible: row.typeName == '巡点',
+          onClick: () => this.openMaintainPicDialog(row),
         },
-        service: "GetMediaMaintainOperationLogAction",
-        token: this.sessionData.token,
-        uid: this.sessionData.uID
-      };
-
-      api.postApi_new(this.apiVar.Media, info).then(res => {
-        if (res.data.SysCode == 200200) {
-          const list = res.data.data.list.map(item => {
-            console.log(item.remark, 'rmark')
-            let rmark
-            let rmarkCtx = JSON.parse(JSON.stringify(item.remark))
-            if (rmarkCtx.indexOf('[') === -1) {
-              rmark = [rmarkCtx]
-            } else {
-              rmark = JSON.parse(item.remark)
-            }
+        {
+          text: '历史记录',
+          onClick: () => this.showHistory(row),
+        },
+      ]
+    },
+    /**
+     * 分页-页数改变
+     */
+    pageChange (val) {
+      this.pagination.page = val
+      this.getTableList();
+    },
+    /**
+     * 分页-页大小改变
+     */
+    pageSizeChange (val) {
+      this.pagination.page = 1
+      this.pagination.pageSize = val
+      this.getTableList();
+    },
+    /**
+     * 搜索字段变化
+     */
+    handleSeachChange(filed) {
+      // console.log('headerSeachChange ===', filed, this.searchData[filed])
+    },
+    /**
+     * 列表搜索
+     */
+    handleSearch() {
+      this.searchParamFormat();
+      this.getTableList();
+    },
+    /**
+     * 列表重置
+     */
+    handleReset() {
+      this.pagination.page = 1
+      this.searchData = initSearchData()
+      this.handleSearch()
+    },
+    /**
+     * 构造搜索配置项
+     * type: labelSelect 单选, multiLabelSelect 多选
+     */
+    createSearchItemConfig({ type, title, fieldName, items = [] }) {
+      let obj = {}
+      switch (type) {
+        // 下拉单选
+        case 'labelSelect':
+          obj = {
+            title,
+            type: 'select',
+            props: {
+              placeholder: '请选择',
+              filterable: true,
+            },
+            options: items.map(({title}) => ({
+              label: title,
+              value: title,
+            }))
+          }
+          break
+        // 下拉多选
+        case 'multiLabelSelect':
+          obj = {
+            title,
+            type: 'select',
+            props: {
+              placeholder: '请选择',
+              filterable: true,
+              multiple: true,
+              collapseTags: true,
+            },
+            options: items.map(({title}) => ({
+              label: title,
+              value: title,
+            }))
+          }
+          break
+        // 带有其他输入框的下拉
+        case 'multiLabelInputSelect':
+          obj = {
+            title,
+            type: 'input-select',
+            props: {
+              options: items.map(({title, type: optionType}) => ({
+                label: title,
+                value: title,
+                isCustom: optionType === 'input'
+              }))
+            },
+          }
+          break
+        // 输入框
+        default:
+        obj = {
+          title,
+          type: 'input',
+          props: {
+            placeholder: '请输入',
+          },
+        }
+      }
+      return obj
+    },
+    /**
+     * 获取搜索字段默认值
+     */
+    getFiledDefaultValue({ type }) {
+      let value = null;
+      if (type === 'multiLabelSelect') value = []
+      return value
+    },
+    /**
+     * 获取列表字段和搜索字段配置
+     */
+    async getTableConfig() {
+      try {
+        this.pageLoading = true
+        const res = await this.$api.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
+        const { SysCode: code, MSG: message, data } = res.data
+        if (code !== 200200) return Message.error(message || '获取列表字段和搜索字段配置数据失败')
+        const { searchList, headerList } = data
+        // 处理搜索栏字段配置数据
+        let searchFileds = {}
+        let searchData = {}
+        searchList.forEach(item => {
+          searchFileds[item.fieldName] = this.createSearchItemConfig(item)
+          searchData[item.fieldName] = this.getFiledDefaultValue(item)
+        })
+        this.searchFileds = Object.assign(initSearchFileds(), searchFileds)
+        this.searchData = Object.assign(initSearchData(), searchData)
+        // 处理列表字段配置数据
+        const tableColumns = headerList.map(item => {
+          const { title, fieldName: dataIndex, fixedFlag, labelStyleFlag: isTagStyle } = item
+          // 状态列特殊处理
+          if (dataIndex === 'statusDesc') {
             return {
-              ...item,
-              remark: Array.isArray(rmark) ? rmark : [rmark],
-              sellState: item.operationType === 1 ? '不可售卖' : '可售卖'
+              title,
+              dataIndex,
+              fixed: 'right',
+              slot: 'statusDesc',
             }
-          }) || []
-           let obj = {
-            resName: item.resName,
-            mTitle: item.mTitle,
-            assetTag: item.assetTag,
-            asLab: item.asLab,
-            list
-          };
-          this.logList = obj 
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
-
-    },
-
-    // 获取历史记录
-    getHistoryList (item) {
-      console.log(item, 'itememem')
-      let info = {
-        "data": {
-          mID: item.mID,
-          pageNum: 1,
-          pageSize: 80,
-        },
-        "service": "GetMediaMaintenanceHistoryListAction",
-        "token": this.sessionData.token,
-        "uid": this.sessionData.uID
-      };
-
-      api.postApi_new(this.apiVar.Media, info).then(res => {
-        console.log('历史记录', res.data);
-        if (res.data.SysCode == 200200) {
-          let obj = {
-            resName: item.resName,
-            mTitle: item.mTitle,
-            assetTag: item.assetTag,
-            asLab: item.asLab,
-            list: []
-          };
-          for (let data of res.data.data.list) {
-            let a = {
-              time: data.createTime,
-              patrolPointFields: data.patrolPointFields,
-              address: data.resAddress,
-              recordId: data.recordId,
-              mID: data.mID,
-            };
-            if (data.type == 1) {
-              a.type = '巡点'
-            } else if (data.type == 2) {
-              a.type = '待维修'
-            } else if (data.type == 3) {
-              a.type = '拆除'
-            }
-
-            obj.list.push(a);
           }
-          this.logList = obj;
-          console.log(this.logList);
-        } else {
-          Message.warning(res.data.MSG);
-        }
-      }).catch(err => {
-        console.log(err);
-      });
-
-    },
-    /**
-     * 获取下拉列表
-     */
-    getpartrolList() {
-      api.getPartrolPoint(this.apiVar.partrolApi).then(res => {
-        let arr1 = res.data.data[0].items
-        let arr2 = res.data.data[1].items
-        let arr3 = res.data.data[2].items
-        let arr4 = res.data.data[3].items
-        let questionArr = []
-        let mediaArr = []
-        let deviceArr = []
-        let trafficArr = []
-        // 赋值问题反馈下拉列表
-        for (let i = 0; i < arr1.length; i++){
-          let obj = {}
-          obj.value = arr1[i].title
-          questionArr.push(obj)
-        }
-        this.questionReplyArr = questionArr
-        // 赋值设备问题下拉列表
-        for (let i = 0; i < arr2.length; i++){
-          let obj = {}
-          obj.value = arr2[i].title
-          deviceArr.push(obj)
-        }
-        this.deviceQuestionArr = deviceArr
-        // 赋值媒介情况下拉列表
-        for (let i = 0; i < arr3.length; i++){
-          let obj = {}
-          obj.value = arr3[i].title
-          mediaArr.push(obj)
-        }
-        this.mediaSituationArr = mediaArr
-        // 赋值通行情况下拉列表
-        for (let i = 0; i < arr4.length; i++){
-          let obj = {}
-          obj.value = arr4[i].title
-          trafficArr.push(obj)
-        }
-        this.trafficSituationArr = trafficArr
-      }).catch(err => {
-        console.log(err);
-      });
-    },
-    /**
-     * 转换 输入框中的数据
-     */
-    changeInput() {
-      // 将通行情况中的输入框数据转换
-      if (this.trafficValue !== '') {
-        console.log(this.trafficSituation,'1');
-        this.searchInfo.trafficArr = this.trafficSituation.slice()
-        let index = this.searchInfo.trafficArr.indexOf('其他(' + this.trafficValue + ')')
-        if (index !== -1) {
-          this.searchInfo.trafficArr.splice(index, 1)
-          this.searchInfo.trafficArr.push(this.trafficValue)
-        }
-      } else {
-        this.searchInfo.trafficArr = this.trafficSituation.slice()
-      }
-      // 将媒介情况中的输入框数据转换
-      if (this.mediaValue !== '') {
-        this.searchInfo.mediaArr = this.mediaSituation.slice()
-        let index = this.searchInfo.mediaArr.indexOf('其他(' + this.mediaValue + ')')
-        if (index !== -1) {
-          this.searchInfo.mediaArr.splice(index, 1)
-          this.searchInfo.mediaArr.push(this.mediaValue)
-        }
-      } else {
-        this.searchInfo.mediaArr = this.mediaSituation.slice()
-      }
-      // 将设备问题中的输入框数据转换
-      if (this.deviceValue1 !== '' && this.deviceValue2 !== '') {
-        this.searchInfo.deviceArr = this.deviceQuestion.slice()
-        let index1 = this.searchInfo.deviceArr.indexOf('其他设备异常(' + this.deviceValue1 + ')')
-        if (index1 !== -1) {
-          this.searchInfo.deviceArr.splice(index1, 1)
-          this.searchInfo.deviceArr.push(this.deviceValue1)
-        }
-        let index2 = this.searchInfo.deviceArr.indexOf('具体异常说明(' + this.deviceValue2 + ')')
-        if (index2 !== -1) {
-          this.searchInfo.deviceArr.splice(index2, 1)
-          this.searchInfo.deviceArr.push(this.deviceValue2)
-        }
-      } else if (this.deviceValue1 !== '') {
-        this.searchInfo.deviceArr = this.deviceQuestion.slice()
-        let index = this.searchInfo.deviceArr.indexOf('其他设备异常(' + this.deviceValue1 + ')')
-        if (index !== -1) {
-          this.searchInfo.deviceArr.splice(index, 1)
-          this.searchInfo.deviceArr.push(this.deviceValue1)
-        }
-      } else if (this.deviceValue2 !== '') {
-        this.searchInfo.deviceArr = this.deviceQuestion.slice()
-        let index = this.searchInfo.deviceArr.indexOf('具体异常说明(' + this.deviceValue2 + ')')
-        if (index !== -1) {
-          this.searchInfo.deviceArr.splice(index, 1)
-          this.searchInfo.deviceArr.push(this.deviceValue2)
-        }
-      } else {
-        this.searchInfo.deviceArr = this.deviceQuestion.slice()
-      }
-      // 将问题反馈中的输入框数据转换
-      if (this.questionValue !== '') {
-        this.searchInfo.questionArr = this.questionReply.slice()
-        let index = this.searchInfo.questionArr.indexOf('其他(' + this.questionValue + ')')
-        if (index !== -1) {
-          this.searchInfo.questionArr.splice(index, 1)
-          this.searchInfo.questionArr.push(this.questionValue)
-        }
-      } else {
-        this.searchInfo.questionArr = this.questionReply.slice()
-      }
-    },
-    /**
-     * 通行情况下拉框切换输入框
-     * @param {Array} val 
-     */
-    changetraffic(val) {
-      let index = this.trafficSituationArr.length - 1 
-      if (val[val.length - 1] === this.trafficSituationArr[index].value) {
-        this.showtrafficInput = 0
-      }
-    },
-    /**
-     * 通行情况输入框切换下拉框
-     */
-    changetrafficInput() {
-      let index = this.trafficSituationArr.length-1
-      if (this.trafficValue === '') {
-        let index1 = this.trafficSituation.indexOf(this.trafficSituationArr[index].value)
-        this.trafficSituation.splice(index1, 1)
-      }
-      this.showtrafficInput = 1
-    },
-    /**
-     * 通行情况输入框失焦
-     */
-    trafficChange() {
-      let index = this.trafficSituationArr.length - 1
-      let index1 = this.trafficSituation.length -1
-      if (this.trafficValue === '') {
-        this.trafficSituationArr[index].value = '其他(请输入)'
-      } else {
-        this.trafficSituationArr[index].value = '其他('+ this.trafficValue + ')'
-        this.trafficSituation[index1]= '其他('+ this.trafficValue + ')'
-        this.showtrafficInput = 1
-      }
-    },
-    /**
-     * 媒介情况下拉框切换输入框
-     * @param {Array} val 
-     */
-    changeMedia(val) {
-      let index = this.mediaSituationArr.length - 1
-      if (val[val.length - 1] === this.mediaSituationArr[index].value) {
-        this.showMediaInput = 0
-      }
-    },
-    /**
-     * 媒介情况输入框切换下拉框
-     */
-    changeMediaInput() {
-      let index = this.mediaSituationArr.length-1
-      if (this.mediaValue === '') {
-        let index1 = this.mediaSituation.indexOf(this.mediaSituationArr[index].value)
-        this.mediaSituation.splice(index1, 1)
-      }
-      this.showMediaInput = 1
-    },
-    /**
-     * 媒介情况输入框失焦
-     */
-    mediaChange() {
-      let index = this.mediaSituationArr.length - 1
-      let index1 = this.mediaSituation.length -1
-      if (this.mediaValue === '') {
-        this.mediaSituationArr[index].value = '其他(请输入)'
-      } else {
-        this.mediaSituationArr[index].value = '其他('+ this.mediaValue + ')'
-        this.mediaSituation[index1] = '其他('+ this.mediaValue + ')'
-        this.showMediaInput = 1
-      }
-    },
-    /**
-     * 设备问题下拉框切换输入框
-     * @param {Arrary} val 
-     */
-    changeDevice(val) {
-      console.log(val,'val');
-      let index = this.deviceQuestionArr.length - 1
-      if (val[val.length - 1] === this.deviceQuestionArr[index-1].value) {
-        this.showDeviceInput = 0
-      }else if(val[val.length - 1] === this.deviceQuestionArr[index].value){
-        this.showDeviceInput = 2
-      }
-    },
-    /**
-     * 设备问题输入框切换下拉框
-     * @param {Arrary} val 
-     */
-    changeDeviceInput(val) {
-      let index = this.deviceQuestionArr.length-1
-      if (val[val.length - 1] === this.deviceQuestionArr[index-1].value) {
-        this.showDeviceInput = 0
-      } else if(val[val.length - 1] === this.deviceQuestionArr[index].value){
-        this.showDeviceInput = 2
-      } else {
-        this.showDeviceInput = 1
-      }
-      if (val[val.length - 2] === this.deviceQuestionArr[index-1].value) {
-        if (this.deviceValue1 === '') {
-          let index1 = this.deviceQuestion.indexOf(this.deviceQuestionArr[index-1].value)
-          this.deviceQuestion.splice(index1, 1)
-        }
-      } else if (val[val.length - 2] === this.deviceQuestionArr[index].value) {
-        if (this.deviceValue2 === '') {
-          let index2 = this.deviceQuestion.indexOf(this.deviceQuestionArr[index].value)
-          this.deviceQuestion.splice(index2, 1)
-        }
-      }
-    },
-    /**
-     * 设备问题 其他设备异常 输入框失焦
-     */
-    deviceChange1() {
-      let index = this.deviceQuestionArr.length-2
-      let index1 = this.deviceQuestion.length-1
-      if (this.deviceValue1 === '') {
-        this.deviceQuestionArr[index].value = '其他设备异常(请输入)'
-      } else {
-        this.deviceQuestionArr[index].value = '其他设备异常('+ this.deviceValue1 + ')'
-        this.deviceQuestion[index1] ='其他设备异常('+ this.deviceValue1 + ')'
-        this.showDeviceInput = 1
-      }
-    },
-    /**
-     * 设备问题 具体异常说明输入框失焦
-     */
-    deviceChange2() {
-      let index = this.deviceQuestionArr.length-1
-      let index1 = this.deviceQuestion.length-1
-      if (this.deviceValue2 === '') {
-        this.deviceQuestionArr[index].value = '具体异常说明(请输入)'
-      } else {
-        this.deviceQuestionArr[index].value ='具体异常说明('+ this.deviceValue2 + ')'
-        this.deviceQuestion[index1] ='具体异常说明('+ this.deviceValue2 + ')'
-        this.showDeviceInput = 1
-      }
-    },
-    /**
-     * 问题反馈下拉框切换输入框
-     * @param {Arrary} val 
-     */
-    changeQuestion(val) {
-      let index = this.questionReplyArr.length - 1
-      if (val[val.length - 1] === this.questionReplyArr[index].value) {
-        this.showQuestionInput = 0
-      }
-    },
-    /**
-     * 问题反馈输入框切换下拉框
-     */
-    changeQuestionInput() {
-      let index = this.questionReplyArr.length-1
-      if (this.questionValue === '') {
-        let index1 = this.questionReply.indexOf(this.questionReplyArr[index].value1)
-        this.questionReply.splice(index1, 1)
-      }
-      this.showQuestionInput = 1
-    },
-    /**
-     * 问题反馈输入框失焦
-     */
-    questionChange() {
-      let index = this.questionReplyArr.length-1
-      let index1 = this.questionReply.length-1
-      if (this.questionValue === '') {
-        this.questionReplyArr[index].value = '其他(请输入)'
-      } else {
-        this.questionReplyArr[index].value = this.questionValue
-        this.questionReply[index1] = this.questionValue
-        this.showQuestionInput = 1
+          return {
+            title,
+            dataIndex,
+            isTagStyle,
+            fixed: fixedFlag ? 'left' : null,
+          }
+        })
+        tableColumns.unshift({ title: '序号', type: 'index' })
+        tableColumns.push({
+          title: '操作',
+          key: 'action',
+          slot: 'action',
+          fixed: 'right',
+        })
+        this.tableColumns = tableColumns
+        // console.log('tableColumns ====', this.tableColumns)
+      } catch (err) {
+        Message.error(String(err) || '获取列表字段和搜索字段配置数据失败')
+        console.error('getTableConfig error:', err)
+      } finally {
+        this.pageLoading = false
       }
     },
   },
-  computed: {
-    fixedLeft() {
-      return this.customPermission.patrolPermission ===3 ? 'left' : 'false'
-    }
-  }
+  async mounted () {
+    this.sessionData = sessFun.getSess();
+    // 先请求字段配置
+    await this.getTableConfig()
+    this.getUserOptions();
+    this.getDistrictOptions();
+    this.handleSearch();
+  },
 };
 </script>
 
-<style scoped lang="scss">
-.table_wrap {
-  margin: 24px 32px;
-}
-
-/deep/ .mediaList_container .el-row {
-  margin-bottom: 15px;
-  display: flex;
-}
-
-/deep/ .mediaList_container .el-col > span {
-  font-size: 14px;
-  min-width: 65px;
-  color: rgba(0, 0, 0, 0.85);
-}
-
-/deep/ .mediaList_container .el-input__icon.el-icon-arrow-down.is-reverse {
-  line-height: 34px;
-}
-
-/deep/ .mediaList_container .el-col .el-cascader {
-  width: 100%;
-}
-/deep/ .mediaList_container .el-col {
-  position: relative;
-}
-.text{
-  position: absolute;
-  width: 55px;
-  height: 34px;
-  line-height: 30px;
-  left: 67px;
-  z-index: 999;
-  color: #909399;
-  background-color: #f4f4f5;
-  text-align: center;
-  font-size: 12px;
-}
-.text1{
-  width: 85px;
-}
-/deep/ .el-select {
-  width: 100%;
-}
-/deep/ .el-select .el-select__tags{
-  margin-top: 1px;
-  height: 30px;
-  overflow: auto;
-}
-
-/deep/ .el-input{
-  position: relative;
-}
-// /deep/ .el-input .el-input__inner{
-//   height: 34px !important;
-// }
-/deep/ .el-input .el-select{
-  width: 80px !important;
-}
-.device .device-select{
-  width: 110px !important
-}
-
-/deep/ .el-col .el-date-editor .el-range__close-icon {
-  line-height: 27px;
-}
-
-.table_dt dl dt {
-  font-size: 14px;
-}
-
-.table_dt dl dd {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
-}
-
-/deep/ .table_dt .cell{
-  text-overflow: clip;
-}
-
-// /deep/ .mediaList_container .el-input__inner {
-//   height: 32px;
-// }
-
-
-/deep/ .mediaList_container .el-col-6 {
-  display: flex;
-  align-items: center;
-  margin-right: 24px;
-}
-
-/deep/ .mediaList_container .el-date-editor .el-range-separator,
-/deep/ .mediaList_container .el-date-editor .el-range__icon {
-  line-height: 26px;
-}
-
-.red {
-  background-color: #ff6e6e;
-}
-
-.green {
-  background-color: #52c41a;
-}
-
-.mediaList_container .el-row .span_style {
-  border-radius: 12px;
-  color: #fff;
-  width: 54px;
-  display: inline-block;
-  text-align: center;
-  font-size: 12px;
-}
-
-.span_a {
-  color: #1890ff;
-  cursor: pointer;
-}
-
-.img_span_style {
-  border-radius: 12px;
-  color: #fff;
-  width: 130px;
-  display: inline-block;
-  text-align: center;
-  font-size: 12px;
-  background: #979797;
-}
-
-.loglist_box .title {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.85);
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-.loglist_box .title p:last-child {
-  font-size: 14px;
-  margin-top: 2px;
-}
-
-/deep/ .logList-wrap .el-dialog__body {
-  padding: 16px 24px 30px;
-}
-
-/deep/ .logList-wrap .el-dialog__title {
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 16px;
-}
-
-.point_style {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/deep/ .el-dropdown-link {
-  cursor: pointer;
-  color: #108ee9;
-}
-
-.block,
-.remark {
-  display: flex;
-  align-items: center;
-}
-
-.remark {
-  margin-top: 16px;
-}
-
-/deep/ .block .el-date-editor.el-input__inner,
-/deep/ .block .el-input--prefix .el-input__inner {
-  height: 32px;
-  width: 350px;
-}
-
-/deep/ .block .el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 350px;
-}
-
-/deep/ .block .el-input__icon {
-  line-height: 32px;
-}
-
-/deep/ .remark .el-textarea__inner {
-  width: 350px;
-  height: 74px;
-  resize: none;
-}
-
-/deep/ .el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: 100%;
-  height: 32px;
-  padding-right: 0;
-}
-
-/deep/ .remark .el-textarea {
-  width: 350px;
-}
-
-/deep/ .ad_mediaDetail_wrap .el-date-editor .el-range__icon {
-  position: relative;
-  top: -3px;
-}
-
-/deep/ .ad_mediaDetail_wrap .el-date-editor .el-range-separator {
-  line-height: 25px;
-}
-
-/*滚动条*/
-/deep/ .el-table__body-wrapper {
-  overflow-y: hidden;
-  overflow-x: scroll;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar {
-  height: 8px;
-  background: #fafafa;
-}
-
-/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
-  /*滚动条里面小方块*/
-  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-/deep/ .el-dialog__body {
-  padding-bottom: 6px !important;
-}
-/deep/ .el-dialog__footer {
-  padding: 10px 24px 24px;
-} 
-/deep/ .el-input .el-input-group__prepend{
-  padding: 0;
-  width: 80px;
-}
-/deep/ .el-input .el-input-group__prepend .el-select{
-  margin: 0;
-}
-.tag{
-  height: 22px;
-  line-height: 22px;
-  text-align: center;
-  padding: 0 8px;
-  background: linear-gradient(0deg, #E6F7FF, #E6F7FF),linear-gradient(0deg, #91D5FF, #91D5FF);
-  border: 1px solid #91D5FF ;
-  margin-right: 8px;
-  font-size: 12px;
-  color: #1890FF;
-}
-</style>
+<style scoped lang="scss"></style>

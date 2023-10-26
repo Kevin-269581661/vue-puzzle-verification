@@ -116,6 +116,11 @@
                   @click="isEdit(scope.row)"
                   >编辑</span
                 >
+                <span
+                  style="color: #108ee9; cursor: pointer; margin-left: 10px"
+                  @click="isPatrolPoint(scope.row)"
+                  >巡点配置</span
+                >
               </template>
             </el-table-column>
 
@@ -235,6 +240,8 @@
         <el-button type="primary" @click="handleCompany()">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 巡点配置弹出框 -->
+    <PatrolPointDialog ref="patrolPointRef" @submitSuccess="searchFun"/>
   </div>
 </template>
 
@@ -246,11 +253,13 @@ import sessFun from "../../commonFun/sessFun.js";
 import api from "../../api/api.js";
 import noSearchResult from "./components/noSearchResult.vue";
 import pointState from "./components/pointState.vue";
+import PatrolPointDialog from './components/companyList/patrolPointDialog.vue'
 
 export default {
   components: {
     noSearchResult,
     pointState,
+    PatrolPointDialog
   },
   data() {
     return {
@@ -666,6 +675,11 @@ export default {
         acceptSpiltOrderStatus: row.acceptSpiltOrderStatus
       };
       this.getCompanyPerssion()
+    },
+    // 巡点配置
+    isPatrolPoint(row) {
+      // console.log('mediaTypeIds--', row)
+      this.$refs.patrolPointRef.open(row)
     },
   },
   mounted() {

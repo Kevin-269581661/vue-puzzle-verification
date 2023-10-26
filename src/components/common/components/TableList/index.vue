@@ -289,7 +289,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .table_list_container {
+
+  /deep/ .el-table .el-table__header-wrapper th.el-table__cell{
+    background-color: #fafafa !important;
+  }
+
+  /deep/ .el-table .el-table__header th.el-table__cell{
+    background-color: #fafafa !important;
+  }
+
   .table_tool_box {
     display: flex;
     align-items: center;

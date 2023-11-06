@@ -907,6 +907,57 @@
                     </el-button>
                   </el-popover>
 
+                  <el-select
+                    v-model="openDoorTypeValue"
+                    placeholder="开门次数"
+                    :class="buildValue !== '' ? 'otherSelectActive' : ''"
+                    size="small"
+                    class="otherSelect"
+                    ref="openDoorRef"
+                    @change="tableHeaderFilterByOpenDoor"
+                  >
+                    <el-option
+                      v-for="item in openDoorType"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                    <!-- <hr/> -->
+                    <div class="open-door-select">
+                      <div class="open-door-date">
+                        <span class="demonstration">自定义时间范围：</span>
+                        <el-date-picker
+                          v-model="openDoorDate"
+                          type="daterange"
+                          value-format="yyyy/MM/dd"
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions0"
+                          @change="tableHeaderFilterByOpenDoorDate"
+                          >
+                        </el-date-picker>
+                      </div>
+                      <div class="open-door-input">
+                        <p>大于&nbsp;</p>
+                        <el-input type="number" v-model="openDoorCount" @change="tableHeaderFilterByOpenDoorCount"></el-input>
+                        <p>&nbsp;&nbsp;次</p>
+                      </div>
+                    </div>
+                  </el-select>
+
+                  <el-select
+                    v-model="supportVoice"
+                    placeholder="是否支持语音"
+                    :class="buildValue !== '' ? 'otherSelectActive' : ''"
+                    size="small"
+                    class="otherSelect"
+                    @change="tableHeaderFilterSupportVoice"
+                  >
+                    <el-option label="支持" :value="1"></el-option>
+                    <el-option label="不支持" :value="0"></el-option>
+                  </el-select>
                 </dd>
               </dl>
             </div>
@@ -1204,6 +1255,21 @@
                     >
                       <template slot-scope="scope">
                         <span>{{ scope.row.mediaRemark || "--" }}</span>
+                      </template>
+                    </el-table-column>
+                  </template>
+                  <template v-else-if="item.label === '开门次数'">
+                    <el-table-column
+                      class-name="el-table-column-mediaRemark"
+                      v-if="item.isChecked"
+                      :label="item.label"
+                      :prop="item.prop"
+                      :min-width="item.width"
+                      :show-overflow-tooltip="item.showTooltip"
+                      :fixed="item.fix === 'left' ? true : false"
+                    >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.openDoorCount }}</span>
                       </template>
                     </el-table-column>
                   </template>
@@ -2375,6 +2441,32 @@ export default {
         { buildValue: "综合型写字楼", buildlabel: "综合型写字楼" },
         { buildValue: "工业园区", buildlabel: "工业园区" },
       ],
+      openDoorType: [
+        {
+          label: '截止至今',
+          value: 5
+        },
+        {
+          label: '昨日',
+          value: 1
+        },
+        {
+          label: '近7天',
+          value: 2
+        },
+        {
+          label: '近30天',
+          value: 3
+        },
+        {
+          label: '自定义',
+          value:  4
+        },
+      ],
+      openDoorCount: 0, //开门次数
+      openDoorTypeValue:null, //开门类型
+      openDoorDate: [], //开门次数日期范围
+      supportVoice: null, //语音支持
       buildValue: "",
       //搜索框
       searchInput: "",
@@ -2384,6 +2476,11 @@ export default {
         disabledDate(time) {
           return time.getTime() <= Date.now();
         },
+      },
+      pickerOptions0: {
+        disabledDate(time) {
+          return time.getTime() > Date.now() - 8.64e6; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
       },
       dateInput: [], // 时间输入框
       beforeDate: [], // 时间输入框的前一次时间
@@ -4209,6 +4306,9 @@ export default {
       this.getAdsParamsData.mType = this.mediaMType || "";
       this.getAdsParamsData.site = this.site || "";
       this.getAdsParamsData.siteOrientation = this.siteOrientation || "";
+      this.getAdsParamsData.openDoorType = this.openDoorTypeValue
+      this.getAdsParamsData.openDoorCount = this.openDoorCount
+      this.getAdsParamsData.supportVoice = this.supportVoice || null
       for (let i in this.getAdsParamsData) {
         if (
           this.getAdsParamsData[i] === "" ||
@@ -4317,6 +4417,7 @@ export default {
           unitCount: key.unitCount || "--",
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
+          openDoorCount: key.openDoorCount !==null ? key.openDoorCount : '--'
         };
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
@@ -4820,7 +4921,8 @@ export default {
     },
     // 选点表格头部过滤条件tab删除方法
     filterTagCloseFun(tab, index) {
-      //   console.log("tab", tab, "index", index);
+      console.log("tab", tab, "index", index);
+      this.filterCondition.splice(index, 1);
       if (tab.condition === "mstate") {
         // 媒体状态
         this.getAdsParamsData.mState = "";
@@ -4914,8 +5016,43 @@ export default {
         // 商圈
         this.tradingArea = '';
         this.getAdsParamsData.tradingArea = "";
+      } else if (tab.condition === 'openDoorType') {
+        //开门次数类型
+        if (this.openDoorTypeValue === 4) {
+          this.openDoorDate = []
+          this.openDoorTypeValue = null
+          this.getAdsParamsData.openDoorType = null  
+          this.getAdsParamsData.openDoorBeginDate = null
+          this.getAdsParamsData.openDoorEndDate = null
+          this.filterCondition.forEach((item, i) => {
+            if (item.condition === 'openDoorDate') {
+              this.filterCondition.splice(i, 1)  
+            }   
+          })
+        }
+        this.openDoorTypeValue = null
+        this.getAdsParamsData.openDoorType = null
+      } else if (tab.condition === 'openDoorCount') {
+        //开门次数
+        this.openDoorCount = 0 
+        this.getAdsParamsData.openDoorCount = 0
+      }else if (tab.condition === 'openDoorDate') {
+        //开门次数日期范围
+        this.openDoorDate=[]
+        this.getAdsParamsData.openDoorBeginDate = null
+        this.getAdsParamsData.openDoorEndDate = null
+        this.openDoorTypeValue = null
+        this.getAdsParamsData.openDoorType = null
+        this.filterCondition.forEach((item, i) => {
+          if (item.condition === 'openDoorType') {
+            this.filterCondition.splice(i, 1)  
+          }   
+        })
+      } else if (tab.condition === 'supportVoice') {
+        //语音支持 
+        this.supportVoice = null
+        this.getAdsParamsData.supportVoice = null
       }
-      this.filterCondition.splice(index, 1);
       this.setPageNoAndTableData();
       this.getAdList();
     },
@@ -5147,6 +5284,84 @@ export default {
         this.setPageNoAndTableData();
         this.getAdList();
       }
+    },
+    // 开门次数
+    tableHeaderFilterByOpenDoor () {
+      if (this.openDoorTypeValue === 4) {
+        if (this.openDoorDate.length === 0) {
+          sessFun.messageFun("warning", "请选择自定义时间范围!");
+          this.openDoorTypeValue = null
+        } else {
+          this.isHaveThisTag("openDoorType", '开门次数类型：'+this.openDoorType[this.openDoorTypeValue].label);
+          if (this.openDoorCount > 0) {
+            this.isHaveThisTag("openDoorCount", '开门次数：大于'+this.openDoorCount +'次');
+          }
+          this.isHaveThisTag("openDoorDate", '开门次数时间范围：'+this.openDoorDate[0] +'~'+this.openDoorDate[1]);
+          this.getAdsParamsData.openDoorType = this.openDoorTypeValue
+          this.getAdsParamsData.openDoorCount = this.openDoorCount
+          this.getAdsParamsData.openDoorBeginDate  = this.openDoorDate[0] || ''
+          this.getAdsParamsData.openDoorEndDate  = this.openDoorDate[1] || ''
+          this.setPageNoAndTableData();
+          this.getAdList();     
+        }
+      } else {
+          this.isHaveThisTag("openDoorType", '开门次数类型：'+this.openDoorType[this.openDoorTypeValue].label);
+          if (this.openDoorCount > 0) {
+            this.isHaveThisTag("openDoorCount", '开门次数：大于'+this.openDoorCount +'次');
+          }
+          for (let i in this.filterCondition) {
+            if (this.filterCondition[i].condition === 'openDoorDate') {
+              this.filterCondition.splice(i, 1)
+              break; 
+            }
+          }
+        this.getAdsParamsData.openDoorType = this.openDoorTypeValue
+        this.getAdsParamsData.openDoorCount = this.openDoorCount
+        this.getAdsParamsData.openDoorBeginDate  = ''
+        this.getAdsParamsData.openDoorEndDate  = ''
+        this.setPageNoAndTableData();
+        this.getAdList();   
+      }
+    },
+
+    //开门时间范围更改（自定义选项下）
+    tableHeaderFilterByOpenDoorDate() {
+      if (this.openDoorTypeValue === 4) {
+        this.isHaveThisTag("openDoorDate", '自定义次数时间范围：' + this.openDoorDate[0] + '~' + this.openDoorDate[1]);  
+        this.getAdsParamsData.openDoorBeginDate  = ''
+        this.getAdsParamsData.openDoorEndDate  = ''
+        this.setPageNoAndTableData();
+        this.getAdList();        
+      }
+    },
+    //开门次数更改
+    tableHeaderFilterByOpenDoorCount() {
+      this.openDoorCount = Math.floor(this.openDoorCount)
+      if (this.openDoorCount < 0) {
+        this.openDoorCount = 0  
+      } else if (this.openDoorCount == 0) {
+        this.filterCondition.forEach((item, i) => {
+          if (item.condition === 'openDoorCount') {
+            this.filterCondition.splice(i,1)
+          }
+        })  
+      } else {
+        this.isHaveThisTag("openDoorCount", '开门次数：大于'+this.openDoorCount +'次'); 
+        this.getAdsParamsData.openDoorCount = this.openDoorCount
+        this.setPageNoAndTableData();
+        this.getAdList(); 
+      }
+    },
+    // 语音支持
+    tableHeaderFilterSupportVoice() {
+      if (this.supportVoice) {
+        this.isHaveThisTag("supportVoice", '支持语音');  
+      } else {
+        this.isHaveThisTag("supportVoice", '不支持语音');    
+      }
+      this.getAdsParamsData.supportVoice = this.supportVoice;
+      this.setPageNoAndTableData();
+      this.getAdList();
     },
 
     emptyFun(letter) {
@@ -8262,5 +8477,39 @@ export default {
 
 .other-dd-popper {
   padding: 6px;
+}
+.open-door-select{
+  padding: 10px 20px;
+}
+.open-door-date{
+  border-top: 1px solid blue;
+  width: 380px;
+  padding: 10px 0;
+}
+.open-door-date span {
+  font-weight: 400;
+  font-size: 14px;
+}
+.open-door-input{
+  width: 180px;
+  height: 30px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.open-door-input p{
+  font-weight: 400;
+  font-size: 14px;
+  width: 50px;
+}
+.open-door-input .el-input{
+  width: 150px !important;
+}
+.open-door-input .el-input__inner{
+  width: 100% !important;
+}
+.block {
+  padding: 10px 0;
 }
 </style>

@@ -170,6 +170,14 @@
                     >一键导出</el-button
                   >
                 </el-col>
+                <el-col :span="3" style="float: right;" class="switch-img-btn">
+                  <el-button type="primary" @click="isActive=!isActive" v-if="isActive"
+                    >切换图片比例3：4</el-button
+                  >
+                  <el-button type="primary" @click="isActive=!isActive" v-else
+                    >切换图片比例4：3</el-button
+                  >
+                </el-col>
             </el-row>
           </template>
           <el-tab-pane
@@ -185,6 +193,7 @@
               :show-pic="showPic"
               :publish="searchInfo.publish"
               @doSomeThing="saveChange"
+              :isActive="isActive"
             ></photo>
             <!--页码-->
             <div class="ad_pagination" v-if="showPic === 3">
@@ -214,6 +223,7 @@
                 :show-pic="showPic"
                 :tabType="activeName"
                 @doSomeThing="saveChange"
+                :isActive="isActive"
               ></photo>
               <!--页码-->
               <div class="ad_pagination" v-if="showPic === 3">
@@ -378,7 +388,9 @@ export default {
         totalpageNum: 0,
         // 投放面
         asLab: null
-      }
+      },
+      //控制图片比例
+      isActive: false
     };
   },
   created () {
@@ -1134,6 +1146,11 @@ export default {
     .item_content {
       flex: 1;
     }
+  }
+}
+.switch-img-btn{
+  button{
+    min-width: 150px;
   }
 }
 </style>

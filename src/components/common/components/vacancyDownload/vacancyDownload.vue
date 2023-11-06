@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 空位导出-弹框组件 -->
-    <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="500px">
+    <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="790px">
       <template slot="title">
         <div class="dialog_header">
           <span style="margin-right: auto;">空位导出</span>
@@ -95,6 +95,66 @@
 
         <el-row>
           <el-col :span="6">
+            <span>开门次数范围:</span>
+          </el-col>
+          <el-col :span="18" class="openDoorCount">
+            <div class="openDoorSelect">
+              <span>时间：</span>
+              <el-select
+                v-model="downLoadInfo.openDoorType"
+                placeholder="开门次数"
+                size="small"
+                class="otherSelect"
+                ref="openDoorRef"
+                @change="handleChangeOpenDoorCount"
+              >
+                <el-option
+                  v-for="item in openDoorCountType"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+                <div class="open-door-select">
+                  <div class="open-door-date">
+                    <span class="demonstration">自定义时间范围：</span>
+                    <el-date-picker
+                      v-model="openDoorDate"
+                      type="daterange"
+                      value-format="yyyy/MM/dd"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions0"
+                      >
+                    </el-date-picker>
+                  </div>
+                </div>
+              </el-select>
+            </div>
+            <div>
+              <span>范围：</span>
+              <el-input  type="number" v-model="downLoadInfo.openDoorMinCount" placeholder="最小值" style="width:120px" @change="handleChangeInput"></el-input>
+              &nbsp;~&nbsp;
+              <el-input  type="number" v-model="downLoadInfo.openDoorMaxCount" placeholder="最大值" style="width:120px" @change="handleChangeInput"></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="6">
+            <span>是否支持语音播报:</span>
+          </el-col>
+          <el-col :span="18">
+            <el-radio-group v-model="downLoadInfo.supportVoice">
+              <el-radio :label="-1">不限</el-radio>
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="0">否</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="6">
             <span>选择日期:</span>
           </el-col>
           <el-col :span="18">
@@ -171,6 +231,14 @@ export default {
         dateType: "1",
         // 自定义日期
         daterange: [],
+        //最小值
+        openDoorMinCount: '',
+        //最大值
+        openDoorMaxCount: '',
+        //开门类型值
+        openDoorType: '',
+        //语音支持
+        supportVoice: -1
       },
       allMediaTypes: [],
       tempMediaTypes: [],
@@ -185,6 +253,33 @@ export default {
       mediaTypeList: [],
       collectList: [],
       collectSelection: null,
+      // 开门次数类型
+      openDoorCountType: [
+        {
+          label: '昨日',
+          value: 1
+        },
+        {
+          label: '近7天',
+          value: 2
+        },
+        {
+          label: '近30天',
+          value: 3
+        },
+        {
+          label: '自定义',
+          value:  4
+        },
+      ],
+       //开门次数日期范围
+      openDoorDate: [],
+      //限制时间范围
+      pickerOptions0: {
+        disabledDate(time) {
+          return time.getTime() > Date.now() - 8.64e6; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
     };
   },
   methods: {
@@ -261,6 +356,15 @@ export default {
       this.resetDownloadInfo()
       this.close();
     },
+    //输入框校验
+    handleChangeInput() {
+      if (this.downLoadInfo.openDoorMinCount < 0 ) {
+        this.downLoadInfo.openDoorMinCount = ''
+      }
+      if (this.downLoadInfo.openDoorMaxCount < 0 ) {
+        this.downLoadInfo.openDoorMaxCount = ''
+      }
+    },
     // 重置空位导出信息
     resetDownloadInfo() {
       const info = this.downLoadInfo
@@ -270,9 +374,12 @@ export default {
       info.mediaTypeIds = ''
       info.daterange = []
       this.collectSelection = null
+      info.supportVoice = 1
+      info.openDoorMinCount = ''
+      info.openDoorMaxCount = ''
     },
     confirmDown () {
-      let { loadType, city, daterange, dateType, mediaTypeIds } = this.downLoadInfo;
+      let { loadType, city, daterange, dateType, openDoorType, openDoorMinCount,openDoorMaxCount,mediaTypeIds } = this.downLoadInfo;
         if (!loadType) {
             Message.warning("请选择选点纬度!");
             return;
@@ -281,11 +388,24 @@ export default {
             Message.warning("请选择城市!");
             return;
         }
+        
+        if (openDoorType !== '' && openDoorMinCount === '') {
+          this.messageFun("warning", "请填写最小值");
+          return;
+        }
+        if (openDoorType !== '' && openDoorMaxCount === '') {
+          this.messageFun("warning", "请填写最大值");
+          return;
+        }
+        if (openDoorType === '' && openDoorMinCount !== '' && openDoorMaxCount !== '') {
+          this.messageFun("warning", "请选择开门时间范围");
+          return;
+        }
         if (dateType == "2") {
-            if (!daterange || !daterange.length) {
+          if (!daterange || !daterange.length) {
             this.messageFun("warning", "请先选择日期");
             return;
-            }
+          }
         }
         if (!mediaTypeIds.length) {
             Message.warning("请选择媒体类型!");
@@ -360,10 +480,14 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
         });
-        let { city, mediaTypeIds, dateType, daterange } = this.downLoadInfo;
+        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, daterange } = this.downLoadInfo;
         let params = {
             cityIds: city.join(','),
             mediaTypeIds: mediaTypeIds.join(','),
+            supportVoice,
+            openDoorType: openDoorType === ''? null : openDoorType,
+            openDoorMinCount: openDoorMinCount === ''? null : openDoorMinCount,
+            openDoorMaxCount: openDoorMaxCount === ''? null : openDoorMaxCount
         }
         // 自定义日期
         if(dateType === '2') {
@@ -453,6 +577,15 @@ export default {
           console.error('createCollect error:', err)
         })
       }).catch(() => {});
+    },
+    // 开门次数
+    handleChangeOpenDoorCount () {
+      if (this.openDoorType === 4) {
+        if (this.openDoorDate.length === 0) {
+          sessFun.messageFun("warning", "请选择自定义时间范围!");
+          this.openDoorType = null
+        }
+      }
     },
     /**
      * 打开收藏列表
@@ -569,7 +702,7 @@ export default {
 
 <style lang="scss" scoped>
 /deep/.vacancy_box .el-row {
-  height: 45px;
+  height: 50px;
 }
 /deep/.vacancy_box .el-select {
   width: 90%;
@@ -607,4 +740,66 @@ export default {
     }
   }
 }
+.openDoorCount{
+  display: flex;
+  align-items: center;
+  margin-top: -8px;
+  /deep/ .el-select{
+    width: 135px;
+  }
+  .openDoorSelect{
+    margin-right: 10px;
+  }
+}
+.otherSelect {
+  /deep/ .el-input__inner {
+    max-width: 135px;
+    height: 30px;
+    padding-left: 10px;
+    color: #1890ff;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  /deep/ .el-select__tags-text {
+    display: inline-block;
+    max-width: 30px;
+    overflow: hidden;
+    // text-overflow: ellipsis;
+  }
+  /deep/ .el-tag__close.el-icon-close {
+    right: -5px;
+    top: -5px;
+  }
+}
+
+.otherSelect /deep/ .el-tag {
+  background: #fff;
+  color: #1890ff;
+}
+
+.otherSelect /deep/ .el-input__inner:hover {
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.otherSelectActive /deep/ .el-input__inner {
+  border-color: #1890ff;
+}
+
+.otherSelectActive /deep/ .el-input .el-select__caret {
+  color: #1890ff;
+}
+.open-door-select{
+  padding: 10px 20px;
+}
+.open-door-date{
+  border-top: 1px solid blue;
+  width: 470px;
+  padding: 10px 0;
+}
+.open-door-date span {
+  font-weight: 400;
+  font-size: 14px;
+}
+
 </style>

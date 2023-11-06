@@ -4417,7 +4417,7 @@ export default {
           unitCount: key.unitCount || "--",
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
-          openDoorCount: key.openDoorCount || 0
+          openDoorCount: key.openDoorCount !==null ? key.openDoorCount : '--'
         };
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;

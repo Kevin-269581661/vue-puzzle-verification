@@ -1191,7 +1191,7 @@
                       asState: key.asState || '--', // 媒体状态
                       asSaleState: key.asSaleState || '--', // 售卖状态
                       unSaleableReason: key.unSaleableReason, // 不可售卖原因
-                      openDoorCount: key.openDoorCount || '--', //开门次数 全部
+                      openDoorCount: key.openDoorCount !== null ? key.openDoorCount : '--', //开门次数 全部
                       yesterdayCnt: key.yesterdayCnt || '--', //开门次数 昨日
                       nearlySevenDaysCnt: key.nearlySevenDaysCnt || '--', //开门次数 近七天
                       nearlyThirtyDaysCnt: key.nearlyThirtyDaysCnt || '--', //开门次数 近三十天

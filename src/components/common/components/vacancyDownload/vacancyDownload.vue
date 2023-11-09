@@ -377,7 +377,7 @@ export default {
       info.mediaTypeIds = ''
       info.daterange = []
       this.collectSelection = null
-      info.supportVoice = 1
+      info.supportVoice = -1
       info.openDoorMinCount = ''
       info.openDoorMaxCount = ''
       info.openDoorType = ''

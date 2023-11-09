@@ -398,6 +398,10 @@ export default {
             return;
         }
         
+        if (openDoorMinCount > openDoorMaxCount) {
+          this.messageFun("warning", "最小值不能大于最大值");
+          return;
+        }
         if (openDoorType !== '' && openDoorMinCount === '') {
           this.messageFun("warning", "请填写最小值");
           return;

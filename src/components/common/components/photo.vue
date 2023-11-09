@@ -37,9 +37,14 @@
             tabType:{
                 type: String,
                 default: 'first'
-            }
+            },
+            // 缩放比例
+            isActive:{
+                type: Boolean,
+                default: false
+            },
         },
-        data() {
+        data(props) {
             return {
                 sessionData: '',
                 //缩略图
@@ -63,7 +68,8 @@
                     resName: '',
                     week: '',
                     url: ''
-                }
+                },
+                isActive: props.isActive
             }
         },
         watch:{
@@ -245,7 +251,7 @@
                 </div>
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
-                    <div class="photoCard" v-for="(img, index) of imgarr" :key="img.pID">
+                    <div class="photoCard" :class="{active: isActive}" v-for="(img, index) of imgarr" :key="img.pID">
                         <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
                             <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->
@@ -375,21 +381,28 @@
     .photoCard {
         transition: all 0.3s;
         float: left;
-        width: 18.8%;
+        width: 280px;
         background: #ffffff;
         border-radius: 2px;
         text-align: left;
         border: 1px solid rgba(0, 0, 0, 0.1);
         margin: 0 0.5% 16px;
+        position: relative;
     }
 
     .photoCard .imgBox {
         width: 100%;
-        height: 160px;
+        height: 373px;
         position: relative;
-        overflow: hidden;
     }
-
+    .photoCard .imgBox img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .active .imgBox{
+        height: 210px;
+    }
     .imgBox .mask-btn {
         width: 100%;
         height: 100%;

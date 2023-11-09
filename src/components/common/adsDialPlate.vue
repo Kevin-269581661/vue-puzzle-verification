@@ -71,9 +71,16 @@
             <div class="tab_conten">
                 <div class="table_wrap"
                     :class="!tableLength && (pageData.pageSize == 20 ? 'table_wrap_20' : pageData.pageSize == 30 ? 'table_wrap_30' : pageData.pageSize == 40 ? 'table_wrap_40' : '')">
-                    <el-table v-loading="tableLoading" element-loading-text="拼命加载中..."
-                        element-loading-spinner="el-icon-loading" :key="itemKey" :data="adsTableList" class="ads_table"
-                        :class="tableLength ? 'ads_table_10' : ''" style="width: 100%">
+                    <el-table
+                      v-loading="tableLoading"
+                      element-loading-text="拼命加载中..."
+                      element-loading-spinner="el-icon-loading"
+                      :key="itemKey"
+                      :data="adsTableList"
+                      :border="true"
+                      class="ads_table"
+                      :class="tableLength ? 'ads_table_10' : ''"
+                      style="width: 100%">
                         <template v-for="item in adsColumn">
                             <template v-if="item.label === '媒体状态'">
                                 <el-table-column v-if="item.isChecked" column-key="asState" :prop="item.prop"

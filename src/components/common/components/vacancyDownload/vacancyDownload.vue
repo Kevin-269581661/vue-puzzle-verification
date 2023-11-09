@@ -93,7 +93,7 @@
           </el-col>
         </el-row>
 
-        <el-row>
+        <el-row  v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
           <el-col :span="6">
             <span>开门次数范围:</span>
           </el-col>
@@ -141,7 +141,7 @@
           </el-col>
         </el-row>
 
-        <el-row>
+        <el-row v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
           <el-col :span="6">
             <span>是否支持语音播报:</span>
           </el-col>
@@ -363,6 +363,9 @@ export default {
       }
       if (this.downLoadInfo.openDoorMaxCount < 0 ) {
         this.downLoadInfo.openDoorMaxCount = ''
+      }
+      if (this.downLoadInfo.openDoorMaxCount > 100000000) {
+        this.downLoadInfo.openDoorMaxCount = 100000000
       }
     },
     // 重置空位导出信息

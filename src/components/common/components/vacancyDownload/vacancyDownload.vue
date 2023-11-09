@@ -119,7 +119,7 @@
                   <div class="open-door-date">
                     <span class="demonstration">自定义时间范围：</span>
                     <el-date-picker
-                      v-model="openDoorDate"
+                      v-model="downLoadInfo.openDoorDate"
                       type="daterange"
                       value-format="yyyy/MM/dd"
                       range-separator="至"
@@ -237,6 +237,8 @@ export default {
         openDoorMaxCount: '',
         //开门类型值
         openDoorType: '',
+        //开门次数日期范围
+        openDoorDate: [],
         //语音支持
         supportVoice: -1
       },
@@ -272,8 +274,6 @@ export default {
           value:  4
         },
       ],
-       //开门次数日期范围
-      openDoorDate: [],
       //限制时间范围
       pickerOptions0: {
         disabledDate(time) {
@@ -377,15 +377,21 @@ export default {
       info.supportVoice = 1
       info.openDoorMinCount = ''
       info.openDoorMaxCount = ''
+      info.openDoorType = ''
+      info.openDoorDate = []
     },
     confirmDown () {
-      let { loadType, city, daterange, dateType, openDoorType, openDoorMinCount,openDoorMaxCount,mediaTypeIds } = this.downLoadInfo;
+      let { loadType, city, daterange, dateType, openDoorType, openDoorMinCount,openDoorMaxCount,mediaTypeIds,openDoorDate } = this.downLoadInfo;
         if (!loadType) {
             Message.warning("请选择选点纬度!");
             return;
         }
         if (!city.length) {
             Message.warning("请选择城市!");
+            return;
+       }
+        if ( openDoorType === 4 && openDoorDate.length < 2) {
+          this.messageFun("warning", "请选择自定义时间范围");
             return;
         }
         
@@ -397,7 +403,13 @@ export default {
           this.messageFun("warning", "请填写最大值");
           return;
         }
+        
+        
         if (openDoorType === '' && openDoorMinCount !== '' && openDoorMaxCount !== '') {
+          this.messageFun("warning", "请选择开门时间范围");
+          return;
+        }
+        if (openDoorType === '' && openDoorMinCount === '' && openDoorMaxCount === '') {
           this.messageFun("warning", "请选择开门时间范围");
           return;
         }
@@ -480,15 +492,17 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
         });
-        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, daterange } = this.downLoadInfo;
+        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, daterange, openDoorDate } = this.downLoadInfo;
         let params = {
             cityIds: city.join(','),
             mediaTypeIds: mediaTypeIds.join(','),
             supportVoice,
             openDoorType: openDoorType === ''? null : openDoorType,
             openDoorMinCount: openDoorMinCount === ''? null : openDoorMinCount,
-            openDoorMaxCount: openDoorMaxCount === ''? null : openDoorMaxCount
-        }
+            openDoorMaxCount: openDoorMaxCount === '' ? null : openDoorMaxCount,
+            openDoorBeginDate: openDoorType === 4 ? openDoorDate[0] : null,
+            openDoorEndDate: openDoorType === 4 ? openDoorDate[1] : null
+          }
         // 自定义日期
         if(dateType === '2') {
             params.startTime = daterange[0]

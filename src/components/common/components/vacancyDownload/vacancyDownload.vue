@@ -412,10 +412,6 @@ export default {
           this.messageFun("warning", "请选择开门时间范围");
           return;
         }
-        if (openDoorType === '' && openDoorMinCount === '' && openDoorMaxCount === '') {
-          this.messageFun("warning", "请选择开门时间范围");
-          return;
-        }
         if (dateType == "2") {
           if (!daterange || !daterange.length) {
             this.messageFun("warning", "请先选择日期");

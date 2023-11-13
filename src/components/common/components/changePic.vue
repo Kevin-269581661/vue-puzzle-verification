@@ -75,6 +75,10 @@
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="图片数量:">
+                    <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" :min="0" v-model="publishSearchInfo.picNum">
+                    </el-input>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="searchImg()">搜 索</el-button>
                     <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -672,6 +676,8 @@
                     mTitles: ['全部'],
                     // 位置朝向
                     siteOrientation: '全部',
+                    // 图片数量
+                    picNum: '',
                 },
                 // 资源列表
                 allResource: [],
@@ -1138,6 +1144,7 @@
                 this.pageInfo.paginationShow = false;
                 this.pageInfo.loading = true;
                 let info = {};
+                console.log('type',this.type);
                 if (this.type == 1) {
                     info = this.searchFormat('SK');
                 } else if (this.type == 2) {
@@ -1180,7 +1187,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize2} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus, mTitles, assetTags, siteOrientation} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus, mTitles, assetTags, siteOrientation, picNum} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -1194,7 +1201,8 @@
                     prStatus: prStatus=='全部'?'':prStatus,
                     mTitles: mTitles.includes('全部')?'':mTitles,
                     assetTags: assetTags.includes('全部')?'':assetTags,
-                    siteOrientation: siteOrientation=='全部'?'':siteOrientation,
+                    siteOrientation: siteOrientation == '全部' ? '' : siteOrientation,
+                    picNum      
                 };
 
                 if (allPic == '2') {
@@ -1254,6 +1262,10 @@
                     }
                 }
                 this.getImgArr();
+            },
+            // 图片数量输入校验
+            handlePicNumChange(val) {
+                this.publishSearchInfo.picNum = this.publishSearchInfo.picNum.replace(/\D/g, '')
             },
             // 上下刊报告列表
             getImgInfo(params) {

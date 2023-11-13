@@ -156,6 +156,10 @@
             </el-select>
         </el-form-item>
         -->
+        <el-form-item label="图片数量:">
+            <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" :min="0" v-model="publishSearchInfo.picNum">
+            </el-input>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="searchImg()">搜 索</el-button>
           <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -1009,6 +1013,8 @@ export default {
         mTitle: ['全部'],
         // 位置朝向
         siteOrientation: '全部',
+        // 图片数量
+        picNum: ''
       },
       // 资源列表
       allResource: [],
@@ -1355,6 +1361,10 @@ export default {
         }
       });
     },
+    // 图片数量输入校验
+    handlePicNumChange(val) {
+        this.publishSearchInfo.picNum = this.publishSearchInfo.picNum.replace(/\D/g, '')
+    },
     formatCitys(arr) {
       arr = arr.map((item) => {
         return {
@@ -1474,7 +1484,8 @@ export default {
         // prStatus,
         mTitle,
         assetTag,
-        siteOrientation
+        siteOrientation,
+        picNum
       } = this.publishSearchInfo;
       let info = {
         uid: uID,
@@ -1490,7 +1501,8 @@ export default {
         // prStatus: prStatus == "全部" ? "" : prStatus,
         mTitle: mTitle.includes('全部') ? "" : mTitle,
         assetTag: assetTag.includes('全部') ? "" : assetTag,
-        siteOrientation: siteOrientation=='全部' ? "" : siteOrientation,
+        siteOrientation: siteOrientation == '全部' ? "" : siteOrientation,
+        picNum
       };
 
       if (allPic == "2") {

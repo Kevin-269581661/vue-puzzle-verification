@@ -157,7 +157,7 @@
         </el-form-item>
         -->
         <el-form-item label="图片数量:">
-            <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" :min="0" v-model="publishSearchInfo.picNum">
+            <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" v-model="publishSearchInfo.picNum">
             </el-input>
         </el-form-item>
         <el-form-item>
@@ -1363,7 +1363,13 @@ export default {
     },
     // 图片数量输入校验
     handlePicNumChange(val) {
-        this.publishSearchInfo.picNum = this.publishSearchInfo.picNum.replace(/\D/g, '')
+      this.publishSearchInfo.picNum = this.publishSearchInfo.picNum.replace(/\D/g, '')
+      if (this.publishSearchInfo.picNum < 0) {
+        this.publishSearchInfo.picNum = 0
+      }
+      if (this.publishSearchInfo.picNum > 10000) {
+        this.publishSearchInfo.picNum = 10000
+      }
     },
     formatCitys(arr) {
       arr = arr.map((item) => {

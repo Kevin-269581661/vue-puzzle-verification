@@ -43,10 +43,40 @@ function deserialize(val) {
   }
   return data
 }
+/**
+ * 复制文本到剪切板
+ * @param {String} text
+ */
+async function setClipboardData(text) {
+  let val = String(text)
+  if (navigator.clipboard && navigator.permissions) {
+    return await navigator.clipboard.writeText(val)
+  } else {
+    // 兼容旧浏览器
+    const textArea = document.createElement('textArea')
+    textArea.value = val
+    textArea.style.width = 0
+    // 解决 Safari 浏览器中，点击复制按钮，整个页面会跳动一下
+    textArea.style.position = 'fixed'
+    textArea.style.left = 0
+    textArea.style.top = 0
+    textArea.style.transform = 'translate(-100%, -100%)'
+    textArea.setAttribute('readonly', 'readonly')
+    document.body.appendChild(textArea)
+    textArea.select()
+    let result = document.execCommand("copy")
+    document.body.removeChild(textArea)
+    if (!result) {
+      throw new Error('复制失败')
+    }
+  }
+}
 
 export {
   // 下载文件
   downLoadFile,
   // 安全解析 josn
   deserialize,
+  // 复制文本到剪切板
+  setClipboardData
 }

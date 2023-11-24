@@ -197,6 +197,13 @@ export default {
       }
     },
     /**
+     * 重置数据
+     */
+    handleReset() {
+      this.formData = initFormData()
+      this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+    },
+    /**
      * 打开弹框
      * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
      */
@@ -217,11 +224,11 @@ export default {
     },
     /**
      * 关闭弹框
+     * （可以处理一些收尾操作，如：清除定时器、事件监听等等）
      */
     close() {
       if (this.visible) {
-        this.formData = initFormData()
-        this.$refs['formRef'].clearValidate()
+        this.handleReset()
         this.$emit('close')
         this.visible = false
       }

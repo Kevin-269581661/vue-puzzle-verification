@@ -386,6 +386,9 @@
               </div>
             </div>
           </el-tab-pane>
+          <el-tab-pane label="CPM售后报告" name="second">
+            <CpmAfterSaleReport :apId="report.apID" />
+          </el-tab-pane>
         </el-tabs>
         <!--缩略图对话框-->
         <el-dialog :visible.sync="dialogVisible">
@@ -561,6 +564,7 @@ import sessFun from '../../commonFun/sessFun.js';
 
 
 import noSearchResult from "../common/components/noSearchResult.vue";
+import CpmAfterSaleReport from './components/cpmAfterSaleReport.vue'
 
 import {
   Dialog,
@@ -608,7 +612,8 @@ export default {
     elForm: Form,
     elFormItem: FormItem,
     elCarousel: Carousel,
-    elCarouselItem: CarouselItem
+    elCarouselItem: CarouselItem,
+    CpmAfterSaleReport
   },
   data () {
     return {
@@ -1189,7 +1194,7 @@ export default {
       };
       api.getApi(this.apiVar.Advertisement + "/GetReportBatch", info)
         .then(res => {
-          console.log(res.data);
+          console.log('获取原始数据 getData ===', res.data);
           if (res.data.SysCode == 200200) {
             let data = res.data;
 

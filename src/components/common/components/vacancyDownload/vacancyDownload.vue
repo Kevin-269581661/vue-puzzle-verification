@@ -398,7 +398,7 @@ export default {
             return;
         }
         
-        if (openDoorMinCount > openDoorMaxCount) {
+        if (Number(openDoorMinCount) > Number(openDoorMaxCount)) {
           this.messageFun("warning", "最小值不能大于最大值");
           return;
         }

@@ -71,6 +71,23 @@ async function setClipboardData(text) {
     }
   }
 }
+/**
+ * 获取 url 上的参数，转换成对象
+ */
+function getUrlParams(url) {
+  let paramsObj = {}
+  if (!url || typeof url !== 'string') return paramsObj
+  const urlParamArr = url.split('?')
+  if (urlParamArr.length <= 1) return paramsObj
+  urlParamArr
+    .pop()
+    .split('&')
+    .forEach((item) => {
+      const [key, value] = item.split('=')
+      paramsObj[key] = value
+    })
+  return paramsObj
+}
 
 export {
   // 下载文件
@@ -78,5 +95,7 @@ export {
   // 安全解析 josn
   deserialize,
   // 复制文本到剪切板
-  setClipboardData
+  setClipboardData,
+  // 获取 url 上的参数，转换成对象
+  getUrlParams
 }

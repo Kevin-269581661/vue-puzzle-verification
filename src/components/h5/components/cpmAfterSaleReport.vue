@@ -70,7 +70,6 @@ export default {
      * 点击分享配置
      */
      handleShareBtnclick() {
-      console.log('点击分享配置 ===')
       this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(this.apId) // 新增
     }
   }

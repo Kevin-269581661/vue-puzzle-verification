@@ -17,11 +17,11 @@
           <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px" size="small" class="form">
 
             <el-form-item label="用户名：" prop="name">
-              <el-input v-model="formData.name" placeholder="请输入用户名" clearable></el-input>
+              <el-input v-model.trim="formData.name" placeholder="请输入用户名" clearable :maxlength="30"></el-input>
             </el-form-item>
 
             <el-form-item label="手机号：" prop="phone">
-              <el-input v-model="formData.phone" placeholder="请输入手机号" clearable></el-input>
+              <el-input v-model="formData.phone" placeholder="请输入手机号" clearable :maxlength="11"></el-input>
             </el-form-item>
 
           </el-form>
@@ -68,7 +68,21 @@ export default {
       formData: initFormData(),
       formRules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+        phone: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error('请输入手机号'))
+              } else if (!/^1\d{10}$/.test(value)) {
+                callback(new Error('请输入正确的手机号'))
+              } {
+                callback()
+              }
+            }
+          }
+        ]
       },
     }
   },

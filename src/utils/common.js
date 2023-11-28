@@ -1,7 +1,7 @@
 /**
  * 导出文件
  * @param {*} data 二进制流
- * @param {*} fileName
+ * @param {*} fileName 可带或不带后缀
  * @param {*} etc 文件后缀，带不带点都可
  */
 function downLoadFile (data, fileName, etc = 'xlsx') {
@@ -22,7 +22,10 @@ function downLoadFile (data, fileName, etc = 'xlsx') {
   let href = window.URL.createObjectURL(blob)
   link.style.display = 'none'
   link.href = href
-  link.setAttribute('download', fileName + '.' + suffix)
+  if (fileName.indexOf('.') === -1) {
+    fileName += '.' + suffix
+  }
+  link.setAttribute('download', fileName)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

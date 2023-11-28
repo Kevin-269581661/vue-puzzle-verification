@@ -8,16 +8,6 @@
   组件说明：
     1、该组件一般用于下载文件，导出文件
   组件属性：
-    downloadFileName: [String] 必传 - 下载的文件名
-    requestApi: [Function] 必传 - 请求的api
-    requestUrl: [String] 必传 - 请求的api
-    requestParams: [Object] 非必传 - 请求参数
-    handleResponse: [Function] 非必传 - 请求之后对返回值进行处理
-    text: [String] 非必传，默认“导出” - 按钮文案
-    type: [String] 非必传，默认“plain” - 按钮类型
-    isJoinTimeToFileName: [Boolean] 非必传，默认 true - 是否在文件名后拼接时间
-    downloadFileSuffix: [String] 非必传，默认 xlsx - 下载的文件后缀（可不带点）
-    confirmContent: [String] 非必传，默认“确认将当前条件下的数据导出吗？” - 确认框提示
   组件事件：
   组件插槽：
   组件用法：
@@ -31,20 +21,18 @@ export default {
   name: 'downloadFileButton',
   emits: ['submitSuccess', 'close'],
   props: {
-    // 下载的文件名
-    downloadFileName: {
-      type: String,
-      required: true
-    },
-    // 请求的api
-    requestApi: {
-      type: Function,
-      required: true
-    },
     // 请求路径
     requestUrl: {
       type: String,
       required: true
+    },
+    // 下载的文件名-默认取后端返回的文件名
+    downloadFileName: {
+      type: String,
+    },
+    // 请求的api-默认post
+    requestApi: {
+      type: Function,
     },
     // 请求参数
     requestParams: {
@@ -102,14 +90,39 @@ export default {
       }
       try {
         this.downloadLoading = true
-        const res = await this.requestApi(this.requestUrl, this.requestParams)
+        // 处理请求方法
+        let requestFunction = null
+        if (this.requestApi) {
+          requestFunction = this.requestApi
+        } else {
+          requestFunction = (url, params) => {
+            return this.$api.postDownloadFileApi(url, params)
+          }
+        }
+        // 发起请求
+        const res = await requestFunction(this.requestUrl, this.requestParams)
         let data = null
+        // 处理响应结果
         if (this.handleResponse && typeof this.handleResponse === 'function') {
           data = this.handleResponse(res)
         } else {
           data = res.data
         }
-        let fileName = this.downloadFileName
+        // console.log('处理响应结果 res ===>', res)
+        // 处理文件名
+        let fileName = ''
+        if (this.downloadFileName) {
+          fileName = this.downloadFileName
+        } else {
+          // console.log('fileName ======', window.decodeURI(res.headers['content-disposition'].split('=')[1]), "UTF-8")
+          fileName = window.decodeURI(res.headers['content-disposition'].split('=')[1], "UTF-8");
+          // if (fileName.lastIndexOf('.') > -1) {
+          //   fileName.slice(fileName.lastIndexOf('.') + 1)
+          // }
+          if (fileName.lastIndexOf(';') > -1) {
+            fileName.slice(fileName.lastIndexOf(';') + 1)
+          }
+        }
         if (this.isJoinTimeToFileName) {
           fileName += '-' + this.$moment().format('YYYY-MM-DD HH:mm:ss')
         }

@@ -113,7 +113,7 @@
                     class="form"
                   >
                     <el-form-item label="分享名称" prop="name">
-                      <el-input v-model="shareLinkTabData.formData.name" placeholder="请输入" clearable class="form_item_width"></el-input>
+                      <el-input v-model.trim="shareLinkTabData.formData.name" placeholder="请输入" :maxlength="30" clearable class="form_item_width"></el-input>
                     </el-form-item>
 
                     <el-form-item label="访问方式" prop="loginType">

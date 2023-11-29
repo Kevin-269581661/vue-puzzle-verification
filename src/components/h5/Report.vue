@@ -386,8 +386,8 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="CPM售后报告" name="second">
-            <CpmAfterSaleReport :apId="report.apID" />
+          <el-tab-pane v-if="report.saleMode === 1" label="CPM售后报告" name="cpmReport">
+            <CpmAfterSaleReport v-if="planPanel === 'cpmReport'" :apId="report.apID" />
           </el-tab-pane>
         </el-tabs>
         <!--缩略图对话框-->
@@ -1151,6 +1151,7 @@ export default {
         let data = res.data.data;
         // 换画抬头信息
         this.report = this.getFangInfo(data.adPlanInfo);
+        // console.log('report getPainData =====', this.report)
         // 投放详情
         let result = this.getResInfo(data.resInfo);
         this.putDetail = result;
@@ -1201,6 +1202,7 @@ export default {
             // 上下刊抬头信息
             // this.report = this.getFangInfo(data.adPlanInfo);
             this.report = data.adPlanInfo;
+            // console.log('report getData =====', this.report)
             // 投放详情
             let result = data.resInfo;
             this.putDetail = result;

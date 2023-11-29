@@ -5,6 +5,7 @@
       <el-date-picker
         v-model="scheduleDate"
         :picker-options="scheduleDatePickerOptions"
+        :clearable="false"
         type="daterange"
         format="yyyy-MM-dd"
         value-format="yyyy-MM-dd"
@@ -12,6 +13,7 @@
         end-placeholder="结束日期"
         placeholder="选择日期"
         size="small"
+        @change="handleScheduleDateChange"
       >
       </el-date-picker>
 
@@ -162,15 +164,15 @@ export default {
       scheduleDate: [],
       scheduleDatePickerOptions: {
         disabledDate: (t) =>  {
-          const { beginDate, endDate } = this.orderDate
+          const { beginDate, endDate } = this.dateRange
           if (beginDate && endDate) {
-            return dayjs(t).isBefore(dayjs(beginDate), 'day') || dayjs(t).isAfter(dayjs(endDate), 'day') || dayjs(t).isAfter(dayjs(), 'day')
+            return dayjs(t).isBefore(dayjs(beginDate), 'day') || dayjs(t).isAfter(dayjs(endDate), 'day')
           }
           return true
         }
       },
-      // 订单的原始时间
-      orderDate: {
+      // 时间可选范围
+      dateRange: {
         beginDate: '',
         endDate: '',
       },
@@ -215,6 +217,22 @@ export default {
   },
   methods: {
     /**
+     * 改变日期
+     */
+    handleScheduleDateChange(val) {
+      console.log('改变日期 val===', val)
+      if (!val) return this.$message.warning('请选择日期')
+      this.refreshData()
+    },
+    /**
+     * 刷新数据
+     */
+    refreshData() {
+      this.handleReset()
+      this.getRIdsOptions()
+      this.getDaysOpenDoor()
+    },
+    /**
      * 获取订单每天开门次数数据
      */
      async getDaysOpenDoor() {
@@ -234,8 +252,8 @@ export default {
           xData.push(item.dateId)
           yData.push(item.count)
         })
-        this.reportChartData.xData = xData
-        this.reportChartData.yData = yData
+        this.reportChartData = { xData, yData }
+        this.setChartRender()
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getDaysOpenDoor error:', err)
@@ -274,19 +292,15 @@ export default {
         const res = await this.$api.getApi('/addsp/api/v1/share/admin/adPlan/getAdPlanDate', { apId: this.apId })
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return this.$message.error(message || '获取订单日期数据失败')
-        console.log('getAdPlanDate ====', data)
         let { beginDate, endDate } = data
-        // 缓存订单原始时间
-        this.orderDate = { beginDate, endDate }
         // 处理默认时间：如果结束时间大于今天，取今天日期
         if (dayjs().isBefore(dayjs(endDate), 'day')) {
           endDate = dayjs().format('YYYY-MM-DD')
         }
+        this.dateRange = { beginDate, endDate }
         // 展示默认时间
         this.scheduleDate = [beginDate, endDate]
-        this.handleSearch()
-        this.getRIdsOptions()
-        this.getDaysOpenDoor()
+        this.refreshData()
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getAdPlanDate error:', err)
@@ -409,26 +423,34 @@ export default {
      * 点击分享配置
      */
      handleShareBtnclick() {
-      this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(this.apId) // 新增
+      this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(this.apId)
     },
     /**
      * 初始化
      */
     initChart() {
-      this.reportChart = echarts.init(document.getElementById('reportChart'))
-      this.reportChart.setOption(getReportChartOptions(this.reportChartData.xData, this.reportChartData.yData))
+      setTimeout(() => {
+        this.reportChart = echarts.init(document.getElementById('reportChart'))
+        this.setChartRender()
+      }, 500)
+    },
+    /**
+     * 设置图表数据
+     */
+    setChartRender() {
+      this.reportChart && this.reportChart.setOption(getReportChartOptions(this.reportChartData))
     },
     /**
      * 屏幕宽度变化
      */
     handleResize: debounce(function () {
-      console.log('加了防抖')
       this.reportChart.resize()
     }, 300)
   },
   mounted() {
     this.initChart()
     window.addEventListener('resize', this.handleResize, false)
+    if (this.apId) this.getAdPlanDate()
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize, false)
@@ -447,8 +469,10 @@ export default {
 
   .chart_map_wrapper {
     height: 450px;
+    width: 100%;
     .report_chart {
-      height: 100%;
+      height: 450px;
+      width: 100%;
     }
   }
 

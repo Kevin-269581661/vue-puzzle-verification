@@ -385,6 +385,9 @@
               </div>
             </div>
           </el-tab-pane>
+          <el-tab-pane v-if="report.saleMode === 1" label="CPM售后报告" name="cpmReport">
+            <CpmAfterSaleReport v-if="planPanel === 'cpmReport'" :apId="report.apID" />
+          </el-tab-pane>
         </el-tabs>
         <!--缩略图对话框-->
         <el-dialog :visible.sync="dialogVisible">
@@ -558,6 +561,7 @@ import dateFormat from "../../commonFun/timeFormat.js";
 import sessFun from "../../commonFun/sessFun.js";
 
 import noSearchResult from "../common/components/noSearchResult.vue";
+import CpmAfterSaleReport from './components/cpmAfterSaleReport.vue'
 
 import {
   Dialog,
@@ -606,6 +610,7 @@ export default {
     elFormItem: FormItem,
     elCarousel: Carousel,
     elCarouselItem: CarouselItem,
+    CpmAfterSaleReport
   },
   data() {
     return {

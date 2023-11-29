@@ -4320,6 +4320,7 @@ export default {
       this.getAdsParamsData.pageSize = this.pageSize;
       this.getAdsParamsData.uid = this.BDData.uid;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+      this.getAdsParamsData.saleMode = this.planForm.saleMode
       this.getAdsParamsData.mType = this.mediaMType || "";
       this.getAdsParamsData.site = this.site || "";
       this.getAdsParamsData.siteOrientation = this.siteOrientation || "";

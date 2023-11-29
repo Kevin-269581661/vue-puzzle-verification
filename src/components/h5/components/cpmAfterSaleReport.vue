@@ -103,7 +103,7 @@
         <el-table-column prop="tradingArea" label="商圈" min-width="120" />
         <el-table-column prop="chDay" label="入住时间" min-width="120" />
         <el-table-column prop="price" label="楼盘价格" min-width="120" />
-        <el-table-column prop="householdsCount" label="媒体数量" min-width="120" />
+        <el-table-column prop="adSpaceCount" label="媒体数量" min-width="120" />
         <el-table-column prop="openDoorCount" label="开门次数" min-width="120" fixed="right">
         </el-table-column>
       </el-table>

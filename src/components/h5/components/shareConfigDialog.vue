@@ -213,7 +213,7 @@ const initFormData = () => {
     name: '',
     // 手机号登录
     mobileLogin: false,
-    // 验证码登录
+    // 验证码登录（密码）
     verificationCodeLogin: false,
     // 订单ID
     apId: null,
@@ -312,8 +312,8 @@ export default {
         // 预加载数据
         preparedData: {
           loginTypeOptions: [
-            { label: '验证码访问（统一验证码访问）' , value: 1 },
-            { label: '手机号访问（用户需要通过手机号和密码访问）' , value: 2 },
+            { label: '密码访问（统一密码访问）' , value: 1 },
+            { label: '手机号访问（用户需要通过手机号和验证码访问）' , value: 2 },
           ],
           typeOptions: [
             { label: '永久' , value: 3 },
@@ -367,8 +367,17 @@ export default {
      */
     async handleCopyLink() {
       try {
+        let text = ''
+        const { loginType } = this.shareLinkTabData.formData
         const { shareLink, verificationCode } = this.shareLinkTabData.formData
-        let text = `链接：${shareLink}\n验证码：${verificationCode}`
+        // 密码访问
+        if (loginType === 1) {
+          text = `链接：${shareLink}\n密码：${verificationCode}`
+        }
+        // 手机号访问
+        else if (loginType === 2) {
+          text = `链接：${shareLink}`
+        }
         await setClipboardData(text)
         this.$message.success('已复制到剪切板')
       } catch (err) {

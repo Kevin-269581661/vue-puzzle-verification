@@ -275,7 +275,7 @@ export default {
       try {
         // this.loading = true
         const [beginDate, endDate] = this.scheduleDate
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/adPlan/getCityList', {
+        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/getCityList', {
           apId: this.apId,
           beginDate,
           endDate

@@ -1,124 +1,132 @@
 <template>
   <div v-loading="loading" class="cpm_after_sale_report">
-    <!-- CPM 售后报告组件 -->
-    <div class="header_bar">
-      <el-date-picker
-        v-model="scheduleDate"
-        :picker-options="scheduleDatePickerOptions"
-        :clearable="false"
-        type="daterange"
-        format="yyyy-MM-dd"
-        value-format="yyyy-MM-dd"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        placeholder="选择日期"
-        size="small"
-        @change="handleScheduleDateChange"
-      >
-      </el-date-picker>
+    <template v-if="visible">
+      <!-- CPM 售后报告组件 -->
+      <div class="header_bar">
+        <el-date-picker
+          v-model="scheduleDate"
+          :picker-options="scheduleDatePickerOptions"
+          :clearable="false"
+          type="daterange"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          placeholder="选择日期"
+          size="small"
+          @change="handleScheduleDateChange"
+        >
+        </el-date-picker>
 
-      <el-button type="plain" size="small" style="width: 100px" @click="handleShareBtnclick">
-        <!-- <img src="@/assets/images/icons/share_icon.png" /> -->
-        <i class="el-icon-share"></i>
-        分享设置
-      </el-button>
-    </div>
+        <el-button type="plain" size="small" style="width: 100px" @click="handleShareBtnclick">
+          <!-- <img src="@/assets/images/icons/share_icon.png" /> -->
+          <i class="el-icon-share"></i>
+          分享设置
+        </el-button>
+      </div>
 
-    <!-- 折线图 -->
-    <div v-loading="chartLoading" class="chart_map_wrapper">
-      <div id="reportChart" class="report_chart"></div>
-    </div>
+      <!-- 折线图 -->
+      <div v-loading="chartLoading" class="chart_map_wrapper">
+        <div id="reportChart" class="report_chart"></div>
+      </div>
 
-    <div class="search_bar">
-      <!-- <el-row style="flex-wrap: wrap" :gutter="16" align="middle">
-        <el-col class="gutter_row" :xs="24" :md="12" :lg="8" :xl="6">
+      <div class="search_bar">
+        <!-- <el-row style="flex-wrap: wrap" :gutter="16" align="middle">
+          <el-col class="gutter_row" :xs="24" :md="12" :lg="8" :xl="6">
+            <div class="search_item">
+              <div class="search_item_title">资源名称</div>
+              <el-input v-model="searchData.resName" placeholder="请输入" clearable size="small"></el-input>
+            </div>
+          </el-col>
+          <el-col class="gutter_row" :xs="24" :md="12" :lg="8" :xl="6">
+            <div class="search_item">
+              <div class="search_item_title">城市</div>
+              <el-input v-model="searchData.resName" placeholder="请输入" clearable size="small"></el-input>
+            </div>
+          </el-col>
+        </el-row> -->
+        <div class="search_content">
           <div class="search_item">
             <div class="search_item_title">资源名称</div>
-            <el-input v-model="searchData.resName" placeholder="请输入" clearable size="small"></el-input>
+            <el-input v-model="searchData.resName" placeholder="请输入资源名称" clearable size="small" class="item_content"></el-input>
           </div>
-        </el-col>
-        <el-col class="gutter_row" :xs="24" :md="12" :lg="8" :xl="6">
           <div class="search_item">
             <div class="search_item_title">城市</div>
-            <el-input v-model="searchData.resName" placeholder="请输入" clearable size="small"></el-input>
+            <el-select
+              v-model="searchData.rIds"
+              multiple
+              collapse-tags
+              placeholder="请选择要筛选的城市"
+              clearable
+              size="small"
+              class="item_content"
+            >
+              <el-option v-for="(item, index) in preparedData.rIdsOptions" :key="index" :label="item.name" :value="item.rid" />
+            </el-select>
           </div>
-        </el-col>
-      </el-row> -->
-      <div class="search_content">
-        <div class="search_item">
-          <div class="search_item_title">资源名称</div>
-          <el-input v-model="searchData.resName" placeholder="请输入资源名称" clearable size="small" class="item_content"></el-input>
         </div>
-        <div class="search_item">
-          <div class="search_item_title">城市</div>
-          <el-select
-            v-model="searchData.rIds"
-            multiple
-            collapse-tags
-            placeholder="请选择要筛选的城市"
-            clearable
-            size="small"
-            class="item_content"
-          >
-            <el-option v-for="(item, index) in preparedData.rIdsOptions" :key="index" :label="item.name" :value="item.rid" />
-          </el-select>
+
+        <div class="search_control">
+          <el-button-group>
+            <el-button type="plain" size="small" @click="handleReset">重置</el-button>
+            <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
+          </el-button-group>
+          <!-- 导出 -->
+          <DownloadFileButton
+            requestUrl="/addsp/api/v1/share/admin/adPlan/exportResInfo"
+            :requestParams="searchCondition"
+            :isJoinTimeToFileName="false"
+            class="download_button"
+          />
         </div>
+
       </div>
 
-      <div class="search_control">
-        <el-button-group>
-          <el-button type="plain" size="small" @click="handleReset">重置</el-button>
-          <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
-        </el-button-group>
-        <!-- 导出 -->
-        <DownloadFileButton
-          requestUrl="/addsp/api/v1/share/admin/adPlan/exportResInfo"
-          :requestParams="searchCondition"
-          :isJoinTimeToFileName="false"
-          class="download_button"
-        />
-      </div>
-
-    </div>
-
-    <div class="table_wrapper">
-      <el-table
-        v-loading="tableLoading"
-        :data="tableList"
-        :load="tableLoad"
-        :tree-props="{ children:'children', hasChildren: 'hasChildren' }"
-        row-key="resId"
-        style="width: 100%"
-        height="100%"
-        lazy
-        border
-      >
-        <el-table-column prop="resName" label="资源名称" min-width="250" />
-        <el-table-column prop="city" label="城市" min-width="120" />
-        <el-table-column prop="areaName" label="区域" min-width="120" />
-        <el-table-column prop="address" label="地址" min-width="100" />
-        <el-table-column prop="buildingType" label="楼盘类型" min-width="120" />
-        <el-table-column prop="tradingArea" label="商圈" min-width="120" />
-        <el-table-column prop="chDay" label="入住时间" min-width="120" />
-        <el-table-column prop="price" label="楼盘价格" min-width="120" />
-        <el-table-column prop="adSpaceCount" label="媒体数量" min-width="120" />
-        <el-table-column prop="openDoorCount" label="开门次数" min-width="120" fixed="right">
-        </el-table-column>
-      </el-table>
-      <div class="pagination_box">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :page-sizes="pagination.sizes"
-          :current-page.sync="pagination.page"
-          :page-size="pagination.pageSize"
-          :total="pagination.total"
-          @current-change="pageChange"
-          @size-change="pageSizeChange"
+      <div class="table_wrapper">
+        <el-table
+          v-loading="tableLoading"
+          :data="tableList"
+          :load="tableLoad"
+          :tree-props="{ children:'children', hasChildren: 'hasChildren' }"
+          row-key="resId"
+          style="width: 100%"
+          height="100%"
+          lazy
+          border
         >
-        </el-pagination>
+          <el-table-column prop="resName" label="资源名称" min-width="250" />
+          <el-table-column prop="city" label="城市" min-width="120" />
+          <el-table-column prop="areaName" label="区域" min-width="120" />
+          <el-table-column prop="address" label="地址" min-width="100" />
+          <el-table-column prop="buildingType" label="楼盘类型" min-width="120" />
+          <el-table-column prop="tradingArea" label="商圈" min-width="120" />
+          <el-table-column prop="chDay" label="入住时间" min-width="120" />
+          <el-table-column prop="price" label="楼盘价格" min-width="120" />
+          <el-table-column prop="adSpaceCount" label="媒体数量" min-width="120" />
+          <el-table-column prop="openDoorCount" label="开门次数" min-width="120" fixed="right">
+          </el-table-column>
+        </el-table>
+        <div class="pagination_box">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="pagination.sizes"
+            :current-page.sync="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @current-change="pageChange"
+            @size-change="pageSizeChange"
+          >
+          </el-pagination>
+        </div>
       </div>
+    </template>
+
+    <div v-else class="empty_box">
+      <img src="@/assets/images/nofound.png" alt="" class="empty_img">
+      <div class="empty_text">订单未开始投放，暂无数据</div>
     </div>
+
 
     <!-- 分享设置弹窗 -->
     <ShareConfigDialog ref="shareConfigDialogRef" />
@@ -159,6 +167,7 @@ export default {
   },
   data() {
     return {
+      visible: false,
       scheduleDate: [],
       scheduleDatePickerOptions: {
         disabledDate: (t) =>  {
@@ -291,6 +300,12 @@ export default {
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return this.$message.error(message || '获取订单日期数据失败')
         let { beginDate, endDate } = data
+        // 如果是未开始投放的订单，不展示数据
+        if (dayjs().isBefore(dayjs(beginDate), 'day')) {
+          this.visible = false
+          return
+        }
+        this.visible = true
         // 处理默认时间：如果结束时间大于今天，取今天日期
         if (dayjs().isBefore(dayjs(endDate), 'day')) {
           endDate = dayjs().format('YYYY-MM-DD')
@@ -298,6 +313,7 @@ export default {
         this.dateRange = { beginDate, endDate }
         // 展示默认时间
         this.scheduleDate = [beginDate, endDate]
+        this.initChart()
         this.refreshData()
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
@@ -442,11 +458,11 @@ export default {
      * 屏幕宽度变化
      */
     handleResize: debounce(function () {
-      this.reportChart.resize()
+      this.reportChart && this.reportChart.resize()
     }, 300)
   },
   mounted() {
-    this.initChart()
+    // this.initChart()
     window.addEventListener('resize', this.handleResize, false)
     if (this.apId) this.getAdPlanDate()
   },
@@ -526,6 +542,20 @@ export default {
     }
   }
 
-
+  .empty_box {
+    padding: 120px 0 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .empty_img {
+      width: 120px;
+      margin-bottom: 15px;
+    }
+    .empty_text {
+      color: #999;
+      text-align: center;
+    }
+  }
 }
 </style>

@@ -156,11 +156,61 @@
 
                     <el-form-item label="分享链接" prop="shareLink">
                       <el-switch v-model="shareLinkTabData.formData.status" active-text="开" inactive-text="关" class="switch_box"></el-switch>
-                      <el-input v-model="shareLinkTabData.formData.shareLink" placeholder="保存后生成链接" clearable readonly class="form_item_width">
+
+                      <!-- 手机号访问样式 -->
+                      <el-input
+                        v-if="shareLinkTabData.formData.loginType === 2"
+                        v-model="shareLinkTabData.formData.shareLink"
+                        :disabled="!shareLinkTabData.formData.status"
+                        placeholder="保存后生成链接"
+                        clearable
+                        readonly
+                        class="form_item_width"
+                      >
                         <div slot="append">
-                          <el-button  type="primary" :disabled="!shareLinkTabData.formData.shareLink" size="small" @click="handleCopyLink">复制</el-button>
+                          <el-button
+                            type="primary"
+                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
+                            size="small"
+                            @click="handleCopyLink">
+                            复制链接
+                          </el-button>
                         </div>
                       </el-input>
+                      <!-- 密码访问样式 -->
+                      <template v-else-if="shareLinkTabData.formData.loginType === 1">
+                        <el-input
+                          v-model="shareLinkTabData.formData.shareLink"
+                          :disabled="!shareLinkTabData.formData.status"
+                          placeholder="保存后生成链接"
+                          clearable
+                          readonly
+                          class="form_item_width"
+                        >
+                        </el-input>
+                        <div class="code_row form_item_width">
+                          <span>密码：</span>
+                          <el-input
+                            v-model="shareLinkTabData.formData.verificationCode"
+                            :disabled="!shareLinkTabData.formData.status"
+                            placeholder="密码"
+                            clearable
+                            readonly
+                            style="width: 120px;"
+                          >
+                          </el-input>
+                          <el-button
+                            type="primary"
+                            size="small"
+                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
+                            @click="handleCopyLink"
+                          >
+                            复制链接和密码
+                          </el-button>
+                        </div>
+                      </template>
+                      <!-- 阻止复制遮罩 -->
+                      <div v-if="!shareLinkTabData.formData.status" class="disable_text_select_mask"></div>
                     </el-form-item>
 
 
@@ -230,7 +280,7 @@ const initFormData = () => {
     loginType: 1,
     // 分享链接
     shareLink: '',
-    // 链接的验证码
+    // 链接的验证码（密码）
     verificationCode: ''
   }
 }
@@ -696,6 +746,29 @@ export default {
     top: -25px;
     z-index: 10;
   }
+  .code_row {
+    display: flex;
+    margin-top: 14px;
+    justify-content: space-between;
+  }
+  .disable_text_select_mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  /deep/ .el-button {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  /deep/ .el-button.is-disabled {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+    background-color: #FAFAFA;
+    border-color: rgba(0,0,0,0.15);
+  }
   /deep/ .el-form-item__label {
     padding: 0;
     color: rgba(0, 0, 0, 0.85);
@@ -741,6 +814,9 @@ export default {
     border-bottom: 0;
     border-left: 0;
     border-right: 0;
+  }
+  /deep/ .el-input__inner[disabled] {
+    user-select: none;
   }
 }
 

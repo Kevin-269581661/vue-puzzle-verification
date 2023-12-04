@@ -13,27 +13,31 @@
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
-          <el-tabs v-model="currentTabName" tab-position="left" class="tab_box">
+          <el-tabs v-model="currentTabName" tab-position="left" class="tab_box" >
 
-            <el-tab-pane :label="tabList[0].label" :name="tabList[0].name">
+            <el-tab-pane v-if="isPublishedLink" :label="tabList[0].label" :name="tabList[0].name">
               <div class="tab_content">
                 <div class="tab_content_top">
                   <div class="title_box">分享列表</div>
-                  <el-button type="primary" size="small">新增</el-button>
+                  <el-button type="primary" size="small" @click="createShareUser">新增</el-button>
                 </div>
                 <div class="table_wrap_box">
-                  <el-table :data="shareListTabData.tableList" height="100%" style="width: 100%" border size="medium">
+                  <el-table :data="shareListTabData.tableList" :loading="shareListTabData.loading" height="100%" style="width: 100%" border size="medium">
                     <el-table-column prop="name" label="用户名" width="190"></el-table-column>
                     <el-table-column prop="phone" label="手机号" width="190"></el-table-column>
-                    <el-table-column label="操作" width="190">
+                    <el-table-column label="操作" >
                       <template slot-scope="scope">
                         <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button type="text" size="small" @click="handleDisabled(scope.row)">禁用</el-button>
+                        <el-button type="text" size="small" @click="toggleDisable(scope.row)">
+                          <!-- enable: 1 启用，0 禁用 -->
+                          {{ scope.row.enable ? '禁用' : '启用' }}
+                        </el-button>
                       </template>
                     </el-table-column>
                   </el-table>
                 </div>
-                <div class="pagination_box">
+                <!-- 暂不做分页 -->
+                <!-- <div class="pagination_box">
                   <el-pagination
                     background
                     layout="prev, pager, next"
@@ -43,28 +47,42 @@
                     @current-change="(v) => pageChange(v, 'shareListTabData')"
                   >
                   </el-pagination>
-                </div>
+                </div> -->
               </div>
             </el-tab-pane>
 
-            <el-tab-pane :label="tabList[1].label" :name="tabList[1].name">
+            <el-tab-pane v-if="isPublishedLink" :label="tabList[1].label" :name="tabList[1].name">
               <div class="tab_content">
                 <div class="tab_content_top">
                   <div class="title_box">申请列表</div>
                 </div>
                 <div class="table_wrap_box">
                   <el-table :data="applyListTabData.tableList" height="100%" style="width: 100%" border size="medium">
-                    <el-table-column prop="name" label="用户名" width="190"></el-table-column>
-                    <el-table-column prop="phone" label="手机号" width="190"></el-table-column>
-                    <el-table-column label="操作" width="190">
+                    <el-table-column prop="name" label="用户名" width="140"></el-table-column>
+                    <el-table-column prop="phone" label="手机号" width="140"></el-table-column>
+                    <el-table-column prop="status" label="状态" width="140">
                       <template slot-scope="scope">
-                        <el-button type="text" size="small" @click="handlePass(scope.row)">通过</el-button>
-                        <el-button type="text" size="small" @click="handleRefuse(scope.row)">拒绝</el-button>
+                        <!-- status: 0 未审，1 通过，-1 拒绝 -->
+                        <div class="cell_box">
+                          <el-tag v-if="scope.row.status === 0" type="warning" size="medium" >待处理</el-tag>
+                          <el-tag v-else-if="scope.row.status === 1" type="success" size="medium" >已通过</el-tag>
+                          <el-tag v-else-if="scope.row.status === -1" type="danger" size="medium" >已拒绝</el-tag>
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="操作" >
+                      <template slot-scope="scope">
+                        <!-- status: 0 未审，1 通过，-1 拒绝 -->
+                        <template v-if="scope.row.status === 0">
+                          <el-button type="text" size="small" @click="handleAuth(scope.row, 1)">通过</el-button>
+                          <el-button type="text" size="small" @click="handleAuth(scope.row, -1)">拒绝</el-button>
+                        </template>
+                        <span v-else>--</span>
                       </template>
                     </el-table-column>
                   </el-table>
                 </div>
-                <div class="pagination_box">
+                <!-- <div class="pagination_box">
                   <el-pagination
                     background
                     layout="prev, pager, next"
@@ -74,7 +92,7 @@
                     @current-change="(v) => pageChange(v, 'applyListTabData')"
                   >
                   </el-pagination>
-                </div>
+                </div> -->
               </div>
             </el-tab-pane>
 
@@ -95,7 +113,7 @@
                     class="form"
                   >
                     <el-form-item label="分享名称" prop="name">
-                      <el-input v-model="shareLinkTabData.formData.name" placeholder="请输入" clearable class="form_item_width"></el-input>
+                      <el-input v-model.trim="shareLinkTabData.formData.name" placeholder="请输入" :maxlength="30" clearable class="form_item_width"></el-input>
                     </el-form-item>
 
                     <el-form-item label="访问方式" prop="loginType">
@@ -138,11 +156,61 @@
 
                     <el-form-item label="分享链接" prop="shareLink">
                       <el-switch v-model="shareLinkTabData.formData.status" active-text="开" inactive-text="关" class="switch_box"></el-switch>
-                      <el-input v-model="shareLinkTabData.formData.shareLink" placeholder="保存后生成链接" clearable readonly class="form_item_width">
+
+                      <!-- 手机号访问样式 -->
+                      <el-input
+                        v-if="shareLinkTabData.formData.loginType === 2"
+                        v-model="shareLinkTabData.formData.shareLink"
+                        :disabled="!shareLinkTabData.formData.status"
+                        placeholder="保存后生成链接"
+                        clearable
+                        readonly
+                        class="form_item_width"
+                      >
                         <div slot="append">
-                          <el-button  type="primary" :disabled="!shareLinkTabData.formData.shareLink" size="small" @click="handleCopyLink">复制</el-button>
+                          <el-button
+                            type="primary"
+                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
+                            size="small"
+                            @click="handleCopyLink">
+                            复制链接
+                          </el-button>
                         </div>
                       </el-input>
+                      <!-- 密码访问样式 -->
+                      <template v-else-if="shareLinkTabData.formData.loginType === 1">
+                        <el-input
+                          v-model="shareLinkTabData.formData.shareLink"
+                          :disabled="!shareLinkTabData.formData.status"
+                          placeholder="保存后生成链接"
+                          clearable
+                          readonly
+                          class="form_item_width"
+                        >
+                        </el-input>
+                        <div class="code_row form_item_width">
+                          <span>密码：</span>
+                          <el-input
+                            v-model="shareLinkTabData.formData.verificationCode"
+                            :disabled="!shareLinkTabData.formData.status"
+                            placeholder="密码"
+                            clearable
+                            readonly
+                            style="width: 120px;"
+                          >
+                          </el-input>
+                          <el-button
+                            type="primary"
+                            size="small"
+                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
+                            @click="handleCopyLink"
+                          >
+                            复制链接和密码
+                          </el-button>
+                        </div>
+                      </template>
+                      <!-- 阻止复制遮罩 -->
+                      <div v-if="!shareLinkTabData.formData.status" class="disable_text_select_mask"></div>
                     </el-form-item>
 
 
@@ -151,7 +219,8 @@
               </div>
             </el-tab-pane>
 
-            <el-tab-pane :label="tabList[3].label" :name="tabList[3].name">
+            <!-- 暂不做 -->
+            <!-- <el-tab-pane :label="tabList[3].label" :name="tabList[3].name">
               <div class="tab_content">
                 <div class="tab_content_top">
                   <div class="title_box">数据修改</div>
@@ -163,7 +232,7 @@
                   </div>
                 </div>
               </div>
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
         </div>
         <div class="custom_dialog_footer">
@@ -172,14 +241,18 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 新建分享列表用户-组件 -->
+    <CreateShareUserDialog ref="createShareUserDialogRef" @submitSuccess="getShareTableList" />
   </div>
 </template>
 
 <script>
 // import { cloneDeep } from "lodash";
 import sessFun from "@/commonFun/sessFun.js";
+import CreateShareUserDialog from './createShareUserDialog.vue'
 import dayjs from "dayjs";
-import { setClipboardData } from '@/utils/common'
+import { setClipboardData, getUrlParams } from '@/utils/common'
 
 /**
  * 初始化表单（提交）数据
@@ -190,7 +263,7 @@ const initFormData = () => {
     name: '',
     // 手机号登录
     mobileLogin: false,
-    // 验证码登录
+    // 验证码登录（密码）
     verificationCodeLogin: false,
     // 订单ID
     apId: null,
@@ -207,7 +280,7 @@ const initFormData = () => {
     loginType: 1,
     // 分享链接
     shareLink: '',
-    // 链接的验证码
+    // 链接的验证码（密码）
     verificationCode: ''
   }
 }
@@ -218,11 +291,12 @@ const initTabList = () => ([
   { label: '分享列表', name: 'shareList' },
   { label: '申请列表', name: 'applyList' },
   { label: '分享链接', name: 'shareLink' },
-  { label: '数据修改', name: 'dataUpdate' },
+  // { label: '数据修改', name: 'dataUpdate' },
 ])
 
 export default {
   name: 'shareConfigDialog',
+  components: { CreateShareUserDialog },
   emits: ['submitSuccess', 'close'],
   props: {},
   data() {
@@ -230,17 +304,12 @@ export default {
       visible: false,
       dialogLoading: false,
       isEdit: false,
-      currentTabName: initTabList()[0].name,
+      currentTabName: initTabList()[2].name,
       tabList: initTabList(),
       // 分享列表tab数据
       shareListTabData: {
-        tableList: [
-          { name: '示例一', phone: '111111' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-        ],
+        loading: false,
+        tableList: [],
         pagination: {
           // 当前页码
           page: 1,
@@ -254,13 +323,8 @@ export default {
       },
       // 申请列表tab数据
       applyListTabData: {
-        tableList: [
-          { name: '示例一', phone: '111111' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-          { name: '示例二', phone: '2222222' },
-        ],
+        loading: false,
+        tableList: [],
         pagination: {
           // 当前页码
           page: 1,
@@ -298,8 +362,8 @@ export default {
         // 预加载数据
         preparedData: {
           loginTypeOptions: [
-            { label: '验证码访问（统一验证码访问）' , value: 1 },
-            { label: '手机号访问（用户需要通过手机号和密码访问）' , value: 2 },
+            { label: '密码访问（统一密码访问）' , value: 1 },
+            { label: '手机号访问（用户需要通过手机号和验证码访问）' , value: 2 },
           ],
           typeOptions: [
             { label: '永久' , value: 3 },
@@ -317,14 +381,53 @@ export default {
       }
     }
   },
+  computed: {
+    isPublishedLink() {
+      return !!this.shareLinkTabData.formData.shareLink
+    }
+  },
+  watch: {
+    isPublishedLink(newVal) {
+      if (newVal) {
+        this.currentTabName = initTabList()[0].name
+      } else {
+        this.currentTabName = initTabList()[2].name
+      }
+    },
+    currentTabName(newVal) {
+      switch (newVal) {
+        case this.tabList[0].name:
+          this.getShareTableList()
+        break
+        case this.tabList[1].name:
+          this.getApplyTableList()
+        break
+        case this.tabList[2].name:
+          this.getShareConfig()
+        break
+        // case this.tabList[3].name:
+
+        // break
+      }
+    }
+  },
   methods: {
     /**
      * 复制链接
      */
     async handleCopyLink() {
       try {
+        let text = ''
+        const { loginType } = this.shareLinkTabData.formData
         const { shareLink, verificationCode } = this.shareLinkTabData.formData
-        let text = `链接：${shareLink}\n验证码：${verificationCode}`
+        // 密码访问
+        if (loginType === 1) {
+          text = `链接：${shareLink}\n密码：${verificationCode}`
+        }
+        // 手机号访问
+        else if (loginType === 2) {
+          text = `链接：${shareLink}`
+        }
         await setClipboardData(text)
         this.$message.success('已复制到剪切板')
       } catch (err) {
@@ -339,7 +442,7 @@ export default {
       this.shareLinkTabData.formData.customDate = []
     },
      /**
-     * 提交表单
+     * 提交分享链接表单
      */
      async saveShareConfig() {
       if (this.shareLinkTabData.loading) return
@@ -382,10 +485,10 @@ export default {
      */
     async getShareConfig() {
       try {
-        const { token, uID: uid } = sessFun.getSess()
         const apId = this.shareLinkTabData.formData.apId
+        if (!apId) return
         this.shareLinkTabData.loading = true
-        const res = await this.$api.getApi('/addsp/api/v1/share/admin/getShareConfig', { apId, token, uid })
+        const res = await this.$api.getApi('/addsp/api/v1/share/admin/getShareConfig', { apId })
         const { SysCode: code, MSG: message, data = {} } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         let loginType = null
@@ -415,60 +518,134 @@ export default {
       }
     },
     /**
-     * 通过
+     * 审核用户
      */
-    handlePass() {
-
-    },
-    /**
-     * 拒绝
-     */
-    handleRefuse() {
-
+    async handleAuth(row, status) {
+      await this.$confirm(`确定要${ status === 1 ? '通过': '拒绝'}【${row.name}】吗？`, "温馨提示", { type: "warning" })
+      try {
+        this.applyListTabData.loading = true
+        let requestUrl = ''
+        if (status === 1) {
+          requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/pass`
+        } else {
+          requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/reject`
+        }
+        const res = await this.$api.postApi_json(requestUrl)
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return this.$message.error(message || '操作失败')
+        this.$message.success('操作成功')
+        this.getApplyTableList()
+      } catch (err) {
+        this.$message.error(String(err) || '操作失败')
+        console.error('handleAuth error:', err)
+      } finally {
+        this.applyListTabData.loading = false
+      }
     },
     /**
      * 分页-页数改变
      */
-     pageChange (page, type) {
-      // this.pagination.page = page
-      // this.getTableList();
+    //  pageChange (page, type) {},
+    /**
+     * 新建分享用户
+     */
+    createShareUser() {
+      const { apId, shareLink } = this.shareLinkTabData.formData
+      // 必须先保存并生成了链接才能创建分享用户
+      let code = ''
+      if (shareLink) {
+        code = getUrlParams(shareLink).code
+      }
+      if (!code) {
+        this.$message.warning('请先发布链接再创建分享用户')
+        return
+      }
+      this.$refs.createShareUserDialogRef && this.$refs.createShareUserDialogRef.open({ apId, code })
     },
     /**
-     * 禁用
+     * 获取分享用户列表
      */
-    handleDisabled(row) {
-      console.log('handleDisabled row ====', row)
+    async getShareTableList() {
+      try {
+        const apId = this.shareLinkTabData.formData.apId
+        this.shareListTabData.loading = true
+        const res = await this.$api.getApi('/addsp/api/v1/share/admin/user/listNormalUser', { apId })
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return this.$message.error(message || '获取分享用户列表数据失败')
+        this.shareListTabData.tableList = data
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getShareTableList error:', err)
+      } finally {
+        this.shareListTabData.loading = false
+      }
+    },
+    /**
+     * 获取未审核用户列表(包含拒绝用户)
+     */
+    async getApplyTableList() {
+      try {
+        const apId = this.shareLinkTabData.formData.apId
+        this.applyListTabData.loading = true
+        const res = await this.$api.getApi('/addsp/api/v1/share/admin/user/listNotAuditUser', { apId })
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return this.$message.error(message || '获取未审核用户列表数据失败')
+        this.applyListTabData.tableList = data
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getApplyTableList error:', err)
+      } finally {
+        this.applyListTabData.loading = false
+      }
+    },
+    /**
+     * 是否设置禁用
+     */
+    async toggleDisable(row) {
+      await this.$confirm(`确定要${ row.enable ? '禁用': '启用'}【${row.name}】吗？`, "温馨提示", { type: "warning" })
+      try {
+        this.shareListTabData.loading = true
+        let requestUrl = ''
+        if (row.enable) {
+          requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/disable`
+        } else {
+          requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/enable`
+        }
+        const res = await this.$api.postApi_json(requestUrl)
+        const { SysCode: code, MSG: message, data = [] } = res.data
+        if (code !== 200200) return this.$message.error(message || '操作失败')
+        this.$message.success('操作成功')
+        this.getShareTableList()
+      } catch (err) {
+        this.$message.error(String(err) || '操作失败')
+        console.error('toggleDisable error:', err)
+      } finally {
+        this.shareListTabData.loading = false
+      }
     },
     /**
      * 编辑
      */
     handleEdit(row) {
       console.log('handleEdit row ====', row)
-    },
-    /**
-     * 获取预加载数据
-     */
-     async getPropTwoOptions() {
-      try {
-        this.dialogLoading = true
-        const res = await this.$api.getApi('/aaaa/bbbb')
-        const { SysCode: code, MSG: message, data = [] } = res.data
-        if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.preparedData.propTwoOptions = data
-      } catch (err) {
-        this.$message.error(String(err) || '获取数据失败')
-        console.error('getDetail error:', err)
-      } finally {
-        this.dialogLoading = false
-      }
+      const { apId, shareLink } = this.shareLinkTabData.formData
+      // 必须先保存并生成了链接才能创建分享用户
+      let code = getUrlParams(shareLink).code
+      this.$refs.createShareUserDialogRef && this.$refs.createShareUserDialogRef.open({ apId, code, ...row })
     },
     /**
      * 重置数据
      */
     handleReset() {
-      this.shareLinkTabData.formData = initFormData()
+      this.dialogLoading = false
+      this.currentTabName = initTabList()[2].name
+      this.shareListTabData.loading = false
+      this.shareListTabData.tableList = []
+      this.applyListTabData.loading = false
+      this.applyListTabData.tableList = []
       this.shareLinkTabData.loading = false
-      this.$refs['formRef'].clearValidate()
+      this.shareLinkTabData.formData = initFormData()
+      this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
     },
     /**
      * 打开弹框
@@ -476,28 +653,16 @@ export default {
      */
     open(apId) {
       if (!apId) return
+      this.handleReset()
       this.shareLinkTabData.formData.apId = apId
       this.getShareConfig()
-      // if (row) {
-      //   this.isEdit = true
-      //   this.formData = {
-      //     ...this.formData,
-      //     ...row
-      //   }
-      //   // 根据 id 获取详情，二选一
-      //   // this.getDetail(row.id)
-      // } else {
-      //   this.isEdit = false
-      // }
       this.visible = true
-      // this.getPropTwoOptions()
     },
     /**
      * 关闭弹框
      */
     close() {
       if (this.visible) {
-        this.handleReset()
         this.$emit('close')
         this.visible = false
       }
@@ -558,6 +723,17 @@ export default {
   margin-top: 13px;
   flex: 1;
   overflow: hidden;
+  .cell_box {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  /deep/ .el-table__body-wrapper {
+    min-height: auto;
+  }
+  /deep/ .el-table__empty-block {
+    // height: 100px !important;
+  }
 }
 
 .form_wrap_box {
@@ -569,6 +745,29 @@ export default {
     left: 220px;
     top: -25px;
     z-index: 10;
+  }
+  .code_row {
+    display: flex;
+    margin-top: 14px;
+    justify-content: space-between;
+  }
+  .disable_text_select_mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+  /deep/ .el-button {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  /deep/ .el-button.is-disabled {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+    background-color: #FAFAFA;
+    border-color: rgba(0,0,0,0.15);
   }
   /deep/ .el-form-item__label {
     padding: 0;
@@ -615,6 +814,9 @@ export default {
     border-bottom: 0;
     border-left: 0;
     border-right: 0;
+  }
+  /deep/ .el-input__inner[disabled] {
+    user-select: none;
   }
 }
 

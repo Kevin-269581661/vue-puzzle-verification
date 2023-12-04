@@ -149,6 +149,17 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
+              <el-form-item label="售卖模式：" prop="saleMode" required>
+                <el-radio-group v-model="planForm.saleMode" >
+                  <el-radio
+                    v-for="item in saleModeOptions"
+                    :key="item.value"
+                    :label="item.value"
+                  >{{ item.label }}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item
                 v-if="isPay && BDData.uType === 'ADN_BD'"
                 label="关联商机："
@@ -1136,7 +1147,13 @@ export default {
         customerMediaType: undefined, // 关联商机
         customerBudget: "",
         customerDemand: "",
+        // 售卖模式：
+        saleMode: 0,
       },
+      saleModeOptions: [
+        { label: '传统售卖模式', value: 0 },
+        { label: 'CPM售卖模式', value: 1 },
+      ],
       pointOfAsrIDs: [],
       // 本地客户商机列表
       opportunityList: [],
@@ -1501,6 +1518,7 @@ export default {
       this.importDraftsConfig.adcID = this.planForm.adcID; // 客户联系人
       this.importDraftsConfig.apName = this.planForm.planName; // 意向方案名称
       this.importDraftsConfig.rIDs = this.planForm.throwCity; // 选择的城市
+      this.importDraftsConfig.saleMode = this.planForm.saleMode; // 售卖模式
       this.getAdsParamsData = {
         prID: this.city[0].rid,
         riD: this.city[0].rid,
@@ -3356,7 +3374,7 @@ export default {
       };
       if(this.isPay && this.BDData.uType === 'ADN_BD') {
         if(this.planForm.opportunityId) {
-          const tempOpportunity = this.opportunityList.find(opportunity => 
+          const tempOpportunity = this.opportunityList.find(opportunity =>
             opportunity.opportunityId === this.planForm.opportunityId
           );
           params.opportunityId = this.planForm.opportunityId;

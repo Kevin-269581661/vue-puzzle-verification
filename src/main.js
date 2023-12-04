@@ -116,6 +116,11 @@ axios.interceptors.request.use(
 // 拦截响应
 axios.interceptors.response.use(
 	response => {
+    // console.log('拦截响应 ===', response)
+    // 如果是导出 文件 放行
+    if (response.request.responseType === 'blob') {
+      return response
+    }
 		let res = response.data;
 		if(res.SysCode == 100302){
 			sessionStorage.clear();

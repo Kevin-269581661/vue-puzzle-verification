@@ -18,7 +18,7 @@
         >
         </el-date-picker>
 
-        <el-button type="plain" size="small" style="width: 100px" @click="handleShareBtnclick">
+        <el-button v-if="permissions.share" type="plain" size="small" style="width: 100px" @click="handleShareBtnclick">
           <!-- <img src="@/assets/images/icons/share_icon.png" /> -->
           <i class="el-icon-share"></i>
           分享设置
@@ -167,6 +167,9 @@ export default {
   },
   data() {
     return {
+      permissions: {
+        share: false
+      },
       visible: false,
       scheduleDate: [],
       scheduleDatePickerOptions: {
@@ -459,10 +462,18 @@ export default {
      */
     handleResize: debounce(function () {
       this.reportChart && this.reportChart.resize()
-    }, 300)
+    }, 300),
+    /**
+     * 权限初始化
+     */
+    initPermission() {
+      const sessionData = sessFun.getSess()
+      // 地方媒介、全国媒介才有权限设置分享
+      this.permissions.share = ["ADN_MD", "ADN_MD_COUNTRY"].includes(sessionData.uType)
+    }
   },
   mounted() {
-    // this.initChart()
+    this.initPermission()
     window.addEventListener('resize', this.handleResize, false)
     if (this.apId) this.getAdPlanDate()
   },

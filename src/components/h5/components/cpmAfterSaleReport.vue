@@ -458,6 +458,7 @@ export default {
      */
     async getTableList() {
       try {
+        this.tableList = []
         this.tableLoading = true
         const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/pageResInfo', this.searchCondition)
         const { SysCode: code, MSG: message, data } = res.data || {}

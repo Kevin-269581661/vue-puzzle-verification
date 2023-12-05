@@ -259,7 +259,7 @@
               <template v-if="item.label === '媒体类型'">
                 <el-table-column :prop="item.prop" :label="item.label" min-width="250px" show-overflow-tooltip
                   column-key="mediaTypeNames"
-                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM') && item.isChecked"
+                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM' || role == 'ADN_BD_KA') && item.isChecked"
                   :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList">
                   <template slot-scope="scope">
                     <div class="media-box">

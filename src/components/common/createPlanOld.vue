@@ -149,6 +149,17 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
+              <el-form-item label="售卖模式：" prop="saleMode" required>
+                <el-radio-group v-model="planForm.saleMode" >
+                  <el-radio
+                    v-for="item in saleModeOptions"
+                    :key="item.value"
+                    :label="item.value"
+                  >{{ item.label }}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item
                 v-if="isPay && BDData.uType === 'ADN_BD'"
                 label="关联商机："
@@ -2496,7 +2507,13 @@ export default {
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
         opportunityId: undefined, // 关联商机
         customerMediaType: undefined, // 关联商机
+        // 售卖模式：
+        saleMode: 0,
       },
+      saleModeOptions: [
+        { label: '传统售卖模式', value: 0 },
+        { label: 'CPM售卖模式', value: 1 },
+      ],
       pointOfAsrIDs: [],
       // 本地客户商机列表
       opportunityList: [],
@@ -4303,6 +4320,7 @@ export default {
       this.getAdsParamsData.pageSize = this.pageSize;
       this.getAdsParamsData.uid = this.BDData.uid;
       this.getAdsParamsData.asrIDs = this.planForm.pointOfAsrIDs.join(",");
+      this.getAdsParamsData.saleMode = this.planForm.saleMode
       this.getAdsParamsData.mType = this.mediaMType || "";
       this.getAdsParamsData.site = this.site || "";
       this.getAdsParamsData.siteOrientation = this.siteOrientation || "";
@@ -5021,20 +5039,20 @@ export default {
         if (this.openDoorTypeValue === 4) {
           this.openDoorDate = []
           this.openDoorTypeValue = null
-          this.getAdsParamsData.openDoorType = null  
+          this.getAdsParamsData.openDoorType = null
           this.getAdsParamsData.openDoorBeginDate = null
           this.getAdsParamsData.openDoorEndDate = null
           this.filterCondition.forEach((item, i) => {
             if (item.condition === 'openDoorDate') {
-              this.filterCondition.splice(i, 1)  
-            }   
+              this.filterCondition.splice(i, 1)
+            }
           })
         }
         this.openDoorTypeValue = null
         this.getAdsParamsData.openDoorType = null
       } else if (tab.condition === 'openDoorCount') {
         //开门次数
-        this.openDoorCount = 0 
+        this.openDoorCount = 0
         this.getAdsParamsData.openDoorCount = 0
       }else if (tab.condition === 'openDoorDate') {
         //开门次数日期范围
@@ -5045,11 +5063,11 @@ export default {
         this.getAdsParamsData.openDoorType = null
         this.filterCondition.forEach((item, i) => {
           if (item.condition === 'openDoorType') {
-            this.filterCondition.splice(i, 1)  
-          }   
+            this.filterCondition.splice(i, 1)
+          }
         })
       } else if (tab.condition === 'supportVoice') {
-        //语音支持 
+        //语音支持
         this.supportVoice = null
         this.getAdsParamsData.supportVoice = null
       }
@@ -5302,7 +5320,7 @@ export default {
           this.getAdsParamsData.openDoorBeginDate  = this.openDoorDate[0] || ''
           this.getAdsParamsData.openDoorEndDate  = this.openDoorDate[1] || ''
           this.setPageNoAndTableData();
-          this.getAdList();     
+          this.getAdList();
         }
       } else {
           this.isHaveThisTag("openDoorType", '开门次数类型：'+this.openDoorType[this.openDoorTypeValue].label);
@@ -5312,7 +5330,7 @@ export default {
           for (let i in this.filterCondition) {
             if (this.filterCondition[i].condition === 'openDoorDate') {
               this.filterCondition.splice(i, 1)
-              break; 
+              break;
             }
           }
         this.getAdsParamsData.openDoorType = this.openDoorTypeValue
@@ -5320,44 +5338,44 @@ export default {
         this.getAdsParamsData.openDoorBeginDate  = ''
         this.getAdsParamsData.openDoorEndDate  = ''
         this.setPageNoAndTableData();
-        this.getAdList();   
+        this.getAdList();
       }
     },
 
     //开门时间范围更改（自定义选项下）
     tableHeaderFilterByOpenDoorDate() {
       if (this.openDoorTypeValue === 4) {
-        this.isHaveThisTag("openDoorDate", '自定义次数时间范围：' + this.openDoorDate[0] + '~' + this.openDoorDate[1]);  
+        this.isHaveThisTag("openDoorDate", '自定义次数时间范围：' + this.openDoorDate[0] + '~' + this.openDoorDate[1]);
         this.getAdsParamsData.openDoorBeginDate  = ''
         this.getAdsParamsData.openDoorEndDate  = ''
         this.setPageNoAndTableData();
-        this.getAdList();        
+        this.getAdList();
       }
     },
     //开门次数更改
     tableHeaderFilterByOpenDoorCount() {
       this.openDoorCount = Math.floor(this.openDoorCount)
       if (this.openDoorCount < 0) {
-        this.openDoorCount = 0  
+        this.openDoorCount = 0
       } else if (this.openDoorCount == 0) {
         this.filterCondition.forEach((item, i) => {
           if (item.condition === 'openDoorCount') {
             this.filterCondition.splice(i,1)
           }
-        })  
+        })
       } else {
-        this.isHaveThisTag("openDoorCount", '开门次数：大于'+this.openDoorCount +'次'); 
+        this.isHaveThisTag("openDoorCount", '开门次数：大于'+this.openDoorCount +'次');
         this.getAdsParamsData.openDoorCount = this.openDoorCount
         this.setPageNoAndTableData();
-        this.getAdList(); 
+        this.getAdList();
       }
     },
     // 语音支持
     tableHeaderFilterSupportVoice() {
       if (this.supportVoice) {
-        this.isHaveThisTag("supportVoice", '支持语音');  
+        this.isHaveThisTag("supportVoice", '支持语音');
       } else {
-        this.isHaveThisTag("supportVoice", '不支持语音');    
+        this.isHaveThisTag("supportVoice", '不支持语音');
       }
       this.getAdsParamsData.supportVoice = this.supportVoice;
       this.setPageNoAndTableData();
@@ -6546,6 +6564,7 @@ export default {
         bid: this.planForm.companyBrand,
         suid: this.BDData.uid,
         detail: JSON.stringify(mediaTypeList),
+        saleMode: this.planForm.saleMode,
       };
       if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         delete params.suid;

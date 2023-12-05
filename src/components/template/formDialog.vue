@@ -67,7 +67,6 @@ vue2 通用弹窗组件模板
 
  */
 
-import { Message } from "element-ui";
 // import { cloneDeep } from "lodash";
 import sessFun from "@/commonFun/sessFun.js";
 
@@ -144,18 +143,18 @@ export default {
       try {
         const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const res = await this.$api.postApi_json('/addsp/patrolPoint/web/getList', {
+        const res = await this.$api.postApi_json('/addsp/api/xxxxx', {
           ...this.formData,
           uid,
           token,
         })
         const { SysCode: code, MSG: message, data } = res.data
-        if (code !== 200200) return Message.error(message || '操作失败')
-        Message.success('操作成功')
+        if (code !== 200200) return this.$message.error(message || '操作失败')
+        this.$message.success('操作成功')
         this.$emit('submitSuccess')
         this.close()
       } catch (err) {
-        Message.error(String(err) || '操作失败')
+        this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
       } finally {
         this.dialogLoading = false
@@ -170,10 +169,10 @@ export default {
         this.dialogLoading = true
         const res = await this.$api.getApi('/aaaa/bbbb', { id })
         const { SysCode: code, MSG: message, data = [] } = res.data
-        if (code !== 200200) return Message.error(message || '获取数据失败')
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.formData = data
       } catch (err) {
-        Message.error(String(err) || '获取数据失败')
+        this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
       } finally {
         this.dialogLoading = false
@@ -187,14 +186,21 @@ export default {
         this.dialogLoading = true
         const res = await this.$api.getApi('/aaaa/bbbb')
         const { SysCode: code, MSG: message, data = [] } = res.data
-        if (code !== 200200) return Message.error(message || '获取数据失败')
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.preparedData.propTwoOptions = data
       } catch (err) {
-        Message.error(String(err) || '获取数据失败')
+        this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
       } finally {
         this.dialogLoading = false
       }
+    },
+    /**
+     * 重置数据
+     */
+    handleReset() {
+      this.formData = initFormData()
+      this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
     },
     /**
      * 打开弹框
@@ -217,11 +223,11 @@ export default {
     },
     /**
      * 关闭弹框
+     * （可以处理一些收尾操作，如：清除定时器、事件监听等等）
      */
     close() {
       if (this.visible) {
-        this.formData = initFormData()
-        this.$refs['formRef'].clearValidate()
+        this.handleReset()
         this.$emit('close')
         this.visible = false
       }
@@ -236,7 +242,7 @@ export default {
   padding: 0;
 }
 
-.dialog_container {
+.dialog_content {
   .custom_dialog_footer{
     padding: 10px 20px 20px;
   }

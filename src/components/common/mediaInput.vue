@@ -558,7 +558,7 @@
                         <el-form-item label="设备ID" prop="mac">
                           <el-input
                             v-model="mediaItem.mediaForm.mac"
-                            placeholder="例:消防门"
+                            placeholder="请输入 mac 码"
                           ></el-input>
                         </el-form-item>
                       </el-col>

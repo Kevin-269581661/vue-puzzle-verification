@@ -386,6 +386,9 @@
               </div>
             </div>
           </el-tab-pane>
+          <el-tab-pane v-if="report.saleMode === 1" label="CPM售后报告" name="cpmReport">
+            <CpmAfterSaleReport v-if="planPanel === 'cpmReport'" :apId="report.apID" />
+          </el-tab-pane>
         </el-tabs>
         <!--缩略图对话框-->
         <el-dialog :visible.sync="dialogVisible">
@@ -561,6 +564,7 @@ import sessFun from '../../commonFun/sessFun.js';
 
 
 import noSearchResult from "../common/components/noSearchResult.vue";
+import CpmAfterSaleReport from './components/cpmAfterSaleReport.vue'
 
 import {
   Dialog,
@@ -608,7 +612,8 @@ export default {
     elForm: Form,
     elFormItem: FormItem,
     elCarousel: Carousel,
-    elCarouselItem: CarouselItem
+    elCarouselItem: CarouselItem,
+    CpmAfterSaleReport
   },
   data () {
     return {
@@ -1146,6 +1151,7 @@ export default {
         let data = res.data.data;
         // 换画抬头信息
         this.report = this.getFangInfo(data.adPlanInfo);
+        // console.log('report getPainData =====', this.report)
         // 投放详情
         let result = this.getResInfo(data.resInfo);
         this.putDetail = result;
@@ -1189,13 +1195,14 @@ export default {
       };
       api.getApi(this.apiVar.Advertisement + "/GetReportBatch", info)
         .then(res => {
-          console.log(res.data);
+          console.log('获取原始数据 getData ===', res.data);
           if (res.data.SysCode == 200200) {
             let data = res.data;
 
             // 上下刊抬头信息
             // this.report = this.getFangInfo(data.adPlanInfo);
             this.report = data.adPlanInfo;
+            // console.log('report getData =====', this.report)
             // 投放详情
             let result = data.resInfo;
             this.putDetail = result;

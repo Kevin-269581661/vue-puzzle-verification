@@ -95,6 +95,25 @@ export const api = {
         }).then(res => res).catch(err => {
             console.log('getPartorl---error',err);
         })
+    },
+    /**
+     * post 下载文件请求方法
+     * @param {*} url
+     * @param {*} data
+     * @param {*} headers
+     * @returns
+     */
+    postDownloadFileApi(url, data = {}, headers = {}) {
+      return axios({
+        method: 'post',
+        url,
+        data,
+        headers:{
+          'Content-Type': 'application/json',
+          ...headers
+        },
+        responseType: 'blob'
+      })
     }
 }
 export default api

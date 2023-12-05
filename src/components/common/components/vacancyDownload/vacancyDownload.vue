@@ -397,7 +397,7 @@ export default {
           this.messageFun("warning", "请选择自定义时间范围");
             return;
         }
-        
+
         if (Number(openDoorMinCount) > Number(openDoorMaxCount)) {
           this.messageFun("warning", "最小值不能大于最大值");
           return;
@@ -410,8 +410,8 @@ export default {
           this.messageFun("warning", "请填写最大值");
           return;
         }
-        
-        
+
+
         if (openDoorType === '' && openDoorMinCount !== '' && openDoorMaxCount !== '') {
           this.messageFun("warning", "请选择开门时间范围");
           return;

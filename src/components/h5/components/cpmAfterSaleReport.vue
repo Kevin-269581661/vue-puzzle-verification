@@ -387,7 +387,7 @@ export default {
           return {
             ...item,
             resId: row.resId + "" + index,
-            resName: item.name + '（媒体位ID:' + item.mediaId + '）'
+            resName: item.name + '（媒体位ID:' + item.assetTag + '）'
           }
         })
         resolve(list)

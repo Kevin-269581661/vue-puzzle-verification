@@ -463,8 +463,11 @@ export default {
         if (type === 2) {
           params.beginDate = customDate[0]
           params.endDate = customDate[1]
+        } else {
+          params.beginDate = ''
+          params.endDate = ''
         }
-        console.log('提交表单 params =====', params)
+        // console.log('提交表单 params =====', params)
         this.shareLinkTabData.loading = true
         const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/config/save', params)
         const { SysCode: code, MSG: message, data } = res.data

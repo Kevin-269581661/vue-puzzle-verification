@@ -82,6 +82,12 @@
 
       </div>
 
+      <Alter class="alter_bar">
+        <span class="alter_content">
+          {{ scheduleDateDisplay }}，投放的小区数量有 <span class="text_blue">{{ statisticsData.resCount }}</span> 个，覆盖户数 <span class="text_blue">{{ statisticsData.householdsCount }}</span> 户
+        </span>
+      </Alter>
+
       <div class="table_wrapper">
         <el-table
           v-loading="tableLoading"
@@ -135,13 +141,14 @@
 
 <script>
 
-import dayjs from "dayjs";
+import dayjs from "dayjs"
 // import * as echarts from 'echarts'
 import { debounce } from 'lodash'
-import { getReportChartOptions } from "../report.data";
-import sessFun from "@/commonFun/sessFun.js";
+import { getReportChartOptions } from "../report.data"
+import sessFun from "@/commonFun/sessFun.js"
 import ShareConfigDialog from "./shareConfigDialog.vue"
-import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
+import DownloadFileButton from "@/components/common/components/downloadFileButton.vue"
+import Alter from "@/components/common/components/Alter/index.vue"
 
 /**
  * 初始化搜索数据
@@ -157,7 +164,7 @@ const initSearchData = () => {
 
 export default {
   name: 'cpmAfterSaleReport',
-  components: { ShareConfigDialog, DownloadFileButton },
+  components: { ShareConfigDialog, DownloadFileButton, Alter },
   // emits: ['submitSuccess', 'close'],
   props: {
     // 订单ID
@@ -167,10 +174,12 @@ export default {
   },
   data() {
     return {
+      // 权限
       permissions: {
         share: false
       },
       visible: false,
+      // 订单排期时间
       scheduleDate: [],
       scheduleDatePickerOptions: {
         disabledDate: (t) =>  {
@@ -189,6 +198,7 @@ export default {
       loading: false,
       chartLoading: false,
       reportChart: null,
+      // 折线图数据
       reportChartData: {
         xData: [],
         yData: []
@@ -215,10 +225,21 @@ export default {
       preparedData: {
         rIdsOptions: []
       },
+      // 统计数据
+      statisticsData: {
+        // 小区数量
+        resCount: 0,
+        // 覆盖住户数量
+        householdsCount: 0
+      }
     }
   },
   computed: {
-
+    scheduleDateDisplay() {
+      if (!this.scheduleDate) return ''
+      const [beginDate, endDate] = this.scheduleDate
+      return dayjs(beginDate).format('YYYY年MM月DD日') + ' - ' + dayjs(endDate).format('YYYY年MM月DD日')
+    }
   },
   watch: {
     apId(newVal) {
@@ -241,6 +262,7 @@ export default {
       this.handleReset()
       this.getRIdsOptions()
       this.getDaysOpenDoor()
+      this.getStatisticsData()
     },
     /**
      * 获取订单每天开门次数数据
@@ -269,6 +291,26 @@ export default {
         console.error('getDaysOpenDoor error:', err)
       } finally {
         this.chartLoading = false
+      }
+    },
+    /**
+     * 获取获取订单统计数据
+     */
+     async getStatisticsData() {
+      try {
+        const [beginDate, endDate] = this.scheduleDate
+        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/playInfo', {
+          apId: this.apId,
+          beginDate,
+          endDate
+        })
+        const { SysCode: code, MSG: message, data = {} } = res.data
+        if (code !== 200200) return this.$message.error(message || '获取订单统计数据失败')
+        const { resCount, householdsCount } = data
+        this.statisticsData = { resCount, householdsCount }
+      } catch (err) {
+        this.$message.error(String(err) || '获取订单统计数据失败')
+        console.error('getStatisticsData error:', err)
       }
     },
     /**
@@ -495,6 +537,7 @@ export default {
   .chart_map_wrapper {
     height: 450px;
     width: 100%;
+    margin-bottom: 14px;
     .report_chart {
       height: 450px;
       width: 100%;
@@ -502,7 +545,7 @@ export default {
   }
 
   .table_wrapper {
-    height: 640px;
+    height: 550px;
   }
 
   .pagination_box {
@@ -516,7 +559,7 @@ export default {
   .search_bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     .search_control {
       display: flex;
     }
@@ -567,6 +610,16 @@ export default {
       color: #999;
       text-align: center;
     }
+  }
+}
+
+.alter_bar {
+  margin-bottom: 14px;
+  /deep/ .car_title_wrapper {
+    padding: 0;
+  }
+  .text_blue {
+    color: #1890FF;
   }
 }
 </style>

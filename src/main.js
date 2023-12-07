@@ -91,7 +91,7 @@ router.beforeEach((to, from, next) => {
 	if (to.meta.title) {
 			document.title = to.meta.title
 	} else {
-			document.title = 'QADN'
+			document.title = '亲邻线下后台'
 	}
 	next();
 });

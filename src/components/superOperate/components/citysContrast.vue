@@ -459,7 +459,7 @@
                     console.log('请求数据了');
                     this.getMediaType();
                     this.getCityContrastData();
-                }            
+                }
             },
             activeName(newVal,oldVal){
                 this.activeName = newVal
@@ -564,7 +564,7 @@
                 this.selectCompareCityData = this.directNameList.concat()
                 this.beforeCityKey = this.directNameList.concat()
                 console.log('directNameList',this.directNameList)
-                
+
             },
             /*  城市数据展示  */
             getAllCityInfo(){
@@ -1368,14 +1368,14 @@
                         top: "0",
                         itemWidth: 8,
                         itemHeight: 8,
-                        itemGap: 24
+                        itemGap: 16
                     },
                     series: [
                         {
                             name: '社区',
                             type: "pie",
                             radius: ["25%", "35%"],
-                            center: ['20%', '25%'],
+                            center: ['20%', '35%'],
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
@@ -1387,7 +1387,7 @@
                             name: '媒体数',
                             type: "pie",
                             radius: ["25%", "35%"],
-                            center: ['50%', '25%'],
+                            center: ['50%', '35%'],
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
@@ -1399,7 +1399,7 @@
                             name: '点位',
                             type: "pie",
                             radius: ["25%", "35%"],
-                            center: ['80%', '25%'],
+                            center: ['80%', '35%'],
                             color: this.colorArr,
                             avoidLabelOverlap: false,
                             label: {
@@ -1606,17 +1606,17 @@
 
     .pie_wrap p:nth-of-type(1) {
         left: 20%;
-        top: 25%;
+        top: 35%;
     }
 
     .pie_wrap p:nth-of-type(2) {
         left: 50%;
-        top: 25%;
+        top: 35%;
     }
 
     .pie_wrap p:nth-of-type(3) {
         left: 80%;
-        top: 25%;
+        top: 35%;
     }
 
     .pie_wrap p:nth-of-type(4) {

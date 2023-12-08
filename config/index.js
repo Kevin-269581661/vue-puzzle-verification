@@ -34,7 +34,8 @@ module.exports = {
       //     }
       //   },
       '/devURL': {  //使用"/api"来代替
-        target: 'https://test-qadn.qinlindmp.com', //源地址
+        target: 'https://test-qadn.qinlindmp.com', // 测试地址
+        // target: 'https://www.qinlinad.com', // 正式地址
         changeOrigin: true, //改变源
         pathRewrite: {
           '^/devURL': '' //路径重写

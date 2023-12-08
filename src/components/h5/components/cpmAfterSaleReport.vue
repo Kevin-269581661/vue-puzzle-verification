@@ -612,6 +612,46 @@ export default {
       text-align: center;
     }
   }
+
+  /deep/ .echarts_tooltip_title{
+    width: 200px;
+    height: 36px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 10px;
+    align-items: center;
+    box-sizing: border-box;
+    margin-bottom: -20px;
+    color: #808080;
+    background-color:#F4F6F6;
+    font-size: 12px;
+  }
+
+  /deep/ .echarts_tooltip_content{
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 10px;
+    box-sizing: border-box;
+    align-items: center;
+    font-size: 12px;
+    color: #2C313C;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  /deep/ .echarts_tooltip_i{
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  /deep/ .had_not_data{
+    height: 240px;
+    text-align: center;
+    padding-top: 100px;
+  }
 }
 
 .alter_bar {

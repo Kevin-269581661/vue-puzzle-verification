@@ -89,7 +89,24 @@ function getReportChartOptions ({ xData = [], yData = [] }) {
         },
       }
     ],
-    tooltip: {},
+    tooltip: {
+        trigger: 'axis',
+        // 坐标轴指示器，坐标轴触发有效
+        axisPointer: {
+          // 默认为直线，可选为：'line' | 'shadow'
+          type: 'shadow'
+        },
+        backgroundColor: '#FFFFFF',
+        padding: 0,
+        borderColor: '#dddddd',
+        borderWidth: 1,
+        formatter: function (params) {
+            return '<p class="echarts_tooltip_title"><span>' + params[0].name + '</span></p>' + '<br/>' +
+                '<p class="echarts_tooltip_content">' +
+                '<span><i class="echarts_tooltip_i" style="background-color: #4AA6FC;"></i>' + params[0].seriesName + '</span>' + params[0].data + '</p>'
+
+        },
+    },
     dataZoom: [
       {
         // type: 'inside',

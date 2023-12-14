@@ -271,7 +271,7 @@ export default {
       try {
         this.chartLoading = true
         const [beginDate, endDate] = this.scheduleDate
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/daysOpenDoor', {
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/daysOpenDoor', {
           apId: this.apId,
           beginDate,
           endDate
@@ -299,7 +299,7 @@ export default {
      async getStatisticsData() {
       try {
         const [beginDate, endDate] = this.scheduleDate
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/playInfo', {
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/playInfo', {
           apId: this.apId,
           beginDate,
           endDate
@@ -320,7 +320,7 @@ export default {
       try {
         // this.loading = true
         const [beginDate, endDate] = this.scheduleDate
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/getCityList', {
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/getCityList', {
           apId: this.apId,
           beginDate,
           endDate
@@ -341,7 +341,7 @@ export default {
      async getAdPlanDate() {
       try {
         this.loading = true
-        const res = await this.$api.getApi('/addsp/api/v1/share/admin/adPlan/getAdPlanDate', { apId: this.apId })
+        const res = await this.$request.getApi('/addsp/api/v1/share/admin/adPlan/getAdPlanDate', { apId: this.apId })
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return this.$message.error(message || '获取订单日期数据失败')
         let { beginDate, endDate } = data
@@ -379,7 +379,7 @@ export default {
           resId: row.resId,
           apId: this.apId,
         }
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/resPlayMedia', params)
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/resPlayMedia', params)
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取列表子数据失败')
         let list = []
@@ -460,7 +460,7 @@ export default {
       try {
         this.tableList = []
         this.tableLoading = true
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/adPlan/pageResInfo', this.searchCondition)
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/pageResInfo', this.searchCondition)
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取列表数据失败')
         const { list = [], total } = data

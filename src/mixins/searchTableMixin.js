@@ -127,7 +127,7 @@ export default {
         if (requestFunction) {
           request = requestFunction
         } else {
-          request = this.$api.postApi_json
+          request = this.$request.postApi_json
         }
         this.tableList = []
         this.tableLoading = true

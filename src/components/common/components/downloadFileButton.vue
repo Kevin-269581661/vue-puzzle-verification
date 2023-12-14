@@ -96,7 +96,7 @@ export default {
           requestFunction = this.requestApi
         } else {
           requestFunction = (url, params) => {
-            return this.$api.postDownloadFileApi(url, params)
+            return this.$request.postDownloadFileApi(url, params)
           }
         }
         // 发起请求

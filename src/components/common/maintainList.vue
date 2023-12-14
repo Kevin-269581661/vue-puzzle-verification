@@ -97,7 +97,9 @@ import MaintainHistoryDialog from '@/components/common/components/maintainList/m
 import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
 import { deserialize } from '@/utils/common'
 
-// 初始化搜索绑定数据
+/**
+ * 初始化搜索绑定数据
+ */
 const initSearchData = () => ({
   resName: '',
   assetTag: '',
@@ -121,7 +123,9 @@ const initSearchData = () => ({
   // 问题反馈
   remark: '',
 })
-// 初始化搜索配置
+/**
+ * 初始化搜索配置
+ */
 const initSearchFileds = () => ({
   resName: {
     title: '资源名称',
@@ -256,7 +260,7 @@ export default {
     async getDistrictOptions () {
       try {
         const { token, uID: uid } = this.sessionData
-        const res = await this.$api.postApi_new(this.apiVar.Media, {
+        const res = await this.$request.postApi_new(this.apiVar.Media, {
           token, uid,
           service: 'GetCompanyCitiesAction'
         }) || {}
@@ -284,7 +288,7 @@ export default {
     async getUserOptions () {
       try {
         const { token, uID: uid } = this.sessionData
-        const res = await this.$api.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', {
+        const res = await this.$request.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', {
           token, uid
         }) || {}
         const { SysCode: code, MSG: message, data = [] } = res.data
@@ -341,7 +345,7 @@ export default {
         const { token, uID: uid } = this.sessionData
         const { page: pageNum, pageSize } = this.pagination
         this.tableLoading = true
-        const res = await this.$api.postApi_json('/addsp/patrolPoint/web/getList', {
+        const res = await this.$request.postApi_json('/addsp/patrolPoint/web/getList', {
           ...this.searchCondition,
           uid,
           token,
@@ -505,7 +509,7 @@ export default {
     async getTableConfig() {
       try {
         this.pageLoading = true
-        const res = await this.$api.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
+        const res = await this.$request.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return Message.error(message || '获取列表字段和搜索字段配置数据失败')
         const { searchList, headerList } = data

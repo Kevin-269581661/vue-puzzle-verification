@@ -85,7 +85,7 @@ export default {
       try {
         const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const res = await this.$api.postApi_new(this.apiVar.Media, {
+        const res = await this.$request.postApi_new(this.apiVar.Media, {
           token,
           uid,
           service: "GetMediaMaintainOperationLogAction",
@@ -124,7 +124,7 @@ export default {
       try {
         const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const res = await this.$api.postApi_new(this.apiVar.Media, {
+        const res = await this.$request.postApi_new(this.apiVar.Media, {
           uid,
           token,
           service: "GetMediaMaintenanceHistoryListAction",

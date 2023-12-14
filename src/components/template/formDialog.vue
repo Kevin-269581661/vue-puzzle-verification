@@ -143,7 +143,7 @@ export default {
       try {
         const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const res = await this.$api.postApi_json('/addsp/api/xxxxx', {
+        const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
           ...this.formData,
           uid,
           token,
@@ -167,7 +167,7 @@ export default {
       if (!id) return console.error('getDetail error: id 不能为空')
       try {
         this.dialogLoading = true
-        const res = await this.$api.getApi('/aaaa/bbbb', { id })
+        const res = await this.$request.getApi('/aaaa/bbbb', { id })
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.formData = data
@@ -184,7 +184,7 @@ export default {
      async getPropTwoOptions() {
       try {
         this.dialogLoading = true
-        const res = await this.$api.getApi('/aaaa/bbbb')
+        const res = await this.$request.getApi('/aaaa/bbbb')
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.preparedData.propTwoOptions = data
@@ -207,6 +207,7 @@ export default {
      * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
      */
     open(row) {
+      if (this.visible) return
       if (row) {
         this.isEdit = true
         this.formData = {
@@ -226,11 +227,10 @@ export default {
      * （可以处理一些收尾操作，如：清除定时器、事件监听等等）
      */
     close() {
-      if (this.visible) {
-        this.handleReset()
-        this.$emit('close')
-        this.visible = false
-      }
+      if (!this.visible) return
+      this.handleReset()
+      this.$emit('close')
+      this.visible = false
     }
   }
 }
@@ -242,9 +242,8 @@ export default {
   padding: 0;
 }
 
-.dialog_content {
-  .custom_dialog_footer{
-    padding: 10px 20px 20px;
-  }
+.custom_dialog_footer{
+  padding: 10px 20px 20px;
 }
+
 </style>

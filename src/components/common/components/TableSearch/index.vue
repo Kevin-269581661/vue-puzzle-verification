@@ -91,7 +91,7 @@
           ],
           // type 类型为 select 时使用：非必传 - 配置 value、label 字段名
           optionKey: {
-            value: 'value'
+            value: 'value',
             label: 'label'
           }
           on: {

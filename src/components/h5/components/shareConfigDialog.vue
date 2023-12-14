@@ -788,13 +788,10 @@ export default {
   }
   /deep/ .el-radio {
     display: block;
+    line-height: 32px;
   }
   /deep/ .el-radio__input.is-checked+.el-radio__label {
     color: #606266;
-  }
-  /deep/ .el-radio:not(:last-child) {
-    // line-height: 32px;
-    margin-bottom: 8px;
   }
   // /deep/ .el-input-group__append, .el-input-group__prepend {
   //   color: #fff;

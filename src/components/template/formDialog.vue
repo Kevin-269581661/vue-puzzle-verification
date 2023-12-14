@@ -21,10 +21,10 @@
             <el-form-item label="示例二：" prop="propTwo">
               <el-select v-model.trim="formData.propTwo" placeholder="请选择" filterable clearable>
                 <el-option
-                  v-for="(cell, j) in preparedData.propTwoOptions"
-                  :key="cell.val"
-                  :value="cell.val"
-                  :label="cell.label"
+                  v-for="item in preparedData.propTwoOptions"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
                 />
               </el-select>
             </el-form-item>

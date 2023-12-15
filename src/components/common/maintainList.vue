@@ -10,37 +10,39 @@
       <!-- 列表搜索栏 -->
       <div class="page_content_top">
         <div class="page_title">维护列表</div>
-        <TableSearch
-          :value="searchData"
-          :fileds="searchFileds"
-          @change="handleSeachChange"
-          @search="handleSearch"
-          @reset="handleReset"
-        >
-          <template slot="districtList">
-            <el-cascader
-              v-model="searchData.districtList"
-              :options="searchFileds.districtList.options"
-              clearable
-              change-on-select
-              size="small"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-            </el-cascader>
-          </template>
+        <div class="search_box">
+          <TableSearch
+            :value="searchData"
+            :fileds="searchFileds"
+            @change="handleSeachChange"
+            @search="handleSearch"
+            @reset="handleReset"
+          >
+            <template slot="districtList">
+              <el-cascader
+                v-model="searchData.districtList"
+                :options="searchFileds.districtList.options"
+                clearable
+                change-on-select
+                size="small"
+                placeholder="请选择"
+                style="width: 100%"
+              >
+              </el-cascader>
+            </template>
 
-          <!-- 导出 -->
-          <template slot="action">
-            <DownloadFileButton
-              :requestApi="$api.getApi_file"
-              :requestParams="exportRequestParams"
-              requestUrl="/mediaService/api/v2/exportRMList"
-              downloadFileName="维护记录"
-            />
-          </template>
+            <!-- 导出 -->
+            <template slot="action">
+              <DownloadFileButton
+                :requestApi="$api.getApi_file"
+                :requestParams="exportRequestParams"
+                requestUrl="/mediaService/api/v2/exportRMList"
+                downloadFileName="维护记录"
+              />
+            </template>
 
-        </TableSearch>
+          </TableSearch>
+        </div>
       </div>
       <div class="table_box">
         <!-- 表格 -->
@@ -569,4 +571,8 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.search_box {
+  padding: 24px 24px 8px;
+}
+</style>

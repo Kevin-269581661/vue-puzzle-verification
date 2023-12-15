@@ -1,13 +1,12 @@
 <template>
   <!-- 通用动态配置表格组件 -->
   <div class="table_list_container">
-    <div  class="table_tool_box">
+    <div v-if="showSetting" class="table_tool_box">
       <div class="tool_left">
         <slot name='tableTool'></slot>
       </div>
       <!-- 列设置 -->
       <TableSetting
-        v-if="showSetting"
         :columns="totalColumns"
         :cacheKey="currentPageName"
         refresh

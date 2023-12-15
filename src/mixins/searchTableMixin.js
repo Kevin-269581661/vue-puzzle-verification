@@ -46,6 +46,8 @@ export default {
           // 可选 - 请求方法（传函数）
           requestFunction: ''
         }
+        // 也可以直接写封装的 apiModel 方法
+        // list: api.xxxx.list
       }
     }
   },
@@ -120,19 +122,26 @@ export default {
      */
     async getTableList() {
       try {
-        const { requestUrl, requestFunction } = this.apiModel.list
-        if (!requestUrl) throw new Error('getTableList error: 请配置请求地址')
-        // 处理请求方法
-        let request = null
-        if (requestFunction) {
-          request = requestFunction
-        } else {
-          request = this.$request.postApi_json
-        }
         this.tableList = []
         this.tableLoading = true
-        // 发起请求
-        const res = await request(requestUrl, this.searchCondition)
+        // 处理请求方法
+        let res = null
+        let request = null
+        if (typeof this.apiModel.list === 'function') {
+          request = this.apiModel.list
+          // 发起请求
+          res = await request(this.searchCondition)
+        } else if (typeof this.apiModel.list === 'object') {
+          const { requestUrl, requestFunction } = this.apiModel.list
+          if (!requestUrl) throw new Error('getTableList error: 请配置请求地址')
+          if (requestFunction) {
+            request = requestFunction
+          } else {
+            request = this.$request.postApi_json
+          }
+          // 发起请求
+          res = await request(requestUrl, this.searchCondition)
+        }
         const { list = [], total } = this.handleTableListResponse(res)
         console.log('getTableList ===', list, total)
         this.tableList = list
@@ -145,21 +154,60 @@ export default {
       }
     },
     /**
-     * 对列表接口请求的参数特殊处理
-     * （默认不处理，如有需要，请重写该方法）
+     * 统一获取预加载数据 options 方法
+     * @param {*} filedToApiModel { filedName: apiModelPromiseFunction }
+     */
+    async getOptions(filedToApiModel) {
+      try {
+        if (typeof filedToApiModel !== 'object') {
+          throw new Error('filedToApiModel must be an object')
+        }
+        const promiseList = Object.values(filedToApiModel).map(apiModelPromiseFunction => apiModelPromiseFunction())
+        const filedList = Object.keys(filedToApiModel)
+        const resList = await Promise.all(promiseList)
+        console.log('getOptions resList:', resList)
+        resList.forEach((res, index) => {
+          let options = this.handleOptionsRes(res)
+          this.setOptions(filedList[index], options)
+        })
+      } catch (err) {
+        console.error('getOptions error:', err)
+        this.$message.error(String(err) || '获取预加载数据失败')
+      }
+    },
+    /**
+     * 设置 options
+     * @param {*} filed
+     * @param {*} options
+     */
+    setOptions(filed, options) {
+      this.searchFileds[filed].options = options
+    },
+    /**
+     * 处理列表接口请求的参数
+     * （如有需要，请重写该方法）
      */
     handleTableListRequestParam(params) {
       return params
     },
     /**
-     * 对列表接口返回的数据特殊处理
-     * （默认不处理，如有需要，请重写该方法）
+     * 处理列表接口返回的数据
+     * （如有需要，请重写该方法）
      */
     handleTableListResponse(res) {
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message || '获取列表数据失败')
       const { list = [], total } = data
       return { list, total }
+    },
+    /**
+     * 处理预加载数据返回结果
+     * （如有需要，请重写该方法）
+     */
+    handleOptionsRes(res) {
+      const { SysCode: code, MSG: message, data } = res.data || {}
+      if (code !== 200200) throw new Error(message || '获取预加载数据失败')
+      return data
     },
     /**
      * 初始化
@@ -188,7 +236,7 @@ export default {
           }
         })
       }
-    }
+    },
   },
   created() {
     // 使用时，需要在子组件内这里调用 initSearchTableMixin 初始化方法

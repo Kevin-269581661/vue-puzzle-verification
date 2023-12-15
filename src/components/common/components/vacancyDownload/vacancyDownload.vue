@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 空位导出-弹框组件 -->
-    <el-dialog title="空位导出" :visible.sync="isOpenDownload" width="790px">
+    <el-dialog title="空位导出" :visible.sync="visible" width="700px">
       <template slot="title">
         <div class="dialog_header">
           <span style="margin-right: auto;">空位导出</span>
@@ -25,7 +25,7 @@
             @change="collectChange"
           >
             <el-option
-              v-for="item of collectList"
+              v-for="item in collectList"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -34,154 +34,133 @@
 
         </div>
       </template>
-      <div class="vacancy_box">
 
-        <el-row>
-          <el-col :span="6">
-            <span>导出空位:</span>
-          </el-col>
-          <el-col :span="18">
-            <el-radio-group v-model="downLoadInfo.loadType" @input="loadTypeChange">
-              <template v-for="(item, index) in mediaPermissionList" >
-                <el-radio :label="item" :key="index">
-                  {{item}}
+      <div v-loading="dialogLoading" class="dialog_content">
+        <div class="custom_dialog_body">
+          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="160px" size="small" class="form">
+
+            <el-form-item label="导出空位：" prop="loadType">
+              <el-radio-group v-model="formData.loadType" @input="onChangeLoadType">
+                <el-radio v-for="(item, index) in preparedData.loadTypeOptions" :label="item" :key="index">
+                  {{ item }}
                 </el-radio>
-              </template>
-            </el-radio-group>
-          </el-col>
-        </el-row>
+              </el-radio-group>
+            </el-form-item>
 
-        <el-row>
-          <el-col :span="6">
-            <span>选择城市:</span>
-          </el-col>
-          <el-col :span="18">
-            <el-select
-              v-model="downLoadInfo.city"
-              placeholder="请选择城市"
-              multiple
-              size="small"
-              collapse-tags
-              filterable
-            >
-              <el-option
-                v-for="item in cityList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="6">
-            <span>媒体类型:</span>
-          </el-col>
-          <el-col :span="18">
+            <el-form-item label="选择城市：" prop="city">
               <el-select
-                size="small"
-                class="m_ehicle_class"
+                v-model="formData.city"
+                placeholder="请选择"
+                filterable
+                clearable
                 multiple
                 collapse-tags
-                v-model="downLoadInfo.mediaTypeIds"
-                placeholder="请选择媒体类型"
-              >
-                <el-option v-for="(item, index) in allMediaTypes" :key="index" :label="item.mediaTypeName" :value="item.mediaTypeId"></el-option>
-              </el-select>
-          </el-col>
-        </el-row>
-
-        <el-row  v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
-          <el-col :span="6">
-            <span>开门次数范围:</span>
-          </el-col>
-          <el-col :span="18" class="openDoorCount">
-            <div class="openDoorSelect">
-              <span>时间：</span>
-              <el-select
-                v-model="downLoadInfo.openDoorType"
-                placeholder="开门次数"
-                size="small"
-                class="otherSelect"
-                ref="openDoorRef"
-                @change="handleChangeOpenDoorCount"
               >
                 <el-option
-                  v-for="item in openDoorCountType"
+                  v-for="item in preparedData.cityOptions"
                   :key="item.value"
-                  :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
-                <div class="open-door-select">
-                  <div class="open-door-date">
-                    <span class="demonstration">自定义时间范围：</span>
-                    <el-date-picker
-                      v-model="downLoadInfo.openDoorDate"
-                      type="daterange"
-                      value-format="yyyy/MM/dd"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions0"
-                      >
-                    </el-date-picker>
-                  </div>
-                </div>
+                  :label="item.label"
+                />
               </el-select>
-            </div>
-            <div>
-              <span>范围：</span>
-              <el-input  type="number" v-model="downLoadInfo.openDoorMinCount" placeholder="最小值" style="width:120px" @change="handleChangeInput"></el-input>
-              &nbsp;~&nbsp;
-              <el-input  type="number" v-model="downLoadInfo.openDoorMaxCount" placeholder="最大值" style="width:120px" @change="handleChangeInput"></el-input>
-            </div>
-          </el-col>
-        </el-row>
+            </el-form-item>
 
-        <el-row v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
-          <el-col :span="6">
-            <span>是否支持语音播报:</span>
-          </el-col>
-          <el-col :span="18">
-            <el-radio-group v-model="downLoadInfo.supportVoice">
-              <el-radio :label="-1">不限</el-radio>
-              <el-radio :label="1">是</el-radio>
-              <el-radio :label="0">否</el-radio>
-            </el-radio-group>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <span>选择日期:</span>
-          </el-col>
-          <el-col :span="18">
-            <el-radio-group v-model="downLoadInfo.dateType">
-              <el-radio label="1">默认半年日期</el-radio>
-              <el-radio label="2">自定义日期</el-radio>
-            </el-radio-group>
-          </el-col>
-        </el-row>
+            <el-form-item label="媒体类型：" prop="mediaTypeIds">
+              <el-select
+                v-model.trim="formData.mediaTypeIds"
+                placeholder="请选择"
+                filterable
+                clearable
+                multiple
+                collapse-tags
+              >
+                <el-option
+                  v-for="item in preparedData.mediaTypeOptions"
+                  :key="item.mediaTypeId"
+                  :value="item.mediaTypeId"
+                  :label="item.mediaTypeName"
+                />
+              </el-select>
+            </el-form-item>
 
-        <el-row v-if="downLoadInfo.dateType == '2'">
-          <el-col :span="18" :offset="6">
-            <el-date-picker
-              v-model="downLoadInfo.daterange"
-              type="daterange"
-              size="small"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy/MM/dd"
-              format="yyyy/MM/dd"
-              :picker-options="pickerOptions"
-            >
-            </el-date-picker>
-          </el-col>
-        </el-row>
+            <el-form-item label="开门次数范围：" prop="openDoorCount" v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
+              <div class="open_door_count">
+                <div class="time_box">
+                  <span>时间：</span>
+                  <el-select v-model="formData.openDoorType" placeholder="请选择" size="small" @change="onChangeOpenDoorType">
+                    <el-option
+                      v-for="item in preparedData.openDoorTypeOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                  <el-date-picker
+                    v-if="formData.openDoorType === 4"
+                    v-model="formData.openDoorDate"
+                    :picker-options="openDoorDatePickerOptions"
+                    type="daterange"
+                    size="small"
+                    value-format="yyyy/MM/dd"
+                    range-separator="-"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    style="width: 240px;margin-left: 5px"
+                    >
+                  </el-date-picker>
+                </div>
+                <div>
+                  <span>范围：</span>
+                  <el-input  type="number" size="small" v-model="formData.openDoorMinCount" placeholder="最小值" style="width:120px" @change="handleChangeInput"></el-input>
+                  &nbsp;~&nbsp;
+                  <el-input  type="number" size="small" v-model="formData.openDoorMaxCount" placeholder="最大值" style="width:120px" @change="handleChangeInput"></el-input>
+                </div>
+              </div>
+            </el-form-item>
 
-        <div class="dialog_footer">
+            <el-form-item label="是否支持语音播报：" prop="supportVoice" v-if="sessionData.uType === 'ADN_MD_COUNTRY'">
+              <el-radio-group v-model="formData.supportVoice">
+                <el-radio v-for="item in preparedData.supportVoiceOptions" :label="item.value" :key="item.value">
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="选择日期：" prop="dateType" >
+              <el-radio-group v-model="formData.dateType">
+                <el-radio v-for="item in preparedData.dateTypeOptions" :label="item.value" :key="item.value" class="radio_box">
+                  <span>{{ item.label }}</span>
+                  <el-date-picker
+                    v-if="item.value === '2' && formData.dateType === '2'"
+                    v-model="formData.customDate"
+                    :picker-options="customDatePickerOptions"
+                    type="daterange"
+                    format="yyyy/MM/dd"
+                    value-format="yyyy/MM/dd"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    placeholder="选择日期"
+                    size="small"
+                    style="width: 240px"
+                  >
+                  </el-date-picker>
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="方案过滤：" prop="planFilter" >
+              <el-radio-group v-model="formData.planFilter" @input="onChangePlanFilter">
+                <el-radio-button v-for="item in preparedData.planFilterOptions" :label="item.value" :key="item.value" >
+                  <span>{{ item.label }}</span>
+                </el-radio-button>
+              </el-radio-group>
+              <span v-if="formData.planFilter === '2'" style="margin-left: 10px">已选0个</span>
+            </el-form-item>
+
+          </el-form>
+        </div>
+        <div class="custom_dialog_footer">
           <div class="footer_left">
             <span class="btn_box" @click="createCollect">
               <i class="el-icon-star-off"></i>
@@ -189,16 +168,18 @@
             </span>
             <span class="btn_box" @click="openCollectTable">收藏列表</span>
           </div>
-          <el-button @click="cancelDown" size="small">取 消</el-button>
-          <el-button type="primary" @click="confirmDown" size="small">
-            确 定
-          </el-button>
+          <el-button @click="close" size="small">取 消</el-button>
+          <el-button type="primary" @click="onSubmit" size="small">确 定</el-button>
         </div>
+
       </div>
     </el-dialog>
 
     <!-- 收藏列表 -->
     <VacancyDownloadCollect ref="vacancyDownloadCollect" :collectList="collectList" @getCollectList="getCollectList" @cancelCollect="cancelCollect"/>
+
+    <!-- 选择方案 -->
+    <ChoosePlanDialog ref="choosePlanDialogRef"/>
   </div>
 </template>
 
@@ -208,94 +189,154 @@ import api from "../../../../api/api.js";
 import sessFun from "../../../../commonFun/sessFun.js";
 import filterData from "../../../../commonFun/filterTableData.js";
 import VacancyDownloadCollect from './vacancyDownloadCollect.vue'
+import ChoosePlanDialog from '@/components/common/components/choosePlanDialog.vue'
 import { Message } from "element-ui";
+
+/**
+ * 初始化表单（提交）数据
+ */
+ const initFormData = () => {
+  return {
+    // 导出空位
+    loadType: '',
+    // 选择城市
+    city: [],
+    // 媒体类型
+    mediaTypeIds: [],
+    // 开门类型值
+    openDoorType: '',
+    // 开门次数日期范围
+    openDoorDate: [],
+    openDoorMinCount: null,
+    openDoorMaxCount: null,
+    supportVoice: -1,
+    dateType: '1',
+    customDate: [],
+    // 方案过滤
+    planFilter: '1',
+  }
+}
 
 export default {
   components: {
-    VacancyDownloadCollect
+    VacancyDownloadCollect,
+    ChoosePlanDialog
   },
   data () {
     return {
-      isOpenDownload: false,
+      visible: false,
+      dialogLoading: false,
+      formData: initFormData(),
+      formRules: {
+        // 通用校验
+        loadType: [{ required: true, message: '请选择选点纬度', trigger: 'blur' }],
+        city: [{ required: true, message: '请选择城市', trigger: 'blur' }],
+        mediaTypeIds: [{ required: true, message: '请选择媒体类型', trigger: 'blur' }],
+        // 特殊校验
+        openDoorCount: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let { openDoorType, openDoorMinCount, openDoorMaxCount } = this.formData
+              if (!openDoorType === 4 && openDoorDate.length < 2) {
+                callback(new Error('请选择自定义时间范围'))
+              } else if (Number(openDoorMinCount) > Number(openDoorMaxCount)) {
+                callback(new Error('最小值不能大于最大值'))
+              } else if (openDoorType !== '' && openDoorMinCount === '') {
+                callback(new Error('请填写最小值'))
+              } else if (openDoorType !== '' && openDoorMaxCount === '') {
+                callback(new Error('请填写最大值'))
+              } else if (openDoorType === '' && openDoorMinCount !== '' && openDoorMaxCount !== '') {
+                callback(new Error('请选择开门时间范围'))
+              } else {
+                callback()
+              }
+            }
+          }
+        ],
+        dateType: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let { dateType, customDate } = this.formData
+              if (dateType == "2" && customDate.length < 2) {
+                callback(new Error('请选择自定义日期'))
+              } else {
+                callback()
+              }
+            }
+          }
+        ]
+      },
+      // 预加载数据
+      preparedData: {
+        loadTypeOptions: [],
+        cityOptions: [],
+        mediaTypeOptions: [],
+        openDoorTypeOptions: [
+          { label: '昨日', value: 1 },
+          { label: '近7天', value: 2 },
+          { label: '近30天', value: 3 },
+          { label: '自定义', value: 4 },
+        ],
+        supportVoiceOptions: [
+          { label: '不限', value: -1 },
+          { label: '是', value: 1 },
+          { label: '否', value: 0 },
+        ],
+        dateTypeOptions: [
+          { label: '默认半年日期', value: '1' },
+          { label: '自定义日期', value: '2' },
+        ],
+        planFilterOptions: [
+          { label: '全部过滤', value: '1' },
+          { label: '自定义过滤', value: '2' },
+        ]
+      },
       // 登录信息
       sessionData: {},
-      // 空位导出信息
-      downLoadInfo: {
-        // 导出空位
-        loadType: "",
-        // 选择城市
-        city: [],
-        // 媒体类型
-        mediaTypeIds: '',
-        // 是否默认日期
-        dateType: "1",
-        // 自定义日期
-        daterange: [],
-        //最小值
-        openDoorMinCount: '',
-        //最大值
-        openDoorMaxCount: '',
-        //开门类型值
-        openDoorType: '',
-        //开门次数日期范围
-        openDoorDate: [],
-        //语音支持
-        supportVoice: -1
-      },
-      allMediaTypes: [],
-      tempMediaTypes: [],
-      // 城市列表
-      cityList: [],
-      pickerOptions: {
+      customDatePickerOptions: {
         disabledDate (time) {
           return time.getTime() <= Date.now() - 1000 * 3600 * 24;
         },
       },
-      mediaPermissionList: [],
-      mediaTypeList: [],
-      collectList: [],
-      collectSelection: null,
-      // 开门次数类型
-      openDoorCountType: [
-        {
-          label: '昨日',
-          value: 1
-        },
-        {
-          label: '近7天',
-          value: 2
-        },
-        {
-          label: '近30天',
-          value: 3
-        },
-        {
-          label: '自定义',
-          value:  4
-        },
-      ],
-      //限制时间范围
-      pickerOptions0: {
+      // 限制时间范围
+      openDoorDatePickerOptions: {
         disabledDate(time) {
-          return time.getTime() > Date.now() - 8.64e6; //如果没有后面的-8.64e6就是不可以选择今天的
+          // 如果没有后面的-8.64e6就是不可以选择今天的
+          return time.getTime() > Date.now() - 8.64e6;
         }
       },
+      tempMediaTypes: [],
+      mediaTypeList: [],
+      // 收藏列表
+      collectList: [],
+      collectSelection: null,
     };
   },
   methods: {
-    open() {
-      this.isOpenDownload = true
+    onChangePlanFilter(val) {
+      console.log('onChangePlanFilter ====', val)
+      if (val === '2') {
+        this.$refs.choosePlanDialogRef.open()
+      }
     },
-    close() {
-      this.isOpenDownload = false
+    onChangeOpenDoorType() {
+      this.formData.openDoorDate = []
     },
-    // 导出类型对应媒体类型
-    loadTypeChange(type) {
-        this.downLoadInfo.mediaTypeIds = []
-        const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
-        this.allMediaTypes = this.tempMediaTypes[index].mediaTypeList
+    /**
+     * 导出类型对应媒体类型
+     */
+    onChangeLoadType(type) {
+      this.formData.mediaTypeIds = []
+      const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
+      this.preparedData.mediaTypeOptions = this.tempMediaTypes[index].mediaTypeList
     },
-    // 获取session数据
+    /**
+     * 获取session数据
+     */
     getSessionData () {
       this.sessionData = sessFun.getSess();
       // 处理导点纬度
@@ -326,7 +367,6 @@ export default {
             })
         })
       }
-
       // 按小区导出不做限制
       tempPermiision.push('小区')
       const resArr = filterData(permissionList, 'mediaTypeId', 'mediaTypeName').map(item => {
@@ -335,12 +375,10 @@ export default {
           mediaTypeName: item.mediaTypeName
         }
       })
-
       tempMediaTypes.push({
         chooseTypeName: '小区',
         mediaTypeList: resArr
       })
-
       // 导出空位的处理
       if (
         ['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) &&
@@ -348,97 +386,41 @@ export default {
       ) {
         tempPermiision = tempPermiision.filter(item => item !== '点位')
       }
-
       this.tempMediaTypes = tempMediaTypes
-      this.mediaPermissionList = tempPermiision
+      this.preparedData.loadTypeOptions = tempPermiision
     },
-    cancelDown() {
-      this.resetDownloadInfo()
-      this.close();
-    },
-    //输入框校验
+    /**
+     * 输入框校验
+     */
     handleChangeInput() {
-      if (this.downLoadInfo.openDoorMinCount < 0 ) {
-        this.downLoadInfo.openDoorMinCount = ''
+      if (this.formData.openDoorMinCount < 0 ) {
+        this.formData.openDoorMinCount = ''
       }
-      if (this.downLoadInfo.openDoorMaxCount < 0 ) {
-        this.downLoadInfo.openDoorMaxCount = ''
+      if (this.formData.openDoorMaxCount < 0 ) {
+        this.formData.openDoorMaxCount = ''
       }
-      if (this.downLoadInfo.openDoorMaxCount > 100000000) {
-        this.downLoadInfo.openDoorMaxCount = 100000000
+      if (this.formData.openDoorMaxCount > 100000000) {
+        this.formData.openDoorMaxCount = 100000000
       }
     },
-    // 重置空位导出信息
-    resetDownloadInfo() {
-      const info = this.downLoadInfo
-      info.loadType = '',
-      info.city = [],
-      info.dateType = '1'
-      info.mediaTypeIds = ''
-      info.daterange = []
-      this.collectSelection = null
-      info.supportVoice = -1
-      info.openDoorMinCount = ''
-      info.openDoorMaxCount = ''
-      info.openDoorType = ''
-      info.openDoorDate = []
+    async onSubmit () {
+      await this.$refs['formRef'].validate()
+      let { loadType } = this.formData;
+      switch(loadType) {
+        // 按小区
+        case "小区": this.getExcelData('exportVacancyByCommunity', '小区'); break;
+        // 按楼栋
+        case "楼栋": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
+        // 按单元
+        case "单元": this.getExcelData('exportVacancyByUnit', '单元'); break;
+        // 按点位
+        case "点位": this.getExcelData('exportVacancyByAds', '点位'); break;
+      }
     },
-    confirmDown () {
-      let { loadType, city, daterange, dateType, openDoorType, openDoorMinCount,openDoorMaxCount,mediaTypeIds,openDoorDate } = this.downLoadInfo;
-        if (!loadType) {
-            Message.warning("请选择选点纬度!");
-            return;
-        }
-        if (!city.length) {
-            Message.warning("请选择城市!");
-            return;
-       }
-        if ( openDoorType === 4 && openDoorDate.length < 2) {
-          this.messageFun("warning", "请选择自定义时间范围");
-            return;
-        }
-
-        if (Number(openDoorMinCount) > Number(openDoorMaxCount)) {
-          this.messageFun("warning", "最小值不能大于最大值");
-          return;
-        }
-        if (openDoorType !== '' && openDoorMinCount === '') {
-          this.messageFun("warning", "请填写最小值");
-          return;
-        }
-        if (openDoorType !== '' && openDoorMaxCount === '') {
-          this.messageFun("warning", "请填写最大值");
-          return;
-        }
-
-
-        if (openDoorType === '' && openDoorMinCount !== '' && openDoorMaxCount !== '') {
-          this.messageFun("warning", "请选择开门时间范围");
-          return;
-        }
-        if (dateType == "2") {
-          if (!daterange || !daterange.length) {
-            this.messageFun("warning", "请先选择日期");
-            return;
-          }
-        }
-        if (!mediaTypeIds.length) {
-            Message.warning("请选择媒体类型!");
-            return;
-        }
-        switch(loadType) {
-            // 按小区
-            case "小区": this.getExcelData('exportVacancyByCommunity', '小区'); break;
-            // 按楼栋
-            case "楼栋": this.getExcelData('exportVacancyByBuilding', '楼栋'); break;
-            // 按单元
-            case "单元": this.getExcelData('exportVacancyByUnit', '单元'); break;
-            // 按点位
-            case "点位": this.getExcelData('exportVacancyByAds', '点位'); break;
-        }
-    },
-    // 获取城市
-    getCity () {
+    /**
+     * 获取城市下拉数据
+     */
+    getCityOptions () {
       let info = {
         token: this.sessionData.token,
         uid: this.sessionData.uID,
@@ -446,7 +428,6 @@ export default {
       api
         .postApi(this.apiVar.Advertisement + "/GetAuthorCity", info)
         .then((res) => {
-        // console.log(res.data);
           if (res.data.SysCode == 300200) {
             let resinfo = res.data.data;
             let result = [];
@@ -457,7 +438,7 @@ export default {
               };
               result.push(obj);
             }
-            this.cityList = result;
+            this.preparedData.cityOptions = result;
           } else {
             Message.warning(res.data.MSG);
           }
@@ -467,7 +448,7 @@ export default {
     getCityName (rids) {
         let citys = [];
         for (let i = 0; i < rids.length; i++) {
-            for(let data of this.cityList) {
+            for(let data of this.preparedData.cityOptions) {
                 if(data.value === rids[i]) {
                     citys.push(data.label)
                     break
@@ -478,11 +459,11 @@ export default {
     },
     // 导出表格
     exportToExcel(data, name) {
-        let { city, dateType, daterange } = this.downLoadInfo;
+        let { city, dateType, customDate } = this.formData;
         let fileName = this.getCityName(city)
         // 自定义日期
         if(dateType == '2') {
-            fileName += '-' + daterange[0] + '~' + daterange[1]
+            fileName += '-' + customDate[0] + '~' + customDate[1]
         }
         // 导出excel
         FileSaver.saveAs(new Blob([data], {type: "application/vnd.ms-excel"}), `${fileName} 空位表(按${name}).xlsx`)
@@ -495,7 +476,7 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
         });
-        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, daterange, openDoorDate } = this.downLoadInfo;
+        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, customDate, openDoorDate } = this.formData;
         let params = {
             cityIds: city.join(','),
             mediaTypeIds: mediaTypeIds.join(','),
@@ -508,8 +489,8 @@ export default {
           }
         // 自定义日期
         if(dateType === '2') {
-            params.startTime = daterange[0]
-            params.endTime = daterange[1]
+            params.startTime = customDate[0]
+            params.endTime = customDate[1]
         }
         api.getApi_file('/addsp/api/v1/excel/export/' + url, params)
         .then((res) => {
@@ -523,7 +504,7 @@ export default {
             }
         })
         .catch((err) => {
-            console.log(err);
+            console.error('getExcelData error:', err);
         })
         .finally(() => {
             loadingPoint.close()
@@ -545,9 +526,10 @@ export default {
         inputPattern: /.+/,
         inputErrorMessage: '请输入筛选组合名称'
       }).then(({ value: name }) => {
-        const { city: cityIds, dateType, daterange, mediaTypeIds, loadType: vacancy } = this.downLoadInfo
+        debugger
+        const { city: cityIds, dateType, customDate, mediaTypeIds, loadType: vacancy } = this.formData
         const citys = cityIds.map(cityId => {
-          return this.cityList.find(item => item.value === cityId).label
+          return this.preparedData.cityOptions.find(item => item.value === cityId).label
         })
         let defaultTimeFlag = null
         if (dateType == '1') {
@@ -555,9 +537,9 @@ export default {
         } else if (dateType == '2') {
           defaultTimeFlag = 0
         }
-        const [startTime = null, endTime = null] = daterange
+        const [startTime = null, endTime = null] = customDate
         const mediaTypes = mediaTypeIds.map(id => {
-          return this.allMediaTypes.find(item => item.mediaTypeId === id).mediaTypeName
+          return this.preparedData.mediaTypeOptions.find(item => item.mediaTypeId === id).mediaTypeName
         })
         let params = {
           // 城市ids
@@ -594,15 +576,6 @@ export default {
           console.error('createCollect error:', err)
         })
       }).catch(() => {});
-    },
-    // 开门次数
-    handleChangeOpenDoorCount () {
-      if (this.openDoorType === 4) {
-        if (this.openDoorDate.length === 0) {
-          sessFun.messageFun("warning", "请选择自定义时间范围!");
-          this.openDoorType = null
-        }
-      }
     },
     /**
      * 打开收藏列表
@@ -667,49 +640,55 @@ export default {
         if (itemData) {
           let { cityIds: city = [], vacancy: loadType, mediaTypeIds = [], startTime, endTime, defaultTimeFlag } = itemData
           // 导出空位的处理
-          if (!this.mediaPermissionList.includes(loadType)) {
+          if (!this.preparedData.loadTypeOptions.includes(loadType)) {
             loadType = null
           }
           // 选择城市的处理
-          const cityIdList = this.cityList.map(item => item.value)
+          const cityIdList = this.preparedData.cityOptions.map(item => item.value)
           city = city.filter(item => cityIdList.includes(item))
-          // console.log('collectChange city===>', city)
           // 媒体类型的处理
-          // console.log('tempMediaTypes ===', this.tempMediaTypes)
-          if (loadType) this.loadTypeChange(loadType)
-          // console.log('allMediaTypes ===', this.allMediaTypes)
-
-          const allMediaTypeIdList = this.allMediaTypes.map(item => item.mediaTypeId)
-          // console.log('allMediaTypeIdList ===', allMediaTypeIdList)
-          // console.log('collectChange mediaTypeIds===>', JSON.stringify(mediaTypeIds))
-
-
+          if (loadType) this.onChangeLoadType(loadType)
+          const allMediaTypeIdList = this.preparedData.mediaTypeOptions.map(item => item.mediaTypeId)
           mediaTypeIds = mediaTypeIds.filter(item => allMediaTypeIdList.includes(item))
-          // console.log('collectChange mediaTypeIds===>', mediaTypeIds)
-
           // 选择日期的处理
-          let daterange = []
+          let customDate = []
           if (!defaultTimeFlag && startTime && endTime) {
-            daterange = [startTime, endTime]
+            customDate = [startTime, endTime]
           }
-          // console.log('collectChange daterange===>', daterange)
-
-          this.downLoadInfo = {
+          this.formData = {
+            ...this.formData,
             city,
             loadType,
             mediaTypeIds,
             dateType: defaultTimeFlag ? '1' : '2',
-            daterange
+            customDate
           }
+          // console.log('collectChange formData===>', this.formData)
         }
       }
-    }
+    },
+    /**
+     * 重置数据
+     */
+     handleReset() {
+      this.formData = initFormData()
+      this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+    },
+    open() {
+      this.visible = true
+    },
+    close() {
+      if (this.visible) {
+        this.handleReset()
+        this.$emit('close')
+        this.visible = false
+      }
+    },
   },
   mounted () {
     this.getSessionData();
-    this.getCity();
+    this.getCityOptions();
     this.getCollectList({})
-    // this.getAllMediaTypes();
   },
   computed: {
 
@@ -718,8 +697,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-dialog__body {
+  padding: 0;
+}
+
 /deep/.vacancy_box .el-row {
   height: 50px;
+  .el-col:first-child {
+    padding-right: 14px;
+    text-align: right;
+  }
 }
 /deep/.vacancy_box .el-select {
   width: 90%;
@@ -743,7 +730,7 @@ export default {
   align-items: center;
   padding-right: 36px;
 }
-.dialog_footer {
+.custom_dialog_footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -757,66 +744,32 @@ export default {
     }
   }
 }
-.openDoorCount{
-  display: flex;
-  align-items: center;
-  margin-top: -8px;
+.open_door_count {
+  // display: flex;
   /deep/ .el-select{
-    width: 135px;
+    width: 120px;
   }
-  .openDoorSelect{
-    margin-right: 10px;
-  }
-}
-.otherSelect {
-  /deep/ .el-input__inner {
-    max-width: 135px;
-    height: 30px;
-    padding-left: 10px;
-    color: #1890ff;
-    border-radius: 0;
-    overflow: hidden;
-  }
-  /deep/ .el-select__tags-text {
-    display: inline-block;
-    max-width: 30px;
-    overflow: hidden;
-    // text-overflow: ellipsis;
-  }
-  /deep/ .el-tag__close.el-icon-close {
-    right: -5px;
-    top: -5px;
+  .time_box{
+    margin-bottom: 10px;
   }
 }
 
-.otherSelect /deep/ .el-tag {
-  background: #fff;
-  color: #1890ff;
-}
-
-.otherSelect /deep/ .el-input__inner:hover {
-  color: #1890ff;
-  border-color: #1890ff;
-}
-
-.otherSelectActive /deep/ .el-input__inner {
-  border-color: #1890ff;
-}
-
-.otherSelectActive /deep/ .el-input .el-select__caret {
-  color: #1890ff;
-}
 .open-door-select{
   padding: 10px 20px;
 }
 .open-door-date{
-  border-top: 1px solid blue;
+  border-top: 1px solid #eee;
   width: 470px;
   padding: 10px 0;
 }
 .open-door-date span {
   font-weight: 400;
   font-size: 14px;
+}
+
+.radio_box {
+  display: block;
+  line-height: 32px;
 }
 
 </style>

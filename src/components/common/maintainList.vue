@@ -7,10 +7,11 @@
     </div>
 
     <div v-loading="pageLoading" class="page_content">
-      <!-- 列表搜索栏 -->
+      <!-- 页面顶部 -->
       <div class="page_content_top">
         <div class="page_title">维护列表</div>
-        <div class="search_box">
+        <!-- 列表搜索栏 -->
+        <div class="search_bar">
           <TableSearch
             :value="searchData"
             :fileds="searchFileds"
@@ -44,26 +45,29 @@
           </TableSearch>
         </div>
       </div>
-      <div class="table_box">
+      <div class="table_content_box">
         <!-- 表格 -->
-        <TableList
-          :columns="tableColumns"
-          :dataSource="tableList"
-          :loading="tableLoading"
-          @refreshTable="getTableList"
-        >
+        <div class="table_wrapper">
+          <TableList
+            :columns="tableColumns"
+            :dataSource="tableList"
+            :loading="tableLoading"
+            @refreshTable="getTableList"
+          >
 
-          <!-- 自定义状态列 -->
-          <template slot="statusDesc" slot-scope="slotProps">
-            <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
-          </template>
+            <!-- 自定义状态列 -->
+            <template slot="statusDesc" slot-scope="slotProps">
+              <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
+            </template>
 
-          <template slot="action" slot-scope="slotProps">
-            <TableAction :actionList="getActionList(slotProps.row)" />
-          </template>
+            <template slot="action" slot-scope="slotProps">
+              <TableAction :actionList="getActionList(slotProps.row)" />
+            </template>
 
-        </TableList>
-        <div class="pagination_box">
+          </TableList>
+        </div>
+        <!-- 分页器 -->
+        <div class="pagination_wrapper">
           <el-pagination
             background
             layout="total, sizes, prev, pager, next, jumper"
@@ -572,7 +576,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.search_box {
+.search_bar {
   padding: 24px 24px 8px;
 }
 </style>

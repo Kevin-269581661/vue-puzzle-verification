@@ -117,6 +117,7 @@ export default {
      */
     async getTableList() {
       try {
+        if (this.tableLoading) return
         // this.tableList = []
         this.tableLoading = true
         const { page, pageSize, keyConfig } = this.pagination

@@ -112,7 +112,7 @@
           <el-table-column prop="openDoorCount" label="开门次数" min-width="120" fixed="right">
           </el-table-column>
         </el-table>
-        <div class="pagination_box">
+        <div class="pagination_wrapper">
           <el-pagination
             background
             layout="total, sizes, prev, pager, next, jumper"
@@ -558,7 +558,7 @@ export default {
     height: 550px;
   }
 
-  .pagination_box {
+  .pagination_wrapper {
     .el-pagination {
       position: relative;
       top: 0;

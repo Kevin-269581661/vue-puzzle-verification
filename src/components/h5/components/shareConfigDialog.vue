@@ -37,7 +37,7 @@
                   </el-table>
                 </div>
                 <!-- 暂不做分页 -->
-                <!-- <div class="pagination_box">
+                <!-- <div class="pagination_wrapper">
                   <el-pagination
                     background
                     layout="prev, pager, next"
@@ -82,7 +82,7 @@
                     </el-table-column>
                   </el-table>
                 </div>
-                <!-- <div class="pagination_box">
+                <!-- <div class="pagination_wrapper">
                   <el-pagination
                     background
                     layout="prev, pager, next"

@@ -1,6 +1,7 @@
 <template>
-  <!-- 通用动态配置表格组件 -->
-  <div class="table_list_container">
+  <!-- 通用表格组件 -->
+  <div class="table_list_container" :style="{ height: height || null }">
+    <!-- 工具栏 -->
     <div v-if="showSetting" class="table_tool_box">
       <div class="tool_left">
         <slot name='tableTool'></slot>
@@ -17,89 +18,91 @@
         @spaceSetting="tableSizeChange"
       />
     </div>
+    <!-- 表格 -->
+    <div class="table_list_wrapper">
+      <el-table
+        ref="tableRef"
+        v-loading="loading"
+        :height="height ? '100%' : null"
+        :data="dataSource"
+        :border="true"
+        :key="tableKey"
+        :size="tableSize"
+        element-loading-text="玩命加载中..."
+        element-loading-spinner="el-icon-loading"
+        highlight-current-row
+        tooltip-effect="dark"
+      >
+        <template v-for="col in tableColumns">
+          <el-table-column
+            v-if="col.type === 'index'"
+            :key="col.key || 'index'"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            label="序号"
+            type="index"
+            width="80"
+            fixed="left">
+          </el-table-column>
 
-    <el-table
-      ref="tableRef"
-      v-loading="loading"
-      :data="dataSource"
-      :border="true"
-      :key="tableKey"
-      :size="tableSize"
-      style="width: 100%"
-      element-loading-text="玩命加载中..."
-      element-loading-spinner="el-icon-loading"
-      highlight-current-row
-      tooltip-effect="dark"
-    >
-      <template v-for="col in tableColumns">
-        <el-table-column
-          v-if="col.type === 'index'"
-          :key="col.key || 'index'"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          label="序号"
-          type="index"
-          width="80"
-          fixed="left">
-        </el-table-column>
+          <el-table-column
+            v-else-if="col.type === 'selection'"
+            :key="col.key || 'selection'"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            type="selection"
+            width="55"
+            fixed="left">
+          </el-table-column>
 
-        <el-table-column
-          v-else-if="col.type === 'selection'"
-          :key="col.key || 'selection'"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          type="selection"
-          width="55"
-          fixed="left">
-        </el-table-column>
+          <el-table-column
+            v-else-if="col.slot"
+            :label="col.title"
+            :key="col.key || col.dataIndex"
+            :column-key="col.key || col.dataIndex"
+            :width="col.width"
+            :min-width="col.minWidth"
+            :fixed="col.fixed"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+          >
+            <template slot-scope="scope">
+              <slot :name="col.slot" :row="scope.row">
+                <!-- <span>{{ scope.row }}</span> -->
+              </slot>
+            </template>
+          </el-table-column>
 
-        <el-table-column
-          v-else-if="col.slot"
-          :label="col.title"
-          :key="col.key || col.dataIndex"
-          :column-key="col.key || col.dataIndex"
-          :width="col.width"
-          :min-width="col.minWidth"
-          :fixed="col.fixed"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-        >
-          <template slot-scope="scope">
-            <slot :name="col.slot" :row="scope.row">
-              <!-- <span>{{ scope.row }}</span> -->
-            </slot>
-          </template>
-        </el-table-column>
+          <el-table-column
+            v-else
+            :label="col.title"
+            :key="col.key || col.dataIndex"
+            :column-key="col.key || col.dataIndex"
+            :prop="col.dataIndex"
+            :width="col.isTagStyle ? '350' : col.width"
+            :min-width="col.minWidth"
+            :fixed="col.fixed"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            show-overflow-tooltip
+          >
+            <template slot-scope="scope">
+              <!-- 标签样式 -->
+              <div v-if="col.isTagStyle && scope.row[col.dataIndex]" class="tag_wraper">
+                <span v-for="(item, i) in getTagList(scope.row, col)"
+                  :key="i" class="tag_box">
+                  {{ item }}
+                </span>
+              </div>
+              <!-- 默认样式 -->
+              <span v-else>{{ scope.row[col.dataIndex] }}</span>
+            </template>
+          </el-table-column>
+        </template>
 
-        <el-table-column
-          v-else
-          :label="col.title"
-          :key="col.key || col.dataIndex"
-          :column-key="col.key || col.dataIndex"
-          :prop="col.dataIndex"
-          :width="col.isTagStyle ? '350' : col.width"
-          :min-width="col.minWidth"
-          :fixed="col.fixed"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <!-- 标签样式 -->
-            <div v-if="col.isTagStyle && scope.row[col.dataIndex]" class="tag_wraper">
-              <span v-for="(item, i) in getTagList(scope.row, col)"
-                :key="i" class="tag_box">
-                {{ item }}
-              </span>
-            </div>
-            <!-- 默认样式 -->
-            <span v-else>{{ scope.row[col.dataIndex] }}</span>
-          </template>
-        </el-table-column>
-      </template>
-
-      <NoSearchResult slot="empty"/>
-    </el-table>
+        <NoSearchResult slot="empty"/>
+      </el-table>
+    </div>
   </div>
 </template>
 
@@ -193,14 +196,14 @@ export default {
   },
   props: {
     /**
-     * 表格列配置
+     * 必传-表格列配置
      */
     columns: {
       type: Array,
       required: true
     },
     /**
-     * 表格数据
+     * 必传-表格数据
      */
     dataSource: {
       type: Array,
@@ -219,6 +222,13 @@ export default {
     showSetting: {
       type: Boolean,
       default: true
+    },
+    /**
+     * 组件总高度（一般传 '100%'，由父元素决定，不传则自动撑开）
+     */
+    height: {
+      type: String,
+      default: ''
     }
   },
   emits: ['refreshTable'],
@@ -290,6 +300,9 @@ export default {
 <style lang="scss" scoped>
 
 .table_list_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 
   /deep/ .el-table .el-table__header-wrapper th.el-table__cell{
     background-color: #fafafa !important;
@@ -300,12 +313,18 @@ export default {
   }
 
   .table_tool_box {
+    width: 100%;
     display: flex;
     align-items: center;
     padding-bottom: 16px;
     .tool_left {
       flex: 1;
     }
+  }
+
+  .table_list_wrapper {
+    flex: 1;
+    overflow: hidden;
   }
 
   .tag_wraper {

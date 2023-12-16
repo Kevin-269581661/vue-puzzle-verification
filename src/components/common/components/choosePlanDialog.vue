@@ -13,6 +13,7 @@
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
+          <!-- 搜索栏 -->
           <div class="search_wrapper">
             <TableSearch
               :value="searchData"
@@ -24,7 +25,7 @@
               <!-- 关键词 -->
               <template slot="keyword">
                 <el-input v-model="searchData.keyword" placeholder="请输入"  size="small" clearable class="keyword_input_box">
-                  <el-select v-model="searchData.select" slot="prepend" size="small" placeholder="请选择" class="keyword_select_box">
+                  <el-select v-model="searchData.keywordType" slot="prepend" size="small" placeholder="请选择" class="keyword_select_box">
                     <template v-for="item in searchFileds.keyword.options" >
                       <el-option v-if="item.label === '所属销售' && permissions.belongs_saler" :value="item.value" :label="item.label" :key="item.value"></el-option>
                       <el-option v-else :value="item.value" :label="item.label" :key="item.value"></el-option>
@@ -58,20 +59,98 @@
 
             </TableSearch>
           </div>
+          <!-- 表格 -->
           <div class="table_wrapper">
             <TableList
               :columns="tableColumns"
               :dataSource="tableList"
               :loading="tableLoading"
               :showSetting="false"
+              height="100%"
               @refreshTable="getTableList"
             >
 
-              <!-- 自定义状态列 -->
-              <!-- <template slot="statusDesc" slot-scope="slotProps">
-                <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
-              </template> -->
+              <!-- 方案价格 -->
+              <template slot="apTotal" slot-scope="slotProps">
+                <span>¥{{ slotProps.row.apTotal }}</span>
+              </template>
+
+              <!-- 投放城市 -->
+              <template slot="cityArea" slot-scope="scope">
+                <template v-if="permissions.is_show_all_city">
+                  <div v-for="(item, index) in scope.row.details" :key="index" class="city_p">
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      :content="
+                        `${item.asName} ${item.city}(${item.num}面，${formatTime(item.pdStar)}至${formatTime(item.pdEnd)})`
+                      "
+                      placement="top"
+                    >
+                      <div>
+                        {{ `${item.city}(${item.num}面，${formatTime(item.pdStar)}至${formatTime(item.pdEnd)})` }}
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </template>
+                <template v-else>
+                  <div v-for="(item, index) in scope.row.details" :key="index" class="city_p">
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      :content="
+                        `${item.asName} ${item.city}(${scope.row.apState == -1 ? item.num : '--'}面，${formatTime(item.pdStar)}至${formatTime(item.pdEnd)})`
+                      "
+                      placement="top"
+                    >
+                      <div>
+                        {{ `${item.city}(${scope.row.apState == -1 ? item.num : '--'}面，${formatTime(item.pdStar)}至${formatTime(item.pdEnd)})` }}
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </template>
+              </template>
+
+              <!-- 媒体类型 -->
+              <template slot="mediaTypeDetails" slot-scope="scope">
+                <div class="media-box">
+                  <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
+                    <div class="tag"
+                      :class="m.mediaTypeName === '广告门' ? 'ad' :
+                            m.mediaTypeName === '框架' ? 'ad' :
+                            m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
+                            m.mediaTypeName === '灯箱' ? 'light-box' :
+                            m.mediaTypeName === '道闸' ? 'brake' : ''">
+                      <template v-if="m.RemainDay">
+                        <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
+                          placement="top">
+                          <i class="el-icon-lock icon"></i>
+                        </el-tooltip>
+                        {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                      </template>
+                      <template v-else>
+                        {{ m.mediaTypeName || '--' }}
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
             </TableList>
+          </div>
+          <!-- 分页器 -->
+          <div class="pagination_wrapper">
+            <el-pagination
+              background
+              layout="total, sizes, prev, pager, next, jumper"
+              :page-sizes="pagination.sizes"
+              :current-page.sync="pagination.page"
+              :page-size="pagination.pageSize"
+              :total="pagination.total"
+              @current-change="pageChange"
+              @size-change="pageSizeChange"
+            >
+            </el-pagination>
           </div>
         </div>
         <div class="custom_dialog_footer">
@@ -85,6 +164,7 @@
 
 <script>
 import sessFun from "@/commonFun/sessFun"
+import dateFormat from "@/commonFun/timeFormat.js"
 import searchTableMixin from '@/mixins/searchTableMixin'
 import TableList from "@/components/common/components/TableList/index.vue"
 import TableSearch from "@/components/common/components/TableSearch/index.vue"
@@ -95,16 +175,16 @@ import TableSearch from "@/components/common/components/TableSearch/index.vue"
 const initSearchData = () => ({
   // 关键词
   keyword: '',
-  select: '1',
+  keywordType: '1',
   // 日期
-  dateType: '',
+  dateType: '0',
   rangeDate: [],
   // 选择状态
-  status: '',
+  apstate: '',
   // 选择城市
-  cityWord: '',
+  cityName: '',
   // 是否预锁
-  Lock: '',
+  lockStatus: '',
 })
 /**
  * 初始化搜索配置
@@ -129,7 +209,7 @@ const initSearchFileds = () => ({
       { label: '创建日期', value: '2' },
     ]
   },
-  status: {
+  apstate: {
     title: '选择状态',
     type: 'select',
     props: {
@@ -145,7 +225,7 @@ const initSearchFileds = () => ({
       { label: '强制结束', value: 5 },
     ]
   },
-  cityWord: {
+  cityName: {
     title: '选择城市',
     type: 'select',
     props: {
@@ -158,7 +238,7 @@ const initSearchFileds = () => ({
       label: 'rName'
     }
   },
-  Lock: {
+  lockStatus: {
     title: '是否预锁',
     type: 'select',
     props: {
@@ -175,13 +255,13 @@ const initSearchFileds = () => ({
  */
 const initTableColums = () => ([
   { title: '序号', type: 'selection' },
-  { title: '方案名称', dataIndex: 'apName' },
-  { title: '客户名称', dataIndex: 'cName' },
-  { title: '品牌名称', dataIndex: 'bTitle' },
-  { title: '方案价格', dataIndex: 'apTotal' },
+  { title: '方案名称', dataIndex: 'apName', width: 150 },
+  { title: '客户名称', dataIndex: 'cName', width: 150 },
+  { title: '品牌名称', dataIndex: 'bTitle', width: 150 },
+  { title: '方案价格', slot: 'apTotal' },
   { title: '所有人', dataIndex: 'realName' },
-  { title: '投放城市(点位面数,排期)', dataIndex: 'cityArea' },
-  { title: '媒体类型', dataIndex: 'mediaTypeDetails' },
+  { title: '投放城市(点位面数,排期)', slot: 'cityArea', width: 320 },
+  { title: '媒体类型', slot: 'mediaTypeDetails', width: 200 },
 ])
 /**
  * 初始化列表分页数据
@@ -189,7 +269,7 @@ const initTableColums = () => ([
 const initPagination = () => ({
   // 请求的时候，分页字段名配置
   keyConfig: {
-    page: 'pageNum',
+    page: 'start',
     pageSize: 'pagesize'
   }
 })
@@ -226,23 +306,68 @@ export default {
     permissions() {
       const role = this.sessionData.uType
       return {
-        belongs_saler: ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
+        belongs_saler: ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role),
+        is_show_all_city: this.sessionData.ascType == 0 || this.sessionData.uType == "ADN_MD_COUNTRY",
+        is_show_mediaType_column: ['ADN_MD', 'ADN_MD_COUNTRY', 'ADN_BD', 'ADN_SM', 'ADN_BD_KA'].includes(role),
       }
     }
   },
   methods: {
     /**
+     * 时间格式化
+     */
+    formatTime(val) {
+      return dateFormat.toDate(val, "/")
+    },
+    /**
      * 处理列表接口返回的数据
      */
     handleTableListResponse(res) {
       const { list = [], total } = res.data
-      return { list, total }
+      const newList = list.map(item => {
+        const { details, mediaTypeNames } = item
+        // 处理城市
+        details.sort((a, b) => a.asrID - b.asrID)
+        // 处理媒体类型数据
+        const mediaTypeDetails = mediaTypeNames.split(',').map(item => {
+          const index = details.findIndex(cell => cell.mediaTypeName === item)
+          if (index > -1) {
+            return details[index]
+          } else {
+            return { mediaTypeName: item }
+          }
+        })
+        return {
+          ...item,
+          mediaTypeDetails
+        }
+      })
+      return { list: newList, total }
     },
     /**
      * 处理预加载数据返回结果
      */
     handleOptionsRes(res) {
       return res.data
+    },
+    /**
+     * 处理列表接口请求的参数
+     */
+    handleTableListRequestParam(params) {
+      const { uID: uid, token } = this.sessionData
+      const [ starttime = null, andtime = null ] = params.rangeDate || []
+      params = {
+        ...params,
+        uid,
+        token,
+        keywordType: params.keyword ? params.keywordType : null,
+        timeType: starttime ? params.dateType : null,
+        starttime,
+        andtime,
+        rname: params.cityName,
+        onyusuo: params.lockStatus,
+      }
+      return params
     },
     /**
      * 提交表单
@@ -291,7 +416,7 @@ export default {
     const { uID: uid, token } = this.sessionData
     this.initSearchTableMixin({ initSearchData, initSearchFileds, initPagination, initTableColums })
     this.getOptions({
-      cityWord: () => this.$api.advertisement.getAPDCityNames({ uid, token })
+      cityName: () => this.$api.advertisement.getAPDCityNames({ uid, token })
     })
   },
   mounted() {
@@ -310,8 +435,19 @@ export default {
   background-color: #fff;
 }
 
+.custom_dialog_body {
+  height: calc(80vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
 .custom_dialog_footer{
   padding: 10px 20px 20px;
+}
+
+.table_wrapper {
+  flex: 1;
+  overflow: hidden;
 }
 
 .keyword_input_box {
@@ -342,6 +478,70 @@ export default {
   }
   /deep/ .el-range-editor.is-active {
     border-color: #1890FF;
+  }
+}
+
+
+.media-box {
+  display: flex;
+  flex-wrap: wrap;
+
+  .media-tag {
+    margin: 4px 8px 4px 0;
+
+    .tag {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 2px;
+      font-family: 'Roboto';
+      font-size: 12px;
+      margin-right: 8px;
+      line-height: normal;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+
+      &.ad {
+        background: #E6F7FF;
+        color: #1890FF;
+        border: 1px solid #91D5FF;
+      }
+
+      &.unit-access {
+        background: #F6FFED;
+        color: #52C41A;
+        border: 1px solid #B7EB8F;
+      }
+
+      &.light-box {
+        background: #E6FFFB;
+        color: #13C2C2;
+        border: 1px solid #87E8DE;
+      }
+
+      &.brake {
+        background: #f9f0ff;
+        color: #722ED1;
+        border: 1px solid #D3ADF7;
+      }
+
+      &.framework{
+        background: linear-gradient(0deg, #FFFBE6, #FFFBE6),linear-gradient(0deg, #FFE58F, #FFE58F);
+        color: #FAAD14;
+        border: 1px solid #FFE58F;
+      }
+
+      .icon {
+        cursor: pointer;
+        display: block;
+        width: 10px;
+        margin-right: 6px;
+      }
+    }
   }
 }
 

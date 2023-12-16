@@ -11,7 +11,7 @@ export default {
       searchFileds: {},
       // 搜索栏字段绑定数据 - 使用 initSearchData 传入
       searchData: {},
-      // 真正的搜索条件
+      // 真正的搜索条件（不包含分页条件）
       searchCondition: {},
       // 表格字段配置 - 建议使用 initTableColums 传入
       tableColumns: [],
@@ -68,6 +68,8 @@ export default {
      * 列表搜索
      */
     handleSearch() {
+      // 重置当前页码
+      this.pagination.page = 1
       this.searchParamFormat();
       this.getTableList();
     },
@@ -75,7 +77,7 @@ export default {
      * 列表重置
      */
     handleReset() {
-      this.pagination.page = 1
+      // 重置搜索条件
       if (_initSearchData) {
         this.searchData = _initSearchData()
       }
@@ -100,7 +102,6 @@ export default {
      * 搜索数据格式化
      */
     searchParamFormat() {
-      const { page, pageSize, keyConfig } = this.pagination
       let params = {}
       Object.keys(this.searchData).forEach((key) => {
         let val = this.searchData[key]
@@ -109,28 +110,27 @@ export default {
         }
         params[key] = val
       })
-      params = this.handleTableListRequestParam(params)
-      params = {
-        ...params,
-        [keyConfig.page]: page,
-        [keyConfig.pageSize]: pageSize
-      }
-      this.searchCondition = params
+      this.searchCondition = this.handleTableListRequestParam(params)
     },
     /**
      * 获取列表数据
      */
     async getTableList() {
       try {
-        this.tableList = []
+        // this.tableList = []
         this.tableLoading = true
+        const { page, pageSize, keyConfig } = this.pagination
         // 处理请求方法
         let res = null
         let request = null
         if (typeof this.apiModel.list === 'function') {
           request = this.apiModel.list
           // 发起请求
-          res = await request(this.searchCondition)
+          res = await request({
+            ...this.searchCondition,
+            [keyConfig.page]: page,
+            [keyConfig.pageSize]: pageSize
+          })
         } else if (typeof this.apiModel.list === 'object') {
           const { requestUrl, requestFunction } = this.apiModel.list
           if (!requestUrl) throw new Error('getTableList error: 请配置请求地址')

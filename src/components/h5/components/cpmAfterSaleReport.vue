@@ -74,7 +74,7 @@
           <!-- 导出 -->
           <DownloadFileButton
             requestUrl="/addsp/api/v1/share/admin/adPlan/exportResInfo"
-            :requestParams="searchCondition"
+            :requestParams="exportRequestParams"
             :isJoinTimeToFileName="false"
             class="download_button"
           />
@@ -239,6 +239,13 @@ export default {
       if (!this.scheduleDate) return ''
       const [beginDate, endDate] = this.scheduleDate
       return dayjs(beginDate).format('YYYY年MM月DD日') + ' - ' + dayjs(endDate).format('YYYY年MM月DD日')
+    },
+    exportRequestParams() {
+      return {
+        ...this.searchCondition,
+        pageNum: this.pagination.page,
+        pageSize: this.pagination.pageSize,
+      }
     }
   },
   watch: {
@@ -400,7 +407,6 @@ export default {
      * 搜索数据格式化
      */
     searchParamFormat() {
-      const { page: pageNum, pageSize } = this.pagination
       let params = {}
       Object.keys(this.searchData).forEach((key) => {
         let val = this.searchData[key]
@@ -418,8 +424,6 @@ export default {
       params = {
         ...params,
         apId: this.apId,
-        pageNum,
-        pageSize
       }
       this.searchCondition = params
     },
@@ -427,6 +431,7 @@ export default {
      * 列表搜索
      */
      handleSearch() {
+      this.pagination.page = 1
       this.searchParamFormat();
       this.getTableList();
     },
@@ -434,7 +439,6 @@ export default {
      * 列表重置
      */
     handleReset() {
-      this.pagination.page = 1
       this.searchData = initSearchData()
       this.handleSearch()
     },
@@ -458,9 +462,14 @@ export default {
      */
     async getTableList() {
       try {
+        const { page: pageNum, pageSize } = this.pagination
         this.tableList = []
         this.tableLoading = true
-        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/pageResInfo', this.searchCondition)
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/adPlan/pageResInfo', {
+          ...this.searchCondition,
+          pageNum,
+          pageSize
+        })
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取列表数据失败')
         const { list = [], total } = data

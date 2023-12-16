@@ -421,6 +421,7 @@ export default {
      * 列表搜索
      */
     handleSearch() {
+      this.pagination.page = 1
       this.searchParamFormat();
       this.getTableList();
     },
@@ -428,7 +429,6 @@ export default {
      * 列表重置
      */
     handleReset() {
-      this.pagination.page = 1
       this.searchData = initSearchData()
       this.handleSearch()
     },

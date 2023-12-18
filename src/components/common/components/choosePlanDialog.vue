@@ -68,6 +68,7 @@
               :showSetting="false"
               height="100%"
               @refreshTable="getTableList"
+              @selectionChange="onChangeTableSelection"
             >
 
               <!-- 方案价格 -->
@@ -278,10 +279,8 @@ export default {
   name: 'choosePlanDialog',
   mixins: [searchTableMixin],
   components: { TableList, TableSearch },
-  emits: ['submitSuccess', 'close'],
-  props: {
-
-  },
+  props: {},
+  emits: ['close', 'confirm'],
   data() {
     return {
       visible: false,
@@ -299,6 +298,8 @@ export default {
       },
       // 登录信息、
       sessionData: {},
+      // 列表已勾选
+      tableSelection: []
     }
   },
   computed: {
@@ -313,6 +314,12 @@ export default {
     }
   },
   methods: {
+    /**
+     * 列表勾选事件
+     */
+    onChangeTableSelection(list) {
+      this.tableSelection = list
+    },
     /**
      * 时间格式化
      */
@@ -337,6 +344,12 @@ export default {
             return { mediaTypeName: item }
           }
         })
+        // 处理勾选回显
+        if (this.tableSelection.some(cell => cell.apID === item.apID)) {
+          item.isSelected = true
+        } else {
+          item.isSelected = false
+        }
         return {
           ...item,
           mediaTypeDetails
@@ -374,30 +387,23 @@ export default {
      */
     async onSubmit() {
       try {
-        const { token, uID: uid } = sessFun.getSess()
-        this.dialogLoading = true
-        const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
-          ...this.formData,
-          uid,
-          token,
-        })
-        const { SysCode: code, MSG: message, data } = res.data
-        if (code !== 200200) return this.$message.error(message || '操作失败')
-        this.$message.success('操作成功')
-        this.$emit('submitSuccess')
+        if (!this.tableSelection.length) return this.$message.warning('请先选择方案')
+        // this.dialogLoading = true
+        this.$emit('confirm', this.tableSelection)
         this.close()
       } catch (err) {
         this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
       } finally {
-        this.dialogLoading = false
+        // this.dialogLoading = false
       }
     },
     /**
      * 打开弹框
-     * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
      */
-    open(row) {
+    open(tableSelection) {
+      if (this.visible) return
+      this.tableSelection = tableSelection || []
       this.handleSearch()
       this.visible = true
     },

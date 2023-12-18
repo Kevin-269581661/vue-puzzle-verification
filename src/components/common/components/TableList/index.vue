@@ -28,6 +28,7 @@
         :border="true"
         :key="tableKey"
         :size="tableSize"
+        :row-key="rowKey ? rowKey : null"
         element-loading-text="玩命加载中..."
         element-loading-spinner="el-icon-loading"
         highlight-current-row
@@ -45,14 +46,21 @@
             fixed="left">
           </el-table-column>
 
+          <!-- type="selection" -->
           <el-table-column
             v-else-if="col.type === 'selection'"
             :key="col.key || 'selection'"
             :align="col.align || 'center'"
             :header-align="col.headerAlign || 'center'"
-            type="selection"
             width="55"
-            fixed="left">
+            fixed="left"
+          >
+            <template slot="header" slot-scope="scope">
+              <el-checkbox v-model="isSelectedAllInCurrentPage" @change="handleSelectAll"></el-checkbox>
+            </template>
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row[selectKey]" @change="val => handleSelectionChange(val, scope.row)"></el-checkbox>
+            </template>
           </el-table-column>
 
           <el-table-column
@@ -117,6 +125,7 @@
 
   组件事件：
     @refreshTable 刷新列表接口数据（对应父组件 getTableList）
+    @selectionChange 列表勾选
 
   组件插槽：
     v-slot="tableTool" 表格工具栏
@@ -210,6 +219,20 @@ export default {
       default: () => []
     },
     /**
+     * 表格为 selection 时，作为判断是否勾选的 key
+     */
+     selectKey: {
+      type: String,
+      default: 'isSelected'
+    },
+    /**
+     * 行唯一id（起到优化作用）
+     */
+    rowKey: {
+      type: String,
+      default: ''
+    },
+    /**
      * 数据加载 loading
      */
     loading: {
@@ -231,13 +254,15 @@ export default {
       default: ''
     }
   },
-  emits: ['refreshTable'],
+  emits: ['refreshTable', 'selectionChange'],
   data () {
     return {
       // 表格行距
       tableSize: '',
       totalColumns: [],
-      tableKey: ''
+      tableKey: '',
+      isSelectedAllInCurrentPage: false,
+      selectedList: []
     }
   },
   computed: {
@@ -268,9 +293,52 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    dataSource (newVal) {
+      this.checkSelectedAll()
     }
   },
   methods: {
+    /**
+     * 点击列表全选
+     */
+    handleSelectAll() {
+      this.dataSource.forEach(row => {
+        row[this.selectKey] = this.isSelectedAllInCurrentPage
+        this.handleSelect(this.isSelectedAllInCurrentPage, row)
+      })
+      this.$emit('selectionChange', this.selectedList)
+    },
+    /**
+     * 列表勾选事件
+     */
+    handleSelectionChange(isSelected, row) {
+      this.handleSelect(isSelected, row)
+      this.checkSelectedAll()
+      this.$emit('selectionChange', this.selectedList)
+    },
+    /**
+     * 处理列表单行勾选
+     */
+    handleSelect(isSelected, row) {
+      let index = -1
+      if (this.rowKey) {
+        index = this.selectedList.findIndex(item => item[this.rowKey] === row[this.rowKey])
+      } else {
+        index = this.selectedList.findIndex(item => JSON.stringify(item) === JSON.stringify(row))
+      }
+      if (index !== -1 && !isSelected) {
+        this.selectedList.splice(index, 1)
+      } else if (index === -1 && isSelected) {
+        this.selectedList.push(row)
+      }
+    },
+    /**
+     * 检查是否全选了本页
+     */
+    checkSelectedAll() {
+      this.isSelectedAllInCurrentPage = this.dataSource.every(item => item[this.selectKey])
+    },
     /**
      * 处理标签样式列
      */
@@ -282,7 +350,7 @@ export default {
     /**
      * 改变列表行距
      */
-     tableSizeChange(size) {
+    tableSizeChange(size) {
       this.tableSize = size
     },
     /**

@@ -149,13 +149,18 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="方案过滤：" prop="planFilter" >
-              <el-radio-group v-model="formData.planFilter" @input="onChangePlanFilter">
-                <el-radio-button v-for="item in preparedData.planFilterOptions" :label="item.value" :key="item.value" >
+            <el-form-item label="方案过滤：" prop="planFilterType" >
+              <el-radio-group v-model="formData.planFilterType" @input="onChangePlanFilter">
+                <el-radio-button
+                  v-for="item in preparedData.planFilterTypeOptions"
+                  :key="item.value"
+                  :label="item.value"
+                  @click.native="onClickPlanFilterType(item.value)"
+                >
                   <span>{{ item.label }}</span>
                 </el-radio-button>
               </el-radio-group>
-              <span v-if="formData.planFilter === '2'" style="margin-left: 10px">已选0个</span>
+              <span v-if="formData.planFilterType === '2'" style="margin-left: 10px">已选{{ formData.planFilterSelection.length }}个</span>
             </el-form-item>
 
           </el-form>
@@ -179,7 +184,7 @@
     <VacancyDownloadCollect ref="vacancyDownloadCollect" :collectList="collectList" @getCollectList="getCollectList" @cancelCollect="cancelCollect"/>
 
     <!-- 选择方案 -->
-    <ChoosePlanDialog ref="choosePlanDialogRef"/>
+    <ChoosePlanDialog ref="choosePlanDialogRef" @confirm="onConfirmChoosePlan"/>
   </div>
 </template>
 
@@ -213,7 +218,8 @@ import { Message } from "element-ui";
     dateType: '1',
     customDate: [],
     // 方案过滤
-    planFilter: '1',
+    planFilterType: '1',
+    planFilterSelection: []
   }
 }
 
@@ -290,7 +296,7 @@ export default {
           { label: '默认半年日期', value: '1' },
           { label: '自定义日期', value: '2' },
         ],
-        planFilterOptions: [
+        planFilterTypeOptions: [
           { label: '全部过滤', value: '1' },
           { label: '自定义过滤', value: '2' },
         ]
@@ -317,12 +323,28 @@ export default {
     };
   },
   methods: {
-    onChangePlanFilter(val) {
-      console.log('onChangePlanFilter ====', val)
+    onClickPlanFilterType(val) {
+      console.log('onClickPlanFilterType e === ', val)
       if (val === '2') {
-        this.$refs.choosePlanDialogRef.open()
+        this.$refs.choosePlanDialogRef.open(this.formData.planFilterSelection)
       }
     },
+    /**
+     * 确认选择方案
+     */
+    onConfirmChoosePlan(list) {
+      console.log('onConfirmChoosePlan ====', list)
+      this.formData.planFilterSelection = list
+    },
+    /**
+     * 方案过滤切换
+     */
+    onChangePlanFilter(val) {
+      // console.log('onChangePlanFilter ====', val)
+    },
+    /**
+     * 开门次数时间类型切换
+     */
     onChangeOpenDoorType() {
       this.formData.openDoorDate = []
     },

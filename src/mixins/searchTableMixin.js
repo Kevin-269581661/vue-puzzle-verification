@@ -13,7 +13,7 @@ export default {
       searchData: {},
       // 真正的搜索条件（不包含分页条件）
       searchCondition: {},
-      // 表格字段配置 - 建议使用 initTableColums 传入
+      // 表格字段配置 - 建议使用 initTableColumns 传入
       tableColumns: [],
       // 表格加载状态
       tableLoading: false,
@@ -216,7 +216,7 @@ export default {
     initSearchTableMixin({
       initSearchData,
       initSearchFileds,
-      initTableColums,
+      initTableColumns,
       initPagination
     }) {
       if (initSearchData && typeof initSearchData === 'function') {
@@ -226,8 +226,8 @@ export default {
       if (initSearchFileds && typeof initSearchFileds === 'function') {
         this.searchFileds = initSearchFileds()
       }
-      if (initTableColums && typeof initTableColums === 'function') {
-        this.tableColumns = initTableColums()
+      if (initTableColumns && typeof initTableColumns === 'function') {
+        this.tableColumns = initTableColumns()
       }
       if (initPagination && typeof initPagination === 'function') {
         const paginationCustom = initPagination()

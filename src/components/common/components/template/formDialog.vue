@@ -1,6 +1,6 @@
 <template>
   <div class="dialog_container">
-    <!-- 弹框模板组件 -->
+    <!-- 模板-弹框组件 -->
     <el-dialog
       :visible.sync="visible"
       :append-to-body="true"
@@ -15,11 +15,11 @@
         <div class="custom_dialog_body">
           <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" size="small" class="form">
             <el-form-item label="示例一：" prop="propOne">
-              <el-input v-model="formData.propOne" placeholder="请输入" clearable></el-input>
+              <el-input v-model.trim="formData.propOne" placeholder="请输入" clearable maxlength="100"></el-input>
             </el-form-item>
 
             <el-form-item label="示例二：" prop="propTwo">
-              <el-select v-model.trim="formData.propTwo" placeholder="请选择" filterable clearable>
+              <el-select v-model="formData.propTwo" placeholder="请选择" filterable clearable>
                 <el-option
                   v-for="item in preparedData.propTwoOptions"
                   :key="item.value"

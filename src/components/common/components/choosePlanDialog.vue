@@ -18,7 +18,6 @@
             <TableSearch
               :value="searchData"
               :fileds="searchFileds"
-              @change="handleChangeSeach"
               @search="handleSearch"
               @reset="handleReset"
             >
@@ -66,6 +65,7 @@
               :dataSource="tableList"
               :loading="tableLoading"
               :showSetting="false"
+              rowKey="apID"
               height="100%"
               @refreshTable="getTableList"
               @selectionChange="onChangeTableSelection"
@@ -254,7 +254,7 @@ const initSearchFileds = () => ({
 /**
  * 初始化列表字段
  */
-const initTableColums = () => ([
+const initTableColumns = () => ([
   { title: '序号', type: 'selection' },
   { title: '方案名称', dataIndex: 'apName', width: 150 },
   { title: '客户名称', dataIndex: 'cName', width: 150 },
@@ -420,7 +420,7 @@ export default {
   created() {
     this.sessionData = sessFun.getSess()
     const { uID: uid, token } = this.sessionData
-    this.initSearchTableMixin({ initSearchData, initSearchFileds, initPagination, initTableColums })
+    this.initSearchTableMixin({ initSearchData, initSearchFileds, initPagination, initTableColumns })
     this.getOptions({
       cityName: () => this.$api.advertisement.getAPDCityNames({ uid, token })
     })

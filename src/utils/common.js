@@ -91,6 +91,15 @@ function getUrlParams(url) {
     })
   return paramsObj
 }
+/**
+ * 得到一个唯一id
+ */
+const getUniqueId = (function () {
+  let id = 0
+  return function () {
+    return Math.random().toString(36).slice(3, 6) + Number(`${Date.now()}${++id}`).toString(36)
+  }
+})()
 
 export {
   // 下载文件
@@ -100,5 +109,7 @@ export {
   // 复制文本到剪切板
   setClipboardData,
   // 获取 url 上的参数，转换成对象
-  getUrlParams
+  getUrlParams,
+  // 得到一个唯一id
+  getUniqueId
 }

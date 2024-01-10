@@ -4,12 +4,12 @@
     <el-dialog
       :visible.sync="visible"
       :append-to-body="true"
-      :show-close="true"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
+      :show-close="true"
       :title="`${isEdit ? '编辑' : '新建'}模板弹框`"
       width="60%"
-      @closed="close"
+      @closed="afterClose"
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
@@ -31,8 +31,8 @@
           </el-form>
         </div>
         <div class="custom_dialog_footer">
-          <el-button @click="close" size="small">取消</el-button>
-          <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
+          <el-button size="small" @click="close">取消</el-button>
+          <el-button type="primary" size="small" @click="onSubmit">确定</el-button>
         </div>
       </div>
     </el-dialog>
@@ -42,7 +42,7 @@
 <script>
 /*
 
-vue2 通用弹窗组件模板
+  vue2 通用弹窗组件模板
 
   使用方法：全部复制，粘贴，根据业务需求修改，多余的删掉
 
@@ -50,13 +50,13 @@ vue2 通用弹窗组件模板
     preparedData
 
   事件：
-    @close // 当弹窗关闭
+    @afterClose // 当弹窗关闭
     @submitSuccess // 当提交成功
 
   父组件调用（采用调用方法的方式打开，保证数据传递及时性，以及方便控制打开时的初始化逻辑处理，且父组件无需维护多余子组件的变量）：
 
     组件标签：
-    <FormDialog ref='formDialogRef' :preparedData="formDialogPreparedData" @close="onClose" @submitSuccess="onSubmitSuccess"/>
+    <FormDialog ref='formDialogRef' :preparedData="formDialogPreparedData" @afterClose="afterClose" @submitSuccess="onSubmitSuccess"/>
 
     打开：
     this.$refs.formDialogRef && this.$refs.formDialogRef.open() // 新增
@@ -65,7 +65,7 @@ vue2 通用弹窗组件模板
     关闭：
     this.$refs.formDialogRef && this.$refs.formDialogRef.close()
 
- */
+*/
 
 // import { cloneDeep } from "lodash";
 import sessFun from "@/commonFun/sessFun.js";
@@ -82,7 +82,7 @@ const initFormData = () => {
 
 export default {
   name: 'formDialog',
-  emits: ['submitSuccess', 'close'],
+  emits: ['submitSuccess', 'afterClose'],
   props: {
     // 预加载数据（默认是由父组件传入，如果不是，则需要写在 data 里，并创建方法获取预加载数据）
     preparedData: {
@@ -134,6 +134,7 @@ export default {
      * 提交表单
      */
     async onSubmit() {
+      if (this.dialogLoading) return
       try {
         const isPass = await this.$refs['formRef'].validate()
         if (!isPass) return
@@ -198,9 +199,10 @@ export default {
     /**
      * 重置数据
      */
-    handleReset() {
+    afterClose() {
       this.formData = initFormData()
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+      this.$emit('afterClose')
     },
     /**
      * 打开弹框
@@ -228,8 +230,6 @@ export default {
      */
     close() {
       if (!this.visible) return
-      this.handleReset()
-      this.$emit('close')
       this.visible = false
     }
   }

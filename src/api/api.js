@@ -114,6 +114,24 @@ export const api = {
         },
         responseType: 'blob'
       })
+    },
+    /**
+     * post 上传文件请求方法
+     * @param {*} url
+     * @param {*} data
+     * @param {*} headers
+     * @returns
+     */
+    postUploadFileApi(url, data = {}, headers = {}) {
+      return axios({
+        method: 'post',
+        url,
+        data,
+        headers:{
+          'Content-Type': 'multipart/form-data',
+          ...headers
+        },
+      })
     }
 }
 export default api

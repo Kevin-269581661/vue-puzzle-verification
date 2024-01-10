@@ -19,6 +19,15 @@ export default {
       tableLoading: false,
       // 表格数据
       tableList: [],
+      // 列表配置
+      tableSetting: {
+        // 是否使用分页
+        usePagination: true,
+        // 是否是树型表格
+        useTreeTable: false,
+        // 是否滚动到顶部
+        isScrollToTop: false
+      },
       // 不能直接在子组件中覆盖，需使用 initPagination 传入
       pagination: {
         // 当前页码
@@ -69,7 +78,9 @@ export default {
      */
     handleSearch() {
       // 重置当前页码
-      this.pagination.page = 1
+      if (this.tableSetting.usePagination) {
+        this.pagination.page = 1
+      }
       this.searchParamFormat();
       this.getTableList();
     },
@@ -119,20 +130,25 @@ export default {
       try {
         if (this.tableLoading) return
         // this.tableList = []
+        let params = { ...this.searchCondition }
         this.tableLoading = true
-        const { page, pageSize, keyConfig } = this.pagination
+        // 判断是否使用分页
+        if (this.tableSetting.usePagination) {
+          const { page, pageSize, keyConfig } = this.pagination
+          params = {
+            ...params,
+            [keyConfig.page]: page,
+            [keyConfig.pageSize]: pageSize
+          }
+        }
         // 处理请求方法
         let res = null
         let request = null
         if (typeof this.apiModel.list === 'function') {
           request = this.apiModel.list
           // 发起请求
-          res = await request({
-            ...this.searchCondition,
-            [keyConfig.page]: page,
-            [keyConfig.pageSize]: pageSize
-          })
-        } else if (typeof this.apiModel.list === 'object') {
+          res = await request(params)
+        } else if (this.apiModel.list && typeof this.apiModel.list === 'object') {
           const { requestUrl, requestFunction } = this.apiModel.list
           if (!requestUrl) throw new Error('getTableList error: 请配置请求地址')
           if (requestFunction) {
@@ -141,12 +157,18 @@ export default {
             request = this.$request.postApi_json
           }
           // 发起请求
-          res = await request(requestUrl, this.searchCondition)
+          res = await request(requestUrl, params)
+        } else {
+          throw new Error('getTableList error: 请配置请求方法')
         }
-        const { list = [], total } = this.handleTableListResponse(res)
-        console.log('getTableList ===', list, total)
-        this.tableList = list
-        this.pagination.total = total
+        // 判断是否使用分页
+        if (this.tableSetting.usePagination) {
+          const { list = [], total } = this.handleTableListResponse(res)
+          this.tableList = list
+          this.pagination.total = total
+        } else {
+          this.tableList = this.handleTableListResponse(res)
+        }
       } catch (err) {
         this.$message.error(String(err) || '获取列表数据失败')
         console.error('getTableList error:', err)
@@ -198,8 +220,11 @@ export default {
     handleTableListResponse(res) {
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message || '获取列表数据失败')
-      const { list = [], total } = data
-      return { list, total }
+      if (this.tableSetting.usePagination) {
+        const { list = [], total } = data
+        return { list, total }
+      }
+      return data
     },
     /**
      * 处理预加载数据返回结果
@@ -217,7 +242,8 @@ export default {
       initSearchData,
       initSearchFileds,
       initTableColumns,
-      initPagination
+      initPagination,
+      initTableSetting
     }) {
       if (initSearchData && typeof initSearchData === 'function') {
         _initSearchData = initSearchData
@@ -234,6 +260,14 @@ export default {
         Object.keys(paginationCustom).forEach((key) => {
           if (key in this.pagination) {
             this.pagination[key] = paginationCustom[key]
+          }
+        })
+      }
+      if (initTableSetting && typeof initTableSetting === 'function') {
+        const tableSetting = initTableSetting()
+        Object.keys(tableSetting).forEach((key) => {
+          if (key in this.tableSetting) {
+            this.tableSetting[key] = tableSetting[key]
           }
         })
       }

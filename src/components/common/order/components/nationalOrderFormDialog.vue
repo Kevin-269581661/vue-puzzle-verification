@@ -182,6 +182,18 @@
               </el-radio-group>
             </el-form-item>
 
+            <el-form-item label="售卖模式：" prop="saleMode">
+              <el-radio-group v-model="formData.saleMode">
+                  <el-radio
+                    v-for="item in preparedData.saleModeOptions"
+                    :key="item.value"
+                    :label="item.value"
+                  >
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
           </el-form>
         </div>
         <div class="custom_dialog_footer">
@@ -285,6 +297,7 @@ export default {
         // specification: [{ required: true, message: '请输入需求说明', trigger: 'blur' }],
         lockPointFormType: [{ required: true, message: '请选择锁点返表类型', trigger: 'blur' }],
         skFormType: [{ required: true, message: '请选择上刊返表类型', trigger: 'blur' }],
+        saleMode: [{ required: true, message: '请选择售卖模式', trigger: 'blur' }],
         // 特殊校验
         companyList: [
           {
@@ -323,6 +336,10 @@ export default {
         skFormTypeOptions: [
           { label: '系统模板' , value: 1 },
           { label: '客户模板' , value: 2 },
+        ],
+        saleModeOptions: [
+          { label: '传统售卖模式' , value: 0 },
+          { label: 'CPM售卖模式' , value: 1 },
         ],
       },
       // 投放日期限制
@@ -363,7 +380,7 @@ export default {
         this.dialogLoading = true
         // 处理时间
         const [ startTime = null, endTime = null ] = this.formData.publishDateRange
-        const res = await this.$api.qcentDsp.addPlan({
+        const res = await this.$api.resource.saveOrUpdatePlan({
           ...this.formData,
           startTime,
           endTime
@@ -387,7 +404,7 @@ export default {
       if (!id) return console.error('getDetail error: id 不能为空')
       try {
         this.dialogLoading = true
-        const res = await this.$api.qcentDsp.getById({ id })
+        const res = await this.$api.resource.getById({ id })
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.formData = {

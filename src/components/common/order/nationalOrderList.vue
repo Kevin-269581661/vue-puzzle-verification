@@ -49,7 +49,7 @@
                     <span>{{ item.label }}</span>
                   </el-radio-button>
                 </el-radio-group>
-                <el-button type="plain" size="small" @click="handleCreate">新建项目</el-button>
+                <!-- <el-button type="plain" size="small" @click="goDetailPage">新建项目</el-button> -->
               </div>
             </template>
 
@@ -82,7 +82,7 @@
     </div>
 
     <!-- 全国单-创建计划-弹窗 -->
-    <NationalOrderFormDialog ref="nationalOrderFormDialogRef"/>
+    <!-- <NationalOrderFormDialog ref="nationalOrderFormDialogRef"/> -->
 
   </div>
 </template>
@@ -94,7 +94,7 @@ import PointState from '@/components/common/components/pointState.vue';
 import TableList from "@/components/common/components/TableList/index.vue";
 import TableAction from "@/components/common/components/TableAction/index.vue";
 import TableSearch from "@/components/common/components/TableSearch/index.vue";
-import NationalOrderFormDialog from './components/nationalOrderFormDialog.vue';
+// import NationalOrderFormDialog from './components/nationalOrderFormDialog.vue';
 /**
  * 初始化搜索绑定数据
  */
@@ -104,8 +104,8 @@ const initSearchData = () => ({
   customerBrandName: '',
   applyBy: '',
   applyCompanyName: '',
-  // 状态:1.对接中,2.投放中,3.已终止,4.已完成
-  status: 1
+  // 状态:0.待确认 1.对接中,2.投放中,3.已终止,4.已完成
+  status: 0
 })
 /**
  * 初始化搜索配置
@@ -208,7 +208,7 @@ export default {
     TableList,
     TableAction,
     TableSearch,
-    NationalOrderFormDialog
+    // NationalOrderFormDialog
   },
   data () {
     return {
@@ -218,14 +218,15 @@ export default {
       // 预加载数据
       preparedData: {
         statusOptions: [
-          { label: '对接中', value: 1, color: 'rgba(82,196,26,1)' },
-          { label: '投放中', value: 2, color: 'rgba(250,173,20,1)'  },
-          { label: '已终止', value: 3, color: 'rgba(82,196,26,1)'  },
-          { label: '已完成', value: 4, color: 'rgba(82,196,26,1)'  },
+          { label: '待确认', value: 0, color: '#108ee9' },
+          { label: '对接中', value: 1, color: '#108ee9' },
+          { label: '投放中', value: 2, color: '#2db7f5'  },
+          { label: '已完成', value: 4, color: '#52C41A'  },
+          { label: '已终止', value: 3, color: '#D8D8D8'  },
         ]
       },
       apiModel: {
-        list: this.$api.qcentDsp.getPage
+        list: this.$api.resource.getPage
       },
     };
   },
@@ -234,6 +235,7 @@ export default {
      * 处理列表接口返回的数据
      */
      handleTableListResponse(res) {
+      console.log('handleTableListResponse res===', res)
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message || '获取列表数据失败')
       const { list = [], total } = data
@@ -258,14 +260,18 @@ export default {
     /**
      * 新建
      */
-    handleCreate () {
-      this.$refs.nationalOrderFormDialogRef && this.$refs.nationalOrderFormDialogRef.open();
-    },
+    // handleCreate () {
+    //   // this.$refs.nationalOrderFormDialogRef && this.$refs.nationalOrderFormDialogRef.open();
+    //   this.goDetailPage()
+    // },
     /**
      * 跳转详情页
      */
-    goDetailPage (item) {
-      // this.$router.push('/')
+    goDetailPage (id) {
+      this.$router.push({
+        path: '/media/nationalOrderDetail',
+        query: { id }
+      })
     },
     /**
      * 列表操作按钮组
@@ -276,7 +282,7 @@ export default {
           text: '详情',
           single: true,
           // visible: row.typeName == '巡点',
-          onClick: () => this.goDetailPage(row)
+          onClick: () => this.goDetailPage(row.id)
         },
       ]
     },

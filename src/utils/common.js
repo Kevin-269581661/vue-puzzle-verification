@@ -1,10 +1,53 @@
+
+import axios from 'axios';
+
+/**
+ * 通过 Ajax 下载文件
+ * @param {*} url
+ * @returns
+ */
+async function downloadFileByUrl(url) {
+  if (!/^http.+\.\w+$/.test(url)) {
+    return console.error('URL 必须以 http/https 开头，以文件名+后缀结尾');
+  }
+  const res = await axios({
+    method: 'get',
+    url,
+    responseType: 'blob',
+  })
+  let fileName = ''
+  if (res.headers['content-disposition']) {
+    fileName = window.decodeURI(res.headers['content-disposition'].split('=')[1], "UTF-8");
+    if (fileName.lastIndexOf(';') > -1) {
+      fileName.slice(fileName.lastIndexOf(';') + 1)
+    }
+  } else {
+    fileName = url.split('/').pop();
+  }
+  console.log('fileName ===', fileName)
+  await downLoadFile(res.data.data, fileName)
+}
+/**
+ * 通过 iframe 下载文件
+ * @param {*} fileUrl
+ */
+async function downloadFileByIframe(fileUrl) {
+  try {
+    const elemIF = document.createElement('iframe')
+    elemIF.src = fileUrl
+    elemIF.style.display = 'none'
+    document.body.appendChild(elemIF)
+  } catch (e) {
+    console.warn('文件下载：', e)
+  }
+}
 /**
  * 导出文件
  * @param {*} data 二进制流
  * @param {*} fileName 可带或不带后缀
  * @param {*} etc 文件后缀，带不带点都可
  */
-function downLoadFile (data, fileName, etc = 'xlsx') {
+async function downLoadFile (data, fileName, etc = 'xlsx') {
   let suffix = etc.lastIndexOf('.') > -1 ? etc.slice(etc.lastIndexOf('.') + 1) : etc
   const TypeObj = {
     'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -15,10 +58,15 @@ function downLoadFile (data, fileName, etc = 'xlsx') {
     'zip': 'application/zip',
     'rar': 'application/x-rar-compressed'
   }
+  let blob = null
+  if (suffix in TypeObj) {
+    blob = new Blob([data], {
+      type: TypeObj[suffix]
+    })
+  } else {
+    blob = new Blob([data])
+  }
   const link = document.createElement('a')
-  let blob = new Blob([data], {
-    type: TypeObj[suffix]
-  })
   let href = window.URL.createObjectURL(blob)
   link.style.display = 'none'
   link.href = href
@@ -102,6 +150,10 @@ const getUniqueId = (function () {
 })()
 
 export {
+  // 通过 iframe 下载文件
+  downloadFileByIframe,
+  // 通过链接下载文件
+  downloadFileByUrl,
   // 下载文件
   downLoadFile,
   // 安全解析 josn

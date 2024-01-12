@@ -57,4 +57,10 @@ export function confirm(params) {
 export function uploadNodeFiles(params) {
   return request.postApi_json("/addsp/resource/uploadFiles", params)
 }
+/**
+ * 统计流程公司数据
+ */
+export function countProcessCompanies(params) {
+  return request.getApi("/addsp/resource/countProcessCompanies", params)
+}
 

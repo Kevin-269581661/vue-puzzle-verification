@@ -317,33 +317,77 @@
                         操作<i class="el-icon-arrow-down el-icon--right"></i>
                       </span>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native.prevent="addPoint(scope.row)"
-                          :disabled="isDisable || scope.row.apState !== -1">配点
+                        <el-dropdown-item
+                          @click.native.prevent="addPoint(scope.row)"
+                          :disabled="isDisable || scope.row.apState !== -1"
+                        >
+                          配点
                         </el-dropdown-item>
 
-                        <el-dropdown-item @click.native.prevent="preload(scope.row)" :disabled="
-                          scope.row.isdfmj ||
-                          isDisable ||
-                          scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.canLock)
-                        ">预锁
+                        <el-dropdown-item
+                          v-if="
+                            !scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.canLock
+                          "
+                          @click.native.prevent="preload(scope.row)"
+                        >
+                          预锁
                         </el-dropdown-item>
 
-                        <el-dropdown-item @click.native.prevent="release(scope.row)" :disabled="
-                          scope.row.isdfmj ||
-                          isDisable ||
-                          scope.row.apState !== 1 ||
-                          (scope.row.apState != 1 &&
-                            scope.row.apControlLevel !== 1)
-                        ">发布
+                        <el-dropdown-item
+                          v-if="
+                            scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.canLock
+                          "
+                          @click.native.prevent="handleLockApply(scope.row)"
+                        >
+                          预锁申请
                         </el-dropdown-item>
 
-                        <el-dropdown-item @click.native.prevent="clearLock(scope.row)" :disabled="
-                          scope.row.isdfmj ||
-                          isDisable ||
-                          scope.row.apState !== 1 ||
-                          (scope.row.apState == 1 && !scope.row.unLock)
-                        ">解除预锁
+                        <el-dropdown-item
+                          v-if="
+                            !scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.apControlLevel == 1
+                          "
+                          @click.native.prevent="release(scope.row)"
+                        >
+                          发布
+                        </el-dropdown-item>
+
+                        <el-dropdown-item
+                          v-if="
+                            scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.apControlLevel == 1
+                          "
+                          @click.native.prevent="handleReleaseApply(scope.row)"
+                        >
+                          发布申请
+                        </el-dropdown-item>
+
+                        <el-dropdown-item
+                          v-if="
+                            !scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.unLock
+                          "
+                          @click.native.prevent="clearLock(scope.row)"
+                        >
+                          解除预锁
+                        </el-dropdown-item>
+
+                        <el-dropdown-item
+                          v-if="
+                            scope.row.isdfmj &&
+                            !isDisable &&
+                            scope.row.apState === 1 && scope.row.unLock
+                          "
+                          @click.native.prevent="handleClearLockApply(scope.row)"
+                        >
+                          解锁申请
                         </el-dropdown-item>
 
                         <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
@@ -535,11 +579,16 @@
           <h3>请选择要预锁的媒体类型</h3>
           <el-checkbox-group v-model="mediaTypeChecks">
             <div class="checkbox-item" v-for="item in currentMediaType" :key="item.value">
+              <!--
+                :disabled="!item.authMediaFlag || item.RemainDay !== ''"
+               -->
               <el-checkbox
                 :label="item.value"
-                :disabled="!item.authMediaFlag || item.RemainDay !== ''"
                 :checked="item.RemainDay !== ''"
-              >{{ item.label }}
+                :disabled="item.RemainDay !== ''"
+              >
+                <div>{{ item.label }}</div>
+                <div v-if="!item.authMediaFlag && item.RemainDay === ''" style="color: #F56C6C">勾选该选项发送申请</div>
               </el-checkbox>
             </div>
           </el-checkbox-group>
@@ -1179,6 +1228,7 @@ export default {
     release(row) {
       // 1)	全国媒介可发布全部销售的方案
       // 2)	地方媒介只能发布只选择了该所属公司点位的方案
+      // 3) 当包含“广告门”和“单元门禁灯箱”时，地方媒介可以都发布，因为这两个不可差分
 
       this.QCinfo = "";
       // 真实数据
@@ -1383,6 +1433,52 @@ export default {
       }
     },
 
+    /**
+     * 处理预锁申请
+     */
+    async handleLockApply(row) {
+      console.log('handleLockApply row ===', row)
+      try {
+        await this.$confirm(`锁定后，方案中的点位将被占用，是否确认发送锁定该方案的点位申请？`, '温馨提示')
+        let startObj = this.compareTime(row.cityArea, "pdStar", "pdEnd");
+        let date = timeFormat.toDate(new Date(), "/");
+        if (startObj.startTime <= date) {
+          this.$message.warning('开始投放时间已经早于当前时间，请提交发布申请')
+          return
+        }
+        const { apID: apId, mediaTypeIds: mediaTypeId } = row
+        this.handlePlanApply(apId, mediaTypeId, 2)
+      } catch (error) {
+        console.error('handleLockApply error:', error)
+      }
+    },
+    /**
+     * 处理发布申请
+     */
+    async handleReleaseApply(row) {
+      console.log('handleReleaseApply row ===', row)
+      try {
+        await this.$confirm(`确认发送发布该方案的申请？`, '温馨提示')
+        const { apID: apId, mediaTypeIds: mediaTypeId } = row
+        this.handlePlanApply(apId, mediaTypeId, 1)
+      } catch (error) {
+        console.error('handleReleaseApply error:', error)
+      }
+    },
+    /**
+     * 处理解锁申请
+     */
+    async handleClearLockApply(row) {
+      console.log('handleClearLockApply row ===', row)
+      try {
+        await this.$confirm(`解锁后，方案中的点位将被释放，确认发送解锁该方案的点位申请？`, '温馨提示')
+        const { apID: apId, mediaTypeIds: mediaTypeId } = row
+        this.handlePlanApply(apId, mediaTypeId, 3)
+      } catch (error) {
+        console.error('handleClearLockApply error:', error)
+      }
+    },
+
     //预锁
     preload(row) {
       this.$confirm(
@@ -1455,39 +1551,33 @@ export default {
     },
 
     // 解除预锁
-    clearLock(row) {
-      this.$confirm(
-        "<p>解锁后，方案中的点位将被释放</p>",
-        "是否确认解锁该方案的点位",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-          dangerouslyUseHTMLString: true,
+    async clearLock(row) {
+      try {
+        await this.$confirm('解锁后，方案中的点位将被释放（不能直接解锁的媒体将发送解锁请求），确认解锁该方案的点位？', '温馨提示')
+        this.currentItem = row;
+        // 检查是否有“单元门禁灯箱”，若勾选了，则调用发送申请接口
+        console.log('解除预锁 ===', row)
+        const applyItem = row.mediaTypeDetails.find(item => !item.authMediaFlag && item.RemainDay !== '')
+        console.log('applyItem ===', applyItem, this.currentItem.apID)
+        if (applyItem) {
+          this.handlePlanApply(row.apID, applyItem.mediaTypeId, 3)
         }
-      )
-        .then(() => {
-          this.currentItem = row;
-          this.currentMediaType = row.details.map(item => {
-            return {
-              label: item.mediaTypeName,
-              value: item.mediaTypeId,
-              mediaTypeName: item.mediaTypeName
-            }
-          })
-          this.Ctrlloading = this.$loading({
+        this.currentMediaType = row.details.map(item => {
+          return {
+            label: item.mediaTypeName,
+            value: item.mediaTypeId,
+            mediaTypeName: item.mediaTypeName
+          }
+        })
+        this.Ctrlloading = this.$loading({
             text: "请耐心等待...",
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
           });
-          this.noLockCity(row);
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
+        this.noLockCity(row);
+      } catch (error) {
+        console.log('clearLock error:', error)
+      }
     },
 
     // 检查当前拆分方案是否有点位被删除
@@ -1565,16 +1655,37 @@ export default {
       }
     },
 
+    /**
+     * 处理发布、预锁、解锁申请（地方媒介）
+     */
+    async handlePlanApply(apId, mediaTypeId, type) {
+      try {
+        const res = await this.$api.plan.addApply({
+          // 方案id
+          apId,
+          // 媒体类型id
+          mediaTypeId,
+          // 操作类型：1.发布，2.预锁，3.解锁
+          type
+        })
+        const { SysCode: code, MSG: message, data } = res.data
+        if (code !== 200200) return this.$message.error(message || '操作失败')
+        this.$message.success('操作成功')
+      } catch (error) {
+        this.$message.error(String(error) || '操作失败')
+      }
+    },
+
     // 预锁
-    LockCity(act) {
+    LockCity(act, mediaTypeIds) {
       let info = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         act: act,
         apid: this.currentItem.apID,
-        mediaTypeIds: this.mediaTypeChecks
+        mediaTypeIds
       };
-
+      console.log('LockCity info ===', info)
       api
         .postApi(this.apiVar.Advertisement + "/SetFangan", info)
         .then((res) => {
@@ -1785,6 +1896,7 @@ export default {
       obj.canLock = item.details.some(function (item, index) {
         return !item.RemainDay;
       });
+      // RemainDay: 预锁剩余天数 ，authMediaFlag: 地方媒介 && 单元门禁 值为 false，没有这个媒体权限 返回 false
       obj.unLock = item.details.some(function (item, index) {
         return item.RemainDay && item.authMediaFlag;
       });
@@ -2109,7 +2221,19 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      this.LockCity("L");
+      let mediaTypeIds = []
+      // 判断是否勾选“单元门禁灯箱”，若勾选了，则调用发送申请接口
+      const applyItem = this.currentMediaType.find(item => !item.authMediaFlag && item.RemainDay === '')
+      console.log('applyItem ===', applyItem)
+      if (applyItem && this.mediaTypeChecks.includes(applyItem.value)) {
+        mediaTypeIds = this.mediaTypeChecks.filter(item => item !== applyItem.value)
+        console.log('applyItem 222===')
+        this.handlePlanApply(this.currentItem.apID, applyItem.value, 2)
+      }
+      // 直接锁点（广告门）
+      if (mediaTypeIds.length) {
+        this.LockCity("L", mediaTypeIds);
+      }
       this.mediaTypeChecks = []
     },
 
@@ -2796,8 +2920,13 @@ a {
         margin-bottom: 4px;
 
         .el-checkbox {
-          display: block;
+          display: flex;
           margin-right: 0;
+          line-height: 32px;
+        }
+        .el-checkbox__input {
+          padding-top: 4px;
+          box-sizing: border-box;
         }
       }
 

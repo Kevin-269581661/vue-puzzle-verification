@@ -171,8 +171,8 @@
               <div class="custom_tree_node" slot-scope="{ data }">
                 <!-- {{ test(node, data) }} -->
                 <div v-if="data.menuType === 1" class="menu_item">
-                  <span>{{ data.title }}（99+）</span>
-                  <el-badge type="danger" is-dot  />
+                  <span>{{ data.title }}（{{ data.count }}）</span>
+                  <!-- <el-badge type="danger" is-dot  /> -->
                 </div>
                 <div v-else class="sub_menu_item">
                   <span class="title" :title="data.title">{{ data.title }}</span>
@@ -974,12 +974,13 @@ export default {
             title: `未完成${item.name}`,
             menuType: 1,
             children: [],
+            count: 0,
             isLeaf: false
           }
         })
         this.treeData = [
-          { title: '全部', code: 'all', id: null, menuType: 1, children: [], isLeaf: false },
-          { title: '已完成', code: 'finished', id: null, menuType: 1, children: [], isLeaf: false },
+          { title: '全部', code: 'all', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
+          { title: '已完成', code: 'finished', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
           ...newNodeList
         ]
         // 处理-换画标签 tab，存在2个及以上才显示
@@ -996,6 +997,33 @@ export default {
       } finally {
         this.pageLoading = false
       }
+    },
+    /**
+     * 统计流程公司数据
+     */
+     async getCountProcessCompanies() {
+      try {
+        const res = await this.$api.resource.countProcessCompanies({
+          processId: this.activeTabKey
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取统计流程公司数据失败')
+        // data 是一个对象，key 是 `${status}_${nodeId}`，全部key -1， 已完成 1
+        this.treeData.forEach((item) => {
+          item.count = data[item.key] || 0
+        })
+      } catch (err) {
+        console.error('getCountProcessCompanies error:', err)
+      }
+    },
+    /**
+     * 刷新详情和公司统计数据
+     */
+    async refreshDetail() {
+      // 先获取到流程 id
+      await this.getDetail()
+      // 获取公司统计数据
+      await this.getCountProcessCompanies()
     },
     /**
      * 发布
@@ -1466,7 +1494,7 @@ export default {
   },
   async mounted () {
     this.sessionData = sessFun.getSess();
-    this.getDetail()
+    this.refreshDetail()
   },
 };
 </script>

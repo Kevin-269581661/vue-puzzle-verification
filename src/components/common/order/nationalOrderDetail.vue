@@ -971,6 +971,7 @@ export default {
         const newNodeList = nodeList.map(item => {
           return {
             ...item,
+            key: `0_${item.id}`,
             title: `未完成${item.name}`,
             menuType: 1,
             children: [],
@@ -979,8 +980,8 @@ export default {
           }
         })
         this.treeData = [
-          { title: '全部', code: 'all', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
-          { title: '已完成', code: 'finished', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
+          { title: '全部', key: '-1', code: 'all', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
+          { title: '已完成', key: '1', code: 'finished', id: null, menuType: 1, children: [], count: 0, isLeaf: false },
           ...newNodeList
         ]
         // 处理-换画标签 tab，存在2个及以上才显示

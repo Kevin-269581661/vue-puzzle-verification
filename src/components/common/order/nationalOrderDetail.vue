@@ -60,10 +60,12 @@
             <el-col class="gutter_row" :xs="24" :md="12" :lg="8" :xl="6">
               <div class="info_item">
                 <div class="item_label">投放城市：</div>
-                <div class="item_value">{{ detailData.launchCities }}</div>
-                <el-tooltip effect="dark" :content="detailData.launchCities" placement="top">
-                  <i class="el-icon-info show_more_icon"></i>
-                </el-tooltip>
+                <div class="item_value">
+                  <span class="title">{{ detailData.launchCities }}投放城市：投放城市：投放城市：投放城市</span>
+                  <el-tooltip effect="dark" :content="detailData.launchCities" placement="top">
+                    <i class="el-icon-info show_more_icon" style="margin-left: 5px"></i>
+                  </el-tooltip>
+                </div>
               </div>
             </el-col>
 
@@ -1555,6 +1557,15 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    .title {
+      max-width: calc(100% - 20px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
   }
   .show_more_icon {
     color: #999;
@@ -1623,6 +1634,10 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
+    }
+    /deep/ .el-badge {
+      display: flex;
+      align-items: center;
     }
     /deep/ .el-tree-node__content {
       height: 40px !important;

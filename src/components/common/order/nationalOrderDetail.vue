@@ -835,7 +835,7 @@ export default {
       this.uploadFileData = {
         ...initUploadFileData(),
         title: title || '上传文件',
-        accept: accept || '.',
+        accept: accept || '',
         multiple: multiple || false
       }
       this.$refs.uploadFileDialogRef && this.$refs.uploadFileDialogRef.open()

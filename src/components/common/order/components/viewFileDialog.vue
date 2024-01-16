@@ -107,7 +107,7 @@ export default {
       // Object.assign(uploadFileData, {
       //   ...initUploadFileData(),
       //   title: title || '上传文件',
-      //   accept: accept || '.',
+      //   accept: accept || '',
       //   multiple: multiple || false
       // })
       // uploadFileModalRef.value?.open()
@@ -138,7 +138,7 @@ export default {
           break
         // 补充客户素材
         case ResourceTypeEnum.CUSTOMER_MATERIALS:
-          openUploadFileModal('上传补充客户素材', '*')
+          openUploadFileModal('上传补充客户素材', '')
           break
         // 补充客户点位反馈模板
         case ResourceTypeEnum.SPACE_FEEDBACK:

@@ -11,7 +11,7 @@
       width="600px"
       @closed="afterClose"
     >
-      <div v-loading="dialogLoading" class="dialog_content">
+      <div v-loading="dialogLoading" :element-loading-text="dialogLoadingTip" class="dialog_content">
         <div class="custom_dialog_body">
           <el-upload
             :file-list="fileList"
@@ -48,6 +48,7 @@
 
 <script>
 import sessFun from "@/commonFun/sessFun.js";
+import CosUploader from '@/utils/cos-js-sdk-v5-util'
 
 export default {
   name: 'uploadFileDialog',
@@ -84,7 +85,7 @@ export default {
     // '.doc,.docx,.pdf,.xls,.xlsx,.ppt,.pptx,.jpeg,.jpg,.png'
     accept: {
       type: String,
-      default: '*'
+      default: ''
     },
     // 发到后台的文件参数名
     name: {
@@ -105,8 +106,10 @@ export default {
     return {
       visible: false,
       dialogLoading: false,
+      dialogLoadingTip: '正在上传中（0%），请勿关闭弹窗',
       isEdit: false,
       fileList: [],
+      cosUploader: null
     }
   },
   methods: {
@@ -123,18 +126,19 @@ export default {
           formData.append(key, this.uploadParams[key])
         })
         this.dialogLoading = true
-        const res = await this.$request.postUploadFileApi(
-          this.uploadUrl || `/resource/upload`,
-          formData,
-          { token, uid }
-        )
-        const { SysCode: code, MSG: message, data } = res.data || {}
-        if (code !== 200200) {
-          params.onError(message, params.file)
-          return this.$message.error(message || '上传失败')
-        }
+        this.dialogLoadingTip = `正在上传中（0%），请勿关闭弹窗`
+        this.cosUploader = CosUploader.create()
+        const res = await this.cosUploader.uploadFile({
+          file: params.file,
+          onProgress: (percent) => {
+            this.dialogLoadingTip = `正在上传中（${percent * 100}%），请勿关闭弹窗`
+            // params.onProgress(percent)
+          }
+        })
+        console.log('上传成功 res ===', res)
         this.$message.success(`${params.file.name} 上传成功`)
-        params.onSuccess(data, params.file)
+        const downloadUrl = `https://${res.Location}`
+        params.onSuccess(downloadUrl, params.file)
       } catch (err) {
         console.error('handleRequest error:', err)
         params.onError(err, params.file)
@@ -242,6 +246,7 @@ export default {
     afterClose() {
       this.$refs.uploadRef.clearFiles()
       this.fileList = []
+      if (this.cosUploader) this.cosUploader.cancel()
       this.$emit('afterClose')
     },
     /**

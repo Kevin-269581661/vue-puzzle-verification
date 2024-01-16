@@ -61,7 +61,7 @@
               <div class="info_item">
                 <div class="item_label">投放城市：</div>
                 <div class="item_value">
-                  <span class="title">{{ detailData.launchCities }}投放城市：投放城市：投放城市：投放城市</span>
+                  <span class="title">{{ detailData.launchCities }}</span>
                   <el-tooltip effect="dark" :content="detailData.launchCities" placement="top">
                     <i class="el-icon-info show_more_icon" style="margin-left: 5px"></i>
                   </el-tooltip>

@@ -67,7 +67,7 @@
 <script>
 import sessFun from "@/commonFun/sessFun.js";
 import { ResourceTypeEnum } from '../data'
-import { downloadFileByUrl, downloadFileByIframe } from '@/utils/common'
+import { downloadFileByUrl, downloadFileByIframe, previewFile } from '@/utils/common'
 
 let _resourceId = null
 let _resourceType = null
@@ -159,7 +159,9 @@ export default {
     /**
      * 查看文件
      */
-    handlePreviewFile(item) {},
+    handlePreviewFile(item) {
+      previewFile(item.url)
+    },
     /**
      * 下载文件
      */

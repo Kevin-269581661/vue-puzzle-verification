@@ -46,7 +46,8 @@
                     :label="item.value"
                     :disabled="tableLoading"
                   >
-                    <span>{{ item.label }}</span>
+                    <span v-if="item.label === '全部'">{{ item.label }}</span>
+                    <span v-else>{{ item.label }}（{{statisticData[item.key]}}）</span>
                   </el-radio-button>
                 </el-radio-group>
                 <!-- <el-button type="plain" size="small" @click="goDetailPage">新建项目</el-button> -->
@@ -105,7 +106,7 @@ const initSearchData = () => ({
   applyBy: '',
   applyCompanyName: '',
   // 状态:0.待确认 1.对接中,2.投放中,3.已终止,4.已完成
-  status: 0
+  status: null
 })
 /**
  * 初始化搜索配置
@@ -218,24 +219,49 @@ export default {
       // 预加载数据
       preparedData: {
         statusOptions: [
-          { label: '待确认', value: 0, color: '#108ee9' },
-          { label: '对接中', value: 1, color: '#108ee9' },
-          { label: '投放中', value: 2, color: '#2db7f5'  },
-          { label: '已完成', value: 4, color: '#52C41A'  },
-          { label: '已终止', value: 3, color: '#D8D8D8'  },
+          { label: '全部', value: null, color: '', key: 'all' },
+          { label: '待确认', value: 0, color: '#108ee9', key: 'toConfirmNum' },
+          { label: '对接中', value: 1, color: '#108ee9', key: 'inProgressNum' },
+          { label: '投放中', value: 2, color: '#2db7f5', key: 'launchNum'  },
+          { label: '已完成', value: 4, color: '#52C41A', key: 'finishNum'  },
+          { label: '已终止', value: 3, color: '#D8D8D8', key: 'stopNum'  },
         ]
       },
       apiModel: {
         list: this.$api.resource.getPage
       },
+      statisticData: {
+        // 待确认数量
+        toConfirmNum: 0,
+        // 对接中数量
+        inProgressNum: 0,
+        // 投放中数量
+        launchNum: 0,
+        // 已终止数量
+        stopNum: 0,
+        // 已完成数量
+        finishNum: 0
+      }
     };
   },
   methods: {
     /**
+     * 获取节点列表
+     */
+     async onTableDataGot() {
+      try {
+        const res = await this.$api.resource.countStatus()
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取列表统计数据失败')
+        this.$set(this, 'statisticData', data)
+      } catch (err) {
+        console.error('onTableDataGot error:', err)
+      }
+    },
+    /**
      * 处理列表接口返回的数据
      */
      handleTableListResponse(res) {
-      console.log('handleTableListResponse res===', res)
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message || '获取列表数据失败')
       const { list = [], total } = data
@@ -254,7 +280,6 @@ export default {
      * 切换状态
      */
     onChangeStatus(val) {
-      console.log('onChangeStatus ===', val)
       this.handleSearch()
     },
     /**

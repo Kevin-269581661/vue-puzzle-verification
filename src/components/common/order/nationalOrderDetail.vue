@@ -232,7 +232,7 @@
                               重选点位
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -269,10 +269,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -307,10 +307,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -338,6 +338,7 @@
                         </div>
                         <template v-if="item.status === 1">
                           <div class="btn_group">
+                            <div v-if="item.fileList && item.fileList.length" class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
                               {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
@@ -355,10 +356,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -384,6 +385,7 @@
                         </div>
                         <template v-if="item.status === 1">
                           <div class="btn_group">
+                            <div v-if="item.fileList && item.fileList.length" class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
                               {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
@@ -401,10 +403,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -430,6 +432,7 @@
                         </div>
                         <template v-if="item.status === 1">
                           <div class="btn_group">
+                            <div v-if="item.fileList && item.fileList.length" class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
                               {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
@@ -447,10 +450,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -468,6 +471,7 @@
                       <template v-if="item.nodeCode === 'orderForm'">
                         <template v-if="item.status === 1">
                           <div class="btn_group">
+                            <div v-if="item.fileList && item.fileList.length" class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
                               {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
@@ -485,10 +489,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -523,10 +527,10 @@
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
                             <div class="btn_box" @click="handleNodeAction(item, 'upload')">
-                              重新上传
+                              {{ item.fileList && item.fileList.length ? '修改' : '上传' }}
                             </div>
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">
-                              再次确认
+                              确认
                             </div>
                           </div>
                         </template>
@@ -541,6 +545,11 @@
                       </template>
                     </template>
                     <PointState :state-text="item.statusText" :color="item.statusColor" class="status_box"/>
+                    <i
+                      v-if="item.status === 3 && isAuth"
+                      class="el-icon-warning-outline reject_icon"
+                      @click="showRejectMsg(item)"
+                    ></i>
                   </div>
                 </div>
               </div>
@@ -598,7 +607,7 @@ import ViewFileDialog from './components/viewFileDialog.vue'
 import UploadPictureVideoDialog from './components/uploadPictureVideoDialog.vue'
 import DynamicListDialog from './components/dynamicListDialog.vue'
 import ViewPointDialog from './components/viewPointDialog.vue'
-import { deserialize, getUniqueId } from '@/utils/common'
+import { deserialize, getUniqueId, previewFile } from '@/utils/common'
 import { ResourceTypeEnum } from './data'
 
 // 状态显示枚举:1.确认,2.待确认,3.拒绝(回到确认),4.已完成
@@ -756,6 +765,27 @@ export default {
   },
   methods: {
     /**
+     * 显示拒绝原因
+     */
+    showRejectMsg(item) {
+      // 图片直接打开弹框
+      if (['threeColor'].includes(item.nodeCode)) {
+        this.openUploadPictureVideoModal(item, {
+          title: '拒绝原因',
+          isShowVideo: true,
+          isShowRejectExpand: true,
+          isShowColor: true
+        })
+      } else if (['bleedPic', 'exquisitePic'].includes(item.nodeCode)) {
+        this.openUploadPictureVideoModal(item, {
+          title: '拒绝原因',
+          isShowRejectExpand: true
+        })
+      } else {
+        this.$alert(item.rejectExpand, '拒绝原因')
+      }
+    },
+    /**
      * 跳转到选择点位页面
      */
     async goChoosePointPage() {
@@ -766,7 +796,6 @@ export default {
         if (!apID) throw new Error('获取方案数据失败: 参数 adPlanId 缺失')
         const { uID: uid, token } = this.sessionData
         const res = await this.$api.advertisement.getProposal({ uid, token, start: 1, pagesize: 999, apID })
-        console.log('goChoosePointPage ====', res)
         if (!res.data || !res.data.list.length) throw new Error('获取方案数据失败')
         const row = res.data.list[0]
         // 以下逻辑参考 /planList 页面
@@ -879,7 +908,6 @@ export default {
     openViewFileModal(resourceType) {
       const { id: resourceId } = this.detailData
       if (!resourceId) return
-      console.log('openViewFileModal ===', resourceId, resourceType)
       this.$refs.viewFileDialogRef && this.$refs.viewFileDialogRef.open({ resourceId, resourceType })
     },
     /**
@@ -913,25 +941,19 @@ export default {
      * 点击树形
      */
     onTreeSelect(data, node) {
-      console.log('onTreeSelect data ===', data, node)
       // 地方媒介只能查看自己公司的数据
       if (data.menuType === 2) {
         this.currentCompanyItem = data
         this.getNodeDetail()
       }
     },
-    // test(...p) {
-    //   console.log('test p ====', ...p)
-    // },
     /**
      * 懒加载树形公司列表数据
      */
     async onTreeLoadData (node, resolve) {
-        console.log('onTreeLoadData node ===', node)
         if (node.level === 0) {
           return resolve(this.treeData);
         }
-        console.log('onTreeLoadData 111 ===', node)
         const { children, menuType, id: nodeId, code: key } = node.data
         // if (children && children.length) return resolve()
         if (menuType !== 1) return resolve([])
@@ -963,7 +985,6 @@ export default {
         if (!id) return this.$message.error('获取详情数据失败，参数缺失')
         this.pageLoading = true
         const res = await this.$api.resource.getById({ id })
-        console.log('getDetail =========', res)
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取详情数据失败')
         this.detailData = data
@@ -1032,13 +1053,12 @@ export default {
      * 发布
      */
     publishPlan () {
-      console.log('publishPlan ====')
+      // console.log('publishPlan ====')
     },
     /**
      * 确认上传/确认选点（地方媒介）
      */
     async handleConfirmUpload(item) {
-      console.log('handleConfirmUpload item ===', item)
       try {
         await this.$confirm('确认执行操作？', '温馨提示')
         this.nodeLoading = true
@@ -1061,7 +1081,6 @@ export default {
      * 处理节点按钮操作
      */
     handleNodeAction(item, buttonName) {
-      console.log('handleNodeAction item ===', item)
       this.currentNodeItem = item
       const handleObj = {
         // 1、 确认点位情况
@@ -1210,7 +1229,8 @@ export default {
             case 3:
               if (buttonName === 'view') {
                 this.openUploadPictureVideoModal(item, {
-                  title: '查看出血图片'
+                  title: '查看出血图片',
+                  isShowRejectExpand: true
                 })
                 return
               }
@@ -1243,6 +1263,10 @@ export default {
           switch (item.status) {
             // 待上传
             case 1:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
               if (buttonName === 'upload') {
                 return this.openUploadFileModal('上传点位反馈', '.xls,.xlsx')
               }
@@ -1265,6 +1289,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
                 return
               }
               if (buttonName === 'upload') {
@@ -1291,6 +1316,10 @@ export default {
           switch (item.status) {
             // 待上传
             case 1:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
               if (buttonName === 'upload') {
                 return this.openUploadFileModal('上传上刊报告', '.ppt,.pptx')
               }
@@ -1313,6 +1342,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
                 return
               }
               if (buttonName === 'upload') {
@@ -1339,6 +1369,10 @@ export default {
           switch (item.status) {
             // 待上传
             case 1:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
               if (buttonName === 'upload') {
                 return this.openUploadFileModal('上传上刊明细', '.xls,.xlsx')
               }
@@ -1361,6 +1395,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
                 return
               }
               if (buttonName === 'upload') {
@@ -1387,6 +1422,10 @@ export default {
           switch (item.status) {
             // 待上传
             case 1:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
               if (buttonName === 'upload') {
                 return this.openUploadFileModal('上传下单表', '.pdf')
               }
@@ -1409,6 +1448,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
                 return
               }
               if (buttonName === 'upload') {
@@ -1463,7 +1503,8 @@ export default {
             case 3:
               if (buttonName === 'view') {
                 this.openUploadPictureVideoModal(item, {
-                  title: '查看精美图片'
+                  title: '查看精美图片',
+                  isShowRejectExpand: true
                 })
                 return
               }
@@ -1708,6 +1749,7 @@ export default {
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid #e9e9e9;
+        position: relative;
         &:last-child {
           border: 0;
         }
@@ -1761,5 +1803,15 @@ export default {
 
 .status_box {
   margin-left: 16px;
+  margin-right: 23px;
+}
+.reject_icon {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #ccc;
+  cursor: pointer;
 }
 </style>

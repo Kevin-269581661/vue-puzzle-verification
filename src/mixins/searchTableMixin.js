@@ -169,6 +169,7 @@ export default {
         } else {
           this.tableList = this.handleTableListResponse(res)
         }
+        this.onTableDataGot()
       } catch (err) {
         this.$message.error(String(err) || '获取列表数据失败')
         console.error('getTableList error:', err)
@@ -225,6 +226,13 @@ export default {
         return { list, total }
       }
       return data
+    },
+    /**
+     * 列表接口请求完毕的回调
+     * （如有需要，请重写该方法）
+     */
+    onTableDataGot() {
+      console.log('列表接口请求完毕')
     },
     /**
      * 处理预加载数据返回结果

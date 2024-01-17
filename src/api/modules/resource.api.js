@@ -12,8 +12,8 @@ export function getPage(params) {
 /**
  * 查询资源计划状态数据
  */
-export function countStatus(params) {
-  return request.getApi("/addsp/resource/countStatus", params)
+export function countStatus() {
+  return request.getApi("/addsp/resource/countStatus")
 }
 /**
  * 查询资源计划详情

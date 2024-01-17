@@ -148,6 +148,24 @@ const getUniqueId = (function () {
     return Math.random().toString(36).slice(3, 6) + Number(`${Date.now()}${++id}`).toString(36)
   }
 })()
+/**
+ * 文件预览（支持 Excel、Word、PPT、图片等）
+ * 此方法借助了第三方网站，打开新窗口预览（也可以使用 iframe 嵌套在当前页面）
+ */
+function previewFile(url) {
+  const newUrl = url.split('?')[0]
+  const etc = newUrl.slice(newUrl.lastIndexOf('.') + 1)
+  let openUrl = ''
+  if (['pptx', 'ppt', 'xlsx', 'xls', 'doc', 'docx'].includes(etc)) {
+    // word官方预览链接（支持三种格式，部分word带特殊符号或流程图无法显示）
+    // openUrl = `https://view.xdocin.com/view?src=${encodeURIComponent(url)}`
+    // office官方预览（pdf不能展示）
+    openUrl = `http://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
+  } else {
+    openUrl = url
+  }
+  window.open(openUrl, '_blank')
+}
 
 export {
   // 通过 iframe 下载文件
@@ -163,5 +181,7 @@ export {
   // 获取 url 上的参数，转换成对象
   getUrlParams,
   // 得到一个唯一id
-  getUniqueId
+  getUniqueId,
+  // 文件预览（支持 Excel、Word、PPT、图片等）
+  previewFile
 }

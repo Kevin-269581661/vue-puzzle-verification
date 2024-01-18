@@ -383,7 +383,7 @@
                           v-if="
                             scope.row.isdfmj &&
                             !isDisable &&
-                            scope.row.apState === 1 && scope.row.unLock
+                            scope.row.apState === 1 && scope.row.canApplyLock
                           "
                           @click.native.prevent="handleClearLockApply(scope.row)"
                         >
@@ -1899,6 +1899,9 @@ export default {
       // RemainDay: 预锁剩余天数 ，authMediaFlag: 地方媒介 && 单元门禁 值为 false，没有这个媒体权限 返回 false
       obj.unLock = item.details.some(function (item, index) {
         return item.RemainDay && item.authMediaFlag;
+      });
+      obj.canApplyLock = item.details.some(function (item, index) {
+        return item.RemainDay && !item.authMediaFlag;
       });
       for (let data of item.details) {
         data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--

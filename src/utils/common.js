@@ -151,6 +151,7 @@ const getUniqueId = (function () {
 /**
  * 文件预览（支持 Excel、Word、PPT、图片等）
  * 此方法借助了第三方网站，打开新窗口预览（也可以使用 iframe 嵌套在当前页面）
+ * 注意：重要文件不可使用该方法！！！存在安全泄密问题！！！使用前请三思
  */
 function previewFile(url) {
   const newUrl = url.split('?')[0]

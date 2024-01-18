@@ -149,7 +149,7 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="方案过滤：" prop="planFilterType" >
+            <!-- <el-form-item label="方案过滤：" prop="planFilterType" >
               <el-radio-group v-model="formData.planFilterType" @input="onChangePlanFilter">
                 <el-radio-button
                   v-for="item in preparedData.planFilterTypeOptions"
@@ -161,7 +161,7 @@
                 </el-radio-button>
               </el-radio-group>
               <span v-if="formData.planFilterType === '2'" style="margin-left: 10px">已选{{ formData.planFilterSelection.length }}个</span>
-            </el-form-item>
+            </el-form-item> -->
 
           </el-form>
         </div>

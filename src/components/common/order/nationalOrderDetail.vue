@@ -841,6 +841,8 @@ export default {
           urls: list,
           videoUrl
         })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '保存数据失败')
         this.$message.success('提交成功')
         this.getNodeDetail()
       } catch (err) {

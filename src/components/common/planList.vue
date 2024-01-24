@@ -2234,6 +2234,8 @@ export default {
         mediaTypeIds = this.mediaTypeChecks.filter(item => item !== applyItem.value)
         console.log('applyItem 222===')
         this.handlePlanApply(this.currentItem.apID, applyItem.value, 2)
+      } else {
+        mediaTypeIds = this.mediaTypeChecks
       }
       // 直接锁点（广告门）
       if (mediaTypeIds.length) {

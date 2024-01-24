@@ -836,7 +836,7 @@ export default {
      */
     async saveUploadNodeFiles(list, videoUrl = '') {
       try {
-        await this.$api.resource.uploadNodeFiles({
+        const res = await this.$api.resource.uploadNodeFiles({
           processDetailId: this.currentNodeItem.processDetailId,
           urls: list,
           videoUrl
@@ -1155,6 +1155,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看三色文件',
                   isShowVideo: true
@@ -1171,6 +1172,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看三色文件',
                   isShowVideo: true,
@@ -1195,6 +1197,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看三色文件',
                   isShowVideo: true,
@@ -1229,6 +1232,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看出血图片'
                 })
@@ -1244,6 +1248,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看出血图片',
                   isShowRejectExpand: true
@@ -1265,6 +1270,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看出血图片'
                 })
@@ -1283,6 +1289,7 @@ export default {
             // 待上传
             case 1:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1296,6 +1303,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1309,6 +1317,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1322,6 +1331,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1338,6 +1348,7 @@ export default {
             // 待上传
             case 1:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1351,6 +1362,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1364,6 +1376,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1377,6 +1390,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1393,6 +1407,7 @@ export default {
             // 待上传
             case 1:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1406,6 +1421,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1419,6 +1435,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1432,6 +1449,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1448,6 +1466,7 @@ export default {
             // 待上传
             case 1:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1461,6 +1480,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1474,6 +1494,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1487,6 +1508,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1517,6 +1539,7 @@ export default {
             // 待确认
             case 2:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }
@@ -1530,6 +1553,7 @@ export default {
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 this.openUploadPictureVideoModal(item, {
                   title: '查看精美图片',
                   isShowRejectExpand: true
@@ -1551,6 +1575,7 @@ export default {
             // 已完成
             case 4:
               if (buttonName === 'view') {
+                if (!item.fileList.length) return this.$message.warning('文件未上传')
                 previewFile(item.fileList[0].url)
                 return
               }

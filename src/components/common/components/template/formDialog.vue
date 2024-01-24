@@ -5,7 +5,6 @@
       :visible.sync="visible"
       :append-to-body="true"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
       :show-close="true"
       :title="`${isEdit ? '编辑' : '新建'}模板弹框`"
       width="60%"

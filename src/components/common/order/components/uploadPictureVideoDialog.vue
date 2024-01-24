@@ -351,7 +351,7 @@ export default {
       this.isEdit = true
       this.rowData = row
       // 回显
-      this.formData.threeColorPictureList = row.fileList || []
+      this.formData.threeColorPictureList = row.fileList ? [...row.fileList] : []
       this.formData.videoUrl = row.videoUrl
       this.formData.rejectExpand = row.rejectExpand
       // this.formData.color = row.confirmExpand

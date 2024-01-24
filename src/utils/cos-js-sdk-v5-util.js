@@ -55,8 +55,8 @@ export default class CosUploader {
     const {
       bucketName,
       prefix,
-      expiration,
-      // expiredTime,
+      // expiration,
+      expiredTime,
       // logDir,
       region,
       sessionToken,
@@ -81,7 +81,7 @@ export default class CosUploader {
           // StartTime: Math.floor(startTime / 1000),
           StartTime: startTime,
           // 时间戳，单位秒，如：1580000900
-          ExpiredTime: expiration,
+          ExpiredTime: expiredTime,
           // ExpiredTime: 1580000900,
           // 设置onProgress回调此时，默认1000ms一次
           ProgressInterval: this.progressInterval,
@@ -99,6 +99,8 @@ export default class CosUploader {
     //   await this.getCos()
     // }
     await this.getCos()
+    // 路径去掉中文（app端无法访问）
+    const filePath = this.prefix + encodeURIComponent(`${new Date().getTime()}_${file.name}`)
     // 上传图片  其中Bucket 和 Region 接口返回，Bucke和Region是由公司负责人使用公司账户，登入腾讯云，获取回来的。
     const uploadRes = await this.cos.uploadFile({
       // 桶名-必须字段
@@ -108,7 +110,8 @@ export default class CosUploader {
       // 必须  这个值要注意下，前面是要跟公司设置的oss路径要匹配的，不然上传可能会报403
       // key 在前面加上路径写法可以生成文件夹
       // Key: `crm/dsp/web/${new Date().getTime()}_${file.name}`,
-      Key: `${this.prefix}${new Date().getTime()}_${file.name}`,
+      // Key: `${this.prefix}${new Date().getTime()}_${file.name}`,
+      Key: filePath,
       Body: file, // 上传文件对象
       StorageClass: 'STANDARD',
       // 触发分块上传的阈值，超过3MB使用分块上传，非必须

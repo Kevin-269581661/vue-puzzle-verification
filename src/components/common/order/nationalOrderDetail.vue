@@ -12,7 +12,7 @@
         <div class="title_box">
           <div class="text">{{ detailData.name }}</div>
           <div class="action_box">
-            <el-button size="small" @click="handleTotalDynamic">全局动态</el-button>
+            <!-- <el-button size="small" @click="handleTotalDynamic">全局动态</el-button> -->
             <!-- <el-button type="primary" icon="el-icon-edit" size="small">编辑</el-button> -->
             <!-- 更多操作下拉框 -->
             <!-- <el-dropdown>
@@ -217,15 +217,15 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'viewPoint')">
                               查看点位
                             </div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'choosePoint')">
@@ -236,16 +236,16 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'viewPoint')">
                               查看点位
                             </div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 2、 三色 -->
@@ -258,13 +258,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -276,14 +276,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 3、 出血 -->
@@ -296,13 +296,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -314,14 +314,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 4、 点位反馈 -->
@@ -345,13 +345,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -363,14 +363,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 5、 上刊报告 -->
@@ -392,13 +392,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -410,14 +410,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 6、 上刊明细 -->
@@ -439,13 +439,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -457,14 +457,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 7、 下单表 -->
@@ -478,13 +478,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -496,14 +496,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
 
                       <!-- 8、 上传精美图片 -->
@@ -516,13 +516,13 @@
                             <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 2">
+                        <template v-else-if="item.status === 2">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div>
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'reject')">拒绝</div>
+                            <div class="btn_box" @click="handleNodeAction(item, 'confirm')">确认</div> -->
                           </div>
-                        </template> -->
+                        </template>
                         <template v-else-if="item.status === 3">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
@@ -534,14 +534,14 @@
                             </div>
                           </div>
                         </template>
-                        <!-- <template v-else-if="item.status === 4">
+                        <template v-else-if="item.status === 4">
                           <div class="btn_group">
                             <div class="btn_box" @click="handleNodeAction(item, 'view')">查看</div>
-                            <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
+                            <!-- <div class="btn_box" @click="handleNodeAction(item, 'cancel')">
                               解除确认
-                            </div>
+                            </div> -->
                           </div>
-                        </template> -->
+                        </template>
                       </template>
                     </template>
                     <PointState :state-text="item.statusText" :color="item.statusColor" class="status_box"/>
@@ -1097,17 +1097,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'viewPoint') {
-            //     return message.warning('请前往 QADN 系统查看点位')
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return handleReject(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'viewPoint') {
+                this.goChoosePointPage()
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return handleReject(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'choosePoint') {
@@ -1119,14 +1120,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'viewPoint') {
-            //     return message.warning('请前往 QADN 系统查看点位')
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'viewPoint') {
+                this.goChoosePointPage()
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1149,17 +1151,21 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                this.openUploadPictureVideoModal(item, {
+                  title: '查看三色文件',
+                  isShowVideo: true
+                })
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1185,14 +1191,19 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                this.openUploadPictureVideoModal(item, {
+                  title: '查看三色文件',
+                  isShowVideo: true,
+                  isShowColor: true
+                })
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1214,17 +1225,20 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                this.openUploadPictureVideoModal(item, {
+                  title: '查看出血图片'
+                })
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1247,14 +1261,17 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                this.openUploadPictureVideoModal(item, {
+                  title: '查看出血图片'
+                })
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1275,17 +1292,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1300,14 +1318,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1328,17 +1347,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1353,14 +1373,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1381,17 +1402,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1406,14 +1428,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1434,17 +1457,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1459,14 +1483,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         },
@@ -1488,17 +1513,18 @@ export default {
               }
               break
             // 待确认
-            // case 2:
-            //   if (buttonName === 'view') {
-            //     return viewThreeColor(item)
-            //   }
-            //   if (buttonName === 'reject') {
-            //     return rejectThreeColor(item)
-            //   }
-            //   if (buttonName === 'confirm') {
-            //     return handleToConfirm(item)
-            //   }
-            //   break
+            case 2:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'reject') {
+              //   return rejectThreeColor(item)
+              // }
+              // if (buttonName === 'confirm') {
+              //   return handleToConfirm(item)
+              // }
+              break
             // 已拒绝
             case 3:
               if (buttonName === 'view') {
@@ -1521,14 +1547,15 @@ export default {
               }
               break
             // 已完成
-            // case 4:
-            //   if (buttonName === 'view') {
-            //     return
-            //   }
-            //   if (buttonName === 'cancel') {
-            //     return handleCancelConfirm(item)
-            //   }
-            //   break
+            case 4:
+              if (buttonName === 'view') {
+                previewFile(item.fileList[0].url)
+                return
+              }
+              // if (buttonName === 'cancel') {
+              //   return handleCancelConfirm(item)
+              // }
+              break
             default:
           }
         }

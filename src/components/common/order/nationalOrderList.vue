@@ -59,6 +59,11 @@
               <PointState :state-text="slotProps.row.statusText" :color="slotProps.row.statusColor"/>
             </template>
 
+            <!-- 投放日期 -->
+            <template slot="publishTime" slot-scope="slotProps">
+              <span>{{ slotProps.row.startTime || '--' }} 至 {{ slotProps.row.endTime || '--' }}</span>
+            </template>
+
             <!-- 操作列 -->
             <template slot="action" slot-scope="slotProps">
               <TableAction :actionList="getActionList(slotProps.row)" />
@@ -176,7 +181,10 @@ const initTableColumns = () => ([
   },
   {
     title: '投放日期',
-    dataIndex: 'startTime',
+    dataIndex: 'publishTime',
+    width: 220,
+    minWidth: 220,
+    slot: 'publishTime',
   },
   {
     title: '状态',

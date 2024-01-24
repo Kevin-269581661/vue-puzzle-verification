@@ -25,7 +25,7 @@ async function downloadFileByUrl(url) {
     fileName = url.split('/').pop();
   }
   console.log('fileName ===', fileName)
-  await downLoadFile(res.data.data, fileName)
+  await downLoadFile(res.data, fileName)
 }
 /**
  * 通过 iframe 下载文件
@@ -50,11 +50,11 @@ async function downloadFileByIframe(fileUrl) {
 async function downLoadFile (data, fileName, etc = 'xlsx') {
   let suffix = etc.lastIndexOf('.') > -1 ? etc.slice(etc.lastIndexOf('.') + 1) : etc
   const TypeObj = {
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'xls': 'application/vnd.ms-excel',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'pdf': 'application/pdf',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
+    'xls': 'application/vnd.ms-excel;charset=utf-8',
+    'doc': 'application/msword;charset=utf-8',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8',
+    'pdf': 'application/pdf;charset=utf-8',
     'zip': 'application/zip',
     'rar': 'application/x-rar-compressed'
   }

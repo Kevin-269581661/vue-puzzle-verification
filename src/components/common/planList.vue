@@ -1673,6 +1673,8 @@ export default {
         this.$message.success('操作成功')
       } catch (error) {
         this.$message.error(String(error) || '操作失败')
+      } finally {
+        this.Ctrlloading && this.Ctrlloading.close();
       }
     },
 

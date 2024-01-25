@@ -47,13 +47,12 @@
                     "
                     type="default"
                     @click="createShareCode"
-                    >协同选点</el-button
                   >
-                  <el-button
-                    type="default"
-                    @click="setPlanPrice"
-                    >设置金额</el-button
-                  >
+                    协同选点
+                  </el-button>
+                  <el-button type="default" @click="setPlanPrice">
+                    设置金额
+                  </el-button>
                   <el-button
                     v-if="
                       customPermission.proposalPermission == 1 &&
@@ -62,8 +61,9 @@
                     type="default"
                     :disabled="matchCnt >= 10"
                     @click="matchRes"
-                    >{{ `配点(${10 - matchCnt})` }}</el-button
                   >
+                    {{ `配点(${10 - matchCnt})` }}
+                  </el-button>
                   <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                   <el-button
                     type="primary"
@@ -79,7 +79,7 @@
                         planDetail.planMode == 1
                       ) || ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)
                     "
-                    >
+                  >
                     编辑
                   </el-button>
                 </template>
@@ -599,7 +599,7 @@
     },
     provide() {
       return {
-        getAudioList: this.getAudioList  
+        getAudioList: this.getAudioList
       }
     },
     methods: {

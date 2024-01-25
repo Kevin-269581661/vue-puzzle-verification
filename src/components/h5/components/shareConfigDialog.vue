@@ -37,7 +37,7 @@
                   </el-table>
                 </div>
                 <!-- 暂不做分页 -->
-                <!-- <div class="pagination_box">
+                <!-- <div class="pagination_wrapper">
                   <el-pagination
                     background
                     layout="prev, pager, next"
@@ -82,7 +82,7 @@
                     </el-table-column>
                   </el-table>
                 </div>
-                <!-- <div class="pagination_box">
+                <!-- <div class="pagination_wrapper">
                   <el-pagination
                     background
                     layout="prev, pager, next"
@@ -469,7 +469,7 @@ export default {
         }
         // console.log('提交表单 params =====', params)
         this.shareLinkTabData.loading = true
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/config/save', params)
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/config/save', params)
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return this.$message.error(message || '操作失败')
         // 生成链接
@@ -491,7 +491,7 @@ export default {
         const apId = this.shareLinkTabData.formData.apId
         if (!apId) return
         this.shareLinkTabData.loading = true
-        const res = await this.$api.getApi('/addsp/api/v1/share/admin/getShareConfig', { apId })
+        const res = await this.$request.getApi('/addsp/api/v1/share/admin/getShareConfig', { apId })
         const { SysCode: code, MSG: message, data = {} } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         let loginType = null
@@ -533,7 +533,7 @@ export default {
         } else {
           requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/reject`
         }
-        const res = await this.$api.postApi_json(requestUrl)
+        const res = await this.$request.postApi_json(requestUrl)
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '操作失败')
         this.$message.success('操作成功')
@@ -572,7 +572,7 @@ export default {
       try {
         const apId = this.shareLinkTabData.formData.apId
         this.shareListTabData.loading = true
-        const res = await this.$api.getApi('/addsp/api/v1/share/admin/user/listNormalUser', { apId })
+        const res = await this.$request.getApi('/addsp/api/v1/share/admin/user/listNormalUser', { apId })
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取分享用户列表数据失败')
         this.shareListTabData.tableList = data
@@ -590,7 +590,7 @@ export default {
       try {
         const apId = this.shareLinkTabData.formData.apId
         this.applyListTabData.loading = true
-        const res = await this.$api.getApi('/addsp/api/v1/share/admin/user/listNotAuditUser', { apId })
+        const res = await this.$request.getApi('/addsp/api/v1/share/admin/user/listNotAuditUser', { apId })
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取未审核用户列表数据失败')
         this.applyListTabData.tableList = data
@@ -614,7 +614,7 @@ export default {
         } else {
           requestUrl = `/addsp/api/v1/share/admin/user/${row.id}/enable`
         }
-        const res = await this.$api.postApi_json(requestUrl)
+        const res = await this.$request.postApi_json(requestUrl)
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '操作失败')
         this.$message.success('操作成功')
@@ -788,13 +788,10 @@ export default {
   }
   /deep/ .el-radio {
     display: block;
+    line-height: 32px;
   }
   /deep/ .el-radio__input.is-checked+.el-radio__label {
     color: #606266;
-  }
-  /deep/ .el-radio:not(:last-child) {
-    // line-height: 32px;
-    margin-bottom: 8px;
   }
   // /deep/ .el-input-group__append, .el-input-group__prepend {
   //   color: #fff;

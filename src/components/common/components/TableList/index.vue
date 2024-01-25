@@ -1,13 +1,13 @@
 <template>
-  <!-- 通用动态配置表格组件 -->
-  <div class="table_list_container">
-    <div  class="table_tool_box">
+  <!-- 通用表格组件 -->
+  <div class="table_list_container" :style="{ height: height || null }">
+    <!-- 工具栏 -->
+    <div v-if="showSetting" class="table_tool_box">
       <div class="tool_left">
         <slot name='tableTool'></slot>
       </div>
       <!-- 列设置 -->
       <TableSetting
-        v-if="showSetting"
         :columns="totalColumns"
         :cacheKey="currentPageName"
         refresh
@@ -18,89 +18,99 @@
         @spaceSetting="tableSizeChange"
       />
     </div>
+    <!-- 表格 -->
+    <div class="table_list_wrapper">
+      <el-table
+        ref="tableRef"
+        v-loading="loading"
+        :height="height ? '100%' : null"
+        :data="dataSource"
+        :border="true"
+        :key="tableKey"
+        :size="tableSize"
+        :row-key="rowKey ? rowKey : null"
+        element-loading-text="玩命加载中..."
+        element-loading-spinner="el-icon-loading"
+        highlight-current-row
+        tooltip-effect="dark"
+      >
+        <template v-for="col in tableColumns">
+          <el-table-column
+            v-if="col.type === 'index'"
+            :key="col.key || 'index'"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            label="序号"
+            type="index"
+            width="80"
+            fixed="left">
+          </el-table-column>
 
-    <el-table
-      ref="tableRef"
-      v-loading="loading"
-      :data="dataSource"
-      :border="true"
-      :key="tableKey"
-      :size="tableSize"
-      style="width: 100%"
-      element-loading-text="玩命加载中..."
-      element-loading-spinner="el-icon-loading"
-      highlight-current-row
-      tooltip-effect="dark"
-    >
-      <template v-for="col in tableColumns">
-        <el-table-column
-          v-if="col.type === 'index'"
-          :key="col.key || 'index'"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          label="序号"
-          type="index"
-          width="80"
-          fixed="left">
-        </el-table-column>
+          <!-- type="selection" -->
+          <el-table-column
+            v-else-if="col.type === 'selection'"
+            :key="col.key || 'selection'"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            width="55"
+            fixed="left"
+          >
+            <template slot="header" slot-scope="scope">
+              <el-checkbox v-model="isSelectedAllInCurrentPage" @change="handleSelectAll"></el-checkbox>
+            </template>
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row[selectKey]" @change="val => handleSelectionChange(val, scope.row)"></el-checkbox>
+            </template>
+          </el-table-column>
 
-        <el-table-column
-          v-else-if="col.type === 'selection'"
-          :key="col.key || 'selection'"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          type="selection"
-          width="55"
-          fixed="left">
-        </el-table-column>
+          <el-table-column
+            v-else-if="col.slot"
+            :label="col.title"
+            :key="col.key || col.dataIndex"
+            :column-key="col.key || col.dataIndex"
+            :width="col.width"
+            :min-width="col.minWidth"
+            :fixed="col.fixed"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+          >
+            <template slot-scope="scope">
+              <slot :name="col.slot" :row="scope.row">
+                <!-- <span>{{ scope.row }}</span> -->
+              </slot>
+            </template>
+          </el-table-column>
 
-        <el-table-column
-          v-else-if="col.slot"
-          :label="col.title"
-          :key="col.key || col.dataIndex"
-          :column-key="col.key || col.dataIndex"
-          :width="col.width"
-          :min-width="col.minWidth"
-          :fixed="col.fixed"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-        >
-          <template slot-scope="scope">
-            <slot :name="col.slot" :row="scope.row">
-              <!-- <span>{{ scope.row }}</span> -->
-            </slot>
-          </template>
-        </el-table-column>
+          <el-table-column
+            v-else
+            :label="col.title"
+            :key="col.key || col.dataIndex"
+            :column-key="col.key || col.dataIndex"
+            :prop="col.dataIndex"
+            :width="col.isTagStyle ? '350' : col.width"
+            :min-width="col.minWidth"
+            :fixed="col.fixed"
+            :align="col.align || 'center'"
+            :header-align="col.headerAlign || 'center'"
+            show-overflow-tooltip
+          >
+            <template slot-scope="scope">
+              <!-- 标签样式 -->
+              <div v-if="col.isTagStyle && scope.row[col.dataIndex]" class="tag_wraper">
+                <span v-for="(item, i) in getTagList(scope.row, col)"
+                  :key="i" class="tag_box">
+                  {{ item }}
+                </span>
+              </div>
+              <!-- 默认样式 -->
+              <span v-else>{{ scope.row[col.dataIndex] }}</span>
+            </template>
+          </el-table-column>
+        </template>
 
-        <el-table-column
-          v-else
-          :label="col.title"
-          :key="col.key || col.dataIndex"
-          :column-key="col.key || col.dataIndex"
-          :prop="col.dataIndex"
-          :width="col.isTagStyle ? '350' : col.width"
-          :min-width="col.minWidth"
-          :fixed="col.fixed"
-          :align="col.align || 'center'"
-          :header-align="col.headerAlign || 'center'"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <!-- 标签样式 -->
-            <div v-if="col.isTagStyle && scope.row[col.dataIndex]" class="tag_wraper">
-              <span v-for="(item, i) in getTagList(scope.row, col)"
-                :key="i" class="tag_box">
-                {{ item }}
-              </span>
-            </div>
-            <!-- 默认样式 -->
-            <span v-else>{{ scope.row[col.dataIndex] }}</span>
-          </template>
-        </el-table-column>
-      </template>
-
-      <NoSearchResult slot="empty"/>
-    </el-table>
+        <NoSearchResult slot="empty"/>
+      </el-table>
+    </div>
   </div>
 </template>
 
@@ -115,6 +125,7 @@
 
   组件事件：
     @refreshTable 刷新列表接口数据（对应父组件 getTableList）
+    @selectionChange 列表勾选
 
   组件插槽：
     v-slot="tableTool" 表格工具栏
@@ -194,18 +205,32 @@ export default {
   },
   props: {
     /**
-     * 表格列配置
+     * 必传-表格列配置
      */
     columns: {
       type: Array,
       required: true
     },
     /**
-     * 表格数据
+     * 必传-表格数据
      */
     dataSource: {
       type: Array,
       default: () => []
+    },
+    /**
+     * 表格为 selection 时，作为判断是否勾选的 key
+     */
+     selectKey: {
+      type: String,
+      default: 'isSelected'
+    },
+    /**
+     * 行唯一id（起到优化作用）
+     */
+    rowKey: {
+      type: String,
+      default: ''
     },
     /**
      * 数据加载 loading
@@ -220,15 +245,24 @@ export default {
     showSetting: {
       type: Boolean,
       default: true
+    },
+    /**
+     * 组件总高度（一般传 '100%'，由父元素决定，不传则自动撑开）
+     */
+    height: {
+      type: String,
+      default: ''
     }
   },
-  emits: ['refreshTable'],
+  emits: ['refreshTable', 'selectionChange'],
   data () {
     return {
       // 表格行距
       tableSize: '',
       totalColumns: [],
-      tableKey: ''
+      tableKey: '',
+      isSelectedAllInCurrentPage: false,
+      selectedList: []
     }
   },
   computed: {
@@ -259,9 +293,52 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    dataSource (newVal) {
+      this.checkSelectedAll()
     }
   },
   methods: {
+    /**
+     * 点击列表全选
+     */
+    handleSelectAll() {
+      this.dataSource.forEach(row => {
+        row[this.selectKey] = this.isSelectedAllInCurrentPage
+        this.handleSelect(this.isSelectedAllInCurrentPage, row)
+      })
+      this.$emit('selectionChange', this.selectedList)
+    },
+    /**
+     * 列表勾选事件
+     */
+    handleSelectionChange(isSelected, row) {
+      this.handleSelect(isSelected, row)
+      this.checkSelectedAll()
+      this.$emit('selectionChange', this.selectedList)
+    },
+    /**
+     * 处理列表单行勾选
+     */
+    handleSelect(isSelected, row) {
+      let index = -1
+      if (this.rowKey) {
+        index = this.selectedList.findIndex(item => item[this.rowKey] === row[this.rowKey])
+      } else {
+        index = this.selectedList.findIndex(item => JSON.stringify(item) === JSON.stringify(row))
+      }
+      if (index !== -1 && !isSelected) {
+        this.selectedList.splice(index, 1)
+      } else if (index === -1 && isSelected) {
+        this.selectedList.push(row)
+      }
+    },
+    /**
+     * 检查是否全选了本页
+     */
+    checkSelectedAll() {
+      this.isSelectedAllInCurrentPage = this.dataSource.every(item => item[this.selectKey])
+    },
     /**
      * 处理标签样式列
      */
@@ -273,7 +350,7 @@ export default {
     /**
      * 改变列表行距
      */
-     tableSizeChange(size) {
+    tableSizeChange(size) {
       this.tableSize = size
     },
     /**
@@ -291,6 +368,9 @@ export default {
 <style lang="scss" scoped>
 
 .table_list_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 
   /deep/ .el-table .el-table__header-wrapper th.el-table__cell{
     background-color: #fafafa !important;
@@ -301,12 +381,18 @@ export default {
   }
 
   .table_tool_box {
+    width: 100%;
     display: flex;
     align-items: center;
     padding-bottom: 16px;
     .tool_left {
       flex: 1;
     }
+  }
+
+  .table_list_wrapper {
+    flex: 1;
+    overflow: hidden;
   }
 
   .tag_wraper {

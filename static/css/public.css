@@ -45,14 +45,14 @@
   background-color: #fff;
 }
 
-.table_box {
+.table_content_box {
   padding: 20px 30px;
   background-color: #fff;
   box-sizing: border-box;
   border: 1px solid #ebebeb;
 }
 
-.pagination_box {
+.pagination_wrapper {
   padding: 14px 0;
   display: flex;
   justify-content: flex-end;

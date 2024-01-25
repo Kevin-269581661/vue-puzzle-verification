@@ -20,8 +20,8 @@
                             :class="messageList.readStatus==1?'readed':''"
                             @click="read(item)">
                             <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
-                            <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
-                            <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
+                            <img v-else-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
+                            <img v-else src="../../../assets/images/editor.png" alt="">
                             <div class="content" style="text-align: left;cursor: pointer">
                                 <h5>{{item.title}}</h5>
                                 <p v-html="item.messagePart1" style="text-align: left"></p>
@@ -35,8 +35,8 @@
                             :class="messageList.readStatus==1?'readed':''"
                             @click="read(item)">
                             <img v-if="item.messageType=='0'" src="../../../assets/images/media.png" alt="">
-                            <img v-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
-                            <img v-if="item.messageType=='1'" src="../../../assets/images/editor.png" alt="">
+                            <img v-else-if="item.messageType=='2'" src="../../../assets/images/order.png" alt="">
+                            <img v-else src="../../../assets/images/editor.png" alt="">
                             <div class="content" style="text-align: left;cursor: pointer">
                                 <h5>{{item.title}}</h5>
                                 <p v-html="item.messagePart1" style="text-align: left"></p>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="read-mask" v-if="item.status!=0"></div>
                         </li>
-                    </template>    
+                    </template>
 
                 </ul>
                 <div class="messagelist-btn">

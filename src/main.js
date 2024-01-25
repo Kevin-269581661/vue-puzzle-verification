@@ -7,7 +7,8 @@ import directives from "./commonFun/directives";
 // import {emitRouteEvent} from './commonFun/matomoRule'
 import SlideVerify from 'vue-monoplasty-slide-verify';
 import moment from "dayjs";
-import api from "./api/api.js";
+import request from "./api/api";
+import api from "./api";
 
 import 'default-passive-events'
 
@@ -145,6 +146,9 @@ axios.interceptors.response.use(
 );
 
 Vue.prototype.$moment = moment
+// 全局请求方法
+Vue.prototype.$request = request
+// 全局请求相关api模块
 Vue.prototype.$api = api
 
 /* eslint-disable no-new */

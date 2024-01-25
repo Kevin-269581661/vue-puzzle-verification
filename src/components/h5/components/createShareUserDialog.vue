@@ -100,7 +100,7 @@ export default {
       try {
         const { token, uID: uid } = sessFun.getSess()
         this.dialogLoading = true
-        const res = await this.$api.postApi_json('/addsp/api/v1/share/admin/user/create', {
+        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/user/create', {
           ...this.formData,
           uid,
           token,

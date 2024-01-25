@@ -109,7 +109,7 @@
           <el-checkbox v-model="isCheckAll" @change="handleCheckAll">全部媒体</el-checkbox>
         </div>
         <!-- 列表 -->
-        <div class="table_box">
+        <div class="table_wrapper">
           <el-table
             ref="tableRef"
             :data="tableList"
@@ -164,7 +164,7 @@
           </el-table>
         </div>
         <!-- 分页 -->
-        <div class="pagination_box">
+        <div class="pagination_wrapper">
           <el-pagination
             background
             layout="total, sizes, prev, pager, next, jumper"
@@ -445,7 +445,7 @@ export default {
     }
   }
 
-  .pagination_box {
+  .pagination_wrapper {
     padding-top: 15px;
     text-align: right;
   }

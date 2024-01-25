@@ -523,6 +523,7 @@ export default {
   color: #000;
   margin-right: 14px;
   text-align: right;
+  white-space: nowrap;
 }
 
 .control_btns {
@@ -534,5 +535,6 @@ export default {
 
 .search_item_slot {
   flex: 1;
+  overflow: hidden;
 }
 </style>

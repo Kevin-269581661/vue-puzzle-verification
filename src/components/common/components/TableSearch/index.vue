@@ -1,25 +1,23 @@
 <template>
-  <div class="table_search_container">
-    <!-- 列表-搜索栏通用组件 -->
-    <SearchItems
-      v-bind="$attrs"
-      :fileds="renderFileds"
-      :size="size"
-      @change="k => $emit('change', k)"
-      @search="$emit('search')"
-      @reset="$emit('reset')"
-    >
-      <!-- 插槽 -->
-      <template v-for="(_, name) in $slots" :slot="name" >
-        <slot :name="name" />
-      </template>
-      <template v-if="foldVisible" slot="fold">
-        <el-button type="text" :size="size" @click.stop="handleFold">
-          {{ isShowAll ? '收起' : '展开' }}<i :class="`el-icon-arrow-${ isShowAll ? 'up' : 'down' }`"></i>
-        </el-button>
-      </template>
-    </SearchItems>
-  </div>
+  <!-- 列表-搜索栏通用组件 -->
+  <SearchItems
+    v-bind="$attrs"
+    :fileds="renderFileds"
+    :size="size"
+    @change="k => $emit('change', k)"
+    @search="$emit('search')"
+    @reset="$emit('reset')"
+  >
+    <!-- 插槽 -->
+    <template v-for="(_, name) in $slots" :slot="name" >
+      <slot :name="name" />
+    </template>
+    <template v-if="foldVisible" slot="fold">
+      <el-button type="text" :size="size" @click.stop="handleFold">
+        {{ isShowAll ? '收起' : '展开' }}<i :class="`el-icon-arrow-${ isShowAll ? 'up' : 'down' }`"></i>
+      </el-button>
+    </template>
+  </SearchItems>
 </template>
 
 <script>
@@ -91,7 +89,7 @@
           ],
           // type 类型为 select 时使用：非必传 - 配置 value、label 字段名
           optionKey: {
-            value: 'value'
+            value: 'value',
             label: 'label'
           }
           on: {
@@ -181,13 +179,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table_search_container {
-  padding: 24px 24px 8px;
-  box-sizing: border-box;
-  .el-button--text {
-    padding-left: 0;
-    padding-right: 0;
-    min-width: 0;
-  }
+/deep/ .el-button--text {
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
 }
 </style>

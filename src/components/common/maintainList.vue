@@ -7,61 +7,67 @@
     </div>
 
     <div v-loading="pageLoading" class="page_content">
-      <!-- 列表搜索栏 -->
+      <!-- 页面顶部 -->
       <div class="page_content_top">
         <div class="page_title">维护列表</div>
-        <TableSearch
-          :value="searchData"
-          :fileds="searchFileds"
-          @change="handleSeachChange"
-          @search="handleSearch"
-          @reset="handleReset"
-        >
-          <template slot="districtList">
-            <el-cascader
-              v-model="searchData.districtList"
-              :options="searchFileds.districtList.options"
-              clearable
-              change-on-select
-              size="small"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-            </el-cascader>
-          </template>
+        <!-- 列表搜索栏 -->
+        <div class="search_bar">
+          <TableSearch
+            :value="searchData"
+            :fileds="searchFileds"
+            @change="handleSeachChange"
+            @search="handleSearch"
+            @reset="handleReset"
+          >
+            <template slot="districtList">
+              <el-cascader
+                v-model="searchData.districtList"
+                :options="searchFileds.districtList.options"
+                clearable
+                change-on-select
+                size="small"
+                placeholder="请选择"
+                style="width: 100%"
+              >
+              </el-cascader>
+            </template>
 
-          <!-- 导出 -->
-          <template slot="action">
-            <DownloadFileButton
-              :requestApi="$api.getApi_file"
-              :requestParams="exportRequestParams"
-              requestUrl="/mediaService/api/v2/exportRMList"
-              downloadFileName="维护记录"
-            />
-          </template>
+            <!-- 导出 -->
+            <template slot="action">
+              <DownloadFileButton
+                :requestApi="$api.getApi_file"
+                :requestParams="exportRequestParams"
+                requestUrl="/mediaService/api/v2/exportRMList"
+                downloadFileName="维护记录"
+              />
+            </template>
 
-        </TableSearch>
+          </TableSearch>
+        </div>
       </div>
-      <div class="table_box">
+      <div class="table_content_box">
         <!-- 表格 -->
-        <TableList
-          :columns="tableColumns"
-          :dataSource="tableList"
-          :loading="tableLoading"
-          @refreshTable="getTableList"
-        >
+        <div class="table_wrapper">
+          <TableList
+            :columns="tableColumns"
+            :dataSource="tableList"
+            :loading="tableLoading"
+            @refreshTable="getTableList"
+          >
 
-          <!-- 自定义状态列 -->
-          <template slot="statusDesc" slot-scope="slotProps">
-            <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
-          </template>
+            <!-- 自定义状态列 -->
+            <template slot="statusDesc" slot-scope="slotProps">
+              <PointState :state-text="slotProps.row.statusDesc" :color="statusColorObj[slotProps.row.statusDesc]"/>
+            </template>
 
-          <template slot="action" slot-scope="slotProps">
-            <TableAction :actionList="getActionList(slotProps.row)" />
-          </template>
+            <template slot="action" slot-scope="slotProps">
+              <TableAction :actionList="getActionList(slotProps.row)" />
+            </template>
 
-        </TableList>
-        <div class="pagination_box">
+          </TableList>
+        </div>
+        <!-- 分页器 -->
+        <div class="pagination_wrapper">
           <el-pagination
             background
             layout="total, sizes, prev, pager, next, jumper"
@@ -97,7 +103,9 @@ import MaintainHistoryDialog from '@/components/common/components/maintainList/m
 import DownloadFileButton from "@/components/common/components/downloadFileButton.vue";
 import { deserialize } from '@/utils/common'
 
-// 初始化搜索绑定数据
+/**
+ * 初始化搜索绑定数据
+ */
 const initSearchData = () => ({
   resName: '',
   assetTag: '',
@@ -121,7 +129,9 @@ const initSearchData = () => ({
   // 问题反馈
   remark: '',
 })
-// 初始化搜索配置
+/**
+ * 初始化搜索配置
+ */
 const initSearchFileds = () => ({
   resName: {
     title: '资源名称',
@@ -256,7 +266,7 @@ export default {
     async getDistrictOptions () {
       try {
         const { token, uID: uid } = this.sessionData
-        const res = await this.$api.postApi_new(this.apiVar.Media, {
+        const res = await this.$request.postApi_new(this.apiVar.Media, {
           token, uid,
           service: 'GetCompanyCitiesAction'
         }) || {}
@@ -284,7 +294,7 @@ export default {
     async getUserOptions () {
       try {
         const { token, uID: uid } = this.sessionData
-        const res = await this.$api.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', {
+        const res = await this.$request.getApi(this.apiVar.UCAPI + '/GetSameCompanyUser', {
           token, uid
         }) || {}
         const { SysCode: code, MSG: message, data = [] } = res.data
@@ -341,7 +351,7 @@ export default {
         const { token, uID: uid } = this.sessionData
         const { page: pageNum, pageSize } = this.pagination
         this.tableLoading = true
-        const res = await this.$api.postApi_json('/addsp/patrolPoint/web/getList', {
+        const res = await this.$request.postApi_json('/addsp/patrolPoint/web/getList', {
           ...this.searchCondition,
           uid,
           token,
@@ -415,6 +425,7 @@ export default {
      * 列表搜索
      */
     handleSearch() {
+      this.pagination.page = 1
       this.searchParamFormat();
       this.getTableList();
     },
@@ -422,7 +433,6 @@ export default {
      * 列表重置
      */
     handleReset() {
-      this.pagination.page = 1
       this.searchData = initSearchData()
       this.handleSearch()
     },
@@ -505,7 +515,7 @@ export default {
     async getTableConfig() {
       try {
         this.pageLoading = true
-        const res = await this.$api.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
+        const res = await this.$request.getApi('/addsp/patrolPoint/web/getPageInfo') || {}
         const { SysCode: code, MSG: message, data } = res.data
         if (code !== 200200) return Message.error(message || '获取列表字段和搜索字段配置数据失败')
         const { searchList, headerList } = data
@@ -565,4 +575,8 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.search_bar {
+  padding: 24px 24px 8px;
+}
+</style>

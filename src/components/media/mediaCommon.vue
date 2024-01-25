@@ -22,31 +22,46 @@
                 <el-menu-item index="/media/mediaList">媒体列表</el-menu-item>
                 <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
             </el-submenu>
+
             <el-menu-item v-if="isNation" index="/media/planList">方案管理</el-menu-item>
+
             <el-submenu v-if="!isNation" index="5" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
                 <el-menu-item index="/media/planList">方案列表</el-menu-item>
                 <el-menu-item index="/media/adsDialPlate">点位表盘</el-menu-item>
             </el-submenu>
+
             <el-submenu v-if="sessionData.uType === 'ADN_MD_COUNTRY'" index="11" :show-timeout="80" popper-class="submenu">
                 <template slot="title">订单管理</template>
                 <el-menu-item index="/media/orderList">常规订单</el-menu-item>
                 <el-menu-item index="/media/countryOrderList">非系统全国单</el-menu-item>
+                <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
             </el-submenu>
+
+            <el-submenu v-else-if="sessionData.permissions.includes('naOrderDockManagement')" index="11" :show-timeout="80" popper-class="submenu">
+                <template slot="title">订单管理</template>
+                <el-menu-item index="/media/orderList">常规订单</el-menu-item>
+                <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
+            </el-submenu>
+
             <el-menu-item v-else index="/media/orderList">订单管理</el-menu-item>
+
             <el-submenu index="7" :show-timeout="80" popper-class="submenu">
                 <template slot="title">工程管理</template>
                 <el-menu-item index="/media/projectList">上画任务</el-menu-item>
                 <el-menu-item index="/media/paintedCount">上画统计</el-menu-item>
                 <el-menu-item index="/media/paintedPath" v-if="!isNation">线路管理</el-menu-item>
             </el-submenu>
+
             <el-menu-item index="/media/photoGallery">图片库</el-menu-item>
+
             <el-submenu index="10" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/media/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/media/communityRank">社区排名</el-menu-item>
                 <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
+
             <el-submenu index="8" :show-timeout="80" popper-class="submenu two-word-submenu">
                 <template slot="title">
                     更多

@@ -60,10 +60,10 @@ export default {
       default: '上传文件'
     },
     // 请求路径
-    uploadUrl: {
-      type: String,
-      required: true
-    },
+    // uploadUrl: {
+    //   type: String,
+    //   required: true
+    // },
     // 请求参数
     uploadParams: {
       type: Object,

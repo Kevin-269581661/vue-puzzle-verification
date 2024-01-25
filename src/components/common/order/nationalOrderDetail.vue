@@ -620,7 +620,7 @@ const statusOptions = [
 
 const initUploadFileData = () => ({
   title: '',
-  uploadUrl: '/addsp/resource/upload',
+  // uploadUrl: '/addsp/resource/upload',
   multiple: false,
   disabled: false,
   accept: ''
@@ -894,7 +894,9 @@ export default {
     handleClickSendInfo() {
       const { sendInfo } = this.detailData
       if (!sendInfo) return
-      this.$alert(sendInfo, '小样寄送信息')
+      const h = this.$createElement
+      const pList = sendInfo.split('\n').map((item) => h('p', item))
+      this.$alert(h('div', {}, pList), '小样寄送信息')
     },
     /**
      * 选点要求
@@ -902,7 +904,9 @@ export default {
     handleClickChoosePointRule() {
       const { specification } = this.detailData
       if (!specification) return this.$message.warning('暂无选点要求')
-      this.$alert(specification, '选点要求')
+      const h = this.$createElement
+      const pList = specification.split('\n').map((item) => h('p', item))
+      this.$alert(h('div', {}, pList), '选点要求')
     },
     /**
      * 打开已上传文件弹框

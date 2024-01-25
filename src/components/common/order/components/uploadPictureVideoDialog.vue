@@ -123,7 +123,7 @@ const initFormData = () => {
 
 const initUploadFileData = () => ({
   title: '',
-  uploadUrl: '/addsp/resource/upload',
+  // uploadUrl: '/addsp/resource/upload',
   multiple: false,
   disabled: false,
   accept: ''

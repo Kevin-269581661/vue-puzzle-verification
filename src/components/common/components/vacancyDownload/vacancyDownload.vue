@@ -212,8 +212,8 @@ import { Message } from "element-ui";
     openDoorType: '',
     // 开门次数日期范围
     openDoorDate: [],
-    openDoorMinCount: null,
-    openDoorMaxCount: null,
+    openDoorMinCount: '',
+    openDoorMaxCount: '',
     supportVoice: -1,
     dateType: '1',
     customDate: [],

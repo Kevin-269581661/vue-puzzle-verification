@@ -241,7 +241,7 @@ export default {
         // 特殊校验
         openDoorCount: [
           {
-            required: true,
+            required: false,
             trigger: 'blur',
             validator: (rule, value, callback) => {
               let { openDoorType, openDoorMinCount, openDoorMaxCount } = this.formData

@@ -528,26 +528,26 @@
                   fixed
                   prop="title"
                   label="音频标题"
-                  min-width="400"
+                  min-width="300"
                   show-overflow-tooltip
                   >
                 </el-table-column>
                 <el-table-column
                   prop="apName"
                   label="关联订单或方案名称"
-                  min-width="380"
+                  min-width="300"
                   show-overflow-tooltip
                   >
                 </el-table-column>
                 <el-table-column
                   prop="createTime"
                   label="创建日期"
-                  min-width="320">
+                  width="180">
                 </el-table-column>
                 <el-table-column
                   prop="status"
                   label="审批状态"
-                  min-width="250">
+                  width="100">
                   <template slot-scope="scope">
                     <div v-if="scope.row.status === 0">
                         待审核
@@ -568,6 +568,7 @@
                 </el-table-column>
                 <el-table-column
                   label="操作"
+                  fixed="right"
                   min-width="150">
                   <template slot-scope="scope">
                     <div style="width:100%; display: flex; justify-content: space-between;">

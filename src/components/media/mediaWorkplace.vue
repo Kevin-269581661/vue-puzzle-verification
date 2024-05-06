@@ -512,11 +512,11 @@
                   <el-button
                     type="primary"
                     icon="el-icon-search"
-                    @click="getAudioList()"
+                    @click="searchAudio"
                   >
                     搜索</el-button
                   >
-                  <el-button plain @click="resetAudio()">重置</el-button>
+                  <el-button plain @click="resetAudio">重置</el-button>
                 </li>
               </div>
               <el-table
@@ -888,6 +888,7 @@ export default {
 
     // 获取音频审核列表
     getAudioList() {
+      // if (this.loading) return
       this.loading=true
       let data = {
         title: this.searchInfo.title === ''? null : this.searchInfo.title,
@@ -1008,10 +1009,14 @@ export default {
         this.$refs.audioRef.play()
       }
     },
+    searchAudio() {
+      this.currentPage = 1
+      this.getAudioList()
+    },
     resetAudio() {
       this.searchInfo.title = null
       this.searchInfo.apName = null
-      this.getAudioList()
+      this.searchAudio()
     },
 
     toSearchParams() {

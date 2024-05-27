@@ -2099,7 +2099,7 @@ export default {
             this.Editloading.close();
           } else {
             this.Editloading.close();
-            sessFun.messageFun("warning", "资源创建失败！");
+            sessFun.messageFun("warning", res.data.MSG || "资源创建失败！");
           }
         })
         .catch((err) => {

@@ -85,7 +85,7 @@
                   </div>
                   <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
                   <div class="upload_tip" slot="tip">
-                    <span class="start_text">* </span>只能上传 WAV 格式音频文件，时长10-15秒且不超过3M
+                    <span class="start_text">* </span>只能上传wav格式音频文件，建议时长3-5秒且文件大小不超过1MB
                   </div>
                 </el-upload>
               </el-form-item>

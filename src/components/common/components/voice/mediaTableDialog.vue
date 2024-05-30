@@ -19,6 +19,7 @@
               v-model="searchData.assetTag"
               placeholder="请输入资源名称"
               clearable
+              maxlength="30"
               size="small"
               class="item_content"
             ></el-input>
@@ -30,6 +31,7 @@
               v-model="searchData.resName"
               placeholder="请输入方案名称"
               clearable
+              maxlength="30"
               size="small"
               class="item_content"
             ></el-input>
@@ -41,6 +43,19 @@
               v-model="searchData.mediaName"
               placeholder="请输入资产编号"
               clearable
+              maxlength="30"
+              size="small"
+              class="item_content"
+            ></el-input>
+          </div>
+
+          <div class="search_item">
+            <span class="item_title">设备MAC：</span>
+            <el-input
+              v-model="searchData.mac"
+              placeholder="请输入设备MAC"
+              clearable
+              maxlength="30"
               size="small"
               class="item_content"
             ></el-input>
@@ -52,6 +67,7 @@
               v-model="searchData.siteType"
               placeholder="请输入位置类型"
               clearable
+              maxlength="30"
               size="small"
               class="item_content"
             ></el-input>
@@ -126,7 +142,7 @@
             <!-- <el-table-column label="序号" type="index" width="80"></el-table-column> -->
             <!-- <el-table-column type="selection" width="55"></el-table-column> -->
 
-            <el-table-column v-if="!isCheckAll" width="55" key="selection">
+            <el-table-column v-if="!isCheckAll" width="55" key="selection" fixed="left">
               <template slot="header" slot-scope="scope">
                 <el-checkbox v-model="isCheckAllCurrentPage" @change="handleSelectAll"></el-checkbox>
               </template>
@@ -135,25 +151,27 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="媒体名称" prop="mtitle" show-overflow-tooltip></el-table-column>
+            <el-table-column label="媒体名称" prop="mtitle" min-width="120" fixed="left" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="资源名称" prop="resName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="资源名称" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="城市" prop="cityName" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="区域" prop="areaName" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="街道" prop="street" show-overflow-tooltip></el-table-column>
+            <el-table-column label="街道" prop="street" min-width="120" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="商圈" prop="tradingArea" show-overflow-tooltip></el-table-column>
+            <el-table-column label="商圈" prop="tradingArea" min-width="120" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="媒体备注" prop="remark" show-overflow-tooltip></el-table-column>
+            <el-table-column label="媒体备注" prop="remark" min-width="120" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="位置类型" prop="siteType" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="位置朝向" prop="siteOrientation" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="媒体位ID" prop="assetTag" show-overflow-tooltip></el-table-column>
+            <el-table-column label="媒体位ID" prop="assetTag" min-width="120" show-overflow-tooltip></el-table-column>
+
+            <el-table-column label="设备MAC" prop="mac" min-width="120" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="楼盘类型" prop="resType" show-overflow-tooltip></el-table-column>
 
@@ -198,6 +216,8 @@ const initSearchData = () => ({
   // apId: null,
   // 此记录的Id，编辑才传
   id: null,
+  // 设备MAC
+  mac: '',
   // 媒体位ID
   assetTag: '',
   // 资源名称

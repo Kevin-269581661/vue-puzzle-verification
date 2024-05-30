@@ -159,13 +159,17 @@
         <el-row class="content_wrapper">
           <el-col :span="8" class="content_left">
             <el-tree
+              ref="treeRef"
               v-if="this.treeData.length"
               :props="{
                 label: 'title',
                 children: 'children',
                 isLeaf: 'isLeaf'
               }"
+              node-key="key"
               :load="onTreeLoadData"
+              :default-expanded-keys="['-1']"
+              :default-checked-keys="defaultCheckedKeys"
               lazy
               style="width: 100%"
               @node-click="onTreeSelect"
@@ -664,6 +668,8 @@ export default {
       },
       tabList: [],
       treeData: [],
+      defaultCheckedKeys: [],
+      isInitTree: true,
       activeTabKey: null,
       // 当前选中的公司
       currentCompanyItem: {
@@ -946,7 +952,7 @@ export default {
     /**
      * 点击树形
      */
-    onTreeSelect(data, node) {
+    onTreeSelect(data) {
       // 地方媒介只能查看自己公司的数据
       if (data.menuType === 2) {
         this.currentCompanyItem = data
@@ -957,30 +963,41 @@ export default {
      * 懒加载树形公司列表数据
      */
     async onTreeLoadData (node, resolve) {
-        if (node.level === 0) {
-          return resolve(this.treeData);
+      if (node.level === 0) {
+        return resolve(this.treeData);
+      }
+      const { children, menuType, id: nodeId, code: key } = node.data
+      // if (children && children.length) return resolve()
+      if (menuType !== 1) return resolve([])
+      const status = key === 'all' ? null : key === 'finished' ?  1 : 0
+      const res = await this.$api.resource.listProcessCompanies({
+        status,
+        nodeId,
+        processId: this.activeTabKey
+      })
+      const { SysCode: code, MSG: message, data = [] } = res.data || {}
+      if (code !== 200200) throw new Error(message || '获取详情数据失败')
+      const list = data.map((item, i) => {
+        return {
+          ...item,
+          title: item.companyName,
+          key: getUniqueId(),
+          menuType: 2,
+          isLeaf: true
         }
-        const { children, menuType, id: nodeId, code: key } = node.data
-        // if (children && children.length) return resolve()
-        if (menuType !== 1) return resolve([])
-        const status = key === 'all' ? null : key === 'finished' ?  1 : 0
-        const res = await this.$api.resource.listProcessCompanies({
-          status,
-          nodeId,
-          processId: this.activeTabKey
-        })
-        const { SysCode: code, MSG: message, data = [] } = res.data || {}
-        if (code !== 200200) throw new Error(message || '获取详情数据失败')
-        const list = data.map((item) => {
-          return {
-            ...item,
-            title: item.companyName,
-            key: getUniqueId(),
-            menuType: 2,
-            isLeaf: true
-          }
-        })
-        resolve(list)
+      })
+      resolve(list)
+      if (this.isInitTree) {
+        this.isInitTree = false
+        if (list.length) {
+          // 设置默认选中自己的公司，没有就第一个
+          const curItem = list.find(item => item.companyId === Number(this.sessionData.asrID)) || list[0]
+          this.$nextTick(() => {
+            this.$refs.treeRef && this.$refs.treeRef.setCurrentKey(curItem)
+          })
+          this.onTreeSelect(curItem)
+        }
+      }
     },
     /**
      * 获取详情
@@ -1760,6 +1777,9 @@ export default {
     .el-tree-node.is-current.is-focusable > .el-tree-node__content .sub_menu_item::before {
       transition: height 0.15s ease-out;
       height: 40px;
+    }
+    /deep/ .el-tree-node.is-current:not(.is-expanded) {
+      background-color: #F5F7FA;
     }
     .menu_item {
       line-height: 40px;

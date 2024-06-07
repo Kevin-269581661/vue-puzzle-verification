@@ -480,7 +480,7 @@
       initWebsocket() {
         if ("WebSocket" in window) {
           // let wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
-          // let wsUrl = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
+          // let wsUrl = "wss://test-qadn.qinlinad.com/UCAPI/ScanLogin?type=PC"
           let wsUrl = this.apiVar.wsUrl;
           this.websock = new WebSocket(wsUrl); // 这里面的this都指向vue
           this.websock.onopen = this.websocketOpen;

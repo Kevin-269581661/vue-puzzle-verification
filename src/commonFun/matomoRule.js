@@ -7,8 +7,8 @@
 (function () {
     try {
         matomoFun({
-            dev: "https://test-matomo.qinlindmp.com/",
-            test: "https://test-matomo.qinlindmp.com/",
+            dev: "https://test-matomo.qinlinad.com/",
+            test: "https://test-matomo.qinlinad.com/",
             gray: "https://matomo.qinlinad.com/",
             prod: "https://matomo.qinlinad.com/",
         }[process.env.EVN_CONFIG]);

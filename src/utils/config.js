@@ -23,7 +23,7 @@ const apiRoot = {
   // 对外灰度域名
   // grayURL: '"https://rc.qinlinad.com/"',
   // static
-  grayURL: '"https://beta-qadn.qinlindmp.com/"',
+  grayURL: '"https://beta-qadn.qinlinad.com/"',
   prodURL: '"https://www.qinlinad.com/"',
 };
 

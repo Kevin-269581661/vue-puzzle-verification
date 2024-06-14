@@ -617,10 +617,10 @@
       bandPhoneNum() {
         //打开提示绑定手机模态框
         let userCenterUrl = {
-          dev: "https://test-qadp.qinlindmp.com/",
-          test: "https://test-qadp.qinlindmp.com/",
-          gray: "https://user-admin.qinlindmp.com/",
-          prod: "https://user-admin.qinlindmp.com/",
+          dev: "https://test-qadp.qinlinad.com/",
+          test: "https://test-qadp.qinlinad.com/",
+          gray: "https://user-admin.qinlinad.com/",
+          prod: "https://user-admin.qinlinad.com/",
         }[this.env];
         window.location.href = `${userCenterUrl}login?mark=bindPhoneNum&source=qadn&userName=${this.username}`;
       },

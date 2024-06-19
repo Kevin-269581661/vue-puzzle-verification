@@ -573,7 +573,7 @@ export default {
     var glSript = document.createElement("script");
     glSript.type = "text/javascript";
     glSript.src =
-      "https://api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init";
+      "https://api.map.baidu.com/api?type=webgl&v=1.0&ak=lUXDm9ximz8kysFkEXggFm1qYK9HCBx8&callback=init";
     document.body.appendChild(glSript);
     glSript.onload = () => {
       var script = document.createElement("script");
@@ -1057,20 +1057,24 @@ export default {
     },
     // 是否开通数字化
     requestIsPay() {
-      api.getApi('/addsp/api/v1/company/isPay', {
-          asrID: this.sessionData.asrID
-      }).then(res => {
+      api
+        .getApi("/addsp/api/v1/company/isPay", {
+          asrID: this.sessionData.asrID,
+        })
+        .then((res) => {
           if (res.data.SysCode === 200200 && res.data.data === false) {
             // 没有开通时显示新建媒体
-            const linkIndex = this.linkArrNew.findIndex((item) => item.title==='新建方案')
+            const linkIndex = this.linkArrNew.findIndex(
+              (item) => item.title === "新建方案"
+            );
             this.linkArrNew.splice(linkIndex, 0, {
               imgurl: require("../../assets/images/addMedia.png"),
               title: "新建媒体",
               link: "./media/mediaInput",
             });
           }
-      })
-    }
+        });
+    },
   },
   beforeRouteEnter(to, from, next) {
     /* 在渲染该组件的对应路由被 confirm 前调用

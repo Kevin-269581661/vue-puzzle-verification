@@ -447,8 +447,8 @@ export default {
       this.sessionData = sessFun.getSess();
     },
     resizeRank(price) {
-      let rankLength = document.getElementsByClassName("timeline")[0]
-        .offsetWidth;
+      let rankLength =
+        document.getElementsByClassName("timeline")[0].offsetWidth;
       let maxPrice = this.priceList[this.priceList.length - 1];
       let truePrice = document.getElementById("rank_info");
       let side = (price / maxPrice) * rankLength;
@@ -995,7 +995,7 @@ export default {
     var glSript = document.createElement("script");
     glSript.type = "text/javascript";
     glSript.src =
-      "https://api.map.baidu.com/api?type=webgl&v=1.0&ak=OuaBKFQpjyuK6a2BvVW7qbNagMkSAKqI&callback=init";
+      "https://api.map.baidu.com/api?type=webgl&v=1.0&ak=lUXDm9ximz8kysFkEXggFm1qYK9HCBx8&callback=init";
     document.body.appendChild(glSript);
     glSript.onload = () => {
       var script = document.createElement("script");

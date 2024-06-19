@@ -3,7 +3,7 @@
 let wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid=';
 let shareWUYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid=';
 let jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-test/';
-let wsUrl = "wss://test-qadn.qinlindmp.com/UCAPI/ScanLogin?type=PC"
+let wsUrl = "wss://test-qadn.qinlinad.com/UCAPI/ScanLogin?type=PC"
 if (process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'graying') {
   // 正式环境
   wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=';
@@ -16,14 +16,14 @@ if (process.env.NODE_ENV == 'development') {
   jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
 const apiRoot = {
-  // devURL: '"https://test-qadn.qinlindmp.com/"',
+  // devURL: '"https://test-qadn.qinlinad.com/"',
   devURL: '"/devURL/"',
   // testURL: '"http://192.168.1.239/"',
-  testURL: '"https://test-qadn.qinlindmp.com/"',
+  testURL: '"https://test-qadn.qinlinad.com/"',
   // 对外灰度域名
   // grayURL: '"https://rc.qinlinad.com/"',
   // static
-  grayURL: '"https://beta-qadn.qinlindmp.com/"',
+  grayURL: '"https://beta-qadn.qinlinad.com/"',
   prodURL: '"https://www.qinlinad.com/"',
 };
 

@@ -1,41 +1,39 @@
+<!-- 模板-弹框组件 -->
 <template>
-  <div class="dialog_container">
-    <!-- 模板-弹框组件 -->
-    <el-dialog
-      :visible.sync="visible"
-      :append-to-body="true"
-      :close-on-click-modal="false"
-      :show-close="true"
-      :title="`${isEdit ? '编辑' : '新建'}模板弹框`"
-      width="60%"
-      @closed="afterClose"
-    >
-      <div v-loading="dialogLoading" class="dialog_content">
-        <div class="custom_dialog_body">
-          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" size="small" class="form">
-            <el-form-item label="示例一：" prop="propOne">
-              <el-input v-model.trim="formData.propOne" placeholder="请输入" clearable maxlength="100"></el-input>
-            </el-form-item>
+  <el-dialog
+    width="60%"
+    append-to-body
+    show-close
+    :title="`${isEdit ? '编辑' : '新建'}模板弹框`"
+    :visible.sync="visible"
+    :close-on-click-modal="false"
+    @closed="afterClose"
+  >
+    <div v-loading="loading" class="dialog_content">
+      <div class="custom_dialog_body">
+        <el-form ref="formRef" class="form" label-width="120px" size="small"  :model="formData" :rules="formRules">
+          <el-form-item label="示例一：" prop="propOne">
+            <el-input v-model.trim="formData.propOne" placeholder="请输入" clearable maxlength="100"></el-input>
+          </el-form-item>
 
-            <el-form-item label="示例二：" prop="propTwo">
-              <el-select v-model="formData.propTwo" placeholder="请选择" filterable clearable>
-                <el-option
-                  v-for="item in preparedData.propTwoOptions"
-                  :key="item.value"
-                  :value="item.value"
-                  :label="item.label"
-                />
-              </el-select>
-            </el-form-item>
-          </el-form>
-        </div>
-        <div class="custom_dialog_footer">
-          <el-button size="small" @click="close">取消</el-button>
-          <el-button type="primary" size="small" @click="onSubmit">确定</el-button>
-        </div>
+          <el-form-item label="示例二：" prop="propTwo">
+            <el-select v-model="formData.propTwo" placeholder="请选择" filterable clearable>
+              <el-option
+                v-for="item in preparedData.propTwoOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
       </div>
-    </el-dialog>
-  </div>
+      <div class="custom_dialog_footer">
+        <el-button size="small" @click="close">取消</el-button>
+        <el-button type="primary" size="small" @click="onSubmit">确定</el-button>
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -101,7 +99,7 @@ export default {
   data() {
     return {
       visible: false,
-      dialogLoading: false,
+      loading: false,
       isEdit: false,
       formData: initFormData(),
       formRules: {
@@ -133,7 +131,7 @@ export default {
      * 提交表单
      */
     async onSubmit() {
-      if (this.dialogLoading) return
+      if (this.loading) return
       try {
         const isPass = await this.$refs['formRef'].validate()
         if (!isPass) return
@@ -142,7 +140,7 @@ export default {
       }
       try {
         const { token, uID: uid } = sessFun.getSess()
-        this.dialogLoading = true
+        this.loading = true
         const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
           ...this.formData,
           uid,
@@ -157,7 +155,7 @@ export default {
         this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
       } finally {
-        this.dialogLoading = false
+        this.loading = false
       }
     },
     /**
@@ -166,7 +164,7 @@ export default {
     async getDetail(id) {
       if (!id) return console.error('getDetail error: id 不能为空')
       try {
-        this.dialogLoading = true
+        this.loading = true
         const res = await this.$request.getApi('/aaaa/bbbb', { id })
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
@@ -175,7 +173,7 @@ export default {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
       } finally {
-        this.dialogLoading = false
+        this.loading = false
       }
     },
     /**
@@ -183,7 +181,7 @@ export default {
      */
      async getPropTwoOptions() {
       try {
-        this.dialogLoading = true
+        this.loading = true
         const res = await this.$request.getApi('/aaaa/bbbb')
         const { SysCode: code, MSG: message, data = [] } = res.data
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
@@ -192,13 +190,14 @@ export default {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
       } finally {
-        this.dialogLoading = false
+        this.loading = false
       }
     },
     /**
      * 重置数据
      */
     afterClose() {
+      this.isEdit = false
       this.formData = initFormData()
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
       this.$emit('afterClose')
@@ -209,6 +208,7 @@ export default {
      */
     open(row) {
       if (this.visible) return
+      this.visible = true
       if (row) {
         this.isEdit = true
         this.formData = {
@@ -217,10 +217,7 @@ export default {
         }
         // 根据 id 获取详情，二选一
         // this.getDetail(row.id)
-      } else {
-        this.isEdit = false
       }
-      this.visible = true
       // this.getPropTwoOptions()
     },
     /**

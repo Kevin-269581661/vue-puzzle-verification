@@ -390,7 +390,9 @@ export default {
         asLab: null
       },
       //控制图片比例
-      isActive: false
+      isActive: false,
+      // 获取案例库接口配置: 1.使用旧接口 /advertisement/GetlmgListV2 2.使用新接口 /addsp/photoGalleryCache/getPage
+      getImgApiType: 1
     };
   },
   created () {
@@ -415,10 +417,19 @@ export default {
     // 行业
     this.getIndustry();
     this.getAllCity();
-    this.searchFun();
     this.getSystemMediaTypes();
+    this.init()
   },
   methods: {
+    async init() {
+      try {
+        await this.getImgApiConfig();
+        this.searchFun();
+      } catch (error) {
+        console.error('init error:', error);
+      }
+    },
+
     getSessionData () {
       this.sessionData = JSON.parse(sessionStorage.getItem('session_data'));
       if (this.sessionData.ascType == 0 && this.sessionData.uType === 'ADN_SM') {
@@ -603,7 +614,13 @@ export default {
         }
       }
       console.log('getImgList ===>', params)
-      api.getApi(this.apiVar.Advertisement + "/GetImgListV2", params).then(res => {
+      let url = ''
+      if (this.getImgApiType == 2) {
+        url = '/addsp/photoGalleryCache/getPage'
+      } else {
+        url = this.apiVar.Advertisement + "/GetImgListV2"
+      }
+      api.getApi(url, params).then(res => {
         console.log('案例库res', res)
         if (res.data.SysCode === 200200) {
           let resData = res.data.data
@@ -832,6 +849,21 @@ export default {
     //筛选
     filterCaseType (value, row) {
       return row.tag === value;
+    },
+
+    /**
+     * 获取案例库接口配置
+     */
+    async getImgApiConfig () {
+      try {
+        this.firstBodyLoading = true
+        const res = await api.getApi('/addsp/photoGalleryCache/getShowType')
+        const { SysCode, data } = res.data || {}
+        if (SysCode !== 200200) return this.messageFun('error', '获取案例库接口配置失败')
+        this.getImgApiType = data
+      } catch (err) {
+        this.firstBodyLoading = false
+      }
     },
   },
 

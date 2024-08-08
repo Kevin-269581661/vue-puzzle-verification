@@ -69,7 +69,6 @@
                     week: '',
                     url: ''
                 },
-                isActive: props.isActive
             }
         },
         watch:{
@@ -251,7 +250,7 @@
                 </div>
                 <!--图片列表-->
                 <div class="find clearfix" v-if="showPic === 3">
-                    <div class="photoCard" :class="{active: isActive}" v-for="(img, index) of imgarr" :key="img.pID">
+                    <div class="photoCard" :class="{active: isActive}" v-for="(img, index) of imgarr" :key="img.id || img.pID">
                         <div class="imgBox" @mouseenter="showPreImg = index" @mouseleave="showPreImg = null">
                             <img :src="img.pUrl" alt="" class="smallImg">
                             <!--查看缩略图和下载-->

@@ -69,6 +69,11 @@ export default {
     confirmContent: {
       type: String,
       default: '确认将当前条件下的数据导出吗？'
+    },
+    // 是否显示确认框
+    showConfirm: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -82,11 +87,13 @@ export default {
      */
      async handleExport() {
       if (this.downloadLoading) return
-      try {
-        const confirmRes =  await this.$confirm(this.confirmContent, '温馨提示')
-        if (confirmRes !== 'confirm') return
-      } catch (err) {
-        return
+      if (this.showConfirm) {
+        try {
+          const confirmRes =  await this.$confirm(this.confirmContent, '温馨提示')
+          if (confirmRes !== 'confirm') return
+        } catch (err) {
+          return
+        }
       }
       try {
         this.downloadLoading = true

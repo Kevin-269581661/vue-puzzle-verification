@@ -390,6 +390,7 @@
               </div>
             </div>
           </el-tab-pane>
+
           <el-tab-pane label="物料信息" name="third" :disabled="usableBtn">
             <material
               :materialInfoData="materialInfoJson"
@@ -398,6 +399,7 @@
               v-if="planPanel == 'third'"
             ></material>
           </el-tab-pane>
+
           <el-tab-pane
             label="上刊报告"
             name="forth"
@@ -412,6 +414,7 @@
               ></change-pic>
             </div>
           </el-tab-pane>
+
           <el-tab-pane
             label="下刊报告"
             name="fifth"
@@ -1190,6 +1193,9 @@
         <el-button plain type="default" @click="goBack"> 返回 </el-button>
       </div>
     </div>
+
+    <!-- 订单图片审核-弹框组件 -->
+    <OrderImgAuditDialog ref="orderImgAuditDialogRef" />
   </div>
 </template>
 
@@ -1217,6 +1223,7 @@ import changeProposalOrderPrice from "./components/changeProposalOrderPrice.vue"
 import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 import TableSetting from "./components/TableSetting";
 import audioList from "./components/audioList.vue";
+import OrderImgAuditDialog from './components/orderImgAuditDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1232,7 +1239,8 @@ export default {
     changeProposalOrderPrice,
     ScheduleAlter,
     TableSetting,
-    audioList
+    audioList,
+    OrderImgAuditDialog
   },
   data () {
     return {
@@ -1261,7 +1269,7 @@ export default {
       companyId: null,  //公司ID
       mediaTypeList: [],  //媒体类型
       materialInfoJson: {},  //物料信息数据
-      audioInfoList:{},  //音频信息列表 
+      audioInfoList:{},  //音频信息列表
       // session信息
       sessionData: {},
       isDown: false,
@@ -1501,7 +1509,7 @@ export default {
   },
   provide() {
     return {
-      getAudioList: this.getAudioList  
+      getAudioList: this.getAudioList
     }
   },
   methods: {
@@ -1897,11 +1905,13 @@ export default {
       } else if (this.planPanel == "third") {
       } else if (this.planPanel == "forth") {
         this.getAdMaterialRemarkList()
+        this.getOrderCheckResult(0)
       } else if (this.planPanel == "fifth") {
         this.getAdMaterialRemarkList()
+        this.getOrderCheckResult(1)
       } else if (this.planPanel == "sixth") {
       } else if (this.planPanel == "seventh") {
-        this.getAudioList() 
+        this.getAudioList()
       }
 
     },
@@ -2794,6 +2804,26 @@ export default {
       this.changePriceModal = true
       this.handleTime = new Date().getTime()
       this.changePriceData.handleTime = this.handleTime
+    },
+
+    /**
+     * 订单图片审核结果查询
+     */
+    async getOrderCheckResult(type) {
+      try {
+        const { apID } = this.orderDetail
+        const res = await this.$request.getApi('/addsp/api/v1/audit/getOrderCheckResult', {
+          // 审核类型（0-上画 1-下画 2-换画）
+          type,
+          apID
+        })
+        const { SysCode: code, MSG: message, data } = res.data
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        if (data) this.$refs.orderImgAuditDialogRef && this.$refs.orderImgAuditDialogRef.open({ type, apID })
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getDetail error:', err)
+      }
     }
   }
   ,

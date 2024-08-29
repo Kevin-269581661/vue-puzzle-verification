@@ -14,7 +14,7 @@
     </div>
     <div v-loading="loading" class="dialog_content">
       <div class="custom_dialog_body">
-        <TextAlert showIcon title="检测到当前订单有疑似图片不一致的情况，请及时检查！" class="alert_box" />
+        <TextAlert showIcon title="小范：检测到当前订单有疑似图片不一致的情况，请及时检查！" class="alert_box" />
         <div class="btn_group">
           <!-- <el-button type="primary" size="small" @click="handleExport">导出审核明细</el-button> -->
           <DownloadFileButton

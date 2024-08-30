@@ -79,6 +79,15 @@
                     <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" v-model="publishSearchInfo.picNum">
                     </el-input>
                 </el-form-item>
+
+                <el-form-item label="图片相似度:">
+                    <el-select placeholder="请选择图片相似度" v-model="publishSearchInfo.similarityScore" clearable>
+                        <el-option label="低于0.9" value="0.9"></el-option>
+                        <el-option label="低于0.8" value="0.8"></el-option>
+                        <el-option label="低于0.7" value="0.7"></el-option>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item>
                     <el-button type="primary" @click="searchImg()">搜 索</el-button>
                     <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -678,6 +687,8 @@
                     siteOrientation: '全部',
                     // 图片数量
                     picNum: '',
+                    // 图片相似度
+                    similarityScore: ''
                 },
                 // 资源列表
                 allResource: [],
@@ -1187,7 +1198,7 @@
             searchFormat(type) {
                 let {uID, token} = this.sessionData;
                 let {currPage, pageSize2} = this.pageInfo;
-                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus, mTitles, assetTags, siteOrientation, picNum} = this.publishSearchInfo;
+                let {mediaType, citySelect, allhouse, allPic, lState, dateRange, materialRemark, prStatus, mTitles, assetTags, siteOrientation, picNum, similarityScore} = this.publishSearchInfo;
                 let info = {
                     uid: uID,
                     token: token,
@@ -1202,7 +1213,8 @@
                     mTitles: mTitles.includes('全部')?'':mTitles,
                     assetTags: assetTags.includes('全部')?'':assetTags,
                     siteOrientation: siteOrientation == '全部' ? '' : siteOrientation,
-                    picNum      
+                    picNum,
+                    similarityScore
                 };
 
                 if (allPic == '2') {
@@ -1246,6 +1258,7 @@
                         mTitles: ['全部'],
                         assetTags: ['全部'],
                         siteOrientation: '全部',
+                        similarityScore: ''
                     };
 
                 }else{
@@ -1259,6 +1272,7 @@
                         mTitles: ['全部'],
                         assetTags: ['全部'],
                         siteOrientation: '全部',
+                        similarityScore: ''
                     }
                 }
                 this.getImgArr();

@@ -80,7 +80,7 @@
                     </el-input>
                 </el-form-item>
 
-                <el-form-item label="图片相似度:">
+                <el-form-item v-if="isShowSimilarityScore" label="图片相似度:">
                     <el-select placeholder="请选择图片相似度" v-model="publishSearchInfo.similarityScore" clearable>
                         <el-option label="低于0.9" value="0.9"></el-option>
                         <el-option label="低于0.8" value="0.8"></el-option>
@@ -658,6 +658,7 @@
         },
         data() {
             return {
+                isShowSimilarityScore: false,
                 mediaTypeList: [],
                 // 上下刊搜索
                 publishSearchInfo: {
@@ -907,6 +908,7 @@
             //得到换画排期筛选列表
             this.getAdChangeLaunchDateList()
             this.getAdsUploadImgCnt();
+            this.getIsWhiteUser()
         },
         watch: {
             fromType(newVal, oldVal) {
@@ -921,6 +923,20 @@
         },
 
         methods: {
+          /**
+           * 检查白名单配置
+           */
+          async getIsWhiteUser() {
+            try {
+              const res = await this.$request.getApi('/addsp/api/v1/audit/isWhiteUser')
+              const { SysCode: code, MSG: message, data } = res.data
+              if (code !== 200200) return this.$message.error(message || '获取数据失败')
+              this.isShowSimilarityScore = data
+            } catch (err) {
+              this.$message.error(String(err) || '获取数据失败')
+              console.error('getIsWhiteUser error:', err)
+            }
+          },
             // 获取 1媒体位id/2媒体名称/3位置朝向/4设备型号 的数据
             // type: 'default'-上下刊，'change'-换画
             getPlanDetails(type, mid) {

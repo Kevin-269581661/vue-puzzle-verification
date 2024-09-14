@@ -30,7 +30,7 @@
       </div>
 
       <div class="custom_dialog_footer">
-        <el-button type="warning" size="small" @click="closeAndNotAgain">关闭，下次不再弹出</el-button>
+        <el-button type="danger" plain size="small" @click="closeAndNotAgain">忽略，下次不再弹出</el-button>
         <el-button size="small" @click="close">关闭</el-button>
       </div>
     </div>
@@ -166,6 +166,9 @@ export default {
 
 .custom_dialog_footer{
   padding: 10px 20px 20px;
+  /deep/ .el-button {
+    padding: 0 12px;
+  }
 }
 
 .alert_box {

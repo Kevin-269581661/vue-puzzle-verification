@@ -37,6 +37,8 @@ const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 新全国单流程
 const NationalOrderList = () => import(/* webpackChunkName: "NationalOrderList" */ '../components/common/order/nationalOrderList.vue')
+// 客户监播-列表
+const CustomerMonitoringList = () => import(/* webpackChunkName: "CustomerMonitoringList" */ '../components/common/order/customerMonitoringList/index.vue')
 const NationalOrderDetail = () => import(/* webpackChunkName: "NationalOrderDetail" */ '../components/common/order/nationalOrderDetail.vue')
 // 创建非系统全国单
 const createOrder = () => import(/* webpackChunkName: "createOrder" */ '../components/common/createOrder.vue')
@@ -280,6 +282,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
                         {path: '/media/nationalOrderList', component: NationalOrderList},
+                        {path: '/media/customerMonitoringList', component: CustomerMonitoringList},
                         {path: '/media/nationalOrderDetail', component: NationalOrderDetail},
                         {path: '/media/createOrder', component: createOrder},
                         {path: '/media/countryOrderList', component: countryOrderList},
@@ -344,6 +347,7 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
                         {path: '/media/nationalOrderList', component: NationalOrderList},
+                        {path: '/media/customerMonitoringList', component: CustomerMonitoringList},
                         {path: '/media/nationalOrderDetail', component: NationalOrderDetail},
                         {path: '/media/countryOrderList', component: countryOrderList},
                         {path: '/media/planDetail', component: planDetail},

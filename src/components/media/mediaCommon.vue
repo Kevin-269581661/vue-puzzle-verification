@@ -36,12 +36,14 @@
                 <el-menu-item index="/media/orderList">常规订单</el-menu-item>
                 <el-menu-item index="/media/countryOrderList">非系统全国单</el-menu-item>
                 <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
+                <el-menu-item index="/media/customerMonitoringList">客户监播管理</el-menu-item>
             </el-submenu>
 
             <el-submenu v-else-if="sessionData.permissions.includes('naOrderDockManagement')" index="11" :show-timeout="80" popper-class="submenu">
                 <template slot="title">订单管理</template>
                 <el-menu-item index="/media/orderList">常规订单</el-menu-item>
                 <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
+                <el-menu-item index="/media/customerMonitoringList">客户监播管理</el-menu-item>
             </el-submenu>
 
             <el-menu-item v-else index="/media/orderList">订单管理</el-menu-item>

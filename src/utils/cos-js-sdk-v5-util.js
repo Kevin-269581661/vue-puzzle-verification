@@ -1,7 +1,5 @@
 import request from 'axios';
 
-const COS = window.COS
-
 export default class CosUploader {
   // 获取oss基本信息接口地址，这个根据公司来，有些公司不需要请求，公司负责人直接给你，我这里需要请求才能拿到oss基本配置信息
   uploadUrl = '/addsp/resource/web/getTemporaryKey'
@@ -68,7 +66,7 @@ export default class CosUploader {
     this.region = region
     this.prefix = prefix
     // COS 对象
-    const cos = new COS({
+    const cos = new window.COS({
       getAuthorization: (options, callback) => {
         callback({
           // 获取回来的临时密钥的 tmpSecretId

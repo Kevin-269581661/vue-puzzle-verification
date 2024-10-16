@@ -14,13 +14,16 @@
                 <div class="mediaList_container">
                     <el-form :model="accountForm" status-icon :rules="accountRules" ref="accountForm"
                         label-width="120px" class="demo-ruleForm">
+
                         <el-form-item label="账号：" prop="account">
                             <el-input v-model.trim="accountForm.account" placeholder="请输入账号" :disabled="isEdit"
                                 size="small"></el-input>
                         </el-form-item>
+
                         <el-form-item label="姓名：" prop="realName">
                             <el-input v-model.trim="accountForm.realName" placeholder="请输入真实姓名" size="small"></el-input>
                         </el-form-item>
+
                         <el-form-item label="所属公司：" prop="company">
                             <el-select v-model="accountForm.company" placeholder="请选择所属公司" filterable
                                 @change="companyChange" size="small">
@@ -28,6 +31,7 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
+
                         <el-form-item label="角色：" prop="role">
                             <el-select v-model="accountForm.role" placeholder="请选择角色" :disabled="isEdit"
                                 @change="roleSelect" size="small">
@@ -35,6 +39,7 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
+
                         <!-- 媒介或销售 -->
                         <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
@@ -53,6 +58,7 @@
                                 </div>
                             </el-form-item>
                         </template>
+
                         <!-- 开发楼盘人员 -->
                         <template v-if="accountForm.role == 'DEV'">
                             <el-form-item label="开发类别：" prop="devManageLevel">
@@ -62,6 +68,7 @@
                                 </el-select>
                             </el-form-item>
                         </template>
+
                         <!-- 工程人员后台权限 -->
                         <template v-if="accountForm.role == 'ADN_EP'">
                             <el-form-item label="后台权限：">
@@ -85,6 +92,7 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
+
                         <el-form-item label="媒体权限：" prop="mediaPermission" v-if="haveEPPerssion">
                             <el-select multiple v-model="accountForm.mediaPermission" placeholder="请选择媒体权限"
                                 @change="mediaAccessSelect" size="small">
@@ -92,6 +100,7 @@
                                     :label="item.label"></el-option>
                             </el-select>
                         </el-form-item>
+
                         <template v-if="sessionData.uType == 'ADN_SA' && accountForm.role == 'BD'">
                             <el-form-item label="销售类别：" prop="roleLevel">
                                 <el-select v-model="accountForm.saleManageLevel" placeholder="请选择角色" size="small">
@@ -107,6 +116,7 @@
                                 </el-select>
                             </el-form-item>
                         </template>
+
                         <template v-if="accountForm.role == 'BD'">
                             <el-form-item label="上级：" prop="boss">
                                 <el-autocomplete v-model="accountForm.boss"
@@ -115,6 +125,7 @@
                                 </el-autocomplete>
                             </el-form-item>
                         </template>
+
                         <template v-if="sessionData.uType == 'ADN_SA' && accountForm.role == 'MD'">
                             <el-form-item label="媒介类别：" prop="roleLevel">
                                 <el-select v-model="accountForm.mediaManageLevel" placeholder="请选择角色" size="small">
@@ -123,25 +134,39 @@
                                 </el-select>
                             </el-form-item>
                         </template>
+
                         <el-form-item label="部门：" prop="division">
                             <el-input v-model="accountForm.division" placeholder="请输入部门" size="small"></el-input>
                         </el-form-item>
+
                         <el-form-item label="职务：" prop="position">
                             <el-input v-model="accountForm.position" placeholder="请输入职务" size="small"></el-input>
                         </el-form-item>
+
                         <el-form-item label="手机号码：" prop="phone">
                             <el-input v-model="accountForm.phone" maxlength="11" minlength="8" placeholder="请输入手机号码"
                                 size="small"></el-input>
                         </el-form-item>
+
                         <el-form-item label="邮箱：" prop="email">
                             <el-input v-model="accountForm.email" placeholder="请输入邮箱" type="email" size="small">
                             </el-input>
                         </el-form-item>
+
                         <el-form-item label="权限选择：" prop="permissions" v-if="permissionsData.length > 0">
                             <el-checkbox-group v-model="permissions">
                                 <el-checkbox v-for="item in permissionsData" :key="item.permissionCode" :label="item.permissionId">{{item.permissionName}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
+
+                        <!-- 客户数据源：1.adn，2.crm -->
+                        <el-form-item v-if="sessionData.uType == 'ADN_SA'" label="客户数据源：" prop="customerSrc">
+                          <el-radio-group v-model="accountForm.customerSrc">
+                            <el-radio :label="1">ADN</el-radio>
+                            <el-radio :label="2">CRM</el-radio>
+                          </el-radio-group>
+                        </el-form-item>
+
                     </el-form>
                 </div>
             </div>
@@ -284,7 +309,9 @@ export default {
                 mediaManageLevel: "",
                 roleCity: [],
                 backstagePermission: 0,
-                MD_BD_MediaPermission: []
+                MD_BD_MediaPermission: [],
+                // 客户数据源：1.adn，2.crm
+                customerSrc: 1,
             },
             // 权限城市数组
             roleCityArr: [],
@@ -362,6 +389,7 @@ export default {
                 ],
                 boss: [{ validator: validateBoss, trigger: "blur" }],
                 MD_BD_MediaPermission: [{ required: true, message: "媒体权限不能为空", trigger: "blur" }],
+                customerSrc: [{ required: true, message: "客户数据源不能为空", trigger: "blur" }]
             },
             // 登录信息
             sessionData: "",
@@ -519,7 +547,7 @@ export default {
                         //         disabled: isDisabled
                         //     })
                         //   }).sort((a, b) => a.value - b.value)
-                          
+
                         //     _newData.push({
                         //         disabled: isDisabled,
                         //         label: item.mediaTypeName,
@@ -832,14 +860,14 @@ export default {
                     companyId : this.accountForm.company,
                     userId
                 }
-            }   
+            }
             api.getApi('/addsp/api/v1/user/getPermissions', params)
                 .then(res => {
                     this.permissionsData = res.data.data || []
                     res.data.data.forEach(item => {
                         if (item.status === 1) {
                             if (this.permissions.indexOf(item.permissionId) === -1) {
-                                this.permissions.push(item.permissionId)  
+                                this.permissions.push(item.permissionId)
                             }
                         }
                     })
@@ -916,7 +944,8 @@ export default {
                 puid: 0,
                 asrID: actFrom.company,
                 authorCity: actFrom.roleCity ? this.sortCity(actFrom.roleCity) : "",
-                userMediaChooseConfig: JSON.stringify(userMediaChooseConfig) || ""
+                userMediaChooseConfig: JSON.stringify(userMediaChooseConfig) || "",
+                customerSrc: actFrom.customerSrc
             };
             if (Array.isArray(actFrom.mediaPermission) && actFrom.mediaPermission.length > 0) {
                 account.mediaPermission = actFrom.mediaPermission.join(',');
@@ -1067,7 +1096,8 @@ export default {
                                     backstagePermission: result.backstagePermission
                                         ? result.backstagePermission
                                         : 0,
-                                    MD_BD_MediaPermission: MD_BD_MediaPermission || []
+                                    MD_BD_MediaPermission: MD_BD_MediaPermission || [],
+                                    customerSrc: result.customerSrc ? result.customerSrc : 1
                                 };
                                 this.companyChange(editInfo.company);
                                 this.$nextTick(() => {

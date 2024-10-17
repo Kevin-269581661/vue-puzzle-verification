@@ -90,7 +90,7 @@
 
             <!-- 订单数 -->
             <template slot="orderNum" slot-scope="slotProps">
-              <el-link type="primary" :underline="false">{{ slotProps.row.orderNum }}</el-link>
+              <el-link type="primary" :underline="false" @click="openOrderTableDialog(slotProps.row)">{{ slotProps.row.orderNum }}</el-link>
             </template>
 
             <!-- 操作列 -->
@@ -322,12 +322,14 @@ export default {
       })
       return { list: newList, total }
     },
+
     /**
      * 新建
      */
     handleCreate () {
       this.$refs.monitoringFormDialogRef && this.$refs.monitoringFormDialogRef.open()
     },
+
     /**
      * 跳转详情页
      */
@@ -337,6 +339,11 @@ export default {
         query: { id }
       })
     },
+
+    openOrderTableDialog (row) {
+      this.$refs.orderTableDialogRef && this.$refs.orderTableDialogRef.open(row.id)
+    },
+
     /**
      * 列表操作按钮组
      */
@@ -352,7 +359,7 @@ export default {
         {
           text: '订单管理',
           onClick: () => {
-            this.$refs.orderTableDialogRef && this.$refs.orderTableDialogRef.open(row.id)
+            this.openOrderTableDialog(row)
           }
         },
         {

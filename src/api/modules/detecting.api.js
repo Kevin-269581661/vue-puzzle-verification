@@ -9,11 +9,15 @@ import request from "../api.js";
 export function getPage({
   pageNum,
   pageSize,
+  cId,
+  bId,
   title = ''
 }) {
   return request.getApi("/addsp/api/v1/customer/detecting/getPage", {
     pageNum,
     pageSize,
+    cId,
+    bId,
     title
   })
 }

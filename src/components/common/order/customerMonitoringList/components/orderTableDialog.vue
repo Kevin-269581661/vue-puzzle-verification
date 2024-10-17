@@ -251,8 +251,10 @@ export default {
       if (this.tableLoading) return
       try {
         this.tableLoading = true
-        const apIds = this.totalTableList.map(it => it.apId)
-        let res = await this.$api.detecting.updateRel({
+        const apIds = this.totalTableList
+          .filter(it => it.selected)
+          .map(it => it.apId)
+        const res = await this.$api.detecting.updateRel({
           itemId: this.searchData.itemId,
           apIds
         })
@@ -273,6 +275,7 @@ export default {
      * 获取列表数据
      */
     async getTableList(isFetch = false) {
+      this.activeTabKey = '0'
       try {
         this.tableLoading = true
         if (isFetch) {

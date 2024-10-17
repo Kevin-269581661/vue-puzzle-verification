@@ -1,16 +1,15 @@
+<!-- 客户监播-分享设置-新建分享列表用户-弹窗 -->
 <template>
   <div class="dialog_container">
-    <!-- 新建分享列表用户-组件 -->
     <el-dialog
-      :visible.sync="visible"
-      :append-to-body="true"
-      :show-close="true"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :title="`${isEdit ? '编辑' : '新建'}分享用户`"
       top="30vh"
       width="400px"
-      @closed="close"
+      append-to-body
+      show-close
+      :title="`${isEdit ? '编辑' : '新建'}分享用户`"
+      :visible.sync="visible"
+      :close-on-click-modal="false"
+      @closed="afterClose"
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
@@ -21,13 +20,19 @@
             </el-form-item>
 
             <el-form-item label="手机号：" prop="phone">
-              <el-input v-model="formData.phone" placeholder="请输入手机号" clearable :maxlength="11"></el-input>
+              <el-input
+                v-model="formData.phone"
+                placeholder="请输入手机号"
+                clearable
+                :maxlength="11"
+                :disabled="isEdit"
+              ></el-input>
             </el-form-item>
 
           </el-form>
         </div>
         <div class="custom_dialog_footer">
-          <el-button @click="close" size="small">取消</el-button>
+          <el-button size="small" @click="close">取消</el-button>
           <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
         </div>
       </div>
@@ -36,20 +41,12 @@
 </template>
 
 <script>
-
-// import { cloneDeep } from "lodash";
-import sessFun from "@/commonFun/sessFun.js";
-
 /**
  * 初始化表单（提交）数据
  */
 const initFormData = () => {
   return {
     id: null,
-    // 订单ID
-    apId: null,
-    // 分享页面 CODE
-    code: '',
     // 用户名称
     name: '',
     // 用户手机
@@ -59,7 +56,13 @@ const initFormData = () => {
 
 export default {
   name: 'createShareUserDialog',
-  emits: ['submitSuccess', 'close'],
+  emits: ['submitSuccess', 'afterClose'],
+  props: {
+    userList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       visible: false,
@@ -77,7 +80,9 @@ export default {
                 callback(new Error('请输入手机号'))
               } else if (!/^1\d{10}$/.test(value)) {
                 callback(new Error('请输入正确的手机号'))
-              } {
+              } else if (!this.isEdit && this.userList.some(it => it.phone === value)) {
+                callback(new Error('输入的手机号已经存在'))
+              } else {
                 callback()
               }
             }
@@ -98,17 +103,8 @@ export default {
         return
       }
       try {
-        const { token, uID: uid } = sessFun.getSess()
-        this.dialogLoading = true
-        const res = await this.$request.postApi_json('/addsp/api/v1/share/admin/user/create', {
-          ...this.formData,
-          uid,
-          token,
-        })
-        const { SysCode: code, MSG: message, data } = res.data
-        if (code !== 200200) return this.$message.error(message || '操作失败')
-        this.$message.success('操作成功')
-        this.$emit('submitSuccess')
+        // this.dialogLoading = true
+        this.$emit('submitSuccess', { ...this.formData })
         this.close()
       } catch (err) {
         this.$message.error(String(err) || '操作失败')
@@ -120,39 +116,32 @@ export default {
     /**
      * 重置数据
      */
-    handleReset() {
+    afterClose() {
+      this.isEdit = false
       this.formData = initFormData()
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+      this.$emit('afterClose')
     },
     /**
      * 打开弹框
      */
-    open({ apId, code, id, name = '', phone = '' }) {
-      if (!apId || !code) return console.error('open error: apId, code 不能为空')
-      if (id) {
+    open(row) {
+      if (this.visible) return
+      this.visible = true
+      if (row) {
         this.isEdit = true
         this.formData = {
           ...this.formData,
-          apId, code, id, name, phone
+          ...row
         }
-      } else {
-        this.formData = {
-          ...this.formData,
-          apId, code
-        }
-        this.isEdit = false
       }
-      this.visible = true
     },
     /**
      * 关闭弹框
      */
     close() {
-      if (this.visible) {
-        this.handleReset()
-        this.$emit('close')
-        this.visible = false
-      }
+      if (!this.visible) return
+      this.visible = false
     }
   }
 }

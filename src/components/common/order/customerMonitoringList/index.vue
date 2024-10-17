@@ -83,14 +83,19 @@
               </div>
             </template>
 
-            <!-- 是否开启分享 -->
-            <template slot="status" slot-scope="slotProps">
-              <span>{{ slotProps.row.status === 1 ? '开启' : '关闭' }}</span>
-            </template>
-
             <!-- 订单数 -->
             <template slot="orderNum" slot-scope="slotProps">
               <el-link type="primary" :underline="false" @click="openOrderTableDialog(slotProps.row)">{{ slotProps.row.orderNum }}</el-link>
+            </template>
+
+            <!-- 是否开启自动添加 -->
+            <template slot="autoAddStatus" slot-scope="slotProps">
+              <PointState :state-text="slotProps.row.autoAddStatusLabel" :color="slotProps.row.autoAddStatusColor" class="status_box"/>
+            </template>
+
+            <!-- 是否开启分享 -->
+            <template slot="status" slot-scope="slotProps">
+              <PointState :state-text="slotProps.row.statusLabel" :color="slotProps.row.statusColor" class="status_box"/>
             </template>
 
             <!-- 操作列 -->
@@ -134,14 +139,17 @@
 </template>
 
 <script>
-import sessFun from "@/commonFun/sessFun.js";
+import sessFun from "@/commonFun/sessFun.js"
 import searchTableMixin from '@/mixins/searchTableMixin'
-import TableList from "@/components/common/components/TableList/index.vue";
-import TableAction from "@/components/common/components/TableAction/index.vue";
-import TableSearch from "@/components/common/components/TableSearch/index.vue";
-import MonitoringFormDialog from './components/monitoringFormDialog.vue';
+import TableList from "@/components/common/components/TableList/index.vue"
+import TableAction from "@/components/common/components/TableAction/index.vue"
+import TableSearch from "@/components/common/components/TableSearch/index.vue"
+import MonitoringFormDialog from './components/monitoringFormDialog.vue'
 import OrderTableDialog from './components/orderTableDialog.vue'
 import ShareConfigDialog from './components/shareConfigDialog.vue'
+import PointState from '@/components/common/components/pointState.vue'
+import { getLabel } from '@/utils/common'
+
 /**
  * 初始化搜索绑定数据
  */
@@ -192,12 +200,6 @@ const initTableColumns = () => ([
     minWidth: 160,
   },
   {
-    title: '是否开启分享',
-    dataIndex: 'status',
-    minWidth: 120,
-    slot: 'status',
-  },
-  {
     title: '订单数',
     dataIndex: 'orderNum',
     minWidth: 100,
@@ -212,6 +214,19 @@ const initTableColumns = () => ([
     title: '创建时间',
     dataIndex: 'createTime',
     minWidth: 160,
+  },
+  {
+    title: '是否开启自动添加',
+    dataIndex: 'autoAddStatus',
+    minWidth: 140,
+    slot: 'autoAddStatus',
+  },
+  {
+    title: '是否开启分享',
+    dataIndex: 'status',
+    minWidth: 120,
+    fixed: 'right',
+    slot: 'status',
   },
   {
     title: '操作',
@@ -239,6 +254,7 @@ export default {
     TableList,
     TableAction,
     TableSearch,
+    PointState,
     MonitoringFormDialog,
     OrderTableDialog,
     ShareConfigDialog
@@ -250,17 +266,11 @@ export default {
       sessionData: {},
       // 预加载数据
       preparedData: {
-        customerCompanyOptions: [
-          { label: '甲公司', value: 1 },
-          { label: '乙公司', value: 2 },
-        ],
-        customerBrandOptions: [
-          { label: '甲品牌', value: 1 },
-          { label: '乙品牌', value: 2 },
-        ],
+        customerCompanyOptions: [],
+        customerBrandOptions: [],
         statusOptions: [
-          { label: '开启', value: 1 },
-          { label: '关闭', value: 0 },
+          { label: '开启', value: 1, color: '#87d068' },
+          { label: '关闭', value: 0, color: '#D8D8D8' },
         ],
       },
       apiModel: {
@@ -278,7 +288,6 @@ export default {
         const res = await this.$api.detecting.listCustomers()
         const { SysCode: code, MSG: message, data = [] } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        console.log('getCustomerCompanySelectList 111 res ===', res)
         this.customerCompanyList = Object.freeze(data || [])
         this.preparedData.customerCompanyOptions = this.customerCompanyList.map(item => {
           return {
@@ -312,12 +321,12 @@ export default {
       if (code !== 200200) throw new Error(message || '获取列表数据失败')
       const { list = [], total } = data
       const newList = list.map(item => {
-        // 处理状态
-        const { label: statusText, color: statusColor } = this.preparedData.statusOptions.find(option => option.value === item.status) || {}
         return {
           ...item,
-          statusText,
-          statusColor
+          statusLabel: getLabel(item.status, this.preparedData.statusOptions),
+          statusColor: getLabel(item.status, this.preparedData.statusOptions, { labelKey: 'color' }),
+          autoAddStatusLabel: getLabel(item.autoAddStatus, this.preparedData.statusOptions),
+          autoAddStatusColor: getLabel(item.autoAddStatus, this.preparedData.statusOptions, { labelKey: 'color' })
         }
       })
       return { list: newList, total }
@@ -365,33 +374,33 @@ export default {
         {
           text: '分享设置',
           onClick: () => {
-            this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(13)
+            this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(row.id)
           }
         },
-        {
-          text: '开启分享',
-          visible: !row.status,
-          onClick: async () => {
-            try {
-              const confirmRes =  await this.$confirm('确认开启分享？', '提示')
-              if (confirmRes !== 'confirm') return
-            } catch (err) {
-              return
-            }
-          }
-        },
-        {
-          text: '关闭分享',
-          visible: !!row.status,
-          onClick: async () => {
-            try {
-              const confirmRes =  await this.$confirm('确认关闭分享？', '提示')
-              if (confirmRes !== 'confirm') return
-            } catch (err) {
-              return
-            }
-          }
-        },
+        // {
+        //   text: '开启分享',
+        //   visible: !row.status,
+        //   onClick: async () => {
+        //     try {
+        //       const confirmRes =  await this.$confirm('确认开启分享？', '提示')
+        //       if (confirmRes !== 'confirm') return
+        //     } catch (err) {
+        //       return
+        //     }
+        //   }
+        // },
+        // {
+        //   text: '关闭分享',
+        //   visible: !!row.status,
+        //   onClick: async () => {
+        //     try {
+        //       const confirmRes =  await this.$confirm('确认关闭分享？', '提示')
+        //       if (confirmRes !== 'confirm') return
+        //     } catch (err) {
+        //       return
+        //     }
+        //   }
+        // },
       ]
     },
 

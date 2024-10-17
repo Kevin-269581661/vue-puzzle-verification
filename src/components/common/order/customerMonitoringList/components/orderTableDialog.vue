@@ -143,7 +143,7 @@
 
 <script>
 import { Message } from "element-ui";
-import PointState from '@/components/common/components/pointState.vue';
+import PointState from '@/components/common/components/pointState.vue'
 import { getLabel } from '@/utils/common'
 import CreateNotSysOrderDialog from './createNotSysOrderDialog.vue'
 

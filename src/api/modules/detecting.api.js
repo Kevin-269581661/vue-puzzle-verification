@@ -122,3 +122,51 @@ export function addAdPlanRel({
     nonSystemApId
   })
 }
+
+/**
+ * 获取分享配置
+ */
+export function getShareConfig({
+  // 客户监播项目id
+  itemId
+}) {
+  return request.getApi("/addsp/api/v1/customer/detecting/getShareConfig", {
+    itemId
+  })
+}
+
+/**
+ * 设置分享配置
+ */
+export function setShareConfig({
+  // 项目id
+  itemId,
+  // 分享开启状态 1:开启 0:关闭
+  status,
+  // 账号密码登录 1:开启 0:关闭
+  pwdLogin,
+  // 手机验证码登录状态 1:开启 0:关闭
+  verificationCodeLogin,
+  // 分享类型 1-自定义,2-永久
+  type,
+  // 分享有效期开始时间
+  beginDate,
+  // 分享有效期结束时间
+  endDate,
+  // 新增用户列表(不用输入id)
+  addUserList,
+  // 删除用户id
+  deleteUserIds
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/setShareConfig", {
+    itemId,
+    status,
+    pwdLogin,
+    verificationCodeLogin,
+    type,
+    beginDate,
+    endDate,
+    addUserList,
+    deleteUserIds
+  })
+}

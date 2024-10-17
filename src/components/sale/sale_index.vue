@@ -326,33 +326,6 @@ export default {
       hasMpvgl: false,
       // 动效
       isMonthlyRanking: false,
-      linkArrNew: [
-        {
-          imgurl: require("../../assets/images/map.png"),
-          title: "地图选点",
-          link: "",
-        },
-        {
-          imgurl: require("../../assets/images/importPoint.png"),
-          title: "导出空位",
-          link: "",
-        },
-        {
-          imgurl: require("../../assets/images/fangan.png"),
-          title: "新建方案",
-          link: "./sale/createPlan",
-        },
-        {
-          imgurl: require("../../assets/images/img.png"),
-          title: "行业图片",
-          link: "./sale/photoGallery",
-        },
-        {
-          imgurl: require("../../assets/images/client.png"),
-          title: "新建客户",
-          link: "./sale/createClient",
-        },
-      ],
       dataArr: [
         {
           name: "当月激活客户数",
@@ -441,6 +414,47 @@ export default {
       // 业绩目标仪表盘数据
       gaugeData: {},
     };
+  },
+  computed: {
+    linkArrNew() {
+      const { permissions = [] } = sessFun.getSess() || {}
+      const list = [
+        {
+          imgurl: require("../../assets/images/map.png"),
+          title: "地图选点",
+          link: "",
+        },
+        {
+          imgurl: require("../../assets/images/importPoint.png"),
+          title: "导出空位",
+          link: "",
+        },
+        {
+          imgurl: require("../../assets/images/fangan.png"),
+          title: "新建方案",
+          link: "./sale/createPlan",
+        },
+        {
+          imgurl: require("../../assets/images/img.png"),
+          title: "行业图片",
+          link: "./sale/photoGallery",
+        },
+        {
+          imgurl: require("../../assets/images/client.png"),
+          title: "新建客户",
+          link: "./sale/createClient",
+        },
+      ]
+      // 客户投放
+      if (permissions.includes('customerDetecting')) {
+        list.unshift({
+          imgurl: require("../../assets/images/fangan.png"),
+          title: "客户投放",
+          link: "./sale/customerMonitoringList",
+        })
+      }
+      return list
+    }
   },
   methods: {
     getSession() {

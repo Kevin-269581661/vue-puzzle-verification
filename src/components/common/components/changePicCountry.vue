@@ -1202,7 +1202,7 @@ export default {
     } else if (this.type === 2) {
       this.getPainList();
     }
-    this.getPlanDetails()
+    // this.getPlanDetails()
   },
   watch: {
     fromType() {

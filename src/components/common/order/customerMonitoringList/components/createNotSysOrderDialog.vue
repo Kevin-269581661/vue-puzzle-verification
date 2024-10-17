@@ -141,7 +141,6 @@
 </template>
 
 <script>
-import sessFun from "@/commonFun/sessFun.js";
 import FileUpload from '@/components/common/components/FileUpload/index.vue'
 import { downLoadFileByUrl } from '@/utils/downLoadUtil'
 
@@ -313,7 +312,6 @@ export default {
         return
       }
       try {
-        const { token, uID: uid } = sessFun.getSess()
         this.loading = true
         const res = await this.$api.detecting.addAdPlanRel({
           ...this.formData,

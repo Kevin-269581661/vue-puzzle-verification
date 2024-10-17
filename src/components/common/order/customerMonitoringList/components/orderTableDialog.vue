@@ -195,10 +195,40 @@ export default {
     handleNotSysOrder(row) {
       // 有非系统全国单：点击后跳转至当前非系统全国单详情
       if (row.nonSystemApId) {
-
+        this.goNotSysOrderDetailPage(row.nonSystemApId)
       } else {
         // 无非系统全国单：点击后弹出新建弹框
         this.$refs.createNotSysOrderDialogRef && this.$refs.createNotSysOrderDialogRef.open(row.apId)
+      }
+    },
+
+    /**
+     * 跳转非系统订单详情
+     */
+    async goNotSysOrderDetailPage(nonSystemApId) {
+      // 获取详情参数
+      if (this.tableLoading) return
+      try {
+        this.tableLoading = true
+        const res = await this.$api.nationalAdPlan.pageList({
+          apId: nonSystemApId
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '操作失败')
+        // this.close()
+        let list = data.list || []
+        if (!list.length) return this.$message.warning('未找到该订单')
+        const { companyList, apID,  src: apSrc } = list[0]
+        sessionStorage.setItem("change_point_country", "no")
+        sessionStorage.setItem("order_citylist", JSON.stringify(companyList))
+        sessionStorage.setItem("country_order_apid", apID)
+        sessionStorage.setItem("order_apSrc", apSrc)
+        this.$router.push("/sale/countryOrderDetail")
+      } catch (err) {
+        this.$message.error(String(err) || '操作失败')
+        console.error('handleConfirm error:', err)
+      } finally {
+        this.tableLoading = false
       }
     },
 

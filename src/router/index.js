@@ -37,7 +37,7 @@ const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 新全国单流程
 const NationalOrderList = () => import(/* webpackChunkName: "NationalOrderList" */ '../components/common/order/nationalOrderList.vue')
-// 客户监播-列表
+// 客户投放监播列表
 const CustomerMonitoringList = () => import(/* webpackChunkName: "CustomerMonitoringList" */ '../components/common/order/customerMonitoringList/index.vue')
 const NationalOrderDetail = () => import(/* webpackChunkName: "NationalOrderDetail" */ '../components/common/order/nationalOrderDetail.vue')
 // 创建非系统全国单
@@ -282,7 +282,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
                         {path: '/media/nationalOrderList', component: NationalOrderList},
-                        {path: '/media/customerMonitoringList', component: CustomerMonitoringList},
                         {path: '/media/nationalOrderDetail', component: NationalOrderDetail},
                         {path: '/media/createOrder', component: createOrder},
                         {path: '/media/countryOrderList', component: countryOrderList},
@@ -347,7 +346,6 @@ function addRoutes(role, proposal, retain) {
                         {path: '/media/publishPriceList', component: publishPriceList},
                         {path: '/media/orderList', component: orderList},
                         {path: '/media/nationalOrderList', component: NationalOrderList},
-                        {path: '/media/customerMonitoringList', component: CustomerMonitoringList},
                         {path: '/media/nationalOrderDetail', component: NationalOrderDetail},
                         {path: '/media/countryOrderList', component: countryOrderList},
                         {path: '/media/planDetail', component: planDetail},
@@ -407,6 +405,8 @@ function addRoutes(role, proposal, retain) {
                         {path: '/sale/planList', component: planList},
                         {path: '/sale/publishPriceList', component: publishPriceList},
                         {path: '/sale/orderList', component: orderList},
+                        {path: '/sale/customerMonitoringList', component: CustomerMonitoringList},
+                        {path: '/sale/countryOrderDetail', component: countryOrderDetail},
                         {path: '/sale/clientDetail', component: clientDetail},
                         {path: '/sale/planDetail', component: planDetail},
                         {path: '/sale/planEmptyPointDetail', component: planEmptyPointDetail},

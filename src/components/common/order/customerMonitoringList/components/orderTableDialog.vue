@@ -72,7 +72,7 @@
             :data="tableList"
             v-loading="tableLoading"
             height="500px"
-            row-key="mid"
+            row-key="apId"
             style="width: 100%"
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
@@ -98,17 +98,49 @@
             >
             </el-table-column>
 
-            <el-table-column label="投放城市（点位面数，排期）" prop="cityList" min-width="270" >
+            <el-table-column type="expand">
               <template slot-scope="scope">
-                <div v-for="(item, i) in scope.row.cityList" :key="i">
+                <div v-for="(item, i) in scope.row.cityList" style="line-height: 32px" :key="i">
                   {{ item.city || '--' }}（{{ item.num || '--' }}面，{{ item.pdStar || '--' }}至{{ item.pdEnd || '--' }}）
                 </div>
               </template>
             </el-table-column>
 
+            <el-table-column label="投放城市（点位面数，排期）" prop="cityList" width="300">
+              <template slot-scope="scope">
+                <el-tooltip placement="top-start">
+                  <template slot="content">
+                    <div v-for="(item, i) in scope.row.cityList" style="line-height: 32px" :key="i">
+                      {{ item.city || '--' }}（{{ item.num || '--' }}面，{{ item.pdStar || '--' }}至{{ item.pdEnd || '--' }}）
+                    </div>
+                  </template>
+                  <div>
+                    <div v-for="(item, i) in scope.row.cityList.slice(0, 1)" style="line-height: 32px" :key="i">
+                      {{ item.city || '--' }}（{{ item.num || '--' }}面，{{ item.pdStar || '--' }}至{{ item.pdEnd || '--' }}）
+                    </div>
+                    <!-- <div v-for="(item, i) in scope.row.cityList" style="line-height: 32px" :key="i">
+                      {{ item.city || '--' }}（{{ item.num || '--' }}面，{{ item.pdStar || '--' }}至{{ item.pdEnd || '--' }}）
+                    </div> -->
+                  </div>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+
             <el-table-column label="投放总面数" prop="totalNum" min-width="100" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="媒体类型" prop="mediaTypeNames"  min-width="100"  show-overflow-tooltip></el-table-column>
+            <el-table-column label="媒体类型" prop="mediaTypeNames"  min-width="220" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div class="tag_wraper">
+                  <span
+                    v-for="(item, i) in scope.row.mediaTypeNameList"
+                    class="tag_box"
+                    :key="i"
+                  >
+                    {{ item }}
+                  </span>
+                </div>
+              </template>
+            </el-table-column>
 
             <el-table-column label="状态" width="100" fixed="right">
               <template slot-scope="scope">
@@ -144,7 +176,7 @@
 <script>
 import { Message } from "element-ui";
 import PointState from '@/components/common/components/pointState.vue'
-import { getLabel } from '@/utils/common'
+import { getLabel, getTagList } from '@/utils/common'
 import CreateNotSysOrderDialog from './createNotSysOrderDialog.vue'
 
 const initSearchData = () => ({
@@ -192,6 +224,7 @@ export default {
   },
   mounted () {},
   methods: {
+
     handleNotSysOrder(row) {
       // 有非系统全国单：点击后跳转至当前非系统全国单详情
       if (row.nonSystemApId) {
@@ -289,7 +322,8 @@ export default {
               ...item,
               selected: item.status === 1,
               statusLabel: getLabel(item.status, this.statusOptions),
-              statusColor: getLabel(item.status, this.statusOptions, { labelKey: 'color' })
+              statusColor: getLabel(item.status, this.statusOptions, { labelKey: 'color' }),
+              mediaTypeNameList: getTagList(item.mediaTypeNames, ',')
             }
           })
           this.totalTableList = this.tableList
@@ -412,9 +446,21 @@ export default {
 /deep/ .el-dialog .el-dialog__body {
   padding: 0;
 }
+
 .custom_dialog_body {
   padding-bottom: 15px;
 }
+
+.table_wrapper >>> .el-table td .cell {
+  padding: 2px 10px;
+  height: auto;
+  line-height: 28px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
+}
+
 .search_bar {
   display: flex;
   flex-wrap: wrap;
@@ -453,6 +499,30 @@ export default {
   /deep/ .el-tabs__item {
     height: 56px;
     line-height: 56px;
+  }
+}
+
+.tag_wraper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  // flex-wrap: wrap;
+  .tag_box {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    padding: 0 8px;
+    background: linear-gradient(0deg, #E6F7FF, #E6F7FF),linear-gradient(0deg, #91D5FF, #91D5FF);
+    border: 1px solid #91D5FF ;
+    font-size: 12px;
+    color: #1890FF;
+    border-radius: 4px;
+    & + .tag_box {
+      margin-left: 8px;
+    }
   }
 }
 

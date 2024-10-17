@@ -83,6 +83,19 @@
               </div>
             </template>
 
+            <!-- 所属客户品牌 -->
+            <template slot="brandName" slot-scope="slotProps">
+              <div class="tag_wraper">
+                <span
+                  v-for="(item, i) in slotProps.row.brandNameList"
+                  class="tag_box"
+                  :key="i"
+                >
+                  {{ item }}
+                </span>
+              </div>
+            </template>
+
             <!-- 订单数 -->
             <template slot="orderNum" slot-scope="slotProps">
               <el-link type="primary" :underline="false" @click="openOrderTableDialog(slotProps.row)">{{ slotProps.row.orderNum }}</el-link>
@@ -130,10 +143,10 @@
     />
 
     <!-- 订单管理列表-弹窗 -->
-    <OrderTableDialog ref="orderTableDialogRef" />
+    <OrderTableDialog ref="orderTableDialogRef" @submitSuccess="getTableList" />
 
     <!-- 分享设置-弹窗 -->
-    <ShareConfigDialog ref="shareConfigDialogRef" />
+    <ShareConfigDialog ref="shareConfigDialogRef" @submitSuccess="getTableList" />
 
   </div>
 </template>
@@ -148,7 +161,7 @@ import MonitoringFormDialog from './components/monitoringFormDialog.vue'
 import OrderTableDialog from './components/orderTableDialog.vue'
 import ShareConfigDialog from './components/shareConfigDialog.vue'
 import PointState from '@/components/common/components/pointState.vue'
-import { getLabel } from '@/utils/common'
+import { getLabel, getTagList } from '@/utils/common'
 
 /**
  * 初始化搜索绑定数据
@@ -192,17 +205,18 @@ const initTableColumns = () => ([
   {
     title: '所属客户公司',
     dataIndex: 'companyName',
-    minWidth: 160,
+    minWidth: 200,
   },
   {
     title: '所属客户品牌',
     dataIndex: 'brandName',
-    minWidth: 160,
+    minWidth: 200,
+    slot: 'brandName',
   },
   {
     title: '订单数',
     dataIndex: 'orderNum',
-    minWidth: 100,
+    minWidth: 120,
     slot: 'orderNum',
   },
   {
@@ -326,7 +340,8 @@ export default {
           statusLabel: getLabel(item.status, this.preparedData.statusOptions),
           statusColor: getLabel(item.status, this.preparedData.statusOptions, { labelKey: 'color' }),
           autoAddStatusLabel: getLabel(item.autoAddStatus, this.preparedData.statusOptions),
-          autoAddStatusColor: getLabel(item.autoAddStatus, this.preparedData.statusOptions, { labelKey: 'color' })
+          autoAddStatusColor: getLabel(item.autoAddStatus, this.preparedData.statusOptions, { labelKey: 'color' }),
+          brandNameList: getTagList(item.brandName, ',')
         }
       })
       return { list: newList, total }
@@ -417,6 +432,31 @@ export default {
 <style scoped lang="scss">
 .search_bar {
   padding: 24px 24px 8px;
+}
+
+.tag_wraper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  // flex-wrap: wrap;
+  .tag_box {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    padding: 0 8px;
+    background: linear-gradient(0deg, #E6F7FF, #E6F7FF),linear-gradient(0deg, #91D5FF, #91D5FF);
+    border: 1px solid #91D5FF ;
+    font-size: 12px;
+    color: #1890FF;
+    border-radius: 4px;
+    & + .tag_box {
+      margin-left: 8px;
+    }
+  }
 }
 </style>
 

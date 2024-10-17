@@ -359,6 +359,7 @@ export default {
       this.isEdit = false
       this.formData = initFormData()
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+      this.$refs.uploaderRef && this.$refs.uploaderRef.reset()
       this.$emit('afterClose')
     },
     /**

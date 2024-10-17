@@ -2297,6 +2297,7 @@ export default {
     },
 
     handleChangeBrand() {
+      this.planForm.adcID = ""
       // 判断客户数据源
       if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
         return

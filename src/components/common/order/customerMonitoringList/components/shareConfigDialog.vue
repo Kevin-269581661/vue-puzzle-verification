@@ -350,6 +350,7 @@ export default {
         if (code !== 200200) return this.$message.error(message || '操作失败')
         this.$message.success('保存成功，链接已生成')
         this.getShareConfig()
+        this.$emit('submitSuccess')
       } catch (err) {
         this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)

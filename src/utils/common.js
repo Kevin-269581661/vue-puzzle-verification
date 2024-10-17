@@ -177,6 +177,15 @@ function getLabel(value, options = [], config) {
   return current ? current[labelKey] : ''
 }
 
+/**
+ * 处理标签样式列
+ */
+function getTagList(val, splitChar = ',') {
+  val = deserialize(val)
+  if (!val) return []
+  return typeof val === 'string' ? val.split(splitChar) : val
+}
+
 export {
   // 通过 iframe 下载文件
   downloadFileByIframe,
@@ -195,5 +204,7 @@ export {
   // 文件预览（支持 Excel、Word、PPT、图片等）
   previewFile,
   // 获取通过 value 获取 下拉数据 的 label
-  getLabel
+  getLabel,
+  // 处理标签样式列
+  getTagList
 }

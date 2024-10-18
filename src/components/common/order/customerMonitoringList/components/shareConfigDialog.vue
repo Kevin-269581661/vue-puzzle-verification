@@ -19,6 +19,7 @@
               <div v-loading="shareLinkTabData.loading" class="tab_content">
                 <div class="tab_content_top">
                   <div class="title_box">分享链接</div>
+                  <el-switch v-model="shareLinkTabData.formData.status" active-text="开" inactive-text="关"></el-switch>
                 </div>
                 <div class="form_wrap_box">
                   <el-form
@@ -31,16 +32,16 @@
                     :model="shareLinkTabData.formData"
                     :rules="shareLinkTabData.formRules"
                   >
-                    <el-form-item label="访问方式" prop="loginType">
-                      <el-radio-group v-model="shareLinkTabData.formData.loginType">
-                        <el-radio
+                    <el-form-item label="访问方式" prop="loginTypes">
+                      <el-checkbox-group v-model="shareLinkTabData.formData.loginTypes">
+                        <el-checkbox
                           v-for="item in shareLinkTabData.preparedData.loginTypeOptions"
                           :key="item.value"
                           :label="item.value"
                         >
                           {{ item.label }}
-                        </el-radio>
-                      </el-radio-group>
+                        </el-checkbox>
+                      </el-checkbox-group>
                     </el-form-item>
 
                     <el-form-item label="有效期" prop="type">
@@ -70,30 +71,8 @@
                     </el-form-item>
 
                     <el-form-item label="分享链接" prop="shareLink">
-                      <el-switch v-model="shareLinkTabData.formData.status" active-text="开" inactive-text="关" class="switch_box"></el-switch>
-
-                      <!-- 手机号访问样式 -->
-                      <el-input
-                        v-if="shareLinkTabData.formData.loginType === 2"
-                        v-model="shareLinkTabData.formData.shareLink"
-                        :disabled="!shareLinkTabData.formData.status"
-                        placeholder="保存后生成链接"
-                        clearable
-                        readonly
-                        class="form_item_width"
-                      >
-                        <div slot="append">
-                          <el-button
-                            type="primary"
-                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
-                            size="small"
-                            @click="handleCopyLink">
-                            复制链接
-                          </el-button>
-                        </div>
-                      </el-input>
                       <!-- 密码访问样式 -->
-                      <template v-else-if="shareLinkTabData.formData.loginType === 1">
+                      <template v-if="shareLinkTabData.formData.loginTypes.includes(1)">
                         <el-input
                           v-model="shareLinkTabData.formData.shareLink"
                           :disabled="!shareLinkTabData.formData.status"
@@ -124,6 +103,26 @@
                           </el-button>
                         </div>
                       </template>
+                      <!-- 手机号访问样式 -->
+                      <el-input
+                        v-else
+                        v-model="shareLinkTabData.formData.shareLink"
+                        :disabled="!shareLinkTabData.formData.status"
+                        placeholder="保存后生成链接"
+                        clearable
+                        readonly
+                        class="form_item_width"
+                      >
+                        <div slot="append">
+                          <el-button
+                            type="primary"
+                            size="small"
+                            :disabled="!shareLinkTabData.formData.shareLink || !shareLinkTabData.formData.status"
+                            @click="handleCopyLink">
+                            复制链接
+                          </el-button>
+                        </div>
+                      </el-input>
                       <!-- 阻止复制遮罩 -->
                       <div v-if="!shareLinkTabData.formData.status" class="disable_text_select_mask"></div>
                     </el-form-item>
@@ -199,7 +198,7 @@ const initFormData = () => {
     endDate: '',
     customDate: [],
     // 访问方式
-    loginType: 1,
+    loginTypes: [],
     // 分享链接
     shareLink: '',
     // 链接的验证码（密码）
@@ -238,7 +237,7 @@ export default {
         loading: false,
         formData: initFormData(),
         formRules: {
-          loginType: [{ required: true, message: '请选择访问方式', trigger: 'blur' }],
+          loginTypes: [{ required: true, message: '请选择访问方式', trigger: 'blur' }],
           type: [
             {
               required: true,
@@ -288,14 +287,12 @@ export default {
     async handleCopyLink() {
       try {
         let text = ''
-        const { loginType } = this.shareLinkTabData.formData
+        const { loginTypes } = this.shareLinkTabData.formData
         const { shareLink, verificationCode } = this.shareLinkTabData.formData
         // 密码访问
-        if (loginType === 1) {
+        if (loginTypes.includes(1)) {
           text = `链接：${shareLink}\n密码：${verificationCode}`
-        }
-        // 手机号访问
-        else if (loginType === 2) {
+        } else  {
           text = `链接：${shareLink}`
         }
         await setClipboardData(text)
@@ -325,11 +322,11 @@ export default {
         return
       }
       try {
-        const { loginType, status, customDate, type } = this.shareLinkTabData.formData
+        const { loginTypes, status, customDate, type } = this.shareLinkTabData.formData
         const params = {
           ...this.shareLinkTabData.formData,
-          verificationCodeLogin: loginType === 2 ? 1 : 0,
-          pwdLogin: loginType === 1 ? 1 : 0,
+          verificationCodeLogin: loginTypes.includes(2)  ? 1 : 0,
+          pwdLogin: loginTypes.includes(1) ? 1 : 0,
           status: status ? 1 : 0
         }
         if (type === 1) {
@@ -368,14 +365,11 @@ export default {
         const res = await this.$api.detecting.getShareConfig({ itemId: this.shareLinkTabData.formData.itemId })
         const { SysCode: code, MSG: message, data = {} } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        let loginType = null
+        let loginTypes = []
         // pwdLogin 账号密码登录 1:开启 0:关闭
-        if (data.pwdLogin) {
-          loginType = 1
+        if (data.pwdLogin) loginTypes.push(1)
         // verificationCodeLogin 手机验证码登录状态 1:开启 0:关闭
-        } else if (data.verificationCodeLogin) {
-          loginType = 2
-        }
+        if (data.verificationCodeLogin) loginTypes.push(2)
         let customDate = []
         // type 分享类型 1-自定义,2-永久
         if (data.type === 1) {
@@ -384,7 +378,7 @@ export default {
         this.shareLinkTabData.formData = {
           ...this.shareLinkTabData.formData,
           ...data,
-          loginType,
+          loginTypes,
           customDate,
           shareLink: data.url,
           status: data.status === 1 ? true : false
@@ -573,11 +567,11 @@ export default {
     border-top: 1px solid #E9E9E9;
     padding-top: 12px;
   }
-  /deep/ .el-radio {
+  /deep/ .el-checkbox {
     display: block;
     line-height: 32px;
   }
-  /deep/ .el-radio__input.is-checked+.el-radio__label {
+  /deep/ .el-checkbox__input.is-checked+.el-checkbox__label {
     color: #606266;
   }
   // /deep/ .el-input-group__append, .el-input-group__prepend {

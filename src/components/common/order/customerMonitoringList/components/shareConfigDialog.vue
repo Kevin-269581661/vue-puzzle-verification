@@ -567,6 +567,15 @@ export default {
     border-top: 1px solid #E9E9E9;
     padding-top: 12px;
   }
+
+  /deep/ .el-radio {
+    display: block;
+    line-height: 32px;
+  }
+  /deep/ .el-radio__input.is-checked+.el-radio__label {
+    color: #606266;
+  }
+
   /deep/ .el-checkbox {
     display: block;
     line-height: 32px;
@@ -574,6 +583,7 @@ export default {
   /deep/ .el-checkbox__input.is-checked+.el-checkbox__label {
     color: #606266;
   }
+
   // /deep/ .el-input-group__append, .el-input-group__prepend {
   //   color: #fff;
   //   background-color: #1890FF;

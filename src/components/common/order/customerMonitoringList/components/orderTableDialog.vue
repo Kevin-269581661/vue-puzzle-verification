@@ -108,7 +108,7 @@
 
             <el-table-column label="投放城市（点位面数，排期）" prop="cityList" width="300">
               <template slot-scope="scope">
-                <el-tooltip placement="top-start">
+                <el-tooltip placement="top-start" popper-class="order_table_city_tooltip">
                   <template slot="content">
                     <div v-for="(item, i) in scope.row.cityList" style="line-height: 32px" :key="i">
                       {{ item.city || '--' }}（{{ item.num || '--' }}面，{{ item.pdStar || '--' }}至{{ item.pdEnd || '--' }}）
@@ -150,7 +150,8 @@
 
             <el-table-column label="操作" width="150" fixed="right">
               <template slot-scope="scope">
-                <el-button type="text" @click="handleNotSysOrder(scope.row)">非系统订单管理</el-button>
+                <el-button v-if="scope.row.nonSystemApId" type="text" @click="handleNotSysOrder(scope.row)">查看非系统订单</el-button>
+                <el-button v-else type="text" @click="handleNotSysOrder(scope.row)">新建非系统订单</el-button>
               </template>
             </el-table-column>
 
@@ -441,6 +442,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.order_table_city_tooltip {
+  max-width: 600px !important;
+}
+</style>
 
 <style lang="scss" scoped>
 /deep/ .el-dialog .el-dialog__body {

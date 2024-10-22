@@ -175,7 +175,7 @@ const initSearchData = () => ({
  * 初始化搜索配置
  */
 const initSearchFileds = () => ({
-  name: {
+  title: {
     title: '标题',
     type: 'input',
     props: {

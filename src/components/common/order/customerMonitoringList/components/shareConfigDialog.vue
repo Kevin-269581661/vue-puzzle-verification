@@ -33,7 +33,10 @@
                     :rules="shareLinkTabData.formRules"
                   >
                     <el-form-item label="访问方式" prop="loginTypes">
-                      <el-checkbox-group v-model="shareLinkTabData.formData.loginTypes">
+                      <el-checkbox-group
+                        v-model="shareLinkTabData.formData.loginTypes"
+                        :disabled="!shareLinkTabData.formData.status"
+                      >
                         <el-checkbox
                           v-for="item in shareLinkTabData.preparedData.loginTypeOptions"
                           :key="item.value"
@@ -45,7 +48,11 @@
                     </el-form-item>
 
                     <el-form-item label="有效期" prop="type">
-                      <el-radio-group v-model="shareLinkTabData.formData.type" @change="changeShareLinkType">
+                      <el-radio-group
+                        v-model="shareLinkTabData.formData.type"
+                        :disabled="!shareLinkTabData.formData.status"
+                        @change="changeShareLinkType"
+                      >
                           <el-radio
                             v-for="item in shareLinkTabData.preparedData.typeOptions"
                             :key="item.value"
@@ -55,7 +62,6 @@
                           <el-date-picker
                             v-if="item.value === 1 && shareLinkTabData.formData.type === 1"
                             v-model="shareLinkTabData.formData.customDate"
-                            :picker-options="shareLinkTabData.datePickerOptions"
                             type="daterange"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd"
@@ -64,6 +70,8 @@
                             placeholder="选择日期"
                             size="small"
                             style="width: 240px"
+                            :picker-options="shareLinkTabData.datePickerOptions"
+                            :disabled="!shareLinkTabData.formData.status"
                           >
                           </el-date-picker>
                         </el-radio>
@@ -144,7 +152,7 @@
                     <el-table-column prop="phone" label="手机号" header-align="center" align="center" width="190"></el-table-column>
                     <el-table-column label="操作" header-align="center" align="center" width="160">
                       <template slot-scope="scope">
-                        <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                        <!-- <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button> -->
                         <el-button type="text" size="small" style="color: #F56C6C" @click="handleDelete(scope.row, scope.$index)">
                           删除
                         </el-button>
@@ -345,7 +353,7 @@ export default {
         const res = await this.$api.detecting.setShareConfig(params)
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '操作失败')
-        this.$message.success('保存成功，链接已生成')
+        this.$message.success('操作成功')
         this.getShareConfig()
         this.$emit('submitSuccess')
       } catch (err) {

@@ -430,8 +430,12 @@ export default {
       this.loading = false
       this.fileList = []
       this.uploadProgress = 0
-      this.$refs.uploadRef && this.$refs.uploadRef.abort()
-      this.$refs.uploadRef && this.$refs.uploadRef.clearFiles()
+      try {
+        this.$refs.uploadRef && this.$refs.uploadRef.abort()
+        this.$refs.uploadRef && this.$refs.uploadRef.clearFiles()
+      } catch (err) {
+        console.log('reset error: ', err)
+      }
     },
 
     /**

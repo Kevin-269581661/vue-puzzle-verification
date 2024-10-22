@@ -288,6 +288,7 @@ export default {
 
     uploadSuccess() {
       if (this.errorList.length) {
+        this.$refs.uploaderRef && this.$refs.uploaderRef.reset()
         this.openUnsuccessful()
         return
       }

@@ -401,6 +401,7 @@
                 </div>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="物料信息" name="third">
               <material
                 :materialInfoData="materialInfoJson"
@@ -409,6 +410,7 @@
                 :openStatus="false"
               ></material>
             </el-tab-pane>
+
             <el-tab-pane
               label="上刊报告"
               name="forth"
@@ -425,6 +427,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane
               label="下刊报告"
               name="fifth"
@@ -441,6 +444,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country

@@ -23,6 +23,7 @@
             }})</el-radio-button
           >
         </el-radio-group>
+
         <p
           style="
             font-size: 16px;
@@ -34,6 +35,7 @@
           提示：上传完图片后请点击保存
         </p>
       </template>
+
       <el-form :inline="true" size="small">
         <el-form-item label="城市区域:">
           <el-cascader
@@ -44,6 +46,7 @@
             filterable
           ></el-cascader>
         </el-form-item>
+
         <el-form-item label="资源名称:" class="tag-overflow">
           <el-select
             placeholder="请选择资源名称"
@@ -62,6 +65,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item label="监播状态:">
           <el-select
             placeholder="请选择监播状态"
@@ -72,6 +76,7 @@
             <el-option label="未上传" value="3"></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item label="投放状态:">
           <el-select
             placeholder="请选择投放状态"
@@ -82,6 +87,7 @@
             <el-option label="终止投放" value="2"></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item label="投放排期:" class="tag-overflow">
           <el-select
             placeholder="请选择投放排期"
@@ -104,6 +110,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item label="物料备注:" class="tag-overflow">
           <el-select
             placeholder="请选择物料备注"
@@ -124,6 +131,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
+
         <!-- <el-form-item label="拍照状态:">
           <el-select
             placeholder="请选择拍照状态"
@@ -156,10 +164,12 @@
             </el-select>
         </el-form-item>
         -->
+
         <el-form-item label="图片数量:">
             <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" v-model="publishSearchInfo.picNum">
             </el-input>
         </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="searchImg()">搜 索</el-button>
           <el-button type="plain" @click="resetSearch('sxk')">重 置</el-button>
@@ -459,14 +469,12 @@
     <!-- 分页 -->
     <div class="pager">
       <el-pagination
-        v-if="pageInfo.paginationShow"
         background
         :current-page.sync="pageInfo.currPage"
         :page-sizes="[6, 12]"
         :page-size="pageInfo.pageSize"
         layout="sizes, prev, pager, next, jumper"
         :total="pageInfo.totalNum"
-        hide-on-single-page
         @size-change="sizeChange"
         @current-change="changePage"
       >
@@ -504,6 +512,7 @@
     <!-- 换画弹出框 -->
     <el-dialog
       v-if="isShowPic"
+      append-to-body
       title="选择换画点位"
       :visible.sync="isShowPic"
       :show-close="false"
@@ -772,9 +781,11 @@
         >
       </div>
     </el-dialog>
+
     <!--编辑换画-->
     <el-dialog
       title="编辑换画信息"
+      append-to-body
       :visible.sync="changePicDetailModal"
       custom-class="change-pic-detail-modal"
       :close-on-click-modal="false"
@@ -866,8 +877,9 @@
         >
       </div>
     </el-dialog>
+
     <!-- 批量换画弹出框 -->
-    <el-dialog :visible.sync="isShowEdit" title="批量换画" width="405px">
+    <el-dialog :visible.sync="isShowEdit" title="批量换画" append-to-body width="405px">
       <el-row>
         <el-col class="flex_box">
           <span> <b style="color: #ff0000">*</b> 换画日期： </span>
@@ -922,7 +934,7 @@
     </el-dialog>
 
     <!-- 图片查看显示 -->
-    <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
+    <el-dialog :visible.sync="dialogVisible" append-to-body class="imgPreview" top="10vh">
       <img :src="dialogImageUrl" alt="暂无图片" />
       <ul class="u-comment">
         <li>
@@ -1459,7 +1471,7 @@ export default {
       }
       this.getImgInfo(info);
       this.$nextTick(function () {
-        // this.pageInfo.paginationShow = true;
+        this.pageInfo.paginationShow = true;
       });
     },
     changeSelect(arr = [], target, optionsArr) {

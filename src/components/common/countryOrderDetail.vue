@@ -1428,7 +1428,7 @@ export default {
     },
     //返回列表
     goBack() {
-      this.$router.push("./countryOrderList");
+      this.$router.go(-1);
     },
     // 获取订单内公司列表
     getCompaniesOfOrder() {

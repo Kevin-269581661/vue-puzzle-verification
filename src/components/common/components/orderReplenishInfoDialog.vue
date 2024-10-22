@@ -20,7 +20,6 @@
             <FileUpload
               ref="picUploaderRef"
               v-model="formData.materialUrl"
-              useOss
               accept=".jpeg,.jpg,.png"
               uploaderType="img"
               :maxSize="10"

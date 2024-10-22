@@ -150,7 +150,7 @@ export default {
     // 请求路径
     uploadUrl: {
       type: String,
-      default: ''
+      default: `${process.env.API_ROOT}addsp/upload`
     },
     // 请求参数
     uploadParams: {
@@ -225,13 +225,21 @@ export default {
     event: 'change'
   },
   data() {
+    const headers = {}
+    try {
+      const { token = '', uID: uid = '' } = sessFun.getSess() || {}
+      headers.token = token
+      headers.uid = uid
+    } catch (err) {
+      console.error('data error: ', err)
+    }
     return {
+      headers,
       loading: false,
       uploadProgress: 0,
       loadingTip: '上传中（0%）',
       fileList: [],
       cosUploader: null,
-      headers: {}
     }
   },
   watch: {
@@ -267,7 +275,6 @@ export default {
      */
     async handleRequest(params) {
       // console.log('handleRequest params ===', params)
-      const { token, uID: uid } = sessFun.getSess()
       try {
         const formData = new FormData()
         formData.append(this.name, params.file)
@@ -349,7 +356,10 @@ export default {
           }
           url = `https://${res.Location}`
         } else {
-          url = res.data[0].path
+          if (res.code !== 200) {
+            throw new Error('文件上传失败: ' + res.message)
+          }
+          url = res.data
         }
         const { name, size, type: mime, uid: key } = fileInfo.raw
         this.fileList.push({ name, size, mime, key, url })

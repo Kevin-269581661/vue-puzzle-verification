@@ -143,7 +143,8 @@ export default {
         // 获取角色
         getRole() {
             const role = this.sessionData.uType;
-            if (['ADN_BD_KA', 'ADN_BD'].includes(role) && !this.isPay) {
+            // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
+            if (role === 'ADN_BD' || ['ADN_BD_KA'].includes(role) && !this.isPay) {
               this.showEditBtn = true
             }
         },

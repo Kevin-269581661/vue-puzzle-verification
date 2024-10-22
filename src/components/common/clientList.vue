@@ -238,7 +238,7 @@ export default {
                 this.showNewBtn = false;
             }
             // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
-            if (['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType) && this.isPay) {
+            if (['ADN_BD_KA'].includes(this.sessionData.uType) && this.isPay) {
               this.showNewBtn = false
             }
         },

@@ -1,8 +1,10 @@
 import request from 'axios';
 
 export default class CosUploader {
-  // 获取oss基本信息接口地址，这个根据公司来，有些公司不需要请求，公司负责人直接给你，我这里需要请求才能拿到oss基本配置信息
+  // 获取oss基本信息接口地址
   uploadUrl = '/addsp/resource/web/getTemporaryKey'
+
+  params = {}
 
   // 设置onProgress回调此时，默认1000ms一次
   progressInterval = 1000
@@ -31,10 +33,9 @@ export default class CosUploader {
   }
 
   constructor(options) {
-    if (options) {
-      const { uploadUrl } = options
-      this.uploadUrl = uploadUrl
-    }
+    const { uploadUrl, params } = options || {}
+    if (uploadUrl) this.uploadUrl = uploadUrl
+    if (params) this.params = params
   }
 
   /**
@@ -44,52 +45,58 @@ export default class CosUploader {
   async getCos() {
     // 获取 oss 配置信息（密钥相关信息）
     const res = await request({
+      url: this.uploadUrl,
       method: 'GET',
-      url: this.uploadUrl
+      params: this.params
     })
     console.log('getCos res ===', res)
-    const { SysCode: code, MSG: message, data } = res.data || {}
-    if (code !== 200200) throw new Error(message || '获取 oss 配置信息失败')
-    const {
-      bucketName,
-      prefix,
-      // expiration,
-      expiredTime,
-      // logDir,
-      region,
-      sessionToken,
-      startTime,
-      tmpSecretId,
-      tmpSecretKey
-    } = data
-    this.bucketName = bucketName
-    this.region = region
-    this.prefix = prefix
-    // COS 对象
-    const cos = new window.COS({
-      getAuthorization: (options, callback) => {
-        callback({
-          // 获取回来的临时密钥的 tmpSecretId
-          TmpSecretId: tmpSecretId,
-          // 获取回来的临时密钥的 tmpSecretKey
-          TmpSecretKey: tmpSecretKey,
-          // 获取回来的临时密钥的 sessionToken，对应 header 的 x-cos-security-token 字段
-          XCosSecurityToken: sessionToken,
-          // 时间戳，单位秒，如：1580000000
-          // StartTime: Math.floor(startTime / 1000),
-          StartTime: startTime,
-          // 时间戳，单位秒，如：1580000900
-          ExpiredTime: expiredTime,
-          // ExpiredTime: 1580000900,
-          // 设置onProgress回调此时，默认1000ms一次
-          ProgressInterval: this.progressInterval,
-          // 细粒度控制权限需要设为 true，会限制密钥只在相同请求时重复使用
-          ScopeLimit: true
-        })
-      }
-    })
-    this.cos = cos
-    return cos
+    let code = res.data.SysCode || res.data.code
+    let message = res.data.MSG || res.data.message
+    let data = res.data.data || {}
+    if (code === 200200 || code === 200) {
+      const {
+        bucketName,
+        prefix,
+        // expiration,
+        expiredTime,
+        // logDir,
+        region,
+        sessionToken,
+        startTime,
+        tmpSecretId,
+        tmpSecretKey
+      } = data
+      this.bucketName = bucketName
+      this.region = region
+      this.prefix = prefix
+      // COS 对象
+      const cos = new window.COS({
+        getAuthorization: (options, callback) => {
+          callback({
+            // 获取回来的临时密钥的 tmpSecretId
+            TmpSecretId: tmpSecretId,
+            // 获取回来的临时密钥的 tmpSecretKey
+            TmpSecretKey: tmpSecretKey,
+            // 获取回来的临时密钥的 sessionToken，对应 header 的 x-cos-security-token 字段
+            XCosSecurityToken: sessionToken,
+            // 时间戳，单位秒，如：1580000000
+            // StartTime: Math.floor(startTime / 1000),
+            StartTime: startTime,
+            // 时间戳，单位秒，如：1580000900
+            ExpiredTime: expiredTime,
+            // ExpiredTime: 1580000900,
+            // 设置onProgress回调此时，默认1000ms一次
+            ProgressInterval: this.progressInterval,
+            // 细粒度控制权限需要设为 true，会限制密钥只在相同请求时重复使用
+            ScopeLimit: true
+          })
+        }
+      })
+      this.cos = cos
+      return cos
+    } else {
+      throw new Error(message || '获取 oss 配置信息失败')
+    }
   }
 
   async uploadFile({ file, onProgress }) {

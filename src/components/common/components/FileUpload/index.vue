@@ -143,6 +143,13 @@ export default {
       type: Boolean,
       default: false
     },
+    // oss 对象配置
+    ossOptions: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
     // 上传方法（传了这个，uploadUrl 则不需要传！ ）
     uploadApi: {
       type: Function
@@ -285,7 +292,7 @@ export default {
         this.uploadProgress = 0
         let res = null
         if (this.useOss) {
-          this.cosUploader = CosUploader.create()
+          this.cosUploader = CosUploader.create(this.ossOptions)
           res = await this.cosUploader.uploadFile({
             file: params.file,
             onProgress: (percent) => {

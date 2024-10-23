@@ -205,41 +205,7 @@ export default {
         // this.dialogLoading = false
       }
     },
-    /**
-     * 获取详情
-     */
-    async getDetail(id) {
-      if (!id) return console.error('getDetail error: id 不能为空')
-      try {
-        this.dialogLoading = true
-        const res = await this.$request.getApi('/aaaa/bbbb', { id })
-        const { SysCode: code, MSG: message, data = [] } = res.data
-        if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.formData = data
-      } catch (err) {
-        this.$message.error(String(err) || '获取数据失败')
-        console.error('getDetail error:', err)
-      } finally {
-        this.dialogLoading = false
-      }
-    },
-    /**
-     * 获取预加载数据
-     */
-     async getPropTwoOptions() {
-      try {
-        this.dialogLoading = true
-        const res = await this.$request.getApi('/aaaa/bbbb')
-        const { SysCode: code, MSG: message, data = [] } = res.data
-        if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.preparedData.propTwoOptions = data
-      } catch (err) {
-        this.$message.error(String(err) || '获取数据失败')
-        console.error('getDetail error:', err)
-      } finally {
-        this.dialogLoading = false
-      }
-    },
+
     /**
      * 重置数据
      */

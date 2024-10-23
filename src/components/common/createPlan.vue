@@ -49,12 +49,13 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
               <el-form-item label="公司名称：" prop="companyName">
                 <el-select
                   v-model="planForm.companyName"
-                  @change="GetBrandByCid"
                   placeholder="请选择公司名称"
                   filterable
+                  @change="GetBrandByCid"
                 >
                   <el-option
                     v-for="item in companyName"
@@ -65,11 +66,14 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
               <el-form-item label="公司品牌：" prop="companyBrand">
                 <el-select
                   v-model="planForm.companyBrand"
                   placeholder="请选择公司品牌"
                   filterable
+                  :disabled="!planForm.companyName"
+                  @change="handleChangeBrand"
                 >
                   <el-option
                     v-for="item in companyBrand"
@@ -80,11 +84,13 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
               <el-form-item label="联系人：" prop="adcID">
                 <el-select
                   v-model="planForm.adcID"
                   placeholder="请选择所属联系人"
                   filterable
+                  :disabled="!planForm.companyBrand"
                 >
                   <el-option
                     v-for="item in adcID"
@@ -95,6 +101,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
               <el-form-item
                 label="投放城市："
                 prop="throwCity"
@@ -150,6 +157,30 @@
                 </el-select>
               </el-form-item>
 
+              <el-form-item
+                v-if="BDData.uType == 'ADN_BD_KA'"
+                label="归属公司："
+                prop="pointOfAsrIDs"
+                ref="planPointOfAsrIDs"
+              >
+                <el-select
+                  v-model="planForm.pointOfAsrIDs"
+                  size="small"
+                  filterable
+                  multiple
+                  placeholder="请选择"
+                  :disabled="!planForm.throwCity || !planForm.throwCity.length"
+                >
+                  <el-option
+                    v-for="item in pointOfAsrIDs"
+                    :key="item.asrID * 1"
+                    :label="item.asName"
+                    :value="item.asrID * 1"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
               <el-form-item label="售卖模式：" prop="saleMode" required>
                 <el-radio-group v-model="planForm.saleMode" >
                   <el-radio
@@ -181,6 +212,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+
               <el-form-item
                 v-if="isPay && BDData.uType === 'ADN_BD'"
                 label="意向投放媒体："
@@ -202,28 +234,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item
-                v-if="BDData.uType == 'ADN_BD_KA'"
-                label="归属公司："
-                prop="pointOfAsrIDs"
-                ref="planPointOfAsrIDs"
-              >
-                <el-select
-                  v-model="planForm.pointOfAsrIDs"
-                  size="small"
-                  filterable
-                  multiple
-                  placeholder="请选择"
-                >
-                  <el-option
-                    v-for="item in pointOfAsrIDs"
-                    :key="item.asrID * 1"
-                    :label="item.asName"
-                    :value="item.asrID * 1"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
+
               <el-form-item
                 v-if="isBD"
                 label="客户预算："
@@ -1341,6 +1352,8 @@ export default {
       total: 0, //总可选点位
       // 定制权限
       customPermission: {},
+      // 缓存销售crm的客户列表下拉数据
+      crmCustomerCompanyList: []
     };
   },
   created() {
@@ -1573,6 +1586,7 @@ export default {
         this.planForm.ownerSales = this.BDData.realName;
         this.BDData.uid = sess.uID;
         this.BDData.uType = sess.uType;
+        this.BDData.customerSrc = sess.customerSrc;
 
         this.isBD = true;
         if (this.$route.fullPath.indexOf("unfinishedPlan") == -1) {
@@ -2186,6 +2200,7 @@ export default {
                   label: key.realName + "(" + key.sName + ")",
                   value: key.uID,
                   uType: key.uType,
+                  customerSrc: key.customerSrc,
                 });
               }
               this.salerList = arr;
@@ -2199,7 +2214,24 @@ export default {
         this.salerListLoading = false;
       }
     },
-    Get_cName () {
+
+    /**
+     * 获取客户公司下拉数据
+     */
+     Get_cName() {
+      // 判断客户数据源
+      // customerSrc 客户数据源：1.adn，2.crm
+      if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+        this.getAdnCustomerCompanySelectList()
+      } else {
+        this.getCrmCustomerCompanySelectList()
+      }
+    },
+
+    /**
+     * 获取adn的客户列表下拉数据
+     */
+    async getAdnCustomerCompanySelectList () {
       let params = {
         uid: this.BDData.uid,
         token: this.sessionData.token,
@@ -2237,20 +2269,91 @@ export default {
           this.companyName = companyList; // 公司名称列表
           this.adcID = ownerList; // 联系人列表
         });
+     },
+
+    /**
+     * 获取销售crm的客户列表下拉数据
+     */
+     async getCrmCustomerCompanySelectList() {
+      try {
+        const res = await this.$api.adPlan.listCustomers({
+          uId: this.BDData.uid,
+          pageNum: 1,
+          pageSize: 9999
+        })
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.crmCustomerCompanyList = Object.freeze(data)
+        this.companyName = data.map(item => {
+          return {
+            label: item.cName,
+            value: item.cID
+          }
+        })
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getCrmCustomerCompanySelectList error:', err)
+      }
     },
+
+    handleChangeBrand() {
+      this.planForm.adcID = ""
+      // 判断客户数据源
+      if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+        return
+      }
+      // crm 客户源联系人需要单独从接口拿
+      this.getCrmCustomerContactSelectList()
+    },
+
+    /**
+     * 获取销售crm的客户下的联系人列表
+     */
+    async getCrmCustomerContactSelectList() {
+      try {
+        const current = this.companyBrand.find(item => item.value === this.planForm.companyBrand)
+        const res = await this.$api.adPlan.listContacts({
+          saleProcessId: current.saleProcessId
+        })
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.adcID = data.map(item => {
+          return {
+            label: item.realName,
+            value: item.uID
+          }
+        })
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getCrmCustomerContactSelectList error:', err)
+      }
+    },
+
     // 获取公司品牌
-    GetBrandByCid (val) {
+    GetBrandByCid () {
       this.planForm.companyBrand = "";
       this.planForm.adcID = "";
-      console.log("所选公司的ID", val);
+      // 判断客户数据源
+       // customerSrc 客户数据源：1.adn，2.crm
+       if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+        this.getAdnCustomerBrandSelectList()
+      } else {
+        this.getCrmCustomerBrandSelectList()
+      }
+    },
+
+    /**
+     * 获取 adn 客户公司品牌
+     */
+    getAdnCustomerBrandSelectList() {
       let cidParams = {
-        cid: val,
+        cid: this.planForm.companyName,
         token: this.sessionData.token,
       };
       api
         .getApi(this.apiVar.Advertisement + "/GetBrand", cidParams)
         .then((res) => {
-          console.log("公司品牌", res.data);
+          // console.log("公司品牌", res.data);
           if (res.data.SysCode === 200200) {
             let CBrand = res.data.data;
             let BrandList = [];
@@ -2269,7 +2372,7 @@ export default {
       let customerList = this.customer;
       let ownerList = []; // 联系人
       for (let j = 0; j < customerList.length; j++) {
-        if (customerList[j].cID == val) {
+        if (customerList[j].cID == this.planForm.companyName) {
           let owner = {
             label: customerList[j].realName,
             value: customerList[j].uID,
@@ -2279,6 +2382,24 @@ export default {
       }
       this.adcID = ownerList;
     },
+
+
+    /**
+     * 获取 crm 客户公司品牌
+     */
+     getCrmCustomerBrandSelectList() {
+      const item = this.crmCustomerCompanyList.find(it => it.cID === this.planForm.companyName)
+      if (!item) return
+      this.companyBrand = (item.itemList || []).map(it => {
+        return {
+          ...it,
+          // 可能存在不同媒体类型，同一品牌名称
+          label: `${it.bTitle}(${it.mediaType})`,
+          value: it.bID
+        }
+      })
+    },
+
     // 获取公司及品牌
     getBand () {
       for (let n = 0; n < this.companyName.length; n++) {

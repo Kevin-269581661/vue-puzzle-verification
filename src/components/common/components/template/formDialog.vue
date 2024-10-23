@@ -146,7 +146,7 @@ export default {
           uid,
           token,
         })
-        const { SysCode: code, MSG: message, data } = res.data
+        const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '操作失败')
         this.$message.success('操作成功')
         this.$emit('submitSuccess')
@@ -166,7 +166,7 @@ export default {
       try {
         this.loading = true
         const res = await this.$request.getApi('/aaaa/bbbb', { id })
-        const { SysCode: code, MSG: message, data = [] } = res.data
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.formData = data
       } catch (err) {
@@ -183,7 +183,7 @@ export default {
       try {
         this.loading = true
         const res = await this.$request.getApi('/aaaa/bbbb')
-        const { SysCode: code, MSG: message, data = [] } = res.data
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.preparedData.propTwoOptions = data
       } catch (err) {

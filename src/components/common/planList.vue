@@ -1660,7 +1660,7 @@ export default {
      */
     async handlePlanApply(apId, mediaTypeId, type) {
       try {
-        const res = await this.$api.plan.addApply({
+        const res = await this.$api.adPlan.addApply({
           // 方案id
           apId,
           // 媒体类型id

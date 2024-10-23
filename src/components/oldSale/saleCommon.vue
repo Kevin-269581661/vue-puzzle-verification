@@ -9,26 +9,39 @@
             @select="handleSelect"
             background-color="#fff"
             active-text-color="#1890FF">
+
             <el-menu-item index="" class="no-hover" style="cursor: default">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
+
             <el-menu-item index="/sale">首页</el-menu-item>
+
             <el-menu-item index="/sale/clientList">客户管理</el-menu-item>
+
             <el-submenu index="6" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
                 <el-menu-item index="/sale/planList">方案列表</el-menu-item>
                 <el-menu-item index="/sale/adsDialPlate" v-if="!isNation">点位表盘</el-menu-item>
             </el-submenu>
+
+            <!-- <el-submenu index="order" :show-timeout="80" popper-class="submenu">
+              <template slot="title">订单管理</template>
+              <el-menu-item index="/sale/orderList">常规订单</el-menu-item>
+            </el-submenu> -->
+
             <el-menu-item index="/sale/orderList">订单管理</el-menu-item>
+
             <el-menu-item index="/sale/photoGallery">图片库</el-menu-item>
+
             <el-submenu index="10" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/sale/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/sale/communityRank">社区排名</el-menu-item>
                 <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
+
             <el-submenu index="8" :show-timeout="80" popper-class="submenu two-word-submenu">
                 <template slot="title">
                     更多
@@ -48,9 +61,11 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login" class="index-menu-item">退出登录</el-menu-item>
             </el-submenu>
+
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
             </el-menu-item>
+
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 10px;">
                 <questionTip></questionTip>
             </el-menu-item>
@@ -206,8 +221,8 @@
         width: calc(100% - 24px);
         padding: 5px 12px 0;
         text-align: left;
-        color: rgba(0, 0, 0, 0.85); 
-        font-size: 14px; 
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
         line-height: 18px;
     }
     .my-balance::after {

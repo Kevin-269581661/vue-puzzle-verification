@@ -149,16 +149,18 @@ export default {
             isReset: true,
             //过滤所有人
             filterRealName: [],
+            isPay: 0
         };
     },
     mounted: function() {
-        this.getRole();
-        if(!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
-            this.getCompany();
-        }else{
-            this.getSubSaleList()
-        }
-        this.searchFun();
+      this.sessionData = sessFun.getSess();
+      this.requestIsPay();
+      if(!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
+          this.getCompany();
+      }else{
+          this.getSubSaleList()
+      }
+      this.searchFun();
 
     },
     methods: {
@@ -218,11 +220,26 @@ export default {
                 console.log(err);
             });
         },
+
+        requestIsPay() {
+          api.getApi('/addsp/api/v1/company/isPay', {
+              asrID: this.sessionData.asrID
+          }).then(res => {
+              if (res.data.SysCode === 200200 && res.data.data === true) {
+                this.isPay = 1;
+              }
+              this.getRole()
+          })
+        },
+
         // 判断角色是否有新建按钮(销售有)
         getRole() {
-            this.sessionData = sessFun.getSess();
             if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
                 this.showNewBtn = false;
+            }
+            // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
+            if (['ADN_BD_KA'].includes(this.sessionData.uType) && this.isPay) {
+              this.showNewBtn = false
             }
         },
         // 搜索数据格式化

@@ -11,12 +11,17 @@
                 <span class="normal-text">城市排名</span>
             </div>
         </div>
+
         <div v-if="honorImg.length>0" class="line-vertical"></div>
+
         <div class="item-two" v-if="honorImg.length>0">
             <slot :showImgNum="showImgNum"></slot>
         </div>
+
         <div v-show="showImgNum < honorImg.length && showImgNum > 0" class="overflow-img">●●●</div>
+
         <div v-if="linkArr.length>0 && showImgNum > 0" class="line-vertical"></div>
+
         <div class="item-three">
             <home-link class="cell-group" :link="linkArr"></home-link>
         </div>

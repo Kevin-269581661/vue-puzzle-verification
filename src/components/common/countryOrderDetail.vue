@@ -89,6 +89,10 @@
       </div>
     </div>
     <div class="mediaList_wrap margin_16_64">
+      <div class="btn_group">
+        <el-button class="import" type="plain" @click="openImportImgDialog">导入图片</el-button>
+      </div>
+
       <el-tabs
         class="company-tabs"
         v-if="companiesOfOrder.length"
@@ -401,6 +405,7 @@
                 </div>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="物料信息" name="third">
               <material
                 :materialInfoData="materialInfoJson"
@@ -409,6 +414,7 @@
                 :openStatus="false"
               ></material>
             </el-tab-pane>
+
             <el-tab-pane
               label="上刊报告"
               name="forth"
@@ -425,6 +431,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane
               label="下刊报告"
               name="fifth"
@@ -441,6 +448,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country
@@ -965,6 +973,9 @@
     <div class="content_bottom_btn">
       <el-button plain type="default" @click="goBack"> 返回 </el-button>
     </div>
+
+    <!-- 非系统订单-导入上下刊图片-弹框组件 -->
+    <ImportPublishPicDialog ref="importPublishPicDialogRef" />
   </div>
 </template>
 
@@ -988,6 +999,7 @@ import noSearchResult from "./components/noSearchResult.vue";
 import ChangePicCountry from "./components/changePicCountry.vue";
 import ChangeCountryOrderPrice from "./components/changeCountryOrderPrice.vue";
 import ScheduleAlterCountry from "@/components/common/components/Alter/ScheduleAlterCountry";
+import ImportPublishPicDialog from '@/components/common/components/importPublishPicDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1001,6 +1013,7 @@ export default {
     noSearchResult,
     ChangeCountryOrderPrice,
     ScheduleAlterCountry,
+    ImportPublishPicDialog
   },
   data() {
     return {
@@ -1201,6 +1214,13 @@ export default {
     // this.getOrderPriceDetail();
   },
   methods: {
+    /**
+     * 打开导入图片弹框
+     */
+    openImportImgDialog() {
+      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open()
+    },
+
     //初始化各项数据
     initListData() {
       this.currPage = 1;
@@ -1428,7 +1448,7 @@ export default {
     },
     //返回列表
     goBack() {
-      this.$router.push("./countryOrderList");
+      this.$router.go(-1);
     },
     // 获取订单内公司列表
     getCompaniesOfOrder() {
@@ -1998,6 +2018,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mediaList_wrap {
+  position: relative;
+}
+
+.btn_group {
+  position: absolute;
+  top: 65px;
+  right: 30px;
+  z-index: 10;
+}
+
 .ellipsis-td {
   width: 132px;
   overflow: hidden;

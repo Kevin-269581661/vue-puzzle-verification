@@ -1218,7 +1218,18 @@ export default {
      * 打开导入图片弹框
      */
     openImportImgDialog() {
-      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open()
+      const imgTypeOjb = {
+        forth: 0,
+        fifth: 1,
+        sixth: 2
+      }
+      // 0:上刊,1:下刊,2:换画
+      const imgType = imgTypeOjb[this.planPanel]
+      // 公司id
+      const asrID = this.currentCompanyId
+      // 方案id
+      const apId = this.apId
+      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open({ imgType, asrID, apId })
     },
 
     //初始化各项数据

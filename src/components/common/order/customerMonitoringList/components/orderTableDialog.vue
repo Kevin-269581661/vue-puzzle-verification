@@ -2,7 +2,7 @@
 <template>
   <div>
     <el-dialog
-      width="80%"
+      width="90%"
       top="10vh"
       append-to-body
       show-close
@@ -148,10 +148,11 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="操作" width="150" fixed="right">
+            <el-table-column label="操作" width="270" fixed="right">
               <template slot-scope="scope">
                 <el-button v-if="scope.row.nonSystemApId" type="text" @click="handleNotSysOrder(scope.row)">查看非系统订单</el-button>
                 <el-button v-else type="text" @click="handleNotSysOrder(scope.row)">新建非系统订单</el-button>
+                <el-button type="text" @click="openPPTsettingDialog(scope.row)">导出PPT管理</el-button>
               </template>
             </el-table-column>
 
@@ -170,6 +171,9 @@
 
     <!-- 新建非系统订单-弹框组件 -->
     <CreateNotSysOrderDialog ref="createNotSysOrderDialogRef" @submitSuccess="handleRefreshSearch"/>
+
+    <!-- 导出PPT管理-弹框组件 -->
+    <ExportPptSettingDialog ref="exportPptSettingDialogRef" />
   </div>
 
 </template>
@@ -179,6 +183,7 @@ import { Message } from "element-ui";
 import PointState from '@/components/common/components/pointState.vue'
 import { getLabel, getTagList } from '@/utils/common'
 import CreateNotSysOrderDialog from './createNotSysOrderDialog.vue'
+import ExportPptSettingDialog from './exportPptSettingDialog.vue'
 
 const initSearchData = () => ({
   // 客户监播项目id
@@ -193,7 +198,8 @@ export default {
   name: 'orderTableDialog',
   components: {
     PointState,
-    CreateNotSysOrderDialog
+    CreateNotSysOrderDialog,
+    ExportPptSettingDialog
   },
   props: {},
   emits: ['submitSuccess', 'afterClose'],
@@ -225,6 +231,9 @@ export default {
   },
   mounted () {},
   methods: {
+    openPPTsettingDialog() {
+      this.$refs.exportPptSettingDialogRef && this.$refs.exportPptSettingDialogRef.open()
+    },
 
     handleNotSysOrder(row) {
       // 有非系统全国单：点击后跳转至当前非系统全国单详情

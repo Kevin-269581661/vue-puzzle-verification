@@ -1,5 +1,5 @@
 /**
- * 图片包 相关请求模块
+ * 图片包 photoPackage 相关请求模块
  */
 import request from "../api.js";
 
@@ -9,10 +9,12 @@ import request from "../api.js";
 export function matchSpace({
   // 0:上刊,1:下刊,2:换画
   imgType,
+  // 换画必填
+  replaceRecordId,
   // 公司id
   asrID,
   // 关联类型区分属性(方案id)
-  ptP,
+  apId,
   // 上传压缩包后的url
   zipUrl,
   // 请求唯一key
@@ -20,8 +22,9 @@ export function matchSpace({
 }) {
   return request.postApi_json("/national/api/v1/photoPackage/matchSpace", {
     imgType,
+    replaceRecordId,
     asrID,
-    ptP,
+    apId,
     zipUrl,
     uqKey
   })

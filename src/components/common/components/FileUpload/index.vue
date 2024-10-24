@@ -16,6 +16,7 @@
     :multiple="false"
     :disabled="disabled"
     :limit="maxCount"
+    :auto-upload="autoUpload"
     v-bind="$attrs"
     :before-upload="handleUploadBefore"
     :on-exceed="handleUploadExceed"
@@ -225,6 +226,10 @@ export default {
     showFileList: {
       type: Boolean,
       default: false
+    },
+    autoUpload: {
+      type: Boolean,
+      default: true
     }
   },
   model: {
@@ -270,11 +275,10 @@ export default {
   },
   methods: {
     /**
-     * 退出登录，返回登录页
+     * 手动确定上传
      */
-    logout() {
-      // this.setGlobalState && this.setGlobalState({ isLogin: false })
-      // if (!window.__POWERED_BY_QIANKUN__) this.$router.push('/')
+    submitUpload() {
+      this.$refs.uploadRef && this.$refs.uploadRef.submit()
     },
 
     /**

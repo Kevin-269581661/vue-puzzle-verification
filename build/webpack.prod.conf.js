@@ -50,7 +50,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         comments: false,
         compress: {
           warnings: true,
-          drop_console: true,
+          drop_console: env.NODE_ENV === 'production',
           collapse_vars: true,
           reduce_vars: true,
         }

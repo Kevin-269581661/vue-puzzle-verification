@@ -12,6 +12,7 @@ const config = require('../config')
 const webpackConfig = require('./webpack.prod.conf')
 
 const spinner = ora('building for ' + process.env.NODE_ENV + ' of ' + process.env.env_config+ ' mode...' )
+console.log('building for ' + process.env.NODE_ENV + ' of ' + process.env.env_config+ ' mode...')
 // const spinner = ora('building for production...')
 spinner.start()
 

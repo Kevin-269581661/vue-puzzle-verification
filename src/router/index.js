@@ -75,6 +75,7 @@ const resContrastMap = () => import(/* webpackChunkName: "resContrastMap" */ '..
 // 下载进度页面
 const progressDown = () => import(/* webpackChunkName: "progressDown" */ '../components/common/progressDown.vue')
 const progressDownCountry = () => import(/* webpackChunkName: "progressDownCountry" */ '../components/common/progressDownCountry.vue')
+const DownloadProgressView = () => import(/* webpackChunkName: "downloadProgressView" */ '../components/common/downloadProgressView.vue')
 
 //地图选点中转页面
 // const mapMessage = () => import('../components/common/mapMessage.vue')
@@ -136,6 +137,7 @@ const staticRoutes = [{path: '/', redirect: '/login'},
     {path: '/login', name: 'login', component: login},
     // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
     {path: '/progressDown', name: 'progressDown', component: progressDown},
+    {path: '/downloadProgressView', name: 'downloadProgressView', component: DownloadProgressView},
     {path: '/progressDownCountry', name: 'progressDownCountry', component: progressDownCountry},
     {path: '/shareADList', name: 'shareADList', component: shareADList},
     {path: '/shareADListProposal', name: 'shareADListProposal', component: shareADListProposal},

@@ -90,7 +90,7 @@
     </div>
     <div class="mediaList_wrap margin_16_64">
       <div class="btn_group">
-        <el-button class="import" type="plain" @click="openImportImgDialog">导入图片</el-button>
+        <el-button v-if="['forth', 'fifth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">导入图片</el-button>
       </div>
 
       <el-tabs

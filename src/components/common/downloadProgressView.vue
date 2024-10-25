@@ -27,16 +27,21 @@
     <div class="file_style" v-if="percentNum == 100">
       <img src="../../assets/images/downfile.png" alt="" />
     </div>
+
+    <!-- 非系统订单-图片导入文件匹配失败-弹窗 -->
+    <FailListDialog ref="failListDialogRef" />
   </div>
 </template>
 
 <script>
-import sessFun from "@/commonFun/sessFun.js";
+import FailListDialog from '@/components/common/components/failListDialog/index.vue'
 
 // 轮询任务间隔时长（毫秒）
 const TASK_INTERVAL = 10000
 
 export default {
+  name: 'downloadProgressView',
+  components: { FailListDialog },
   data() {
     return {
       sessionData: null,
@@ -50,7 +55,7 @@ export default {
       // 请求标识（第一次请求后返回）
       // uqKey: '',
       // 进度条状态：'' 正常, success 成功, exception 失败, warning 警告
-      progressStatus: ''
+      progressStatus: null
     };
   },
   methods: {
@@ -65,16 +70,16 @@ export default {
           if (this.failList.length) {
             console.log('failList ===', this.failList)
             this.progressStatus = 'warning'
-            // this.$refs.uploaderRef && this.$refs.uploaderRef.reset()
-            // this.openUnsuccessful()
+            this.$refs.failListDialogRef && this.$refs.failListDialogRef.open(this.failList)
             return
           }
           this.progressStatus = 'success'
-          this.$message.success('操作成功')
+          // this.$message.success('操作成功')
+          this.$alert("操作成功")
         } else {
           await this.sleep(TASK_INTERVAL)
           // 粗略计算累积时间
-          this.spendSecond += TASK_INTERVAL / 1000
+          this.spendSecond += (TASK_INTERVAL / 1000)
           this.beginTask()
         }
       } catch (err) {
@@ -142,27 +147,11 @@ export default {
     }
   },
   mounted() {
-    this.sessionData = sessFun.getSess()
     if (this.$route.query.downtype) {
       this.beginTask()
     } else {
       this.$message.error('操作失败：downtype 参数缺失')
     }
-
-    // this.myInterval = setInterval(() => {
-    //   setTimeout(() => {
-    //     console.log("downtype--", this.$route.query.downtype);
-    //     //调用接口的方法
-    //     if (this.$route.query.downtype == 1) {
-    //       this.getProcess();
-    //     } else if (this.$route.query.downtype == 2) {
-    //       this.getPPTProcess();
-    //     } else if (this.$route.query.downtype == 3) {
-    //       this.getBroundResProcess();
-    //     }
-    //   }, 1);
-    //   this.second = this.second + 5;
-    // }, 5000);
   },
   beforeDestroy() {
     this.stopTask()

@@ -42,7 +42,7 @@
       </div>
       <div class="custom_dialog_footer">
         <el-button size="small" @click="close">取消</el-button>
-        <el-button type="primary" size="small" @click="onSubmit">测试跳转</el-button>
+        <!-- <el-button type="primary" size="small" @click="onSubmit">确定</el-button> -->
       </div>
     </div>
   </el-dialog>
@@ -92,16 +92,10 @@ export default {
     /**
      * 上传oss完成
      */
-    // async uploadSuccess() {
-    //   try {
-    //     // 先调一次接口，获取 uqKey
-    //     const isComplete = await this.getResult()
-    //     this.openProgressDownPage()
-    //   } catch (err) {
-    //     this.$message.error(String(err) || '操作失败')
-    //     console.error('uploadSuccess error:', err)
-    //   }
-    // },
+    async uploadSuccess() {
+      this.openProgressDownPage()
+      this.close()
+    },
 
     /**
      * 打开下载进度页
@@ -120,33 +114,9 @@ export default {
     },
 
     /**
-     * 查询文件数据处理是否完成
-     */
-    // async getResult() {
-    //   const res = await this.$api.photoPackage.matchSpace({
-    //     ...this.formData
-    //   })
-    //   const { SysCode: code, MSG: message, data } = res.data || {}
-    //   if (code !== 200200) throw new Error(message)
-    //   const { rate, failList, uqKey } = data
-    //   this.uploadPercent = rate
-    //   this.failList = failList
-    //   this.formData.uqKey = uqKey
-    //   return this.uploadPercent >= 100
-    // },
-
-    /**
      * 提交表单
      */
-    async onSubmit() {
-      // this.$router.replace({
-      //   query: {
-      //     ...this.$route.query,
-      //     uqKey: 1
-      //   }
-      // })
-      // this.openProgressDownPage()
-    },
+    async onSubmit() {},
 
     /**
      * 重置数据

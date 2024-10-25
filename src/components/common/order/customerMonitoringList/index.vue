@@ -21,6 +21,7 @@
             @reset="handleReset"
           >
             <!-- 所属公司 -->
+            <!-- @change="handleChangeCId" -->
             <template slot="cId">
               <el-select
                 v-model="searchData.cId"
@@ -29,7 +30,6 @@
                 clearable
                 style="width: 100%"
                 size="small"
-                @change="handleChangeCId"
               >
                 <el-option
                   v-for="item in preparedData.customerCompanyOptions"
@@ -41,7 +41,7 @@
             </template>
 
              <!-- 所属品牌 -->
-             <template slot="bId">
+             <!-- <template slot="bId">
               <el-select
                 v-model="searchData.bId"
                 placeholder="请选择"
@@ -58,7 +58,7 @@
                   :label="item.label"
                 />
               </el-select>
-            </template>
+            </template> -->
 
           </TableSearch>
         </div>
@@ -187,10 +187,10 @@ const initSearchFileds = () => ({
     title: '所属公司',
     slotContent: 'cId'
   },
-  bId: {
-    title: '所属品牌',
-    slotContent: 'bId'
-  },
+  // bId: {
+  //   title: '所属品牌',
+  //   slotContent: 'bId'
+  // },
 })
 /**
  * 初始化列表字段配置
@@ -315,17 +315,17 @@ export default {
       }
     },
 
-    handleChangeCId() {
-      this.searchData.bId = null
-      const current = this.customerCompanyList.find(it => it.cId === this.searchData.cId)
-      if (!current) return
-      this.preparedData.customerBrandOptions = (current.brandList || []).map(it => {
-        return {
-          label: it.bTitle,
-          value: it.bId
-        }
-      })
-    },
+    // handleChangeCId() {
+    //   this.searchData.bId = null
+    //   const current = this.customerCompanyList.find(it => it.cId === this.searchData.cId)
+    //   if (!current) return
+    //   this.preparedData.customerBrandOptions = (current.brandList || []).map(it => {
+    //     return {
+    //       label: it.bTitle,
+    //       value: it.bId
+    //     }
+    //   })
+    // },
 
     /**
      * 处理列表接口返回的数据

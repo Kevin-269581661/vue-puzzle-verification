@@ -2,17 +2,9 @@
 <template>
   <div class="down_page">
     <el-progress
-      v-if="percentNum == 100"
-      type="circle"
-      status="success"
-      :width="120"
-      :percentage="percentNum"
-    ></el-progress>
-
-    <el-progress
-      v-else
       type="circle"
       :width="120"
+      :status="progressStatus"
       :percentage="percentNum"
     ></el-progress>
 
@@ -56,7 +48,9 @@ export default {
       // 不符合要求数据列表
       failList: [],
       // 请求标识（第一次请求后返回）
-      uqKey: ''
+      // uqKey: '',
+      // 进度条状态：'' 正常, success 成功, exception 失败, warning 警告
+      progressStatus: ''
     };
   },
   methods: {
@@ -70,10 +64,12 @@ export default {
         if (isComplete) {
           if (this.failList.length) {
             console.log('failList ===', this.failList)
+            this.progressStatus = 'warning'
             // this.$refs.uploaderRef && this.$refs.uploaderRef.reset()
             // this.openUnsuccessful()
             return
           }
+          this.progressStatus = 'success'
           this.$message.success('操作成功')
         } else {
           await this.sleep(TASK_INTERVAL)
@@ -86,6 +82,7 @@ export default {
         // 此处使用模态框提示（重提示）
         // this.$message.error(String(err) || '操作失败')
         this.$alert("操作失败: " + err)
+        this.progressStatus = 'exception'
         console.error('beginTask error:', err)
       }
     },
@@ -124,7 +121,6 @@ export default {
           res = await this.$api.photoPackage.matchSpace({
             ...this.$route.query,
             zipUrl: decodeURIComponent(this.$route.query.zipUrl),
-            uqKey: this.uqKey
           })
           break
         default:
@@ -132,9 +128,16 @@ export default {
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message)
       const { rate, failList, uqKey } = data
-      this.uqKey = uqKey
-      this.percentNum = rate
-      this.failList = failList
+      this.percentNum = Number(rate)
+      this.failList = failList || []
+      if (!this.$route.query.uqKey) {
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            uqKey
+          }
+        })
+      }
       return this.percentNum >= 100
     }
   },

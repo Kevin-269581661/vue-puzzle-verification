@@ -26,7 +26,7 @@
               useOss
               showFileList
               listType="text-plain"
-              accept=".zip"
+              accept=".zip,.rar,.tar,.gz,.7zip,.apk"
               :ossOptions="{
                 uploadUrl: '/national/upload/getTemporaryKey',
                 params: {
@@ -139,7 +139,13 @@ export default {
      * 提交表单
      */
     async onSubmit() {
-      this.openProgressDownPage()
+      // this.$router.replace({
+      //   query: {
+      //     ...this.$route.query,
+      //     uqKey: 1
+      //   }
+      // })
+      // this.openProgressDownPage()
     },
 
     /**

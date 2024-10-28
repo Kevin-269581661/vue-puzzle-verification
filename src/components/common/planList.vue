@@ -288,6 +288,16 @@
                 </el-table-column>
               </template>
 
+              <template v-if="item.label === '是否母单'">
+                <el-table-column :prop="item.prop" :label="item.label" min-width="100px"
+                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                  <template slot-scope="scope">
+                    <el-tag v-if="!scope.row.papID">母</el-tag>
+                    <el-tag v-else type="success">子</el-tag>
+                  </template>
+                </el-table-column>
+              </template>
+
               <template v-if="item.label === '创建日期'">
                 <el-table-column :prop="item.prop" :label="item.label" min-width="200px" sortable="custom"
                   show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
@@ -768,6 +778,7 @@ export default {
         { id: 4, label: "所有人", prop: "realName", isChecked: true, fix: "not" },
         { id: 5, label: "投放城市(点位面数,排期)", prop: "cityArea", isChecked: true, fix: "not" },
         { id: 6, label: "媒体类型", prop: "mediaTypeDetails", isChecked: true, fix: "not" },
+        { id: 10, label: "是否母单", prop: "papID", isChecked: true, fix: "not" },
         { id: 7, label: "创建日期", prop: "apcTime", isChecked: true, fix: "not" },
         { id: 8, label: "状态", prop: "apState", isChecked: true, fix: "not" },
         { id: 9, label: "操作", isChecked: true, fix: "right" },
@@ -1871,6 +1882,7 @@ export default {
         mediaTypeNames: item.mediaTypeNames || "", // 媒体类型
         mediaTypeIds: item.mediaTypeIds || "", // 媒体类型id
         isKA: item.isKA,
+        papID: item.papID,
       };
       // 处理媒体类型数据
       let mediaTypeNames = obj.mediaTypeNames.split(',')

@@ -20,12 +20,15 @@
             element-loading-spinner="el-icon-loading"
           >
             <div class="plan-title">
-              <h4>
-                <img src="../../assets/images/orderlogo.png" alt="" />{{
-                  planDetail.apName
-                }}
+              <h4 style="display: flex;">
+                <!-- <img src="../../assets/images/orderlogo.png" alt="" /> -->
+                <span v-if="!planDetail.papID" class="order_type_tag blue">母</span>
+                <span v-else class="order_type_tag green">子</span>
+                <span>{{ planDetail.apName }}</span>
               </h4>
+
               <div class="handleBtn" v-if="planDetail.isSimpleRight === 1">
+
                 <el-tooltip
                   v-if="
                     ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
@@ -37,8 +40,10 @@
                 >
                   <el-button @click="reLock">预 锁</el-button>
                 </el-tooltip>
+
                 <!-- apState：0已完成；1进行中；2未投放；3投放中；5强制结束；-1待配点 -->
                 <template v-if="planDetail.apState == 1">
+
                   <!-- planMode：0普通 1意向 -->
                   <el-button
                     v-if="
@@ -50,9 +55,11 @@
                   >
                     协同选点
                   </el-button>
+
                   <el-button type="default" @click="setPlanPrice">
                     设置金额
                   </el-button>
+
                   <el-button
                     v-if="
                       customPermission.proposalPermission == 1 &&
@@ -64,6 +71,7 @@
                   >
                     {{ `配点(${10 - matchCnt})` }}
                   </el-button>
+
                   <!-- 1:普通销售编辑非意向方案2:权限销售编辑意向小区3:媒介编辑所有方案 -->
                   <el-button
                     type="primary"
@@ -83,6 +91,15 @@
                     编辑
                   </el-button>
                 </template>
+
+                <!-- 母单显示 -->
+                <el-button
+                  v-if="!planDetail.papID"
+                  type="plain"
+                  @click="openInfoDialog"
+                >
+                  资料补充
+                </el-button>
               </div>
             </div>
             <div>
@@ -424,6 +441,7 @@
           </div>
         </el-dialog>
       </div>
+
       <!--智能配点-->
       <add-point
         :dialogVisible="addPointDialogVisible"
@@ -437,6 +455,9 @@
         @openAddPoint="addPointDialogVisible = true"
         @merge2ShopList="BDSaveMatchToPlan"
       ></add-point>
+
+      <!-- 订单详情-资料补充-弹窗 -->
+      <OrderReplenishInfoDialog ref="orderReplenishInfoDialogRef" />
     </div>
   </template>
 
@@ -457,7 +478,7 @@
   import detail from "./components/detailInfo.vue";
   import addPoint from './components/addPoint.vue';
   import TableSetting from "./components/TableSetting";
-
+  import OrderReplenishInfoDialog from  './components/orderReplenishInfoDialog.vue'
   import {
     Message,
     MessageBox,
@@ -472,7 +493,8 @@
       addPoint,
       audioList,
       ScheduleAlter,
-      TableSetting
+      TableSetting,
+      OrderReplenishInfoDialog
     },
     data () {
       let validatPrice = (rule, value, callback) => {
@@ -603,6 +625,13 @@
       }
     },
     methods: {
+      /**
+       * 打开资料补充弹框
+       */
+      openInfoDialog() {
+        this.$refs.orderReplenishInfoDialogRef && this.$refs.orderReplenishInfoDialogRef.open(this.apId)
+      },
+
       handleSizeChange (val) {
         this.pageSize = val;
         this.getAudioList()
@@ -796,6 +825,7 @@
             if (res.data.SysCode == 200200) {
               let info = res.data.data;
               this.planDetail = {
+                papID: info.papID,
                 adcID: info.adcID,
                 apID: info.apID,
                 apName: info.apName,
@@ -1594,5 +1624,22 @@
 
   /deep/ .el-table td .cell {
     font-size: 14px;
+  }
+
+  .order_type_tag {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+    border-radius: 4px;
+    margin-right: 10px;
+    &.blue {
+      background-color: #1890FF;
+    }
+    &.green {
+      background-color: #67c23a;
+    }
   }
   </style>

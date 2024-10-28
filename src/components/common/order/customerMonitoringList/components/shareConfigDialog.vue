@@ -143,7 +143,7 @@
             <el-tab-pane :label="tabList[1].label" :name="tabList[1].name">
               <div class="tab_content">
                 <div class="tab_content_top">
-                  <div class="title_box">分享用户</div>
+                  <div class="title_box">添加用户</div>
                   <el-button type="primary" size="small" @click="createShareUser">新增</el-button>
                 </div>
                 <div class="table_wrap_box">
@@ -219,7 +219,7 @@ const initFormData = () => {
  */
 const initTabList = () => ([
   { label: '分享链接', name: 'shareLink' },
-  { label: '分享用户', name: 'shareList' },
+  { label: '添加用户', name: 'shareList' },
 ])
 
 export default {

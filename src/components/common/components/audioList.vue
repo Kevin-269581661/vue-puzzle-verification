@@ -636,9 +636,9 @@ import FileSaver from 'file-saver';
   .change-pic-detail-modal /deep/ .el-dialog__body {
       padding: 5px 24px;
   }
-  .el-tabs__content{
+  /* .el-tabs__content{
     padding-bottom: 60px;
-  }
+  } */
 
   .el-dropdown-link{
     cursor: pointer;

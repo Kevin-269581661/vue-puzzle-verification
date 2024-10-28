@@ -40,20 +40,21 @@ export default {
   box-sizing: border-box;
   position: relative;
   display: flex;
-  align-items: center;
+  // align-items: center;
   word-wrap: break-word;
 
   .text_alert_content {
     flex: 1;
     overflow: hidden;
     font-size: 14px;
-    line-height: 1.5715;
+    line-height: 22px;
     color: #000000;
   }
 
   .icon {
     color: #1890ff;
     margin-right: 10px;
+    line-height: 22px;
   }
 }
 </style>

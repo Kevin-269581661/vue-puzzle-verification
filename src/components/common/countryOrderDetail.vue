@@ -89,6 +89,10 @@
       </div>
     </div>
     <div class="mediaList_wrap margin_16_64">
+      <div class="btn_group">
+        <el-button v-if="['forth', 'fifth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">导入图片</el-button>
+      </div>
+
       <el-tabs
         class="company-tabs"
         v-if="companiesOfOrder.length"
@@ -401,6 +405,7 @@
                 </div>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="物料信息" name="third">
               <material
                 :materialInfoData="materialInfoJson"
@@ -409,6 +414,7 @@
                 :openStatus="false"
               ></material>
             </el-tab-pane>
+
             <el-tab-pane
               label="上刊报告"
               name="forth"
@@ -416,6 +422,7 @@
             >
               <div class="changepic_box" v-if="planPanel == 'forth'">
                 <Change-Pic-Country
+                  ref="upPicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="0"
@@ -425,6 +432,7 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane
               label="下刊报告"
               name="fifth"
@@ -432,6 +440,7 @@
             >
               <div class="changepic_box" v-if="planPanel == 'fifth'">
                 <Change-Pic-Country
+                  ref="downPicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="1"
@@ -441,9 +450,11 @@
                 ></Change-Pic-Country>
               </div>
             </el-tab-pane>
+
             <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country
+                  ref="changePicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="2"
@@ -965,6 +976,9 @@
     <div class="content_bottom_btn">
       <el-button plain type="default" @click="goBack"> 返回 </el-button>
     </div>
+
+    <!-- 非系统订单-导入上下刊图片-弹框组件 -->
+    <ImportPublishPicDialog ref="importPublishPicDialogRef" />
   </div>
 </template>
 
@@ -988,6 +1002,7 @@ import noSearchResult from "./components/noSearchResult.vue";
 import ChangePicCountry from "./components/changePicCountry.vue";
 import ChangeCountryOrderPrice from "./components/changeCountryOrderPrice.vue";
 import ScheduleAlterCountry from "@/components/common/components/Alter/ScheduleAlterCountry";
+import ImportPublishPicDialog from '@/components/common/components/importPublishPicDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1001,6 +1016,7 @@ export default {
     noSearchResult,
     ChangeCountryOrderPrice,
     ScheduleAlterCountry,
+    ImportPublishPicDialog
   },
   data() {
     return {
@@ -1201,6 +1217,33 @@ export default {
     // this.getOrderPriceDetail();
   },
   methods: {
+    /**
+     * 打开导入图片弹框
+     */
+    openImportImgDialog() {
+      const imgTypeOjb = {
+        forth: 0,
+        fifth: 1,
+        sixth: 2
+      }
+      // 0:上刊,1:下刊,2:换画
+      const imgType = imgTypeOjb[this.planPanel]
+      // 公司id
+      const asrID = this.currentCompanyId
+      // 方案id
+      const apId = this.apId
+      let replaceRecordId = ''
+      if (imgType == 2 && this.$refs.changePicCountryRef) {
+        replaceRecordId = this.$refs.changePicCountryRef[0].getReplaceRecordId()
+      }
+      // 没有换画，不能上传
+      if (imgType == 2 && !replaceRecordId) {
+        this.$message.warning('暂无换画报告')
+        return
+      }
+      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open({ imgType, asrID, apId, replaceRecordId })
+    },
+
     //初始化各项数据
     initListData() {
       this.currPage = 1;
@@ -1428,7 +1471,7 @@ export default {
     },
     //返回列表
     goBack() {
-      this.$router.push("./countryOrderList");
+      this.$router.go(-1);
     },
     // 获取订单内公司列表
     getCompaniesOfOrder() {
@@ -1998,6 +2041,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mediaList_wrap {
+  position: relative;
+}
+
+.btn_group {
+  position: absolute;
+  top: 65px;
+  right: 30px;
+  z-index: 10;
+}
+
 .ellipsis-td {
   width: 132px;
   overflow: hidden;

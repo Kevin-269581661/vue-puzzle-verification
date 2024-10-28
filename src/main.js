@@ -9,6 +9,8 @@ import SlideVerify from 'vue-monoplasty-slide-verify';
 import moment from "dayjs";
 import request from "./api/api";
 import api from "./api";
+// 引入图片预览组件
+import vueImgPreview from 'hevue-img-preview'
 
 import 'default-passive-events'
 
@@ -25,9 +27,12 @@ import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
 import App from './App'
+
 Vue.use(ElementUI);
 Vue.use(MintUI);
 Vue.use(SlideVerify);
+// 初始化图片预览组件
+Vue.use(vueImgPreview)
 
 // axios
 import axios from 'axios'

@@ -77,7 +77,7 @@
         </div>
 
         <div class="content_bottom_btn">
-            <el-button type="primary" @click="editClient" v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)" >编辑</el-button>
+            <el-button v-if="showEditBtn" type="primary" @click="editClient">编辑</el-button>
             <el-button plain @click="goBack" >返回</el-button>
         </div>
     </div>
@@ -100,7 +100,6 @@ export default {
         return {
             // 登录信息
             sessionData:{},
-            role: "",
             userInfo: {
                 realName: "",
                 email: "",
@@ -119,18 +118,35 @@ export default {
                 rName: "",
                 cRemark: "",
                 iName: ""
-            }
+            },
+            showEditBtn: false,
+            isPay: 0
         };
     },
     created() {
-        this.getRole();
+        this.sessionData = sessFun.getSess();
+        this.requestIsPay();
         this.getInitData();
     },
     methods: {
+      requestIsPay() {
+          api.getApi('/addsp/api/v1/company/isPay', {
+              asrID: this.sessionData.asrID
+          }).then(res => {
+              if (res.data.SysCode === 200200 && res.data.data === true) {
+                this.isPay = 1;
+              }
+              this.getRole()
+          })
+        },
+
         // 获取角色
         getRole() {
-            this.sessionData = sessFun.getSess();
-            this.role = this.sessionData.uType;
+            const role = this.sessionData.uType;
+            // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
+            if (role === 'ADN_BD' || ['ADN_BD_KA'].includes(role) && !this.isPay) {
+              this.showEditBtn = true
+            }
         },
         // 返回
         goBack() {

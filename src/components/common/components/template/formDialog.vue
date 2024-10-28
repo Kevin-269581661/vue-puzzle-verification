@@ -72,6 +72,7 @@ import sessFun from "@/commonFun/sessFun.js";
  */
 const initFormData = () => {
   return {
+    id: null,
     propOne: null,
     propTwo: null
   }
@@ -146,7 +147,7 @@ export default {
           uid,
           token,
         })
-        const { SysCode: code, MSG: message, data } = res.data
+        const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '操作失败')
         this.$message.success('操作成功')
         this.$emit('submitSuccess')
@@ -158,17 +159,20 @@ export default {
         this.loading = false
       }
     },
+
     /**
      * 获取详情
      */
-    async getDetail(id) {
-      if (!id) return console.error('getDetail error: id 不能为空')
+    async getDetail() {
       try {
         this.loading = true
-        const res = await this.$request.getApi('/aaaa/bbbb', { id })
-        const { SysCode: code, MSG: message, data = [] } = res.data
+        const res = await this.$request.getApi('/aaaa/bbbb', { id: this.formData.id })
+        const { SysCode: code, MSG: message, data = {} } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.formData = data
+        this.formData = {
+          ...this.formData,
+          ...data
+        }
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
@@ -176,6 +180,7 @@ export default {
         this.loading = false
       }
     },
+
     /**
      * 获取预加载数据
      */
@@ -183,7 +188,7 @@ export default {
       try {
         this.loading = true
         const res = await this.$request.getApi('/aaaa/bbbb')
-        const { SysCode: code, MSG: message, data = [] } = res.data
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         this.preparedData.propTwoOptions = data
       } catch (err) {
@@ -193,6 +198,7 @@ export default {
         this.loading = false
       }
     },
+
     /**
      * 重置数据
      */
@@ -202,6 +208,7 @@ export default {
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
       this.$emit('afterClose')
     },
+
     /**
      * 打开弹框
      * （弹框打开时调用，一些弹框打开时的初始化处理可以在此方法内进行，譬如：通过 row.id 请求详情...）
@@ -216,10 +223,11 @@ export default {
           ...row
         }
         // 根据 id 获取详情，二选一
-        // this.getDetail(row.id)
+        // this.getDetail()
       }
       // this.getPropTwoOptions()
     },
+
     /**
      * 关闭弹框
      * （可以处理一些收尾操作，如：清除定时器、事件监听等等）

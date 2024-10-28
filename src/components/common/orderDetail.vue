@@ -50,8 +50,10 @@
                 type="plain"
                 @click="changePain()"
                 v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                >换 画
+              >
+                换 画
               </el-button>
+
               <el-select
                 v-if="
                   ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
@@ -80,12 +82,22 @@
                   @click.native="changeHandleType(3)"
                 ></el-option>
               </el-select>
+
               <el-button
                 type="plain"
                 @click="changePrice"
                 v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
-                >修改金额
+              >
+                修改金额
               </el-button>
+
+              <el-button
+                type="plain"
+                @click="openInfoDialog"
+              >
+                资料补充
+              </el-button>
+
             </div>
           </div>
           <div>
@@ -1196,6 +1208,9 @@
 
     <!-- 订单图片审核-弹框组件 -->
     <OrderImgAuditDialog ref="orderImgAuditDialogRef" />
+
+    <!-- 订单详情-资料补充-弹窗 -->
+    <OrderReplenishInfoDialog ref="orderReplenishInfoDialogRef" />
   </div>
 </template>
 
@@ -1224,6 +1239,7 @@ import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 import TableSetting from "./components/TableSetting";
 import audioList from "./components/audioList.vue";
 import OrderImgAuditDialog from './components/orderImgAuditDialog.vue'
+import OrderReplenishInfoDialog from  './components/orderReplenishInfoDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1240,7 +1256,8 @@ export default {
     ScheduleAlter,
     TableSetting,
     audioList,
-    OrderImgAuditDialog
+    OrderImgAuditDialog,
+    OrderReplenishInfoDialog
   },
   data () {
     return {
@@ -1513,6 +1530,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * 打开资料补充弹框
+     */
+    openInfoDialog() {
+      this.$refs.orderReplenishInfoDialogRef && this.$refs.orderReplenishInfoDialogRef.open(this.apId)
+    },
+
     // 列展示
     filterColumn(columns) {
         this.currentColumns = columns

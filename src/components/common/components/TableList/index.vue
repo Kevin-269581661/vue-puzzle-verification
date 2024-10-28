@@ -68,9 +68,9 @@
             :label="col.title"
             :key="col.key || col.dataIndex"
             :column-key="col.key || col.dataIndex"
-            :width="col.width"
-            :min-width="col.minWidth"
-            :fixed="col.fixed"
+            :width="col.width || null"
+            :min-width="col.minWidth || null"
+            :fixed="col.fixed || null"
             :align="col.align || 'center'"
             :header-align="col.headerAlign || 'center'"
           >

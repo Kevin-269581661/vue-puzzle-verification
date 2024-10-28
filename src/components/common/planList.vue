@@ -396,9 +396,16 @@
                         ">
                           拆单
                         </el-dropdown-item>
-                        <el-dropdown-item :disabled="
-                          scope.row.apState !== 1 && scope.row.apState !== -1
-                        " @click.native.prevent="deleteAdPlan(scope.row)">
+
+                        <!-- apState 方案状态：0已完成；1进行中；2未投放；3投放中；5强制结束，(-1待配点） -->
+                        <!-- 地方媒介不可删除KA销售创建的方案 -->
+                        <el-dropdown-item
+                          :disabled="
+                            (role == 'ADN_MD' && scope.row.isKA == 1) ||
+                            (scope.row.apState !== 1 && scope.row.apState !== -1)
+                          "
+                          @click.native.prevent="deleteAdPlan(scope.row)"
+                        >
                           删除
                         </el-dropdown-item>
                       </el-dropdown-menu>
@@ -1660,7 +1667,7 @@ export default {
      */
     async handlePlanApply(apId, mediaTypeId, type) {
       try {
-        const res = await this.$api.plan.addApply({
+        const res = await this.$api.adPlan.addApply({
           // 方案id
           apId,
           // 媒体类型id
@@ -1863,6 +1870,7 @@ export default {
         mediaTypeDetails: [], // 媒体类型详细数据（包括预锁）
         mediaTypeNames: item.mediaTypeNames || "", // 媒体类型
         mediaTypeIds: item.mediaTypeIds || "", // 媒体类型id
+        isKA: item.isKA,
       };
       // 处理媒体类型数据
       let mediaTypeNames = obj.mediaTypeNames.split(',')
@@ -2160,8 +2168,6 @@ export default {
 
     // 删除方案
     deleteAdPlan(row) {
-      // console.log(this.apiVar, "this.apiVar");
-      // console.log(row);
 
       if (row.apState == 1 && !row.canLock) {
         return sessFun.messageFun(

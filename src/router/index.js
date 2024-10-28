@@ -37,6 +37,8 @@ const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 新全国单流程
 const NationalOrderList = () => import(/* webpackChunkName: "NationalOrderList" */ '../components/common/order/nationalOrderList.vue')
+// 客户投放监播列表
+const CustomerMonitoringList = () => import(/* webpackChunkName: "CustomerMonitoringList" */ '../components/common/order/customerMonitoringList/index.vue')
 const NationalOrderDetail = () => import(/* webpackChunkName: "NationalOrderDetail" */ '../components/common/order/nationalOrderDetail.vue')
 // 创建非系统全国单
 const createOrder = () => import(/* webpackChunkName: "createOrder" */ '../components/common/createOrder.vue')
@@ -73,6 +75,7 @@ const resContrastMap = () => import(/* webpackChunkName: "resContrastMap" */ '..
 // 下载进度页面
 const progressDown = () => import(/* webpackChunkName: "progressDown" */ '../components/common/progressDown.vue')
 const progressDownCountry = () => import(/* webpackChunkName: "progressDownCountry" */ '../components/common/progressDownCountry.vue')
+const DownloadProgressView = () => import(/* webpackChunkName: "downloadProgressView" */ '../components/common/downloadProgressView.vue')
 
 //地图选点中转页面
 // const mapMessage = () => import('../components/common/mapMessage.vue')
@@ -134,6 +137,7 @@ const staticRoutes = [{path: '/', redirect: '/login'},
     {path: '/login', name: 'login', component: login},
     // {path: '/mapMessage', name: 'mapMessage', component: mapMessage},
     {path: '/progressDown', name: 'progressDown', component: progressDown},
+    {path: '/downloadProgressView', name: 'downloadProgressView', component: DownloadProgressView},
     {path: '/progressDownCountry', name: 'progressDownCountry', component: progressDownCountry},
     {path: '/shareADList', name: 'shareADList', component: shareADList},
     {path: '/shareADListProposal', name: 'shareADListProposal', component: shareADListProposal},
@@ -403,6 +407,8 @@ function addRoutes(role, proposal, retain) {
                         {path: '/sale/planList', component: planList},
                         {path: '/sale/publishPriceList', component: publishPriceList},
                         {path: '/sale/orderList', component: orderList},
+                        {path: '/sale/customerMonitoringList', component: CustomerMonitoringList},
+                        {path: '/sale/countryOrderDetail', component: countryOrderDetail},
                         {path: '/sale/clientDetail', component: clientDetail},
                         {path: '/sale/planDetail', component: planDetail},
                         {path: '/sale/planEmptyPointDetail', component: planEmptyPointDetail},

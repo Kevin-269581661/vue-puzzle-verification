@@ -422,6 +422,7 @@
             >
               <div class="changepic_box" v-if="planPanel == 'forth'">
                 <Change-Pic-Country
+                  ref="upPicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="0"
@@ -439,6 +440,7 @@
             >
               <div class="changepic_box" v-if="planPanel == 'fifth'">
                 <Change-Pic-Country
+                  ref="downPicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="1"
@@ -1232,7 +1234,12 @@ export default {
       const apId = this.apId
       let replaceRecordId = ''
       if (imgType == 2 && this.$refs.changePicCountryRef) {
-        replaceRecordId = this.$refs.changePicCountryRef.replaceRecordId
+        replaceRecordId = this.$refs.changePicCountryRef[0].getReplaceRecordId()
+      }
+      // 没有换画，不能上传
+      if (imgType == 2 && !replaceRecordId) {
+        this.$message.warning('暂无换画报告')
+        return
       }
       this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open({ imgType, asrID, apId, replaceRecordId })
     },

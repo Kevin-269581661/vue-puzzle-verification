@@ -1217,12 +1217,6 @@ export default {
     // this.getPlanDetails()
   },
 
-  computed: {
-    replaceRecordId() {
-      return this.painList.length ? this.painList[this.activePainIndex].id : ''
-    }
-  },
-
   watch: {
     fromType() {
       // 新增换画组
@@ -1232,6 +1226,10 @@ export default {
   },
 
   methods: {
+    getReplaceRecordId() {
+      return this.painList.length ? this.painList[this.activePainIndex].id : ''
+    },
+
     // 获取 媒体位id/媒体名称/位置朝向 的数据
     // getPlanDetails() {
     //     let info = {

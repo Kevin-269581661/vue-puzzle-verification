@@ -137,6 +137,7 @@ export default {
     open(row) {
       if (this.visible) return
       this.visible = true
+      console.log('open row ===', row)
       if (row) {
         const { imgType, asrID, apId, replaceRecordId } = row
         this.formData = {

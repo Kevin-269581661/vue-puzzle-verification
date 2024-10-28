@@ -8,12 +8,20 @@
       :percentage="percentNum"
     ></el-progress>
 
-    <p class="text_style">
-      {{
-        percentNum == 100
-          ? "生成完成，请在下载工具里查看文件"
-          : "正在生成中，请等待…"
-      }}
+    <p v-if="progressStatus === 'success'" class="text_style">
+      处理完成
+    </p>
+
+    <p v-else-if="progressStatus === 'exception'" class="text_style" style="color: #F56C6C">
+      处理失败，请稍后重试~
+    </p>
+
+    <p v-else-if="progressStatus === 'warning'" class="text_style">
+      处理完成，部分处理失败，<el-link :underline="false" @click="openFailResultDialog">查看处理失败列表</el-link>
+    </p>
+
+    <p v-else class="text_style">
+      正在处理中，请等待...
     </p>
 
     <span v-if="percentNum < 100" class="nav"
@@ -24,9 +32,9 @@
         >立即加速</a
     ></span>
 
-    <div class="file_style" v-if="percentNum == 100">
+    <!-- <div class="file_style" v-if="percentNum == 100">
       <img src="../../assets/images/downfile.png" alt="" />
-    </div>
+    </div> -->
 
     <!-- 非系统订单-图片导入文件匹配失败-弹窗 -->
     <FailListDialog ref="failListDialogRef" targetName="非系统订单图片导入"/>
@@ -61,6 +69,26 @@ export default {
   methods: {
 
     /**
+     * 打开处理结果弹窗
+     */
+    openFailResultDialog() {
+      if (!this.failList.length) return
+      const list = this.failList.map(it => {
+        return {
+          title: it
+        }
+      })
+      const columns = [
+        {
+          title: '失败文件名称',
+          dataIndex: 'title',
+        }
+      ]
+      this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns })
+    }
+
+
+    /**
      * 开启轮询任务
      */
      async beginTask() {
@@ -70,18 +98,7 @@ export default {
           if (this.failList.length) {
             console.log('failList ===', this.failList)
             this.progressStatus = 'warning'
-            const list = this.failList.map(it => {
-              return {
-                title: it
-              }
-            })
-            const columns = [
-              {
-                title: '失败文件名称',
-                dataIndex: 'title',
-              }
-            ]
-            this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns })
+            this.openFailResultDialog()
             return
           }
           this.progressStatus = 'success'

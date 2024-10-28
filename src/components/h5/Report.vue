@@ -428,6 +428,7 @@
                 <el-option :value="100" label="通用模板（皓邻新）"></el-option>
                 <el-option :value="1" label="定制模板"></el-option>
                 <el-option :value="101" label="定制模板（BSK）"></el-option>
+                <el-option :value="102" label="滴滴专用模板"></el-option>
                 <!-- 南宁定制，亲粤邻 显示 审核模板 -->
                 <el-option
                   v-if="permissions.includes('AIImageAudit')"
@@ -456,6 +457,7 @@
                 </div>
               </el-alert>
             </li>
+
             <!-- 亲粤邻定制的模板-选择导出排版 -->
             <li v-if="templateType == 1 && customizeCode == 2">
               <span class="form-label">导出排版：</span>
@@ -471,6 +473,7 @@
                 <el-option value="2pointPerPage" label="2点位/页"></el-option>
               </el-select>
             </li>
+
             <!-- 通用模板、审核模板-选择导出排版 -->
             <li v-else-if="[0, 3, 99, 100].includes(templateType)">
               <span class="form-label">导出排版：</span>
@@ -485,6 +488,7 @@
                 <el-option value="4" label="4张/页"></el-option>
               </el-select>
             </li>
+
             <!-- 定制模板（BSK）-选择导出排版 -->
             <li v-else-if="[101].includes(templateType)">
               <span class="form-label">导出排版：</span>
@@ -495,6 +499,19 @@
                 placeholder="请选择"
               >
                 <el-option value="2" label="2张/页"></el-option>
+              </el-select>
+            </li>
+
+            <!-- 滴滴专用模板-选择导出排版 -->
+            <li v-else-if="[102].includes(templateType)">
+              <span class="form-label">导出排版：</span>
+              <el-select
+                size="small"
+                class="pptx-select"
+                v-model="pptxType"
+                placeholder="请选择"
+              >
+                <el-option value="3" label="3张/页"></el-option>
               </el-select>
             </li>
 
@@ -707,7 +724,7 @@ export default {
       if (
         this.pptxType == '2pointPerPage'
         || !this.isCustomize
-        || [0, 3, 99, 100, 101].includes(this.templateType)
+        || [0, 3, 99, 100, 101, 102].includes(this.templateType)
       ) {
         this.pptxFilter = this.pptxFilter.filter((item) => {
           return item === '0' || item === 'splitFlag';
@@ -903,7 +920,7 @@ export default {
      */
     getPTTx () {
       // 定制模板导出时未开通提示
-      if (![0, 3, 99, 100, 101].includes(this.templateType) && this.isCustomize == false) {
+      if (![0, 3, 99, 100, 101, 102].includes(this.templateType) && this.isCustomize == false) {
         this.$message({
           showClose: true,
           message: '贵司尚未定制专属模板，不能导出',
@@ -916,7 +933,7 @@ export default {
         return
       }
       // 如果选择了定制模板，但是定制模板id 未获取到
-      if (![0, 3, 99, 100, 101].includes(this.templateType) && this.customizeCode === null) {
+      if (![0, 3, 99, 100, 101, 102].includes(this.templateType) && this.customizeCode === null) {
         this.$message.error('未获取到定制模板数据，请刷新页面重试！')
         return
       }

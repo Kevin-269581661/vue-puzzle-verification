@@ -1,140 +1,100 @@
-<!-- 模板-弹框组件 -->
+<!-- 导入失败结果-弹框组件 -->
 <template>
   <el-dialog
-    width="60%"
+    top="5vh"
+    width="90%"
     append-to-body
     show-close
-    :title="`${isEdit ? '编辑' : '新建'}模板弹框`"
+    :title="`导入${targetName}失败信息`"
     :visible.sync="visible"
     :close-on-click-modal="false"
     @closed="afterClose"
   >
-    <div v-loading="loading" class="dialog_content">
+    <div class="dialog_content">
       <div class="custom_dialog_body">
-        <el-form ref="formRef" class="form" label-width="120px" size="small"  :model="formData" :rules="formRules">
-          <el-form-item label="示例一：" prop="propOne">
-            <el-input v-model.trim="formData.propOne" placeholder="请输入" clearable maxlength="100"></el-input>
-          </el-form-item>
-
-          <el-form-item label="示例二：" prop="propTwo">
-            <el-select v-model="formData.propTwo" placeholder="请选择" filterable clearable>
-              <el-option
-                v-for="item in preparedData.propTwoOptions"
-                :key="item.value"
-                :value="item.value"
-                :label="item.label"
-              />
-            </el-select>
-          </el-form-item>
-        </el-form>
+        <TableList
+          :columns="tableColumns"
+          :dataSource="tableList"
+          :loading="loading"
+          :showSetting="false"
+        >
+        </TableList>
       </div>
       <div class="custom_dialog_footer">
-        <el-button size="small" @click="close">取消</el-button>
-        <el-button type="primary" size="small" @click="onSubmit">确定</el-button>
+        <el-button size="small" @click="close">关闭</el-button>
+        <el-button type="primary" size="small" :loading="loading" @click="exportExcel">导出</el-button>
       </div>
     </div>
   </el-dialog>
 </template>
 
 <script>
-/**
- * 初始化表单（提交）数据
- */
-const initFormData = () => {
-  return {
-    propOne: null,
-    propTwo: null
-  }
-}
+import TableList from "@/components/common/components/TableList/index.vue"
+import dayjs from "dayjs";
 
 export default {
   name: 'failListDialog',
+  components: { TableList },
   emits: ['submitSuccess', 'afterClose'],
-  props: {},
+  props: {
+    targetName: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       visible: false,
       loading: false,
-      isEdit: false,
-      formData: initFormData(),
-      formRules: {
-        // 通用校验
-        propOne: [{ required: true, message: '请输入示例一', trigger: 'blur' }],
-        // 特殊校验
-        propTwo: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: (rule, value, callback) => {
-              if (!value) {
-                callback(new Error('请选择示例二'))
-              } else {
-                callback()
-              }
-            }
-          }
-        ]
-      },
-      // 预加载数据
-      // preparedData: {
-      //   propTwoOptions: []
-      // }
+      tableList: [],
+      tableColumns: [],
     }
   },
   methods: {
     /**
-     * 提交表单
+     * 导出结果
      */
-    async onSubmit() {
+    exportExcel() {
       if (this.loading) return
-      // try {
-      //   const isPass = await this.$refs['formRef'].validate()
-      //   if (!isPass) return
-      // } catch (err) {
-      //   return
-      // }
-      // try {
-      //   this.loading = true
-      //   const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
-      //     ...this.formData,
-      //     uid,
-      //     token,
-      //   })
-      //   const { SysCode: code, MSG: message, data } = res.data || {}
-      //   if (code !== 200200) return this.$message.error(message || '操作失败')
-      //   this.$message.success('操作成功')
-      //   this.$emit('submitSuccess')
-      //   this.close()
-      // } catch (err) {
-      //   this.$message.error(String(err) || '操作失败')
-      //   console.error('onSubmit error:', err)
-      // } finally {
-      //   this.loading = false
-      // }
+      this.loading = true
+      require.ensure([], () => {
+        const {
+          export_json_to_excel,
+        } = require("@/vendorExcel/Export2Excel");
+        const tHeader = this.tableColumns.map(it => it.title)
+        const filterVal = this.tableColumns.map(it => it.dataIndex)
+        const list = this.tableList
+        const data = this.formatJson(filterVal, list);
+        const timeTxt = dayjs().format('YYYY-MM-DD HH:mm:ss')
+        export_json_to_excel(tHeader, data, `${this.targetName}导入失败信息${timeTxt}`);
+        this.loading = false
+      });
     },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
+    },
+
     /**
      * 重置数据
      */
     afterClose() {
-      this.isEdit = false
-      this.formData = initFormData()
-      this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
+      this.loading = false
+      this.tableList = []
+      this.tableColumns = []
       this.$emit('afterClose')
     },
+
     /**
      * 打开弹框
      */
-    open(row) {
+    open({ list, columns }) {
       if (this.visible) return
       this.visible = true
-      if (row) {
-        this.isEdit = true
-        this.formData = {
-          ...this.formData,
-          ...row
-        }
-      }
+      this.tableList = list || []
+      this.tableColumns = columns || []
     },
+
     /**
      * 关闭弹框
      */

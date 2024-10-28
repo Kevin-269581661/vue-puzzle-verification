@@ -29,7 +29,7 @@
     </div>
 
     <!-- 非系统订单-图片导入文件匹配失败-弹窗 -->
-    <FailListDialog ref="failListDialogRef" />
+    <FailListDialog ref="failListDialogRef" targetName="非系统订单图片导入"/>
   </div>
 </template>
 
@@ -70,7 +70,18 @@ export default {
           if (this.failList.length) {
             console.log('failList ===', this.failList)
             this.progressStatus = 'warning'
-            this.$refs.failListDialogRef && this.$refs.failListDialogRef.open(this.failList)
+            const list = this.failList.map(it => {
+              return {
+                title: it
+              }
+            })
+            const columns = [
+              {
+                title: '失败文件名称',
+                dataIndex: 'title',
+              }
+            ]
+            this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns })
             return
           }
           this.progressStatus = 'success'

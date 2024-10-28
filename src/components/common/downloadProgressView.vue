@@ -73,15 +73,15 @@ export default {
      */
     openFailResultDialog() {
       if (!this.failList.length) return
-      const list = this.failList.map(it => {
-        return {
-          title: it
-        }
-      })
+      const list = this.failList
       const columns = [
         {
           title: '失败文件名称',
-          dataIndex: 'title',
+          dataIndex: 'name',
+        },
+        {
+          title: '失败信息',
+          dataIndex: 'msg',
         }
       ]
       this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns })

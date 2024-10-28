@@ -85,7 +85,7 @@ export default {
         }
       ]
       this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns })
-    }
+    },
 
 
     /**

@@ -231,8 +231,11 @@ export default {
   },
   mounted () {},
   methods: {
-    openPPTsettingDialog() {
-      this.$refs.exportPptSettingDialogRef && this.$refs.exportPptSettingDialogRef.open()
+    openPPTsettingDialog(row) {
+      this.$refs.exportPptSettingDialogRef && this.$refs.exportPptSettingDialogRef.open({
+        itemId: this.searchData.itemId,
+        apId: row.apId
+      })
     },
 
     handleNotSysOrder(row) {

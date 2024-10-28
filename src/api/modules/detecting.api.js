@@ -170,3 +170,32 @@ export function setShareConfig({
     deleteUserIds
   })
 }
+
+/**
+ * 查询城市导出PPT状态列表
+ */
+export function listPptStatus({
+  // 客户监播项目id
+  itemId,
+  apId
+}) {
+  return request.getApi("/addsp/api/v1/customer/detecting/listPptStatus", {
+    itemId,
+    apId
+  })
+}
+
+/**
+ * 开启城市PPT导出
+ */
+export function setPPTStatus({
+  itemId,
+  apId,
+  codeList
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/setPPTStatus", {
+    itemId,
+    apId,
+    codeList
+  })
+}

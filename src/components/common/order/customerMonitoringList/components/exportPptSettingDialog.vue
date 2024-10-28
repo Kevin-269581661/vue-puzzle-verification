@@ -21,13 +21,17 @@
           :rules="formRules"
         >
 
-          <el-form-item label="选择开启导出PPT城市：" prop="cityIds">
+          <el-form-item label="选择开启导出PPT城市：" prop="codeList">
             <el-transfer
-              v-model="formData.cityIds"
+              v-model="formData.codeList"
               filterable
               filter-placeholder="请输入"
               :data="cityList"
               :filter-method="filterMethod"
+              :props="{
+                key: 'code',
+                label: 'city'
+              }"
               :titles="['待选列表', '已选列表']"
             >
             </el-transfer>
@@ -45,14 +49,17 @@
 </template>
 
 <script>
-import sessFun from "@/commonFun/sessFun.js"
 
 /**
  * 初始化表单（提交）数据
  */
 const initFormData = () => {
   return {
-    cityIds: []
+    // 客户监播项目id
+    itemId: null,
+    // 订单id
+    apId: null,
+    codeList: []
   }
 }
 
@@ -68,28 +75,9 @@ export default {
       formData: initFormData(),
       formRules: {
         // 通用校验
-        cityIds: [{ required: true, message: '请选择城市', trigger: 'blur' }],
-        // 特殊校验
-        // propTwo: [
-        //   {
-        //     required: true,
-        //     trigger: 'blur',
-        //     validator: (rule, value, callback) => {
-        //       if (!value) {
-        //         callback(new Error('请选择示例二'))
-        //       } else {
-        //         callback()
-        //       }
-        //     }
-        //   }
-        // ]
+        codeList: [{ required: true, message: '请选择城市', trigger: 'blur' }],
       },
-      cityList: [
-        { key: 1, label: '广州1' },
-        { key: 2, label: '广州2' },
-        { key: 3, label: '广州3' },
-        { key: 4, label: '广州4' },
-      ]
+      cityList: []
     }
   },
   methods: {
@@ -97,7 +85,7 @@ export default {
      * 筛选
      */
     filterMethod(query, item) {
-      return item.label.indexOf(query) > -1;
+      return item.city.indexOf(query) > -1;
     },
 
     /**
@@ -112,12 +100,9 @@ export default {
         return
       }
       try {
-        const { token, uID: uid } = sessFun.getSess()
         this.loading = true
-        const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
-          ...this.formData,
-          uid,
-          token,
+        const res = await this.$api.detecting.setPPTStatus({
+          ...this.formData
         })
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '操作失败')
@@ -131,17 +116,18 @@ export default {
         this.loading = false
       }
     },
+
     /**
      * 获取详情
      */
-    async getDetail(id) {
-      if (!id) return console.error('getDetail error: id 不能为空')
+    async getDetail() {
       try {
         this.loading = true
-        const res = await this.$request.getApi('/aaaa/bbbb', { id })
-        const { SysCode: code, MSG: message, data = [] } = res.data || {}
+        const res = await this.$api.detecting.listPptStatus({ ...this.formData })
+        const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.formData = data
+        this.cityList = data || []
+        this.formData.codeList = this.cityList.filter(it => it.status).map(it => it.code)
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getDetail error:', err)
@@ -155,10 +141,12 @@ export default {
      */
     afterClose() {
       this.isEdit = false
+      this.cityList = []
       this.formData = initFormData()
       this.$refs['formRef'] && this.$refs['formRef'].clearValidate()
       this.$emit('afterClose')
     },
+
     /**
      * 打开弹框
      */
@@ -167,13 +155,16 @@ export default {
       this.visible = true
       if (row) {
         this.isEdit = true
+        const { apId, itemId } = row
         this.formData = {
           ...this.formData,
-          ...row
+          apId,
+          itemId
         }
-        // this.getDetail(row.id)
+        this.getDetail()
       }
     },
+
     /**
      * 关闭弹框
      */

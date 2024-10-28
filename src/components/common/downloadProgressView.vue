@@ -17,7 +17,7 @@
     </p>
 
     <p v-else-if="progressStatus === 'warning'" class="text_style">
-      处理完成，部分处理失败，<el-link :underline="false" @click="openFailResultDialog">查看处理失败列表</el-link>
+      处理完成，部分处理失败，<a href="javaScript:;" class="nav-text" @click="openFailResultDialog">查看处理失败列表</a>
     </p>
 
     <p v-else class="text_style">

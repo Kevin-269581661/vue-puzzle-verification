@@ -126,7 +126,12 @@ export default {
         const res = await this.$api.detecting.listPptStatus({ ...this.formData })
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
-        this.cityList = data || []
+        this.cityList = (data || []).map(item => {
+          return {
+            ...item,
+            city: item.isSystemOrder ? item.city : `${item.city}（非系统单）`
+          }
+        })
         this.formData.codeList = this.cityList.filter(it => it.status).map(it => it.code)
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')

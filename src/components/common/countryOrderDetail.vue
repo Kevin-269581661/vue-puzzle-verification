@@ -452,6 +452,7 @@
             <el-tab-pane label="换画报告" name="sixth">
               <div class="changepic_box" v-if="planPanel == 'sixth'">
                 <Change-Pic-Country
+                  ref="changePicCountryRef"
                   :apId="apId"
                   :companyId="currentCompanyId"
                   :type="2"
@@ -1229,7 +1230,11 @@ export default {
       const asrID = this.currentCompanyId
       // 方案id
       const apId = this.apId
-      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open({ imgType, asrID, apId })
+      let replaceRecordId = ''
+      if (imgType == 2 && this.$refs.changePicCountryRef) {
+        replaceRecordId = this.$refs.changePicCountryRef.replaceRecordId
+      }
+      this.$refs.importPublishPicDialogRef && this.$refs.importPublishPicDialogRef.open({ imgType, asrID, apId, replaceRecordId })
     },
 
     //初始化各项数据

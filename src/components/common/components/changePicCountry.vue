@@ -1216,6 +1216,13 @@ export default {
     }
     // this.getPlanDetails()
   },
+
+  computed: {
+    replaceRecordId() {
+      return this.painList.length ? this.painList[this.activePainIndex].id : ''
+    }
+  },
+
   watch: {
     fromType() {
       // 新增换画组

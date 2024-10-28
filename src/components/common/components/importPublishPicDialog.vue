@@ -138,9 +138,10 @@ export default {
       if (this.visible) return
       this.visible = true
       if (row) {
-        const { imgType, asrID, apId } = row
+        const { imgType, asrID, apId, replaceRecordId } = row
         this.formData = {
           ...this.formData,
+          replaceRecordId,
           imgType,
           asrID,
           apId

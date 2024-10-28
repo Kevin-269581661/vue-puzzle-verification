@@ -75,7 +75,7 @@ export default {
       formData: initFormData(),
       formRules: {
         // 通用校验
-        codeList: [{ required: true, message: '请选择城市', trigger: 'blur' }],
+        // codeList: [{ required: true, message: '请选择城市', trigger: 'blur' }],
       },
       cityList: []
     }

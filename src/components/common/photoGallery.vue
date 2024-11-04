@@ -180,6 +180,7 @@
                 </el-col>
             </el-row>
           </template>
+
           <el-tab-pane
             label="案例库"
             name="first"
@@ -187,6 +188,13 @@
             element-loading-text="玩命加载中..."
             element-loading-spinner="el-icon-loading"
           >
+
+            <div v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="tab_wrapper">
+              <el-tabs v-model="activeTabKey" @tab-click="handleClickTab">
+                <el-tab-pane v-for="item in tabList" :key="item.value" :label="item.label" :name="item.value" ></el-tab-pane>
+              </el-tabs>
+            </div>
+
             <!-- 图片 -->
             <photo
               :imgarr="pageUpImgArr"
@@ -211,6 +219,7 @@
               </el-pagination>
             </div>
           </el-tab-pane>
+
           <el-tab-pane v-if="isShowAllTab" label="收藏夹" name="second">
             <div
               v-loading="secondBodyLoading"
@@ -242,6 +251,7 @@
               </div>
             </div>
           </el-tab-pane>
+
           <el-tab-pane v-if="isShowOrderPhoto" label="行业图片" name="three">
             <order-photo></order-photo>
           </el-tab-pane>
@@ -392,7 +402,8 @@ export default {
       //控制图片比例
       isActive: false,
       // 获取案例库接口配置: 1.使用旧接口 /advertisement/GetlmgListV2 2.使用新接口 /addsp/photoGalleryCache/getPage
-      getImgApiType: 1
+      getImgApiType: 1,
+      activeTabKey: '1',
     };
   },
   created () {
@@ -420,7 +431,30 @@ export default {
     this.getSystemMediaTypes();
     this.init()
   },
+  computed: {
+    tabList() {
+      const list = [{ label: '全国', value: '1' }]
+      switch(this.sessionData.uType) {
+        // 媒介的叫：本地
+        case 'ADN_MD':
+        case 'ADN_MD_COUNTRY':
+          list.push({ label: '本地', value: '2' })
+          break
+        // 销售的叫：我的
+        case 'ADN_BD':
+        case 'ADN_BD_KA':
+          list.push({ label: '我的', value: '2' })
+          break
+        default:
+      }
+      return list
+    }
+  },
   methods: {
+    handleClickTab() {
+      this.searchPic()
+    },
+
     async init() {
       try {
         await this.getImgApiConfig();
@@ -615,10 +649,14 @@ export default {
       }
       console.log('getImgList ===>', params)
       let url = ''
-      if (this.getImgApiType == 2) {
-        url = '/addsp/photoGalleryCache/getPage'
+      if (this.activeTabKey === '1') {
+        if (this.getImgApiType == 2) {
+          url = '/addsp/photoGalleryCache/getPage'
+        } else {
+          url = this.apiVar.Advertisement + "/GetImgListV2"
+        }
       } else {
-        url = this.apiVar.Advertisement + "/GetImgListV2"
+        url = '/addsp/photoGalleryCache/v2/getPage'
       }
       api.getApi(url, params).then(res => {
         console.log('案例库res', res)
@@ -664,6 +702,8 @@ export default {
       }).catch(err => {
         console.log('err', err)
         this.isSearch = true;
+        this.firstBodyLoading = false
+        this.$message.error('请求异常，请稍后再试')
       })
     },
     // 获取收藏夹图片列表
@@ -1183,6 +1223,31 @@ export default {
 .switch-img-btn{
   button{
     min-width: 150px;
+  }
+}
+
+.tab_wrapper {
+  background: #fff;
+  margin-bottom: 24px;
+  // padding: 0 24px;
+  border: 1px solid #ebebeb;
+  /deep/ .el-tabs__header {
+    margin: 0;
+    border-color: transparent;
+  }
+  /deep/ .el-tabs__nav-wrap::after {
+    background-color: transparent;
+  }
+  /deep/ .el-tabs__item {
+    height: 56px;
+    line-height: 56px;
+  }
+  /deep/ .el-tabs__content {
+    padding: 0;
+  }
+  /deep/ .el-tabs__nav {
+    height: 56px;
+    line-height: 56px;
   }
 }
 </style>

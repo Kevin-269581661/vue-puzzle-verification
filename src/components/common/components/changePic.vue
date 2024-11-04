@@ -197,6 +197,8 @@
         <div class="imgs_box" v-if="!firstTime">
             <div class="imgs_point">
                 <div class="point_item" v-for="(item, index) of imageArr" :key="index">
+                  <!-- 已完成的标记 -->
+                  <div v-if="item.markStatus === 1" class="finish_mark">已标记</div>
                     <div class="detail_top">
                         <el-tooltip class="item" effect="dark"
                                     :content='item.city+"-"+item.rName+"-"+item.resName+"-"+item.mTitle+"-"+item.asLab'
@@ -1340,6 +1342,7 @@
                                 data.timeRange = time;
                             }
                             this.imageArr = dataInfo.dataList;
+                            console.log('imageArr ===', this.imageArr)
                             this.checkImgStatus();
                         } else {
                             sessFun.messageFun('warning', res.data.MSG);
@@ -1451,6 +1454,7 @@
                             data.photoList = data.adPlanPics;
                         }
                         this.imageArr = dataInfo.dataList;
+                        console.log('this.imageArr 222====', this.imageArr);
                         this.checkImgStatus();
 
                         if (dataInfo.totalSize == 0) {
@@ -2931,6 +2935,26 @@
         margin: 0 10px 16px;
         border: 1px solid rgba(233, 233, 233, 1);
         overflow: hidden;
+        position: relative;
+    }
+
+    .finish_mark {
+      width: 82px;
+      height: 22px;
+      background-color: #67C23A;
+      position: absolute;
+      top: 9px;
+      right: -21px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(45deg);
+      font-size: 12px;
+      color: #fff;
+      line-height: 22px;
+      text-align: center;
+      box-shadow: -1px 3px 8px 1px rgba(0, 0, 0, 0.2);
     }
 
     /* 详情头部 */

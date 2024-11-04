@@ -10,10 +10,12 @@
                 </el-radio-group>
                 <p style="font-size: 16px;color: red;display:inline-block;float:right;">提示：上传完图片后请点击保存</p>
             </template>
+
             <el-form :inline="true" size="small">
                 <el-form-item label="城市区域:">
                     <el-cascader placeholder="请选择城市区域" :options="publishSearchInfo.citys" v-model="publishSearchInfo.citySelect" @change="searchImgChange()" filterable></el-cascader>
                 </el-form-item>
+
                 <el-form-item label="资源名称:" class="tag-overflow">
                     <el-select placeholder="请选择资源名称" filterable multiple collapse-tags v-model="publishSearchInfo.allhouse" @change="arr=>publicChangeSelect(arr, 'allhouse', 'allResource')">
                         <el-option label="全部" value="全部"></el-option>
@@ -21,6 +23,7 @@
                                 :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="监播状态:">
                     <el-select placeholder="请选择监播状态" v-model="publishSearchInfo.allPic">
                         <el-option label="全部" value="1"></el-option>
@@ -28,6 +31,7 @@
                         <el-option label="未上传" value="3"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="投放状态:">
                     <el-select placeholder="请选择投放状态" v-model="publishSearchInfo.lState">
                         <el-option label="全部" value="0"></el-option>
@@ -35,18 +39,21 @@
                         <el-option label="终止投放" value="2"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="投放排期:" class="tag-overflow">
                     <el-select placeholder="请选择投放排期" multiple collapse-tags v-model="publishSearchInfo.dateRange" @change="arr=>publicChangeSelect(arr, 'dateRange', 'scheduleList')">
                         <el-option class="date_range_class" label="全部" value="全部"></el-option>
                         <el-option class="date_range_class" v-for="(dateRangeItem, rangeIndex) in scheduleList" :label="dateRangeItem.text" :value="dateRangeItem.value" :key="rangeIndex"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="物料备注:" class="tag-overflow">
                     <el-select placeholder="请选择物料备注" multiple collapse-tags v-model="publishSearchInfo.materialRemark" @change="arr=>publicChangeSelect(arr, 'materialRemark', 'adMaterialRemarkList')">
                         <el-option label="全部" value="全部"></el-option>
                         <el-option v-for="(materialItem, materialIndex) in adMaterialRemarkList" :label="materialItem.text" :value="materialItem.value" :key="materialIndex"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="拍照状态:">
                     <el-select placeholder="请选择拍照状态" v-model="publishSearchInfo.prStatus">
                         <el-option label="全部" value="全部"></el-option>
@@ -54,6 +61,7 @@
                         <el-option label="未拍照" value="0"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="媒体名称:" class="tag-overflow">
                     <el-select placeholder="请选择媒体名称" filterable multiple collapse-tags v-model="publishSearchInfo.mTitles" @change="arr=>publicChangeSelect(arr, 'mTitles', `mTitleList['default']`)">
                         <el-option label="全部" value="全部"></el-option>
@@ -61,6 +69,7 @@
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="媒体位ID:" class="tag-overflow">
                     <el-select placeholder="请选择媒体位ID" filterable multiple collapse-tags v-model="publishSearchInfo.assetTags" @change="arr=>publicChangeSelect(arr, 'assetTags', `assetTagList['default']`)">
                         <el-option label="全部" value="全部"></el-option>
@@ -68,6 +77,7 @@
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="位置朝向:">
                     <el-select placeholder="请选择位置朝向" filterable collapse-tags v-model="publishSearchInfo.siteOrientation">
                         <el-option label="全部" value="全部"></el-option>
@@ -75,6 +85,7 @@
                                 :value="item.itemValue"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="图片数量:">
                     <el-input placeholder="请输入图片数量" type="number" @change="handlePicNumChange" v-model="publishSearchInfo.picNum">
                     </el-input>

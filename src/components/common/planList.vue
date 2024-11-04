@@ -42,7 +42,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择状态：</span>
-            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2">
+            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2" clearable>
               <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
             </el-select>
           </div>
@@ -51,7 +51,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择城市：</span>
-            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2">
+            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2" clearable>
               <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text">
               </el-option>
             </el-select>
@@ -71,7 +71,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>是否预锁：</span>
-            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2">
+            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2" clearable>
               <el-option label="已预锁" value="2"></el-option>
               <el-option label="未预锁" value="1"></el-option>
             </el-select>
@@ -275,7 +275,8 @@
                               placement="top">
                               <i class="el-icon-lock icon"></i>
                             </el-tooltip>
-                            {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                            <span>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'initial' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
+
                           </template>
                           <template v-else>
                             {{ m.mediaTypeName || '--' }}

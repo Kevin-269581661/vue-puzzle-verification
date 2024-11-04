@@ -71,7 +71,7 @@ const initFormData = () => {
 }
 
 export default {
-  name: 'formDialog',
+  name: 'importPublishPicDialog',
   components: { FileUpload },
   emits: ['submitSuccess', 'afterClose'],
   data() {

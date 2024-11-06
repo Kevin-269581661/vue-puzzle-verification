@@ -68,23 +68,47 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="公司品牌：" prop="companyBrand">
-                <el-select
-                  v-model="planForm.companyBrand"
-                  placeholder="请选择公司品牌"
-                  filterable
-                  :disabled="!planForm.companyName"
-                  @change="handleChangeBrand"
-                >
-                  <el-option
-                    v-for="item in companyBrand"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+              <!-- crm 客户公司品牌 -->
+              <template v-if="BDData.customerSrc == 2">
+                <el-form-item label="公司品牌：" prop="companyBrand">
+                  <el-select
+                    v-model="planForm.companyBrandMediaType"
+                    placeholder="请选择公司品牌"
+                    filterable
+                    :disabled="!planForm.companyName"
+                    @change="handleChangeCompanyBrandMediaType"
                   >
-                  </el-option>
-                </el-select>
-              </el-form-item>
+                    <el-option
+                      v-for="item in companyBrandMediaTypeOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+
+              <!-- adn 客户公司品牌 -->
+              <template v-else>
+                <el-form-item label="公司品牌：" prop="companyBrand">
+                  <el-select
+                    v-model="planForm.companyBrand"
+                    placeholder="请选择公司品牌"
+                    filterable
+                    :disabled="!planForm.companyName"
+                    @change="handleChangeBrand"
+                  >
+                    <el-option
+                      v-for="item in companyBrand"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
 
               <el-form-item label="联系人：" prop="ownerBU">
                 <el-select
@@ -2412,6 +2436,7 @@ export default {
       companyName: [], //step1公司名称
       cName: "", // 选中公司名称
       companyBrand: [], //step1公司品牌
+      companyBrandMediaTypeOptions: [],
       cBand: "", // 选中的品牌
       ownerBU: [], //step1联系人
       //step1投放城市
@@ -2513,6 +2538,7 @@ export default {
         ownerSales: "", // 所属销售
         companyName: "",
         companyBrand: "",
+        companyBrandMediaType: '',
         throwCity: [],
         ownerBU: "", // 所属联系人
         planRemark: "",
@@ -3964,6 +3990,7 @@ export default {
       // 重新输入账号时，初始化部分数据
       this.planForm.companyName = "";
       this.planForm.companyBrand = "";
+      this.planForm.companyBrandMediaType = "";
       this.planForm.ownerBU = "";
       this.planForm.throwCity = [];
       this.dynamicTags = [];
@@ -4100,14 +4127,19 @@ export default {
       }
     },
 
+    handleChangeCompanyBrandMediaType() {
+      this.planForm.ownerBU = ''
+      if (this.planForm.companyBrandMediaType) {
+        this.planForm.companyBrand = Number(this.planForm.companyBrandMediaType.split('_')[0])
+      } else {
+        this.planForm.companyBrand = ''
+      }
+      console.log('handleChangeCompanyBrandMediaType =====', this.planForm.companyBrand)
+      this.getCrmCustomerContactSelectList()
+    },
+
     handleChangeBrand() {
       this.planForm.ownerBU = ''
-      // 判断客户数据源
-      if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
-        return
-      }
-      // crm 客户源联系人需要单独从接口拿
-      this.getCrmCustomerContactSelectList()
     },
 
     /**
@@ -4115,7 +4147,7 @@ export default {
      */
     async getCrmCustomerContactSelectList() {
       try {
-        const current = this.companyBrand.find(item => item.value === this.planForm.companyBrand)
+        const current = this.companyBrandMediaTypeOptions.find(item => item.value === this.planForm.companyBrandMediaType)
         const res = await this.$api.adPlan.listContacts({
           saleProcessId: current.saleProcessId
         })
@@ -4137,6 +4169,7 @@ export default {
     // 获取公司品牌
     GetBrandByCid() {
       this.planForm.companyBrand = "";
+      this.planForm.companyBrandMediaType = "";
       this.planForm.ownerBU = "";
       // 判断客户数据源
        // customerSrc 客户数据源：1.adn，2.crm
@@ -4194,16 +4227,15 @@ export default {
     getCrmCustomerBrandSelectList() {
       const item = this.crmCustomerCompanyList.find(it => it.cID === this.planForm.companyName)
       if (!item) return
-      this.companyBrand = (item.itemList || []).map(it => {
+      this.companyBrandMediaTypeOptions = (item.itemList || []).map(it => {
         return {
           ...it,
           // 可能存在不同媒体类型，同一品牌名称
           label: `${it.bTitle}(${it.mediaType})`,
-          value: it.bID
+          value: `${it.bID}_${it.saleProcessId}`
         }
       })
     },
-
 
     // 获取公司及品牌
     getBand() {
@@ -4212,12 +4244,18 @@ export default {
           this.cName = this.companyName[n].label;
         }
       }
-      for (let n = 0; n < this.companyBrand.length; n++) {
-        if (this.companyBrand[n].value === this.planForm.companyBrand) {
-          this.cBand = this.companyBrand[n].label;
+      if (this.BDData.customerSrc == 2) {
+        const current = this.companyBrandMediaTypeOptions.find(item => item.value === this.planForm.companyBrandMediaType)
+        this.cBand = current ? current.label : ''
+      } else {
+        for (let n = 0; n < this.companyBrand.length; n++) {
+          if (this.companyBrand[n].value === this.planForm.companyBrand) {
+            this.cBand = this.companyBrand[n].label;
+          }
         }
       }
     },
+
     // 表单验证
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {

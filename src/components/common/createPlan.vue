@@ -2324,7 +2324,7 @@ export default {
     },
 
     handleChangeCompanyBrandMediaType() {
-      this.planForm.ownerBU = ''
+      this.planForm.adcID = ""
       if (this.planForm.companyBrandMediaType) {
         this.planForm.companyBrand = Number(this.planForm.companyBrandMediaType.split('_')[0])
       } else {
@@ -2343,7 +2343,7 @@ export default {
      */
     async getCrmCustomerContactSelectList() {
       try {
-        const current = this.companyBrand.find(item => item.value === this.planForm.companyBrand)
+        const current = this.companyBrandMediaTypeOptions.find(item => item.value === this.planForm.companyBrandMediaType)
         const res = await this.$api.adPlan.listContacts({
           saleProcessId: current.saleProcessId
         })

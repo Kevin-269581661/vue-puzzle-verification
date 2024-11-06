@@ -20,11 +20,14 @@
           element-loading-spinner="el-icon-loading"
         >
           <div class="plan-title">
-            <h4>
-              <img src="../../assets/images/orderlogo.png" alt="" />{{
-                planDetail.apName
-              }}
+
+            <h4 style="display: flex;">
+              <!-- <img src="../../assets/images/orderlogo.png" alt="" /> -->
+              <span v-if="!planDetail.papID" class="order_type_tag blue">母</span>
+              <span v-else class="order_type_tag green">子</span>
+              <span>{{ planDetail.apName }}</span>
             </h4>
+
             <div class="handleBtn">
               <!--<el-button plain>导出</el-button>-->
               <el-tooltip
@@ -46,6 +49,15 @@
                   >编辑</el-button
                 >
               </template>
+
+              <!-- 母单显示 -->
+              <el-button
+                v-if="!planDetail.papID"
+                type="plain"
+                @click="openInfoDialog"
+              >
+                资料补充
+              </el-button>
             </div>
           </div>
           <div>
@@ -245,27 +257,31 @@
       </div>
       <div class="content_bottom_btn">
         <el-button
+          v-if="planPanel == 'first'"
           plain
           type="default"
           icon="el-icon-download"
           class="searchBtn"
-          v-if="planPanel == 'first'"
-          
-          @click="export2Excel(planDetail.apName)"
           :disabled="isDown"
-          >导出</el-button
+          @click="export2Excel(planDetail.apName)"
         >
+          导出
+        </el-button>
         <el-button
           plain
           class="cancel"
           @click="goBack()"
-          
-          >返回</el-button
         >
+          返回
+        </el-button>
       </div>
     </div>
+
     <!--智能配点-->
-        <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="false" :matchCnt.sync="matchCnt" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
+    <add-point :dialogVisible="addPointDialogVisible" :showMatchResult="false" :matchCnt.sync="matchCnt" :apID="planDetail.apID" :rejectAdPlan="rejectAdPlan" :ADLimit="ADLimit" :customPermission="customPermission" @closeAddPoint="addPointDialogVisible=false" @openAddPoint="addPointDialogVisible=true" @merge2ShopList="BDSaveMatchToPlan"></add-point>
+
+    <!-- 订单详情-资料补充-弹窗 -->
+    <OrderReplenishInfoDialog ref="orderReplenishInfoDialogRef" />
   </div>
 </template>
 
@@ -285,12 +301,14 @@ import {
   Message,
   MessageBox,
 } from "element-ui";
+import OrderReplenishInfoDialog from  './components/orderReplenishInfoDialog.vue'
 
 export default {
   name: "planDetail",
   components: {
     detail,
-    addPoint
+    addPoint,
+    OrderReplenishInfoDialog
   },
   data() {
     return {
@@ -367,6 +385,14 @@ export default {
     },
   },
   methods: {
+    /**
+     * 打开资料补充弹框
+     */
+    openInfoDialog() {
+      const apId = sessionStorage.getItem('plan_apid')
+      this.$refs.orderReplenishInfoDialogRef && this.$refs.orderReplenishInfoDialogRef.open(apId)
+    },
+
     //跳转配点路由
     editPlan(){
       this.$router.push("./editPlan");
@@ -454,9 +480,9 @@ export default {
           "districtName",
           "resAddress",    // 地址
           "mVehicle",  //媒介载体
-          "tradingArea", 
+          "tradingArea",
           "fNum",    //楼栋数量
-          "hNum", 
+          "hNum",
           "hPrice",
           "cType",
           "chDay",
@@ -552,7 +578,7 @@ export default {
               oInput.select();                // 选择对象
               document.execCommand("Copy"); // 执行浏览器复制命令
               oInput.style.display = 'none';
-              sessFun.messageFun("success", '协同选点链接复制成功，马上分享');    
+              sessFun.messageFun("success", '协同选点链接复制成功，马上分享');
           } else {
               sessFun.messageFun("warning", res.data.MSG);
           }
@@ -1052,5 +1078,22 @@ export default {
 }
 #pane-second {
   margin-bottom: 32px;
+}
+
+.order_type_tag {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  font-size: 18px;
+  color: #fff;
+  border-radius: 4px;
+  margin-right: 10px;
+  &.blue {
+    background-color: #1890FF;
+  }
+  &.green {
+    background-color: #67c23a;
+  }
 }
 </style>

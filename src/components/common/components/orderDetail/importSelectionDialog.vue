@@ -15,26 +15,37 @@
           <el-form ref="formRef" class="form" label-width="100px" size="small"  :model="formData" :rules="formRules">
 
             <el-form-item label="选择文件：" prop="lIds">
-              <FileUpload
-                ref="uploaderRef"
-                drag
-                showFileList
-                listType="text-plain"
-                accept=".xls,.xlsx"
-                :showTip="false"
-                :maxSize="10"
-                :uploadApi="$api.adLaunch.uploadMarkSk"
-                :uploadParams="formData"
-                :handleUploadRes="handleUploadRes"
-                @success="uploadSuccess"
-              />
-              <TextAlert v-if="isUploadFinish" showIcon class="alert_box">
-                <div v-if="failList.length">
-                  成功处理 <span class="blue_text">{{ successSize }}</span> 条数据，失败 <span class="red_text">{{ failList.length }}</span> 条，<a href="javaScript:;" class="nav-text" @click="openFailResultDialog">查看失败列表明细</a>
-                </div>
-                <div v-else>成功处理 <span class="blue_text">{{ successSize }}</span> 条数据</div>
-              </TextAlert>
-              <div class="desc">注：上传中请勿关闭弹窗，否则上传将被取消！</div>
+              <el-button
+                type="primary"
+                icon="el-icon-download"
+                style="margin-bottom: 20px"
+                @click="downloadTemplate"
+              >
+                下载导入模板
+              </el-button>
+
+              <div class="item_box">
+                <FileUpload
+                  ref="uploaderRef"
+                  drag
+                  showFileList
+                  listType="text-plain"
+                  accept=".xls,.xlsx"
+                  :showTip="false"
+                  :maxSize="10"
+                  :uploadApi="$api.adLaunch.uploadMarkSk"
+                  :uploadParams="formData"
+                  :handleUploadRes="handleUploadRes"
+                  @success="uploadSuccess"
+                />
+                <TextAlert v-if="isUploadFinish" showIcon class="alert_box">
+                  <div v-if="failList.length">
+                    成功处理 <span class="blue_text">{{ successSize }}</span> 条数据，失败 <span class="red_text">{{ failList.length }}</span> 条，<a href="javaScript:;" class="nav-text" @click="openFailResultDialog">查看失败列表明细</a>
+                  </div>
+                  <div v-else>成功处理 <span class="blue_text">{{ successSize }}</span> 条数据</div>
+                </TextAlert>
+                <div class="desc">注：上传中请勿关闭弹窗，否则上传将被取消！</div>
+              </div>
             </el-form-item>
 
           </el-form>
@@ -55,6 +66,7 @@
 import FileUpload from '@/components/common/components/FileUpload/index.vue'
 import FailListDialog from '@/components/common/components/failListDialog/index.vue'
 import TextAlert from "@/components/common/components/TextAlert/index.vue"
+import { downLoadFileByUrl } from '@/utils/downLoadUtil'
 
 /**
  * 初始化表单（提交）数据
@@ -97,6 +109,14 @@ export default {
   },
 
   methods: {
+    /**
+     * 下载模板
+     */
+     downloadTemplate() {
+      const url = this.apiVar.qadnUrl + '/importTemplate/新增标记.xlsx'
+      downLoadFileByUrl(url)
+    },
+
     handleUploadRes(res) {
       const { SysCode: code, MSG: message, data } = res.data || {}
       if (code !== 200200) throw new Error(message || '上传失败 code != 200')
@@ -132,12 +152,8 @@ export default {
           dataIndex: 'asLab',
         },
         {
-          title: '排期开始时间',
-          dataIndex: 'lStar',
-        },
-        {
-          title: '排期结束时间',
-          dataIndex: 'lEnd',
+          title: '投放排期',
+          dataIndex: 'time',
         },
         {
           title: '错误原因',

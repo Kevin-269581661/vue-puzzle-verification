@@ -418,6 +418,7 @@
           >
             <div class="changepic_box" v-if="planPanel == 'forth'">
               <change-pic
+                ref="upPicRef"
                 :type="1"
                 :order-detail="orderDetail"
                 :scheduleList="scheduleList"
@@ -433,6 +434,7 @@
           >
             <div class="changepic_box" v-if="planPanel == 'fifth'">
               <change-pic
+                ref="dowPicRef"
                 :type="2"
                 :order-detail="orderDetail"
                 :scheduleList="scheduleList"
@@ -444,6 +446,7 @@
           <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
             <div class="changepic_box" v-show="planPanel == 'sixth'">
               <change-pic
+                ref="changePicRef"
                 :type="3"
                 :firstTime="false"
                 :scheduleList="scheduleList"
@@ -1211,7 +1214,7 @@
     <OrderImgAuditDialog ref="orderImgAuditDialogRef" />
 
     <!-- 标记完成-弹窗 -->
-    <MarkFinishDialog ref="markFinishDialogRef" :scheduleOptions="scheduleList" />
+    <MarkFinishDialog ref="markFinishDialogRef" :scheduleOptions="scheduleList" @submitSuccess="refreshList" />
 
   </div>
 </template>
@@ -1532,6 +1535,19 @@ export default {
     }
   },
   methods: {
+    refreshList() {
+      switch(this.planPanel) {
+        case 'forth':
+          console.log('refreshList 111', this.$refs.upPicRef);
+          this.$refs.upPicRef && this.$refs.upPicRef.searchImg()
+          break
+        case 'sixth':
+          console.log('refreshList 222', this.$refs.changePicRef);
+          this.$refs.changePicRef && this.$refs.changePicRef.searchImg()
+          break
+      }
+    },
+
     openImportImgDialog() {
       this.$refs.markFinishDialogRef && this.$refs.markFinishDialogRef.open()
     },

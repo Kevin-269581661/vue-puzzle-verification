@@ -275,7 +275,7 @@
                               placement="top">
                               <i class="el-icon-lock icon"></i>
                             </el-tooltip>
-                            <span>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'initial' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
+                            <span>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'unset' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
 
                           </template>
                           <template v-else>

@@ -10,15 +10,15 @@ export function listMarkSpaces({
   // 方案id
   apId,
   // 媒体位ID
-  assetTag,
+  assetTags,
   // 资源名称
-  resName,
+  resIds,
   // 媒体名称
-  mTitle,
-  // 排期开始时间
-  lStar,
-  // 排期结束时间
-  lEnd,
+  mTitles,
+  // 排期
+  times,
+  city,
+  district,
   // 页码
   pageNum,
   // 每页记录数
@@ -26,11 +26,16 @@ export function listMarkSpaces({
 }) {
   return request.postApi_json("/addsp/api/v1/adLaunch/listMarkSpaces", {
     apId,
-    assetTag,
-    resName,
-    mTitle,
-    lStar,
-    lEnd,
+    // 媒体位ID
+    assetTags,
+    // 资源名称
+    resIds,
+    // 媒体名称
+    mTitles,
+    // 排期
+    times,
+    city,
+    district,
     pageNum,
     pageSize,
   })

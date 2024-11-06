@@ -32,7 +32,7 @@
           <div class="search_item">
             <span class="item_title">资源名称：</span>
             <el-select
-              v-model="searchData.resNames"
+              v-model="searchData.resIds"
               placeholder="请选择"
               filterable
               clearable
@@ -71,38 +71,29 @@
             </el-select>
           </div>
 
-          <!-- <div class="search_item">
+          <div class="search_item">
             <span class="item_title">媒体名称：</span>
-            <el-select
-              v-model="searchData.mTitles"
-              placeholder="请选择"
-              filterable
-              clearable
-              multiple
-              collapse-tags
-              size="small"
-              class="item_content"
-            >
-              <el-option
-                v-for="item in preparedData.mTitleOptions"
-                :key="item.value"
-                :value="item.value"
-                :label="item.label"
-              />
-            </el-select>
-          </div> -->
-
-          <!-- <div class="search_item">
-            <span class="item_title">媒体位ID：</span>
             <el-input
-              v-model="searchData.apName"
+              v-model="searchData.mTitle"
               placeholder="请输入"
               clearable
               maxlength="30"
               size="small"
               class="item_content"
             ></el-input>
-          </div> -->
+          </div>
+
+          <div class="search_item">
+            <span class="item_title">媒体位ID：</span>
+            <el-input
+              v-model="searchData.assetTag"
+              placeholder="请输入"
+              clearable
+              maxlength="30"
+              size="small"
+              class="item_content"
+            ></el-input>
+          </div>
         </div>
 
         <div class="search_control">
@@ -163,6 +154,14 @@
               label="媒体"
               prop="mTitle"
               min-width="120"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+
+            <el-table-column
+              label="媒体位ID"
+              prop="assetTag"
+              min-width="160"
               show-overflow-tooltip
             >
             </el-table-column>
@@ -241,10 +240,12 @@ const initSearchData = () => ({
   apId: null,
   // 媒体位ID
   assetTags: [],
+  assetTag: '',
   // 资源名称
-  resNames: [],
+  resIds: [],
   // 媒体名称
   mTitles: [],
+  mTitle: '',
   times: [],
   // 排期开始时间
   // lStar: null,
@@ -267,6 +268,11 @@ export default {
       type: Array,
       default: () => []
     },
+    // 是否是换画
+    isChangePic: {
+      type: Boolean,
+      default: false
+    }
   },
   emits: ['submitSuccess', 'afterClose'],
   data () {
@@ -295,6 +301,7 @@ export default {
         cityOptions: [],
         resourceOptions: [],
         mTitleOptions: [],
+        assetTagOptions: [],
       },
       // 是否勾选全部媒体
       isCheckAll: false,
@@ -350,7 +357,7 @@ export default {
 
     handleChangeCity() {
       console.log('handleChangeCity ===', this.searchData.citySelectedList)
-      this.searchData.resNames = []
+      this.searchData.resIds = []
       this.getResourceOptions()
     },
 
@@ -394,9 +401,9 @@ export default {
             value: item.cityId,
             children: item.districtDtoList.map(cell => {
               return {
-                  ...cell,
-                  label: cell.districtName,
-                  value: cell.districtId
+                ...cell,
+                label: cell.districtName,
+                value: cell.districtId
               }
             })
           }
@@ -404,6 +411,45 @@ export default {
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getCityOptions error:', err)
+      } finally {
+        // this.loading = false
+      }
+    },
+
+    /**
+     * 获取媒体的数据
+     *
+     * type:  1媒体位id/ 2媒体名称/ 3位置朝向/ 4设备型号
+     */
+    async getPlanDetails(type, mid = '') {
+      try {
+        // this.loading = true
+        let params = {
+          apID: this.searchData.apId
+        }
+        // 是否是换画
+        if (this.isChangePic) {
+          params.replaceRecordId = mid
+        } else {
+          params.mediaTypeId = mid
+        }
+        const res = await this.$request.postApi_json('/addsp/api/v2/adPlan/getPlanDetailItem', {
+          ...params,
+          type
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        switch (type) {
+          case 1:
+            this.preparedData.assetTagOptions = data || []
+            break
+          case 2:
+            this.preparedData.mTitleOptions = data || []
+            break
+        }
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getPlanDetails error:', err)
       } finally {
         // this.loading = false
       }
@@ -458,8 +504,20 @@ export default {
       try {
         this.tableLoading = true
         const { pageNum, pageSize } = this.pagination
+        const { assetTag, mTitle, citySelectedList, scheduleSelectedList } = this.searchCondition
+        const [ city = null, district = null ] = citySelectedList || []
+        console.log('scheduleSelectedList ===', scheduleSelectedList)
+        const times = (scheduleSelectedList || []).map(item => {
+          const [lStar, lEnd] = item.split('-')
+          return { lStar, lEnd }
+        })
         const res = await this.$api.adLaunch.listMarkSpaces({
           ...this.searchCondition,
+          assetTags: assetTag ? [ assetTag ] : null,
+          mTitles: mTitle ? [ mTitle ] : null,
+          times,
+          city,
+          district,
           pageNum,
           pageSize
         })

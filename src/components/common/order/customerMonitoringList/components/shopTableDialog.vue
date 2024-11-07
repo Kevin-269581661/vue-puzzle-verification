@@ -203,7 +203,7 @@ export default {
     },
 
     handleChangeCity(val) {
-      console.log('handleChangeCity val ===', val)
+      // console.log('handleChangeCity val ===', val)
       // 城市下拉改变时，省份不选中
       // if (Array.isArray(val) && val.length == 1) {
       //   this.searchData.citySelectedList = []
@@ -267,8 +267,13 @@ export default {
       try {
         this.tableLoading = true
         const { pageNum, pageSize } = this.pagination
+        const { citySelectedList } = this.searchCondition
+        const [provRegionId = null, cityRegionId = null, districtRegionId = null] = citySelectedList || []
         const res = await this.$api.detecting.pageShops({
           ...this.searchCondition,
+          provRegionId,
+          cityRegionId,
+          districtRegionId,
           pageNum,
           pageSize
         })

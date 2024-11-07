@@ -270,13 +270,12 @@
                                 m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
                                 m.mediaTypeName === '灯箱' ? 'light-box' :
                                 m.mediaTypeName === '道闸' ? 'brake' : ''">
-                          <template v-if="m.RemainDay">
+                          <template v-if="m.RemainDay || m.RemainDay == 0">
                             <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
                               placement="top">
                               <i class="el-icon-lock icon"></i>
                             </el-tooltip>
                             <span>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'unset' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
-
                           </template>
                           <template v-else>
                             {{ m.mediaTypeName || '--' }}
@@ -643,6 +642,8 @@ import recycleBinDialog from "./components/recycleBinDialog.vue";
 import filterFormat from "../../commonFun/filterTableData.js";
 import timeFormat from "../../commonFun/timeFormat.js";
 import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
+import { isEmpty, isNotEmpty } from '@/utils/common'
+
 export default {
   name: "projectList",
   components: {
@@ -1917,14 +1918,14 @@ export default {
       let asrIDarr = [];
       // RemainDay-预锁时间，没有的时候，就说明方案没有被预锁
       obj.canLock = item.details.some(function (item, index) {
-        return !item.RemainDay;
+        return isEmpty(item.RemainDay)
       });
       // RemainDay: 预锁剩余天数 ，authMediaFlag: 地方媒介 && 单元门禁 值为 false，没有这个媒体权限 返回 false
       obj.unLock = item.details.some(function (item, index) {
-        return item.RemainDay && item.authMediaFlag;
+        return isNotEmpty(item.RemainDay) && item.authMediaFlag;
       });
       obj.canApplyLock = item.details.some(function (item, index) {
-        return item.RemainDay && !item.authMediaFlag;
+        return isNotEmpty(item.RemainDay) && !item.authMediaFlag;
       });
       for (let data of item.details) {
         data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--

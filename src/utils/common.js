@@ -186,7 +186,61 @@ function getTagList(val, splitChar = ',') {
   return typeof val === 'string' ? val.split(splitChar) : val
 }
 
+/**
+ * 检测数据的类型
+ *
+ * @param {*} data
+ * @returns 返回类型字符串： string number boolean undefined null object function array date regExp object
+ */
+const checkType = (data) => {
+  let type = Object.prototype.toString.call(data)
+  type = type.slice(8, type.length - 1)
+  return type.toLowerCase()
+}
+/**
+ * 判断是否是空数组，空对象，空字符串
+ *
+ * @param {*} value
+ * @returns true false
+ */
+const isEmpty = (value) => {
+  let isEmptyVal = false
+  const type = checkType(value)
+  switch (type) {
+    case 'array':
+      if (value.length === 0) isEmptyVal = true
+      break
+    case 'object':
+      // if (JSON.stringify(value) === '{}') isEmptyVal = true
+      if (Object.keys(value).length === 0) isEmptyVal = true
+      break
+    case 'string':
+      if (value === '') isEmptyVal = true
+      break
+    case 'undefined':
+      isEmptyVal = true
+      break
+    case 'null':
+      isEmptyVal = true
+      break
+    default:
+  }
+  return isEmptyVal
+}
+/**
+ * 检测是否是不为空数组，空对象，空字符串，null
+ *
+ * @param {*} value
+ * @returns true false
+ */
+const isNotEmpty = (value) => {
+  return !isEmpty(value)
+}
+
 export {
+  checkType,
+  isEmpty,
+  isNotEmpty,
   // 通过 iframe 下载文件
   downloadFileByIframe,
   // 通过链接下载文件

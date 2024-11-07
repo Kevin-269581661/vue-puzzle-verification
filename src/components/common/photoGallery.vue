@@ -189,7 +189,7 @@
             element-loading-spinner="el-icon-loading"
           >
 
-            <div v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="tab_wrapper">
+            <div v-if="['ADN_MD', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="tab_wrapper">
               <el-tabs v-model="activeTabKey" @tab-click="handleClickTab">
                 <el-tab-pane v-for="item in tabList" :key="item.value" :label="item.label" :name="item.value" ></el-tab-pane>
               </el-tabs>
@@ -437,7 +437,6 @@ export default {
       switch(this.sessionData.uType) {
         // 媒介的叫：本地
         case 'ADN_MD':
-        case 'ADN_MD_COUNTRY':
           list.push({ label: '本地', value: '2' })
           break
         // 销售的叫：我的

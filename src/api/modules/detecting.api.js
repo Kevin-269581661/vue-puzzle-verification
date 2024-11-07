@@ -199,3 +199,40 @@ export function setPPTStatus({
     codeList
   })
 }
+
+/**
+ * 查询门店列表
+ */
+export function pageShops({
+  apId,
+  itemId,
+  shopName,
+  pageSize,
+  pageNum
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/pageShops", {
+    apId,
+    itemId,
+    shopName,
+    pageSize,
+    pageNum
+  })
+}
+
+/**
+ * 删除门店
+ */
+export function deleteShops({
+  shopIds
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/deleteShops", {
+    shopIds
+  })
+}
+
+/**
+ * 导入门店列表（导入）
+ */
+export function importShops(params) {
+  return request.postUpload_file("/addsp/api/v1/customer/detecting/importShops", params)
+}

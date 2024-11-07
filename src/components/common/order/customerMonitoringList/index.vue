@@ -148,6 +148,9 @@
     <!-- 分享设置-弹窗 -->
     <ShareConfigDialog ref="shareConfigDialogRef" @submitSuccess="getTableList" />
 
+    <!-- 门店信息管理-弹窗 -->
+    <ShopTableDialog ref="shopTableDialogRef" />
+
   </div>
 </template>
 
@@ -160,6 +163,7 @@ import TableSearch from "@/components/common/components/TableSearch/index.vue"
 import MonitoringFormDialog from './components/monitoringFormDialog.vue'
 import OrderTableDialog from './components/orderTableDialog.vue'
 import ShareConfigDialog from './components/shareConfigDialog.vue'
+import ShopTableDialog from './components/shopTableDialog.vue'
 import PointState from '@/components/common/components/pointState.vue'
 import { getLabel, getTagList } from '@/utils/common'
 
@@ -271,7 +275,8 @@ export default {
     PointState,
     MonitoringFormDialog,
     OrderTableDialog,
-    ShareConfigDialog
+    ShareConfigDialog,
+    ShopTableDialog
   },
   data () {
     return {
@@ -390,6 +395,12 @@ export default {
           text: '分享设置',
           onClick: () => {
             this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open(row.id)
+          }
+        },
+        {
+          text: '门店信息',
+          onClick: () => {
+            this.$refs.shopTableDialogRef && this.$refs.shopTableDialogRef.open(row.id)
           }
         },
         // {

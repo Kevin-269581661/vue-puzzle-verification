@@ -41,7 +41,7 @@
         </el-form>
       </div>
       <div class="custom_dialog_footer">
-        <el-button size="small" @click="close">取消</el-button>
+        <el-button size="small" @click="close">关 闭</el-button>
         <!-- <el-button type="primary" size="small" @click="onSubmit">确定</el-button> -->
       </div>
     </div>

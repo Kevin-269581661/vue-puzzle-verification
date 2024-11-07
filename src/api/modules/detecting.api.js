@@ -207,6 +207,9 @@ export function pageShops({
   apId,
   itemId,
   shopName,
+  provRegionId,
+  cityRegionId,
+  districtRegionId,
   pageSize,
   pageNum
 }) {
@@ -214,6 +217,9 @@ export function pageShops({
     apId,
     itemId,
     shopName,
+    provRegionId,
+    cityRegionId,
+    districtRegionId,
     pageSize,
     pageNum
   })
@@ -223,10 +229,12 @@ export function pageShops({
  * 删除门店
  */
 export function deleteShops({
+  itemId,
   shopIds
 }) {
   return request.postApi_json("/addsp/api/v1/customer/detecting/deleteShops", {
-    shopIds
+    shopIds,
+    itemId
   })
 }
 

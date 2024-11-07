@@ -14,7 +14,7 @@
       <div v-loading="loading" class="custom_dialog_body">
         <!-- 搜索条件 -->
         <div class="search_bar">
-          <!-- <div class="search_item">
+          <div class="search_item">
             <span class="item_title">区域：</span>
             <el-cascader
               v-model="searchData.citySelectedList"
@@ -22,12 +22,14 @@
               size="small"
               filterable
               clearable
+              change-on-select
               class="item_content"
               :options="preparedData.cityOptions"
+              :show-all-levels="false"
               @change="handleChangeCity"
             >
             </el-cascader>
-          </div> -->
+          </div>
 
           <div class="search_item">
             <span class="item_title">门店名称：</span>
@@ -45,7 +47,15 @@
         <div class="search_control">
           <div class="part_left">
             <el-button type="primary" size="small" @click="openImportShopDialog">导入新增</el-button>
-            <el-button type="primary" size="small" @click="exportShopData">导出</el-button>
+            <DownloadFileButton
+              text="导出"
+              type="primary"
+              requestUrl="/addsp/api/v1/customer/detecting/exportShops"
+              :requestParams="{
+                itemId: searchData.itemId,
+              }"
+              :isJoinTimeToFileName="false"
+            />
             <el-button type="danger" size="small" @click="handleDeleteBatch">批量删除</el-button>
           </div>
           <el-button-group style="margin-right: 8px">
@@ -66,7 +76,7 @@
             ref="tableRef"
             v-loading="tableLoading"
             height="500px"
-            row-key="lId"
+            row-key="id"
             style="width: 100%"
             element-loading-text="玩命加载中.."
             element-loading-spinner="el-icon-loading"
@@ -84,19 +94,19 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="省" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column label="门店名称" prop="shopName" min-width="120" show-overflow-tooltip fixed="left"></el-table-column>
 
-            <el-table-column label="市" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column label="省" prop="provRegionName" min-width="100" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="区" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column label="市" prop="cityRegionName" min-width="100" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="门店名称" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column label="区" prop="districtRegionName" min-width="100" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="详细地址" prop="resName" min-width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column label="详细地址" prop="address" min-width="200" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="经度" prop="districtName" min-width="100" show-overflow-tooltip></el-table-column>
+            <el-table-column label="经度" prop="lng" min-width="100" show-overflow-tooltip></el-table-column>
 
-            <el-table-column label="纬度" prop="districtName" min-width="100" show-overflow-tooltip></el-table-column>
+            <el-table-column label="纬度" prop="lat" min-width="100" show-overflow-tooltip></el-table-column>
 
             <el-table-column label="操作" width="100" fixed="right">
               <template slot-scope="scope">
@@ -127,30 +137,32 @@
     </el-dialog>
 
     <!-- 订单详情-导入选中/导入取消选中-弹框组件 -->
-    <ImportShopDialog ref="importShopDialogRef"  />
+    <ImportShopDialog ref="importShopDialogRef" @submitSuccess="getTableList" />
   </div>
 
 </template>
 
 <script>
 import { Message } from "element-ui";
-// import PointState from '@/components/common/components/pointState.vue'
-// import TextAlert from "@/components/common/components/TextAlert/index.vue"
-import { getLabel, getTagList } from '@/utils/common'
 import ImportShopDialog from './importShopDialog.vue'
+import DownloadFileButton from "@/components/common/components/downloadFileButton.vue"
+import areaData from "@/commonFun/areaPackage_new.js"
 
 const initSearchData = () => ({
   itemId: null,
+  provRegionId: null,
+  cityRegionId: null,
+  districtRegionId: null,
   shopIds: [],
+  citySelectedList: [],
   shopName: '',
 })
 
 export default {
   name: 'shopTableDialog',
   components: {
-    // PointState,
-    // TextAlert,
-    ImportShopDialog
+    ImportShopDialog,
+    DownloadFileButton
   },
   props: {},
   emits: ['submitSuccess', 'afterClose'],
@@ -176,7 +188,9 @@ export default {
         // 每页条数选项
         sizes: [10, 20, 50],
       },
-      preparedData: {},
+      preparedData: {
+        cityOptions: []
+      },
       // 是否勾选全部媒体
       isCheckAll: false,
       isCheckAllCurrentPage: false,
@@ -184,9 +198,59 @@ export default {
   },
   mounted () {},
   methods: {
-    handleDelete() {},
+    getCityOptions() {
+      this.preparedData.cityOptions = Object.freeze(areaData.cityArea())
+    },
 
-    handleDeleteBatch() {},
+    handleChangeCity(val) {
+      console.log('handleChangeCity val ===', val)
+      // 城市下拉改变时，省份不选中
+      // if (Array.isArray(val) && val.length == 1) {
+      //   this.searchData.citySelectedList = []
+      // }
+    },
+
+    /**
+     * 单个删除
+     */
+    async handleDelete(row) {
+      await this.$confirm(`确定删除${row.provRegionName}-${row.cityRegionName}-${row.districtRegionName}-${row.address}的【${row.shopName}】门店数据吗？`, "提示", { type: "warning" })
+      this.deleteShops([ row.id ])
+    },
+
+    /**
+     * 批量删除
+     */
+    async handleDeleteBatch() {
+      if (!this.selectedIds.length) return Message.warning('请先勾选要删除的门店')
+      try {
+        await this.$confirm(`确定删除选中的${this.selectedIds.length}条门店数据吗？`, "提示", { type: "warning" })
+        await this.deleteShops(this.selectedIds, true)
+      } catch (err) {
+        console.error('handleDeleteBatch error:', err)
+      }
+    },
+
+    async deleteShops(shopIds = [], isBatch = false) {
+      if (!shopIds.length) return
+      try {
+        this.tableLoading = true
+        const res = await this.$api.detecting.deleteShops({
+          itemId: this.searchData.itemId,
+          shopIds,
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return Message.error(message || '操作失败')
+        Message.success('删除成功')
+        if (isBatch) this.selectedIds = []
+        this.getTableList()
+      } catch (err) {
+        Message.error(err || '操作失败')
+        console.error('deleteShops error:', err)
+      } finally {
+        this.tableLoading = false
+      }
+    },
 
     /**
      * 导入
@@ -194,10 +258,6 @@ export default {
     openImportShopDialog () {
       const { itemId } = this.searchData
       this.$refs.importShopDialogRef && this.$refs.importShopDialogRef.open(itemId)
-    },
-
-    exportShopData() {
-
     },
 
     /**
@@ -219,7 +279,7 @@ export default {
           return {
             ...item,
             // 如果已选列表中有，则默认勾选
-            selected: this.selectedIds.includes(item.lId),
+            selected: this.selectedIds.includes(item.id),
           }
         })
         this.pagination.total = total
@@ -287,13 +347,13 @@ export default {
     /**
      * 勾选
      */
-    handleSelect(isSelect, { lId }) {
+    handleSelect(isSelect, { id }) {
       this.testCheckAll()
-      const hasOne = this.selectedIds.includes(lId)
+      const hasOne = this.selectedIds.includes(id)
       if (hasOne && !isSelect) {
-        this.selectedIds.splice(this.selectedIds.indexOf(lId), 1)
+        this.selectedIds.splice(this.selectedIds.indexOf(id), 1)
       } else if (!hasOne && isSelect) {
-        this.selectedIds.push(lId)
+        this.selectedIds.push(id)
       }
     },
 
@@ -301,17 +361,17 @@ export default {
      * 勾选全页
      */
     handleSelectAll(isSelect) {
-      let lIds = []
+      let ids = []
       this.tableList.forEach(item => {
         item.selected = isSelect
-        lIds.push(item.lId)
+        ids.push(item.id)
       })
-      if (!lIds.length) return
+      if (!ids.length) return
       // 取消选中
       if (!isSelect) {
-        this.selectedIds = this.selectedIds.filter(item => !lIds.includes(item))
+        this.selectedIds = this.selectedIds.filter(item => !ids.includes(item))
       } else {
-        this.selectedIds = Array.from(new Set([...lIds, ...this.selectedIds]))
+        this.selectedIds = Array.from(new Set([...ids, ...this.selectedIds]))
       }
     },
 
@@ -337,6 +397,7 @@ export default {
       this.visible = true
       this.searchData.itemId = itemId
       this.handleSearch()
+      this.getCityOptions()
     },
 
     /**

@@ -14,7 +14,7 @@
         <div class="custom_dialog_body">
           <el-form ref="formRef" class="form" label-width="100px" size="small"  :model="formData" :rules="formRules">
 
-            <el-form-item label="选择文件：" prop="lIds">
+            <el-form-item label="选择文件：" >
               <el-button
                 type="primary"
                 icon="el-icon-download"
@@ -51,7 +51,7 @@
           </el-form>
         </div>
         <div class="custom_dialog_footer">
-          <el-button size="small" @click="close">取 消</el-button>
+          <el-button size="small" @click="close">关 闭</el-button>
         </div>
       </div>
     </el-dialog>
@@ -101,7 +101,7 @@ export default {
      * 下载模板
      */
      downloadTemplate() {
-      const url = this.apiVar.qadnUrl + '/importTemplate/新增标记.xlsx'
+      const url = this.apiVar.qadnUrl + '/importTemplate/导入新增门店模板.xlsx'
       downLoadFileByUrl(url)
     },
 
@@ -110,7 +110,6 @@ export default {
       if (code !== 200200) throw new Error(message || '上传失败 code != 200')
       this.failList = data.failList || []
       this.successSize = data.successCnt || 0
-      this.formData.lIds = data.lIds || []
       return ''
     },
 
@@ -121,6 +120,7 @@ export default {
         this.openFailResultDialog()
         return
       }
+      this.$emit('submitSuccess')
     },
 
     /**

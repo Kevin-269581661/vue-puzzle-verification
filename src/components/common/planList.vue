@@ -275,7 +275,8 @@
                               placement="top">
                               <i class="el-icon-lock icon"></i>
                             </el-tooltip>
-                            <span>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'unset' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
+                            <span v-if="m.RemainDay < 0">{{ m.mediaTypeName }}（<span style="color: red">超{{ Math.abs(m.RemainDay) }}天</span>）</span>
+                            <span v-else>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'unset' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
                           </template>
                           <template v-else>
                             {{ m.mediaTypeName || '--' }}

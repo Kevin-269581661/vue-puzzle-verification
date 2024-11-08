@@ -42,7 +42,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择状态：</span>
-            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2">
+            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2" clearable>
               <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
             </el-select>
           </div>
@@ -51,7 +51,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择城市：</span>
-            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2">
+            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2" clearable>
               <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text">
               </el-option>
             </el-select>
@@ -71,7 +71,7 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>是否预锁：</span>
-            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2">
+            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2" clearable>
               <el-option label="已预锁" value="2"></el-option>
               <el-option label="未预锁" value="1"></el-option>
             </el-select>
@@ -270,12 +270,13 @@
                                 m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
                                 m.mediaTypeName === '灯箱' ? 'light-box' :
                                 m.mediaTypeName === '道闸' ? 'brake' : ''">
-                          <template v-if="m.RemainDay">
+                          <template v-if="m.RemainDay || m.RemainDay == 0">
                             <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
                               placement="top">
                               <i class="el-icon-lock icon"></i>
                             </el-tooltip>
-                            {{ m.mediaTypeName }}{{ `（剩${m.RemainDay}天）` }}
+                            <span v-if="m.RemainDay < 0">{{ m.mediaTypeName }}（<span style="color: red">超{{ Math.abs(m.RemainDay) }}天</span>）</span>
+                            <span v-else>{{ m.mediaTypeName }}（<span :style="{ color: m.RemainDay > 3 ? 'unset' : 'red' }">剩{{ m.RemainDay }}天</span>）</span>
                           </template>
                           <template v-else>
                             {{ m.mediaTypeName || '--' }}
@@ -642,6 +643,8 @@ import recycleBinDialog from "./components/recycleBinDialog.vue";
 import filterFormat from "../../commonFun/filterTableData.js";
 import timeFormat from "../../commonFun/timeFormat.js";
 import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
+import { isEmpty, isNotEmpty } from '@/utils/common'
+
 export default {
   name: "projectList",
   components: {
@@ -1916,14 +1919,14 @@ export default {
       let asrIDarr = [];
       // RemainDay-预锁时间，没有的时候，就说明方案没有被预锁
       obj.canLock = item.details.some(function (item, index) {
-        return !item.RemainDay;
+        return isEmpty(item.RemainDay)
       });
       // RemainDay: 预锁剩余天数 ，authMediaFlag: 地方媒介 && 单元门禁 值为 false，没有这个媒体权限 返回 false
       obj.unLock = item.details.some(function (item, index) {
-        return item.RemainDay && item.authMediaFlag;
+        return isNotEmpty(item.RemainDay) && item.authMediaFlag;
       });
       obj.canApplyLock = item.details.some(function (item, index) {
-        return item.RemainDay && !item.authMediaFlag;
+        return isNotEmpty(item.RemainDay) && !item.authMediaFlag;
       });
       for (let data of item.details) {
         data.apState = item.apState; //新增字段,判断是否是意向方案,点位面数显示为--

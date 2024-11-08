@@ -1,7 +1,8 @@
 <!-- 客户监播项目列表-订单管理-导出PPT管理-弹框组件 -->
 <template>
   <el-dialog
-    width="700px"
+    top="8vh"
+    width="1000px"
     append-to-body
     show-close
     title="导出PPT管理"
@@ -26,6 +27,7 @@
               v-model="formData.codeList"
               filterable
               filter-placeholder="请输入"
+              class="city_transfer"
               :data="cityList"
               :filter-method="filterMethod"
               :props="{
@@ -34,6 +36,9 @@
               }"
               :titles="['待选列表', '已选列表']"
             >
+            <span slot-scope="{ option }">
+              <span :style="{ color: option.isSystemOrder ? 'blue' : 'red' }">{{ option.city }}</span>
+            </span>
             </el-transfer>
           </el-form-item>
 
@@ -189,6 +194,27 @@ export default {
 
 .custom_dialog_footer{
   padding: 10px 20px 20px;
+}
+
+.city_transfer {
+  height: calc(80vh - 200px);
+
+  /deep/ .el-button {
+    min-width: unset;
+  }
+
+  /deep/ .el-transfer-panel {
+    width: calc((100% - 150px) / 2);
+    height: 100%;
+  }
+
+  /deep/ .el-transfer-panel__list {
+    height: calc(100% - 47px);
+  }
+
+  /deep/ .el-transfer-panel__body {
+    height: calc(100% - 55px);
+  }
 }
 
 </style>

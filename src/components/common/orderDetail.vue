@@ -99,6 +99,10 @@
         </div>
       </div>
       <div class="mediaList_wrap margin_16_64">
+        <div class="btn_group">
+          <el-button v-if="['forth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">标记完成</el-button>
+        </div>
+
         <el-tabs v-model="planPanel" @tab-click="handleClick()">
           <el-tab-pane label="选点排期" name="first">
             <schedule-alter :detailData="orderDetail" />
@@ -235,6 +239,7 @@
                       </el-form>
                     </template>
                   </el-table-column>
+
                   <template v-for="item in currentColumns">
                     <template v-if="item.label === '资源名称'">
                         <el-table-column
@@ -349,6 +354,7 @@
                         </el-table-column>
                     </template>
                   </template>
+
                   <div slot="empty">
                     <no-search-result></no-search-result>
                   </div>
@@ -412,6 +418,7 @@
           >
             <div class="changepic_box" v-if="planPanel == 'forth'">
               <change-pic
+                ref="upPicRef"
                 :type="1"
                 :order-detail="orderDetail"
                 :scheduleList="scheduleList"
@@ -427,6 +434,7 @@
           >
             <div class="changepic_box" v-if="planPanel == 'fifth'">
               <change-pic
+                ref="dowPicRef"
                 :type="2"
                 :order-detail="orderDetail"
                 :scheduleList="scheduleList"
@@ -434,9 +442,11 @@
               ></change-pic>
             </div>
           </el-tab-pane>
+
           <el-tab-pane label="换画报告" name="sixth" v-if="showPain">
             <div class="changepic_box" v-show="planPanel == 'sixth'">
               <change-pic
+                ref="changePicRef"
                 :type="3"
                 :firstTime="false"
                 :scheduleList="scheduleList"
@@ -445,6 +455,7 @@
               ></change-pic>
             </div>
           </el-tab-pane>
+
           <el-tab-pane label="音频信息" name="seventh" v-if="sessionData.permissions.includes('voiceAdvertisingBroadcastShow')">
               <audioList
                 :audioInfoData="audioInfoList"
@@ -1202,6 +1213,9 @@
     <!-- 订单图片审核-弹框组件 -->
     <OrderImgAuditDialog ref="orderImgAuditDialogRef" />
 
+    <!-- 标记完成-弹窗 -->
+    <MarkFinishDialog ref="markFinishDialogRef" :scheduleOptions="scheduleList" @submitSuccess="refreshList" />
+
   </div>
 </template>
 
@@ -1230,6 +1244,7 @@ import ScheduleAlter from '@/components/common/components/Alter/ScheduleAlter'
 import TableSetting from "./components/TableSetting";
 import audioList from "./components/audioList.vue";
 import OrderImgAuditDialog from './components/orderImgAuditDialog.vue'
+import MarkFinishDialog from './components/orderDetail/markFinishDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1246,7 +1261,8 @@ export default {
     ScheduleAlter,
     TableSetting,
     audioList,
-    OrderImgAuditDialog
+    OrderImgAuditDialog,
+    MarkFinishDialog
   },
   data () {
     return {
@@ -1519,6 +1535,23 @@ export default {
     }
   },
   methods: {
+    refreshList() {
+      switch(this.planPanel) {
+        case 'forth':
+          console.log('refreshList 111', this.$refs.upPicRef);
+          this.$refs.upPicRef && this.$refs.upPicRef.searchImg()
+          break
+        case 'sixth':
+          console.log('refreshList 222', this.$refs.changePicRef);
+          this.$refs.changePicRef && this.$refs.changePicRef.searchImg()
+          break
+      }
+    },
+
+    openImportImgDialog() {
+      this.$refs.markFinishDialogRef && this.$refs.markFinishDialogRef.open()
+    },
+
     // 列展示
     filterColumn(columns) {
         this.currentColumns = columns
@@ -2839,6 +2872,17 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../assets/component.scss';
+.mediaList_wrap {
+  position: relative;
+}
+
+.btn_group {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  z-index: 10;
+}
+
 .ellipsis-td {
   width: 132px;
   overflow: hidden;

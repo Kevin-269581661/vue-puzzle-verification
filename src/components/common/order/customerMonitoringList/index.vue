@@ -151,6 +151,9 @@
     <!-- 门店信息管理-弹窗 -->
     <ShopTableDialog ref="shopTableDialogRef" />
 
+    <!-- 客户监播-数据调整-弹框组件 -->
+    <DataAdjustDialog ref="dataAdjustDialogRef" />
+
   </div>
 </template>
 
@@ -164,6 +167,7 @@ import MonitoringFormDialog from './components/monitoringFormDialog.vue'
 import OrderTableDialog from './components/orderTableDialog.vue'
 import ShareConfigDialog from './components/shareConfigDialog.vue'
 import ShopTableDialog from './components/shopTableDialog.vue'
+import DataAdjustDialog from './components/dataAdjustDialog.vue'
 import PointState from '@/components/common/components/pointState.vue'
 import { getLabel, getTagList } from '@/utils/common'
 
@@ -276,7 +280,8 @@ export default {
     MonitoringFormDialog,
     OrderTableDialog,
     ShareConfigDialog,
-    ShopTableDialog
+    ShopTableDialog,
+    DataAdjustDialog
   },
   data () {
     return {
@@ -401,6 +406,12 @@ export default {
           text: '门店信息',
           onClick: () => {
             this.$refs.shopTableDialogRef && this.$refs.shopTableDialogRef.open(row.id)
+          }
+        },
+        {
+          text: '数据调整',
+          onClick: () => {
+            this.$refs.dataAdjustDialogRef && this.$refs.dataAdjustDialogRef.open(row.id)
           }
         },
         // {

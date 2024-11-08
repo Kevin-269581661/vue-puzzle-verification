@@ -3,7 +3,7 @@
   <div>
     <el-dialog
       width="90%"
-      top="10vh"
+      top="8vh"
       append-to-body
       show-close
       title="门店信息管理"

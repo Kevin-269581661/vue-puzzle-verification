@@ -71,12 +71,9 @@ export default {
         return
       }
       try {
-        // const { token, uID: uid } = sessFun.getSess()
         this.loading = true
-        const res = await this.$request.postApi_json('/addsp/api/xxxxx', {
-          ...this.formData,
-          // uid,
-          // token,
+        const res = await this.$api.detecting.updateUserMulti({
+          ...this.formData
         })
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '操作失败')
@@ -86,6 +83,24 @@ export default {
       } catch (err) {
         this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    /**
+     * 获取详情
+     */
+     async getDetail() {
+      try {
+        this.loading = true
+        const res = await this.$api.detecting.getUserMulti({ id: this.formData.id })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.formData.userMulti = data || 0
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getDetail error:', err)
       } finally {
         this.loading = false
       }
@@ -104,16 +119,12 @@ export default {
     /**
      * 打开弹框
      */
-    open(row) {
+    open(id) {
+      if (!id) return
       if (this.visible) return
       this.visible = true
-      if (row) {
-        this.isEdit = true
-        this.formData = {
-          ...this.formData,
-          ...row
-        }
-      }
+      this.formData.id = id
+      this.getDetail()
     },
 
     /**

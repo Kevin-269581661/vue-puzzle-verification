@@ -132,20 +132,40 @@ export default {
       const list = this.failList
       const columns = [
         {
-          title: '媒体位ID',
-          dataIndex: 'assetTag',
+          title: '省',
+          dataIndex: 'provRegionName',
         },
         {
-          title: '投放面',
-          dataIndex: 'asLab',
+          title: '市',
+          dataIndex: 'cityRegionName',
         },
         {
-          title: '投放排期',
-          dataIndex: 'time',
+          title: '区',
+          dataIndex: 'districtRegionName',
+        },
+        {
+          title: '门店名称',
+          dataIndex: 'shopName',
+        },
+        {
+          title: '详细地址',
+          dataIndex: 'address',
+        },
+        {
+          title: '经度',
+          dataIndex: 'lng',
+        },
+        {
+          title: '纬度',
+          dataIndex: 'lat',
+        },
+        {
+          title: '出错的行号',
+          dataIndex: 'rowNum',
         },
         {
           title: '错误原因',
-          dataIndex: 'reason',
+          dataIndex: 'failReason',
         }
       ]
       this.$refs.failListDialogRef && this.$refs.failListDialogRef.open({ list, columns, successSize })

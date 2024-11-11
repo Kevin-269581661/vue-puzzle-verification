@@ -153,7 +153,7 @@ export default {
         case 4:
           res = await this.$api.photoPackage.matchSpace({
             ...this.$route.query,
-            zipUrl: decodeURIComponent(this.$route.query.zipUrl),
+            zipUrl: decodeURI(decodeURIComponent(this.$route.query.zipUrl)),
           })
           break
         default:

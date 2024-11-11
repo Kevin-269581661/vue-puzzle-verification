@@ -151,6 +151,10 @@ export default {
         return {}
       }
     },
+    // 自定义 oss 上传的文件名，参数为原始文件名，返回一个字符串，为自定义文件名
+    handleOssFileName: {
+      type: Function
+    },
     // 上传方法（传了这个，uploadUrl 则不需要传！ ）
     uploadApi: {
       type: Function
@@ -287,11 +291,6 @@ export default {
     async handleRequest(params) {
       // console.log('handleRequest params ===', params)
       try {
-        const formData = new FormData()
-        formData.append(this.name, params.file)
-        Object.keys(this.uploadParams).forEach(key => {
-          formData.append(key, this.uploadParams[key])
-        })
         this.loading = true
         this.uploadProgress = 0
         let res = null
@@ -299,12 +298,18 @@ export default {
           this.cosUploader = CosUploader.create(this.ossOptions)
           res = await this.cosUploader.uploadFile({
             file: params.file,
+            fileName: typeof this.handleOssFileName === 'function' ? this.handleOssFileName(params.file.name) : '',
             onProgress: (percent) => {
               this.uploadProgress = percent * 100
               // params.onProgress(percent)
             }
           })
         } else if (this.uploadApi && typeof this.uploadApi === 'function') {
+          const formData = new FormData()
+          formData.append(this.name, params.file)
+          Object.keys(this.uploadParams).forEach(key => {
+            formData.append(key, this.uploadParams[key])
+          })
           res = await this.uploadApi(formData)
         } else {
           throw new Error('上传接口未配置')
@@ -365,7 +370,7 @@ export default {
           if (res.statusCode !== 200) {
             throw new Error('文件上传失败')
           }
-          url = `https://${res.Location}`
+          url = decodeURI(`https://${res.Location}`)
         } else {
           if (res.code !== 200) {
             throw new Error('文件上传失败: ' + res.message)

@@ -51,9 +51,7 @@
               text="导出"
               type="primary"
               requestUrl="/addsp/api/v1/customer/detecting/exportShops"
-              :requestParams="{
-                itemId: searchData.itemId,
-              }"
+              :requestParams="searchCondition"
               :isJoinTimeToFileName="false"
             />
             <el-button type="danger" size="small" @click="handleDeleteBatch">批量删除</el-button>
@@ -267,13 +265,8 @@ export default {
       try {
         this.tableLoading = true
         const { pageNum, pageSize } = this.pagination
-        const { citySelectedList } = this.searchCondition
-        const [provRegionId = null, cityRegionId = null, districtRegionId = null] = citySelectedList || []
         const res = await this.$api.detecting.pageShops({
           ...this.searchCondition,
-          provRegionId,
-          cityRegionId,
-          districtRegionId,
           pageNum,
           pageSize
         })
@@ -302,7 +295,7 @@ export default {
      */
     async handleSearch () {
       this.pagination.pageNum = 1
-      const searchCondition = {}
+      let searchCondition = {}
       Object.keys(this.searchData).forEach((key) => {
         let val = this.searchData[key]
         if (val === '' || val === void 0) {
@@ -310,6 +303,15 @@ export default {
         }
         searchCondition[key] = val
       })
+      // 特殊参数处理
+      const { citySelectedList } = searchCondition
+      const [provRegionId = null, cityRegionId = null, districtRegionId = null] = citySelectedList || []
+      searchCondition = {
+        ...searchCondition,
+        provRegionId,
+        cityRegionId,
+        districtRegionId,
+      }
       this.searchCondition = searchCondition
       await this.getTableList()
     },

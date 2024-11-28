@@ -89,7 +89,7 @@ export default {
       if (this.downloadLoading) return
       if (this.showConfirm) {
         try {
-          const confirmRes =  await this.$confirm(this.confirmContent, '温馨提示')
+          const confirmRes =  await this.$confirm(this.confirmContent, '提示')
           if (confirmRes !== 'confirm') return
         } catch (err) {
           return

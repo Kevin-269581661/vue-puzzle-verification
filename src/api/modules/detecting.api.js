@@ -199,3 +199,75 @@ export function setPPTStatus({
     codeList
   })
 }
+
+/**
+ * 查询门店列表
+ */
+export function pageShops({
+  apId,
+  itemId,
+  shopName,
+  provRegionId,
+  cityRegionId,
+  districtRegionId,
+  pageSize,
+  pageNum
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/pageShops", {
+    apId,
+    itemId,
+    shopName,
+    provRegionId,
+    cityRegionId,
+    districtRegionId,
+    pageSize,
+    pageNum
+  })
+}
+
+/**
+ * 删除门店
+ */
+export function deleteShops({
+  itemId,
+  shopIds
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/deleteShops", {
+    shopIds,
+    itemId
+  })
+}
+
+/**
+ * 导入门店列表（导入）
+ */
+export function importShops(params) {
+  return request.postUpload_file("/addsp/api/v1/customer/detecting/importShops", params)
+}
+
+/**
+ * 保存客户监播项目的数据调整的小区住户倍数
+ */
+export function updateUserMulti({
+  // 项目id, 编辑操作必填
+  id,
+  // 数据调整中小区住户放大倍数
+  userMulti
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/updateUserMulti", {
+    id,
+    userMulti
+  })
+}
+
+/**
+ * 查询客户监播项目的数据调整的小区住户倍数
+ */
+export function getUserMulti({
+  // 客户监播项目id
+  id
+}) {
+  return request.getApi("/addsp/api/v1/customer/detecting/getUserMulti", {
+    id
+  })
+}

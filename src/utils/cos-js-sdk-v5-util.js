@@ -4,6 +4,7 @@ export default class CosUploader {
   // 获取oss基本信息接口地址
   uploadUrl = '/addsp/resource/web/getTemporaryKey'
 
+  // 获取oss基本信息接口参数
   params = {}
 
   // 设置onProgress回调此时，默认1000ms一次
@@ -99,14 +100,21 @@ export default class CosUploader {
     }
   }
 
-  async uploadFile({ file, onProgress }) {
+  async uploadFile({ file, onProgress, fileName = '' }) {
     // if (!this.cos) {
     //   await this.getCos()
     // }
     await this.getCos()
-    // 路径去掉中文（app端无法访问）
-    const filePath = this.prefix + encodeURIComponent(`${new Date().getTime()}_${file.name}`)
-    // 上传图片  其中Bucket 和 Region 接口返回，Bucke和Region是由公司负责人使用公司账户，登入腾讯云，获取回来的。
+    let filePath = ''
+    // 自定义文件名（需要保证不能重复！此处不做重复文件名处理！）
+    if (fileName) {
+      filePath = this.prefix + fileName
+    } else {
+      // 默认处理：路径去掉中文（app端无法访问）
+      filePath = this.prefix + encodeURIComponent(`${file.name}_${new Date().getTime()}`)
+    }
+    console.log('oss 执行上传 filePath ===', filePath)
+    // 执行上传
     const uploadRes = await this.cos.uploadFile({
       // 桶名-必须字段
       Bucket: this.bucketName,
@@ -123,7 +131,7 @@ export default class CosUploader {
       SliceSize: 1024 * 1024 * 5,
       onProgress: (progressData) => {
         const { percent } = progressData
-        onProgress(percent)
+        if (typeof onProgress === 'function') onProgress(percent)
       },
       onTaskReady: (taskId) => {
         this.taskId = taskId

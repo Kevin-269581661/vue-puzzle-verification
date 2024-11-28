@@ -935,7 +935,7 @@
 
     <!-- 图片查看显示 -->
     <el-dialog :visible.sync="dialogVisible" append-to-body class="imgPreview" top="10vh">
-      <img :src="dialogImageUrl" alt="暂无图片" />
+      <img :src="dialogImageUrl" alt="暂无图片" class="preview_img" />
       <ul class="u-comment">
         <li>
           <img src="../../../assets/images/usericon.png" />
@@ -3373,7 +3373,7 @@ export default {
   text-align: center;
 }
 
-/deep/ .imgPreview .el-dialog__body img {
+.imgPreview .preview_img {
   max-width: 100%;
   width: auto;
   height: 550px;

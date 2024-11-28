@@ -45,7 +45,7 @@
 import FailListDialog from '@/components/common/components/failListDialog/index.vue'
 
 // 轮询任务间隔时长（毫秒）
-const TASK_INTERVAL = 10000
+const TASK_INTERVAL = 7 * 1000
 
 export default {
   name: 'downloadProgressView',
@@ -153,7 +153,7 @@ export default {
         case 4:
           res = await this.$api.photoPackage.matchSpace({
             ...this.$route.query,
-            zipUrl: decodeURIComponent(this.$route.query.zipUrl),
+            zipUrl: decodeURIComponent(this.$route.query.zipUrl)
           })
           break
         default:

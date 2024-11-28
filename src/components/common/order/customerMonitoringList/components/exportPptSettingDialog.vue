@@ -134,7 +134,8 @@ export default {
         this.cityList = (data || []).map(item => {
           return {
             ...item,
-            city: item.isSystemOrder ? item.city : `${item.city}（非系统单）`
+            // city: item.isSystemOrder ? item.city : `${item.city}（非系统单）`
+            city: item.city
           }
         })
         this.formData.codeList = this.cityList.filter(it => it.status).map(it => it.code)

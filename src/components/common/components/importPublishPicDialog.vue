@@ -27,6 +27,7 @@
               showFileList
               listType="text-plain"
               accept=".zip,.rar,.tar,.gz,.7zip,.apk"
+              :handleOssFileName="handleOssFileName"
               :ossOptions="{
                 uploadUrl: '/national/upload/getTemporaryKey',
                 params: {
@@ -89,6 +90,12 @@ export default {
     }
   },
   methods: {
+    /**
+     * 自定义oss上传文件名
+     */
+    handleOssFileName(name) {
+      return `${Date.now()}_${name}`
+    },
     /**
      * 上传oss完成
      */

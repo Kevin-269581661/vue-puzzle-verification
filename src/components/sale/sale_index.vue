@@ -445,11 +445,11 @@ export default {
           link: "./sale/createClient",
         },
       ]
-      // 客户投放
+      // 客户监播
       if (permissions.includes('customerDetecting')) {
         list.unshift({
           imgurl: require("../../assets/images/fangan.png"),
-          title: "客户投放",
+          title: "客户监播",
           link: "./sale/customerMonitoringList",
         })
       }

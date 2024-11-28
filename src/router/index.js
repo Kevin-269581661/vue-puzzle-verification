@@ -37,7 +37,7 @@ const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */
 const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 新全国单流程
 const NationalOrderList = () => import(/* webpackChunkName: "NationalOrderList" */ '../components/common/order/nationalOrderList.vue')
-// 客户投放监播列表
+// 客户监播列表
 const CustomerMonitoringList = () => import(/* webpackChunkName: "CustomerMonitoringList" */ '../components/common/order/customerMonitoringList/index.vue')
 const NationalOrderDetail = () => import(/* webpackChunkName: "NationalOrderDetail" */ '../components/common/order/nationalOrderDetail.vue')
 // 创建非系统全国单

@@ -344,8 +344,9 @@ export default {
      */
     getTagList(row, col) {
       const val = deserialize(row[col.dataIndex])
-      if (!val) return []
-      return typeof val === 'string' ? val.split(col.splitChar || '、') : val
+      if (Array.isArray(val)) return val
+      if (!val && val !== 0) return []
+      return String(val).split(col.splitChar || '、')
     },
     /**
      * 改变列表行距

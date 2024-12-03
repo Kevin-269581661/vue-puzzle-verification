@@ -182,8 +182,9 @@ function getLabel(value, options = [], config) {
  */
 function getTagList(val, splitChar = ',') {
   val = deserialize(val)
-  if (!val) return []
-  return typeof val === 'string' ? val.split(splitChar) : val
+  if (Array.isArray(val)) return val
+  if (!val && val !== 0) return []
+  return String(val).split(splitChar)
 }
 
 /**

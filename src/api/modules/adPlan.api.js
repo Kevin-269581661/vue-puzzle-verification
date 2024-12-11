@@ -56,3 +56,63 @@ export function setActivityInfo({
   })
 }
 
+/**
+ * 查询方案点位导出模板
+ */
+export function listSpaceExportTemplates({ apId }) {
+  return request.getApi("/addsp/api/v2/adPlan/listSpaceExportTemplates", { apId })
+}
+
+/**
+ * 保存方案点位导出模板
+ */
+export function saveSpaceExportTemplate({
+  apId,
+  name,
+  selectedFields
+}) {
+  return request.postApi_json("/addsp/api/v2/adPlan/saveSpaceExportTemplate", {
+    name,
+    apId,
+    selectedFields
+  })
+}
+
+/**
+ * 导出点位数据
+ */
+export function exportSpaces({
+  // 方案id(仅当前订单时传)
+  apId,
+  // 方案ids(按城市导出时传)
+  apIds,
+  // 方案名称
+  apName,
+  // 选中的字段
+  selectedFields
+}) {
+  return request.postDownloadFileApi("/addsp/api/v2/adPlan/exportSpaces", {
+    apIds,
+    apId,
+    apName,
+    selectedFields
+  })
+}
+
+/**
+ * 删除方案点位导出模板
+ */
+export function deleteSpaceExportTemplate({
+  templateId
+}) {
+  return request.postApi("/addsp/api/v2/adPlan/deleteSpaceExportTemplate", {
+    templateId
+  })
+}
+
+/**
+ * 根据当前方案id查询所有子单
+ */
+export function listChildInfos({ apId }) {
+  return request.getApi("/addsp/api/v2/adPlan/listChildInfos", { apId })
+}

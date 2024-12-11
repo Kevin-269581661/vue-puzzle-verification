@@ -352,6 +352,6 @@ export default {
 
 .adsTable /deep/ .el-table__body-wrapper,
 .adsTable /deep/ .el-table__empty-block {
-  min-height: auto!important;;
+  min-height: auto !important;
 }
 </style>

@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="second-step">
-        <span class="step-title">第二步：上传编辑好的Excle表格</span>
+        <span class="step-title">第二步：上传编辑好的Excel表格</span>
         <el-upload
           ref="importRes"
           drag
@@ -318,7 +318,7 @@ export default {
           "date",
           "failReason"
         ];
-        
+
         const list = this.errorPointList;
         const data = this.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, '导入失败点位');

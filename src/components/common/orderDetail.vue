@@ -964,7 +964,7 @@
                 >点击下载<i class="el-icon-download"></i
               ></a>
             </div>
-            <div class="step-text">第二步：上传编辑好的Excle表格</div>
+            <div class="step-text">第二步：上传编辑好的Excel表格</div>
             <div class="uploader_wrapper">
               <el-upload
                 ref="exportRes"

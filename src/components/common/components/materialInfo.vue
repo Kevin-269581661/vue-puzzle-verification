@@ -65,7 +65,7 @@
                                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown" class="dropdown-menu">
-                                <el-dropdown-item 
+                                <el-dropdown-item
                                                 @click.native="openAllPic()">
                                     添加画像
                                 </el-dropdown-item>
@@ -359,7 +359,7 @@
                 textObj: {
                     title: '导入物料备注',
                     step1: '第一步：下载模板并按要求完善表格',
-                    step2: '第二步：上传编辑好的Excle表格',
+                    step2: '第二步：上传编辑好的Excel表格',
                     fileName: '《QADN-导入物料备注模板》',
                     downloadFileName: '物料备注导入表.xlsx',
                     downloadLink: `${window.location.protocol}//${window.location.host}/importTemplate/物料备注导入表.xlsx`,

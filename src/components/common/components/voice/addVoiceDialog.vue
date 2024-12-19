@@ -3,11 +3,11 @@
     <!-- 添加音频 - 弹框组件 -->
     <el-dialog
       title="添加音频"
-      :visible.sync="visible"
       width="800px"
+      show-close
+      :visible.sync="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :show-close="true"
+      @closed="afterClose"
     >
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
@@ -229,7 +229,7 @@ export default {
     MakeVoiceDialog,
     MediaTableDialog
   },
-  emits: ['refreshList'],
+  emits: ['refreshList', 'afterClose'],
   data () {
     return {
       visible: false,
@@ -417,8 +417,8 @@ export default {
         return false
       }
       // 校验文件大小不超过 3M
-      if (file.size / 1024 / 1024 > 3) {
-        Message.warning('请上传小于 3M 的文件')
+      if (file.size / 1024 / 1024 > 1) {
+        Message.warning('请上传小于 1M 的文件')
         return false
       }
       return true
@@ -547,26 +547,11 @@ export default {
         this.dialogLoading = false
       }
     },
+
     /**
-     * 打开弹框
+     * 重置数据
      */
-    open({ apId, recordId = null }) {
-      if (!apId) {
-        console.error('open error: 缺少参数 apId')
-        return
-      }
-      if (recordId) {
-        this.voiceFormData.id = recordId
-        this.getRecordData(recordId)
-      }
-      this.activeStep = 0
-      this.voiceFormData.apId = apId
-      this.visible = true
-    },
-    /**
-     * 关闭弹框
-     */
-    close() {
+     afterClose() {
       this.activeStep = 0
       this.totalMediasNum = 0
       this.selectedMediaIdList = []
@@ -576,6 +561,28 @@ export default {
       this.playFormData = initPlayFormData()
       this.$refs.voiceFormRef && this.$refs.voiceFormRef.clearValidate()
       this.$refs.playFormRef && this.$refs.playFormRef.clearValidate()
+      this.$emit('afterClose')
+    },
+
+    /**
+     * 打开弹框
+     */
+    open({ apId, recordId = null }) {
+      if (!apId) return
+      if (this.visible) return
+      this.visible = true
+      if (recordId) {
+        this.voiceFormData.id = recordId
+        this.getRecordData(recordId)
+      }
+      this.activeStep = 0
+      this.voiceFormData.apId = apId
+    },
+    /**
+     * 关闭弹框
+     */
+    close() {
+      if (!this.visible) return
       this.visible = false
     },
   },

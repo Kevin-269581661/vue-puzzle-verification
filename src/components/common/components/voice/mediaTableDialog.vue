@@ -3,12 +3,13 @@
     <!-- 媒体列表 - 弹框组件-->
     <el-dialog
       title="媒体列表"
-      width="80%"
-      top="10vh"
+      width="90%"
+      top="5vh"
+      show-close
+      append-to-body
       :visible.sync="visible"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :show-close="true"
+      @closed="afterClose"
     >
       <div class="custom_dialog_body">
         <!-- 搜索条件 -->
@@ -107,23 +108,30 @@
             </el-select>
           </div>
 
-          <div class="search_item">
+        </div>
+
+        <div class="search_control">
+          <div class="part_left">
+            <el-button type="primary" size="small" @click="importSelection">导入选中媒体</el-button>
+            <el-button type="primary" size="small" @click="importCancelSelection">导入取消选中媒体</el-button>
+          </div>
+          <el-button-group style="margin-right: 8px">
+            <el-button plain size="small" @click="handleReset">重置</el-button>
             <el-button
               type="primary"
-              icon="el-icon-search"
               size="small"
               @click="handleSearch"
             >
               搜索
             </el-button>
-            <el-button plain @click="handleReset" size="small">重置</el-button>
-          </div>
-
+          </el-button-group>
         </div>
+
         <!-- 全部媒体 -->
         <div class="check_all_box">
-          <el-checkbox v-model="isCheckAll" @change="handleCheckAll">全部媒体</el-checkbox>
+          <el-checkbox v-model="isCheckAll" >全部媒体</el-checkbox>
         </div>
+
         <!-- 列表 -->
         <div class="table_wrapper">
           <el-table
@@ -203,12 +211,15 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!-- 订单详情-添加音频-媒体列表-导入选中-弹框组件 -->
+    <ImportMediaSelectionDialog ref="importMediaSelectionDialogRef" :isImportCancel="isImportCancel" @submitSuccess="handleImportSelection" />
   </div>
 </template>
 
 <script>
 import { Message } from "element-ui";
-
+import ImportMediaSelectionDialog from "./importMediaSelectionDialog.vue";
 import api from "../../../../api/api.js";
 
 const initSearchData = () => ({
@@ -232,6 +243,7 @@ const initSearchData = () => ({
 
 export default {
   name: 'mediaTableDialog',
+  components: { ImportMediaSelectionDialog },
   props: {
     // 订单ID
     apId: {
@@ -239,7 +251,7 @@ export default {
       // required: true
     },
   },
-  emits: ['confirm'],
+  emits: ['confirm', 'afterClose'],
   data () {
     return {
       visible: false,
@@ -272,13 +284,53 @@ export default {
       isCheckAll: false,
       isCheckAllCurrentPage: false,
       // 已选的媒体
-      selectedMediaIdList: []
+      selectedMediaIdList: [],
+      isImportCancel: false
     };
   },
   mounted () {
 
   },
   methods: {
+    /**
+     * 导入选中结果
+     */
+     handleImportSelection(ids) {
+      // 取消选中
+      if (this.isImportCancel) {
+        this.selectedMediaIdList = this.selectedMediaIdList.filter(item => !ids.includes(item))
+      } else {
+        this.selectedMediaIdList = Array.from(new Set([...ids, ...this.selectedMediaIdList]))
+      }
+      // 回显列表
+      this.tableList.forEach(item => {
+        item.selected = this.selectedMediaIdList.includes(item.mid)
+      })
+      this.testCheckAll()
+      // 处理改变的数据
+      let newList = this.tableSelectChangeList.filter(cell => !ids.includes(cell.mId))
+      ids.forEach(id => {
+        newList.push({ mId: id, isSelect: !this.isImportCancel })
+      })
+      this.tableSelectChangeList = newList
+    },
+
+    /**
+     * 导入选中
+     */
+    importSelection() {
+      this.isImportCancel = false
+      this.$refs.importMediaSelectionDialogRef && this.$refs.importMediaSelectionDialogRef.open(this.apId)
+    },
+
+    /**
+     * 导入取消选中
+     */
+     importCancelSelection () {
+      this.isImportCancel = true
+      this.$refs.importMediaSelectionDialogRef && this.$refs.importMediaSelectionDialogRef.open(this.apId)
+    },
+
     handleConfirm() {
       this.$emit('confirm', {
         list: this.tableSelectChangeList,
@@ -312,7 +364,7 @@ export default {
           }
         })
         this.pagination.total = total
-        this.isCheckAllCurrentPage = this.handleCheckAllPage()
+        this.testCheckAll()
       } catch (err) {
         Message.error(err || '获取列表数据失败')
         console.error('getTableList error:', err)
@@ -324,6 +376,7 @@ export default {
      * 搜索
      */
     handleSearch () {
+      this.pagination.page = 1
       const searchCondition = {}
       Object.keys(this.searchData).forEach((key) => {
         let val = this.searchData[key]
@@ -339,12 +392,11 @@ export default {
      * 重置
      */
     handleReset () {
-      this.pagination.page = 1
       this.searchData = {
         ...initSearchData(),
         id: this.searchData.id
       }
-      this.getTableList();
+      this.handleSearch();
     },
     /**
      * 分页-切换页数
@@ -361,22 +413,19 @@ export default {
       this.pagination.pageSize = val
       this.getTableList();
     },
-    /**
-     * 勾选全部媒体
-     */
-    handleCheckAll() {
-      // this.isCheckAllCurrentPage = false
-    },
+
     /**
      * 检查是否全选了本页
      */
-    handleCheckAllPage() {
-      return this.tableList.filter(item => item.selected).length === this.tableList.length
+    testCheckAll() {
+      this.isCheckAllCurrentPage =  this.tableList.filter(item => item.selected).length === this.tableList.length
     },
+
     /**
      * 勾选
      */
-     handleSelect(isSelect, { mid: mId }) {
+    handleSelect(isSelect, { mid: mId }) {
+      this.testCheckAll()
       const hasOne = this.selectedMediaIdList.includes(mId)
       if (hasOne && !isSelect) {
         this.selectedMediaIdList.splice(this.selectedMediaIdList.indexOf(mId), 1)
@@ -387,40 +436,35 @@ export default {
       let newList = this.tableSelectChangeList.filter(cell => cell.mId != mId)
       newList.push({ mId, isSelect })
       this.tableSelectChangeList = newList
-      this.isCheckAllCurrentPage = this.handleCheckAllPage()
     },
     /**
      * 勾选全页
      */
      handleSelectAll(isSelect) {
-      let newList = []
       let ids = []
       this.tableList.forEach(item => {
         item.selected = isSelect
-
-        ids = this.selectedMediaIdList.filter(mId => mId != item.mid)
-        if (isSelect) ids.push(item.mid)
-        this.selectedMediaIdList = ids
-        // 处理改变的数据
-        newList = this.tableSelectChangeList.filter(cell => cell.mId != item.mid)
-        newList.push({ mId: item.mid, isSelect })
-        this.tableSelectChangeList = newList
+        ids.push(item.mid)
       })
+      if (!ids.length) return
+      // 取消选中
+      if (!isSelect) {
+        this.selectedMediaIdList = this.selectedMediaIdList.filter(item => !ids.includes(item))
+      } else {
+        this.selectedMediaIdList = Array.from(new Set([...ids, ...this.selectedMediaIdList]))
+      }
+      // 处理改变的数据
+      let newList = this.tableSelectChangeList.filter(cell => !ids.includes(cell.mId))
+      ids.forEach(id => {
+        newList.push({ mId: id, isSelect })
+      })
+      this.tableSelectChangeList = newList
     },
+
     /**
-     * 打开弹框
-     * @param {*} recordId 此记录的Id，编辑才传
+     * 重置数据
      */
-    open(mediaIds) {
-      if (Array.isArray(mediaIds)) this.selectedMediaIdList = JSON.parse(JSON.stringify(mediaIds))
-      // this.searchData.id = recordId
-      this.handleSearch()
-      this.visible = true
-    },
-    /**
-     * 关闭弹框
-     */
-    close() {
+     afterClose() {
       this.searchData = initSearchData()
       this.tableList = []
       this.tableSelectChangeList = []
@@ -428,6 +472,26 @@ export default {
       this.isCheckAll = false
       this.isCheckAllCurrentPage = false
       this.pagination.page = 1
+      this.$emit('afterClose')
+    },
+
+    /**
+     * 打开弹框
+     * @param {*} recordId 此记录的Id，编辑才传
+     */
+    open(mediaIds) {
+      if (this.visible) return
+      this.visible = true
+      if (Array.isArray(mediaIds)) this.selectedMediaIdList = JSON.parse(JSON.stringify(mediaIds))
+      // this.searchData.id = recordId
+      this.handleSearch()
+    },
+
+    /**
+     * 关闭弹框
+     */
+    close() {
+      if (!this.visible) return
       this.visible = false
     }
   },
@@ -435,39 +499,46 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.media_table_dialog {
-  /deep/ .el-dialog .el-dialog__body {
-    padding: 0;
-  }
-  .custom_dialog_body {
-    padding-bottom: 15px;
-  }
-  .search_bar {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    .search_item {
-      margin-bottom: 16px;
-      width: 33%;
-      display: inline-flex;
-      align-items: center;
-      padding-right: 24px;
-      box-sizing: border-box;
-      .item_title {
-        margin-right: 14px;
-        white-space: nowrap;
-        width: 90px;
-        text-align: right;
-      }
-      .item_content {
-        flex: 1;
-      }
-    }
-  }
 
-  .pagination_wrapper {
-    padding-top: 15px;
+/deep/ .el-dialog .el-dialog__body {
+  padding: 0;
+}
+
+.custom_dialog_body {
+  padding-bottom: 15px;
+}
+.search_bar {
+display: flex;
+flex-wrap: wrap;
+.search_item {
+  margin-bottom: 16px;
+  width: 33%;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 24px;
+  box-sizing: border-box;
+  .item_title {
+    margin-right: 14px;
+    white-space: nowrap;
+    width: 90px;
     text-align: right;
   }
+  .item_content {
+    flex: 1;
+  }
+}
+}
+
+.pagination_wrapper {
+  padding-top: 15px;
+  text-align: right;
+}
+
+
+.search_control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 </style>

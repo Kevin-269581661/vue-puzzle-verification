@@ -366,7 +366,8 @@
               <el-form-item label="小区照片" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="24">
-                  <el-row v-if="customPermission.patrolPermission" type="flex">
+                  <!-- v-if="customPermission.patrolPermission" -->
+                  <el-row type="flex">
                     <el-form-item
                       label=""
                       prop="mImg"
@@ -431,7 +432,7 @@
                       </div>
                     </el-form-item>
                   </el-row>
-                  <el-form-item
+                  <!-- <el-form-item
                     v-else
                     label=""
                     prop="mImg"
@@ -454,7 +455,7 @@
                         <img width="100%" :src="resImgUrl" alt="" />
                       </el-dialog>
                     </div>
-                  </el-form-item>
+                  </el-form-item> -->
                 </el-col>
               </el-row>
             </el-form>

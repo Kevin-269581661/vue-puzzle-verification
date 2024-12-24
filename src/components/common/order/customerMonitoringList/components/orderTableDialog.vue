@@ -336,7 +336,8 @@ export default {
               selected: item.status === 1,
               statusLabel: getLabel(item.status, this.statusOptions),
               statusColor: getLabel(item.status, this.statusOptions, { labelKey: 'color' }),
-              mediaTypeNameList: getTagList(item.mediaTypeNames, ',')
+              mediaTypeNameList: getTagList(item.mediaTypeNames, ','),
+              cityList: item.cityList || []
             }
           })
           this.totalTableList = this.tableList

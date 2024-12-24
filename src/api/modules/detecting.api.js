@@ -271,3 +271,18 @@ export function getUserMulti({
     id
   })
 }
+
+/**
+ * 新增客户监播项目-非系统单
+ */
+export function addNonSystemItem({
+  // 非系统方案id
+  nonSystemApId,
+  // 客户数据源：1.adn，2.crm
+  customerSrc
+}) {
+  return request.postApi_json("/addsp/api/v1/customer/detecting/addNonSystemItem", {
+    nonSystemApId,
+    customerSrc
+  })
+}

@@ -134,6 +134,11 @@
       </div>
     </div>
 
+    <!-- 选择创建监播方式 -->
+    <CreateMonitoringSelectionDialog ref="createMonitoringSelectionDialogRef" @select="handleSelectCreate" />
+
+    <CreateSysOrderFormDialog ref="createSysOrderFormDialogRef" @submitSuccess="getTableList" />
+
     <!-- 新建客户监播-弹窗 -->
     <MonitoringFormDialog
       ref="monitoringFormDialogRef"
@@ -164,6 +169,8 @@ import TableList from "@/components/common/components/TableList/index.vue"
 import TableAction from "@/components/common/components/TableAction/index.vue"
 import TableSearch from "@/components/common/components/TableSearch/index.vue"
 import MonitoringFormDialog from './components/monitoringFormDialog.vue'
+import CreateMonitoringSelectionDialog from './components/createMonitoringSelectionDialog.vue'
+import CreateSysOrderFormDialog from './components/createSysOrderFormDialog.vue'
 import OrderTableDialog from './components/orderTableDialog.vue'
 import ShareConfigDialog from './components/shareConfigDialog.vue'
 import ShopTableDialog from './components/shopTableDialog.vue'
@@ -281,7 +288,9 @@ export default {
     OrderTableDialog,
     ShareConfigDialog,
     ShopTableDialog,
-    DataAdjustDialog
+    DataAdjustDialog,
+    CreateMonitoringSelectionDialog,
+    CreateSysOrderFormDialog
   },
   data () {
     return {
@@ -304,6 +313,18 @@ export default {
     };
   },
   methods: {
+    handleSelectCreate(type) {
+      console.log('handleSelectCreate type ===', type)
+      switch(type) {
+        case 'hasSysOrder':
+          this.$refs.monitoringFormDialogRef && this.$refs.monitoringFormDialogRef.open()
+          break
+        case 'noneSysOrder':
+          this.$refs.createSysOrderFormDialogRef && this.$refs.createSysOrderFormDialogRef.open()
+          break
+      }
+    },
+
     /**
      * 获取销售crm的客户列表下拉数据
      */
@@ -361,7 +382,7 @@ export default {
      * 新建
      */
     handleCreate () {
-      this.$refs.monitoringFormDialogRef && this.$refs.monitoringFormDialogRef.open()
+      this.$refs.createMonitoringSelectionDialogRef && this.$refs.createMonitoringSelectionDialogRef.open()
     },
 
     /**

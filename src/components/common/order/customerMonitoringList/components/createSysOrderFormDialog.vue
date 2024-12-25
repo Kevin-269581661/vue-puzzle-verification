@@ -27,7 +27,9 @@
               </el-form-item>
 
               <el-form-item label="所属销售：" prop="saleId">
+                <el-input v-if="isSaleRole" v-model="formData.saleName" disabled style="width: 250px"></el-input>
                 <el-select
+                  v-else
                   v-model="formData.saleId"
                   filterable
                   remote
@@ -75,6 +77,7 @@
                   placeholder="请选择"
                   filterable
                   clearable
+                  style="width: 250px"
                   :disabled="!formData.companyId"
                   @change="changeBrandMedia"
                 >
@@ -190,6 +193,7 @@ const initFormData = () => {
     apName: '',
     // 所属销售
     saleId: null,
+    saleName: '',
     // 公司
     companyId: null,
     // 品牌
@@ -235,6 +239,7 @@ export default {
       // 成功数
       successSize: 0,
       step: 1,
+      isSaleRole: true
     }
   },
   computed: {
@@ -251,6 +256,11 @@ export default {
       }
     },
     currentSaleData() {
+      if (this.isSaleRole) {
+        return {
+          customerSrc: this.sessionData.customerSrc
+        }
+      }
       return this.saleOptions.find(item => item.value === this.formData.saleId) || {}
     }
   },
@@ -629,6 +639,12 @@ export default {
   },
   mounted() {
     this.sessionData = sessFun.getSess()
+    this.isSaleRole = ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)
+    if (this.isSaleRole) {
+      this.formData.saleId = this.sessionData.uID
+      this.formData.saleName = this.sessionData.realName
+      this.changeSale(this.formData.saleId)
+    }
   }
 }
 </script>

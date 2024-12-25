@@ -333,8 +333,8 @@ export default {
             collectList.push(item)
           } else if (!item.id && isInit) {
             // 默认初始值
-            this.formData.notSelectedList = item.unselectedFields || []
-            this.formData.hasSelectedList = item.selectedFields || []
+            this.formData.notSelectedList = item.unselectedFields ? [...item.unselectedFields] : []
+            this.formData.hasSelectedList = item.selectedFields ? [...item.selectedFields] : []
           }
         })
         this.collectList = collectList
@@ -356,8 +356,8 @@ export default {
         const current = this.collectList.find(item => item.id === val)
         if (!current) return
         const { selectedFields, unselectedFields } = current
-        this.formData.notSelectedList = unselectedFields || []
-        this.formData.hasSelectedList = selectedFields || []
+        this.formData.notSelectedList = unselectedFields ? [...unselectedFields] : []
+        this.formData.hasSelectedList = selectedFields ? [...selectedFields] : []
       } catch (err) {
         console.error('collectChange error:', err)
       }

@@ -628,6 +628,12 @@ export default {
     open() {
       if (this.visible) return
       this.visible = true
+      this.isSaleRole = ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)
+      if (this.isSaleRole) {
+        this.formData.saleId = this.sessionData.uID
+        this.formData.saleName = this.sessionData.realName
+        this.changeSale(this.formData.saleId)
+      }
     },
     /**
      * 关闭弹框
@@ -639,12 +645,6 @@ export default {
   },
   mounted() {
     this.sessionData = sessFun.getSess()
-    this.isSaleRole = ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)
-    if (this.isSaleRole) {
-      this.formData.saleId = this.sessionData.uID
-      this.formData.saleName = this.sessionData.realName
-      this.changeSale(this.formData.saleId)
-    }
   }
 }
 </script>

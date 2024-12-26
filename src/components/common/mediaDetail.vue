@@ -36,43 +36,48 @@
             <!-- 基本信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>基本信息</h3>
-              <el-row type="flex" class="row-bg row_box"  style="margin-bottom: 0">
+              <el-row type="flex" class="row-bg row_box"  style="margin-bottom: 0; flex-wrap: wrap">
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">资源名称：</span
                   ><span>{{ resData.resName || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">资源别名：</span
                   ><span>{{ resData.resAlias || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">城市：</span
                   ><span>{{ resData.city || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">区域：</span
                   ><span>{{ resData.cityArea || "--" }}</span>
                 </el-col>
-              </el-row>
-              <el-row class="row-bg row_box" style="margin-bottom: 0">
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">街道：</span
                   ><span>{{ resData.street || "--" }}</span>
                 </el-col>
-                  <el-col :span="6">
+
+                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">地址：</span
                   ><span>{{ resData.resAddress || "--" }}</span>
                 </el-col>
-                  <el-col :span="6">
+
+                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">地址描述：</span
                   ><span>{{ resData.addressAlias || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">经纬度：</span
                   ><span>{{ resData.latLng || "--" }}</span>
                 </el-col>
-              </el-row>
-              <el-row  class="row-bg row_box" style="margin-bottom: 0">
+
                 <el-col :span="6" style="position: relative">
                     <div
                     class="ad_mediaInfoPanel_row_box"
@@ -101,46 +106,60 @@
                     </div>
                     </div>
                 </el-col>
-                  <el-col :span="6">
+
+                <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">Q云企小区名称：</span
                   ><span>{{ resData.qCommunity || "--" }}</span>
                 </el-col>
+
               </el-row>
             </div>
+
             <!-- 画像信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>画像信息</h3>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0; flex-wrap: wrap" >
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘类型：</span
                   ><span>{{ resData.houseType || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼盘价格：</span
                   ><span>{{ resData.housePrice || "--" }}元/平方米</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">住户数量：</span
                   ><span>{{ resData.HouseNum || "--" }}户</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">楼栋数量：</span
                   ><span>{{ resData.buildingNum || "--" }}栋</span>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">单元数量：</span
                   ><span>{{ resData.unitCount || "--" }}个</span>
                 </el-col>
+
+                <el-col :span="6">
+                  <span class="ad_mediaInfoPanel_row_title">楼层数量：</span
+                  ><span>{{ resData.floorCnt || "--" }}</span>
+                </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住年份：</span
                   ><span>{{ resData.joinTime || "--" }}年</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">商圈：</span
                   ><span>{{ resData.tradingArea || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6" style="position: relative">
                   <div
                     class="ad_mediaInfoPanel_row_box"
@@ -170,8 +189,7 @@
                     </div>
                   </div>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+
                 <el-col :span="6" style="position: relative">
                   <div
                     class="ad_mediaInfoPanel_row_box"
@@ -200,38 +218,45 @@
                     </div>
                   </div>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">出入口数：</span
                   ><span>{{ resData.EntryExitNum || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">入住率(%)：</span
                   ><span>{{ resData.liveRate || "--" }}%</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">配套电梯：</span
                   ><span>{{ resData.liftType || "--" }}</span>
                 </el-col>
-              </el-row>
-              <el-row type="flex" class="row-bg row_box" style="margin-bottom: 0">
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车位数：</span
                   ><span>{{ resData.carNumber || "--" }}</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">人流量：</span
                   ><span>{{ resData.peopleFlowrate || "--" }}人次/天</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">车流量：</span
                   ><span>{{ resData.carFlowrate || "--" }}车次/天</span>
                 </el-col>
+
                 <el-col :span="6">
                   <span class="ad_mediaInfoPanel_row_title">广告限制：</span
                   ><span>{{ resData.notPush || "--" }}</span>
                 </el-col>
+
               </el-row>
             </div>
+
             <!-- 物业信息 -->
             <div class="ad_mediaInfoPanel_row">
               <h3>物业信息</h3>
@@ -651,6 +676,7 @@
                     EntryExitNum: resData.dNum,
                     buildingNum: resData.fNum, // 楼栋数量
                     unitCount: resData.unitCount, // 单元数量
+                    floorCnt: resData.floorCnt, // 楼层数量
                     rid: resData.rID,
                     qCommunity: resData.qcentCommunityName, // Q云企小区名称
                     houseType: resData.cType, // 楼盘类型
@@ -1381,5 +1407,9 @@
     font-size: 16px;
     right: -4px;
     line-height: 14px;
+  }
+
+  .row_box /deep/ .el-col{
+    margin-bottom: 15px;
   }
   </style>

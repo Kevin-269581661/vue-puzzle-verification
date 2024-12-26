@@ -220,44 +220,48 @@
                     </el-col>
 			    </el-row>
                 <el-row :gutter="76" class="from_row">
+
                     <el-col :span="6">
-                    <el-form-item label="单元数量" prop="unitCount">
-                        <el-input
-                        v-model="recForm.unitCount"
-                        controls-position="right"
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="单元数量" prop="unitCount">
+                          <el-input
+                          v-model="recForm.unitCount"
+                          controls-position="right"
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="入住年份" prop="liveTime">
-                        <el-date-picker
-                        v-model="recForm.liveTime"
-                        type="year"
-                        value-format="yyyy"
-                        format="yyyy 年"
-                        :editable="false"
-                        placeholder=""
-                        @blur="blurFun('liveTime')"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
+                      <el-form-item label="入住年份" prop="liveTime">
+                          <el-date-picker
+                          v-model="recForm.liveTime"
+                          type="year"
+                          value-format="yyyy"
+                          format="yyyy 年"
+                          :editable="false"
+                          placeholder=""
+                          @blur="blurFun('liveTime')"
+                          >
+                          </el-date-picker>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="商圈" prop="business" class="right_form_item">
-                        <el-input
-                        v-model.trim="recForm.business"
-                        placeholder=""
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="商圈" prop="business" class="right_form_item">
+                          <el-input
+                          v-model.trim="recForm.business"
+                          placeholder=""
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="周边配套" prop="supportingFacilities">
-                        <el-input
-                        type="textarea"
-                        v-model="recForm.supportingFacilities"
-                        placeholder=""
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="周边配套" prop="supportingFacilities">
+                          <el-input
+                          type="textarea"
+                          v-model="recForm.supportingFacilities"
+                          placeholder=""
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
 
                 </el-row>

@@ -280,6 +280,7 @@
                             </template>
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '媒体类型' && item.isChecked">
                         <el-table-column
                             :fixed="item.fix === 'left' ? true : false"
@@ -292,6 +293,7 @@
                         >
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '投放面' && item.isChecked">
                         <el-table-column
                             :fixed="item.fix === 'left' ? true : false"
@@ -304,6 +306,7 @@
                         >
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '城市' && item.isChecked">
                         <el-table-column
                             :fixed="item.fix === 'left' ? true : false"
@@ -316,6 +319,7 @@
                         >
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '区域' && item.isChecked">
                         <el-table-column
                             :fixed="item.fix === 'left' ? true : false"
@@ -328,6 +332,7 @@
                         >
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '排期'">
                         <el-table-column
                             :prop="item.prop"
@@ -347,6 +352,7 @@
                             </template>
                         </el-table-column>
                     </template>
+
                     <template v-else>
                         <el-table-column
                             v-if="item.isChecked"
@@ -723,6 +729,7 @@
                   width="45"
                 >
                 </el-table-column>
+
                 <el-table-column type="expand">
                   <template slot-scope="props">
                     <el-form
@@ -782,6 +789,7 @@
                     </el-form>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   label="资源名称"
                   min-width="16.1%"
@@ -813,14 +821,16 @@
                     <span>{{ scope.row.resName || '--' }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="mTitle"
                   label="媒体名称"
                   min-width="10.3%"
                 >
                 </el-table-column>
-                <el-table-column prop="asLab" label="投放面" min-width="5.8%">
-                </el-table-column>
+
+                <el-table-column prop="asLab" label="投放面" min-width="5.8%"></el-table-column>
+
                 <el-table-column
                   prop="city"
                   label="城市"
@@ -829,6 +839,7 @@
                   :filter-method="filterCity"
                 >
                 </el-table-column>
+
                 <el-table-column
                   prop="rName"
                   label="区域"
@@ -837,11 +848,13 @@
                   :filter-method="filterRName"
                 >
                 </el-table-column>
+
                 <el-table-column prop="cType" label="楼盘类型" min-width="6.5%">
                   <template slot-scope="scope">
                     <span>{{ scope.row.cType || '--' }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="hNum"
                   label="小区户数"
@@ -854,6 +867,7 @@
                     }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   label="楼盘价格"
                   min-width="7.3%"
@@ -870,6 +884,7 @@
                     >
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="timeRange"
                   label="排期"
@@ -882,10 +897,12 @@
                     <span>{{ scope.row.timeRange }}</span>
                   </template>
                 </el-table-column>
+
                 <div slot="empty">
                   <no-search-result></no-search-result>
                 </div>
               </el-table>
+
               <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
               <div class="table-bottom-tip">
                 <div style="display: flex" v-if="isHandleChange">
@@ -1300,6 +1317,7 @@ export default {
         { id: 6, label: "商圈", prop: "tradingArea", width: "120px", isChecked: false, fix:"not" },
         { id: 7, label: "媒体名称", prop: "mTitle", width: "120px", isChecked: true, fix:"not" },
         { id: 8, label: "媒体位ID", prop: "assetTag", width: "150px", isChecked: true, fix:"not" },
+        { id: 15, label: "MAC", prop: "mac", width: "150px", isChecked: true, fix:"not" },
         { id: 9, label: "设备类型", prop: "mType", width: "180px", isChecked: false, fix:"not" },
         { id: 10, label: "位置类型", prop: "site", width: "120px", isChecked: false, fix:"not" },
         { id: 11, label: "楼栋", prop: "buildingName", width: "100px", isChecked: false, fix:"not" },

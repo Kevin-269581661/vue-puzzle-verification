@@ -658,7 +658,9 @@
             site: info.site || "--",
             buildingName: info.buildingName || "--",
             unitName: info.unitName || "--",
-            timeRange: info.timeRange || "--"
+            timeRange: info.timeRange || "--",
+            // 如果字段没有值，接口不返回这个字段key
+            mac: info.mac || '--'
           }
           dataArr.push(obj)
         }

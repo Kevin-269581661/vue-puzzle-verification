@@ -255,6 +255,7 @@ export default {
         { id: 5, label: "城市", prop: "city", width:"150", isChecked: true, fix: "not" },
         { id: 6, label: "区域", prop: "rName", width:"150", isChecked: true, fix: "not" },
         { id: 7, label: "媒体位ID", prop: "assetTag", width:"150", isChecked: false, fix: "not" },
+        { id: 15, label: "MAC", prop: "mac", width:"150", isChecked: false, fix: "not" },
         { id: 8, label: "街道", prop: "street", width:"150", isChecked: false, fix: "not" },
         { id: 9, label: "商圈", prop: "tradingArea", width:"150", isChecked: false, fix: "not" },
         { id: 10, label: "设备类型", prop: "mType", width:"150", isChecked: false, fix: "not" },

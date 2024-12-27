@@ -3529,6 +3529,8 @@ export default {
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
+        // 客户数据源：默认为 1
+        customerSrc: this.sessionData.customerSrc || 1,
         ...this.importDraftsConfig,
       };
       if(this.isPay && this.BDData.uType === 'ADN_BD') {

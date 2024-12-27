@@ -6727,6 +6727,8 @@ export default {
         suid: this.BDData.uid,
         detail: JSON.stringify(mediaTypeList),
         saleMode: this.planForm.saleMode,
+        // 客户数据源：默认为 1
+        customerSrc: this.sessionData.customerSrc || 1
       };
       if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         delete params.suid;

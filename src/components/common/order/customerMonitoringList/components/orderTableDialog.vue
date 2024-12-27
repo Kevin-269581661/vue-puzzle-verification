@@ -148,11 +148,9 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="操作" width="270" fixed="right">
+            <el-table-column label="操作" width="200" fixed="right">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.nonSystemApId" type="text" @click="handleNotSysOrder(scope.row)">查看非系统订单</el-button>
-                <el-button v-else type="text" @click="handleNotSysOrder(scope.row)">新建非系统订单</el-button>
-                <el-button type="text" @click="openPPTsettingDialog(scope.row)">导出PPT管理</el-button>
+                <TableAction :actionList="getActionList(scope.row)" />
               </template>
             </el-table-column>
 
@@ -174,6 +172,9 @@
 
     <!-- 导出PPT管理-弹框组件 -->
     <ExportPptSettingDialog ref="exportPptSettingDialogRef" />
+
+    <!-- 订单详情-资料补充-弹窗 -->
+    <OrderReplenishInfoDialog ref="orderReplenishInfoDialogRef" />
   </div>
 
 </template>
@@ -184,6 +185,8 @@ import PointState from '@/components/common/components/pointState.vue'
 import { getLabel, getTagList } from '@/utils/common'
 import CreateNotSysOrderDialog from './createNotSysOrderDialog.vue'
 import ExportPptSettingDialog from './exportPptSettingDialog.vue'
+import TableAction from "@/components/common/components/TableAction/index.vue"
+import OrderReplenishInfoDialog from  '@/components/common/components/orderReplenishInfoDialog.vue'
 
 const initSearchData = () => ({
   // 客户监播项目id
@@ -199,7 +202,9 @@ export default {
   components: {
     PointState,
     CreateNotSysOrderDialog,
-    ExportPptSettingDialog
+    ExportPptSettingDialog,
+    OrderReplenishInfoDialog,
+    TableAction
   },
   props: {},
   emits: ['submitSuccess', 'afterClose'],
@@ -417,6 +422,42 @@ export default {
       this.tableList.forEach(item => {
         item.selected = isSelect
       })
+    },
+
+    /**
+     * 列表操作按钮组
+     */
+     getActionList(row) {
+      return [
+        {
+          text: '查看非系统订单',
+          single: true,
+          visible: row.nonSystemApId,
+          onClick: () => {
+            this.handleNotSysOrder(row)
+          }
+        },
+        {
+          text: '新建非系统订单',
+          visible: !row.nonSystemApId,
+          single: true,
+          onClick: () => {
+            this.handleNotSysOrder(row)
+          }
+        },
+        {
+          text: '导出PPT管理',
+          onClick: () => {
+            this.openPPTsettingDialog(row)
+          }
+        },
+        {
+          text: '资料补充',
+          onClick: () => {
+            this.$refs.orderReplenishInfoDialogRef && this.$refs.orderReplenishInfoDialogRef.open(row.apId)
+          }
+        }
+      ]
     },
 
     /**

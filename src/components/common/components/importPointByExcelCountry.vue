@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="second-step">
-        <span class="step-title">第二步：上传编辑好的Excle表格</span>
+        <span class="step-title">第二步：上传编辑好的Excel表格</span>
         <el-upload
           ref="importRes"
           drag

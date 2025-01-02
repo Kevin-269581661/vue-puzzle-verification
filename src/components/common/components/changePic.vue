@@ -264,7 +264,7 @@
                                    :http-request="uploadImg"
                                    :limit="6"
                                    list-type="picture-card"
-                                   :show-file-list="true"
+                                   :show-file-list="false"
                                    :file-list="item.photoList"
                                    :before-upload="beforeAvatarUpload"
                                    :before-remove="beforeImgRemove"

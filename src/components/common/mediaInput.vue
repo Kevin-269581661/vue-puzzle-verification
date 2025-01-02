@@ -220,44 +220,57 @@
                     </el-col>
 			    </el-row>
                 <el-row :gutter="76" class="from_row">
+
                     <el-col :span="6">
-                    <el-form-item label="单元数量" prop="unitCount">
-                        <el-input
-                        v-model="recForm.unitCount"
-                        controls-position="right"
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="单元数量" prop="unitCount">
+                          <el-input
+                          v-model="recForm.unitCount"
+                          controls-position="right"
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="入住年份" prop="liveTime">
-                        <el-date-picker
-                        v-model="recForm.liveTime"
-                        type="year"
-                        value-format="yyyy"
-                        format="yyyy 年"
-                        :editable="false"
-                        placeholder=""
-                        @blur="blurFun('liveTime')"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
+                      <el-form-item label="楼层数量" prop="floorCnt">
+                          <el-input
+                          v-model="recForm.floorCnt"
+                          controls-position="right"
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="商圈" prop="business" class="right_form_item">
-                        <el-input
-                        v-model.trim="recForm.business"
-                        placeholder=""
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="入住年份" prop="liveTime">
+                          <el-date-picker
+                          v-model="recForm.liveTime"
+                          type="year"
+                          value-format="yyyy"
+                          format="yyyy 年"
+                          :editable="false"
+                          placeholder=""
+                          @blur="blurFun('liveTime')"
+                          >
+                          </el-date-picker>
+                      </el-form-item>
                     </el-col>
+
                     <el-col :span="6">
-                    <el-form-item label="周边配套" prop="supportingFacilities">
-                        <el-input
-                        type="textarea"
-                        v-model="recForm.supportingFacilities"
-                        placeholder=""
-                        ></el-input>
-                    </el-form-item>
+                      <el-form-item label="商圈" prop="business" class="right_form_item">
+                          <el-input
+                          v-model.trim="recForm.business"
+                          placeholder=""
+                          ></el-input>
+                      </el-form-item>
+                    </el-col>
+
+                    <el-col :span="6">
+                      <el-form-item label="周边配套" prop="supportingFacilities">
+                          <el-input
+                          type="textarea"
+                          v-model="recForm.supportingFacilities"
+                          placeholder=""
+                          ></el-input>
+                      </el-form-item>
                     </el-col>
 
                 </el-row>
@@ -366,7 +379,8 @@
               <el-form-item label="小区照片" class="baseInfo"></el-form-item>
               <el-row :gutter="76" class="from_row">
                 <el-col :span="24">
-                  <el-row v-if="customPermission.patrolPermission" type="flex">
+                  <!-- v-if="customPermission.patrolPermission" -->
+                  <el-row type="flex">
                     <el-form-item
                       label=""
                       prop="mImg"
@@ -431,7 +445,7 @@
                       </div>
                     </el-form-item>
                   </el-row>
-                  <el-form-item
+                  <!-- <el-form-item
                     v-else
                     label=""
                     prop="mImg"
@@ -454,7 +468,7 @@
                         <img width="100%" :src="resImgUrl" alt="" />
                       </el-dialog>
                     </div>
-                  </el-form-item>
+                  </el-form-item> -->
                 </el-col>
               </el-row>
             </el-form>
@@ -1003,6 +1017,7 @@ export default {
         liveTime: "", // 入住年份
         business: "", // 商圈
         unitCount: "", // 单元数量
+        floorCnt: "", // 楼层数量
         supportingFacilities: "", // 周边配套
         transportation: "", // 交通状况
         doorwayNum: "", // 出入口数
@@ -1139,6 +1154,7 @@ export default {
         ],
         // 单元数量
         unitCount: [{ required: false, validator: validatePrice, trigger: ["blur"] },],
+        floorCnt: [{ required: false, validator: validatePrice, trigger: ["blur"] },],
         // 入住年份
         liveTime: [ { required: true, message: "请选择年份!", trigger: "change" }],
         // 商圈
@@ -2038,6 +2054,7 @@ export default {
         cd: this.recForm.liveTime, // 入住年份 '2017'
         ta: this.recForm.business || '', // 商圈
         unitCount: this.recForm.unitCount || 0, // 单元数量
+        floorCnt: this.recForm.floorCnt || 0, // 楼层数量
         supportingFacilities: this.recForm.supportingFacilities || '', // 周边配套
         transportation: this.recForm.transportation || '', // 交通状况
         dn: this.recForm.doorwayNum || 0, // 出入口数
@@ -2474,6 +2491,7 @@ export default {
           liveTime: recObj.joinTime, // 入住年份
           business: recObj.tradingArea || "", // 商圈
           unitCount: recObj.unitCount || '', // 单元数量
+          floorCnt: recObj.floorCnt || '', // 楼层数量
           supportingFacilities: recObj.supportingFacilities || "", // 周边配套
           transportation: recObj.transportation || "", // 交通状况
           doorwayNum: recObj.EntryExitNum || '', // 出入口数
@@ -2696,6 +2714,7 @@ export default {
         cd: recObj.liveTime, // 入住年份
         ta: recObj.business || "", // 商圈
         unitCount: recObj.unitCount || 0, // 单元数量
+        floorCnt: recObj.floorCnt || 0, // 楼层数量
         supportingFacilities: recObj.supportingFacilities || "", // 周边配套
         transportation: recObj.transportation || "", // 交通状况
         dn: recObj.doorwayNum || 0, // 出入口数

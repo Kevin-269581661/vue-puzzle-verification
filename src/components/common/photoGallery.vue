@@ -189,6 +189,7 @@
             element-loading-spinner="el-icon-loading"
           >
 
+            <!-- 全国/本地 -->
             <div v-if="['ADN_MD', 'ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="tab_wrapper">
               <el-tabs v-model="activeTabKey" @tab-click="handleClickTab">
                 <el-tab-pane v-for="item in tabList" :key="item.value" :label="item.label" :name="item.value" ></el-tab-pane>
@@ -203,6 +204,7 @@
               @doSomeThing="saveChange"
               :isActive="isActive"
             ></photo>
+
             <!--页码-->
             <div class="ad_pagination" v-if="showPic === 3">
               <el-pagination
@@ -402,7 +404,7 @@ export default {
       //控制图片比例
       isActive: false,
       // 获取案例库接口配置: 1.使用旧接口 /advertisement/GetlmgListV2 2.使用新接口 /addsp/photoGalleryCache/getPage
-      getImgApiType: 1,
+      // getImgApiType: 1,
       activeTabKey: '1',
     };
   },
@@ -456,7 +458,7 @@ export default {
 
     async init() {
       try {
-        await this.getImgApiConfig();
+        // await this.getImgApiConfig();
         this.searchFun();
       } catch (error) {
         console.error('init error:', error);
@@ -648,13 +650,16 @@ export default {
       }
       console.log('getImgList ===>', params)
       let url = ''
+      // 获取全国图片列表
       if (this.activeTabKey === '1') {
-        if (this.getImgApiType == 2) {
-          url = '/addsp/photoGalleryCache/getPage'
-        } else {
+        // 有 allPhotoGallery 权限，调用 旧接口 /advertisement/GetlmgListV2
+        if (this.sessionData.permissions.includes('allPhotoGallery')) {
           url = this.apiVar.Advertisement + "/GetImgListV2"
+        } else {
+          url = '/addsp/photoGalleryCache/getPage'
         }
       } else {
+        // 获取本地图片列表
         url = '/addsp/photoGalleryCache/v2/getPage'
       }
       api.getApi(url, params).then(res => {
@@ -893,17 +898,17 @@ export default {
     /**
      * 获取案例库接口配置
      */
-    async getImgApiConfig () {
-      try {
-        this.firstBodyLoading = true
-        const res = await api.getApi('/addsp/photoGalleryCache/getShowType')
-        const { SysCode, data } = res.data || {}
-        if (SysCode !== 200200) return this.messageFun('error', '获取案例库接口配置失败')
-        this.getImgApiType = data
-      } catch (err) {
-        this.firstBodyLoading = false
-      }
-    },
+    // async getImgApiConfig () {
+    //   try {
+    //     this.firstBodyLoading = true
+    //     const res = await api.getApi('/addsp/photoGalleryCache/getShowType')
+    //     const { SysCode, data } = res.data || {}
+    //     if (SysCode !== 200200) return this.messageFun('error', '获取案例库接口配置失败')
+    //     this.getImgApiType = data
+    //   } catch (err) {
+    //     this.firstBodyLoading = false
+    //   }
+    // },
   },
 
 };

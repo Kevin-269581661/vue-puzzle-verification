@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="second-step">
-        <span class="step-title">第二步：上传编辑好的Excle表格</span>
+        <span class="step-title">第二步：上传编辑好的Excel表格</span>
         <el-upload
           ref="importRes"
           drag
@@ -286,9 +286,9 @@ export default {
           "资产编号",
           "所属公司",
           '省份',
-          "城市", 
-          "区域", 
-          "投放排期", 
+          "城市",
+          "区域",
+          "投放排期",
           "失败原因"
         ];
         const filterVal = [

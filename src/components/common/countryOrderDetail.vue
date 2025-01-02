@@ -90,7 +90,22 @@
     </div>
     <div class="mediaList_wrap margin_16_64">
       <div class="btn_group">
-        <el-button v-if="['forth', 'fifth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">导入图片</el-button>
+        <el-button
+          v-if="['forth', 'fifth', 'sixth'].includes(planPanel)"
+          class="import"
+          type="plain"
+          @click="openImportImgDialog"
+        >
+          导入图片
+        </el-button>
+
+        <el-button
+          class="import"
+          type="plain"
+          @click="openShareConfigDialog"
+        >
+          分享设置
+        </el-button>
       </div>
 
       <el-tabs
@@ -979,6 +994,10 @@
 
     <!-- 非系统订单-导入上下刊图片-弹框组件 -->
     <ImportPublishPicDialog ref="importPublishPicDialogRef" />
+
+    <!-- 分享设置-弹窗 -->
+    <ShareConfigDialog ref="shareConfigDialogRef"  />
+
   </div>
 </template>
 
@@ -1003,6 +1022,7 @@ import ChangePicCountry from "./components/changePicCountry.vue";
 import ChangeCountryOrderPrice from "./components/changeCountryOrderPrice.vue";
 import ScheduleAlterCountry from "@/components/common/components/Alter/ScheduleAlterCountry";
 import ImportPublishPicDialog from '@/components/common/components/importPublishPicDialog.vue'
+import ShareConfigDialog from '@/components/common/components/unsystematicOrder/shareConfigDialog.vue'
 
 export default {
   name: "orderDetail",
@@ -1016,7 +1036,8 @@ export default {
     noSearchResult,
     ChangeCountryOrderPrice,
     ScheduleAlterCountry,
-    ImportPublishPicDialog
+    ImportPublishPicDialog,
+    ShareConfigDialog
   },
   data() {
     return {
@@ -2035,6 +2056,10 @@ export default {
           });
         }
       });
+    },
+
+    openShareConfigDialog() {
+      this.$refs.shareConfigDialogRef && this.$refs.shareConfigDialogRef.open({ apId: this.apId, asrId: this.currentCompanyId })
     }
   },
 };

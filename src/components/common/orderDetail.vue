@@ -157,14 +157,17 @@
                             @click="getPointRecord"
                             >更改记录
                         </el-button>
+
                         <el-button
-                            plain
-                            type="default"
-                            icon="el-icon-download"
-                            @click="export2Excel(orderDetail.apName)"
-                            :disabled="isDown"
-                            >导出
+                          plain
+                          type="default"
+                          icon="el-icon-download"
+                          :disabled="isDown"
+                          @click="handleExport"
+                        >
+                          导出
                         </el-button>
+
                         <el-button
                             v-if="customPermission.pptPermission.gzqylPermission"
                             @click="showRecommendation"
@@ -241,9 +244,10 @@
                   </el-table-column>
 
                   <template v-for="item in currentColumns">
-                    <template v-if="item.label === '资源名称'">
+                    <template v-if="item.label === '资源名称' && item.isChecked">
                         <el-table-column
-                            v-if="item.isChecked"
+                            :key="item.prop"
+                            :prop="item.prop"
                             :fixed="item.fix === 'left' ? true : false"
                             :label="item.label"
                             :min-width="item.width"
@@ -276,10 +280,11 @@
                             </template>
                         </el-table-column>
                     </template>
-                    <template v-else-if="item.label === '媒体类型'">
+
+                    <template v-else-if="item.label === '媒体类型' && item.isChecked">
                         <el-table-column
-                            v-if="item.isChecked"
                             :fixed="item.fix === 'left' ? true : false"
+                            :key="item.prop"
                             :prop="item.prop"
                             :label="item.label"
                             :min-width="item.width"
@@ -288,10 +293,11 @@
                         >
                         </el-table-column>
                     </template>
-                    <template v-else-if="item.label === '投放面'">
+
+                    <template v-else-if="item.label === '投放面' && item.isChecked">
                         <el-table-column
-                            v-if="item.isChecked"
                             :fixed="item.fix === 'left' ? true : false"
+                            :key="item.prop"
                             :prop="item.prop"
                             :label="item.label"
                             :min-width="item.width"
@@ -300,10 +306,11 @@
                         >
                         </el-table-column>
                     </template>
-                    <template v-else-if="item.label === '城市'">
+
+                    <template v-else-if="item.label === '城市' && item.isChecked">
                         <el-table-column
-                            v-if="item.isChecked"
                             :fixed="item.fix === 'left' ? true : false"
+                            :key="item.prop"
                             :prop="item.prop"
                             :label="item.label"
                             :min-width="item.width"
@@ -312,11 +319,12 @@
                         >
                         </el-table-column>
                     </template>
-                    <template v-else-if="item.label === '区域'">
+
+                    <template v-else-if="item.label === '区域' && item.isChecked">
                         <el-table-column
-                            v-if="item.isChecked"
                             :fixed="item.fix === 'left' ? true : false"
                             :prop="item.prop"
+                            :key="item.prop"
                             :label="item.label"
                             :min-width="item.width"
                             :filters="filtersArea"
@@ -324,9 +332,11 @@
                         >
                         </el-table-column>
                     </template>
+
                     <template v-else-if="item.label === '排期'">
                         <el-table-column
                             :prop="item.prop"
+                            :key="item.prop"
                             :label="item.label"
                             :min-width="item.width"
                             :filters="scheduleList"
@@ -342,10 +352,12 @@
                             </template>
                         </el-table-column>
                     </template>
+
                     <template v-else>
                         <el-table-column
                             v-if="item.isChecked"
                             :prop="item.prop"
+                            :key="item.prop"
                             :label="item.label"
                             :min-width="item.width"
                             :show-overflow-tooltip="true"
@@ -479,6 +491,7 @@
               </el-pagination>
             </el-tab-pane>
         </el-tabs>
+
         <!--换画弹框-->
         <div class="changepic_box FIRSTTIME" v-if="showPainModal">
           <change-pic
@@ -492,6 +505,7 @@
             @hidePainModal="hidePainModal()"
           ></change-pic>
         </div>
+
         <!--添加点位对话框-->
         <el-dialog
           title="添加点位"
@@ -507,6 +521,7 @@
             <el-button type="primary" @click="confirmAddPoint">确 定</el-button>
           </span>
         </el-dialog>
+
         <!--excel导入点位对话框-->
         <import-point-by-excel
           :dialogImportPoint="dialogImportPoint"
@@ -514,6 +529,7 @@
           @resetDialogImportPoint="resetDialogImportPoint"
           @refreshCurrentTable="refreshCurrentTable"
         ></import-point-by-excel>
+
         <!-- 更改排期对话框 -->
         <changePointPlayDateRange
           :changeRangeDialog="changeRangeDialog"
@@ -522,6 +538,7 @@
           @resetDialogChangeRange="resetDialogChangeRange"
           @refreshCurrentTable="refreshCurrentTable"
         ></changePointPlayDateRange>
+
         <!-- 图片查看显示 -->
         <el-dialog :visible.sync="dialogVisible" class="imgPreview" top="10vh">
           <img :src="dialogImageUrl" alt="" />
@@ -712,6 +729,7 @@
                   width="45"
                 >
                 </el-table-column>
+
                 <el-table-column type="expand">
                   <template slot-scope="props">
                     <el-form
@@ -771,6 +789,7 @@
                     </el-form>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   label="资源名称"
                   min-width="16.1%"
@@ -802,14 +821,16 @@
                     <span>{{ scope.row.resName || '--' }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="mTitle"
                   label="媒体名称"
                   min-width="10.3%"
                 >
                 </el-table-column>
-                <el-table-column prop="asLab" label="投放面" min-width="5.8%">
-                </el-table-column>
+
+                <el-table-column prop="asLab" label="投放面" min-width="5.8%"></el-table-column>
+
                 <el-table-column
                   prop="city"
                   label="城市"
@@ -818,6 +839,7 @@
                   :filter-method="filterCity"
                 >
                 </el-table-column>
+
                 <el-table-column
                   prop="rName"
                   label="区域"
@@ -826,11 +848,13 @@
                   :filter-method="filterRName"
                 >
                 </el-table-column>
+
                 <el-table-column prop="cType" label="楼盘类型" min-width="6.5%">
                   <template slot-scope="scope">
                     <span>{{ scope.row.cType || '--' }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="hNum"
                   label="小区户数"
@@ -843,6 +867,7 @@
                     }}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   label="楼盘价格"
                   min-width="7.3%"
@@ -859,6 +884,7 @@
                     >
                   </template>
                 </el-table-column>
+
                 <el-table-column
                   prop="timeRange"
                   label="排期"
@@ -871,10 +897,12 @@
                     <span>{{ scope.row.timeRange }}</span>
                   </template>
                 </el-table-column>
+
                 <div slot="empty">
                   <no-search-result></no-search-result>
                 </div>
               </el-table>
+
               <!--<p style="font-size: 12px;color: #666666;margin-top: 10px">提示：带*号的为新增点位</p>-->
               <div class="table-bottom-tip">
                 <div style="display: flex" v-if="isHandleChange">
@@ -925,6 +953,7 @@
             >
           </div>
         </el-dialog>
+
         <!-- 推荐理由弹框 -->
         <el-dialog
           title="推荐理由"
@@ -952,8 +981,8 @@
                 >点击下载<i class="el-icon-download"></i
               ></a>
             </div>
-            <div class="step-text">第二步：上传编辑好的Excle表格</div>
-            <div>
+            <div class="step-text">第二步：上传编辑好的Excel表格</div>
+            <div class="uploader_wrapper">
               <el-upload
                 ref="exportRes"
                 drag
@@ -1033,6 +1062,7 @@
             >
           </div>
         </el-dialog>
+
         <!--点位更改记录对话框-->
         <el-dialog
           title="点位更改记录"
@@ -1216,6 +1246,9 @@
     <!-- 标记完成-弹窗 -->
     <MarkFinishDialog ref="markFinishDialogRef" :scheduleOptions="scheduleList" @submitSuccess="refreshList" />
 
+    <!-- 订单/方案详情-导出点位明细-弹框组件 -->
+    <ExportPointDetailDialog ref="exportPointDetailDialogRef" />
+
   </div>
 </template>
 
@@ -1245,6 +1278,8 @@ import TableSetting from "./components/TableSetting";
 import audioList from "./components/audioList.vue";
 import OrderImgAuditDialog from './components/orderImgAuditDialog.vue'
 import MarkFinishDialog from './components/orderDetail/markFinishDialog.vue'
+import ExportPointDetailDialog from '@/components/common/components/point/exportPointDetailDialog.vue'
+
 
 export default {
   name: "orderDetail",
@@ -1262,7 +1297,8 @@ export default {
     TableSetting,
     audioList,
     OrderImgAuditDialog,
-    MarkFinishDialog
+    MarkFinishDialog,
+    ExportPointDetailDialog
   },
   data () {
     return {
@@ -1281,6 +1317,7 @@ export default {
         { id: 6, label: "商圈", prop: "tradingArea", width: "120px", isChecked: false, fix:"not" },
         { id: 7, label: "媒体名称", prop: "mTitle", width: "120px", isChecked: true, fix:"not" },
         { id: 8, label: "媒体位ID", prop: "assetTag", width: "150px", isChecked: true, fix:"not" },
+        { id: 15, label: "MAC", prop: "mac", width: "150px", isChecked: true, fix:"not" },
         { id: 9, label: "设备类型", prop: "mType", width: "180px", isChecked: false, fix:"not" },
         { id: 10, label: "位置类型", prop: "site", width: "120px", isChecked: false, fix:"not" },
         { id: 11, label: "楼栋", prop: "buildingName", width: "100px", isChecked: false, fix:"not" },
@@ -1794,129 +1831,137 @@ export default {
       this.pointCurrPage = page;
       this.changePointPageFn();
     },
+
+    /**
+     * 导出点位明细
+     */
+    handleExport() {
+      this.$refs.exportPointDetailDialogRef && this.$refs.exportPointDetailDialogRef.open({ apId: this.apId, name: this.orderDetail.apName })
+    },
+
     // 导出excel
-    export2Excel (name) {
-      this.isDown = true;
-      let resultArr = [];
-      for (let data of this.exportArr) {
-        let obj = {
-          resName: data.resName,
-          province: data.province,
-          city: data.city,
-          rName: data.rName,
-          asName: data.asName,
-          mVehicle: data.mVehicle,
-          mTitle: data.mTitle,
-          assetTag: data.assetTag,
-          asLab: data.asLab,
-          timeRange: data.timeRange,
-          finishTimeRange: data.finishTimeRange,
-          tradingArea: data.tradingArea,
-          cType: data.cType,
-          hPrice: data.hPrice / 100,
-          hNum: data.hNum == '0' ? '&' : data.hNum,
-          fNum: data.fNum,
-          chDay: data.chDay,
-          adSize: data.adSize,
-          adViewSize: data.adViewSize,
-          notPush: data.notPush,
-          mRemark: data.mRemark,
-          resAddress: data.resAddress,
-          remark: data.remark,
-          trafficState: data.trafficState,
-          electrifyState: data.electrifyState,
-          mapCenter: data.mapCenterName || '',
-          parkSpaceNum: data.parkSpaceNum || "",
-          carFlow: data.carFlow || "",
-          peopleFlow: data.peopleFlow || "",
-          mType: data.mType || "",
-        };
-        resultArr.push(obj);
-      }
-      require.ensure([], () => {
-        const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
-        let tHeader = [
-          '资源名称',
-          '省份',
-          '城市',
-          '区域',
-          '详细地址',
-          '媒介载体',
-          '媒体名称',
-          '资产编号',
-          '投放面',
-          '投放排期',
-          '门体类型',
-          '商圈',
-          '楼栋数量',
-          '住户数量',
-          '楼盘价格',
-          '楼盘类型',
-          '入住年份/建成年份',
-          '广告限制',
-          '车位数',
-          '车流量',
-          '人流量',
-          '素材尺寸',
-          '可视尺寸',
-          '媒体备注',
-          '地图中心点',
-          '终止日期',
-        ];
-        let filterVal = [
-          'resName',
-          'province',
-          'city',
-          'rName',
-          'resAddress',
-          'mVehicle',
-          'mTitle',
-          'assetTag',
-          'asLab',
-          'timeRange',
-          'mType',
-          'tradingArea',
-          'fNum',
-          'hNum',
-          'hPrice',
-          'cType',
-          'chDay',
-          'notPush',
-          'parkSpaceNum',
-          'carFlow',
-          'peopleFlow',
-          'adSize',
-          'adViewSize',
-          'mRemark',
-          'mapCenter',
-          'finishTimeRange',
-        ];
+    // export2Excel (name) {
+    //   this.isDown = true;
+    //   let resultArr = [];
+    //   for (let data of this.exportArr) {
+    //     let obj = {
+    //       resName: data.resName,
+    //       province: data.province,
+    //       city: data.city,
+    //       rName: data.rName,
+    //       asName: data.asName,
+    //       mVehicle: data.mVehicle,
+    //       mTitle: data.mTitle,
+    //       assetTag: data.assetTag,
+    //       asLab: data.asLab,
+    //       timeRange: data.timeRange,
+    //       finishTimeRange: data.finishTimeRange,
+    //       tradingArea: data.tradingArea,
+    //       cType: data.cType,
+    //       hPrice: data.hPrice / 100,
+    //       hNum: data.hNum == '0' ? '&' : data.hNum,
+    //       fNum: data.fNum,
+    //       chDay: data.chDay,
+    //       adSize: data.adSize,
+    //       adViewSize: data.adViewSize,
+    //       notPush: data.notPush,
+    //       mRemark: data.mRemark,
+    //       resAddress: data.resAddress,
+    //       remark: data.remark,
+    //       trafficState: data.trafficState,
+    //       electrifyState: data.electrifyState,
+    //       mapCenter: data.mapCenterName || '',
+    //       parkSpaceNum: data.parkSpaceNum || "",
+    //       carFlow: data.carFlow || "",
+    //       peopleFlow: data.peopleFlow || "",
+    //       mType: data.mType || "",
+    //     };
+    //     resultArr.push(obj);
+    //   }
+    //   require.ensure([], () => {
+    //     const { export_json_to_excel } = require('../../vendorExcel/Export2Excel');
+    //     let tHeader = [
+    //       '资源名称',
+    //       '省份',
+    //       '城市',
+    //       '区域',
+    //       '详细地址',
+    //       '媒介载体',
+    //       '媒体名称',
+    //       '资产编号',
+    //       '投放面',
+    //       '投放排期',
+    //       '门体类型',
+    //       '商圈',
+    //       '楼栋数量',
+    //       '住户数量',
+    //       '楼盘价格',
+    //       '楼盘类型',
+    //       '入住年份/建成年份',
+    //       '广告限制',
+    //       '车位数',
+    //       '车流量',
+    //       '人流量',
+    //       '素材尺寸',
+    //       '可视尺寸',
+    //       '媒体备注',
+    //       '地图中心点',
+    //       '终止日期',
+    //     ];
+    //     let filterVal = [
+    //       'resName',
+    //       'province',
+    //       'city',
+    //       'rName',
+    //       'resAddress',
+    //       'mVehicle',
+    //       'mTitle',
+    //       'assetTag',
+    //       'asLab',
+    //       'timeRange',
+    //       'mType',
+    //       'tradingArea',
+    //       'fNum',
+    //       'hNum',
+    //       'hPrice',
+    //       'cType',
+    //       'chDay',
+    //       'notPush',
+    //       'parkSpaceNum',
+    //       'carFlow',
+    //       'peopleFlow',
+    //       'adSize',
+    //       'adViewSize',
+    //       'mRemark',
+    //       'mapCenter',
+    //       'finishTimeRange',
+    //     ];
 
-        switch (this.customPermission.patrolPermission) {
-          case 1:
-            tHeader.push('巡点问题', '通行情况');
-            filterVal.push('remark', 'trafficState')
-            break;
-          case 2:
-            tHeader.push('巡点问题', '通行情况', '通电情况');
-            filterVal.push('remark', 'trafficState', 'electrifyState')
-            break;
-        }
+    //     switch (this.customPermission.patrolPermission) {
+    //       case 1:
+    //         tHeader.push('巡点问题', '通行情况');
+    //         filterVal.push('remark', 'trafficState')
+    //         break;
+    //       case 2:
+    //         tHeader.push('巡点问题', '通行情况', '通电情况');
+    //         filterVal.push('remark', 'trafficState', 'electrifyState')
+    //         break;
+    //     }
 
-        if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
-          tHeader.push('归属公司');
-          filterVal.push('asName')
-        }
+    //     if ((this.sessionData.uType == 'ADN_MD_COUNTRY') || (this.sessionData.uType == 'ADN_BD_KA')) {
+    //       tHeader.push('归属公司');
+    //       filterVal.push('asName')
+    //     }
 
-        const list = resultArr;
-        const data = this.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, name);
-        this.isDown = false;
-      })
-    },
-    formatJson (filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
-    },
+    //     const list = resultArr;
+    //     const data = this.formatJson(filterVal, list);
+    //     export_json_to_excel(tHeader, data, name);
+    //     this.isDown = false;
+    //   })
+    // },
+    // formatJson (filterVal, jsonData) {
+    //   return jsonData.map(v => filterVal.map(j => v[j]))
+    // },
     // 判断是否是有换点跳转过来的？
     isChangePoint () {
       let isChange = sessionStorage.getItem('change_point');
@@ -3308,16 +3353,18 @@ export default {
   }
 }
 
-/deep/ .el-upload-list__item.is-success {
-  display: none;
-}
+.uploader_wrapper {
+    /deep/ .el-upload-list__item.is-success {
+    display: none;
+  }
 
-/deep/ .el-upload-list__item.is-1 {
-  display: none;
-}
+    /deep/ .el-upload-list__item.is-1 {
+    display: none;
+  }
 
-/deep/ .disabled .el-upload--picture-card {
-  display: none;
+  /deep/ .disabled .el-upload--picture-card {
+    display: none;
+  }
 }
 
 /deep/ .el-table__expanded-cell[class*='cell'] .el-form {
@@ -3531,24 +3578,28 @@ export default {
   cursor: pointer;
   color: rgba(102, 102, 102, 1);
 }
-/deep/ .el-upload--text {
-  width: 100%;
-}
-/deep/ .el-upload--text .el-upload-list__item {
-  width: 100%;
+
+.uploader_wrapper {
+  /deep/ .el-upload--text {
+    width: 100%;
+  }
+  /deep/ .el-upload--text .el-upload-list__item {
+    width: 100%;
+  }
+
+  /deep/ .el-upload--text .el-upload-dragger {
+    padding-top: 9%;
+    width: 100%;
+    height: 135px;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  /deep/ .el-upload--text .el-upload-dragger img {
+    width: 28px;
+    height: 30px;
+  }
 }
 
-/deep/ .el-upload--text .el-upload-dragger {
-  padding-top: 9%;
-  width: 100%;
-  height: 135px;
-  background: rgba(0, 0, 0, 0.02);
-}
-
-/deep/ .el-upload--text .el-upload-dragger img {
-  width: 28px;
-  height: 30px;
-}
 </style>
 
 <style lang="scss">

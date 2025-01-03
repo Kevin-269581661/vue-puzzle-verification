@@ -13,7 +13,7 @@
     >
       <template slot="title">
         <div class="dialog_header">
-          <span style="margin-right: auto;">导出点位明细</span>
+          <span style="margin-right: auto">导出点位明细</span>
 
           <el-select
             v-model="collectSelection"
@@ -31,7 +31,6 @@
               :label="item.name"
             ></el-option>
           </el-select>
-
         </div>
       </template>
 
@@ -46,13 +45,11 @@
             :model="formData"
             :rules="formRules"
           >
-
             <el-form-item label="导出字段选择：" prop="field">
               <div class="drop_transform_warpper">
                 <div class="drop_card part_left">
                   <div class="card_header">未选择</div>
                   <div class="drop_list">
-
                     <Draggable
                       v-model="formData.notSelectedList"
                       handle=".drop_item"
@@ -63,19 +60,21 @@
                       :forceFallback="true"
                       :scroll="true"
                     >
-                      <div v-for="(item, i) in formData.notSelectedList" class="drop_item" :key="item.key">
+                      <div
+                        v-for="(item, i) in formData.notSelectedList"
+                        class="drop_item"
+                        :key="item.key"
+                      >
                         <span class="text" :title="item.name">{{ item.name }}</span>
                         <span class="el-icon-right icon add" @click="handleAction('add', i)"></span>
                       </div>
                     </Draggable>
-
                   </div>
                 </div>
 
                 <div class="drop_card part_right">
                   <div class="card_header">已选择</div>
                   <div class="drop_list">
-
                     <Draggable
                       v-model="formData.hasSelectedList"
                       handle=".drop_item"
@@ -86,17 +85,22 @@
                       :forceFallback="true"
                       :scroll="true"
                     >
-                      <div v-for="(item, i) in formData.hasSelectedList" class="drop_item selected" :key="item.key">
+                      <div
+                        v-for="(item, i) in formData.hasSelectedList"
+                        class="drop_item selected"
+                        :key="item.key"
+                      >
                         <span class="text" :title="item.name">{{ item.name }}</span>
-                        <span class="el-icon-close icon delete" @click="handleAction('delete', i)"></span>
+                        <span
+                          class="el-icon-close icon delete"
+                          @click="handleAction('delete', i)"
+                        ></span>
                       </div>
                     </Draggable>
-
                   </div>
                 </div>
               </div>
             </el-form-item>
-
           </el-form>
         </div>
         <div class="custom_dialog_footer">
@@ -110,36 +114,44 @@
           <el-button @click="close" size="small">取 消</el-button>
           <el-button type="primary" @click="onSubmit" size="small">确 定</el-button>
         </div>
-
       </div>
     </el-dialog>
 
     <!-- 收藏列表 -->
-    <CollectExportPointDialog ref="collectExportPointDialogRef" :collectList="collectList" @getCollectList="getCollectList" />
+    <CollectExportPointDialog
+      ref="collectExportPointDialogRef"
+      :collectList="collectList"
+      @getCollectList="getCollectList"
+    />
 
     <!-- 城市选择-弹框组件 -->
-    <ExportOrderCitySelectDialog ref="exportOrderCitySelectDialogRef" :cityList="cityList" @submitSuccess="confirmSelectCity" />
+    <ExportOrderCitySelectDialog
+      ref="exportOrderCitySelectDialogRef"
+      :cityList="cityList"
+      @submitSuccess="confirmSelectCity"
+    />
   </div>
 </template>
 
 <script>
-import sessFun from "../../../../commonFun/sessFun.js"
+import sessFun from '../../../../commonFun/sessFun.js'
 import CollectExportPointDialog from './collectExportPointDialog.vue'
 import ExportOrderCitySelectDialog from './exportOrderCitySelectDialog.vue'
 import Draggable from 'vuedraggable'
-import { downLoadFileByRes } from '@/utils/downLoadUtil'
+// import { downLoadFileByRes } from '@/utils/downLoadUtil'
+import FileSaver from 'file-saver'
 
 /**
  * 初始化表单（提交）数据
  */
- const initFormData = () => {
+const initFormData = () => {
   return {
     name: '',
     apId: null,
     // 未选中
     notSelectedList: [],
     // 已选中
-    hasSelectedList: [],
+    hasSelectedList: []
   }
 }
 
@@ -151,7 +163,7 @@ export default {
     Draggable
   },
   emits: ['submitSuccess', 'afterClose'],
-  data () {
+  data() {
     return {
       visible: false,
       loading: false,
@@ -187,7 +199,7 @@ export default {
         // { id: 8, name: '广州8' },
         // { id: 9, name: '广州9' }
       ]
-    };
+    }
   },
   methods: {
     handleAction(type, index) {
@@ -208,11 +220,9 @@ export default {
     /**
      * 提交
      */
-    async onSubmit () {
-
+    async onSubmit() {
       // this.$refs.exportOrderCitySelectDialogRef && this.$refs.exportOrderCitySelectDialogRef.open()
       // return
-
 
       if (this.loading) return
       console.log('onSubmit formData ===', this.formData)
@@ -225,7 +235,7 @@ export default {
       try {
         this.loading = true
         // 不是是全国媒介、ka销售角色，直接走导出
-        if (!['ADN_MD_COUNTRY', 'ADN_BD_KA'].includes(sessFun.getSess().uType) ) {
+        if (!['ADN_MD_COUNTRY', 'ADN_BD_KA'].includes(sessFun.getSess().uType)) {
           return await this.exportToExcel(this.formData.apId)
         }
         // 全国媒介、ka销售角色，获取所有区域子单
@@ -237,7 +247,8 @@ export default {
         }
         this.cityList = data
         // 多个子单，打开选择框
-        this.$refs.exportOrderCitySelectDialogRef && this.$refs.exportOrderCitySelectDialogRef.open()
+        this.$refs.exportOrderCitySelectDialogRef &&
+          this.$refs.exportOrderCitySelectDialogRef.open()
       } catch (err) {
         this.$message.error(String(err) || '操作失败')
         console.error('onSubmit error:', err)
@@ -268,7 +279,10 @@ export default {
      */
     async exportToExcel(apId = null, apIds = []) {
       // 增加排序字段 sort（后端要求）
-      const selectedFields = this.formData.hasSelectedList.map((item, i) => ({ ...item, sort: i + 1 }))
+      const selectedFields = this.formData.hasSelectedList.map((item, i) => ({
+        ...item,
+        sort: i + 1
+      }))
       const res = await this.$api.adPlan.exportSpaces({
         apName: this.formData.name,
         selectedFields,
@@ -277,7 +291,13 @@ export default {
         // 方案id(仅当前订单时传)
         apId
       })
-      await downLoadFileByRes(res)
+
+      // await downLoadFileByRes(res, `${this.formData.name}.xlsx`)
+      FileSaver.saveAs(
+        new Blob([res.data], { type: 'application/vnd.ms-excel' }),
+        `${this.formData.name}.xlsx`
+      )
+
       this.$message.success('导出成功')
       this.$emit('submitSuccess')
       this.close()
@@ -312,7 +332,7 @@ export default {
     /**
      * 打开收藏列表
      */
-    openCollectTableDialog () {
+    openCollectTableDialog() {
       this.$refs.collectExportPointDialogRef && this.$refs.collectExportPointDialogRef.open()
     },
 
@@ -328,7 +348,7 @@ export default {
         const { SysCode: code, MSG: message, data } = res.data || {}
         if (code !== 200200) return this.$message.error(message || '获取数据失败')
         const collectList = []
-        ;(data || []).forEach(item => {
+        ;(data || []).forEach((item) => {
           if (item.id) {
             collectList.push(item)
           } else if (!item.id && isInit) {
@@ -353,7 +373,7 @@ export default {
     async collectChange(val) {
       if (!val) return
       try {
-        const current = this.collectList.find(item => item.id === val)
+        const current = this.collectList.find((item) => item.id === val)
         if (!current) return
         const { selectedFields, unselectedFields } = current
         this.formData.notSelectedList = unselectedFields ? [...unselectedFields] : []
@@ -394,10 +414,10 @@ export default {
     close() {
       if (!this.visible) return
       this.visible = false
-    },
+    }
   },
-  mounted () {},
-};
+  mounted() {}
+}
 </script>
 
 <style lang="scss" scoped>
@@ -500,14 +520,13 @@ export default {
         cursor: pointer;
         display: none;
         &.add {
-          color: #409EFF;
+          color: #409eff;
         }
         &.delete {
-          color: #F56C6C;
+          color: #f56c6c;
         }
       }
     }
   }
-
 }
 </style>

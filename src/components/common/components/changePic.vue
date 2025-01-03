@@ -259,12 +259,12 @@
                                    :key="index+'-'+pageInfo.currPage+'-1'"
                                    @click.native="saveId(item)"
 
-                                   :class="{disabled:uploadDisabled(item.photoList)}"
+                                   :class="{disabled:uploadDisabled(item.photoList || [])}"
                                    :action="doUpload"
                                    :http-request="uploadImg"
                                    :limit="6"
                                    list-type="picture-card"
-                                   :show-file-list="false"
+                                   :show-file-list="true"
                                    :file-list="item.photoList"
                                    :before-upload="beforeAvatarUpload"
                                    :before-remove="beforeImgRemove"
@@ -3246,6 +3246,15 @@
     .upload_border .el-icon-plus {
         font-size: 24px;
         color: rgba(0, 0, 0, 0.45);
+    }
+
+    .upload_plus {
+      /deep/  .el-upload-list__item.is-success {
+        display: none;
+      }
+      /deep/  .el-upload-list__item.is-1 {
+        display: none;
+      }
     }
 
     .imgpain_box {

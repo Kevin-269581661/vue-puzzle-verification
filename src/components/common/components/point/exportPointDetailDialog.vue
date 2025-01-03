@@ -138,8 +138,8 @@ import sessFun from '../../../../commonFun/sessFun.js'
 import CollectExportPointDialog from './collectExportPointDialog.vue'
 import ExportOrderCitySelectDialog from './exportOrderCitySelectDialog.vue'
 import Draggable from 'vuedraggable'
-import { downLoadFileByRes } from '@/utils/downLoadUtil'
-// import FileSaver from 'file-saver'
+// import { downLoadFileByRes } from '@/utils/downLoadUtil'
+import FileSaver from 'file-saver'
 
 /**
  * 初始化表单（提交）数据
@@ -291,8 +291,13 @@ export default {
         // 方案id(仅当前订单时传)
         apId
       })
-      await downLoadFileByRes(res, this.formData.name)
-      // await FileSaver.saveAs(res)
+
+      // await downLoadFileByRes(res, `${this.formData.name}.xlsx`)
+      FileSaver.saveAs(
+        new Blob([res.data], { type: 'application/vnd.ms-excel' }),
+        `${this.formData.name}.xlsx`
+      )
+
       this.$message.success('导出成功')
       this.$emit('submitSuccess')
       this.close()

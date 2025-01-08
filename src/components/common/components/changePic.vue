@@ -281,7 +281,7 @@
         <!-- 分页 -->
         <div class="pager">
             <el-pagination v-if="pageInfo.paginationShow&&!firstTime" background :current-page.sync="pageInfo.currPage"
-                           :page-sizes="[6, 12]" :page-size="pageInfo.pageSize2"
+                           :page-sizes="[6, 12, 30, 60]" :page-size="pageInfo.pageSize2"
                            layout="sizes, prev, pager, next, jumper" :total="pageInfo.totalNum"
                            @size-change="sizeChange" @current-change='changePage'>
             </el-pagination>

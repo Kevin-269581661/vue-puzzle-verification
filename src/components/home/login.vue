@@ -158,7 +158,7 @@
               </div>
             </div>
           </div>
-          <div class="tip">
+          <!-- <div class="tip">
             <p>
               温馨提示：加盟城市请(<a
                 :href="apiVar.qadnUrl + '/importTemplate/ApplicationForm.doc'"
@@ -166,7 +166,7 @@
                 >点击并下载申请表</a
               >)，申请平台账号
             </p>
-          </div>
+          </div> -->
         </div>
       </div>
       <!--背景canvas特效 -->

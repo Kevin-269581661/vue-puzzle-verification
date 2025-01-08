@@ -471,7 +471,7 @@
       <el-pagination
         background
         :current-page.sync="pageInfo.currPage"
-        :page-sizes="[6, 12]"
+        :page-sizes="[6, 12, 30, 60]"
         :page-size="pageInfo.pageSize"
         layout="sizes, prev, pager, next, jumper"
         :total="pageInfo.totalNum"

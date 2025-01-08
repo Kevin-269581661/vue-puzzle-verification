@@ -8,18 +8,21 @@
  * @param {*} fileName 必传-文件名，可带或不带后缀
  * @param {*} etc 非必传-文件后缀，带不带点都可
  */
-async function downLoadFileByBlob(data, fileName, etc = 'xlsx') {
+async function downLoadFileByBlob(data, fileName, etc = '') {
   // 去除文件名空格
   fileName = fileName.replace(/\s+/g, '')
-  // 检查文件名是否带有后缀
-  const fileNameDotIndex = fileName.lastIndexOf('.')
-  if (fileNameDotIndex !== -1) {
-    etc = fileName.slice(fileNameDotIndex + 1)
-    fileName = fileName.slice(0, fileNameDotIndex)
+  // 检查文件名是否带有后缀（不可行，若文件名本身有.）
+  // const fileNameDotIndex = fileName.lastIndexOf('.')
+  // if (fileNameDotIndex !== -1) {
+  //   etc = fileName.slice(fileNameDotIndex + 1)
+  //   fileName = fileName.slice(0, fileNameDotIndex)
+  // }
+  // 如果有传后缀参数，去掉后缀参数的“.”
+  if (etc) {
+    const suffix = etc.startsWith('.') ? etc.slice(1) : etc
+    // if (fileName.indexOf('.') === -1) fileName += `.${suffix}`
+    fileName += `.${suffix}`
   }
-  // 去掉后缀的“.”
-  const suffix = etc.startsWith('.') ? etc.slice(1) : etc
-  if (fileName.indexOf('.') === -1) fileName += `.${suffix}`
   const blob = new Blob([data])
   const href = window.URL.createObjectURL(blob)
   downLoadFileByLink(href, fileName)

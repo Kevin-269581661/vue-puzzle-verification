@@ -100,7 +100,8 @@
       </div>
       <div class="mediaList_wrap margin_16_64">
         <div class="btn_group">
-          <el-button v-if="['forth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">标记完成</el-button>
+          <!-- 只上刊显示按钮 -->
+          <el-button v-if="['forth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">标记完成</el-button>
         </div>
 
         <el-tabs v-model="planPanel" @tab-click="handleClick()">

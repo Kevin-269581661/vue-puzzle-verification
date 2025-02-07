@@ -397,6 +397,7 @@
           .postApi(this.apiVar.UCAPI + "/Login", loginParams)
           .then((res) => {
             let userMsg = res.data;
+            // console.log('userMsg ===', userMsg)
             if (userMsg) {
               if (!userMsg.SysCode) {
                 // 判断是否绑定手机号
@@ -778,10 +779,13 @@
        */
       authentication(data, loginType) {
         let { uType, asName = "", username = "" } = data;
+        // 超级管理员
         if (uType === "ADN_SM") {
           addRoutes("ADN_SM");
           this.$router.push("/superOperate");
-        } else if (["ADN_MD_COUNTRY", "ADN_MD"].includes(uType)) {
+        }
+        // 全国媒介/媒介/总部AE
+        else if (["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(uType)) {
           if (data.customPermission.proposalPermission == 1) {
             // 判断直营媒介
             addRoutes(uType, true);
@@ -790,7 +794,9 @@
             addRoutes(uType);
           }
           this.$router.push("/media");
-        } else if (["ADN_BD_KA", "ADN_BD"].includes(uType)) {
+        }
+        // KA销售/销售
+        else if (["ADN_BD_KA", "ADN_BD"].includes(uType)) {
           if (data.customPermission.proposalPermission == 1) {
             // 判断直营销售
             addRoutes(uType, true);
@@ -799,16 +805,24 @@
             addRoutes(uType);
           }
           this.$router.push("/sale");
-        } else if (uType === "ADN_OP") {
+        }
+        // 运营
+        else if (uType === "ADN_OP") {
           addRoutes("ADN_OP");
           this.$router.push("/operate");
-        } else if (uType === "AD") {
+        }
+        // 广告主
+        else if (uType === "AD") {
           addRoutes("AD");
           this.$router.push("/adOwner");
-        } else if (uType === "ADN_SA") {
+        }
+        // 系统管理员
+        else if (uType === "ADN_SA") {
           addRoutes("ADN_SA");
           this.$router.push("/admin");
-        } else if (
+        }
+        // 开发人员/资产人员/开发总监
+        else if (
           ["ADN_DEV", "ADN_DEV_ASSET", "ADN_DEV_LEADER"].includes(uType)
         ) {
           this.$confirm('开发功能全新升级上线，点击【进入】将为您跳转至新版页面', '提示', {
@@ -829,11 +843,15 @@
               message: '已取消'
             });
           });
-        } else if (loginType == "wx" && uType === "ADN_EP") {
+        }
+        // 工程人员（微信登录）
+        else if (loginType == "wx" && uType === "ADN_EP") {
           addRoutes("ADN_EP");
           // 是否开通后台权限由小程序端判断
           this.$router.push("/f_engineer/orderList");
-        } else if (
+        }
+        // 工程人员（账号登录）
+        else if (
           ["userName", "phoneNum"].includes(loginType) &&
           uType === "ADN_EP" &&
           data.backstagePermission == 1

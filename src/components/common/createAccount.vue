@@ -40,8 +40,8 @@
                             </el-select>
                         </el-form-item>
 
-                        <!-- 媒介或销售 -->
-                        <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD'">
+                        <!-- 媒介/销售/AE -->
+                        <template v-if="accountForm.role == 'MD' || accountForm.role == 'BD' || accountForm.role == 'ADN_AE_HQ'">
                             <el-form-item label="媒体权限：" prop="MD_BD_MediaPermission">
                                 <div class="cascader-box">
                                     <el-cascader
@@ -240,6 +240,10 @@ export default {
                 {
                     label: "销售",
                     value: "BD",
+                },
+                {
+                    label: "AE",
+                    value: "ADN_AE_HQ",
                 },
                 {
                     label: "运营",
@@ -465,8 +469,8 @@ export default {
                         }
                       }
                     }
-                    // 媒介+单元门禁灯箱
-                    else if (this.accountForm.role == 'MD') {
+                    // 媒介/AE + 单元门禁灯箱
+                    else if (this.accountForm.role == 'MD' || this.accountForm.role == 'ADN_AE_HQ') {
                       // 系统管理员：默认勾选单元，否则选择最小纬度
                       if (this.sessionData.uType === 'ADN_SA') {
                         index = node.children.findIndex((child) => child.label === '点位')

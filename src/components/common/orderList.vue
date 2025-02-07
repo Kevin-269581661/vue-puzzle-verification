@@ -38,6 +38,7 @@
               </el-select>
             </el-input>
           </el-col>
+
           <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">日期：</span>
             <div class="date-group">
@@ -65,6 +66,7 @@
               </el-date-picker>
             </div>
           </el-col>
+
           <el-col v-if="isAll" class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">所属公司：</span>
             <el-select
@@ -81,6 +83,7 @@
               ></el-option>
             </el-select>
           </el-col>
+
           <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">城市：</span>
             <el-select
@@ -97,6 +100,7 @@
               ></el-option>
             </el-select>
           </el-col>
+
           <!-- <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <span class="search_label">订单状态：</span>
             <el-select
@@ -112,6 +116,7 @@
               ></el-option>
             </el-select>
           </el-col> -->
+
           <el-col class="row-unit" :xs="12" :sm="8" :md="8" :lg="8" :xl="6">
             <el-button
               type="primary"
@@ -128,6 +133,7 @@
             </el-button>
           </el-col>
         </el-row>
+
         <div class="table_wrap">
           <el-table
             border
@@ -165,6 +171,7 @@
                 }}</span>
               </template>
             </el-table-column>
+
             <el-table-column
               prop="cName"
               label="客户名称"
@@ -172,6 +179,7 @@
               show-overflow-tooltip
             >
             </el-table-column>
+
             <el-table-column
               prop="bTitle"
               label="品牌名称"
@@ -179,6 +187,7 @@
               show-overflow-tooltip
             >
             </el-table-column>
+
             <el-table-column
               prop="apQC"
               label="合同编号"
@@ -186,6 +195,7 @@
               width="180px"
             >
             </el-table-column>
+
             <el-table-column
               prop="apTotal"
               sortable="custom"
@@ -202,6 +212,7 @@
                 >
               </template>
             </el-table-column>
+
             <el-table-column
               label="投放城市(点位面数，排期)"
               prop="cityArea"
@@ -251,6 +262,7 @@
                 </div>
               </template>
             </el-table-column>
+
             <el-table-column
               prop="mediaTypeNames"
               label="媒体类型"
@@ -263,6 +275,7 @@
                     <span>{{ scope.row.mediaTypeNames || '--' }}</span>
                 </template>
             </el-table-column>
+
             <el-table-column
               prop="realName"
               label="所有人"
@@ -274,6 +287,7 @@
               v-if="['ADN_BD_KA', 'ADN_BD'].includes(role)"
             >
             </el-table-column>
+
             <el-table-column
               prop="realName"
               label="所有人"
@@ -282,6 +296,7 @@
               v-if="role === 'ADN_EP'"
             >
             </el-table-column>
+
             <el-table-column
               prop="skProgress"
               label="上刊进度"
@@ -290,6 +305,7 @@
               v-if="role === 'ADN_EP'"
             >
             </el-table-column>
+
             <el-table-column
               prop="xkProgress"
               label="下刊进度"
@@ -298,6 +314,7 @@
               v-if="role === 'ADN_EP'"
             >
             </el-table-column>
+
             <el-table-column
               prop="appTime"
               label="发布日期"
@@ -309,6 +326,7 @@
                 <span>{{ formatTime(scope.row.appTime) }}</span>
               </template>
             </el-table-column>
+
             <el-table-column
               class="Status"
               column-key="apState"
@@ -326,6 +344,7 @@
                 ></point-state>
               </template>
             </el-table-column>
+
             <el-table-column
               label="操作"
               fixed="right"

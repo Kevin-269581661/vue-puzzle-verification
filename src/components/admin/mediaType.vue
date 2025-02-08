@@ -22,6 +22,7 @@
                             <button class="createMedia" @click="addMediaType">新增媒体</button>
                         </div>
                     </el-col>
+
                     <el-col :span="19">
                         <div class="mediaDetail">
                             <div v-if="!isEditForm">
@@ -35,6 +36,7 @@
                                             <p>{{ sourceList | getOptionsLabel(mediaTypeForm.source) }}</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>适用公司</p>
@@ -44,6 +46,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>可投面数</p>
@@ -52,6 +55,7 @@
                                             <p>{{ mediaTypeForm.adSpaceNum }}</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>选点纬度</p>
@@ -62,6 +66,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>售卖方式</p>
@@ -70,6 +75,7 @@
                                             <p>{{ saleTypeData | getOptionsLabel(mediaTypeForm.saleModel) }}</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>监播照片尺寸</p>
@@ -79,6 +85,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <!-- <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>刊例价模式</p>
@@ -91,6 +98,7 @@
                                             </p>
                                         </div>
                                     </div> -->
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>投放方式</p>
@@ -99,6 +107,7 @@
                                             <p>{{ launchTypeData | getOptionsLabel(mediaTypeForm.releaseModel) }}</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>广告位配置</p>
@@ -109,6 +118,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>媒体说明</p>
@@ -134,6 +144,7 @@
                                             <p>亲邻</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>适用公司</p>
@@ -147,6 +158,7 @@
                                             <p>暂无</p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>可投面数</p>
@@ -164,6 +176,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>选点纬度</p>
@@ -181,6 +194,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>售卖方式</p>
@@ -197,6 +211,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>监播照片尺寸</p>
@@ -214,6 +229,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <!-- <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>刊例价模式</p>
@@ -228,6 +244,7 @@
                                             </p>
                                         </div>
                                     </div> -->
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>广告下发方式</p>
@@ -244,6 +261,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>广告位配置</p>
@@ -258,6 +276,7 @@
                                             </p>
                                         </div>
                                     </div>
+
                                     <div class="mediaTable_tr">
                                         <div class="mediaTable_td">
                                             <p>媒体说明</p>

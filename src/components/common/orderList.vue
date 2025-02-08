@@ -31,7 +31,7 @@
                   value="3"
                 ></el-option>
                 <el-option
-                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
                   label="所属销售"
                   value="4"
                 ></el-option>
@@ -379,7 +379,7 @@
                       :disabled="
                         scope.row.apState == 0 ||
                         scope.row.apState == 5 ||
-                        !['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) ||
+                        !['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role) ||
                         isDisableChangePoint(scope.row.mediaTypeNames)
                       "
                       @click.native.prevent="changePoint(scope.row)"
@@ -676,7 +676,7 @@ export default {
       let sess = this.sessionData;
       if (
         sess.ascType == 0 ||
-        (sess.uType == "ADN_MD_COUNTRY")
+        ["ADN_MD_COUNTRY", 'ADN_AE_HQ'].includes(sess.uType)
       ) {
         this.isAll = true;
       } else {

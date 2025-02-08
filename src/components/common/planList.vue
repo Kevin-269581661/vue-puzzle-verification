@@ -23,7 +23,7 @@
                 <el-option label="客户名称" value="2"></el-option>
                 <el-option label="品牌名称" value="3"></el-option>
                 <el-option
-                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
                   label="所属销售"
                   value="4"
                 ></el-option>
@@ -413,7 +413,7 @@
 
               <template v-if="item.label === '媒体类型'">
                 <el-table-column
-                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM' || role == 'ADN_BD_KA') && item.isChecked"
+                  v-if="['ADN_MD', 'ADN_MD_COUNTRY', 'ADN_BD', 'ADN_SM', 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType) && item.isChecked"
                   min-width="250px"
                   show-overflow-tooltip
                   column-key="mediaTypeNames"
@@ -592,10 +592,13 @@
                           解锁申请
                         </el-dropdown-item>
 
-                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
-                          scope.row.apControlLevel === 2 &&
-                          ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
-                        ">
+                        <el-dropdown-item
+                          v-if="
+                            scope.row.apControlLevel === 2 &&
+                            ['ADN_BD_KA', 'ADN_BD', 'ADN_AE_HQ'].includes(sessionData.uType)
+                          "
+                          @click.native.prevent="splitAdPlan(scope.row)"
+                        >
                           拆单
                         </el-dropdown-item>
 
@@ -1048,6 +1051,7 @@ export default {
         uid: sess.uID,
         token: sess.token,
       };
+      // ascType 0:平台商 1:媒体主
       if (sess.ascType == 0) {
         api
           .getApi(this.apiVar.UCAPI + "/GetDirectAscr", info)
@@ -1146,7 +1150,7 @@ export default {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       // ascType 0:平台商 1:媒体主
-      if (sess.ascType == 0 || sess.uType == "ADN_MD_COUNTRY") {
+      if (sess.ascType == 0 || ['ADN_MD_COUNTRY', 'ADN_AE_HQ'].includes(sess.uType)) {
         this.isAll = true;
       } else {
         this.isAll = false;
@@ -1187,7 +1191,7 @@ export default {
       this.IsSevenBD =
         this.sessionData.customPermission.proposalPermission == 1 &&
         ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType);
-      if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
+      if (["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(role)) {
         this.isDisable = false;
       }
       if (["ADN_BD", "ADN_MD"].includes(role)) {
@@ -1197,7 +1201,7 @@ export default {
         this.isSale = true;
       }
       if (
-        !["ADN_BD_KA", "ADN_BD"].includes(role) &&
+        !["ADN_BD_KA", "ADN_BD", 'ADN_AE_HQ'].includes(role) &&
         !["ADN_MD"].includes(role)
       ) {
         this.showNewBtn = false;
@@ -1376,7 +1380,7 @@ export default {
         return
       }
       let ownerSales =
-        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        ["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.sessionData.uType) &&
           adPlan.planData.baseInfo.realNamesName
           ? adPlan.planData.baseInfo.realNamesName
           : adPlan.planData.baseInfo.ownerSales;
@@ -1456,7 +1460,7 @@ export default {
       let dataArr = row.cityArea;
       let sess = this.sessionData;
       let isRelease = false;
-      if (sess.uType == "ADN_MD_COUNTRY") {
+      if (["ADN_MD_COUNTRY", 'ADN_AE_HQ'].includes(sess.uType)) {
         isRelease = true;
       } else {
         let num = 0;
@@ -1639,7 +1643,7 @@ export default {
     // 意向方案配点（直营媒介配点）
     addPoint(row) {
       if (
-        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        ["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.sessionData.uType) &&
         this.sessionData.customPermission.proposalPermission == 1
       ) {
         this.ToEdit(row);
@@ -1745,7 +1749,7 @@ export default {
       // 2)	地方媒介只能预锁方案中投放至该公司的部分
       let sess = this.sessionData;
       let resultArr = [];
-      if (sess.uType == "ADN_MD_COUNTRY") {
+      if (['ADN_MD_COUNTRY', 'ADN_AE_HQ'].includes(sess.uType)) {
         resultArr = arr;
       } else {
         for (let data of arr) {
@@ -2103,6 +2107,10 @@ export default {
         } else {
           obj.isdfmj = true
         }
+      }
+      // AE 角色不能直接操作 预锁/解锁/发布 ，只能发申请
+      else if (["ADN_AE_HQ"].includes(this.role)) {
+        obj.isdfmj = true
       } else {
         obj.isdfmj = false
       }

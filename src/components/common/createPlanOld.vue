@@ -51,6 +51,23 @@
                 </el-select>
               </el-form-item>
 
+              <!-- 客户数据源：1.adn，2.crm -->
+              <el-form-item
+                v-if="sessionData.uType == 'ADN_AE_HQ'"
+                label="客户数据源："
+                prop="customerSrc"
+                required
+              >
+                <el-radio-group
+                  v-model="planForm.customerSrc"
+                  :disabled="!planForm.ownerSales"
+                  @input="handleChangeCustomerSrc"
+                >
+                  <el-radio :label="1">ADN</el-radio>
+                  <el-radio :label="2">CRM</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item label="公司名称：" prop="companyName">
                 <el-select
                   v-model="planForm.companyName"
@@ -69,7 +86,7 @@
               </el-form-item>
 
               <!-- crm 客户公司品牌 -->
-              <template v-if="BDData.customerSrc == 2">
+              <template v-if="currentCustomerSrc == 2">
                 <el-form-item label="公司品牌：" prop="companyBrand">
                   <el-select
                     v-model="planForm.companyBrandMediaType"
@@ -2242,6 +2259,7 @@
       @handleDetails="handlePointDetails"
     >
     </PointSetting>
+
     <PointTable
       :visible.sync="pointTableShow"
       :importData="adResMatch"
@@ -2547,6 +2565,8 @@ export default {
         customerMediaType: undefined, // 关联商机
         // 售卖模式：
         saleMode: 0,
+        // 客户数据源：1.adn，2.crm
+        customerSrc: 1,
       },
       saleModeOptions: [
         { label: '传统售卖模式', value: 0 },
@@ -2833,11 +2853,13 @@ export default {
       crmCustomerCompanyList: []
     };
   },
+
   created() {
     this.getsessionData(); // 获取session中的数据
     this.requestIsPay();
     this.getCustomerMediaTypeList();
   },
+
   mounted() {
     this.areaCity = areaArr.cityArea();
     this.getADLimit(); // 获取广告限制列表
@@ -2850,6 +2872,7 @@ export default {
     }
     // console.log("this.cityOptions", this.cityOptions);
   },
+
   watch: {
     "planForm.throwCity": {
       handler: function () {
@@ -2900,6 +2923,7 @@ export default {
     //   },
     // },
   },
+
   computed: {
     nowPointNum() {
       if (this.dialogTableVisible) {
@@ -2953,6 +2977,14 @@ export default {
         isShowSite = false;
       }
       return isShowSite
+    },
+
+    /**
+     * 当前使用的客户源: 1.adn，2.crm
+     */
+    currentCustomerSrc() {
+      // 判断客户数据源: AE 角色特殊处理, 由 '客户数据源' 选择的值 来决定 客户数据源
+      return this.sessionData.uType == 'ADN_AE_HQ' ? this.planForm.customerSrc : this.BDData.customerSrc
     }
   },
   methods: {
@@ -4008,7 +4040,6 @@ export default {
         this.BDData.uid = val;
         this.getCityList();
         this.Get_cName();
-      } else {
       }
     },
     // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
@@ -4047,12 +4078,23 @@ export default {
     },
 
     /**
+     * 客户数据源切换
+     */
+    handleChangeCustomerSrc() {
+      this.planForm.companyName = ""
+      this.planForm.companyBrand = ""
+      this.planForm.companyBrandMediaType = ""
+      this.planForm.ownerBU = ""
+      this.$refs["planForm"].clearValidate()
+      this.Get_cName()
+    },
+
+    /**
      * 获取客户公司下拉数据
      */
     Get_cName() {
-      // 判断客户数据源
-      // customerSrc 客户数据源：1.adn，2.crm
-      if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+      // 判断客户数据源：1.adn，2.crm
+      if (!this.currentCustomerSrc || this.currentCustomerSrc === 1) {
         this.getAdnCustomerCompanySelectList()
       } else {
         this.getCrmCustomerCompanySelectList()
@@ -4171,9 +4213,8 @@ export default {
       this.planForm.companyBrand = "";
       this.planForm.companyBrandMediaType = "";
       this.planForm.ownerBU = "";
-      // 判断客户数据源
-       // customerSrc 客户数据源：1.adn，2.crm
-       if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+      // 判断客户数据源：1.adn，2.crm
+      if (!this.currentCustomerSrc || this.currentCustomerSrc === 1) {
         this.getAdnCustomerBrandSelectList()
       } else {
         this.getCrmCustomerBrandSelectList()
@@ -4244,7 +4285,8 @@ export default {
           this.cName = this.companyName[n].label;
         }
       }
-      if (this.BDData.customerSrc == 2) {
+      // 判断客户数据源
+      if (this.currentCustomerSrc == 2) {
         const current = this.companyBrandMediaTypeOptions.find(item => item.value === this.planForm.companyBrandMediaType)
         this.cBand = current ? current.label : ''
       } else {

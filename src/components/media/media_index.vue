@@ -583,6 +583,12 @@ export default {
           title: "点位表盘",
           link: "./media/adsDialPlate",
         })
+      } else if (['ADN_AE_HQ'].includes(uType)) {
+        list.push({
+          imgurl: require("../../assets/images/map.png"),
+          title: "地图选点",
+          link: "",
+        })
       }
       return list
     }

@@ -25,6 +25,7 @@
 
                     <el-col :span="19">
                         <div class="mediaDetail">
+                            <!-- 回显 -->
                             <div v-if="!isEditForm">
                                 <h3>{{ mediaTypeForm.name }}</h3>
                                 <div class="mediaTable see">
@@ -127,8 +128,28 @@
                                             <p>{{ mediaTypeForm.remark }}</p>
                                         </div>
                                     </div>
+
+                                    <div class="mediaTable_tr">
+                                        <div class="mediaTable_td">
+                                            <p>城市范围管理</p>
+                                        </div>
+                                        <div class="mediaTable_td">
+                                            <p>
+                                              <span>{{ mediaTypeForm.cityRangeStatus == 1 ? '开' : '关' }}</span>
+                                              <span
+                                                class="see_all"
+                                                style="margin-left: 20px"
+                                                @click="openCityMediaRangeDialog('view')"
+                                              >
+                                                查看
+                                              </span>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- 编辑 -->
                             <el-form v-else :model="mediaTypeForm" :rules="rules" ref="mediaTypeForm">
                                 <el-form-item prop="name" style="width: 220px;">
                                     <el-input v-model.trim="mediaTypeForm.name" maxlength="15" placeholder="请输入类型名称">
@@ -289,6 +310,30 @@
                                             </p>
                                         </div>
                                     </div>
+
+                                    <div class="mediaTable_tr">
+                                        <div class="mediaTable_td">
+                                            <p>城市范围管理</p>
+                                        </div>
+                                        <div class="mediaTable_td">
+                                            <p>
+                                              <el-switch
+                                                v-model="mediaTypeForm.cityRangeStatus"
+                                                active-text="开启"
+                                                inactive-text="关闭"
+                                                :active-value="1"
+                                                :inactive-value="0"
+                                              ></el-switch>
+                                              <span
+                                                class="see_all"
+                                                style="margin-left: 20px"
+                                                @click="openCityMediaRangeDialog('edit')"
+                                              >
+                                                配置
+                                              </span>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-form>
                         </div>
@@ -323,12 +368,19 @@
                 <el-button @click="isVisible = false">关 闭</el-button>
             </div>
         </el-dialog>
+
+        <!-- 城市范围管理-弹框组件 -->
+        <CityMediaRangeDialog ref="cityMediaRangeDialogRef" />
     </div>
 </template>
+
 <script>
-import api from "../../api/api.js";
+import api from "../../api/api.js"
+import CityMediaRangeDialog from '@/components/admin/components/cityMediaRangeDialog.vue'
+
 export default {
     name: "mediaType",
+    components: { CityMediaRangeDialog },
     data() {
         return {
             type: 'create',  //区分当前是新建还是编辑，create为新建，edit为编辑
@@ -488,6 +540,14 @@ export default {
         this.getMediaTypes();
     },
     methods: {
+        openCityMediaRangeDialog(type) {
+          if (type === 'edit') {
+            this.$refs.cityMediaRangeDialogRef && this.$refs.cityMediaRangeDialogRef.open(this.mediaTypeForm.id)
+          } else {
+            this.$refs.cityMediaRangeDialogRef && this.$refs.cityMediaRangeDialogRef.openDetail(this.mediaTypeForm.id)
+          }
+        },
+
         handleCurrentChange(val) {
             this.searchParams.pageNum = val
             this.getMediaTypeCompany()
@@ -641,7 +701,8 @@ export default {
                             // publishPriceModel,
                             releaseModel,
                             adSpaceConfig,
-                            remark
+                            remark,
+                            cityRangeStatus
                         } = this.mediaTypeForm;
                         let _publishPriceModel = '';
                         // publishPriceModel=publishPriceModel.sort()
@@ -684,7 +745,8 @@ export default {
                             // publishPriceModel:_publishPriceModel,
                             releaseModel,
                             adSpaceConfig,
-                            remark
+                            remark,
+                            cityRangeStatus
                         }
                         let Loading = this.$loading({
                             lock: true,
@@ -709,12 +771,14 @@ export default {
                         let {
                             id,
                             name,
-                            remark
+                            remark,
+                            cityRangeStatus
                         } = this.mediaTypeForm;
                         let params = {
                             id,
                             name,
-                            remark
+                            remark,
+                            cityRangeStatus
                         }
                         let Loading = this.$loading({
                             lock: true,
@@ -872,7 +936,7 @@ export default {
                         justify-content: center;
 
                         &:nth-child(1) {
-                            width: 13%;
+                            width: 160px;
                             background: #FAFAFA;
                             border-right: 1px solid #E8E8E8;
                         }

@@ -1253,6 +1253,7 @@ export default {
     },
 
     routeSelect() {
+      // 意向方案权限
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
         if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {

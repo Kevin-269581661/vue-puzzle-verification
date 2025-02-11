@@ -808,14 +808,16 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
->>>.el-form-item {
-    margin-bottom: 0px;
-}
+.mediaList_container {
+    >>>.el-form-item {
+      margin-bottom: 0px;
+  }
 
->>>.el-form-item__error {
-    top: 25%;
-    left: 110%;
-    width: 100%;
+  >>>.el-form-item__error {
+      top: 25%;
+      left: 110%;
+      width: 100%;
+  }
 }
 
 .mediaList_wrap {

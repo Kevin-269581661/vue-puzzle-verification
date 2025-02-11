@@ -240,6 +240,7 @@
                 <el-table-column
                   v-if="item.isChecked"
                   min-width="150px"
+                  show-overflow-tooltip
                   :key="item.prop"
                   :prop="item.prop"
                   :label="item.label"
@@ -247,9 +248,9 @@
                 >
                   <template slot-scope="scope">
                     <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
-                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">{{
-                        scope.row.apName
-                    }}</span>
+                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">
+                    {{ scope.row.apName }}
+                    </span>
                   </template>
                 </el-table-column>
               </template>

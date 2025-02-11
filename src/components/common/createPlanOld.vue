@@ -181,7 +181,6 @@
                   multiple
                   placeholder="请选择"
                   :disabled="!planForm.targetMedia"
-                  @change="handleChangeCityRange"
                 >
                   <el-option
                     v-for="item in preparedData.cityRangeOptions"
@@ -2909,10 +2908,14 @@ export default {
   watch: {
     "planForm.throwCity": {
       handler: function () {
-        this.planForm.pointOfAsrIDs = [];
-        this.preparedData.pointOfAsrIDsOptions = [];
-        if (this.planForm.throwCity.length == 0) return;
-        this.getPointOfAsr();
+        if (this.isShowCityRange) {
+          this.handleChangeCityRange()
+        } else {
+          this.planForm.pointOfAsrIDs = [];
+          this.preparedData.pointOfAsrIDsOptions = [];
+          if (this.planForm.throwCity.length == 0) return;
+          this.getPointOfAsr();
+        }
       },
     },
 
@@ -3062,18 +3065,20 @@ export default {
     /**
      * 选择投放城市(媒体城市范围开)，多选
      */
-    handleChangeCityRange(val) {
-      if (!val || !val.length) return
-      console.log('handleChangeCityRange val ===', val)
-      // const currentItem = this.preparedData.cityRangeOptions.find(item => item.rId === val)
-      // 自动填充配置的公司
-      // this.planForm.pointOfAsrIDs = currentItem.companyList.map(item => item.asrId)
+    handleChangeCityRange() {
+      const val = this.planForm.throwCity
+      if (!val || !val.length) {
+        this.planForm.pointOfAsrIDs = []
+        return
+      }
+      // console.log('handleChangeCityRange val ===', val)
 
-      this.planForm.pointOfAsrIDs = val.map(item => {
-        return this.preparedData.cityRangeOptions.find(cell => cell.rId === item).asrIds || []
-      })
+      this.planForm.pointOfAsrIDs = val.reduce((pre, item) => {
+        const list = this.preparedData.cityRangeOptions.find(cell => cell.rId === item).asrIds || []
+        return [...new Set([...pre, ...list])]
+      }, [])
 
-      console.log('handleChangeCityRange pointOfAsrIDs ===', this.planForm.pointOfAsrIDs)
+      // console.log('handleChangeCityRange pointOfAsrIDs ===', this.planForm.pointOfAsrIDs)
 
     },
 
@@ -6796,6 +6801,7 @@ export default {
       }
       // 只有AE跟KA销售才可以选择投放媒体城市范围配置，需要传城市公司对应关系，目的为了创建空点位的方案
       if (['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
+        // console.log('this.planForm 111====', this.planForm)
         params.cityInfo = JSON.stringify({
           mediaTypeId: this.planForm.targetMedia,
           rIds: this.planForm.throwCity,
@@ -6839,7 +6845,7 @@ export default {
             sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
           } else {
             this.ADloading.close();
-            sessFun.messageFun("warning", "方案创建失败");
+            sessFun.messageFun("warning", res.data.MSG || "方案创建失败");
           }
         });
     },

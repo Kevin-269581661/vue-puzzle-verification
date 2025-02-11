@@ -161,7 +161,7 @@ export default {
     handleChangeCity(item, index) {
       item.asrId = null
       item.asrName = ''
-      // this.getCompanyByCity(item)
+      item.asrOptions = []
     },
 
     /**

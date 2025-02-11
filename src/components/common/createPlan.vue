@@ -126,7 +126,12 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="选择媒体：" prop="targetMedia">
+              <!-- 只有AE跟KA销售才可以选择投放媒体城市范围配置 -->
+              <el-form-item
+                v-if="[ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType)"
+                label="投放媒体："
+                prop="targetMedia"
+              >
                 <el-select
                   v-model="planForm.targetMedia"
                   size="small"
@@ -183,6 +188,7 @@
                     filterable
                     multiple
                     placeholder="请选择"
+                    :disabled="[ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType) && !planForm.targetMedia"
                     @remove-tag="removeCity"
                   >
                     <el-option
@@ -207,7 +213,7 @@
                     filterable
                     multiple
                     placeholder="请选择"
-                    :disabled="!planForm.targetMedia || !planForm.throwCity || !planForm.throwCity.length"
+                    :disabled="!planForm.throwCity || !planForm.throwCity.length"
                   >
                     <el-option
                       v-for="item in preparedData.pointOfAsrIDsOptions"
@@ -1238,6 +1244,7 @@ export default {
         companyBrand: [
           { required: true, message: "请选择公司品牌", trigger: "change" },
         ],
+        targetMedia: [{ required: true, message: "请选择投放媒体", trigger: "change" }],
         throwCity: [
           {
             required: true,
@@ -1409,7 +1416,10 @@ export default {
     this.getsessionData(); // 获取session中的数据
     this.requestIsPay()
     this.getCustomerMediaTypeList()
-    this.getTargetMediaOptions()
+    // 只有AE跟KA销售才可以选择投放媒体城市范围配置
+    if ([ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
+      this.getTargetMediaOptions()
+    }
   },
   mounted () {
     this.areaCity = areaArr.cityArea();

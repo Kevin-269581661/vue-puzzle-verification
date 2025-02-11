@@ -18,7 +18,7 @@ export function listCityRel({
  * 更新媒体类型城市范围列表
  */
 export function updateCityRel(params) {
-  return request.postApi_json("/addsp/api/v1/mediaTypes/updateCityRel", params)
+  return request.postApi_json("/addsp/api/v1/mediaType/updateCityRel", params)
 }
 
 /**

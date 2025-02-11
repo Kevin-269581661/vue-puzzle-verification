@@ -3250,25 +3250,25 @@ export default {
         this.initMediaTag();
         this.submitForm("planForm");
       } else if (this.active === 1) {
-        if (this.shopingList.length !== 0) {
-          this.getBand(); // 获取公司品牌
-          // 防多次点击创建
-          if (!this.creating) {
-            this.creating = true;
-            let timer = setTimeout(() => {
-              this.creating = false;
-              this.ADloading = this.$loading({
-                lock: true,
-                text: "加急创建中...",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)",
-              });
-              this.creatAdPlan();
-              clearTimeout(timer);
-            }, 500);
-          }
-        } else {
+        // 只有AE 和 KA 角色可以创建无点位的方案
+        if (!['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType) && this.shopingList.length === 0) {
           return sessFun.messageFun("warning", "请选择点位");
+        }
+        this.getBand(); // 获取公司品牌
+        // 防多次点击创建
+        if (!this.creating) {
+          this.creating = true;
+          let timer = setTimeout(() => {
+            this.creating = false;
+            this.ADloading = this.$loading({
+              lock: true,
+              text: "加急创建中...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)",
+            });
+            this.creatAdPlan();
+            clearTimeout(timer);
+          }, 500);
         }
       }
     },
@@ -6793,6 +6793,14 @@ export default {
       };
       if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         delete params.suid;
+      }
+      // 只有AE跟KA销售才可以选择投放媒体城市范围配置，需要传城市公司对应关系，目的为了创建空点位的方案
+      if (['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
+        params.cityInfo = JSON.stringify({
+          mediaTypeId: this.planForm.targetMedia,
+          rIds: this.planForm.throwCity,
+          asrIds: this.planForm.pointOfAsrIDs
+        })
       }
       if (this.isPay && this.BDData.uType === "ADN_BD") {
         if (this.planForm.opportunityId) {

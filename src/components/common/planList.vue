@@ -1192,7 +1192,7 @@ export default {
       this.IsSevenBD =
         this.sessionData.customPermission.proposalPermission == 1 &&
         ["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType);
-      if (["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(role)) {
+      if (["ADN_MD_COUNTRY", "ADN_MD"].includes(role)) {
         this.isDisable = false;
       }
       if (["ADN_BD", "ADN_MD"].includes(role)) {
@@ -1207,7 +1207,7 @@ export default {
       ) {
         this.showNewBtn = false;
       }
-      if (["ADN_BD_KA", "ADN_BD", "ADN_SM"].includes(role)) {
+      if (["ADN_BD_KA", "ADN_BD", "ADN_SM", 'ADN_AE_HQ'].includes(role)) {
         this.isDisable = true;
       }
     },
@@ -2109,10 +2109,6 @@ export default {
         } else {
           obj.isdfmj = true
         }
-      }
-      // AE 角色不能直接操作 预锁/解锁/发布 ，只能发申请
-      else if (["ADN_AE_HQ"].includes(this.role)) {
-        obj.isdfmj = true
       } else {
         obj.isdfmj = false
       }

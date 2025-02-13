@@ -25,7 +25,7 @@
                 {{ orderDetail.apQC }}
                 <i
                   class="el-icon-edit"
-                  v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
                   @click="changeCID = true"
                   :class="{ changeCID: !usableBtn }"
                 ></i>
@@ -49,14 +49,14 @@
               <el-button
                 type="plain"
                 @click="changePain()"
-                v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
               >
                 换 画
               </el-button>
 
               <el-select
                 v-if="
-                  ['ADN_MD_COUNTRY', 'ADN_MD'].includes(role) &&
+                  ['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role) &&
                   planPanel == 'first' &&
                   orderDetail.apState != 5 &&
                   orderDetail.apState != 0
@@ -86,7 +86,7 @@
               <el-button
                 type="plain"
                 @click="changePrice"
-                v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)"
+                v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
               >
                 修改金额
               </el-button>
@@ -100,7 +100,8 @@
       </div>
       <div class="mediaList_wrap margin_16_64">
         <div class="btn_group">
-          <el-button v-if="['forth', 'sixth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">标记完成</el-button>
+          <!-- 只上刊显示按钮 -->
+          <el-button v-if="['forth'].includes(planPanel)" class="import" type="plain" @click="openImportImgDialog">标记完成</el-button>
         </div>
 
         <el-tabs v-model="planPanel" @tab-click="handleClick()">
@@ -209,7 +210,8 @@
                         <el-form-item
                           v-if="
                             sessionData.uType == 'ADN_MD_COUNTRY' ||
-                            sessionData.uType == 'ADN_BD_KA'
+                            sessionData.uType == 'ADN_BD_KA' ||
+                            sessionData.uType == 'ADN_AE_HQ'
                           "
                           label="归属公司："
                         >
@@ -761,7 +763,8 @@
                       <el-form-item
                         v-if="
                           sessionData.uType == 'ADN_MD_COUNTRY' ||
-                          sessionData.uType == 'ADN_BD_KA'
+                          sessionData.uType == 'ADN_BD_KA' ||
+                          sessionData.uType == 'ADN_AE_HQ'
                         "
                         label="归属公司:"
                       >
@@ -1552,7 +1555,7 @@ export default {
     if (
       ['ADN_BD_KA', 'ADN_BD'].includes(this.role)
       ||
-      ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.role)
+      ["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.role)
     ) {
       // 获取换画列表
       this.getPainlist();

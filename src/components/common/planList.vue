@@ -12,12 +12,21 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>关键词：</span>
-            <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="u-select">
+            <el-input
+              v-model="searchInfo.keyword"
+              placeholder="请输入内容"
+              size="small"
+              class="u-select"
+            >
               <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
                 <el-option label="方案名称" value="1"></el-option>
                 <el-option label="客户名称" value="2"></el-option>
                 <el-option label="品牌名称" value="3"></el-option>
-                <el-option v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(role)" label="所属销售" value="4"></el-option>
+                <el-option
+                  v-if="['ADN_MD_COUNTRY', 'ADN_MD', 'ADN_AE_HQ'].includes(role)"
+                  label="所属销售"
+                  value="4"
+                ></el-option>
               </el-select>
             </el-input>
           </div>
@@ -26,15 +35,28 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>日期：</span>
-            <el-select size="small" v-model="searchInfo.dateType" placeholder="请选择" class="u-date">
+            <el-select
+              v-model="searchInfo.dateType"
+              placeholder="请选择"
+              size="small"
+              class="u-date"
+            >
               <el-option label="上刊日期" value="0"></el-option>
               <el-option label="下刊日期" value="1"></el-option>
               <el-option label="创建日期" value="2"></el-option>
               <!--<el-option label="换画日期" value="2"></el-option>-->
             </el-select>
-            <el-date-picker size="small" class="u-date-picker" v-model="searchInfo.rangeDate" type="daterange"
-              range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="选择日期"
-              end-placeholder="选择日期">
+            <el-date-picker
+              v-model="searchInfo.rangeDate"
+              size="small"
+              class="u-date-picker"
+              type="daterange"
+              range-separator="-"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              start-placeholder="选择日期"
+              end-placeholder="选择日期"
+            >
             </el-date-picker>
           </div>
         </el-col>
@@ -42,8 +64,19 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择状态：</span>
-            <el-select v-model="searchInfo.status" placeholder="请选择状态" size="small" class="u-select2" clearable>
-              <el-option v-for="item of stateList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+            <el-select
+              v-model="searchInfo.status"
+              placeholder="请选择状态"
+              size="small"
+              class="u-select2"
+              clearable
+            >
+              <el-option
+                v-for="item of stateList"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
@@ -51,9 +84,20 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>选择城市：</span>
-            <el-select v-model="searchInfo.cityWord" placeholder="请选择投放城市" filterable size="small" class="u-select2" clearable>
-              <el-option v-for="item of filterCityData" :key="item.rID" :label="item.text" :value="item.text">
-              </el-option>
+            <el-select
+              v-model="searchInfo.cityWord"
+              placeholder="请选择投放城市"
+              filterable
+              size="small"
+              class="u-select2"
+              clearable
+            >
+              <el-option
+                v-for="item of filterCityData"
+                :key="item.rID"
+                :label="item.text"
+                :value="item.text"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
@@ -61,9 +105,19 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item" v-if="isAll">
             <span>选择公司：</span>
-            <el-select v-model="searchInfo.company" placeholder="请选择所属公司" filterable size="small" class="u-select2">
-              <el-option v-for="item of companyData" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
+            <el-select
+              v-model="searchInfo.company"
+              placeholder="请选择所属公司"
+              filterable
+              size="small"
+              class="u-select2"
+            >
+              <el-option
+                v-for="item of companyData"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
@@ -71,7 +125,13 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="search-item">
             <span>是否预锁：</span>
-            <el-select v-model="searchInfo.Lock" placeholder="是否预锁" size="small" class="u-select2" clearable>
+            <el-select
+              v-model="searchInfo.Lock"
+              placeholder="是否预锁"
+              size="small"
+              class="u-select2"
+              clearable
+            >
               <el-option label="已预锁" value="2"></el-option>
               <el-option label="未预锁" value="1"></el-option>
             </el-select>
@@ -80,10 +140,16 @@
 
         <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
           <div class="btn_wrapper">
-            <el-button type="primary" icon="el-icon-search" @click="search()" :disabled="!isSearch" class="marginR">搜索
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              class="marginR"
+              :disabled="!isSearch"
+              @click="handleSearch"
+            >
+              搜索
             </el-button>
-
-            <el-button plain @click="reset()" :disabled="!isReset" class="marginR">重置</el-button>
+            <el-button plain class="marginR" :disabled="!isReset" @click="reset">重置</el-button>
           </div>
         </el-col>
       </el-row>
@@ -97,64 +163,131 @@
 
           <div class="m-act">
             <div class="btn_box">
-              <el-button plain @click.native.prevent="openRecycleBin" class="marginR">回收站</el-button>
+              <el-button plain class="marginR" @click.native.prevent="openRecycleBin">回收站</el-button>
 
-              <el-button plain v-if="sessionData.permissions.includes('allSpaceExport')"
-                @click.native.prevent="allPointExportVisible = true" class="marginR">总点导出</el-button>
+              <el-button
+                v-if="sessionData.permissions.includes('allSpaceExport')"
+                plain
+                class="marginR"
+                @click.native.prevent="allPointExportVisible = true"
+              >
+                总点导出
+              </el-button>
 
               <!-- <template v-if="showNewBtn || !isNation"> -->
-                <el-button plain @click="reset()" v-if="sessionData.permissions.includes('storeExportSpace')" @click.native.prevent="exportRes"
-                  class="marginR">门店导点</el-button>
-                <el-button plain v-if="showNewBtn" @click.native.prevent="openVacancyDownloadDialog" class="marginR">空位导出
+                <el-button
+                  v-if="sessionData.permissions.includes('storeExportSpace')"
+                  plain
+                  class="marginR"
+                  @click.native.prevent="exportRes"
+                >
+                  门店导点
+                </el-button>
+
+                <el-button
+                  v-if="showNewBtn"
+                  plain
+                  class="marginR"
+                  @click.native.prevent="openVacancyDownloadDialog"
+                >
+                  空位导出
                 </el-button>
               <!-- </template> -->
 
               <template v-if="showNewBtn || !isNation">
-                <el-button type="primary" icon="el-icon-plus" v-if="showNewBtn" @click="addOne()" class="marginR">新建
+                <el-button
+                  v-if="showNewBtn"
+                  type="primary"
+                  icon="el-icon-plus"
+                  class="marginR"
+                  @click="addOne"
+                >
+                  新建
                 </el-button>
               </template>
             </div>
 
             <!-- 列设置 -->
-            <TableSetting refresh space filter :columns="currentPlanColumn" cacheKey="planList"
-              @filterColumn="filterColumn" @refreshTable="refreshTable" @spaceSetting="spaceSetting">
+            <TableSetting
+              refresh
+              space
+              filter
+              cacheKey="planList"
+              :columns="currentPlanColumn"
+              @filterColumn="filterColumn"
+              @refreshTable="refreshTable"
+              @spaceSetting="spaceSetting"
+            >
             </TableSetting>
 
           </div>
         </div>
         <div class="table_wrap">
-          <el-table @filter-change="filterChange" :data="currentPlan" style="width: 100%" @sort-change="sortChange"
-            v-loading="loading" element-loading-text="玩命加载中.." element-loading-spinner="el-icon-loading" :key="itemKey"
-            :size="rowSpace">
+          <el-table
+            v-loading="loading"
+            style="width: 100%"
+            element-loading-text="玩命加载中.."
+            element-loading-spinner="el-icon-loading"
+            :key="itemKey"
+            :data="currentPlan"
+            :size="rowSpace"
+            @sort-change="sortChange"
+            @filter-change="filterChange"
+          >
             <template v-for="item in currentPlanColumn">
 
               <template v-if="item.label === '方案名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" v-if="item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="150px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                >
                   <template slot-scope="scope">
                     <span class="u-bk-btn" v-if="scope.row.apSrc != 0">贝壳</span>
-                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">{{
-                        scope.row.apName
-                    }}</span>
+                    <span style="color: rgba(24, 144, 255, 1); cursor: pointer" @click="ToDetail(scope.row)">
+                    {{ scope.row.apName }}
+                    </span>
                   </template>
                 </el-table-column>
               </template>
 
               <template v-if="item.label === '客户名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="150px" show-overflow-tooltip
-                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
-                </el-table-column>
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="150px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                ></el-table-column>
               </template>
 
               <template v-if="item.label === '品牌名称'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="120px" show-overflow-tooltip
-                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
-                </el-table-column>
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="120px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                ></el-table-column>
               </template>
 
               <template v-if="item.label === '方案价格'">
-                <el-table-column :prop="item.prop" :label="item.label" sortable="custom" min-width="150px"
-                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false"
+                  sortable="custom"
+                  min-width="150px"
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                >
                   <template slot-scope="scope">
                     <span v-if="scope.row.apState == '-1'">--</span>
                     <span v-else>&yen;{{
@@ -165,36 +298,59 @@
               </template>
 
               <template v-if="item.label === '所有人'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="150px"
+                <el-table-column
                   v-if="!(role == 'AD') && !['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked"
-                  show-overflow-tooltip :fixed="item.fix === 'left' ? true : false">
-                </el-table-column>
+                  min-width="150px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                ></el-table-column>
 
-                <el-table-column :prop="item.prop" :label="item.label" min-width="120px"
-                  v-if="['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked" show-overflow-tooltip
-                  :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true"
-                  :fixed="item.fix === 'left' ? true : false">
-                </el-table-column>
+                <el-table-column
+                  v-if="['ADN_BD_KA', 'ADN_BD'].includes(role) && item.isChecked"
+                  min-width="120px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :filters="filterRealName"
+                  :filter-method="filterRealNameFun"
+                  :filter-multiple="true"
+                  :fixed="item.fix === 'left' ? true : false"
+                ></el-table-column>
               </template>
 
               <template v-if="item.label === '投放城市(点位面数,排期)'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="350px" v-if="item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="350px"
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                >
                   <template slot-scope="scope">
                     <template v-if="isAll">
-                      <div v-for="(item, index) of scope.row.cityArea" class="city_p">
-                        <el-tooltip class="item" effect="dark" :content="
-                          item.asName +
-                          ' ' +
-                          item.city +
-                          '(' +
-                          item.num +
-                          '面,' +
-                          formatTime(item.pdStar) +
-                          '至' +
-                          formatTime(item.pdEnd) +
-                          ')'
-                        " placement="top">
+                      <div v-for="(item, index) of scope.row.cityArea" class="city_p" :key="index">
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          placement="top"
+                          :content="
+                            item.asName +
+                            ' ' +
+                            item.city +
+                            '(' +
+                            item.num +
+                            '面,' +
+                            formatTime(item.pdStar) +
+                            '至' +
+                            formatTime(item.pdEnd) +
+                            ')'
+                          "
+                        >
                           <div>
                             <span>
                               {{
@@ -257,19 +413,28 @@
               </template>
 
               <template v-if="item.label === '媒体类型'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="250px" show-overflow-tooltip
+                <el-table-column
+                  v-if="['ADN_MD', 'ADN_MD_COUNTRY', 'ADN_BD', 'ADN_SM', 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType) && item.isChecked"
+                  min-width="250px"
+                  show-overflow-tooltip
                   column-key="mediaTypeNames"
-                  v-if="(role == 'ADN_MD' || role == 'ADN_MD_COUNTRY' || role == 'ADN_BD' || role == 'ADN_SM' || role == 'ADN_BD_KA') && item.isChecked"
-                  :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList">
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false" :filters="mediaTypeFilterList"
+                >
                   <template slot-scope="scope">
                     <div class="media-box">
                       <div class="media-tag" v-for="(m, index) in scope.row.mediaTypeDetails" :key="index">
-                        <div class="tag"
+                        <div
+                          class="tag"
                           :class="m.mediaTypeName === '广告门' ? 'ad' :
-                                m.mediaTypeName === '框架' ? 'ad' :
-                                m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
-                                m.mediaTypeName === '灯箱' ? 'light-box' :
-                                m.mediaTypeName === '道闸' ? 'brake' : ''">
+                            m.mediaTypeName === '框架' ? 'ad' :
+                            m.mediaTypeName === '单元门禁灯箱' ? 'unit-access' :
+                            m.mediaTypeName === '灯箱' ? 'light-box' :
+                            m.mediaTypeName === '道闸' ? 'brake' : ''
+                          "
+                        >
                           <template v-if="m.RemainDay || m.RemainDay == 0">
                             <el-tooltip class="item" effect="dark" :content="`预锁剩余${m.RemainDay || 0}天`"
                               placement="top">
@@ -282,7 +447,6 @@
                             {{ m.mediaTypeName || '--' }}
                           </template>
                         </div>
-
                       </div>
                     </div>
                   </template>
@@ -290,8 +454,14 @@
               </template>
 
               <template v-if="item.label === '是否母单'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="100px"
-                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false"
+                  min-width="100px"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                >
                   <template slot-scope="scope">
                     <el-tag v-if="!scope.row.papID">母</el-tag>
                     <el-tag v-else type="success">子</el-tag>
@@ -300,8 +470,16 @@
               </template>
 
               <template v-if="item.label === '创建日期'">
-                <el-table-column :prop="item.prop" :label="item.label" min-width="200px" sortable="custom"
-                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="200px"
+                  sortable="custom"
+                  show-overflow-tooltip
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                >
                   <template slot-scope="scope">
                     <span>{{ formatTime(scope.row.apcTime) }}</span>
                   </template>
@@ -309,19 +487,33 @@
               </template>
 
               <template v-if="item.label === '状态'">
-                <el-table-column class="tac" :prop="item.prop" :label="item.label" min-width="100px"
-                  show-overflow-tooltip v-if="item.isChecked" :fixed="item.fix === 'left' ? true : false">
+                <el-table-column
+                  v-if="item.isChecked"
+                  min-width="100px"
+                  show-overflow-tooltip
+                  class="tac"
+                  :key="item.prop"
+                  :prop="item.prop"
+                  :label="item.label"
+                  :fixed="item.fix === 'left' ? true : false"
+                >
                   <template slot-scope="scope">
-                    <point-state :state-text="stateToText(scope.row.apState).text"
-                      :color="stateToText(scope.row.apState).color"></point-state>
+                    <point-state
+                      :state-text="stateToText(scope.row.apState).text"
+                      :color="stateToText(scope.row.apState).color"
+                    ></point-state>
                   </template>
                 </el-table-column>
               </template>
 
               <template v-if="item.label === '操作'">
-                <el-table-column :label="item.label" min-width="100px"
+                <el-table-column
                   v-if="!(role == 'ADN_OP' || role == 'AD') && item.isChecked"
-                  :fixed="item.fix">
+                  min-width="100px"
+                  :key="item.label"
+                  :label="item.label"
+                  :fixed="item.fix"
+                >
                   <template slot-scope="scope">
                     <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="false">
                       <span class="el-dropdown-link">
@@ -401,10 +593,13 @@
                           解锁申请
                         </el-dropdown-item>
 
-                        <el-dropdown-item @click.native.prevent="splitAdPlan(scope.row)" v-if="
-                          scope.row.apControlLevel === 2 &&
-                          ['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)
-                        ">
+                        <el-dropdown-item
+                          v-if="
+                            scope.row.apControlLevel === 2 &&
+                            ['ADN_BD_KA', 'ADN_BD', 'ADN_AE_HQ'].includes(sessionData.uType)
+                          "
+                          @click.native.prevent="splitAdPlan(scope.row)"
+                        >
                           拆单
                         </el-dropdown-item>
 
@@ -494,6 +689,7 @@
         <el-form-item label="合同编号" label-width="80px">
           <el-input size="small" v-model="QCinfo"></el-input>
         </el-form-item>
+
         <el-form-item label="订单类型" label-width="80px">
           <el-select v-model="planType" size="small" placeholder="请选择活动区域">
             <el-option label="常规" value="0"></el-option>
@@ -503,6 +699,7 @@
             <el-option label="赠送" value="4"></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item v-if="planType == 1 || planType == 2" :label="`${['常规', '续刊', '补刊', '空刊', '赠送'][planType]}订单`"
           label-width="80px">
           <el-select v-model="relatedApId" size="small" :placeholder="`请选择${['常规', '续刊', '补刊', '空刊', '赠送'][planType]
@@ -511,6 +708,7 @@
             </el-option>
           </el-select>
         </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="publishPlanDialog = false">取 消</el-button>
@@ -854,6 +1052,7 @@ export default {
         uid: sess.uID,
         token: sess.token,
       };
+      // ascType 0:平台商 1:媒体主
       if (sess.ascType == 0) {
         api
           .getApi(this.apiVar.UCAPI + "/GetDirectAscr", info)
@@ -952,7 +1151,7 @@ export default {
       this.sessionData = sessFun.getSess();
       let sess = this.sessionData;
       // ascType 0:平台商 1:媒体主
-      if (sess.ascType == 0 || sess.uType == "ADN_MD_COUNTRY") {
+      if (sess.ascType == 0 || ['ADN_MD_COUNTRY', 'ADN_AE_HQ'].includes(sess.uType)) {
         this.isAll = true;
       } else {
         this.isAll = false;
@@ -1003,12 +1202,12 @@ export default {
         this.isSale = true;
       }
       if (
-        !["ADN_BD_KA", "ADN_BD"].includes(role) &&
+        !["ADN_BD_KA", "ADN_BD", 'ADN_AE_HQ'].includes(role) &&
         !["ADN_MD"].includes(role)
       ) {
         this.showNewBtn = false;
       }
-      if (["ADN_BD_KA", "ADN_BD", "ADN_SM"].includes(role)) {
+      if (["ADN_BD_KA", "ADN_BD", "ADN_SM", 'ADN_AE_HQ'].includes(role)) {
         this.isDisable = true;
       }
     },
@@ -1055,6 +1254,7 @@ export default {
     },
 
     routeSelect() {
+      // 意向方案权限
       if (this.sessionData.customPermission.proposalPermission == 1) {
         // 直营
         if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
@@ -1182,7 +1382,7 @@ export default {
         return
       }
       let ownerSales =
-        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        ["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.sessionData.uType) &&
           adPlan.planData.baseInfo.realNamesName
           ? adPlan.planData.baseInfo.realNamesName
           : adPlan.planData.baseInfo.ownerSales;
@@ -1262,7 +1462,7 @@ export default {
       let dataArr = row.cityArea;
       let sess = this.sessionData;
       let isRelease = false;
-      if (sess.uType == "ADN_MD_COUNTRY") {
+      if (["ADN_MD_COUNTRY", 'ADN_AE_HQ'].includes(sess.uType)) {
         isRelease = true;
       } else {
         let num = 0;
@@ -1445,7 +1645,7 @@ export default {
     // 意向方案配点（直营媒介配点）
     addPoint(row) {
       if (
-        ["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType) &&
+        ["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.sessionData.uType) &&
         this.sessionData.customPermission.proposalPermission == 1
       ) {
         this.ToEdit(row);
@@ -1551,7 +1751,7 @@ export default {
       // 2)	地方媒介只能预锁方案中投放至该公司的部分
       let sess = this.sessionData;
       let resultArr = [];
-      if (sess.uType == "ADN_MD_COUNTRY") {
+      if (['ADN_MD_COUNTRY', 'ADN_AE_HQ'].includes(sess.uType)) {
         resultArr = arr;
       } else {
         for (let data of arr) {
@@ -1789,7 +1989,7 @@ export default {
     },
 
     // 搜索（优化）
-    search() {
+    handleSearch() {
       let { keyword, rangeDate, status, company, cityWord, Lock, dateType, mediaTypeIds } =
         this.searchInfo;
       this.isSearch = false;
@@ -2231,7 +2431,7 @@ export default {
           }
         }
       }
-      this.search()
+      this.handleSearch()
     },
 
     // 关闭预锁媒体类型弹窗
@@ -2282,7 +2482,7 @@ export default {
 
     // 刷新列表
     refreshTable() {
-      this.search();
+      this.handleSearch();
     },
 
     // 更改列表行距

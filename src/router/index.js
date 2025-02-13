@@ -162,9 +162,9 @@ let roleRoutes = []
 function addRoutes(role, proposal, retain) {
     !retain && resetRouter()
     switch (role) {
+        // 超级管理员
         case 'ADN_SM':
             roleRoutes = [
-                //超级运营
                 {
                     path: '/',
                     component: superOperateCommon,
@@ -203,6 +203,7 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
+        // 系统管理员
         case 'ADN_SA':
             roleRoutes = [
                 //admin
@@ -220,13 +221,13 @@ function addRoutes(role, proposal, retain) {
                         {path: '/admin/myInfo', component: myInfo},
                         {path: '/admin/ADlimitList', component: ADlimitList},
                         {path: '/admin/notice', component: notice},
-                        {path: '/admin/mediaType', component: mediaType},
+                        {path: '/admin/mediaType', component: mediaType}
                     ]
                 }]
             break;
+        // 普通运营
         case 'ADN_OP':
             roleRoutes = [
-                //普通运营
                 {
                     path: '/',
                     component: operateCommon,
@@ -250,8 +251,9 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
+        // 全国媒介
+        case 'ADN_AE_HQ':
         case 'ADN_MD_COUNTRY': {
-            //媒介
             let tempMD = null
             if(proposal) {
                 // 直营媒介
@@ -314,8 +316,8 @@ function addRoutes(role, proposal, retain) {
             ]
             break;
         }
+        // 媒介
         case 'ADN_MD': {
-            //媒介
             let tempMD = null
             if(proposal) {
                 // 直营媒介
@@ -376,6 +378,8 @@ function addRoutes(role, proposal, retain) {
             ]
             break;
         }
+
+        // 全国销售/销售
         case 'ADN_BD_KA':
         case 'ADN_BD':
             let tempBD = null
@@ -432,6 +436,7 @@ function addRoutes(role, proposal, retain) {
                 }
             ]
             break;
+        // 广告主
         case 'AD':
             roleRoutes = [
                 //广告主
@@ -465,6 +470,7 @@ function addRoutes(role, proposal, retain) {
                     ]
                 }]
             break;
+        // 工程人员
         case 'ADN_EP':
             roleRoutes = [
                 //工程

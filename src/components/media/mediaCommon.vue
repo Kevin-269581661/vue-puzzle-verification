@@ -9,64 +9,100 @@
             @select="handleSelect"
             background-color="#fff"
             active-text-color="#1890FF">
+
             <el-menu-item index="" class="no-hover" style="cursor: default">
                 <div class="logo_box">
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
-            <el-menu-item index="/media">首页</el-menu-item>
-            <el-menu-item index="/media/workplace">工作台</el-menu-item>
 
-            <el-submenu index="6" :show-timeout="80" popper-class="submenu">
-                <template slot="title">媒体管理</template>
-                <el-menu-item index="/media/mediaList">媒体列表</el-menu-item>
-                <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
+            <el-menu-item index="/media">首页</el-menu-item>
+
+            <el-menu-item
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="/media/workplace"
+            >
+              工作台
+            </el-menu-item>
+
+            <el-submenu
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="6"
+              :show-timeout="80"
+              popper-class="submenu"
+            >
+              <template slot="title">媒体管理</template>
+              <el-menu-item index="/media/mediaList">媒体列表</el-menu-item>
+              <el-menu-item index="/media/maintainList">媒体维护</el-menu-item>
             </el-submenu>
 
             <el-submenu index="5" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
                 <el-menu-item index="/media/planList">方案列表</el-menu-item>
-                <el-menu-item index="/media/adsDialPlate">点位表盘</el-menu-item>
+                <el-menu-item v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)" index="/media/adsDialPlate">点位表盘</el-menu-item>
             </el-submenu>
 
-            <el-submenu v-if="sessionData.uType === 'ADN_MD_COUNTRY'" index="11" :show-timeout="80" popper-class="submenu">
-                <template slot="title">订单管理</template>
-                <el-menu-item index="/media/orderList">常规订单</el-menu-item>
-                <el-menu-item index="/media/countryOrderList">非系统全国单</el-menu-item>
-                <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
+            <el-submenu
+              index="11"
+              :show-timeout="80"
+              popper-class="submenu"
+            >
+              <template slot="title">订单管理</template>
+              <el-menu-item index="/media/orderList">常规订单</el-menu-item>
+              <el-menu-item v-if="sessionData.uType === 'ADN_MD_COUNTRY'" index="/media/countryOrderList">非系统全国单</el-menu-item>
+              <el-menu-item
+                v-if="sessionData.permissions.includes('naOrderDockManagement')"
+                index="/media/nationalOrderList"
+              >
+                全国资源对接管理
+              </el-menu-item>
             </el-submenu>
 
-            <el-submenu v-else-if="sessionData.permissions.includes('naOrderDockManagement')" index="11" :show-timeout="80" popper-class="submenu">
-                <template slot="title">订单管理</template>
-                <el-menu-item index="/media/orderList">常规订单</el-menu-item>
-                <el-menu-item index="/media/nationalOrderList">全国资源对接管理</el-menu-item>
+            <el-submenu
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="7"
+              :show-timeout="80"
+              popper-class="submenu"
+            >
+              <template slot="title">工程管理</template>
+              <el-menu-item index="/media/projectList">上画任务</el-menu-item>
+              <el-menu-item index="/media/paintedCount">上画统计</el-menu-item>
+              <el-menu-item index="/media/paintedPath" v-if="!isNation">线路管理</el-menu-item>
             </el-submenu>
 
-            <el-menu-item v-else index="/media/orderList">订单管理</el-menu-item>
+            <el-menu-item
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="/media/photoGallery"
+            >
+              图片库
+            </el-menu-item>
 
-            <el-submenu index="7" :show-timeout="80" popper-class="submenu">
-                <template slot="title">工程管理</template>
-                <el-menu-item index="/media/projectList">上画任务</el-menu-item>
-                <el-menu-item index="/media/paintedCount">上画统计</el-menu-item>
-                <el-menu-item index="/media/paintedPath" v-if="!isNation">线路管理</el-menu-item>
+            <el-submenu
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="10"
+              :show-timeout="80"
+              v-show="showQinlin"
+              popper-class="submenu"
+            >
+              <template slot="title">亲邻智邻</template>
+              <el-menu-item index="/media/communityPortrait">社区画像</el-menu-item>
+              <el-menu-item index="/media/communityRank">社区排名</el-menu-item>
+              <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
             </el-submenu>
 
-            <el-menu-item index="/media/photoGallery">图片库</el-menu-item>
-
-            <el-submenu index="10" :show-timeout="80" v-show="showQinlin" popper-class="submenu">
-                <template slot="title">亲邻智邻</template>
-                <el-menu-item index="/media/communityPortrait">社区画像</el-menu-item>
-                <el-menu-item index="/media/communityRank">社区排名</el-menu-item>
-                <el-menu-item index="" @click="goResContrastMap">资源对比</el-menu-item>
+            <el-submenu
+              v-if="['ADN_MD_COUNTRY', 'ADN_MD'].includes(sessionData.uType)"
+              index="8"
+              :show-timeout="80"
+              popper-class="submenu two-word-submenu"
+            >
+              <template slot="title">
+                  更多
+              </template>
+              <!-- <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item> -->
+              <el-menu-item index="/media/compact">资料下载</el-menu-item>
             </el-submenu>
 
-            <el-submenu index="8" :show-timeout="80" popper-class="submenu two-word-submenu">
-                <template slot="title">
-                    更多
-                </template>
-                <!-- <el-menu-item index="/media/publishPriceList">刊例价</el-menu-item> -->
-                <el-menu-item index="/media/compact">资料下载</el-menu-item>
-            </el-submenu>
             <!--<el-menu-item index="/media/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
 
             <el-submenu index="9" class="user_center" popper-class="user_center_item submenu" :show-timeout="80">
@@ -79,9 +115,11 @@
                 <!--<el-menu-item index="" @click.native="openWxBox = true">微信授权</el-menu-item>-->
                 <el-menu-item index="/login" class="index-menu-item">退出登录</el-menu-item>
             </el-submenu>
+
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 0 0 4px">
                 <messageNotice></messageNotice>
             </el-menu-item>
+
             <el-menu-item class="no-hover" index="" style="cursor: default;float: right;padding: 0 10px 0 10px;">
                 <questionTip></questionTip>
             </el-menu-item>
@@ -183,7 +221,7 @@
             getUserName() {
                 this.sessionData = JSON.parse(sessionStorage.getItem("session_data"));
                 if (this.sessionData !== null && this.sessionData !== undefined) {
-                    if (!["ADN_MD_COUNTRY", "ADN_MD"].includes(this.sessionData.uType)) {
+                    if (!["ADN_MD_COUNTRY", "ADN_MD", 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
                         this.$message({
                             type: "warning",
                             message: "权限异常,请重新登录"

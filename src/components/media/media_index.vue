@@ -409,28 +409,6 @@ export default {
 
       isAllMedia: false,
       isShowNum: false,
-      linkArrNew: [
-        {
-          imgurl: require("../../assets/images/importPoint.png"),
-          title: "导出空位",
-          link: "",
-        },
-        {
-          imgurl: require("../../assets/images/fangan.png"),
-          title: "新建方案",
-          link: "./media/createPlanOld",
-        },
-        {
-          imgurl: require("../../assets/images/gua.png"),
-          title: "维护管理",
-          link: "./media/maintainList",
-        },
-        {
-          imgurl: require("../../assets/images/gua.png"),
-          title: "点位表盘",
-          link: "./media/adsDialPlate",
-        },
-      ],
       // 勋章排名
       medalInfo: {
         point: 1,
@@ -567,7 +545,53 @@ export default {
       // 媒介预锁概况表格
       preLockArr: [],
       role: "",
+      // 是否开通数字化
+      isPay: false
     };
+  },
+  computed: {
+    linkArrNew() {
+      const { uType } = sessFun.getSess() || {}
+      const list = [
+        {
+          imgurl: require("../../assets/images/importPoint.png"),
+          title: "导出空位",
+          link: "",
+        },
+        {
+          imgurl: require("../../assets/images/fangan.png"),
+          title: "新建方案",
+          link: "./media/createPlanOld",
+        },
+      ]
+      if (['ADN_MD_COUNTRY', 'ADN_MD'].includes(uType)) {
+        // 没有开通时显示新建媒体
+        if (!this.isPay) {
+          list.push({
+            imgurl: require("../../assets/images/addMedia.png"),
+            title: "新建媒体",
+            link: "./media/mediaInput",
+          })
+        }
+        list.push({
+          imgurl: require("../../assets/images/gua.png"),
+          title: "维护管理",
+          link: "./media/maintainList",
+        })
+        list.push({
+          imgurl: require("../../assets/images/gua.png"),
+          title: "点位表盘",
+          link: "./media/adsDialPlate",
+        })
+      } else if (['ADN_AE_HQ'].includes(uType)) {
+        list.push({
+          imgurl: require("../../assets/images/map.png"),
+          title: "地图选点",
+          link: "",
+        })
+      }
+      return list
+    }
   },
   beforeCreate() {
     var glSript = document.createElement("script");
@@ -1062,17 +1086,7 @@ export default {
           asrID: this.sessionData.asrID,
         })
         .then((res) => {
-          if (res.data.SysCode === 200200 && res.data.data === false) {
-            // 没有开通时显示新建媒体
-            const linkIndex = this.linkArrNew.findIndex(
-              (item) => item.title === "新建方案"
-            );
-            this.linkArrNew.splice(linkIndex, 0, {
-              imgurl: require("../../assets/images/addMedia.png"),
-              title: "新建媒体",
-              link: "./media/mediaInput",
-            });
-          }
+          if (res.data.SysCode === 200200) this.isPay = res.data.data
         });
     },
   },
@@ -1094,9 +1108,6 @@ export default {
     let nowDate = timeFormat.toDate(new Date(), "/");
     if (indexIsDateFirst.getIsFirst(this.sessionData.uID, nowDate)) {
       this.isShowNum = true;
-    }
-    if (this.sessionData.uType == "ADN_MD_COUNTRY") {
-      this.linkArrNew.pop();
     }
     this.appCenter = appCenter;
     this.uploadEvent(1);

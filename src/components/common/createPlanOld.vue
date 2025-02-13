@@ -51,6 +51,23 @@
                 </el-select>
               </el-form-item>
 
+              <!-- 客户数据源：1.adn，2.crm -->
+              <el-form-item
+                v-if="sessionData.uType == 'ADN_AE_HQ'"
+                label="客户数据源："
+                prop="customerSrc"
+                required
+              >
+                <el-radio-group
+                  v-model="planForm.customerSrc"
+                  :disabled="!planForm.ownerSales"
+                  @input="handleChangeCustomerSrc"
+                >
+                  <el-radio :label="1">ADN</el-radio>
+                  <el-radio :label="2">CRM</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
               <el-form-item label="公司名称：" prop="companyName">
                 <el-select
                   v-model="planForm.companyName"
@@ -69,7 +86,7 @@
               </el-form-item>
 
               <!-- crm 客户公司品牌 -->
-              <template v-if="BDData.customerSrc == 2">
+              <template v-if="currentCustomerSrc == 2">
                 <el-form-item label="公司品牌：" prop="companyBrand">
                   <el-select
                     v-model="planForm.companyBrandMediaType"
@@ -127,53 +144,46 @@
                 </el-select>
               </el-form-item>
 
+              <!-- 只有AE跟KA销售才可以选择投放媒体城市范围配置 -->
               <el-form-item
+                v-if="[ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType)"
+                label="投放媒体："
+                prop="targetMedia"
+              >
+                <el-select
+                  v-model="planForm.targetMedia"
+                  size="small"
+                  filterable
+                  placeholder="请选择"
+                  @change="handleChangeTargetMedias"
+                >
+                  <el-option
+                    v-for="item in preparedData.targetMediaOptions"
+                    :key="item.mediaTypeId"
+                    :label="item.mediaTypeName"
+                    :value="item.mediaTypeId"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <!-- 媒体城市范围开 -->
+              <el-form-item
+                v-if="isShowCityRange"
                 label="投放城市："
                 prop="throwCity"
                 ref="planThrowCity"
               >
-                <div v-if="cityOther">
-                  <el-tag
-                    :key="tag"
-                    v-for="tag in dynamicTags"
-                    closable
-                    :disable-transitions="false"
-                    @close="spliceCity(tag)"
-                  >
-                    {{ tag }}
-                  </el-tag>
-                  <el-cascader
-                    style="width: 140px"
-                    class="inputNewTag"
-                    v-if="inputVisible"
-                    v-model="selectedOptions"
-                    :options="cityOptions"
-                    ref="saveTagInput"
-                    :show-all-levels="false"
-                    size="small"
-                    @change="handleInputConfirm"
-                  >
-                  </el-cascader>
-                  <el-button
-                    v-else
-                    class="button-new-tag"
-                    size="small"
-                    @mouseover.native="showInput"
-                  >
-                    +
-                  </el-button>
-                </div>
                 <el-select
-                  v-else
                   v-model="planForm.throwCity"
                   size="small"
                   filterable
                   multiple
                   placeholder="请选择"
-                  @remove-tag="removeCity"
+                  :disabled="!planForm.targetMedia"
                 >
                   <el-option
-                    v-for="item in throwCity"
+                    v-for="item in preparedData.cityRangeOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -182,29 +192,56 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item
-                v-if="BDData.uType == 'ADN_BD_KA'"
-                label="归属公司："
-                prop="pointOfAsrIDs"
-                ref="planPointOfAsrIDs"
-              >
-                <el-select
-                  v-model="planForm.pointOfAsrIDs"
-                  size="small"
-                  filterable
-                  multiple
-                  placeholder="请选择"
-                  :disabled="!planForm.throwCity || !planForm.throwCity.length"
+              <!-- 媒体城市范围关 -->
+              <template v-else>
+                <el-form-item
+                  label="投放城市："
+                  prop="throwCity"
+                  ref="planThrowCity"
                 >
-                  <el-option
-                    v-for="item in pointOfAsrIDs"
-                    :key="item.asrID * 1"
-                    :label="item.asName"
-                    :value="item.asrID * 1"
+                  <el-select
+                    v-model="planForm.throwCity"
+                    size="small"
+                    filterable
+                    multiple
+                    placeholder="请选择"
+                    :disabled="[ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(sessionData.uType) && !planForm.targetMedia"
+                    @remove-tag="removeCity"
                   >
-                  </el-option>
-                </el-select>
-              </el-form-item>
+                    <el-option
+                      v-for="item in preparedData.throwCityOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+
+                <el-form-item
+                  v-if="BDData.uType == 'ADN_BD_KA'"
+                  label="归属公司："
+                  prop="pointOfAsrIDs"
+                  ref="planPointOfAsrIDs"
+                >
+                  <el-select
+                    v-model="planForm.pointOfAsrIDs"
+                    size="small"
+                    filterable
+                    multiple
+                    placeholder="请选择"
+                    :disabled="!planForm.throwCity || !planForm.throwCity.length"
+                  >
+                    <el-option
+                      v-for="item in preparedData.pointOfAsrIDsOptions"
+                      :key="item.asrID * 1"
+                      :label="item.asName"
+                      :value="item.asrID * 1"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
 
               <el-form-item label="售卖模式：" prop="saleMode" required>
                 <el-radio-group v-model="planForm.saleMode" >
@@ -2242,6 +2279,7 @@
       @handleDetails="handlePointDetails"
     >
     </PointSetting>
+
     <PointTable
       :visible.sync="pointTableShow"
       :importData="adResMatch"
@@ -2406,8 +2444,6 @@ export default {
       inputValue: "",
       selectedOptions: [],
       cityOptions: [],
-      // 判断是否可选择全国城市
-      cityOther: false,
       // 判断登录用户是否为销售
       isBD: true,
       // 媒体类型 广告门、道闸
@@ -2439,8 +2475,6 @@ export default {
       companyBrandMediaTypeOptions: [],
       cBand: "", // 选中的品牌
       ownerBU: [], //step1联系人
-      //step1投放城市
-      throwCity: [],
       //购物车
       dialogTableVisible: false,
       //搜索类型
@@ -2539,7 +2573,10 @@ export default {
         companyName: "",
         companyBrand: "",
         companyBrandMediaType: '',
+        // 投放城市
         throwCity: [],
+        // 选择媒体
+        targetMedia: null,
         ownerBU: "", // 所属联系人
         planRemark: "",
         pointOfAsrIDs: [], // 点位所属公司id组合，根据城市联动
@@ -2547,12 +2584,13 @@ export default {
         customerMediaType: undefined, // 关联商机
         // 售卖模式：
         saleMode: 0,
+        // 客户数据源：1.adn，2.crm
+        customerSrc: 1,
       },
       saleModeOptions: [
         { label: '传统售卖模式', value: 0 },
         { label: 'CPM售卖模式', value: 1 },
       ],
-      pointOfAsrIDs: [],
       // 本地客户商机列表
       opportunityList: [],
       // 销售crm的媒体类型列表
@@ -2587,6 +2625,7 @@ export default {
         companyBrand: [
           { required: true, message: "请选择公司品牌", trigger: "change" },
         ],
+        targetMedia: [{ required: true, message: "请选择投放媒体", trigger: "change" }],
         throwCity: [
           {
             required: true,
@@ -2830,14 +2869,29 @@ export default {
       tradingAreaList: [], // 商圈
       tradingArea: '',
       // 缓存销售crm的客户列表下拉数据
-      crmCustomerCompanyList: []
+      crmCustomerCompanyList: [],
+      // 预加载数据
+      preparedData: {
+        targetMediaOptions: [],
+        pointOfAsrIDsOptions: [],
+        cityRangeOptions: [],
+        throwCityOptions: [],
+      },
+      // 媒体城市范围开关是否开启
+      isShowCityRange: false
     };
   },
+
   created() {
     this.getsessionData(); // 获取session中的数据
     this.requestIsPay();
     this.getCustomerMediaTypeList();
+    // 只有AE跟KA销售才可以选择投放媒体城市范围配置
+    if ([ 'ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
+      this.getTargetMediaOptions()
+    }
   },
+
   mounted() {
     this.areaCity = areaArr.cityArea();
     this.getADLimit(); // 获取广告限制列表
@@ -2850,13 +2904,18 @@ export default {
     }
     // console.log("this.cityOptions", this.cityOptions);
   },
+
   watch: {
     "planForm.throwCity": {
       handler: function () {
-        this.planForm.pointOfAsrIDs = [];
-        this.pointOfAsrIDs = [];
-        if (this.planForm.throwCity.length == 0) return;
-        this.getPointOfAsr();
+        if (this.isShowCityRange) {
+          this.handleChangeCityRange()
+        } else {
+          this.planForm.pointOfAsrIDs = [];
+          this.preparedData.pointOfAsrIDsOptions = [];
+          if (this.planForm.throwCity.length == 0) return;
+          this.getPointOfAsr();
+        }
       },
     },
 
@@ -2900,6 +2959,7 @@ export default {
     //   },
     // },
   },
+
   computed: {
     nowPointNum() {
       if (this.dialogTableVisible) {
@@ -2953,9 +3013,75 @@ export default {
         isShowSite = false;
       }
       return isShowSite
+    },
+
+    /**
+     * 当前使用的客户源: 1.adn，2.crm
+     */
+    currentCustomerSrc() {
+      // 判断客户数据源: AE 角色特殊处理, 由 '客户数据源' 选择的值 来决定 客户数据源
+      return this.sessionData.uType == 'ADN_AE_HQ' ? this.planForm.customerSrc : this.BDData.customerSrc
     }
   },
   methods: {
+    /**
+     * 获取选择媒体预加载数据
+     */
+     async getTargetMediaOptions() {
+      try {
+        // this.loading = true
+        const res = await this.$api.mediaType.listCityDetail()
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.preparedData.targetMediaOptions = data || []
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getCityOptions error:', err)
+      } finally {
+        // this.loading = false
+      }
+    },
+
+    /**
+     * 选择媒体类型
+     */
+    handleChangeTargetMedias(val) {
+      this.planForm.throwCity = []
+      this.planForm.pointOfAsrIDs = []
+      if (!val) return
+      // 根据媒体类型，判断地区/公司数据接口
+      const currentItem = this.preparedData.targetMediaOptions.find(item => item.mediaTypeId === val)
+      this.isShowCityRange = currentItem.cityRangeStatus == 1
+      this.preparedData.cityRangeOptions = (currentItem.cityList || []).map(item => {
+        // 兼容旧数据
+        return {
+          ...item,
+          label: item.rName,
+          value: item.rId,
+        }
+      })
+    },
+
+    /**
+     * 选择投放城市(媒体城市范围开)，多选
+     */
+    handleChangeCityRange() {
+      const val = this.planForm.throwCity
+      if (!val || !val.length) {
+        this.planForm.pointOfAsrIDs = []
+        return
+      }
+      // console.log('handleChangeCityRange val ===', val)
+
+      this.planForm.pointOfAsrIDs = val.reduce((pre, item) => {
+        const list = this.preparedData.cityRangeOptions.find(cell => cell.rId === item).asrIds || []
+        return [...new Set([...pre, ...list])]
+      }, [])
+
+      // console.log('handleChangeCityRange pointOfAsrIDs ===', this.planForm.pointOfAsrIDs)
+
+    },
+
     requestIsPay() {
       api
         .getApi("/addsp/api/v1/company/isPay", {
@@ -3043,7 +3169,6 @@ export default {
     },
     // 获取权限下的城市列表
     getCityList() {
-      this.cityOther = false;
       let params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
@@ -3070,7 +3195,7 @@ export default {
                 };
                 cityList.push(cityObj);
               }
-              this.throwCity = cityList;
+              this.preparedData.throwCityOptions = cityList;
               this.cityOptions = areaArr.province();
             } else {
               sessFun.messageFun("warning", "城市数据获取异常");
@@ -3078,6 +3203,7 @@ export default {
           }
         });
     },
+
     // 获取所选权限城市下的点位所属公司
     getPointOfAsr() {
       let params = {
@@ -3090,12 +3216,13 @@ export default {
         .getApi(this.apiVar.Advertisement + "/GetCityAscrList", params)
         .then((res) => {
           if (res.data.SysCode === 200200) {
-            this.pointOfAsrIDs = res.data.data;
+            this.preparedData.pointOfAsrIDsOptions = res.data.data;
           } else {
             sessFun.messageFun("warning", res.data.MSG);
           }
         });
     },
+
     // 获取本地客户商机列表
     getOpportunityList() {
       let params = {
@@ -3128,25 +3255,25 @@ export default {
         this.initMediaTag();
         this.submitForm("planForm");
       } else if (this.active === 1) {
-        if (this.shopingList.length !== 0) {
-          this.getBand(); // 获取公司品牌
-          // 防多次点击创建
-          if (!this.creating) {
-            this.creating = true;
-            let timer = setTimeout(() => {
-              this.creating = false;
-              this.ADloading = this.$loading({
-                lock: true,
-                text: "加急创建中...",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)",
-              });
-              this.creatAdPlan();
-              clearTimeout(timer);
-            }, 500);
-          }
-        } else {
+        // 只有AE 和 KA 角色可以创建无点位的方案
+        if (!['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType) && this.shopingList.length === 0) {
           return sessFun.messageFun("warning", "请选择点位");
+        }
+        this.getBand(); // 获取公司品牌
+        // 防多次点击创建
+        if (!this.creating) {
+          this.creating = true;
+          let timer = setTimeout(() => {
+            this.creating = false;
+            this.ADloading = this.$loading({
+              lock: true,
+              text: "加急创建中...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)",
+            });
+            this.creatAdPlan();
+            clearTimeout(timer);
+          }, 500);
         }
       }
     },
@@ -3162,17 +3289,7 @@ export default {
     clearData() {
       this.$router.push("./planList");
     },
-    // 获取城市中文名称
-    getCityName(rid) {
-      let str = "";
-      for (let data of this.throwCity) {
-        if (data.value == rid) {
-          str = data.label;
-          break;
-        }
-      }
-      return str;
-    },
+
     // 导入方案弹出框
     importFanan(type) {
       // 小区
@@ -3901,36 +4018,7 @@ export default {
       console.log("datearrr-----", dateArr);
       return dateArr;
     },
-    // step1投放城市权限是全国时spliceCity、showInput、handleInputConfirm
-    spliceCity(tag) {
-      // step1方案创建,删除选择城市
-      if (this.indexData.city.includes(tag)) {
-        sessFun.messageFun("warning", tag + "为地图选择所在城市，不可删除");
-        return;
-      }
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-      let city_arr = this.cityOptions;
-      for (let i = 0; i < city_arr.length; i++) {
-        // 遍历城市查找城市名对应的rid，用于删除勾选的城市
-        for (let j = 0; j < city_arr[i].children.length; j++) {
-          if (city_arr[i].children[j].label === tag) {
-            let city_rid = city_arr[i].children[j].value;
-            for (let n = 0; n < this.planForm.throwCity.length; n++) {
-              if (city_rid === this.planForm.throwCity[n]) {
-                for (let t = 0; t < this.throwCity.length; t++) {
-                  if (city_rid === this.throwCity[t].value) {
-                    this.throwCity.splice(t, 1);
-                    break;
-                  }
-                }
-                this.planForm.throwCity.splice(n, 1);
-                break;
-              }
-            }
-          }
-        }
-      }
-    },
+
     // 非全国，移除城市
     removeCity(val) {
       //   console.log("非全国，移除城市val", val, this.planForm.throwCity);
@@ -3950,40 +4038,7 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus();
       });
     },
-    // 选择投放城市
-    handleInputConfirm() {
-      let inputValue = this.selectedOptions;
-      // console.log('********',inputValue)
-      if (inputValue) {
-        let cityArr = this.cityOptions;
-        for (let i = 0; i < cityArr.length; i++) {
-          if (cityArr[i].value == inputValue[0]) {
-            let childArr = cityArr[i].children;
-            for (let j = 0; j < childArr.length; j++) {
-              if (childArr[j].value == inputValue[1]) {
-                if (this.dynamicTags.indexOf(childArr[j].label) === -1) {
-                  this.dynamicTags.push(childArr[j].label);
-                  this.planForm.throwCity.push(inputValue[1]);
-                  let cityObj = {
-                    label: childArr[j].label,
-                    value: inputValue[1],
-                  };
-                  this.throwCity.push(cityObj);
-                  console.log("this.throwCity", this.throwCity);
-                  console.log("this.selectedOptions", this.selectedOptions);
-                  this.inputVisible = false;
-                  this.selectedOptions = [];
-                  break;
-                } else {
-                  sessFun.messageFun("warning", "不可以选择重复的城市");
-                }
-              }
-            }
-            break;
-          }
-        }
-      }
-    },
+
     // 选择所属销售
     changeSaler(val) {
       //   console.log("选择所属销售", val);
@@ -3994,7 +4049,7 @@ export default {
       this.planForm.ownerBU = "";
       this.planForm.throwCity = [];
       this.dynamicTags = [];
-      this.throwCity = [];
+      this.preparedData.throwCityOptions = [];
       this.$refs["planForm"].clearValidate();
       if (val) {
         for (let key of this.salerList) {
@@ -4008,7 +4063,7 @@ export default {
         this.BDData.uid = val;
         this.getCityList();
         this.Get_cName();
-      } else {
+        // console.log("this.BDData ===", this.BDData);
       }
     },
     // 登录用户为媒介输入销售用户名去获取该销售的信息以便获取接下来的城市、公司、品牌、投放城市等信息
@@ -4047,12 +4102,23 @@ export default {
     },
 
     /**
+     * 客户数据源切换
+     */
+    handleChangeCustomerSrc() {
+      this.planForm.companyName = ""
+      this.planForm.companyBrand = ""
+      this.planForm.companyBrandMediaType = ""
+      this.planForm.ownerBU = ""
+      this.$refs["planForm"].clearValidate()
+      this.Get_cName()
+    },
+
+    /**
      * 获取客户公司下拉数据
      */
     Get_cName() {
-      // 判断客户数据源
-      // customerSrc 客户数据源：1.adn，2.crm
-      if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+      // 判断客户数据源：1.adn，2.crm
+      if (!this.currentCustomerSrc || this.currentCustomerSrc === 1) {
         this.getAdnCustomerCompanySelectList()
       } else {
         this.getCrmCustomerCompanySelectList()
@@ -4171,9 +4237,8 @@ export default {
       this.planForm.companyBrand = "";
       this.planForm.companyBrandMediaType = "";
       this.planForm.ownerBU = "";
-      // 判断客户数据源
-       // customerSrc 客户数据源：1.adn，2.crm
-       if (!this.BDData.customerSrc || this.BDData.customerSrc === 1) {
+      // 判断客户数据源：1.adn，2.crm
+      if (!this.currentCustomerSrc || this.currentCustomerSrc === 1) {
         this.getAdnCustomerBrandSelectList()
       } else {
         this.getCrmCustomerBrandSelectList()
@@ -4244,7 +4309,8 @@ export default {
           this.cName = this.companyName[n].label;
         }
       }
-      if (this.BDData.customerSrc == 2) {
+      // 判断客户数据源
+      if (this.currentCustomerSrc == 2) {
         const current = this.companyBrandMediaTypeOptions.find(item => item.value === this.planForm.companyBrandMediaType)
         this.cBand = current ? current.label : ''
       } else {
@@ -4260,7 +4326,6 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          //   console.log("表单验证this.throwCity", this.throwCity);
           // 初始化
           this.initStep2Data();
           this.active++;
@@ -4405,12 +4470,13 @@ export default {
       this.area = [];
       let throwCityList = this.planForm.throwCity;
       let cityArr = [];
+      const throwCityOptions = this.isShowCityRange ? this.preparedData.cityRangeOptions : this.preparedData.throwCityOptions
       for (let j = 0; j < throwCityList.length; j++) {
-        for (let t = 0; t < this.throwCity.length; t++) {
-          if (this.throwCity[t].value === throwCityList[j]) {
+        for (let t = 0; t < throwCityOptions.length; t++) {
+          if (throwCityOptions[t].value === throwCityList[j]) {
             let cityObj = {
-              rName: this.throwCity[t].label,
-              rid: this.throwCity[t].value,
+              rName: throwCityOptions[t].label,
+              rid: throwCityOptions[t].value,
             };
             cityArr.push(cityObj);
           }
@@ -6733,6 +6799,15 @@ export default {
       if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
         delete params.suid;
       }
+      // 只有AE跟KA销售才可以选择投放媒体城市范围配置，需要传城市公司对应关系，目的为了创建空点位的方案
+      if (['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
+        // console.log('this.planForm 111====', this.planForm)
+        params.cityInfo = JSON.stringify({
+          mediaTypeId: this.planForm.targetMedia,
+          rIds: this.planForm.throwCity,
+          asrIds: this.planForm.pointOfAsrIDs
+        })
+      }
       if (this.isPay && this.BDData.uType === "ADN_BD") {
         if (this.planForm.opportunityId) {
           const tempOpportunity = this.opportunityList.find(
@@ -6770,7 +6845,7 @@ export default {
             sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
           } else {
             this.ADloading.close();
-            sessFun.messageFun("warning", "方案创建失败");
+            sessFun.messageFun("warning", res.data.MSG || "方案创建失败");
           }
         });
     },
@@ -6950,8 +7025,10 @@ export default {
           uType: this.BDData.uType, // 销售权限
           baseInfo: this.planForm,
           adsList: this.shopingList,
-          throwCity: this.throwCity,
+          throwCity: this.preparedData.throwCityOptions,
           companyBrand: this.companyBrand,
+          preparedData: this.preparedData,
+          isShowCityRange: this.isShowCityRange
         },
       };
       //   console.log(
@@ -6982,7 +7059,9 @@ export default {
         this.planForm = returnData.planData.baseInfo;
         this.BDData.uid = returnData.planData.suid;
         this.BDData.uType = returnData.planData.uType || "";
-        this.throwCity = returnData.planData.throwCity;
+        this.preparedData.throwCityOptions = returnData.planData.throwCity;
+        this.preparedData = returnData.planData.preparedData,
+        this.isShowCityRange = returnData.planData.isShowCityRange,
         this.shopingList = returnData.planData.adsList;
         this.companyBrand = returnData.planData.companyBrand;
         this.cacheAsrID = returnData.planData.asrID;

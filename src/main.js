@@ -42,6 +42,7 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 import { apiVar } from './utils/config.js'
 Vue.prototype.apiVar = apiVar;
 Vue.prototype.env = process.env.EVN_CONFIG;
+
 Vue.filter('uTypeToText', function (userInfo) {
 	if(userInfo) {
 		return {
@@ -58,6 +59,7 @@ Vue.filter('uTypeToText', function (userInfo) {
 			'ADN_DEV': '开发人员',
 			'ADN_DEV_ASSET': '资产人员',
 			'ADN_DEV_LEADER': '开发总监',
+      'ADN_AE_HQ': '总部AE',
 		}[userInfo.uType]
 	} else {
 		return ""

@@ -14,22 +14,29 @@
                     <img src="../../assets/images/logo.png" alt="">
                 </div>
             </el-menu-item>
+
             <el-menu-item index="/admin">账号管理</el-menu-item>
+
             <el-menu-item index="/admin/companyList">公司管理</el-menu-item>
+
             <el-menu-item index="/admin/mediaList">媒体管理</el-menu-item>
+
             <!--<el-menu-item index="/admin/SMqinlinzk">亲邻智邻</el-menu-item>-->
             <!--<el-menu-item index="/admin/communityPortrait" v-show="showQinlin">亲邻智邻</el-menu-item>-->
+
             <el-submenu index="8" :show-timeout="80" v-show="showQinlin">
                 <template slot="title">亲邻智邻</template>
                 <el-menu-item index="/admin/communityPortrait">社区画像</el-menu-item>
                 <el-menu-item index="/admin/communityRank">社区排名</el-menu-item>
             </el-submenu>
+
             <el-submenu index="7" :show-timeout="80" popper-class="submenu">
                 <template slot="title">系统管理</template>
                 <el-menu-item index="/admin/ADlimitList">广告限制</el-menu-item>
                 <el-menu-item index="/admin/notice">公告通知</el-menu-item>
                 <el-menu-item index="/admin/mediaType">媒体类型</el-menu-item>
             </el-submenu>
+
             <el-submenu index="6" class="user_center" popper-class="user_center_item" :show-timeout="80">
                 <template slot="title">
                     <img class="user_avator" :src="avator" alt="">

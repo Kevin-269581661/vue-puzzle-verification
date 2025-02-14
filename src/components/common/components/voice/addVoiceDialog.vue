@@ -85,7 +85,7 @@
                   </div>
                   <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
                   <div class="upload_tip" slot="tip">
-                    <span class="start_text">* </span>只能上传wav格式音频文件，建议时长3-5秒且文件大小不超过1MB
+                    <span class="start_text">* </span>只能上传wav格式音频文件，建议时长3-5秒且文件大小不超过2MB
                   </div>
                 </el-upload>
               </el-form-item>
@@ -416,9 +416,9 @@ export default {
         Message.warning('请上传 WAV 格式文件')
         return false
       }
-      // 校验文件大小不超过 3M
-      if (file.size / 1024 / 1024 > 1) {
-        Message.warning('请上传小于 1M 的文件')
+      // 校验文件大小
+      if (file.size / 1024 / 1024 > 2) {
+        Message.warning('请上传小于 2MB 的文件')
         return false
       }
       return true

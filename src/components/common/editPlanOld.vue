@@ -3244,7 +3244,7 @@ export default {
     },
     // 第四步的导出方案
     downLoadFanan() {
-      console.log("this.shopingList---", this.shopingList);
+      // console.log("downLoadFanan this.shopingList ======", this.shopingList);
       let arr = this.excelData(this.shopingList);
       let allHead = [
         "省份",
@@ -3326,7 +3326,6 @@ export default {
       let dateArr = [];
       let filtersData = filterFormat(arr, "schedules");
       for (let item of filtersData) {
-        console.log(item);
         let dateObj = {
           sheetName: item.value,
           showList: [],
@@ -3989,6 +3988,7 @@ export default {
             } else {
               this.shopingList = tempArr;
             }
+            // console.log('oneKeySelectPoint this.shopingList ====', this.shopingList)
             this.dialogOneKeyPoint = false;
             this.computeMedia_AD();
             this.judgeByselect();
@@ -6238,7 +6238,7 @@ export default {
                   origin: data.rName,
                   buildType: data.cType || "--",
                   houseNum: data.hNum,
-                  buildPrice: data.hPrice / 100,
+                  buildPrice: data.hPrice,
                   mediaName: data.mTitle || "",
                   remark: data.remark || "",
                   trafficState: data.trafficState || "",

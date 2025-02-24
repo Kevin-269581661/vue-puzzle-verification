@@ -3986,7 +3986,7 @@
                                   origin: data.rName,
                                   buildType: data.cType || '--',
                                   houseNum: data.hNum,
-                                  buildPrice: data.hPrice / 100,
+                                  buildPrice: data.hPrice,
                                   mediaName: data.mTitle || '',
                                   remark: data.remark || '',
                                   trafficState: data.trafficState || '',

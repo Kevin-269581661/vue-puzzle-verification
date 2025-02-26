@@ -302,21 +302,21 @@
   </template>
 
   <script>
-  import { api } from "../../api/api.js";
+  import { api } from "@/api/api.js";
   // 价格格式化
-  import commaFormat from "../../commonFun/commaFormat.js";
+  import commaFormat from "@/commonFun/commaFormat.js";
   // 筛选过滤
-  import filterFormat from "../../commonFun/filterTableData.js";
+  import filterFormat from "@/commonFun/filterTableData.js";
   // 时间格式化
-  import dateFormat from "../../commonFun/timeFormat.js";
-  import sessFun from "../../commonFun/sessFun.js";
+  import dateFormat from "@/commonFun/timeFormat.js";
+  import sessFun from "@/commonFun/sessFun.js";
 
   // 报价单
-  import material from "./components/materialInfo.vue";
-  import audioList from "./components/audioList.vue";
-  import detail from "./components/detailInfo.vue";
-  import addPoint from './components/addPoint.vue';
-  import OrderReplenishInfoDialog from  './components/orderReplenishInfoDialog.vue'
+  import material from "@/components/common/components/materialInfo.vue";
+  import audioList from "@/components/common/components/audioList.vue";
+  import detail from "@/components/common/components/detailInfo.vue";
+  import addPoint from '@/components/common/components/addPoint.vue';
+  import OrderReplenishInfoDialog from  '@/components/common/components/orderReplenishInfoDialog.vue'
   import PlanPointScheduleTable from '@/components/common/components/plan/planPointScheduleTable.vue'
   import {
     Message,
@@ -965,7 +965,8 @@
   </script>
 
   <style lang="scss" scoped>
-  @import '../../assets/component.scss';
+  @import '@/assets/component.scss';
+
   .ellipsis-td {
     width: 132px;
     overflow: hidden;

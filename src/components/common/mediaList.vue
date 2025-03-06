@@ -169,6 +169,7 @@
                   <template v-if="item.label === '资源名称'">
                       <el-table-column
                           v-if="item.isChecked"
+                          :key="item.prop"
                           :label="item.label"
                           :min-width="item.width"
                           :show-overflow-tooltip="true"
@@ -184,11 +185,28 @@
                       </template>
                       </el-table-column>
                   </template>
+
+                  <template v-if="item.label === '是否安装在车库'">
+                      <el-table-column
+                          v-if="item.isChecked"
+                          :key="item.prop"
+                          :label="item.label"
+                          :min-width="item.width"
+                          :show-overflow-tooltip="true"
+                          :fixed="item.fix === 'left' ? true : false"
+                      >
+                      <template slot-scope="scope">
+                        {{ scope.row.installGarageFlag == 1 ? "是" : scope.row.installGarageFlag === 0 ?  "否" : '--' }}
+                      </template>
+                      </el-table-column>
+                  </template>
+
                   <template v-else-if="item.label === '媒体类型'">
                       <el-table-column
                           v-if="item.isChecked"
                           column-key="mVehicle"
                           prop="mVehicle"
+                          :key="item.prop"
                           :label="item.label"
                           :min-width="item.width"
                           :show-overflow-tooltip="true"
@@ -202,6 +220,7 @@
                       <el-table-column
                           column-key="openDoorCount"
                           :prop="item.prop"
+                          :key="item.prop"
                           :label="item.label"
                           :min-width="item.width"
                           :filters="[
@@ -222,6 +241,7 @@
                   <template v-else-if="item.label === 'MAC编码'">
                       <el-table-column
                           column-key="mac"
+                          :key="item.prop"
                           :prop="item.prop"
                           :label="item.label"
                           :min-width="180"
@@ -239,6 +259,7 @@
                       <el-table-column
                           v-if="item.isChecked"
                           column-key="asState"
+                          :key="item.prop"
                           :prop="item.prop"
                           :label="item.label"
                           :min-width="item.width"
@@ -262,6 +283,7 @@
                       <el-table-column
                           v-if="item.isChecked"
                           column-key="asSaleState"
+                          :key="item.prop"
                           :prop="item.prop"
                           :label="item.label"
                           :min-width="item.width"
@@ -283,6 +305,7 @@
                   <template v-else-if="item.label === '操作'">
                       <el-table-column
                       v-if="showNewBtn"
+                      :key="item.label"
                       :label="item.label"
                       :min-width="item.width"
                       :fixed="item.fix"
@@ -348,6 +371,7 @@
                   <template v-else>
                       <el-table-column
                           v-if="item.isChecked"
+                          :key="item.prop"
                           :prop="item.prop"
                           :label="item.label"
                           :min-width="item.width"
@@ -727,6 +751,7 @@
               { id: 20, label: "MAC编码", prop: "mac", width: "150", isChecked: true, fix:"not" },
               { id: 7, label: "区域", prop: "rName", width: "120", isChecked: true, fix:"not" },
               { id: 8, label: "商圈", prop: "tradingArea", width: "120", isChecked: true, fix:"not" },
+              { id: 8, label: "是否安装在车库", prop: "installGarageFlag", width: "120", isChecked: true, fix:"not" },
               { id: 9, label: "创建日期", prop: "createTime", width: "140", isChecked: true, fix:"not" },
               { id: 10, label: "楼栋", prop: "buildingName", width: "120", isChecked: false, fix:"not" },
               { id: 11, label: "单元", prop: "unitName", width: "120", isChecked: false, fix:"not" },
@@ -1103,7 +1128,7 @@
                 else if (key === 'openDoorCount') {
                   console.log(filters[key][0]);
                   if (filters[key][0]) {
-                    this.openDoorCountType = filters[key][0] 
+                    this.openDoorCountType = filters[key][0]
                   } else {
                     this.openDoorCountType = 0
                   }
@@ -1181,6 +1206,7 @@
                       city: key.city || '--', // 城市
                       rName: key.rName, // 区域
                       tradingArea: key.tradingArea || '--', // 商圈
+                      installGarageFlag: key.installGarageFlag || '--', // 是否安装在车库
                       createTime: key.createTime || '--', // 创建日期
                       buildingName: key.buildingName || '--', // 楼栋
                       unitName: key.unitName || '--', // 单元

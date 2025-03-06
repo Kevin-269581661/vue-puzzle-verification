@@ -584,6 +584,7 @@
                           ></el-input>
                         </el-form-item>
                       </el-col>
+
                       <el-col :span="6">
                         <el-form-item label="位置类型" prop="site">
                           <el-select
@@ -601,6 +602,25 @@
                           </el-select>
                         </el-form-item>
                       </el-col>
+
+                      <el-col :span="6">
+                        <el-form-item label="是否安装在车库" prop="installGarageFlag">
+                          <el-select
+                            v-model="mediaItem.mediaForm.installGarageFlag"
+                            placeholder="请选择是否安装在车库"
+                            clearable
+                          >
+                            <el-option
+                              v-for="item in preparedData.installGarageFlagOptions"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                            >
+                            </el-option>
+                          </el-select>
+                        </el-form-item>
+                      </el-col>
+
                       <el-col :span="6">
                         <el-form-item label="楼栋号" prop="buildingName" :rules="mediaRules.buildingName">
                           <el-input
@@ -1298,6 +1318,12 @@ export default {
       changeBeforMediaState: "",
       customPermission: {}, //巡点权限
       fangJiaWangPrivateCity: [], // 房价网权限城市
+      preparedData: {
+        installGarageFlagOptions: [
+          { label: '是', value: 1 },
+          { label: '否', value: 0 },
+        ]
+      }
     };
   },
   created() {
@@ -1799,6 +1825,7 @@ export default {
           unitName: "",
           floor: "",
           siteOrientation: "",
+          installGarageFlag: null
         },
       };
       mediaTypeItem.mediaList.push(tempMedia);
@@ -2193,6 +2220,7 @@ export default {
               assetTag: tempMediaForm.assetId,
               deviceType: tempMediaForm.doorType || "",
               site: tempMediaForm.site || "",
+              installGarageFlag: tempMediaForm.installGarageFlag || "",
               mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
@@ -2580,6 +2608,7 @@ export default {
                 doorType: mediaItem.mType || "", // 设备类型
                 adDoorLevel: mediaItem.grade || "",
                 site: mediaItem.site || "", // 位置类型
+                installGarageFlag: mediaItem.installGarageFlag || "", // 是否安装在车库
                 mRemark: mediaItem.mRemark, // 备注
                 buildingName: mediaItem.buildingName, // 楼栋
                 unitName: mediaItem.unitName, // 单元
@@ -2849,6 +2878,7 @@ export default {
                 mediaPicture: tempMediaForm.mImg || "",
                 grade: tempMediaForm.adDoorLevel || "",
                 site: tempMediaForm.site || "",
+                installGarageFlag: tempMediaForm.installGarageFlag || "",
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
                 buildingName: tempMediaForm.buildingName,
@@ -2906,6 +2936,7 @@ export default {
                 mediaPicture: tempMediaForm.mImg || "",
                 mRemark: tempMediaForm.mRemark || "",
                 site: tempMediaForm.site || "",
+                installGarageFlag: tempMediaForm.installGarageFlag || "",
                 adSpaceInfo: tempAdSpaceInfo,
               };
               newMediaParams.push(obj);

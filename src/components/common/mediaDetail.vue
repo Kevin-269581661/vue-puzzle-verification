@@ -334,6 +334,7 @@
                         {{ scope.row.assetTag || "&#45;&#45;" }}
                       </template>
                     </el-table-column>
+
                     <el-table-column
                       prop="site"
                       label="位置类型"
@@ -344,6 +345,18 @@
                         {{ scope.row.site || "--" }}
                       </template>
                     </el-table-column>
+
+                    <el-table-column
+                      prop="installGarageFlag"
+                      label="是否安装在车库"
+                      width="120px"
+                      show-overflow-tooltip
+                    >
+                      <template slot-scope="scope">
+                        {{ scope.row.installGarageFlag == 1 ? "是" : scope.row.installGarageFlag === 0 ?  "否" : '--' }}
+                      </template>
+                    </el-table-column>
+
                     <el-table-column
                         prop="mac"
                         label="设备ID"

@@ -2220,7 +2220,7 @@ export default {
               assetTag: tempMediaForm.assetId,
               deviceType: tempMediaForm.doorType || "",
               site: tempMediaForm.site || "",
-              installGarageFlag: tempMediaForm.installGarageFlag || "",
+              installGarageFlag: tempMediaForm.installGarageFlag,
               mRemark: tempMediaForm.mRemark,
               mediaPicture: tempMediaForm.mImg || "",
               adSpaceInfo: tempAdSpaceInfo,
@@ -2608,7 +2608,7 @@ export default {
                 doorType: mediaItem.mType || "", // 设备类型
                 adDoorLevel: mediaItem.grade || "",
                 site: mediaItem.site || "", // 位置类型
-                installGarageFlag: mediaItem.installGarageFlag || "", // 是否安装在车库
+                installGarageFlag: mediaItem.installGarageFlag, // 是否安装在车库
                 mRemark: mediaItem.mRemark, // 备注
                 buildingName: mediaItem.buildingName, // 楼栋
                 unitName: mediaItem.unitName, // 单元
@@ -2878,7 +2878,7 @@ export default {
                 mediaPicture: tempMediaForm.mImg || "",
                 grade: tempMediaForm.adDoorLevel || "",
                 site: tempMediaForm.site || "",
-                installGarageFlag: tempMediaForm.installGarageFlag || "",
+                installGarageFlag: tempMediaForm.installGarageFlag,
                 mRemark: tempMediaForm.mRemark || "",
                 adSpaceInfo: tempAdSpaceInfo,
                 buildingName: tempMediaForm.buildingName,
@@ -2936,7 +2936,7 @@ export default {
                 mediaPicture: tempMediaForm.mImg || "",
                 mRemark: tempMediaForm.mRemark || "",
                 site: tempMediaForm.site || "",
-                installGarageFlag: tempMediaForm.installGarageFlag || "",
+                installGarageFlag: tempMediaForm.installGarageFlag,
                 adSpaceInfo: tempAdSpaceInfo,
               };
               newMediaParams.push(obj);

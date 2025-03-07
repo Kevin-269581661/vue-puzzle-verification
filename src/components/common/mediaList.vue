@@ -143,7 +143,7 @@
                   space
                   filter
                   :columns="currentPlanColumn"
-                  cacheKey="mediaList"
+                  cacheKey="mediaList2"
                   @filterColumn="filterColumn"
                   @refreshTable="refreshTable"
                   @spaceSetting="spaceSetting">

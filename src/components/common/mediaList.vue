@@ -1206,7 +1206,7 @@
                       city: key.city || '--', // 城市
                       rName: key.rName, // 区域
                       tradingArea: key.tradingArea || '--', // 商圈
-                      installGarageFlag: key.installGarageFlag || '--', // 是否安装在车库
+                      installGarageFlag: key.installGarageFlag, // 是否安装在车库
                       createTime: key.createTime || '--', // 创建日期
                       buildingName: key.buildingName || '--', // 楼栋
                       unitName: key.unitName || '--', // 单元

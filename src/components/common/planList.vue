@@ -2500,7 +2500,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@import '../../assets/component.scss';
+@import '@/assets/component.scss';
 
 a {
   color: #108ee9;

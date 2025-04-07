@@ -134,7 +134,7 @@
                 container="ringChart"
                 :sourceData="ringData[isPoint * 1]"
               ></ring-chart>
-              <div class="bottom-box">
+              <div v-if="sessionData.uType !== 'ADN_MD_COUNTRY'" class="bottom-box">
                 贵公司<span class="avtive">
                   {{ ringData[2][isPoint * 1][0] }} </span
                 >个

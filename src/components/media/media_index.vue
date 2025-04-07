@@ -105,7 +105,6 @@
                 multiple
                 collapse-tags
                 filterable
-                clearable
                 style="margin-left: auto;"
                 size="small"
                 @visible-change="mediaStatisticsVisibleChange"
@@ -168,7 +167,6 @@
                 multiple
                 collapse-tags
                 filterable
-                clearable
                 style="margin-left: auto;"
                 size="small"
                 @visible-change="prelockCompanyVisibleChange"

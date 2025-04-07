@@ -100,12 +100,13 @@
 
               <!-- 媒体概况-多公司选择 -->
               <el-select
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
                 v-model="mediaStatisticsCompanyIds"
                 placeholder="请选择公司"
                 multiple
                 collapse-tags
                 filterable
-                style="margin-left: auto;"
+                style="margin-left: auto; width: 200px"
                 size="small"
                 @visible-change="mediaStatisticsVisibleChange"
               >
@@ -133,6 +134,7 @@
                 container="ringChart"
                 :sourceData="ringData[isPoint * 1]"
               ></ring-chart>
+              <!-- 全国媒介不显示 -->
               <div v-if="sessionData.uType !== 'ADN_MD_COUNTRY'" class="bottom-box">
                 贵公司<span class="avtive">
                   {{ ringData[2][isPoint * 1][0] }} </span
@@ -160,14 +162,25 @@
                 />
               </el-tooltip>
 
+              <el-input
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
+                v-model.trim="prelockPlanName"
+                placeholder="请输入方案名称"
+                size="small"
+                clearable
+                style="margin-left: auto; width: 200px"
+                @change="getPrelockData"
+              ></el-input>
+
               <!-- 预锁概况-多公司选择 -->
               <el-select
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
                 v-model="prelockCompanyIds"
                 placeholder="请选择公司"
                 multiple
                 collapse-tags
                 filterable
-                style="margin-left: auto;"
+                style="margin-left: 14px; width: 200px"
                 size="small"
                 @visible-change="prelockCompanyVisibleChange"
               >
@@ -576,6 +589,8 @@ export default {
       mediaStatisticsCompanyOptions: [],
       // 预锁概况-多公司选择
       prelockCompanyIds: [],
+      // 预锁概况-方案名称
+      prelockPlanName: '',
       prelockCompanyOptions: [],
       // 媒体概况饼图数据
       ringData: [
@@ -957,6 +972,7 @@ export default {
           : this.prelockCompanyIds.join(',')
         const res = await this.$request.getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", {
           asrIds,
+          keyword: this.prelockPlanName,
           uid: this.sessionData.uID,
           token: this.sessionData.token,
         })

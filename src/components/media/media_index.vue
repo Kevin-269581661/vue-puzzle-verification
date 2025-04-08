@@ -108,7 +108,8 @@
                 filterable
                 style="margin-left: auto; width: 200px"
                 size="small"
-                @change="mediaStatisticsVisibleChange"
+                @visible-change="mediaStatisticsVisibleChange"
+                @remove-tag="getMediaStatisticsData"
               >
                 <el-option
                   v-for="item in mediaStatisticsCompanyOptions"
@@ -182,7 +183,8 @@
                 filterable
                 style="margin-left: 14px; width: 200px"
                 size="small"
-                @change="prelockCompanyVisibleChange"
+                @visible-change="prelockCompanyVisibleChange"
+                @remove-tag="getPrelockData"
               >
                 <el-option
                   v-for="item in prelockCompanyOptions"
@@ -670,17 +672,16 @@ export default {
   },
   methods: {
     mediaStatisticsVisibleChange(visible) {
-      console.log('mediaStatisticsVisibleChange ===', visible)
+      if (visible) return
       this.getMediaStatisticsData()
     },
 
     prelockCompanyVisibleChange(visible) {
-      console.log('prelockCompanyVisibleChange ===', visible)
+      if (visible) return
       this.getPrelockData()
     },
 
     handleSelectCompany(currentVal) {
-      console.log('handleSelectCompany ===', currentVal)
       const val = this.mediaStatisticsCompanyIds
       const ALL_OPTION_VAL = -1
       // 如果选中全部公司，则清空其他公司id
@@ -694,7 +695,6 @@ export default {
     },
 
     handleSelectPrelockCompany (currentVal) {
-      console.log('handleSelectPrelockCompany ===', currentVal)
       const val = this.prelockCompanyIds
       const ALL_OPTION_VAL = -1
       // 如果选中全部公司，则清空其他公司id
@@ -728,25 +728,6 @@ export default {
         }
         this.mediaStatisticsCompanyOptions = list
         this.prelockCompanyOptions = list
-
-        // this.mediaStatisticsCompanyOptions = [
-        //   { value: -1, label: '全部' },
-        //   { value: 1, label: '北京' },
-        //   { value: 2, label: '上海' },
-        //   { value: 3, label: '广州' },
-        //   { value: 4, label: '深圳' },
-        // ]
-        // this.mediaStatisticsCompanyIds = [-1]
-
-        // this.prelockCompanyOptions = [
-        //   { value: -1, label: '全部' },
-        //   { value: 1, label: '北京' },
-        //   { value: 2, label: '上海' },
-        //   { value: 3, label: '广州' },
-        //   { value: 4, label: '深圳' },
-        // ]
-        // this.prelockCompanyIds = [-1]
-
       } catch (err) {
         this.$message.error(String(err) || '获取数据失败')
         console.error('getMediaStatisticsCompanyOptions error:', err)

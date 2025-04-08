@@ -108,7 +108,7 @@
                 filterable
                 style="margin-left: auto; width: 200px"
                 size="small"
-                @visible-change="mediaStatisticsVisibleChange"
+                @change="mediaStatisticsVisibleChange"
               >
                 <el-option
                   v-for="item in mediaStatisticsCompanyOptions"
@@ -182,7 +182,7 @@
                 filterable
                 style="margin-left: 14px; width: 200px"
                 size="small"
-                @visible-change="prelockCompanyVisibleChange"
+                @change="prelockCompanyVisibleChange"
               >
                 <el-option
                   v-for="item in prelockCompanyOptions"
@@ -671,13 +671,11 @@ export default {
   methods: {
     mediaStatisticsVisibleChange(visible) {
       console.log('mediaStatisticsVisibleChange ===', visible)
-      if (visible) return
       this.getMediaStatisticsData()
     },
 
     prelockCompanyVisibleChange(visible) {
       console.log('prelockCompanyVisibleChange ===', visible)
-      if (visible) return
       this.getPrelockData()
     },
 

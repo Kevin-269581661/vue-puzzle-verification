@@ -1206,19 +1206,8 @@ export default {
         .postApi(this.apiVar.Advertisement + "/ResetFangLock", params)
         .then((res) => {
           if (res.data.SysCode === 300200) {
-            api
-              .getApi(
-                this.apiVar.report + "/homepage/getMDUnlockPlanReport",
-                params
-              )
-              .then((res) => {
-                if (res.data.SysCode === 200200) {
-                  this.$message.success("预锁成功");
-                  this.preLockArr = res.data.data || [];
-                } else {
-                  this.$message.warning(res.data.MSG || "");
-                }
-              });
+            this.$message.success("预锁成功");
+            this.getPrelockData()
           } else {
             this.$message.warning(res.data.MSG || "");
           }

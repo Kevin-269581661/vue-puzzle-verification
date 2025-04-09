@@ -106,7 +106,7 @@
                 multiple
                 collapse-tags
                 filterable
-                style="margin-left: auto; width: 200px"
+                style="margin-left: auto; width: 260px"
                 size="small"
                 @visible-change="mediaStatisticsVisibleChange"
                 @remove-tag="getMediaStatisticsData"
@@ -181,7 +181,7 @@
                 multiple
                 collapse-tags
                 filterable
-                style="margin-left: 14px; width: 200px"
+                style="margin-left: 14px; width: 260px"
                 size="small"
                 @visible-change="prelockCompanyVisibleChange"
                 @remove-tag="getPrelockData"
@@ -1575,5 +1575,11 @@ export default {
   height: 6px;
   border-radius: 50%;
   margin-right: 5px;
+}
+
+/deep/ .el-select {
+  .el-tag {
+    max-width: 140px !important;
+  }
 }
 </style>

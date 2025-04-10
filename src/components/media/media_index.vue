@@ -1246,9 +1246,11 @@ export default {
     this.appCenter = appCenter;
     this.uploadEvent(1);
     this.allReportApi();
-    this.getMediaStatisticsCompanyOptions()
     this.getMediaStatisticsData()
     this.getPrelockData()
+    if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+      this.getMediaStatisticsCompanyOptions()
+    }
   },
 };
 </script>

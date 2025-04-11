@@ -60,12 +60,7 @@
           <index-custom-card height="520px">
             <template slot="head">
               媒体概况&nbsp;
-              <el-tooltip
-                v-if="isPoint"
-                effect="dark"
-                content="Top center"
-                placement="top"
-              >
+              <el-tooltip v-if="isPoint" effect="dark" placement="top">
                 <ul slot="content">
                   <li style="line-height: 20px">数据更新至昨日</li>
                   <li style="line-height: 20px">
@@ -84,12 +79,7 @@
                 />
               </el-tooltip>
 
-              <el-tooltip
-                v-else
-                effect="dark"
-                content="Top center"
-                placement="top"
-              >
+              <el-tooltip v-else effect="dark" placement="top">
                 <ul slot="content">
                   <li style="line-height: 20px">数据更新至昨日</li>
                   <li style="line-height: 20px">
@@ -108,6 +98,28 @@
                 />
               </el-tooltip>
 
+              <!-- 媒体概况-多公司选择 -->
+              <el-select
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
+                v-model="mediaStatisticsCompanyIds"
+                placeholder="请选择公司"
+                multiple
+                collapse-tags
+                filterable
+                style="margin-left: auto; width: 260px"
+                size="small"
+                @visible-change="mediaStatisticsVisibleChange"
+                @remove-tag="getMediaStatisticsData"
+              >
+                <el-option
+                  v-for="item in mediaStatisticsCompanyOptions"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
+                  @click.native="handleSelectCompany(item.value)"
+                />
+              </el-select>
+
               <el-radio-group
                 v-model="isPoint"
                 size="small"
@@ -123,7 +135,8 @@
                 container="ringChart"
                 :sourceData="ringData[isPoint * 1]"
               ></ring-chart>
-              <div class="bottom-box">
+              <!-- 全国媒介不显示 -->
+              <div v-if="sessionData.uType !== 'ADN_MD_COUNTRY'" class="bottom-box">
                 贵公司<span class="avtive">
                   {{ ringData[2][isPoint * 1][0] }} </span
                 >个
@@ -149,6 +162,38 @@
                   src="../../assets/images/question_icon.png"
                 />
               </el-tooltip>
+
+              <el-input
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
+                v-model.trim="prelockPlanName"
+                placeholder="请输入方案名称"
+                size="small"
+                clearable
+                style="margin-left: auto; width: 200px"
+                @change="getPrelockData"
+              ></el-input>
+
+              <!-- 预锁概况-多公司选择 -->
+              <el-select
+                v-if="sessionData.uType === 'ADN_MD_COUNTRY'"
+                v-model="prelockCompanyIds"
+                placeholder="请选择公司"
+                multiple
+                collapse-tags
+                filterable
+                style="margin-left: 14px; width: 260px"
+                size="small"
+                @visible-change="prelockCompanyVisibleChange"
+                @remove-tag="getPrelockData"
+              >
+                <el-option
+                  v-for="item in prelockCompanyOptions"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
+                  @click.native="handleSelectPrelockCompany(item.value)"
+                />
+              </el-select>
             </template>
             <template slot="content">
               <div style="padding: 20px 25px 10px">
@@ -157,7 +202,7 @@
                   class="lock-table"
                   max-height="486"
                 >
-                  <el-table-column prop="apName" label="方案" width="230">
+                  <el-table-column prop="apName" label="方案" width="230" show-overflow-tooltip>
                     <template slot-scope="scope">
                       <span
                         @click="routePage(scope.row)"
@@ -166,6 +211,13 @@
                       >
                     </template>
                   </el-table-column>
+
+                  <el-table-column prop="city" label="所属城市" width="100" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                      <span>{{ scope.row.city || "" }}</span>
+                    </template>
+                  </el-table-column>
+
                   <el-table-column prop="dayDiffer" label="预锁剩余天数">
                     <template slot-scope="scope">
                       <mini-progress
@@ -184,6 +236,7 @@
                       ></mini-progress>
                     </template>
                   </el-table-column>
+
                   <el-table-column
                     prop="apName"
                     label="操作"
@@ -533,6 +586,14 @@ export default {
       },
       // 媒体概况 媒体和点位切换
       isPoint: true,
+      // 媒体概况-多公司选择
+      mediaStatisticsCompanyIds: [],
+      mediaStatisticsCompanyOptions: [],
+      // 预锁概况-多公司选择
+      prelockCompanyIds: [],
+      // 预锁概况-方案名称
+      prelockPlanName: '',
+      prelockCompanyOptions: [],
       // 媒体概况饼图数据
       ringData: [
         [],
@@ -610,6 +671,69 @@ export default {
     };
   },
   methods: {
+    mediaStatisticsVisibleChange(visible) {
+      if (visible) return
+      this.getMediaStatisticsData()
+    },
+
+    prelockCompanyVisibleChange(visible) {
+      if (visible) return
+      this.getPrelockData()
+    },
+
+    handleSelectCompany(currentVal) {
+      const val = this.mediaStatisticsCompanyIds
+      const ALL_OPTION_VAL = -1
+      // 如果选中全部公司，则清空其他公司id
+      if (val.includes(ALL_OPTION_VAL)) {
+        if (currentVal === ALL_OPTION_VAL) {
+          this.mediaStatisticsCompanyIds = [ALL_OPTION_VAL]
+        } else if (currentVal !== ALL_OPTION_VAL) {
+          this.mediaStatisticsCompanyIds = val.filter((item) => item !== ALL_OPTION_VAL)
+        }
+      }
+    },
+
+    handleSelectPrelockCompany (currentVal) {
+      const val = this.prelockCompanyIds
+      const ALL_OPTION_VAL = -1
+      // 如果选中全部公司，则清空其他公司id
+      if (val.includes(ALL_OPTION_VAL)) {
+        if (currentVal === ALL_OPTION_VAL) {
+          this.prelockCompanyIds = [ALL_OPTION_VAL]
+        } else if (currentVal !== ALL_OPTION_VAL) {
+          this.prelockCompanyIds = val.filter((item) => item !== ALL_OPTION_VAL)
+        }
+      }
+    },
+    /**
+     * 获取媒体概况多公司选择-预加载数据
+     */
+     async getMediaStatisticsCompanyOptions() {
+      try {
+        const res = await this.$api.company.listMultiPermissions()
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        const list = (data || []).map(item => {
+          return {
+            value: item.companyId,
+            label: item.companyName
+          }
+        })
+        if (list.length) {
+          list.unshift({ value: -1, label: '全部' })
+          // 设置默认公司（默认选择全部公司）
+          this.mediaStatisticsCompanyIds = [-1]
+          this.prelockCompanyIds = [-1]
+        }
+        this.mediaStatisticsCompanyOptions = list
+        this.prelockCompanyOptions = list
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getMediaStatisticsCompanyOptions error:', err)
+      }
+    },
+
     getSession() {
       this.sessionData = sessFun.getSess();
       this.isAllMedia =
@@ -815,6 +939,88 @@ export default {
       sessionStorage.setItem("plan_apid", row.apID);
       this.$router.push("./media/planDetail");
     },
+
+    /**
+     * 获取预锁概况数据
+     */
+    async getPrelockData() {
+      console.log("getPrelockData ======");
+      try {
+        let asrIds = !this.prelockCompanyIds.length || this.prelockCompanyIds.includes(-1)
+          ? ''
+          : this.prelockCompanyIds.join(',')
+        const res = await this.$request.getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", {
+          asrIds,
+          keyword: this.prelockPlanName,
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.preLockArr = res.data.data || [];
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getPrelockData error:', err)
+      }
+    },
+
+    /**
+     * 获取媒体概况数据
+     */
+    async getMediaStatisticsData() {
+      console.log("getMediaStatisticsData ======");
+      try {
+        let asrIds = !this.mediaStatisticsCompanyIds.length || this.mediaStatisticsCompanyIds.includes(-1)
+          ? ''
+          : this.mediaStatisticsCompanyIds.join(',')
+        const res = await this.$request.getApi(this.apiVar.report + "/homepage/getMDMediaReport", {
+          asrIds,
+          uid: this.sessionData.uID,
+          token: this.sessionData.token,
+        })
+        /*
+        媒介的媒体概况
+          "banLabCnt" 禁止的点位数
+          "banMediaCnt" 禁止的媒体数
+          "normalLabCnt" 正常的点位数
+          "normalMediaCnt" 正常的媒体数
+          "installLabCnt" 待安装的点位数
+          "installMediaCnt" 待安装的媒体数
+          "repairLabCnt" 待修理的点位数
+          "repairMediaCnt" 待修理的媒体数
+          "demolishLabCnt" 拆除的点位数
+          "demolishMediaCnt" 拆除的媒体数
+          "offPubMediaCnt" 不可投的媒体数
+          "offPubLabCnt" 不可投的点位数
+          "offPubRank" 排名百分比
+        */
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        let temp = res.data.data;
+        this.ringData = [
+          [
+            { item: "可售卖", count: temp.normalMediaCnt || 0 },
+            // { item: "待安装", count: temp.installMediaCnt || 0 },
+            // { item: "待维修", count: temp.repairMediaCnt || 0 },
+            { item: "不可售卖", count: temp.banMediaCnt || 0 },
+          ],
+          [
+            { item: "可售卖", count: temp.normalLabCnt || 0 },
+            // { item: "待安装", count: temp.installLabCnt || 0 },
+            // { item: "待维修", count: temp.repairLabCnt || 0 },
+            { item: "不可售卖", count: temp.banLabCnt || 0 },
+          ],
+          [
+            [temp.offPubMediaCnt, temp.offPubRank + "%"],
+            [temp.offPubLabCnt, temp.offPubRank + "%"],
+          ],
+        ];
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getMediaStatisticsData error:', err)
+      }
+    },
+
     // 首页报表接口
     allReportApi() {
       let params = {
@@ -982,67 +1188,6 @@ export default {
           console.log("err", err);
         })
         .finally((_) => {});
-      /*
-        媒介的媒体概况
-        "banLabCnt" 禁止的点位数
-        "banMediaCnt" 禁止的媒体数
-        "normalLabCnt" 正常的点位数
-        "normalMediaCnt" 正常的媒体数
-        "installLabCnt" 待安装的点位数
-        "installMediaCnt" 待安装的媒体数
-        "repairLabCnt" 待修理的点位数
-        "repairMediaCnt" 待修理的媒体数
-        "demolishLabCnt" 拆除的点位数
-        "demolishMediaCnt" 拆除的媒体数
-        "offPubMediaCnt" 不可投的媒体数
-        "offPubLabCnt" 不可投的点位数
-        "offPubRank" 排名百分比
-      */
-      api
-        .getApi(this.apiVar.report + "/homepage/getMDMediaReport", params)
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            let temp = res.data.data;
-            this.ringData = [
-              [
-                { item: "可售卖", count: temp.normalMediaCnt || 0 },
-                // { item: "待安装", count: temp.installMediaCnt || 0 },
-                // { item: "待维修", count: temp.repairMediaCnt || 0 },
-                { item: "不可售卖", count: temp.banMediaCnt || 0 },
-              ],
-              [
-                { item: "可售卖", count: temp.normalLabCnt || 0 },
-                // { item: "待安装", count: temp.installLabCnt || 0 },
-                // { item: "待维修", count: temp.repairLabCnt || 0 },
-                { item: "不可售卖", count: temp.banLabCnt || 0 },
-              ],
-              [
-                [temp.offPubMediaCnt, temp.offPubRank + "%"],
-                [temp.offPubLabCnt, temp.offPubRank + "%"],
-              ],
-            ];
-          } else {
-            this.$message.warning(res.data.MSG || "");
-          }
-        })
-        .catch((err) => {
-          console.log("媒体概况", err);
-        })
-        .finally((_) => {});
-      // 媒介的预锁概况 /report /homepage/getMDUnlockPlanReport
-      api
-        .getApi(this.apiVar.report + "/homepage/getMDUnlockPlanReport", params)
-        .then((res) => {
-          if (res.data.SysCode === 200200) {
-            this.preLockArr = res.data.data || [];
-          } else {
-            this.$message.warning(res.data.MSG || "");
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        })
-        .finally((_) => {});
     },
     // 跳转到媒体列表页面
     navigateMediaList() {
@@ -1061,19 +1206,8 @@ export default {
         .postApi(this.apiVar.Advertisement + "/ResetFangLock", params)
         .then((res) => {
           if (res.data.SysCode === 300200) {
-            api
-              .getApi(
-                this.apiVar.report + "/homepage/getMDUnlockPlanReport",
-                params
-              )
-              .then((res) => {
-                if (res.data.SysCode === 200200) {
-                  this.$message.success("预锁成功");
-                  this.preLockArr = res.data.data || [];
-                } else {
-                  this.$message.warning(res.data.MSG || "");
-                }
-              });
+            this.$message.success("预锁成功");
+            this.getPrelockData()
           } else {
             this.$message.warning(res.data.MSG || "");
           }
@@ -1112,6 +1246,11 @@ export default {
     this.appCenter = appCenter;
     this.uploadEvent(1);
     this.allReportApi();
+    this.getMediaStatisticsData()
+    this.getPrelockData()
+    if (this.sessionData.uType === 'ADN_MD_COUNTRY') {
+      this.getMediaStatisticsCompanyOptions()
+    }
   },
 };
 </script>
@@ -1219,7 +1358,7 @@ export default {
   }
 
   .achievement-radio-group {
-    margin-left: auto;
+    margin-left: 14px;
     /deep/ .el-radio-button__inner {
       width: 88px;
       font-size: 14px;
@@ -1438,5 +1577,11 @@ export default {
   height: 6px;
   border-radius: 50%;
   margin-right: 5px;
+}
+
+/deep/ .el-select {
+  .el-tag {
+    max-width: 140px !important;
+  }
 }
 </style>

@@ -4389,6 +4389,7 @@ export default {
           ? this.BDData.asrID + ""
           : this.cacheAsrID;
       }
+      // 获取公司媒体权限
       api
         .getApi("/addsp/api/v1/company/mediaTypes", {
           companyIds: selectedAsrIds || this.sessionData.asrID,
@@ -4397,7 +4398,11 @@ export default {
           if (res.data.SysCode == 200200) {
             this.mediaTypeObjectArr = res.data.data || [];
             if (this.mediaTypeObjectArr.length) {
+              // 跟用户媒体权限去重
               this.mediaTypeObjectArr = this.getUserMediaChooseConfigs(this.sessionData);
+              if (!this.mediaTypeObjectArr.length) {
+                return this.$message.warning('当前用户无媒体权限')
+              }
               this.activeMediaType(this.mediaTypeObjectArr[0].id);
               // 获取选点列表
               this.getAdList();
@@ -7373,6 +7378,9 @@ export default {
 
     // 根据账号配置过滤媒体类型
     getUserMediaChooseConfigs(sessionData) {
+      if (!sessionData.userMediaChooseConfigs || !sessionData.userMediaChooseConfigs.length) {
+        return []
+      }
       let hash = {};
       let arr = sessionData.userMediaChooseConfigs.reduce((item, next) => {
         hash[next.mediaTypeName]

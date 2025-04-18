@@ -71,6 +71,9 @@
                 深圳市亲邻科技有限公司 版权所有 <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备15007183号</a>
             </p>
         </div>
+
+      <!-- 检测绑定微信登录-弹框组件 -->
+      <CheckBindWxDialog />
     </div>
 </template>
 
@@ -80,8 +83,13 @@
     import dateFormat from "../../commonFun/timeFormat.js";
     import sessFun from "../../commonFun/sessFun.js";
     import {api} from '../../api/api';
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
+
     export default {
         name: "adOwnerCommon",
+        components:{
+            CheckBindWxDialog
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),

@@ -16,7 +16,7 @@
             </el-menu-item>
             <el-menu-item index="/sale">首页</el-menu-item>
             <el-menu-item index="/sale/clientList">客户管理</el-menu-item>
-            
+
             <el-menu-item index="/sale/planList">方案管理</el-menu-item>
             <!-- <el-submenu index="6" :show-timeout="80" popper-class="submenu">
                 <template slot="title">方案管理</template>
@@ -81,6 +81,9 @@
                 </div>
             </div>
         </el-dialog>
+
+      <!-- 检测绑定微信登录-弹框组件 -->
+      <CheckBindWxDialog />
     </div>
 </template>
 
@@ -90,11 +93,14 @@
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
     import questionTip from '../common/components/questionTip.vue';
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
+
     export default {
         name: "saleCommon",
         components:{
             messageNotice,
-            questionTip
+            questionTip,
+            CheckBindWxDialog
         },
         data(){
             return{
@@ -211,8 +217,8 @@
         width: calc(100% - 24px);
         padding: 5px 12px 0;
         text-align: left;
-        color: rgba(0, 0, 0, 0.85); 
-        font-size: 14px; 
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
         line-height: 18px;
     }
     .my-balance::after {

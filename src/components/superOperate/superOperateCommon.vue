@@ -82,6 +82,9 @@
                 </div>
             </div>
         </el-dialog>
+
+        <!-- 检测绑定微信登录-弹框组件 -->
+        <CheckBindWxDialog />
     </div>
 </template>
 
@@ -90,11 +93,13 @@
     import getBalance from "../../commonFun/companyBalance.js";
     import api from "../../api/api"
     import questionTip from '../common/components/questionTip.vue';
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
 
     export default {
         name: "superOpertaeCommon",
         components: {
-            questionTip
+            questionTip,
+            CheckBindWxDialog
         },
         data(){
             return{
@@ -225,8 +230,8 @@
         width: calc(100% - 24px);
         padding: 5px 12px 0;
         text-align: left;
-        color: rgba(0, 0, 0, 0.85); 
-        font-size: 14px; 
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
         line-height: 18px;
     }
     .my-balance::after {

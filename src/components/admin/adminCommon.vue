@@ -68,6 +68,9 @@
                 </div>
             </div>
         </el-dialog>
+
+        <!-- 检测绑定微信登录-弹框组件 -->
+        <CheckBindWxDialog />
     </div>
 </template>
 
@@ -75,8 +78,13 @@
     import uTypeToText from "../../commonFun/uTypeToText.js";
     import sessFun from '../../commonFun/sessFun.js';
     import api from "../../api/api"
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
+
     export default {
         name: "adminCommon",
+        components:{
+            CheckBindWxDialog
+        },
         data(){
             return{
                 newDate: new Date().getFullYear(),

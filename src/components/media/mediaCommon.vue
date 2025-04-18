@@ -146,6 +146,9 @@
                 </div>
             </div>
         </el-dialog>
+
+        <!-- 检测绑定微信登录-弹框组件 -->
+        <CheckBindWxDialog />
     </div>
 </template>
 
@@ -155,12 +158,14 @@
     import api from "../../api/api"
     import messageNotice from '../common/components/messageNotice.vue';
     import questionTip from '../common/components/questionTip.vue';
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
 
     export default {
         name: "mediaCommon",
         components: {
             messageNotice,
-            questionTip
+            questionTip,
+            CheckBindWxDialog
         },
         data() {
             return {

@@ -51,6 +51,9 @@
                 </div>
             </div>
         </el-dialog>
+
+        <!-- 检测绑定微信登录-弹框组件 -->
+        <CheckBindWxDialog />
     </div>
 </template>
 
@@ -59,10 +62,13 @@
     import sessFun from '../../commonFun/sessFun.js';
     import api from "../../api/api"
     import questionTip from '../common/components/questionTip.vue';
+    import CheckBindWxDialog from '@/components/common/components/checkBindWxDialog.vue'
+
     export default {
         name: "engineerCommon",
         components: {
-            questionTip
+            questionTip,
+            CheckBindWxDialog
         },
         data(){
             return{

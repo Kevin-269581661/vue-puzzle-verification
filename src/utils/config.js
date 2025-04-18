@@ -1,20 +1,26 @@
 'use strict'
+
+const CUR_ENV = process.env.NODE_ENV
+
 // 测试环境
 let wuYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&mapid=';
 let shareWUYouMap = 'https://wsopbodv.dituwuyou.com/qinlin/embed?mid=_J6aWeV128gkhVn54AfWIw&token=SvcvtTqpktwPUb8dbu_jx0602nj_4tF-is8&myid=';
 let jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-test/';
 let wsUrl = "wss://test-qadn.qinlinad.com/UCAPI/ScanLogin?type=PC"
-if (process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'graying') {
+
+if (CUR_ENV == 'production' || CUR_ENV == 'graying') {
   // 正式环境
   wuYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&mapid=';
   shareWUYouMap = 'https://www.dituwuyou.com/qinlin/embed?mid=FPcrNHyq3xXFZDbqlTyHKA&token=fp3nxsKCYZzOSnU0KosEq0GA1o1qcKh5XLA&myid=';
   jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes/';
   wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC";
 }
+
 // 开发环境
-if (process.env.NODE_ENV == 'development') {
+if (CUR_ENV == 'development') {
   jsonLink = 'https://qadn-1256017579.cos.ap-guangzhou.myqcloud.com/cityRes-dev/';
 }
+
 const apiRoot = {
   // devURL: '"https://test-qadn.qinlinad.com/"',
   devURL: '"/devURL/"',

@@ -5,20 +5,26 @@
           <img src="../../assets/images/login_logo.png" alt="" />
           <p>您可信任的智慧社区服务商</p>
         </div>
+
         <div class="login">
-          <div class="loginType">
+          <div class="login_type">
             <ul class="">
-              <li v-bind:class="{ active: isActive == 2 }" @click="loginType(2)">
+
+              <li v-bind:class="{ active: isActive == 2 }" @click="setLoginType(2)">
                 手机登录
               </li>
-              <li v-bind:class="{ active: isActive == 1 }" @click="loginType(1)">
+
+              <!-- <li v-bind:class="{ active: isActive == 1 }" @click="setLoginType(1)">
                 密码登录
-              </li>
-              <li v-bind:class="{ active: isActive == 3 }" @click="loginType(3)">
+              </li> -->
+
+              <li v-bind:class="{ active: isActive == 3 || isActive == 4 }" @click="setLoginType(3)">
                 扫码登录
               </li>
             </ul>
           </div>
+
+          <!-- 密码登录 -->
           <div class="loginInput" v-if="isActive == 1">
             <div v-if="verified == 'trying'" class="login-verify">
               <slide-verify
@@ -79,100 +85,85 @@
               <button id="login" @click="slideVerify()">登&nbsp;录</button>
             </div>
           </div>
-          <div class="phone_login" v-if="isActive == 2">
-            <template>
-              <div class="phone_num">
-                <el-input
-                  name="phoneNum"
-                  placeholder="手机号"
-                  autocomplete="off"
-                  v-model.trim="phoneNum"
-                >
-                  <img
-                    slot="prefix"
-                    src="../../assets/images/phone_num_icon.png"
-                    alt=""
-                  />
-                </el-input>
-              </div>
-              <div class="verification_code">
-                <el-input
-                  placeholder="验证码"
-                  name="verificationCode"
-                  autocomplete="off"
-                  v-model.trim="verificationCode"
-                >
-                  <img
-                    slot="prefix"
-                    src="../../assets/images/verification_code_icon.png"
-                    alt=""
-                  />
-                </el-input>
-                <div
-                  v-show="!isGetVerificationCode"
-                  class="get_code"
-                  @click="getVerificationCode"
-                >
-                  获取验证码
-                </div>
-                <div v-show="isGetVerificationCode" class="wait_code">
-                  {{ waitTime }}秒后可重发
-                </div>
-              </div>
-            </template>
-            <div class="phone_login_btn">
-              <el-button
-                :disabled="!verificationCode"
-                type="primary"
-                id="login"
-                @click="phoneLogin"
-                >登&nbsp;录</el-button
-              >
-            </div>
-          </div>
-          <div class="weixinLogin" v-if="isActive == 3">
-            <div class="weixinCode" v-show="step === 1">
-              <div
-                class="ws_waiting"
-                v-loading="imgLoading"
-                element-loading-text="正在获取二维码..."
-                element-loading-background="rgba(0, 0, 0, 0.1)"
+
+          <!-- 手机登录 -->
+          <div class="phone_login" v-if="isActive == 2 || isActive == 4">
+            <div class="phone_num">
+              <el-input
+                v-model.trim="phoneNum"
+                name="phoneNum"
+                placeholder="请输入11位手机号码"
+                autocomplete="off"
+                maxlength="11"
+                oninput="value=value.replace(/[^\d]/g,'')"
               >
                 <img
-                  id="codeImgID"
-                  :src="codeImg"
-                  alt="二维码"
-                  v-show="!imgLoading"
-                  class="ws_img"
+                  slot="prefix"
+                  src="../../assets/images/phone_num_icon.png"
+                  alt=""
                 />
-                <p v-show="!imgLoading">打开微信扫一扫登录</p>
+              </el-input>
+            </div>
+            <div class="verification_code">
+              <el-input
+                v-model.trim="verificationCode"
+                placeholder="验证码"
+                name="verificationCode"
+                autocomplete="off"
+                maxlength="6"
+                oninput="value=value.replace(/[^\d]/g,'')"
+              >
+                <img
+                  slot="prefix"
+                  src="../../assets/images/verification_code_icon.png"
+                  alt=""
+                />
+              </el-input>
+              <div
+                v-show="!isGetVerificationCode"
+                class="get_code"
+                @click="getVerificationCode"
+              >
+                获取验证码
+              </div>
+              <div v-show="isGetVerificationCode" class="wait_code">
+                {{ waitTime }}秒后可重发
               </div>
             </div>
-            <div class="weixinCode" v-show="step === 2">
-              <div class="ws_waiting">
-                <i
-                  class="el-icon-success"
-                  style="font-size: 48px; color: #409eff"
-                ></i>
-                <div style="margin-top: 16px">扫码成功，等待确认！</div>
-              </div>
+            <div v-if="isActive == 4" class="first_wx_bind_msg">首次使用微信扫码登录需先绑定账号，后续只需要使用微信扫码即可完成自动登录。</div>
+            <div class="phone_login_btn">
+              <el-button
+                type="primary"
+                id="login"
+                :disabled="!verificationCode"
+                :loading="loginBtnLoading"
+                @click="handlePhoneLogin"
+              >
+                {{ isActive == 4 ? '绑定并登录' : '登 录' }}
+                </el-button>
             </div>
           </div>
-          <!-- <div class="tip">
-            <p>
-              温馨提示：加盟城市请(<a
-                :href="apiVar.qadnUrl + '/importTemplate/ApplicationForm.doc'"
-                download="申请表"
-                >点击并下载申请表</a
-              >)，申请平台账号
-            </p>
-          </div> -->
+
+          <!-- 微信扫码登录 -->
+          <div class="weixinLogin" v-if="isActive == 3">
+            <div
+              v-loading="!isGetWxLoginCode"
+              element-loading-text="拼命获取二维码..."
+              element-loading-background="transparent"
+              class="wx_code_wrapper"
+            >
+              <div id="wx_login_qrcode" class="wx_login_qrcode"></div>
+            </div>
+          </div>
+
         </div>
       </div>
+
       <!--背景canvas特效 -->
       <!-- <div>
              <canvas id="Mycanvas"></canvas>
            </div>-->
+
       <!--背景图片动画-->
       <div class="backgroundImg">
         <img src="../../assets/images/loginBg.png" alt="" />
@@ -185,6 +176,7 @@
           >
         </p>
       </div>
+
       <!-- 绑定手机号码弹框 -->
       <el-dialog
         title="绑定手机号码"
@@ -204,40 +196,50 @@
           </div>
         </span>
       </el-dialog>
+
       <!-- 选择账户弹框 -->
       <el-dialog
         title="请选择登录账号"
         :visible.sync="selectUserDialogVisible"
-        width="328px"
+        width="400px"
         center
-        top="30vh"
+        top="25vh"
         :modal="false"
         custom-class="users_info"
         :close-on-click-modal="false"
         :show-close="false"
       >
         <div
-          class="user_info_card"
-          v-for="item in userList"
-          :key="item.id"
-          @click="selectUser(item)"
+          v-loading="selectAccountDialogLoading"
+          element-loading-text="拼命获取登录数据中..."
+          class="select_account_list_wrapper"
         >
-          <div class="head_portrait">
-            <img v-if="item.userPortrait" :src="item.userPortrait" alt="" />
-            <img
-              v-else
-              src="../../assets/images/user_default_portrait.png"
-              alt=""
-            />
-          </div>
-          <div class="info">
-            <div class="name">
-              {{ item.realName + "(" + item.userName + ")" }}
+          <div class="select_account_list">
+            <div
+              v-for="item in userList"
+              class="user_info_card"
+              :key="item.id"
+              @click="handleSelectUser(item)"
+            >
+              <div class="head_portrait">
+                <img v-if="item.userPortrait" :src="item.userPortrait" alt="" />
+                <img
+                  v-else
+                  src="../../assets/images/user_default_portrait.png"
+                  alt=""
+                />
+              </div>
+              <div class="info">
+                <div class="name">
+                  {{ item.realName + "(" + item.userName + ")" }}
+                </div>
+                <div class="job">{{ item.roleName + " | " + item.companyName }}</div>
+              </div>
             </div>
-            <div class="job">{{ item.roleName + " | " + item.companyName }}</div>
           </div>
         </div>
       </el-dialog>
+
       <!-- 找回密码弹框 -->
       <RetrievePassword :isVisible.sync="showRetrieveDialog"></RetrievePassword>
     </div>
@@ -251,28 +253,28 @@
   // import { emitCustomEvent } from "../../commonFun/matomoRule";
   import RetrievePassword from "./components/retrievePassword.vue";
   import Aegis from 'aegis-web-sdk';
+  import settings from '@/settings'
 
   export default {
     name: "login",
     components: {
       elCheckbox: Checkbox,
-      RetrievePassword,
+      RetrievePassword
     },
     data() {
       return {
         verified: "beforeTry",
         loading: false,
+        // 登录方式 1：密码登录 2：手机登录 3：扫码登录 4：微信首次扫码登录未绑定，走验证码登录（登录后自动绑定微信）
         isActive: 2,
         showRetrieveDialog: false,
         username: "", //lxj
         password: "", //qinlin888
         realName: "",
         checke: false,
-        websock: "", // websocket连接
         codeImg: "", // 二维码图片地址
         imgLoading: true, // 二维码loading
         // isWs: false,
-        step: 1, // 扫码登录的步骤
         codeLoading: "", // 扫码登录时的loading
         condeLoginData: "", // 扫码登录返回的登录信息
         timer: "", // 轮询验证二维码是否加载完成
@@ -313,15 +315,17 @@
           "/static/images/loginSlideBg/09.jpg",
           "/static/images/loginSlideBg/10.jpg",
         ],
+        // 微信用户数据
+        wxUserInfo: {
+          unionId: '',
+          openId: ''
+        },
+        loginBtnLoading: false,
+        isGetWxLoginCode: false,
+        selectAccountDialogLoading: false,
       };
     },
-    mounted: function () {
-      // 移除社区画像信息
-      sessionStorage.removeItem("portraitInfo");
-      if (this.GetRequest("code")) {
-        this.doLogin();
-      }
-    },
+
     methods: {
       onSuccess() {
         this.verified = "success";
@@ -368,12 +372,11 @@
         }
         this.verified = "trying";
       },
+
       //登录
       doLogin: function () {
         let name = this.username;
         let pass = this.password;
-
-        //接口
         let loginParams = {};
         if (this.GetRequest("code")) {
           loginParams = { code: this.GetRequest("code") };
@@ -385,14 +388,14 @@
             });
             return;
           }
-          this.loading = this.$loading({
-            lock: true,
-            text: "正在登录...",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)",
-          });
           loginParams = { username: name, pwd: pass };
         }
+        const loadingEl = this.$loading({
+          lock: true,
+          text: "正在登录...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
         api
           .postApi(this.apiVar.UCAPI + "/Login", loginParams)
           .then((res) => {
@@ -403,10 +406,8 @@
                 // 判断是否绑定手机号
                 // 如果没有绑定弹出绑定提示窗口
                 if (!userMsg.bindPhone) {
-                  this.$nextTick(() => {
-                    this.loading.close();
-                    this.bandPhoneDialogVisible = true;
-                  });
+                  loadingEl.close();
+                  this.bandPhoneDialogVisible = true;
                 } else {
                   // 绑定了继续执行下面的流程
                   // 储存行业信息
@@ -424,6 +425,7 @@
                   utils.setLocalData(userMsg)
                   //判断权限
                   this.authentication(userMsg, "userName");
+                  this.setLoginTypeCache()
                 }
               } else {
                 if (userMsg.SysCode == "400403") {
@@ -437,35 +439,31 @@
                     type: "warning",
                   });
                 }
-                this.loading.close();
+                loadingEl.close();
               }
             } else {
               Message({
                 message: "登录异常！",
                 type: "warning",
               });
-              this.loading.close();
+              loadingEl.close();
             }
           })
           .finally(() => {
-            this.loading.close();
+            loadingEl.close();
           })
           .catch((err) => {
             console.log(err);
-            this.loading.close();
+            loadingEl.close();
           });
         this.isLogin = true;
-        if (this.websock !== "") {
-          this.websock.close();
-        }
       },
-      // 判断是否使用扫码登录
+
       /**
-       * @description:
+       * 设置登录方式
        * @param type 1密码登录 2手机登录 3扫码登录
-       * @return {*}
        */
-      loginType(type) {
+      setLoginType(type) {
         //根据点击的登录方式显示active
         this.isActive = type;
         if (this.isActive === 1) {
@@ -474,135 +472,168 @@
           this.notWxLogin();
         } else if (this.isActive === 3) {
           this.isLogin = false;
-          this.initWebsocket();
+          this.initWxLogin()
         }
       },
-      // 扫码登录，初始化websocket
-      initWebsocket() {
-        if ("WebSocket" in window) {
-          // let wsUrl = "wss://www.qinlinad.com/UCAPI/ScanLogin?type=PC"
-          // let wsUrl = "wss://test-qadn.qinlinad.com/UCAPI/ScanLogin?type=PC"
-          let wsUrl = this.apiVar.wsUrl;
-          this.websock = new WebSocket(wsUrl); // 这里面的this都指向vue
-          this.websock.onopen = this.websocketOpen;
-          this.websock.onmessage = this.websocketOnMessage;
-          this.websock.onclose = this.websocketClose;
-          this.websock.onerror = this.websocketError;
-          this.isLogin = false;
-        } else {
-          this.$message.warning("您的浏览器不支持 WebSocket!");
-        }
-      },
-      websocketOpen() {
-        // 打开
-        console.log("WebSocket连接成功");
-      },
-      websocketOnMessage(res) {
-        // 数据接收
-        console.log(typeof res.data, "数据接收", res.data);
-        let wsData = JSON.parse(res.data);
-        if (wsData.step === 1) {
-          this.step = 1;
-          console.log("获取二维码");
-          this.codeImg = wsData.qrurl; //
-          // this.imgLoading = false
-          this.codeImgLoading();
-        } else if (wsData.step === 2) {
-          this.step = 2;
-          console.log("扫码成功");
-        } else if (wsData.step === 3) {
-          this.codeLoading = this.$loading({
-            lock: true,
-            text: "正在登录...",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)",
-          });
-          this.step = 3;
-          console.log("扫码成功后点击确认按钮");
-          this.condeLoginData = res.data;
-          let params = {
-            uid: wsData.uid !== undefined ? wsData.uid : "",
-            token: wsData.token !== undefined ? wsData.token : "",
-          };
-          this.loginFun(params);
-        }
-      },
-      websocketClose() {
-        //  关闭
-        // console.log("WebSocket关闭", this.websock.readyState);
-        if (!this.isLogin) {
-          Message({
-            message: "扫码登录超时，请重新扫码！",
-            type: "warning",
-          });
-          this.initWebsocket();
-        }
-      },
-      websocketError(event) {
-        // 失败
-        console.log("WebSocket连接失败", event);
-      },
-      //扫码登录接口
-      loginFun(data) {
-        let params = data;
-        api.postApi(this.apiVar.UCAPI + "/UserLogin", params).then((res) => {
-          console.log("UserLogin", res);
-          let isLogin = res.data;
-          if (
-            isLogin !== "" &&
-            isLogin !== null &&
-            !isLogin.SysCode &&
-            isLogin.IsLogin !== false
-          ) {
-            // 埋点
-            const aegis = new Aegis({
-                id: '8lZw7Sojz5m46qw32K', // 上报 id
-                uin: isLogin.uID, // 用户唯一 ID（可选）
-                reportApiSpeed: true, // 接口测速
-                reportAssetSpeed: true, // 静态资源测速
-                spa: true, // spa 应用页面跳转的时候开启 pv 计算
-            });
-            this.isLogin = true;
-            this.websock.close(); // 关闭websocket连接
-            this.getIndustry(); //  储存行业信息
-            // isLogin.username = name
-            sessionStorage.setItem("session_data", JSON.stringify(isLogin)); // isLogin.realName
-            utils.setLocalData(isLogin)
-            this.codeLoading.close();
-            //判断权限
-            this.authentication(isLogin, "wx");
-          } else {
-            Message({
-              message: "扫码登录异常！",
-              type: "warning",
-            });
-            this.isLogin = false;
-            this.initWebsocket();
-          }
-          this.codeLoading.close();
-        });
-      },
-      // 判断二维码图片的加载
-      codeImgLoading() {
-        if (!this.isLogin) {
-          let imgInfo = document.getElementById("codeImgID");
-          this.timer = setInterval(() => {
-            if (imgInfo.complete) {
-              // console.log('加载完毕')
-              this.imgLoading = false;
-              clearInterval(this.timer);
-            }
-          }, 50);
-        } else {
-          console.log("非扫码登录");
-        }
-      },
+
       /**
-       * [获取URL中的参数名及参数值的集合]
-       * 示例URL:http://htmlJsTest/getrequest.html?uid=admin&rid=1&fid=2&name=小明
-       * @param {[string]} urlStr [当该参数不为空的时候，则解析该url中的参数集合]
-       * @return {[string]}       [参数集合]
+       * 微信扫码登录-初始化二维码
        */
+      initWxLogin() {
+        this.$nextTick(() => {
+          var obj = new WxLogin({
+            self_redirect: true,
+            id: "wx_login_qrcode",
+            appid: settings.wxScanLoginConfig.appId,
+            scope: "snsapi_login",
+            redirect_uri: settings.wxScanLoginConfig.redirectUri,
+            state: Math.ceil(Math.random() * 1000),
+            style: 'black',
+            // 切换二维码登录样式，值为1时二维码登录将切换到新样式。
+            // stylelite: 1,
+            href: 'data:text/css;base64,aWZyYW1le2Rpc3BsYXk6IGJsb2NrO21hcmdpbjogMCBhdXRvOyB3aWR0aDogMjI4cHg7fQouaW1wb3dlckJveCAudGl0bGV7ZGlzcGxheTogbm9uZTt9ICAgICAKLmltcG93ZXJCb3ggLmluZm97d2lkdGg6IDIyOHB4O30gICAgICAKLmltcG93ZXJCb3ggLnFyY29kZSB7CiAgICBkaXNwbGF5OiBibG9jazsKICAgIHdpZHRoOiAxNzhweDsKICAgIG1hcmdpbjogMzFweCBhdXRvIDA7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjZTJlMmUyOwp9Ci5pbXBvd2VyQm94IC5zdGF0dXMgewogICAgcGFkZGluZzogN3B4IDA7Cn0KLmltcG93ZXJCb3ggLnN0YXR1cyBwOm50aC1vZi10eXBlKDIpIHsKICAgIGRpc3BsYXk6IG5vbmU7Cn0=',
+            onReady: (isReady) => {
+              this.isGetWxLoginCode = isReady
+              console.log('isReady ===', isReady)
+            }
+          });
+        })
+      },
+
+      /**
+       * 微信扫码登录-接收微信码数据
+       */
+      async wxLoginIframeEvent(event) {
+        if (event.origin !== settings.wxScanLoginConfig.redirectOrigin) return;
+        console.log('微信扫码登录收到子消息 ====', event);
+        const code = event.data.code
+        if (code) {
+          this.getWxUserInfo(code)
+        } else {
+          this.$message.error('操作失败，请重试~')
+        }
+      },
+
+      /**
+       * 微信扫码登录-获取绑定的用户信息
+       */
+      getWxUserInfo(wxCode) {
+        console.log('getWxUserInfo wxCode ===', wxCode)
+        this.$api.UCAPI.wxQrCodeUserBindInfo({ code: wxCode })
+          .then(res => {
+            const { SysCode: code, MSG: message, data } = res.data || {}
+            if (code !== 200200 || !data) return this.$message.error(message || '获取数据失败')
+            this.wxUserInfo.unionId = data.unionId
+            this.wxUserInfo.openId = data.openId
+            // 已绑定手机号
+            if (data.userList && data.userList.length) {
+              this.userList = data.userList
+              // 如果只有一个账号，直接登录
+              if (this.userList.length === 1) {
+                this.handleSelectUser(this.userList[0])
+              } else {
+                this.selectUserDialogVisible = true
+              }
+            }
+            // 未绑定（首次没绑定），走验证码登录（登录后自动绑定微信）
+            else {
+              this.setLoginType(4)
+            }
+          })
+        .catch(err => {
+          this.$message.error(String(err) || '获取数据失败')
+          console.error('getWxUserInfo error:', err)
+        })
+      },
+
+      /**
+       * 微信扫码登录-通过码登录
+       */
+       async wxQrcodeLogin(info) {
+        try {
+          this.selectAccountDialogLoading = true
+          const res = await this.$api.UCAPI.wxQrcodeLogin({
+            // 选中的用户id
+            id: info.id,
+            phone: info.phone,
+            wxUnionId: this.wxUserInfo.unionId
+          })
+          const { SysCode: code, MSG: message, data: userInfo } = res.data || {}
+          if (code !== 200200 || !userInfo) {
+            this.selectUserDialogVisible = false;
+            this.$message.error(message || '登录失败，请刷新后重试~')
+            return
+          }
+          this.getIndustry();
+          sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+          utils.setLocalData(userInfo)
+          this.authentication(userInfo, "phoneNum");
+          this.setLoginTypeCache()
+          // 埋点
+          const aegis = new Aegis({
+            id: '8lZw7Sojz5m46qw32K', // 上报 id
+            uin: userInfo.uID, // 用户唯一 ID（可选）
+            reportApiSpeed: true, // 接口测速
+            reportAssetSpeed: true, // 静态资源测速
+            spa: true, // spa 应用页面跳转的时候开启 pv 计算
+          })
+        } catch (err) {
+          this.$message.error(String(err) || '登录失败，请刷新后重试~')
+          console.error('wxQrcodeLogin error:', err)
+          this.selectAccountDialogLoading = false
+          this.selectUserDialogVisible = false;
+        }
+      },
+
+      /**
+       * 手机验证码登录
+       */
+      async phoneCodeLogin(info) {
+        try {
+          const fromWxQrCode = this.isActive == 4
+          this.selectAccountDialogLoading = true
+          const res = await this.$api.UCAPI.phoneCodeLogin({
+            // 选中的用户id
+            fromWxQrCode,
+            wxOpenId: fromWxQrCode ? this.wxUserInfo.openId: null,
+            wxUnionId: fromWxQrCode? this.wxUserInfo.unionId: null,
+            code: this.verificationCode,
+            phone: this.phoneNum,
+            id: info.id,
+            userName: info.userName,
+            companyId: info.companyId,
+            roleId: info.roleId,
+          })
+          this.selectAccountDialogLoading = false
+          const { SysCode: code, MSG: message, data: userInfo } = res.data || {}
+          if (code !== 200200 || !userInfo) {
+            this.loginBtnLoading = false
+            this.selectUserDialogVisible = false;
+            this.$message.error(message || '登录失败')
+            return
+          }
+          this.getIndustry();
+          sessionStorage.setItem("session_data", JSON.stringify(userInfo));
+          utils.setLocalData(userInfo)
+          this.authentication(userInfo, "wx");
+          this.setLoginTypeCache()
+          // 埋点
+          const aegis = new Aegis({
+            id: '8lZw7Sojz5m46qw32K', // 上报 id
+            uin: userInfo.uID, // 用户唯一 ID（可选）
+            reportApiSpeed: true, // 接口测速
+            reportAssetSpeed: true, // 静态资源测速
+            spa: true, // spa 应用页面跳转的时候开启 pv 计算
+          })
+        } catch (err) {
+          this.$message.error(String(err) || '登录失败')
+          console.error('phoneCodeLogin error:', err)
+          this.selectAccountDialogLoading = false
+          this.selectUserDialogVisible = false;
+          this.loginBtnLoading = false
+        }
+      },
+
       GetRequest(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
         var r = window.location.search.substr(1).match(reg); //获取url中"?"符后的字符串并正则匹配
@@ -628,19 +659,21 @@
       // 非微信登录 清除状态
       notWxLogin() {
         this.isLogin = true;
-        if (this.websock) {
-          this.websock.close();
-          clearInterval(this.timer);
-        }
+        this.isGetWxLoginCode = false;
+        this.selectAccountDialogLoading = false
       },
-      // 获取验证码
+
+      /**
+       * 获取验证码
+       */
       getVerificationCode() {
-        //判断是否输入手机号
-        if (this.verifyPhoneNum(this.phoneNum)) return;
+        // 判断是否输入手机号
+        if (!/^1\d{10}$/.test(this.phoneNum)) {
+          return this.$message.warning("请输入正确的手机号");
+        }
         // 防止多次点击
         if (this.getCodeLock) return;
         this.getCodeLock = true;
-        console.log("发送验证码");
         let params = { phone: this.phoneNum, type: 3 };
         api
           .getApi(this.apiVar.UCAPI + "/sendVerificationCode", params)
@@ -667,115 +700,78 @@
             this.getCodeLock = false;
           });
       },
-      //校验手机号
-      verifyPhoneNum(phoneNum) {
-        let reg = /^(?:(?:\+|00)86)?1\d{10}$/;
-        if (!reg.test(phoneNum)) {
+
+      /**
+       * 手机登录
+       */
+      handlePhoneLogin() {
+        if (!/^1\d{10}$/.test(this.phoneNum)) {
           return this.$message.warning("请输入正确的手机号");
         }
-      },
-      //手机登录
-      phoneLogin() {
-        if (this.verifyPhoneNum(this.phoneNum)) return;
-        console.log("手机登录");
-        //校验是否输入验证码
-        let params = {
-          phone: this.phoneNum,
-          code: this.verificationCode,
-        };
+        if (!this.verificationCode) {
+          return this.$message.warning("请输入验证码");
+        }
+        this.loginBtnLoading = true;
         api
-          .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", params)
+          .postApi(this.apiVar.UCAPI + "/getUserListByPhoneCode", {
+            phone: this.phoneNum,
+            code: this.verificationCode,
+          })
           .then(({ data }) => {
             if (data.SysCode == 200200) {
-              //如果有多个账户选择登录用户再进入首页
-              if (data.data.length > 1) {
-                this.userList = data.data;
+              this.userList = data.data || []
+              // 如果只有一个账户则直接进入首页
+              if (this.userList.length === 1) {
+                this.handleSelectUser(this.userList[0])
+              }
+              // 如果有多个账户选择登录用户再进入首页
+              else if (this.userList.length > 1) {
                 this.selectUserDialogVisible = true;
-              } else if (data.data.length == 1) {
-                //如果只有一个账户则直接进入首页
-                let loginParams = {
-                  id: data.data[0].id,
-                  ...params,
-                };
-                return api.postApi(
-                  this.apiVar.UCAPI + "/phoneCodeLogin",
-                  loginParams
-                );
-              } else {
-                this.$message.warning("该手机号尚未绑定账号");
+              }
+              // 未绑定账号
+              else {
+                this.loginBtnLoading = false
+                this.$message.error("该手机号尚未绑定账号");
               }
             } else {
-              this.$message.error(data.MSG);
-            }
-          })
-          .then((res) => {
-            if (!res) return; //避免有多个账户时和报错也进行这一步
-            let { data } = res;
-            if (data.SysCode == 200200 && data.data) {
-              let userInfo = data.data;
-              // 埋点
-              const aegis = new Aegis({
-                id: '8lZw7Sojz5m46qw32K', // 上报 id
-                uin: userInfo.uID, // 用户唯一 ID（可选）
-                reportApiSpeed: true, // 接口测速
-                reportAssetSpeed: true, // 静态资源测速
-                spa: true, // spa 应用页面跳转的时候开启 pv 计算
-              });
-              this.getIndustry();
-              sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-              utils.setLocalData(userInfo)
-              this.authentication(userInfo, "phoneNum");
-            } else {
+              this.loginBtnLoading = false
               this.$message.error(data.MSG);
             }
           })
           .catch((error) => {
-            this.$message.error("登录失败");
-          });
-      },
-      //选择登录用户
-      selectUser(info) {
-        console.log(info, "选择用户登录");
-        let loginParams = {
-          id: info.id,
-          phone: this.phoneNum,
-          code: this.verificationCode,
-        };
-        api
-          .postApi(this.apiVar.UCAPI + "/phoneCodeLogin", loginParams)
-          .then(({ data }) => {
-            if (data.SysCode == 200200 && data.data) {
-              let userInfo = data.data;
-              // 埋点
-              const aegis = new Aegis({
-                id: '8lZw7Sojz5m46qw32K', // 上报 id
-                uin: userInfo.uID, // 用户唯一 ID（可选）
-                reportApiSpeed: true, // 接口测速
-                reportAssetSpeed: true, // 静态资源测速
-                spa: true, // spa 应用页面跳转的时候开启 pv 计算
-              });
-              this.getIndustry();
-              sessionStorage.setItem("session_data", JSON.stringify(userInfo));
-              utils.setLocalData(userInfo)
-              this.authentication(userInfo, "phoneNum");
-            } else {
-              this.$message.error(data.MSG);
-            }
-            this.selectUserDialogVisible = false;
-          })
-          .catch((error) => {
+            this.loginBtnLoading = false
             this.$message.error("登录失败");
           });
       },
 
       /**
-       * @description: 权限判断 保留以前账号登录及扫码登录的逻辑并且兼容手机登录
-       * @param {*} data 登录接口返回的数据
-       * @param {*} loginType 登录方式
-       * 'userName' 账号密码
-       * 'phoneNum' 手机登录
-       * 'wx'       微信扫码
-       * @return {*}
+       * 缓存本次登录方式
+       */
+      setLoginTypeCache() {
+        const loginType = this.isActive == 4 ? 3 : this.isActive;
+        localStorage.setItem("last_login_type", loginType);
+      },
+
+      /**
+       * 读取上次缓存登录方式
+       */
+      getLoginTypeCache() {
+        const lastLoginType = localStorage.getItem("last_login_type");
+        if (lastLoginType) this.setLoginType(Number(lastLoginType));
+      },
+
+      /**
+       * 选择登录用户
+       */
+      async handleSelectUser(info) {
+        console.log('选择用户登录 handleSelectUser ===', info);
+        // 如果是已绑定的扫码登录
+        if (this.isActive == 3) this.wxQrcodeLogin(info)
+        else this.phoneCodeLogin(info)
+      },
+
+      /**
+       * 权限判断 保留以前账号登录及扫码登录的逻辑并且兼容手机登录
        */
       authentication(data, loginType) {
         let { uType, asName = "", username = "" } = data;
@@ -863,38 +859,32 @@
             message: "账号角色权限异常",
             type: "warning",
           });
-          if (loginType == "wx") {
-            this.isLogin = false;
-            this.initWebsocket();
-          }
         }
-        // emitCustomEvent({ uType, asName, username }, loginType);
       },
     },
-    beforeDestroy() {
-      if (this.loading) {
-        this.loading.close();
+
+    mounted: function () {
+      // 移除社区画像信息
+      sessionStorage.removeItem("portraitInfo");
+      if (this.GetRequest("code")) {
+        this.doLogin();
       }
+      // 父页面接收 iframe 的回复
+      window.addEventListener('message', this.wxLoginIframeEvent)
+      this.getLoginTypeCache()
+    },
+
+    beforeDestroy() {
+      // 清除监听事件
+      window.removeEventListener('message', this.wxLoginIframeEvent)
     },
   };
   </script>
   <style lang="scss" scoped>
-  .weixinCode img {
-    width: 240px;
-    height: 260px;
-  }
-
   .ws_waiting {
     width: 300px;
     height: 280px;
     margin: 0 auto;
-  }
-
-  @media all and (max-width: 1420px) {
-    .weixinCode img {
-      width: 220px;
-      height: 240px;
-    }
   }
 
   /deep/ .el-form-item__content {
@@ -968,7 +958,7 @@
   .login {
     position: relative;
     width: 100%;
-    .loginType {
+    .login_type {
       display: flex;
       justify-content: center;
       width: 100%;
@@ -1189,12 +1179,14 @@
     }
     .el-dialog__body {
       padding-top: 0;
+      padding-left: 0;
+      padding-right: 0;
     }
     .user_info_card {
       display: flex;
       align-items: center;
       box-sizing: border-box;
-      width: 280px;
+      width: 100%;
       height: 64px;
       padding: 12px;
       margin-bottom: 12px;
@@ -1276,5 +1268,49 @@
     .el-dialog__footer {
       padding: 16px 24px 24px;
     }
+  }
+
+  .first_wx_bind_msg {
+    width: 368px;
+    color: #e0282e;
+    font-size: 14px;
+    line-height: 20px;
+    margin: 10px auto;
+  }
+
+
+  .wx_code_wrapper {
+    height: 262px;
+    width: 296px;
+    margin: 0 auto;
+    /deep/ .el-loading-spinner {
+      .el-loading-text {
+        color: #999;
+      }
+      .path {
+        stroke: #999;
+      }
+    }
+  }
+
+  .select_account_list_wrapper {
+    max-height: 300px;
+    overflow: hidden auto;
+    .select_account_list {
+      padding: 20px 20px 0;
+    }
+  }
+
+
+  </style>
+
+  <style>
+  .wx_login_qrcode  iframe {
+    height: 262px;
+    width: 296px;
+    border: none;
+    outline: none;
+    display: block;
+    margin: 0 auto;
   }
   </style>

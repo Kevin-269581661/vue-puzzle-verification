@@ -924,6 +924,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`resName-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -937,6 +938,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`mediaName-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -954,6 +956,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`buildingNum-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -966,6 +969,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`unitNum-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -978,6 +982,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`tradingArea-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.tradingArea || "--" }}
@@ -994,6 +999,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`mediaRemark-${item.label}`"
                     >
                       <template slot-scope="scope">
                         <span>{{ scope.row.mediaRemark || "--" }}</span>
@@ -1014,6 +1020,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`patrolProblem-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.remark || "--" }}
@@ -1034,6 +1041,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`trafficCondition-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.trafficState || "--" }}
@@ -1054,6 +1062,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`electrification-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.electrifyState || "--" }}
@@ -1069,6 +1078,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`assetNumber-${item.label}`"
                     >
                       <template slot-scope="scope">
                         <span>{{ scope.row.assetTag || "--" }}</span>
@@ -1084,6 +1094,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`mediaLevel-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{
@@ -1103,6 +1114,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`adLimit-${item.label}`"
                     >
                       <template slot-scope="scope">
                         <span>{{ scope.row.adLimit || "--" }}</span>
@@ -1118,6 +1130,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`adLimit-${item.label}`"
                     >
                       <template slot-scope="scope">
                         <span>{{ scope.row.buildType || "--" }}</span>
@@ -1134,6 +1147,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`mediaStatus-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -1147,6 +1161,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`buildingPrice-${item.label}`"
                     >
                       <template slot-scope="scope">
                         <span>&yen;{{ scope.row.buildPrice }}</span>
@@ -1162,6 +1177,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`peopleFlow-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.peopleFlow || "--" }}
@@ -1178,6 +1194,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`parkSpaceNum-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.parkSpaceNum || "--" }}
@@ -1194,6 +1211,7 @@
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`carFlow-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.carFlow || "--" }}
@@ -1209,6 +1227,7 @@
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
+                      :key="`availableQuantity-${item.label}`"
                     >
                       <template slot-scope="scope">
                         {{ scope.row.actualAdsCnt || 0 }}
@@ -1225,6 +1244,7 @@
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
                       align="center"
+                      :key="`schedule-${item.label}`"
                     >
                     </el-table-column>
                   </template>
@@ -1237,6 +1257,7 @@
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
+                      :key="`default-${item.label}`"
                     >
                     </el-table-column>
                   </template>

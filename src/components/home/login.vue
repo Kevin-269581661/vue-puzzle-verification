@@ -323,6 +323,7 @@
         loginBtnLoading: false,
         isGetWxLoginCode: false,
         selectAccountDialogLoading: false,
+        wxLoginState: null
       };
     },
 
@@ -481,13 +482,14 @@
        */
       initWxLogin() {
         this.$nextTick(() => {
+          this.wxLoginState = Math.ceil(Math.random() * 1000)
           var obj = new WxLogin({
             self_redirect: true,
             id: "wx_login_qrcode",
             appid: settings.wxScanLoginConfig.appId,
             scope: "snsapi_login",
             redirect_uri: settings.wxScanLoginConfig.redirectUri,
-            state: Math.ceil(Math.random() * 1000),
+            state: this.wxLoginState,
             style: 'black',
             // 切换二维码登录样式，值为1时二维码登录将切换到新样式。
             // stylelite: 1,
@@ -505,6 +507,7 @@
        */
       async wxLoginIframeEvent(event) {
         if (event.origin !== settings.wxScanLoginConfig.redirectOrigin) return;
+        if (Number(event.data.state) !== this.wxLoginState) return
         console.log('微信扫码登录收到子消息 ====', event);
         const code = event.data.code
         if (code) {

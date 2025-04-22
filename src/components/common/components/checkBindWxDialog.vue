@@ -50,6 +50,7 @@ export default {
       disappearedDays: '--',
       // 是否成功绑定，用来判断是否调用设置不再提醒
       isSuccessBind: false,
+      wxLoginState: null
     }
   },
   methods: {
@@ -103,13 +104,14 @@ export default {
      */
     initWxLogin() {
       this.$nextTick(() => {
+        this.wxLoginState = Math.ceil(Math.random() * 1000)
         var obj = new WxLogin({
           self_redirect: true,
           id: "wx_bind_qrcode",
           appid: settings.wxScanLoginConfig.appId,
           scope: "snsapi_login",
           redirect_uri: settings.wxScanLoginConfig.redirectUri,
-          state: Math.ceil(Math.random() * 1000),
+          state: this.wxLoginState,
           style: 'black',
           // 切换二维码登录样式，值为1时二维码登录将切换到新样式。
           // stylelite: 1,
@@ -150,6 +152,7 @@ export default {
      */
     wxLoginIframeEvent(event) {
       if (event.origin !== settings.wxScanLoginConfig.redirectOrigin) return;
+      if (Number(event.data.state) !== this.wxLoginState) return
       console.log('弹窗收到子消息 ====', event);
       if (event.data && event.data.code) this.wxQrCodeBind(event.data.code)
       else this.$message.error('操作失败，请重试~')

@@ -11,7 +11,7 @@
   >
     <div v-loading="loading" class="dialog_content">
       <div class="custom_dialog_body">
-        <div class="desc">系统检测到您的手机号码尚未绑定微信登录，扫一扫即可绑定哦~</div>
+        <el-alert title="系统检测到您的手机号码尚未绑定微信登录，扫一扫即可绑定哦~" show-icon type="warning" :closable="false" />
         <div
           v-loading="!isGetWxLoginCode"
           element-loading-text="正在获取二维码..."
@@ -217,7 +217,7 @@ export default {
 .wx_code_wrapper {
   height: 262px;
   width: 296px;
-  margin: 0 auto;
+  margin: 20px auto;
   /deep/ .el-loading-spinner {
     .el-loading-text {
       color: #999;

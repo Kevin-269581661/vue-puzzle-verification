@@ -133,7 +133,12 @@ export default {
       this.$api.UCAPI.wxQrCodeBind({ code: wxCode })
         .then(res => {
           const { SysCode: code, MSG: message, data } = res.data || {}
-          if (code !== 200200) return this.$message.error(message || '操作失败')
+          if (code !== 200200) {
+            this.$message.error(message || '操作失败')
+            // 刷新微信二维码
+            this.initWxLogin()
+            return
+          }
           this.$message.success('绑定成功')
           this.isSuccessBind = true
           this.close()
@@ -141,6 +146,8 @@ export default {
         .catch(err => {
           this.$message.error(String(err) || '操作失败')
           console.error('wxQrCodeBind error:', err)
+          // 刷新微信二维码
+          this.initWxLogin()
         })
         .finally(() => {
           this.loading = false

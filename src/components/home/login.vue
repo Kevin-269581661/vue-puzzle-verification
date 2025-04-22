@@ -525,7 +525,14 @@
         this.$api.UCAPI.wxQrCodeUserBindInfo({ code: wxCode })
           .then(res => {
             const { SysCode: code, MSG: message, data } = res.data || {}
-            if (code !== 200200 || !data) return this.$message.error(message || '获取数据失败')
+            if (code !== 200200 || !data) {
+              this.$message.error(message || '获取数据失败')
+              // 刷新微信登录二维码
+              this.isGetWxLoginCode = false;
+              this.isActive === 3
+              this.initWxLogin()
+              return
+            }
             this.wxUserInfo.unionId = data.unionId
             this.wxUserInfo.openId = data.openId
             // 已绑定手机号
@@ -546,6 +553,10 @@
         .catch(err => {
           this.$message.error(String(err) || '获取数据失败')
           console.error('getWxUserInfo error:', err)
+          // 刷新微信登录二维码
+          this.isGetWxLoginCode = false;
+          this.isActive === 3
+          this.initWxLogin()
         })
       },
 

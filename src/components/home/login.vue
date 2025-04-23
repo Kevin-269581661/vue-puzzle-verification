@@ -493,7 +493,7 @@
             style: 'black',
             // 切换二维码登录样式，值为1时二维码登录将切换到新样式。
             // stylelite: 1,
-            href: 'data:text/css;base64,aWZyYW1le2Rpc3BsYXk6IGJsb2NrO21hcmdpbjogMCBhdXRvOyB3aWR0aDogMjI4cHg7fQouaW1wb3dlckJveCAudGl0bGV7ZGlzcGxheTogbm9uZTt9ICAgICAKLmltcG93ZXJCb3ggLmluZm97d2lkdGg6IDIyOHB4O30gICAgICAKLmltcG93ZXJCb3ggLnFyY29kZSB7CiAgICBkaXNwbGF5OiBibG9jazsKICAgIHdpZHRoOiAxNzhweDsKICAgIG1hcmdpbjogMzFweCBhdXRvIDA7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjZTJlMmUyOwp9Ci5pbXBvd2VyQm94IC5zdGF0dXMgewogICAgcGFkZGluZzogN3B4IDA7Cn0KLmltcG93ZXJCb3ggLnN0YXR1cyBwOm50aC1vZi10eXBlKDIpIHsKICAgIGRpc3BsYXk6IG5vbmU7Cn0=',
+            href: 'data:text/css;base64,LmltcG93ZXJCb3ggLnRpdGxle2Rpc3BsYXk6IG5vbmU7fSAgICAgCi5pbXBvd2VyQm94IC5xcmNvZGUgewogICAgZGlzcGxheTogYmxvY2s7CiAgICB3aWR0aDogMTc4cHg7CiAgICBtYXJnaW46IDE2cHggYXV0byAwOwogICAgYm9yZGVyOiAxcHggc29saWQgI2UyZTJlMjsKfQouaW1wb3dlckJveCAuc3RhdHVzIHsKICAgIHBhZGRpbmc6IDdweCAwOwogICAgdGV4dC1hbGlnbjogY2VudGVyOwp9Ci5pbXBvd2VyQm94ICAuc3RhdHVzX3R4dCB7CiAgICB0ZXh0LWFsaWduOiBsZWZ0Owp9Ci5pbXBvd2VyQm94IC5zdGF0dXMgcDpudGgtb2YtdHlwZSgyKSB7CiAgICBkaXNwbGF5OiBub25lOwp9',
             onReady: (isReady) => {
               this.isGetWxLoginCode = isReady
               console.log('isReady ===', isReady)
@@ -1294,7 +1294,7 @@
 
 
   .wx_code_wrapper {
-    height: 262px;
+    height: 247px;
     width: 296px;
     margin: 0 auto;
     /deep/ .el-loading-spinner {
@@ -1320,7 +1320,7 @@
 
   <style>
   .wx_login_qrcode  iframe {
-    height: 262px;
+    height: 247px;
     width: 296px;
     border: none;
     outline: none;

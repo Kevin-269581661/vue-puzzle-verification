@@ -131,6 +131,18 @@
               </div>
             </div>
             <div v-if="isActive == 4" class="first_wx_bind_msg">首次使用微信扫码登录需先绑定账号，后续只需要使用微信扫码即可完成自动登录。</div>
+            <!-- 扫码首次绑定登录，这里不显示 -->
+            <div v-else class="check_agree_box_phone">
+              <el-checkbox v-model="isCheckAgree">
+                登录即代表同意<a
+                  target="_blank"
+                  style="color: #1890ff"
+                  :href="settings.loginAgreement.url"
+                >
+                  《{{ settings.loginAgreement.name }}》
+                </a>
+              </el-checkbox>
+            </div>
             <div class="phone_login_btn">
               <el-button
                 type="primary"
@@ -153,6 +165,18 @@
               class="wx_code_wrapper"
             >
               <div id="wx_login_qrcode" class="wx_login_qrcode"></div>
+            </div>
+
+            <div class="check_agree_box">
+              <el-checkbox v-model="isCheckAgree">
+                登录即代表同意<a
+                  target="_blank"
+                  style="color: #1890ff"
+                  :href="settings.loginAgreement.url"
+                >
+                  《{{ settings.loginAgreement.name }}》
+                </a>
+              </el-checkbox>
             </div>
           </div>
 
@@ -263,6 +287,7 @@
     },
     data() {
       return {
+        settings,
         verified: "beforeTry",
         loading: false,
         // 登录方式 1：密码登录 2：手机登录 3：扫码登录 4：微信首次扫码登录未绑定，走验证码登录（登录后自动绑定微信）
@@ -323,6 +348,7 @@
         loginBtnLoading: false,
         isGetWxLoginCode: false,
         selectAccountDialogLoading: false,
+        isCheckAgree: false,
         wxLoginState: null
       };
     },
@@ -509,6 +535,13 @@
         if (event.origin !== settings.wxScanLoginConfig.redirectOrigin) return;
         if (Number(event.data.state) !== this.wxLoginState) return
         console.log('微信扫码登录收到子消息 ====', event);
+        if (!this.isCheckAgree) {
+          // 刷新微信登录二维码
+          this.isGetWxLoginCode = false;
+          this.initWxLogin()
+          this.$message.warning(`请勾选同意《${settings.loginAgreement.name}》`)
+          return
+        }
         const code = event.data.code
         if (code) {
           this.getWxUserInfo(code)
@@ -719,6 +752,10 @@
        * 手机登录
        */
       handlePhoneLogin() {
+        if (!this.isCheckAgree && this.isActive == '2') {
+          this.$message.warning(`请勾选同意《${settings.loginAgreement.name}》`)
+          return
+        }
         if (!/^1\d{10}$/.test(this.phoneNum)) {
           return this.$message.warning("请输入正确的手机号");
         }
@@ -771,6 +808,7 @@
        */
       getLoginTypeCache() {
         const lastLoginType = localStorage.getItem("last_login_type");
+        this.isCheckAgree = !!lastLoginType
         if (lastLoginType) this.setLoginType(Number(lastLoginType));
       },
 
@@ -1315,7 +1353,21 @@
     }
   }
 
+  .check_agree_box {
+    margin-top: 12px;
+    text-align: center;
+    /deep/ .el-checkbox__label {
+      color: #666 !important;
+    }
+  }
 
+  .check_agree_box_phone {
+    margin-bottom: 12px;
+    text-align: center;
+    /deep/ .el-checkbox__label {
+      color: #666 !important;
+    }
+  }
   </style>
 
   <style>

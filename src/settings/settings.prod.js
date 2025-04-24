@@ -10,7 +10,7 @@ const envDataConfig = {
 
   // 微信扫码登录配置
   wxScanLoginConfig: {
-    appId: 'wx381e9182f8e4fbdd',
+    appId: 'wx8fd14a2e14e7a6cf',
     redirectUri: `https://app-h5.qinlinkeji.com/wxScanLoginRedirect/index.html`,
     redirectOrigin: `https://app-h5.qinlinkeji.com`
   }

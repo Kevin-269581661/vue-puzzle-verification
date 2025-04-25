@@ -90,7 +90,7 @@ import '../static/css/footer.css'
 // 字体图标css
 import 'font-awesome/css/font-awesome.css'
 // 引入地图聚合js
-import './components/common/map/MarkerClusterer.js'
+// import './components/common/map/MarkerClusterer.js'
 
 router.beforeEach((to, from, next) => {
 	console.log('process.env---', process.env);

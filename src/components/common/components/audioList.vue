@@ -7,17 +7,23 @@
             </el-button>
 
            <div v-if="isOpenH5Audit" class="right">
-              <el-button v-if="isExistH5Audit" type="primary" size="small" @click="recallAudit">
-                撤回审批
-              </el-button>
+              <template v-if="isExistH5Audit">
+                <el-button  type="primary" size="small" @click="viewAudit">
+                  查看审批
+                </el-button>
+
+                <el-button  type="primary" size="small" @click="recallAudit">
+                  撤回审批
+                </el-button>
+              </template>
 
               <el-button v-else type="primary" size="small" @click="createAudit">
                 发起审批
               </el-button>
 
-              <!-- <el-button type="primary" size="small" @click="auditRecord">
+              <el-button type="primary" size="small" @click="auditRecord">
                 审批记录
-              </el-button> -->
+              </el-button>
            </div>
           </div>
 
@@ -248,6 +254,13 @@ import MaterialAuditRecordDialog from '@/components/common/components/material/m
       methods: {
 
         /**
+         * 查看审批
+         */
+        viewAudit() {
+          this.$refs.materialAuditDialogRef && this.$refs.materialAuditDialogRef.open(this.apId)
+        },
+
+        /**
          * 发起审批
          */
         async createAudit() {
@@ -273,9 +286,6 @@ import MaterialAuditRecordDialog from '@/components/common/components/material/m
          */
         async recallAudit() {
           try {
-            // this.$refs.materialAuditDialogRef && this.$refs.materialAuditDialogRef.open(this.apId)
-            // return
-
             await this.$confirm(`确定要撤回审批吗？`, '提示', { type: 'warning' })
             const res = await this.$api.voice.revokeAudit({ apId: this.apId })
             const { code, message, data } = res.data || {}

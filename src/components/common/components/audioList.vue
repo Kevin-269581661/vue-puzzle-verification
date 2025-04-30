@@ -238,7 +238,7 @@ import MaterialAuditRecordDialog from '@/components/common/components/material/m
             sessionData: {},
             isDownLoad: false,
             // 是否开启H5审核
-            isOpenH5Audit: false,
+            isOpenH5Audit: true,
             // 是否存在待审核记录（H5审核）
             isExistH5Audit: false
           }

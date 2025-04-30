@@ -1,11 +1,31 @@
 <template>
   <div class="third-wrap box-wrap">
       <div class="table_wrap" v-if="audioInfoData.length > 0">
-          <p class="search-row">
-              <el-button type="primary" size="small" @click="addVoice"
-                >添加音频
+          <div class="search-row">
+            <el-button type="primary" size="small" @click="addVoice">
+              添加音频
+            </el-button>
+
+           <div v-if="isOpenH5Audit" class="right">
+              <template v-if="isExistH5Audit">
+                <el-button  type="primary" size="small" @click="viewAudit">
+                  查看审批
+                </el-button>
+
+                <el-button  type="primary" size="small" @click="recallAudit">
+                  撤回审批
+                </el-button>
+              </template>
+
+              <el-button v-else type="primary" size="small" @click="createAudit">
+                发起审批
               </el-button>
-          </p>
+
+              <el-button type="primary" size="small" @click="auditRecord">
+                审批记录
+              </el-button>
+           </div>
+          </div>
 
           <el-table
             :data="audioInfoData"
@@ -13,13 +33,15 @@
             v-loading="loading"
             element-loading-text="玩命加载中.."
             class="table-wrap">
+
               <el-table-column label="状态" min-width="6%" align="center">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.status" @change="changeSwitch(scope.row)" :active-value="1" :inactive-value="0"></el-switch>
                 </template>
               </el-table-column>
-              <el-table-column prop="title" label="音频标题" min-width="20%" show-overflow-tooltip align="center">
-              </el-table-column>
+
+              <el-table-column prop="title" label="音频标题" min-width="20%" show-overflow-tooltip align="center"></el-table-column>
+
               <el-table-column prop="date" label="投放日期" min-width="32%" show-overflow-tooltip align="center">
                 <template slot-scope="scope">
                     <div>
@@ -27,6 +49,7 @@
                     </div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="publishType" label="排期方式" min-width="12.4%" align="center">
                 <template slot-scope="scope">
                     <div v-if="scope.row.publishType === 1">按订单投放日期</div>
@@ -34,6 +57,7 @@
                     <div v-else>自定义</div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="publishTimeRange" label="投放时段" min-width="12%" align="center">
                 <template slot-scope="scope">
                     <div v-if="scope.row.publishTimeRange === 1">全时段</div>
@@ -41,6 +65,7 @@
                     <div v-else>自定义</div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="publishDeviceType" label="投放设备" min-width="12%" align="center">
                 <template slot-scope="scope">
                     <div v-if="scope.row.publishDeviceType === 1">全设备</div>
@@ -48,6 +73,7 @@
                     <div v-else>自定义</div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="auditStatus" label="素材审批状态" min-width="12.7%" align="center" >
                 <template slot-scope="scope">
                     <div v-if="scope.row.auditStatus === 0">待审批</div>
@@ -60,6 +86,7 @@
                     </div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="publishStatus" label="投放状态" min-width="12.7%" align="center">
                 <template slot-scope="scope">
                     <div v-if="scope.row.publishStatus === 0">待投放</div>
@@ -67,12 +94,14 @@
                     <div v-else>已停止</div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="playCount" label="播放次数" min-width="12.7%" align="center">
                 <template slot-scope="scope">
                     <div v-if="!scope.row.playCount">--</div>
                     <div v-else>{{ scope.row.playCount}}</div>
                 </template>
               </el-table-column>
+
               <el-table-column prop="count" label="操作" min-width="12.7%" align="left">
                 <template slot-scope="scope">
                     <el-dropdown size="small" trigger="click" placement="bottom-start" :hide-on-click="true">
@@ -82,28 +111,34 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row)" v-if="scope.row.auditStatus !== 2">编辑</el-dropdown-item>
                             <el-dropdown-item @click.native.prevent="openAddVoiceDialog(scope.row)" v-else>重新提交</el-dropdown-item>
+
                             <el-dropdown-item @click.native.prevent="showAudio(scope.row)">试听</el-dropdown-item>
+
                             <el-dropdown-item @click.native.prevent="downLoadAudio(scope.row)">下载</el-dropdown-item>
+
                             <!-- 通过 -->
                             <el-popconfirm
-                              v-if="scope.row.auditStatus === 0  && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
+                              v-if="!isOpenH5Audit && scope.row.auditStatus === 0  && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
                               title="确定通过吗？"
                               @confirm="passAudio(scope.row)"
                             >
                               <el-dropdown-item slot="reference">通过</el-dropdown-item>
                             </el-popconfirm>
+
                             <!-- 不通过 -->
                             <el-popconfirm
-                              v-if="scope.row.auditStatus === 0 && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
+                              v-if="!isOpenH5Audit && scope.row.auditStatus === 0 && sessionData.permissions.includes('voiceAdvertisingBroadcast')"
                               title="确定不通过吗？"
                               @confirm="failAudio(scope.row)"
                             >
                               <el-dropdown-item slot="reference">不通过</el-dropdown-item>
                             </el-popconfirm>
+
                             <!-- 删除 -->
                             <el-popconfirm v-if=" scope.row.publishStatus === 0" title="确定删除吗？"  @confirm="deleteAudio(scope.row)">
                                 <el-dropdown-item slot="reference">删除</el-dropdown-item>
                             </el-popconfirm>
+
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -149,6 +184,12 @@
 
     <!-- 添加音频 - 弹框组件 -->
     <AddVoiceDialog ref="addVoiceDialogRef" @refreshList="() => $emit('getAudioList')"/>
+
+    <!-- 素材审核-弹框组件 -->
+    <MaterialAuditDialog ref="materialAuditDialogRef"/>
+
+    <!-- 素材审核记录-弹框组件 -->
+    <MaterialAuditRecordDialog ref="materialAuditRecordDialogRef"/>
   </div>
 </template>
 
@@ -159,12 +200,16 @@ import {api} from "../../../api/api.js";
 import AddVoiceDialog from "./voice/addVoiceDialog.vue";
 import sessFun from "../../../commonFun/sessFun.js";
 import FileSaver from 'file-saver';
+import MaterialAuditDialog from '@/components/common/components/material/materialAuditDialog.vue'
+import MaterialAuditRecordDialog from '@/components/common/components/material/materialAuditRecordDialog.vue'
 
   export default {
       components: {
           elTable: Table,
           elTableColumn: TableColumn,
-          AddVoiceDialog
+          AddVoiceDialog,
+          MaterialAuditDialog,
+          MaterialAuditRecordDialog
       },
       props: {
           audioInfoData: {
@@ -191,13 +236,109 @@ import FileSaver from 'file-saver';
             failureDialogVisible: false,
             failureReason: '',
             sessionData: {},
-            isDownLoad: false
+            isDownLoad: false,
+            // 是否开启H5审核
+            isOpenH5Audit: true,
+            // 是否存在待审核记录（H5审核）
+            isExistH5Audit: false
           }
     },
-    created() {
+      created() {
         this.sessionData = sessFun.getSess();
       },
+      async mounted() {
+        // 处理素材审核
+        await this.getH5AuditOpenStatus()
+        if (this.isOpenH5Audit) await this.getExistNotAudit()
+      },
       methods: {
+
+        /**
+         * 查看审批
+         */
+        viewAudit() {
+          this.$refs.materialAuditDialogRef && this.$refs.materialAuditDialogRef.open(this.apId)
+        },
+
+        /**
+         * 发起审批
+         */
+        async createAudit() {
+          try {
+            await this.$confirm(`确定要发起审批吗？`, '提示', { type: 'warning' })
+            const res = await this.$api.voice.submitAudit({ apId: this.apId })
+            // const { SysCode: code, MSG: message, data } = res.data || {}
+            // if (code !== 200200) return this.$message.error(message || '操作失败')
+            const { code, message, data } = res.data || {}
+            if (code !== 200) return this.$message.error(message)
+            if (data) {
+              this.$message.success('发起审批成功')
+              this.isExistH5Audit = true
+              this.$refs.materialAuditDialogRef && this.$refs.materialAuditDialogRef.open(this.apId)
+            }
+          } catch (err) {
+            console.error('createAudit error:', error)
+          }
+        },
+
+        /**
+         * 撤回审批
+         */
+        async recallAudit() {
+          try {
+            await this.$confirm(`确定要撤回审批吗？`, '提示', { type: 'warning' })
+            const res = await this.$api.voice.revokeAudit({ apId: this.apId })
+            const { code, message, data } = res.data || {}
+            if (code !== 200) return this.$message.error(message)
+            if (data) {
+              this.$message.success('撤回审批成功')
+              this.isExistH5Audit = false
+            }
+          } catch (err) {
+            console.error('recallAudit error:', error)
+          }
+        },
+
+        /**
+         * 审批记录
+         */
+        auditRecord() {
+          this.$refs.materialAuditRecordDialogRef && this.$refs.materialAuditRecordDialogRef.open(this.apId)
+        },
+
+        /**
+         * 获取h5审核开关状态
+         */
+        async getH5AuditOpenStatus() {
+          try {
+            const res = await this.$api.voice.getH5AuditOpenStatus()
+            const { code, message, data } = res.data || {}
+            if (code !== 200) return this.$message.error(message)
+            this.isOpenH5Audit = !!data
+          } catch (err) {
+            console.error('getH5AuditOpenStatus error:', err)
+          }
+        },
+
+        /**
+         * 校验是否存在待审核记录
+         * 这个接口这个方案是否存在待审核的音频，
+         * 如果true，则隐藏每个音频的编辑按钮跟新建音频的按钮，展示撤回审批；
+         * 如果为false，则展示编辑按钮跟新建按钮，展示发起审批
+         */
+        async getExistNotAudit() {
+          try {
+            const res = await this.$api.voice.existNotAudit({
+              apId: this.apId
+            })
+            const { code, message, data } = res.data || {}
+            if (code !== 200) return this.$message.error(message)
+            this.isExistH5Audit = !!data
+          } catch (err) {
+            console.error('existNotAudit error:', error)
+          }
+        },
+
         /**
          * 打开添加音频弹框
          */
@@ -455,6 +596,9 @@ import FileSaver from 'file-saver';
   /* 搜索 */
   .search-row {
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
   }
 
   .search-row /deep/ .el-button {

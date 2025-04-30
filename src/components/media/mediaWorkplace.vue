@@ -576,18 +576,23 @@
                         <img src="../../assets/images/audioPlay.png">
                         试听
                       </div>
-                      <el-popconfirm
-                        title="确定通过吗？"
-                        @confirm="passAudio(scope.row)"
-                      >
-                        <div class="pass" slot="reference">通过</div>
-                      </el-popconfirm>
-                      <el-popconfirm
-                        title="确定不通过吗？"
-                        @confirm="failAudio(scope.row)"
-                      >
-                        <div class="unpass" slot="reference">不通过</div>
-                      </el-popconfirm>
+
+                      <template v-if="!isOpenH5Audit">
+                        <el-popconfirm
+                          title="确定通过吗？"
+                          @confirm="passAudio(scope.row)"
+                        >
+                          <div class="pass" slot="reference">通过</div>
+                        </el-popconfirm>
+
+                        <el-popconfirm
+                          title="确定不通过吗？"
+                          @confirm="failAudio(scope.row)"
+                        >
+                          <div class="unpass" slot="reference">不通过</div>
+                        </el-popconfirm>
+                      </template>
+
                     </div>
                   </template>
                 </el-table-column>
@@ -720,9 +725,25 @@ export default {
       },
 
       searchPlaceholder: "项目名称/资产编号/合同编号",
+      // 是否开启H5审核
+      isOpenH5Audit: true,
     };
   },
   methods: {
+    /**
+     * 获取h5审核开关状态
+     */
+    async getH5AuditOpenStatus() {
+      try {
+        const res = await this.$api.voice.getH5AuditOpenStatus()
+        const { code, message, data } = res.data || {}
+        if (code !== 200) return this.$message.error(message)
+        this.isOpenH5Audit = !!data
+      } catch (err) {
+        console.error('getH5AuditOpenStatus error:', err)
+      }
+    },
+
     handleEdit(index, row) {
       console.log(index, row);
     },
@@ -1081,6 +1102,7 @@ export default {
     console.log(this.sessionData, "this.sessionData");
 
     this.getData();
+    this.getH5AuditOpenStatus()
   },
 };
 </script>

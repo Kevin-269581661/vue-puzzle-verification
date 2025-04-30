@@ -52,7 +52,7 @@ const editPlanOld = () => import(/* webpackChunkName: "editPlanOld" */ '../compo
 const editPlan = () => import(/* webpackChunkName: "editPlan" */ '../components/common/editPlan.vue')
 // 直营媒介或销售编辑未配点意向方案的意向
 const editEmptyPointPlan = () => import(/* webpackChunkName: "editEmptyPointPlan" */ '../components/common/editEmptyPointPlan.vue')
-const planDetail = () => import(/* webpackChunkName: "planDetail" */ '../components/common/planDetail.vue')
+const planDetail = () => import(/* webpackChunkName: "planDetail" */ '@/components/common/plan/planDetail/index.vue')
 const planEmptyPointDetail = () => import(/* webpackChunkName: "planEmptyPointDetail" */ '../components/common/planEmptyPointDetail.vue')
 const orderDetail = () => import(/* webpackChunkName: "orderDetail" */ '../components/common/orderDetail.vue')
 const countryOrderDetail = () => import(/* webpackChunkName: "countryOrderDetail" */ '../components/common/countryOrderDetail.vue')

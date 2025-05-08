@@ -22,84 +22,116 @@
             <el-form
               v-if="activeStep === 0"
               ref="voiceFormRef"
-              :model="voiceFormData"
-              :rules="voiceFormRules"
               label-width="100px"
               size="small"
               class="voice_form"
+              :model="voiceFormData"
+              :rules="voiceFormRules"
             >
 
-              <el-form-item label="音频标题：" prop="title">
-                <el-input
-                v-model.trim="voiceFormData.title"
-                :disabled="!!voiceFormData.voiceId"
-                placeholder="请输入音频标题"
-                class="form_item_width"
-                maxlength="30"
-              ></el-input>
+              <el-radio-group
+                v-if="auditedVoiceList && auditedVoiceList.length"
+                v-model="voiceType"
+                style="margin-bottom: 20px"
+                size="small"
+                @input="handleChangeVoiceType"
+              >
+                <el-radio-button v-for="(item, i) in voiceTypeOptions" :key="i" :label="item.value">
+                  {{ item.label }}
+                </el-radio-button>
+              </el-radio-group>
+
+              <el-form-item v-if="voiceType === 0" label="选择音频：" prop="voiceId">
+                <el-select
+                  v-model="voiceFormData.voiceId"
+                  placeholder="请选择"
+                  filterable
+                  clearable
+                  @change="handleChangeVoiceId"
+                >
+                  <el-option
+                    v-for="item in auditedVoiceList"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.title"
+                  />
+                </el-select>
+                <el-button type="text" size="small" style="margin-left: 10px;" @click="handleListen">试听</el-button>
               </el-form-item>
 
-              <el-form-item label="音频素材：" prop="voiceId">
-                <!-- 选择的音频 -->
-                <div v-if="voiceFormData.voiceId" class="voice_show_box">
-                  <img src="../../../../assets//images/audio_icon.png"/>
-                  <div class="btn_box">
-                    <i class="el-icon-service listen_icon" @click="playSelectVioce"></i>
-                  </div>
-                  <i class="el-icon-error close_icon" @click="clearSelectVoice"></i>
-                </div>
-                <div class="radio_button_box">
-                  <el-radio-group v-model="activeMaterialBtnVal" :disabled="!voiceFormData.title">
-                    <el-radio-button v-for="(item, i) in materialBtnList" :key="i" :label="item.value">
-                      {{ item.label }}
-                    </el-radio-button>
-                  </el-radio-group>
-                </div>
-                <!-- 制作音频 -->
-                <div v-if="activeMaterialBtnVal === 0" class="make_voice_box" :class="{ disabled: !voiceFormData.title }">
-                  <div class="icon_box">
+              <template v-else-if="voiceType === 1">
+                <el-form-item label="音频标题：" prop="title">
+                  <el-input
+                    v-model.trim="voiceFormData.title"
+                    placeholder="请输入音频标题"
+                    class="form_item_width"
+                    maxlength="30"
+                    :disabled="!!voiceFormData.voiceId"
+                  ></el-input>
+                </el-form-item>
+
+                <el-form-item label="音频素材：" prop="voiceId">
+                  <!-- 选择的音频 -->
+                  <div v-if="voiceFormData.voiceId" class="voice_show_box">
                     <img src="../../../../assets//images/audio_icon.png"/>
+                    <div class="btn_box">
+                      <i class="el-icon-service listen_icon" @click="playSelectVioce"></i>
+                    </div>
+                    <i class="el-icon-error close_icon" @click="clearSelectVoice"></i>
                   </div>
-                  <el-button type="primary" @click="handleMakeVoiceBtnClick" :disabled="!voiceFormData.title">制作音频</el-button>
-                </div>
-                <!-- 上传音频 -->
-                <el-upload
-                  v-else
-                  :action="uploadData.action"
-                  :headers="uploadData.headers"
-                  :data="{
-                    title: voiceFormData.title
-                  }"
-                  :name="uploadData.name"
-                  :show-file-list="false"
-                  :before-upload="handleBeforeUpload"
-                  :on-success="handleUploadSuccess"
-                  :on-error="handleUploadError"
-                  :disabled="!voiceFormData.title"
-                  drag
-                  class="upload_voice_box"
-                  :class="{ disabled: !voiceFormData.title }"
-                >
-                  <div class="icon_box">
-                    <img src="../../../../assets//images/audio_icon.png"/>
+                  <div class="radio_button_box">
+                    <el-radio-group v-model="activeMaterialBtnVal" :disabled="!voiceFormData.title">
+                      <el-radio-button v-for="(item, i) in materialBtnList" :key="i" :label="item.value">
+                        {{ item.label }}
+                      </el-radio-button>
+                    </el-radio-group>
                   </div>
-                  <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
-                  <div class="upload_tip" slot="tip">
-                    <span class="start_text">* </span>只能上传wav格式音频文件，建议时长3-5秒且文件大小不超过2MB
+                  <!-- 制作音频 -->
+                  <div v-if="activeMaterialBtnVal === 0" class="make_voice_box" :class="{ disabled: !voiceFormData.title }">
+                    <div class="icon_box">
+                      <img src="../../../../assets//images/audio_icon.png"/>
+                    </div>
+                    <el-button type="primary" @click="handleMakeVoiceBtnClick" :disabled="!voiceFormData.title">制作音频</el-button>
                   </div>
-                </el-upload>
-              </el-form-item>
+                  <!-- 上传音频 -->
+                  <el-upload
+                    v-else
+                    drag
+                    class="upload_voice_box"
+                    :action="uploadData.action"
+                    :headers="uploadData.headers"
+                    :data="{
+                      title: voiceFormData.title
+                    }"
+                    :name="uploadData.name"
+                    :show-file-list="false"
+                    :before-upload="handleBeforeUpload"
+                    :on-success="handleUploadSuccess"
+                    :on-error="handleUploadError"
+                    :disabled="!voiceFormData.title"
+                    :class="{ disabled: !voiceFormData.title }"
+                  >
+                    <div class="icon_box">
+                      <img src="../../../../assets//images/audio_icon.png"/>
+                    </div>
+                    <div class="upload_text">将音频拖到此处，或 <em>点击上传</em></div>
+                    <div class="upload_tip" slot="tip">
+                      <span class="start_text">* </span>只能上传wav格式音频文件，建议时长3-5秒且文件大小不超过2MB
+                    </div>
+                  </el-upload>
+                </el-form-item>
+              </template>
 
             </el-form>
             <!-- 播放信息表单 -->
             <el-form
               v-else-if="activeStep === 1"
               ref="playFormRef"
-              :model="playFormData"
-              :rules="playFormRules"
               label-width="100px"
               size="small"
               class="play_form"
+              :model="playFormData"
+              :rules="playFormRules"
             >
 
               <el-form-item label="排期方式：" prop="publishType">
@@ -316,7 +348,14 @@ export default {
       // 总的设备数量
       totalMediasNum: 0,
       // 已选的设备 mid 数组
-      selectedMediaIdList: []
+      selectedMediaIdList: [],
+      // 查询审核通过的音频列表
+      auditedVoiceList: [],
+      voiceTypeOptions: [
+        { label: '选择音频', value: 0 },
+        { label: '制作音频', value: 1 },
+      ],
+      voiceType: 1,
     };
   },
   computed: {
@@ -329,6 +368,49 @@ export default {
     }
   },
   methods: {
+    handleChangeVoiceType() {
+      this.voiceFormData.voiceId = ''
+      this.voiceFormData.title = ''
+      this.voiceFormData.voiceUrl = ''
+    },
+
+    handleChangeVoiceId(val) {
+      if (val) {
+        const item = this.auditedVoiceList.find(item => item.id === val)
+        this.voiceFormData.title = item.title
+        this.voiceFormData.voiceUrl = item.url
+      } else {
+        this.voiceFormData.title = ''
+        this.voiceFormData.voiceUrl = ''
+      }
+    },
+    /**
+     * 试听
+     */
+    handleListen() {
+      if (!this.voiceFormData.voiceUrl) {
+        return Message.warning('请先选择音频')
+      }
+      this.playAudio(this.voiceFormData.voiceUrl)
+    },
+    /**
+     * 获取审核通过的音频列表
+     */
+     async getAuditedVoiceList () {
+      try {
+        const { apId } = this.voiceFormData
+        this.dialogLoading = true
+        const res = await this.$api.voice.listAuditedVoice({ apId })
+        const { code, data, message } = res.data
+        if (code !== 200) return Message.error(message)
+        this.auditedVoiceList = data || []
+        this.voiceType = this.auditedVoiceList.length ? 0 : 1
+      } catch (err) {
+        console.error('getAuditedVoiceList error:', err)
+      } finally {
+        this.dialogLoading = false
+      }
+    },
     /**
      * 播放音频
      */
@@ -577,6 +659,7 @@ export default {
       }
       this.activeStep = 0
       this.voiceFormData.apId = apId
+      this.getAuditedVoiceList()
     },
     /**
      * 关闭弹框

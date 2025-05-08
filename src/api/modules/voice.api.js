@@ -60,6 +60,17 @@ function getAuditShareLink({
   })
 }
 
+/**
+ * 查询审核通过的音频列表
+ */
+function listAuditedVoice({
+  apId,
+}) {
+  return request.getApi("/addsp/api/v1/voice/listAuditedVoice", {
+    apId,
+  })
+}
+
 export {
   // 上传投放音频媒体
   uploadMedia,
@@ -75,4 +86,6 @@ export {
   getH5AuditOpenStatus,
   // 获取H5审核分享链接
   getAuditShareLink,
+  // 查询审核通过的音频列表
+  listAuditedVoice,
 }

@@ -253,6 +253,8 @@ const initPlayFormData = () => ({
   // 投放设备列表改变的数据
   medias: [],
   isSelectAll: false,
+  // 是否确认跳过音频冲突校验直接创建
+  isDirectCreate: false,
 })
 
 export default {
@@ -569,6 +571,7 @@ export default {
           const params = {
             ...this.voiceFormData,
             ...this.playFormData,
+            directCreate: this.playFormData.isDirectCreate,
             startDate,
             endDate
           }
@@ -581,6 +584,13 @@ export default {
           }
           if (!res || !res.data) return Message.error('提交表单数据失败')
           const { code, data, MSG } = res.data
+          // 如果出现与当前音频冲突的事件，则弹出弹框提示
+          if (code === 10000) {
+            await this.$confirm(res.data.message, '提示')
+            this.playFormData.isDirectCreate = true
+            handleNextStep()
+            return
+          }
           if (code !== 200) return Message.error(MSG || '提交表单数据失败')
           this.$emit('refreshList')
         }

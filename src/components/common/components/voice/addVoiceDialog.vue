@@ -588,7 +588,7 @@ export default {
           if (code === 10000) {
             await this.$confirm(res.data.message, '提示')
             this.playFormData.isDirectCreate = true
-            handleNextStep()
+            this.handleNextStep()
             return
           }
           if (code !== 200) return Message.error(MSG || '提交表单数据失败')

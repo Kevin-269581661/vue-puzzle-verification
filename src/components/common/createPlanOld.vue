@@ -6733,47 +6733,53 @@ export default {
         return 0;
       }
     },
-    // 创建报价单结构
-    creatAdPlan() {
-      let mediaTypeList = [],
-        apMinTime = null;
-      for (let sKey of this.shopingList) {
-        if (!(sKey.asrID && sKey.rid && sKey.mediaTypeId)) continue;
-        let isHad = false;
-        let tempSchedules = sKey.schedules.split("-");
-        if (apMinTime > tempSchedules[0]) {
-          apMinTime = tempSchedules[0];
-        }
-        for (let aKey of mediaTypeList) {
-          if (
-            aKey.asrID == sKey.asrID &&
-            aKey.rID == sKey.rid &&
-            aKey.mediaTypeId == sKey.mediaTypeId
-          ) {
-            isHad = true;
-            tempSchedules[0] < aKey.pdStar && (aKey.pdStar = tempSchedules[0]);
-            tempSchedules[1] > aKey.pdEnd && (aKey.pdEnd = tempSchedules[1]);
-            aKey.pdNum++;
-            aKey.pdDays +=
-              (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0])) /
-                (3600 * 24 * 1000) +
-              1;
-            break;
-          }
-        }
-        if (!isHad) {
-          let tempObj = {
-            asrID: sKey.asrID,
-            rID: sKey.rid,
-            city: sKey.city,
-            mediaTypeId: sKey.mediaTypeId,
-            pdStar: tempSchedules[0],
-            pdEnd: tempSchedules[1],
+
+    /**
+     * 封装日期处理函数
+     */
+    parseScheduleDates  (schedule) {
+      const [start, end] = schedule.split("-");
+      return { start, end };
+    },
+
+    /**
+     * 计算两个日期之间的天数差
+     */
+    calculateDaysBetween (startDate, endDate) {
+      const msPerDay = 3600 * 24 * 1000;
+      return (Date.parse(endDate) - Date.parse(startDate)) / msPerDay + 1;
+    },
+
+     /**
+      * 创建方案
+      */
+     async creatAdPlan() {
+      // 处理媒体类型数据
+      const mediaTypeList = this.shopingList.reduce((acc, point) => {
+        // 过滤无效点位
+        if (!(point.asrID && point.rid && point.mediaTypeId)) return acc;
+        // 处理投放时间范围
+        const { start, end } = this.parseScheduleDates(point.schedules);
+        const existing = acc.find(item =>
+          item.asrID === point.asrID &&
+          item.rID === point.rid &&
+          item.mediaTypeId === point.mediaTypeId
+        );
+        if (existing) {
+          existing.pdStar = existing.pdStar < start ? existing.pdStar : start;
+          existing.pdEnd = existing.pdEnd > end ? existing.pdEnd : end;
+          existing.pdNum++;
+          existing.pdDays += this.calculateDaysBetween(start, end);
+        } else {
+          acc.push({
+            asrID: point.asrID,
+            rID: point.rid,
+            city: point.city,
+            mediaTypeId: point.mediaTypeId,
+            pdStar: start,
+            pdEnd: end,
             //总投放天数
-            pdDays:
-              (Date.parse(tempSchedules[1]) - Date.parse(tempSchedules[0])) /
-                (3600 * 24 * 1000) +
-              1,
+            pdDays: this.calculateDaysBetween(start, end),
             pdNum: 1,
             pdRemark: "",
             // 赠送面*天
@@ -6784,76 +6790,86 @@ export default {
             pdAdMake: 0,
             pdTotal: 0,
             pdSendFee: 0,
-            pdOtherFee: 0,
-          };
-          mediaTypeList.push(tempObj);
+            pdOtherFee: 0
+          });
         }
-      }
-      let params = {
+        return acc;
+      }, []);
+      const params = {
         uid: this.sessionData.uID,
         token: this.sessionData.token,
         apname: this.planForm.planName,
         adcid: this.planForm.ownerBU,
         bid: this.planForm.companyBrand,
-        suid: this.BDData.uid,
         detail: JSON.stringify(mediaTypeList),
         saleMode: this.planForm.saleMode,
         // 客户数据源：默认为 1
         customerSrc: this.sessionData.customerSrc || 1
       };
-      if (["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
-        delete params.suid;
+      // 处理不同用户类型
+      if (!["ADN_BD_KA", "ADN_BD"].includes(this.sessionData.uType)) {
+        params.suid = this.BDData.uid;
       }
       // 只有AE跟KA销售才可以选择投放媒体城市范围配置，需要传城市公司对应关系，目的为了创建空点位的方案
       if (['ADN_BD_KA', 'ADN_AE_HQ'].includes(this.sessionData.uType)) {
-        // console.log('this.planForm 111====', this.planForm)
         params.cityInfo = JSON.stringify({
           mediaTypeId: this.planForm.targetMedia,
           rIds: this.planForm.throwCity,
           asrIds: this.planForm.pointOfAsrIDs
-        })
+        });
       }
+      // 添加商机信息
       if (this.isPay && this.BDData.uType === "ADN_BD") {
+        // 如果选择了“关联商机”
         if (this.planForm.opportunityId) {
-          const tempOpportunity = this.opportunityList.find(
-            (opportunity) =>
-              opportunity.opportunityId === this.planForm.opportunityId
+          const opportunity = this.opportunityList.find(
+            o => o.opportunityId === this.planForm.opportunityId
           );
+          // 补充参数-【商机ID】
           params.opportunityId = this.planForm.opportunityId;
-          params.opportunityName =
-            (tempOpportunity && tempOpportunity.opportunityName) || "";
+          // 补充参数-【商机名称】
+          params.opportunityName = opportunity ? opportunity.opportunityName : "";
         }
+        // 补充参数-【客户媒体】
         params.customerMediaType = this.planForm.customerMediaType || null;
       }
-      api
-        .postApi(this.apiVar.Advertisement + "/CreateAPDBatch", params)
-        .then((res) => {
-          //   console.log("创建方案", res);
-          if (res.data.SysCode == 200200) {
-            this.FAData.apID = res.data.Data[0].apID;
-            this.PushADBFun(res.data.Data);
-            this.CreateShareADSFun();
-            sessionStorage.setItem("plan_apid", res.data.Data[0].apID);
-            let tempSet = new Set();
-            let cityArea = [];
-            mediaTypeList.forEach((item) => {
-              let asrIDAndRid = `${item.asrID}&&${item.rid}`;
-              if (!tempSet.has(asrIDAndRid)) {
-                cityArea.push({
-                  asrID: item.asrID,
-                  city: item.city,
-                  rid: item.rID,
-                });
-                tempSet.add(asrIDAndRid);
-              }
+      try {
+        const res = await api.postApi(
+          `${this.apiVar.Advertisement}/CreateAPDBatch`,
+          params
+        );
+        if (res.data.SysCode != 200200) {
+          throw new Error(res.data.MSG || "方案创建失败");
+        }
+        // 处理成功响应
+        const { apID } = res.data.Data[0];
+        this.FAData.apID = apID;
+        // 缓存相关数据
+        let tempSet = new Set();
+        let cityArea = [];
+        mediaTypeList.forEach((item) => {
+          let asrIDAndRid = `${item.asrID}&&${item.rid}`;
+          if (!tempSet.has(asrIDAndRid)) {
+            cityArea.push({
+              asrID: item.asrID,
+              city: item.city,
+              rid: item.rID,
             });
-            sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
-          } else {
-            this.ADloading.close();
-            sessFun.messageFun("warning", res.data.MSG || "方案创建失败");
+            tempSet.add(asrIDAndRid);
           }
         });
+        sessionStorage.setItem("plan_apid", apID);
+        sessionStorage.setItem("cityArea", JSON.stringify(cityArea));
+        // 后续处理
+        this.PushADBFun(res.data.Data);
+        this.CreateShareADSFun();
+      } catch (error) {
+        this.ADloading.close();
+        sessFun.messageFun("warning", error.message);
+        console.error("方案创建失败:", error);
+      }
     },
+
     // 价格加上逗号
     priceFormat(price) {
       return commaFormat.init(price);

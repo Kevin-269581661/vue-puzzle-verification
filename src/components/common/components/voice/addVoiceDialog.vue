@@ -121,12 +121,13 @@
                   </el-upload>
                 </el-form-item>
 
-                <el-form-item v-if="activeMaterialBtnVal === 1" label="音频文案：" prop="voiceText">
+                <el-form-item  label="音频文案：" prop="voiceText">
                   <el-input
                     v-model.trim="voiceFormData.voiceText"
                     placeholder="请输入音频文案"
                     class="form_item_width"
                     maxlength="500"
+                    clearable
                   ></el-input>
                 </el-form-item>
 
@@ -134,7 +135,6 @@
                   <FileUpload
                     ref="picUploaderRef"
                     v-model="voiceFormData.materials"
-                    useOss
                     showFileList
                     accept=".jpeg,.jpg,.png"
                     listType="picture-card"
@@ -565,9 +565,10 @@ export default {
     /**
      * 制作音频回调
      */
-    confirmMakeVoice({ voiceId, voiceUrl }) {
+    confirmMakeVoice({ voiceId, voiceUrl, voiceText }) {
       this.voiceFormData.voiceId = voiceId
       this.voiceFormData.voiceUrl = voiceUrl
+      this.voiceFormData.voiceText = voiceText
     },
     /**
      * 点击制作音频
@@ -644,12 +645,13 @@ export default {
         const { data = {} } = await api.getApi('/addsp/api/v1/voice/getVoiceDetail', { id })
         const { code, data: res, message } = data
         if (code !== 200) return Message.error(message || '获取数据失败')
-        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl, mediaIds, materials } = res
+        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl, mediaIds, materials, voiceText } = res
         this.voiceFormData = {
           ...this.voiceFormData,
           title,
           voiceId,
           voiceUrl,
+          voiceText,
           materials: materials || []
         }
         this.playFormData = {

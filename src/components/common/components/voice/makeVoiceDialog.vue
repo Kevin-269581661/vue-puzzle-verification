@@ -261,7 +261,7 @@ export default {
         const { code, data: res, message, MSG } = data
         if (code !== 200 || !res) return  Message.error(message || MSG || '操作失败')
         const { id: voiceId, url: voiceUrl } = res
-        this.$emit('confirm', { voiceId, voiceUrl })
+        this.$emit('confirm', { voiceId, voiceUrl, voiceText: text })
         this.close()
       } catch (err) {
         Message.error(err || '操作失败')

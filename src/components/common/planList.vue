@@ -717,8 +717,18 @@
     </el-dialog>
 
     <!--周边小区导出-->
-    <el-dialog :title="`门店导点(` + exportResStep + `/3)`" :visible.sync="isResExport" :close-on-click-modal="false"
+    <el-dialog :visible.sync="isResExport" :close-on-click-modal="false"
       custom-class="Import_dialog" :show-close="false" width="448px">
+
+      <template slot="title">
+        <div style="position: relative">
+          <span>{{ `门店导点(` + exportResStep + `/3)` }}</span>
+          <div class="ai_btn" title="使用AI小范" @click="jumpCozeStore">
+            <img src="@/assets/images/ai_avatar.png" alt="">
+          </div>
+        </div>
+      </template>
+
       <p class="info_box" v-show="isShowExportTag">
         <i class="el-icon-warning" style="color: #1890ff"></i>
         {{
@@ -842,6 +852,7 @@ import filterFormat from "../../commonFun/filterTableData.js";
 import timeFormat from "../../commonFun/timeFormat.js";
 import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 import { isEmpty, isNotEmpty } from '@/utils/common'
+import settings from '@/settings'
 
 export default {
   name: "projectList",
@@ -2490,6 +2501,10 @@ export default {
       this.rowSpace = size;
     },
 
+    jumpCozeStore() {
+      window.open(settings.cozeWebSDKConfig.cozeStoreLink)
+    },
+
   },
 
   beforeDestroy() {
@@ -3202,6 +3217,29 @@ a {
   border: none;
   color: #C0C4CC;
   padding: 0 3px;
+}
+
+.ai_btn {
+  position: absolute;
+  bottom: -7px;
+  right: -4px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s ease-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 </style>

@@ -32,6 +32,10 @@
             ></el-option>
           </el-select>
 
+          <div class="ai_btn" title="使用AI小范" @click="jumpCozeStore">
+            <img src="@/assets/images/ai_avatar.png" alt="">
+          </div>
+
         </div>
       </template>
 
@@ -196,6 +200,7 @@ import filterData from "../../../../commonFun/filterTableData.js";
 import VacancyDownloadCollect from './vacancyDownloadCollect.vue'
 import ChoosePlanDialog from '@/components/common/components/choosePlanDialog.vue'
 import { Message } from "element-ui";
+import settings from '@/settings'
 
 /**
  * 初始化表单（提交）数据
@@ -689,6 +694,11 @@ export default {
         }
       }
     },
+
+    jumpCozeStore() {
+      window.open(settings.cozeWebSDKConfig.cozeStoreLink)
+    },
+
     /**
      * 重置数据
      */
@@ -751,7 +761,32 @@ export default {
   display: flex;
   align-items: center;
   padding-right: 36px;
+  position: relative;
 }
+
+.ai_btn {
+  position: absolute;
+  bottom: -74px;
+  right: 0;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s ease-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
 .custom_dialog_footer {
   display: flex;
   justify-content: space-between;

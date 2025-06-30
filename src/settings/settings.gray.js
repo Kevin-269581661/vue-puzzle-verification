@@ -13,7 +13,15 @@ const envDataConfig = {
     appId: 'wx8fd14a2e14e7a6cf',
     redirectUri: `https://beta-app-h5.qinlinkeji.com/wxScanLoginRedirect/index.html`,
     redirectOrigin: `https://beta-app-h5.qinlinkeji.com`
-  }
+  },
+
+  cozeWebSDKConfig: {
+    botId: '7485580213435613194',
+    botName: '小范',
+    token: 'pat_MGsNc5zOfgGHLxoub1SFeqgYufIvdkhX221xw5vA1XkRVntnfCFZ1B7pnQEI4nHT',
+    botAvatar: 'https://crm-1256017579.cos.ap-guangzhou.myqcloud.com/crm/icon/ai_photo.gif',
+    cozeStoreLink: 'https://app-h5.qinlinkeji.com/cozeStoreDesc/index.html'
+  },
 }
 
 export default envDataConfig

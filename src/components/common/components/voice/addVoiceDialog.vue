@@ -686,6 +686,7 @@ export default {
       this.playFormData = initPlayFormData()
       this.$refs.voiceFormRef && this.$refs.voiceFormRef.clearValidate()
       this.$refs.playFormRef && this.$refs.playFormRef.clearValidate()
+      this.$refs.picUploaderRef && this.$refs.picUploaderRef.reset()
       this.$emit('afterClose')
     },
 

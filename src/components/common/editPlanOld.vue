@@ -1277,6 +1277,7 @@
                 </el-pagination>
               </div>
             </div>
+
             <!--购物车-->
             <el-dialog
               title="已选点位"
@@ -1360,6 +1361,7 @@
                         </el-dropdown>
                       </el-col>
                     </el-row>
+
                     <el-row class="car-title">
                       <i class="el-icon-info"></i>
                       小区:<span>{{ shopMedia_ADNum.resNum }}</span
@@ -1396,9 +1398,11 @@
                         ADLockNum
                       }}</span>
                     </el-row>
+
                     <span class="change_scheduling" @click="changeAdsSchedule">
                       更换排期
                     </span>
+                    <!-- 列表 -->
                     <el-table
                       v-loading="shopLoading"
                       element-loading-text="加载中"
@@ -1472,6 +1476,7 @@
                           </el-form>
                         </template>
                       </el-table-column>
+
                       <el-table-column
                         label="资源名称"
                         min-width="140"
@@ -1490,20 +1495,24 @@
                           }}</span>
                         </template>
                       </el-table-column>
+
                       <el-table-column prop="city" label="城市" min-width="80">
                       </el-table-column>
+
                       <el-table-column
                         prop="origin"
                         label="区域"
                         min-width="80"
                       >
                       </el-table-column>
+
                       <el-table-column
                         prop="buildType"
                         label="楼盘类型"
                         min-width="85"
                       >
                       </el-table-column>
+
                       <el-table-column
                         prop="schedules"
                         label="排期"
@@ -1520,6 +1529,7 @@
                           >
                         </template>
                       </el-table-column>
+
                       <el-table-column
                         prop="scope"
                         label="地图中心点"
@@ -1539,6 +1549,7 @@
                           </span>
                         </template>
                       </el-table-column>
+
                       <el-table-column
                         prop="mediaName"
                         label="媒体名称"
@@ -1558,6 +1569,7 @@
                           <span v-else> {{ scope.row.mediaName }}</span>
                         </template>
                       </el-table-column>
+
                       <el-table-column
                         prop="mediaLevel"
                         label="媒体等级"
@@ -1571,11 +1583,13 @@
                           }}
                         </template>
                       </el-table-column>
+
                       <el-table-column min-width="65px" label="投放面">
                         <template slot-scope="scope">
                           <span>{{ scope.row.asLab || "--" }}</span>
                         </template>
                       </el-table-column>
+
                       <el-table-column
                         min-width="54px"
                         :render-header="renderHeader"
@@ -1639,6 +1653,7 @@
                 </div>
               </template>
             </el-dialog>
+
           </div>
         </div>
         <div class="step4" v-if="active == 2">
@@ -2117,6 +2132,7 @@
       @handleDetails="handlePointDetails"
     >
     </PointSetting>
+
     <PointTable
       :visible.sync="pointTableShow"
       :importData="adResMatch"

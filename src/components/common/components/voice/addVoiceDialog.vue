@@ -120,6 +120,28 @@
                     </div>
                   </el-upload>
                 </el-form-item>
+
+                <el-form-item v-if="activeMaterialBtnVal === 1" label="音频文案：" prop="voiceText">
+                  <el-input
+                    v-model.trim="voiceFormData.voiceText"
+                    placeholder="请输入音频文案"
+                    class="form_item_width"
+                    maxlength="500"
+                  ></el-input>
+                </el-form-item>
+
+                <el-form-item label="画面素材：" prop="materials">
+                  <FileUpload
+                    ref="picUploaderRef"
+                    v-model="voiceFormData.materials"
+                    useOss
+                    showFileList
+                    accept=".jpeg,.jpg,.png"
+                    listType="picture-card"
+                    :maxSize="50"
+                    :maxCount="10"
+                  />
+                </el-form-item>
               </template>
 
             </el-form>
@@ -222,6 +244,7 @@ import filterData from "../../../../commonFun/filterTableData.js";
 import TimeFrameSelect from './timeFrameSelect.vue'
 import MakeVoiceDialog from "./makeVoiceDialog.vue"
 import MediaTableDialog from "./mediaTableDialog.vue"
+import FileUpload from '@/components/common/components/FileUpload/index.vue'
 
 const initVoiceFormData = () => ({
   // 订单ID
@@ -235,7 +258,13 @@ const initVoiceFormData = () => ({
   // 音频文件ID
   voiceId: '',
   // 音频文件地址
-  voiceUrl: ''
+  voiceUrl: '',
+  // 音频内容文案
+  voiceText: '',
+  // 画面素材
+  materials: [
+  // 'https://crm-1256017579.cos.ap-guangzhou.myqcloud.com/crm/dsp/web/1.png_1751269014504'
+  ]
 })
 
 const initPlayFormData = () => ({
@@ -261,7 +290,8 @@ export default {
   components: {
     TimeFrameSelect,
     MakeVoiceDialog,
-    MediaTableDialog
+    MediaTableDialog,
+    FileUpload
   },
   emits: ['refreshList', 'afterClose'],
   data () {
@@ -614,12 +644,13 @@ export default {
         const { data = {} } = await api.getApi('/addsp/api/v1/voice/getVoiceDetail', { id })
         const { code, data: res, message } = data
         if (code !== 200) return Message.error(message || '获取数据失败')
-        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl, mediaIds } = res
+        const { title, voiceId, publishType, startDate, endDate, publishDeviceType, publishTimeRange, playTimes, voiceUrl, mediaIds, materials } = res
         this.voiceFormData = {
           ...this.voiceFormData,
           title,
           voiceId,
-          voiceUrl
+          voiceUrl,
+          materials: materials || []
         }
         this.playFormData = {
           ...this.playFormData,

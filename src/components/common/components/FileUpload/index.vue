@@ -27,28 +27,30 @@
     :on-preview="handleUploadPreview"
   >
 
-    <div v-if="listType === 'picture-card'" slot="file" slot-scope="{ file }">
-      <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-      <span class="el-upload-list__item-actions">
-        <span class="el-upload-list__item-preview" @click="previewImg(file)">
-          <i class="el-icon-zoom-in"></i>
+    <template v-if="listType === 'picture-card'"  slot="file" slot-scope="{ file }">
+      <div>
+        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+        <span class="el-upload-list__item-actions">
+          <span class="el-upload-list__item-preview" @click="previewImg(file)">
+            <i class="el-icon-zoom-in"></i>
+          </span>
+          <span v-if="!disabled" class="el-upload-list__item-delete" @click="downloadImg(file)">
+            <i class="el-icon-download"></i>
+          </span>
+          <span v-if="!disabled" class="el-upload-list__item-delete" @click="removeImg(file)">
+            <i class="el-icon-delete"></i>
+          </span>
         </span>
-        <span v-if="!disabled" class="el-upload-list__item-delete" @click="downloadImg(file)">
-          <i class="el-icon-download"></i>
-        </span>
-        <span v-if="!disabled" class="el-upload-list__item-delete" @click="removeImg(file)">
-          <i class="el-icon-delete"></i>
-        </span>
-      </span>
-    </div>
+      </div>
+    </template>
 
-    <div v-if="listType === 'text-plain'" slot="file" slot-scope="{ file }">
+    <template v-if="listType === 'text-plain'" slot="file" slot-scope="{ file }">
       <div class="custom_file_list_item">
         <span class="text">{{ file.name }}</span>
         <span v-if="file.status === 'uploading'" class="loading_text">上传中</span>
         <i class="el-icon-close icon" @click="removeImg(file)"></i>
       </div>
-    </div>
+    </template>
 
     <!-- 默认插槽 -->
     <slot>

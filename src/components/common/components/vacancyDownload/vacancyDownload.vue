@@ -201,6 +201,7 @@ import VacancyDownloadCollect from './vacancyDownloadCollect.vue'
 import ChoosePlanDialog from '@/components/common/components/choosePlanDialog.vue'
 import { Message } from "element-ui";
 import settings from '@/settings'
+import Aegis from 'aegis-web-sdk';
 
 /**
  * 初始化表单（提交）数据
@@ -235,6 +236,7 @@ export default {
   },
   data () {
     return {
+      aegis: null,
       visible: false,
       dialogLoading: false,
       formData: initFormData(),
@@ -328,6 +330,24 @@ export default {
     };
   },
   methods: {
+    /**
+     * 埋点初始化
+     */
+     initAegis() {
+      this.aegis = new Aegis({
+        // 上报 id
+        id: '8lZw7Sojz5m46qw32K',
+         // 用户唯一 ID（可选）
+        uin: this.sessionData.uID,
+        // 接口测速
+        reportApiSpeed: true,
+        // 静态资源测速
+        reportAssetSpeed: true,
+        // spa 应用页面跳转的时候开启 pv 计算
+        spa: true,
+      })
+    },
+
     onClickPlanFilterType(val) {
       console.log('onClickPlanFilterType e === ', val)
       if (val === '2') {
@@ -695,7 +715,16 @@ export default {
       }
     },
 
+    /**
+     * 点击AI小范客服按钮
+     */
     jumpCozeStore() {
+      // 埋点
+      this.aegis.infoAll({
+        msg: '点击AI小范客服按钮',
+        ext1: window.location.href,
+        ext2: '空位导出'
+      })
       window.open(settings.cozeWebSDKConfig.cozeStoreLink)
     },
 
@@ -721,9 +750,7 @@ export default {
     this.getSessionData();
     this.getCityOptions();
     this.getCollectList({})
-  },
-  computed: {
-
+    this.initAegis()
   },
 };
 </script>

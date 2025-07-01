@@ -853,6 +853,7 @@ import timeFormat from "../../commonFun/timeFormat.js";
 import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 import { isEmpty, isNotEmpty } from '@/utils/common'
 import settings from '@/settings'
+import Aegis from 'aegis-web-sdk';
 
 export default {
   name: "projectList",
@@ -866,6 +867,7 @@ export default {
   },
   data() {
     return {
+      aegis: null,
       // 搜索数据
       searchInfo: {
         // 搜索的select框
@@ -1019,9 +1021,28 @@ export default {
   mounted() {
     this.getCustomConfig();
     this.getAllMediaTypes();
+    this.initAegis()
   },
 
   methods: {
+    /**
+     * 埋点初始化
+     */
+    initAegis() {
+      this.aegis = new Aegis({
+        // 上报 id
+        id: '8lZw7Sojz5m46qw32K',
+         // 用户唯一 ID（可选）
+        uin: this.sessionData.uID,
+        // 接口测速
+        reportApiSpeed: true,
+        // 静态资源测速
+        reportAssetSpeed: true,
+        // spa 应用页面跳转的时候开启 pv 计算
+        spa: true,
+      })
+    },
+
     /**
      * 打开导出空位弹框
      */
@@ -2501,7 +2522,16 @@ export default {
       this.rowSpace = size;
     },
 
+    /**
+     * 点击AI小范客服按钮
+     */
     jumpCozeStore() {
+      // 埋点
+      this.aegis.infoAll({
+        msg: '点击AI小范客服按钮',
+        ext1: window.location.href,
+        ext2: '门店导点'
+      })
       window.open(settings.cozeWebSDKConfig.cozeStoreLink)
     },
 

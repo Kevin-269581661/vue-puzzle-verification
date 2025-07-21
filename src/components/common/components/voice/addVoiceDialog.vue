@@ -135,9 +135,10 @@
                   <FileUpload
                     ref="picUploaderRef"
                     v-model="voiceFormData.materials"
+                    drag
                     showFileList
                     accept=".jpeg,.jpg,.png"
-                    listType="picture-card"
+                    listType="picture"
                     :maxSize="50"
                     :maxCount="10"
                   />

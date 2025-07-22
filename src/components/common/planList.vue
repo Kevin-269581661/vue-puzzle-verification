@@ -1645,15 +1645,24 @@ export default {
     ToDetail(row) {
       sessionStorage.setItem("plan_apid", row.apID);
       sessionStorage.setItem("cityArea", JSON.stringify(row.cityArea));
+      let targetPath = ''
       if (row.apState == -1) {
         // 未配点意向方案详情
-        this.$router.push("./planEmptyPointDetail");
+        // this.$router.push("./planEmptyPointDetail");
+        targetPath = './planEmptyPointDetail'
       } else if (row.planMode == 1) {
         // 已配点意向方案
-        this.$router.push("./planDetail");
+        // this.$router.push("./planDetail");
+        targetPath = './planDetail'
       } else {
-        this.$router.push("./planDetail");
+        // this.$router.push("./planDetail");
+        targetPath = './planDetail'
       }
+      // 打开新的标签页
+      const { href } = this.$router.resolve({
+        path: targetPath,
+      })
+      window.open(href, '_blank')
     },
 
     // 跳转到编辑页面

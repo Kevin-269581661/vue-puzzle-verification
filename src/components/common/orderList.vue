@@ -838,12 +838,17 @@ export default {
       }
       return obj;
     },
-    // 跳转到详情页面
+
+    /**
+     * 跳转到详情页面
+     */
     ToDetail(row) {
+      let targetPath = ''
       if (this.role == "AD") {
         sessionStorage.setItem("ADorder_apid", row.apID);
         sessionStorage.setItem("ADorder_apSrc", row.apSrc);
-        this.$router.push("./ADorderDetail");
+        // this.$router.push("./ADorderDetail");
+        targetPath = './ADorderDetail'
       } else {
         sessionStorage.setItem("change_point", "no");
         sessionStorage.setItem(
@@ -852,9 +857,16 @@ export default {
         );
         sessionStorage.setItem("order_apid", row.apID);
         sessionStorage.setItem("order_apSrc", row.apSrc);
-        this.$router.push("./orderDetail");
+        // this.$router.push("./orderDetail");
+        targetPath = './orderDetail'
       }
+      // 打开新的标签页
+      const { href } = this.$router.resolve({
+        path: targetPath,
+      })
+      window.open(href, '_blank')
     },
+
     // 更换点位
     changePoint(row) {
       sessionStorage.setItem("change_point", "yes");

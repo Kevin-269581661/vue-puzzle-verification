@@ -1,10 +1,10 @@
 <template>
   <div>
-    <!-- 空位导出-弹框组件 -->
-    <el-dialog title="空位导出" :visible.sync="visible" width="700px">
+    <!-- 导出空位-弹框组件 -->
+    <el-dialog title="导出空位" :visible.sync="visible" width="700px">
       <template slot="title">
         <div class="dialog_header">
-          <span style="margin-right: auto;">空位导出</span>
+          <span style="margin-right: auto;">导出空位</span>
 
           <!-- <el-dropdown>
             <el-button type="plain" size="mini">
@@ -41,7 +41,7 @@
 
       <div v-loading="dialogLoading" class="dialog_content">
         <div class="custom_dialog_body">
-          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="160px" size="small" class="form">
+          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="200px" size="small" class="form">
 
             <el-form-item label="导出空位：" prop="loadType">
               <el-radio-group v-model="formData.loadType" @input="onChangeLoadType">
@@ -167,6 +167,18 @@
               <span v-if="formData.planFilterType === '2'" style="margin-left: 10px">已选{{ formData.planFilterSelection.length }}个</span>
             </el-form-item> -->
 
+            <el-form-item
+              v-if="['点位', '小区'].includes(formData.loadType)"
+              label="是否包含空刊客户点位："
+              prop="showEmptyPublish"
+            >
+              <el-radio-group v-model="formData.showEmptyPublish">
+                <el-radio v-for="item in preparedData.showEmptyPublishOptions" :label="item.value" :key="item.value">
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
           </el-form>
         </div>
         <div class="custom_dialog_footer">
@@ -225,7 +237,9 @@ import Aegis from 'aegis-web-sdk';
     customDate: [],
     // 方案过滤
     planFilterType: '1',
-    planFilterSelection: []
+    planFilterSelection: [],
+    // 是否包含空刊客户点位:0.否，1.是
+    showEmptyPublish: 0
   }
 }
 
@@ -306,6 +320,10 @@ export default {
         planFilterTypeOptions: [
           { label: '全部过滤', value: '1' },
           { label: '自定义过滤', value: '2' },
+        ],
+        showEmptyPublishOptions: [
+          { label: '是', value: 1 },
+          { label: '否', value: 0 },
         ]
       },
       // 登录信息
@@ -380,6 +398,12 @@ export default {
       this.formData.mediaTypeIds = []
       const index = this.tempMediaTypes.findIndex(item => item.chooseTypeName === type)
       this.preparedData.mediaTypeOptions = this.tempMediaTypes[index].mediaTypeList
+      // 处理【是否包含空刊客户点位】联动
+      if (['点位', '小区'].includes(type)) {
+        this.formData.showEmptyPublish = 0
+      } else {
+        this.formData.showEmptyPublish = null
+      }
     },
     /**
      * 获取session数据
@@ -523,11 +547,12 @@ export default {
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
         });
-        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, customDate, openDoorDate } = this.formData;
+        let { city, mediaTypeIds,openDoorType,openDoorMinCount,openDoorMaxCount,supportVoice, dateType, customDate, openDoorDate, showEmptyPublish } = this.formData;
         let params = {
             cityIds: city.join(','),
             mediaTypeIds: mediaTypeIds.join(','),
             supportVoice,
+            showEmptyPublish,
             openDoorType: openDoorType === ''? null : openDoorType,
             openDoorMinCount: openDoorMinCount === ''? null : openDoorMinCount,
             openDoorMaxCount: openDoorMaxCount === '' ? null : openDoorMaxCount,
@@ -723,7 +748,7 @@ export default {
       this.aegis.infoAll({
         msg: '点击AI小范客服按钮',
         ext1: window.location.href,
-        ext2: '空位导出'
+        ext2: '导出空位'
       })
       window.open(settings.cozeWebSDKConfig.cozeStoreLink)
     },

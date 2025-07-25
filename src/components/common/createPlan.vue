@@ -418,6 +418,7 @@
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
+                  <!-- 广告限制 -->
                   <el-select
                     v-model="limitList"
                     placeholder="广告限制"
@@ -436,6 +437,8 @@
                     >
                     </el-option>
                   </el-select>
+
+                  <!-- 楼盘类型 -->
                   <el-select
                     v-model="buildValue"
                     placeholder="楼盘类型"
@@ -452,6 +455,8 @@
                     >
                     </el-option>
                   </el-select>
+
+                  <!-- 住户数量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -483,6 +488,8 @@
                       住户数量
                     </el-button>
                   </el-popover>
+
+                  <!-- 楼盘价格 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -522,6 +529,8 @@
                       楼盘价格
                     </el-button>
                   </el-popover>
+
+                  <!-- 入住年份 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -553,6 +562,8 @@
                       入住年份
                     </el-button>
                   </el-popover>
+
+                  <!-- 人流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -592,6 +603,8 @@
                       人流量
                     </el-button>
                   </el-popover>
+
+                  <!-- 车流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -623,6 +636,8 @@
                       车流量
                     </el-button>
                   </el-popover>
+
+                  <!-- 车位数 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -662,9 +677,25 @@
                       车位数
                     </el-button>
                   </el-popover>
+
+                  <!-- 是否包含空刊客户点位 -->
+                  <el-select
+                    v-model="showEmptyPublish"
+                    placeholder="是否包含空刊客户点位"
+                    size="small"
+                    class="showEmptyPublish"
+                    :class="showEmptyPublish !== '' && showEmptyPublish !== null  ? 'otherSelectActive' : ''"
+                    @change="handleChangeShowEmptyPublish"
+                  >
+                    <el-option label="包含" :value="1"></el-option>
+                    <el-option label="不包含" :value="0"></el-option>
+                  </el-select>
+
                 </dd>
               </dl>
             </div>
+
+            <!-- 已选的条件标签列表 -->
             <div
               class="filter-condition"
               v-show="isOccupied && filterCondition.length > 0"
@@ -681,6 +712,7 @@
                 {{ tag.name }}
               </el-tag>
             </div>
+
             <!--提示-->
             <div class="tip">
               <i class="el-icon-info"></i>
@@ -689,24 +721,24 @@
                 <span>{{ shopingList.length || 0 }}</span> 个
               </p>
             </div>
+
             <!--表格-->
             <div class="table_wrap adsTable">
               <div class="myCheckbox" v-if="isOccupied">
-                <el-checkbox v-model="IsAll" @change="allCheckboxAds"
-                  >全选本页</el-checkbox
-                >
+                <el-checkbox v-model="IsAll" @change="allCheckboxAds">全选本页</el-checkbox>
               </div>
               <el-table
                 v-loading="loading"
                 element-loading-text="玩命加载中.."
                 element-loading-spinner="el-icon-loading"
                 border
-                :data="planList"
-                :default-sort="{ prop: 'resID', order: 'descending' }"
-                @cell-mouse-enter="mouseEnter"
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :data="planList"
+                :default-sort="{ prop: 'resID', order: 'descending' }"
+                :row-class-name="pointTableRowClassName"
+                @cell-mouse-enter="mouseEnter"
               >
                 <!-- //TODO:页面方案列表的改造 -->
                 <el-table-column
@@ -840,7 +872,15 @@
                 >
                 </el-table-column>
               </el-table>
-              <div class="ad_pagination" v-if="total">
+              <div v-if="total" class="ad_pagination" >
+                <p class="warningInfo">
+                  <span
+                    style="background: #6CE9FF"
+                    class="warningInfoColor"
+                  ></span>
+                  <span class="warningInfoName">空刊点位</span>
+                </p>
+
                 <el-pagination
                   background
                   layout="total, sizes, prev, pager, next, jumper"
@@ -1379,7 +1419,8 @@ export default {
       // 定制权限
       customPermission: {},
       // 缓存销售crm的客户列表下拉数据
-      crmCustomerCompanyList: []
+      crmCustomerCompanyList: [],
+      showEmptyPublish: null, //是否包含空刊客户点位
     };
   },
   created() {
@@ -2642,7 +2683,7 @@ export default {
       this.getAdsParamsData.suID = this.BDData.uid;
       this.getAdsParamsData.planAdsCnt = this.planAdsCnt ? this.planAdsCnt : 1;
       this.getAdsParamsData.pageNum = this.pageNum;
-
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish
       for (let i in this.getAdsParamsData) {
         if (!this.getAdsParamsData[i]) {
           delete this.getAdsParamsData[i];
@@ -2901,6 +2942,10 @@ export default {
         this.filterData.pSNum = false;
         this.getAdsParamsData.parkSpaceNumMin = "";
         this.getAdsParamsData.parkSpaceNumMax = "";
+      } else if (tab.condition === 'showEmptyPublish') {
+        // 空刊客户
+        this.showEmptyPublish = null
+        this.getAdsParamsData.showEmptyPublish = null
       }
       this.filterCondition.splice(index, 1);
       this.setpageNumAndTableData();
@@ -2988,6 +3033,29 @@ export default {
         this.getAdList();
       }
     },
+
+    handleChangeShowEmptyPublish() {
+      if (this.showEmptyPublish === 1) {
+        this.isHaveThisTag("showEmptyPublish", '包含空刊客户');
+      } else if (this.showEmptyPublish === 0) {
+        this.isHaveThisTag("showEmptyPublish", '不包含空刊客户');
+      }
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish;
+      this.getAdList();
+    },
+
+    /**
+     * 选点列表高亮行
+     */
+     pointTableRowClassName({ row }) {
+      // 空刊客户所占点位数
+      if (row.emptyPublishSpaceNum) {
+        return "empty_publish_row";
+      } else {
+        return "";
+      }
+    },
+
     // 楼盘价格过滤
     tableHeaderFilter_p () {
       if (this.buildPrice[0] == "" || this.buildPrice[1] == "") {
@@ -4139,11 +4207,12 @@ export default {
 }
 
 .otherSelectActive /deep/ .el-input__inner {
-  border-color: #1890ff;
+  border-color: #1890ff !important;
+  color: #1890ff !important;
 }
 
 .otherSelectActive /deep/ .el-input .el-select__caret {
-  color: #1890ff;
+  color: #1890ff !important;
 }
 
 .otherBtn.el-button {
@@ -4638,13 +4707,23 @@ export default {
   width: 140px;
 }
 
-.ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
-  width: 100px;
+.ad_pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /deep/ .el-pagination__sizes .el-input__inner {
+    width: 100px;
+    height: 28px;
+  }
+  /deep/ .el-pagination__editor.el-input .el-input__inner {
+    width: 45px;
+  }
 }
 
-.ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
-  width: 45px;
+/deep/ .el-table .empty_publish_row {
+  background-color: #6CE9FF !important;
 }
+
 /deep/ .el-upload--text {
   width: 100%;
 }
@@ -4703,6 +4782,15 @@ export default {
   /deep/ .el-dialog__footer {
     padding: 10px 24px 24px;
     text-align: center;
+  }
+}
+
+.showEmptyPublish {
+  /deep/ .el-input__inner {
+    max-width: 200px;
+    height: 30px;
+    border-radius: 0;
+    padding-left: 10px;
   }
 }
 </style>

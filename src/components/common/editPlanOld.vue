@@ -268,6 +268,7 @@
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
+                  <!-- 广告限制 -->
                   <el-select
                     v-model="limitList"
                     placeholder="广告限制"
@@ -287,6 +288,7 @@
                     </el-option>
                   </el-select>
 
+                  <!-- 楼盘类型 -->
                   <el-select
                     v-model="buildValue"
                     placeholder="楼盘类型"
@@ -304,6 +306,7 @@
                     </el-option>
                   </el-select>
 
+                  <!-- 媒体等级 -->
                   <el-select
                     v-model="activeGrade"
                     placeholder="媒体等级"
@@ -317,6 +320,7 @@
                     <el-option label="C级" value="C"></el-option>
                   </el-select>
 
+                  <!-- 住户数量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -390,6 +394,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 楼盘价格 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -430,6 +435,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 入住年份 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -544,6 +550,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 人流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -584,6 +591,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 车流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -616,6 +624,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 车位数 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -697,6 +706,18 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 是否包含空刊客户点位 -->
+                  <el-select
+                    v-model="showEmptyPublish"
+                    placeholder="是否包含空刊客户点位"
+                    size="small"
+                    class="showEmptyPublish"
+                    :class="showEmptyPublish !== '' && showEmptyPublish !== null  ? 'otherSelectActive' : ''"
+                    @change="handleChangeShowEmptyPublish"
+                  >
+                    <el-option label="包含" :value="1"></el-option>
+                    <el-option label="不包含" :value="0"></el-option>
+                  </el-select>
 
                 </dd>
               </dl>
@@ -776,15 +797,16 @@
                 element-loading-text="玩命加载中..."
                 element-loading-spinner="el-icon-loading"
                 border
-                :data="planList"
-                :default-sort="{ prop: 'mID', order: 'descending' }"
-                @cell-mouse-enter="mouseEnter"
-                @row-click="rowClick"
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :data="planList"
+                :default-sort="{ prop: 'mID', order: 'descending' }"
                 :size="rowSpace"
                 :key="itemKey"
+                :row-class-name="pointTableRowClassName"
+                @cell-mouse-enter="mouseEnter"
+                @row-click="rowClick"
               >
                 <el-table-column
                   class-name="el-table-column-checkbox"
@@ -1263,7 +1285,15 @@
                   </template>
                 </template>
               </el-table>
-              <div class="ad_pagination" v-if="total">
+              <div v-if="total" class="ad_pagination" >
+                <p class="warningInfo">
+                  <span
+                    style="background: #6CE9FF"
+                    class="warningInfoColor"
+                  ></span>
+                  <span class="warningInfoName">空刊点位</span>
+                </p>
+
                 <el-pagination
                   background
                   layout="total, sizes, prev, pager, next, jumper"
@@ -2632,10 +2662,8 @@ export default {
 
       tradingAreaList: [], // 商圈
       tradingArea: '',
-
-      isFirstIntoPage: true
-
-
+      isFirstIntoPage: true,
+      showEmptyPublish: null, //是否包含空刊客户点位
     };
   },
   mounted() {
@@ -2730,6 +2758,29 @@ export default {
     }
   },
   methods: {
+    /**
+     * 选点列表高亮行
+     */
+     pointTableRowClassName({ row }) {
+      // 空刊客户所占点位数
+      if (row.emptyPublishSpaceNum) {
+        return "empty_publish_row";
+      } else {
+        return "";
+      }
+    },
+
+    handleChangeShowEmptyPublish() {
+      if (this.showEmptyPublish === 1) {
+        this.isHaveThisTag("showEmptyPublish", '包含空刊客户');
+      } else if (this.showEmptyPublish === 0) {
+        this.isHaveThisTag("showEmptyPublish", '不包含空刊客户');
+      }
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish;
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
     handleSizeChange(val) {
       this.cartPageSize = val;
     },
@@ -3588,6 +3639,7 @@ export default {
       this.getAdsParamsData.mType = this.mediaMType || "";
       this.getAdsParamsData.site = this.site || "";
       this.getAdsParamsData.siteOrientation = this.siteOrientation || "";
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish
       for (let i in this.getAdsParamsData) {
         if (
           this.getAdsParamsData[i] === "" ||
@@ -4201,6 +4253,10 @@ export default {
         // 商圈
         this.tradingArea = '';
         this.getAdsParamsData.tradingArea = "";
+      } else if (tab.condition === 'showEmptyPublish') {
+        // 空刊客户
+        this.showEmptyPublish = null
+        this.getAdsParamsData.showEmptyPublish = null
       }
 
       this.filterCondition.splice(index, 1);
@@ -8328,12 +8384,17 @@ export default {
   height: 28px;
 }
 
-.ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
-  width: 100px;
-}
-
-.ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
-  width: 45px;
+.ad_pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /deep/ .el-pagination__sizes .el-input__inner {
+    width: 100px;
+    height: 28px;
+  }
+  /deep/ .el-pagination__editor.el-input .el-input__inner {
+    width: 45px;
+  }
 }
 
 /*提示*/
@@ -8423,5 +8484,18 @@ export default {
       cursor: text;
     }
   }
+}
+
+.showEmptyPublish {
+  /deep/ .el-input__inner {
+    max-width: 200px;
+    height: 30px;
+    border-radius: 0;
+    padding-left: 10px;
+  }
+}
+
+/deep/ .el-table .empty_publish_row {
+  background-color: #6CE9FF !important;
 }
 </style>

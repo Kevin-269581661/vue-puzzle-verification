@@ -564,6 +564,7 @@
               <dl style="border: none">
                 <dt>其它条件：</dt>
                 <dd class="other-dd">
+                  <!-- 广告限制 -->
                   <el-select
                     v-model="limitList"
                     placeholder="广告限制"
@@ -582,6 +583,8 @@
                     >
                     </el-option>
                   </el-select>
+
+                  <!-- 楼盘类型 -->
                   <el-select
                     v-model="buildValue"
                     placeholder="楼盘类型"
@@ -598,6 +601,8 @@
                     >
                     </el-option>
                   </el-select>
+
+                  <!-- 媒体等级 -->
                   <el-select
                     v-model="activeGrade"
                     placeholder="媒体等级"
@@ -611,6 +616,7 @@
                     <el-option label="C级" value="C"></el-option>
                   </el-select>
 
+                  <!-- 住户数量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -684,6 +690,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 楼盘价格 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -724,6 +731,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 入住年份 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -838,6 +846,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 人流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -878,6 +887,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 车流量 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -910,6 +920,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 车位数 -->
                   <el-popover
                     placement="bottom-start"
                     width="155"
@@ -991,6 +1002,7 @@
                     </el-button>
                   </el-popover>
 
+                  <!-- 开门次数 -->
                   <el-select
                     v-model="openDoorTypeValue"
                     placeholder="开门次数"
@@ -1031,10 +1043,11 @@
                     </div>
                   </el-select>
 
+                  <!-- 是否支持语音 -->
                   <el-select
                     v-model="supportVoice"
                     placeholder="是否支持语音"
-                    :class="buildValue !== '' ? 'otherSelectActive' : ''"
+                    :class="supportVoice !== '' && supportVoice !== null ? 'otherSelectActive' : ''"
                     size="small"
                     class="otherSelect"
                     @change="tableHeaderFilterSupportVoice"
@@ -1042,9 +1055,24 @@
                     <el-option label="支持" :value="1"></el-option>
                     <el-option label="不支持" :value="0"></el-option>
                   </el-select>
+
+                  <!-- 是否包含空刊客户点位 -->
+                  <el-select
+                    v-model="showEmptyPublish"
+                    placeholder="是否包含空刊客户点位"
+                    size="small"
+                    class="showEmptyPublish"
+                    :class="showEmptyPublish !== '' && showEmptyPublish !== null  ? 'otherSelectActive' : ''"
+                    @change="handleChangeShowEmptyPublish"
+                  >
+                    <el-option label="包含" :value="1"></el-option>
+                    <el-option label="不包含" :value="0"></el-option>
+                  </el-select>
                 </dd>
               </dl>
             </div>
+
+            <!-- 已选的条件标签列表 -->
             <div
               class="filter-condition"
               v-show="isOccupied && filterCondition.length > 0"
@@ -1061,6 +1089,7 @@
                 {{ tag.name }}
               </el-tag>
             </div>
+
             <!-- 表格控件 -->
             <div class="table-set">
               <el-radio-group
@@ -1089,7 +1118,7 @@
               </TableSetting>
             </div>
 
-            <!--提示-->
+            <!-- 提示 -->
             <div class="tip">
               <i class="el-icon-info"></i>
               <p>
@@ -1097,15 +1126,14 @@
                 <span>{{ nowPointNum > 0 ? nowPointNum : 0 }}</span> 个
               </p>
             </div>
-            <!--表格-->
+
+            <!-- 表格 -->
             <div class="table_wrap adsTable">
               <div
                 class="myCheckbox"
                 v-if="isOccupied && getAdsParamsData.chooseType === 0"
               >
-                <el-checkbox v-model="IsAll" @change="allCheckboxAds"
-                  >全选本页</el-checkbox
-                >
+                <el-checkbox v-model="IsAll" @change="allCheckboxAds">全选本页</el-checkbox>
               </div>
               <div
                 class="myCheckbox pointNum"
@@ -1115,18 +1143,19 @@
               </div>
               <el-table
                 v-loading="loading"
-                element-loading-text="玩命加载中.."
+                element-loading-text="拼命加载中..."
                 element-loading-spinner="el-icon-loading"
                 border
-                :data="planList"
-                :default-sort="{ prop: 'mID', order: 'descending' }"
-                @cell-mouse-enter="mouseEnter"
-                @row-click="rowClick"
                 style="width: 100%"
                 class="selectAdsTable"
                 height="595"
+                :data="planList"
+                :default-sort="{ prop: 'mID', order: 'descending' }"
                 :size="rowSpace"
                 :key="itemKey"
+                :row-class-name="pointTableRowClassName"
+                @cell-mouse-enter="mouseEnter"
+                @row-click="rowClick"
               >
                 <el-table-column
                   class-name="el-table-column-checkbox"
@@ -1598,7 +1627,15 @@
                   </template>
                 </template>
               </el-table>
-              <div class="ad_pagination" v-if="total">
+              <div v-if="total" class="ad_pagination" >
+                <p class="warningInfo">
+                  <span
+                    style="background: #6CE9FF"
+                    class="warningInfoColor"
+                  ></span>
+                  <span class="warningInfoName">空刊点位</span>
+                </p>
+
                 <el-pagination
                   background
                   layout="total, sizes, prev, pager, next, jumper"
@@ -1612,6 +1649,7 @@
                 </el-pagination>
               </div>
             </div>
+
             <!--购物车-->
             <el-dialog
               title="已选点位"
@@ -2549,6 +2587,7 @@ export default {
       openDoorTypeValue:null, //开门类型
       openDoorDate: [], //开门次数日期范围
       supportVoice: null, //语音支持
+      showEmptyPublish: null, //是否包含空刊客户点位
       buildValue: "",
       //搜索框
       searchInput: "",
@@ -4559,7 +4598,8 @@ export default {
       this.getAdsParamsData.siteOrientation = this.siteOrientation || "";
       this.getAdsParamsData.openDoorType = this.openDoorTypeValue
       this.getAdsParamsData.openDoorCount = this.openDoorCount
-      this.getAdsParamsData.supportVoice = this.supportVoice || null
+      this.getAdsParamsData.supportVoice = this.supportVoice
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish
       for (let i in this.getAdsParamsData) {
         if (
           this.getAdsParamsData[i] === "" ||
@@ -5303,6 +5343,10 @@ export default {
         //语音支持
         this.supportVoice = null
         this.getAdsParamsData.supportVoice = null
+      } else if (tab.condition === 'showEmptyPublish') {
+        // 空刊客户
+        this.showEmptyPublish = null
+        this.getAdsParamsData.showEmptyPublish = null
       }
       this.setPageNoAndTableData();
       this.getAdList();
@@ -5611,6 +5655,17 @@ export default {
         this.isHaveThisTag("supportVoice", '不支持语音');
       }
       this.getAdsParamsData.supportVoice = this.supportVoice;
+      this.setPageNoAndTableData();
+      this.getAdList();
+    },
+
+    handleChangeShowEmptyPublish() {
+      if (this.showEmptyPublish === 1) {
+        this.isHaveThisTag("showEmptyPublish", '包含空刊客户');
+      } else if (this.showEmptyPublish === 0) {
+        this.isHaveThisTag("showEmptyPublish", '不包含空刊客户');
+      }
+      this.getAdsParamsData.showEmptyPublish = this.showEmptyPublish;
       this.setPageNoAndTableData();
       this.getAdList();
     },
@@ -6381,6 +6436,19 @@ export default {
         return "";
       }
     },
+
+    /**
+     * 选点列表高亮行
+     */
+    pointTableRowClassName({ row }) {
+      //  空刊客户所占点位数
+      if (row.emptyPublishSpaceNum) {
+        return "empty_publish_row";
+      } else {
+        return "";
+      }
+    },
+
     // 打开购物车则计算连排门信息
     computeConnectAdData() {
       let shopData = this.shopingList;
@@ -8053,6 +8121,15 @@ export default {
   }
 }
 
+.showEmptyPublish {
+  /deep/ .el-input__inner {
+    max-width: 200px;
+    height: 30px;
+    border-radius: 0;
+    padding-left: 10px;
+  }
+}
+
 .adLimitSelect /deep/ .el-select__tags > span {
   width: 68px;
   height: 28px;
@@ -8070,11 +8147,12 @@ export default {
 }
 
 .otherSelectActive /deep/ .el-input__inner {
-  border-color: #1890ff;
+  border-color: #1890ff !important;
+  color: #1890ff !important;
 }
 
 .otherSelectActive /deep/ .el-input .el-select__caret {
-  color: #1890ff;
+  color: #1890ff !important;
 }
 
 .otherBtn.el-button {
@@ -8682,13 +8760,17 @@ export default {
   min-width: 140px;
 }
 
-.ad_pagination /deep/ .el-pagination__sizes .el-input__inner {
-  width: 100px;
-  height: 28px;
-}
-
-.ad_pagination /deep/ .el-pagination__editor.el-input .el-input__inner {
-  width: 45px;
+.ad_pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /deep/ .el-pagination__sizes .el-input__inner {
+    width: 100px;
+    height: 28px;
+  }
+  /deep/ .el-pagination__editor.el-input .el-input__inner {
+    width: 45px;
+  }
 }
 
 .table-set {
@@ -8755,6 +8837,11 @@ export default {
     }
   }
 }
+
+/deep/ .el-table .empty_publish_row {
+  background-color: #6CE9FF !important;
+}
+
 </style>
 <style>
 .el-tooltip__popper.is-dark {

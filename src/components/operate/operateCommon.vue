@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="app">
         <!--导航栏-->
         <el-menu
             router

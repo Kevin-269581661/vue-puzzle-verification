@@ -1,480 +1,506 @@
+<!-- 客户管理-列表 -->
 <template>
-	<div class="ad_mediaDetail_wrap clearfix">
-		<div class="ad_mediaDetail_nav ">
-			<p class="clearfix">
-				<a href="#" style="color: #999">客户管理</a>
-			</p>
-		</div>
-		<div class="mediaList_wrap">
-			<div class="mediaList_head">
-				<h2>客户列表</h2>
-                <a class="nav-text" href="https://apps.qinlinad.com/crm.html" target="_blank">如何更高效化的管理您的客户？</a>
-			</div>
-			<div class="mediaList_container">
-                <div class="flex_box">
-                    <el-input placeholder="请输入内容" v-model="searchInfo.keyword" size="small" class="marginR">
-                        <el-select v-model="searchInfo.select" slot="prepend" placeholder="请选择">
-                            <el-option label="公司品牌" value="1"></el-option>
-                            <el-option label="公司名称" value="2"></el-option>
-                            <el-option label="联系人" value="3"></el-option>
-                        </el-select>
-                    </el-input>
-                    <el-date-picker size="small" class="marginR" v-model="searchInfo.date" type="daterange" range-separator="-" format="yyyy-MM-dd" value-format="yyyy-MM-dd" start-placeholder="创建日期" end-placeholder="创建日期">
-                    </el-date-picker>
-                    <el-select v-model="searchInfo.company" placeholder="请选择公司" size="small" v-if="!['ADN_BD_KA', 'ADN_BD'].includes(sessionData.uType)" class="marginR">
-                        <el-option v-for="item of companyArr" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                    </el-select>
-                    <el-button type="primary" icon="el-icon-search" @click="search()"
-                               :disabled="!isSearch" class="marginR" >搜索</el-button>
-                    <el-button plain @click="reset()" :disabled="!isReset" class="marginR" >重置</el-button>
-                    <el-button plain @click="newClient()" v-if="showNewBtn" class="marginR" >新建</el-button>
+  <div class="page_container">
+    <div class="page_navigation">
+      <p class="clearfix">
+        <a href="#">客户管理</a>
+      </p>
+    </div>
+
+    <div v-loading="pageLoading" class="page_content">
+      <!-- 页面顶部 -->
+      <div class="page_content_top">
+        <div class="page_title" style="display: flex; align-items: center;">
+          <span style="margin-right: auto">客户列表</span>
+          <a class="nav-text" href="https://apps.qinlinad.com/crm.html" target="_blank">如何更高效化的管理您的客户？</a>
+        </div>
+
+        <!-- 列表搜索栏 -->
+        <div class="search_bar">
+          <TableSearch
+            :value="searchData"
+            :fileds="displaySearchFileds"
+            @search="handleSearch"
+            @reset="handleReset"
+          >
+            <template slot="keyword">
+              <el-input v-model="searchData.keyword"  placeholder="请输入" size="small">
+                  <el-select
+                    v-model="searchData.select"
+                    slot="prepend"
+                    placeholder="请选择"
+                    size="small"
+                    style="width: 100px"
+                  >
+                      <el-option label="公司品牌" :value="1"></el-option>
+                      <el-option label="公司名称" :value="2"></el-option>
+                      <el-option label="联系人" :value="3"></el-option>
+                  </el-select>
+              </el-input>
+            </template>
+          </TableSearch>
+        </div>
+      </div>
+      <div class="table_content_box">
+        <!-- 表格 -->
+        <div class="table_wrapper">
+          <TableList
+            :columns="tableColumns"
+            :dataSource="tableList"
+            :loading="tableLoading"
+            @refreshTable="getTableList"
+            @sortChange="sortChange"
+          >
+
+            <!-- 顶部按钮栏 -->
+            <template slot="tableTool">
+              <div style="display: flex; justify-content: space-between">
+                <span>列表</span>
+                <div>
+                  <el-button
+                    v-if="showNewBtn"
+                    type="primary"
+                    icon="el-icon-plus"
+                    size="small"
+                    @click="handleCreate"
+                  >
+                    新建
+                  </el-button>
                 </div>
-				<div class="table_wrap">
-					<!-- <el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%" :default-sort="{prop: 'joinTime', order: 'descending'}"> -->
-					<el-table border :data="currentPlan" @sort-change="sortChange" v-loading="loading" element-loading-text="玩命加载中..." element-loading-spinner="el-icon-loading" style="width: 100%">
-						<el-table-column prop="realName" label="联系人" min-width="6%" show-overflow-tooltip>
-						</el-table-column>
-						<!--<el-table-column prop="clientRName" label="所在地" min-width="7.2%">-->
-						<!--</el-table-column>-->
-						<el-table-column prop="position" label="职位" min-width="7.2%" show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column prop="phone" label="手机号码" min-width="9.5%">
-						</el-table-column>
-						<el-table-column prop="cName" label="公司名称" min-width="18.4%" show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column prop="rName" label="所在城市" min-width="8%">
-						</el-table-column>
-						<el-table-column prop="cBrand" label="公司品牌" min-width="12.1%" show-overflow-tooltip>
-						</el-table-column>
-						<el-table-column prop="puName" label="所有人" min-width="6.1%" show-overflow-tooltip  :filters="filterRealName" :filter-method="filterRealNameFun" :filter-multiple="true">
-						</el-table-column>
-						<el-table-column prop="joinTime" label="创建日期" min-width="8.3%" sortable="custom">
-							<template slot-scope="scope">
-								<span>{{ formatTime(scope.row.joinTime) }}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="操作" min-width="4.1%">
-							<template slot-scope="scope">
-								<a href="javascript:void(0)" @click="showDetail(scope.row)" style="color: #108EE9"
-                                   >查看</a>
-							</template>
-						</el-table-column>
+              </div>
+            </template>
 
-                        <div slot="empty">
-                            <no-search-result></no-search-result>
-                        </div>
-					</el-table>
+            <!-- 创建日期 -->
+            <template slot="joinTime" slot-scope="slotProps">
+              {{ formatTime(slotProps.row.joinTime) }}
+            </template>
 
-                    <div class="ad_pagination">
-                        <el-pagination
-                            background
-                            v-if="paginationShow"
-                            @size-change="sizeChange"
-                            @current-change="changePage"
-                            :current-page.sync="currPage"
-                            :page-sizes="pageSizes"
-                            :page-size="pageSize"
-                            layout="total, sizes, prev, pager, next, jumper"
-                            :total="totalNum">
-                        </el-pagination>
-                    </div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- 客户品牌 -->
+            <template slot="brandName" slot-scope="slotProps">
+              <div class="tag_wraper">
+                <span
+                  v-for="(item, i) in slotProps.row.brandNameList"
+                  class="tag_box"
+                  :key="i"
+                >
+                  {{ item }}
+                </span>
+              </div>
+            </template>
+
+            <!-- 操作列 -->
+            <template slot="action" slot-scope="slotProps">
+              <TableAction :actionList="getActionList(slotProps.row)" />
+            </template>
+
+          </TableList>
+        </div>
+        <div class="pagination_wrapper">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="pagination.sizes"
+            :current-page.sync="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="pagination.total"
+            @current-change="pageChange"
+            @size-change="pageSizeChange"
+          >
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import api from "../../api/api.js";
-// 时间控件格式化
+import sessFun from "@/commonFun/sessFun.js"
+import searchTableMixin from '@/mixins/searchTableMixin'
+import TableList from "@/components/common/components/TableList/index.vue"
+import TableAction from "@/components/common/components/TableAction/index.vue"
+import TableSearch from "@/components/common/components/TableSearch/index.vue"
+import PointState from '@/components/common/components/pointState.vue'
+import { getLabel, getTagList, isEmpty, isNotEmpty } from '@/utils/common'
 import dateFormat from "../../commonFun/timeFormat.js";
-import sessFun from "../../commonFun/sessFun.js";
-import noSearchResult from "./components/noSearchResult.vue";
-// 筛选过滤
 import filterFormat from "../../commonFun/filterTableData.js";
-import {
-    Row,
-    Input,
-    Button,
-    Table,
-    TableColumn,
-    DatePicker,
-    Select,
-    Option,
-    Message
-} from "element-ui";
+
+/**
+ * 初始化搜索绑定数据
+ */
+const initSearchData = () => ({
+  select: 1,
+  keyword: '',
+  dateRange: [],
+  asrID: null,
+  beginTime: '',
+  endTime: '',
+  orderby: '',
+  desc: '',
+  brandName: '',
+  companyName: '',
+  contactName: ''
+})
+/**
+ * 初始化搜索配置
+ */
+const initSearchFileds = () => ({
+  keyword: {
+    slot: 'keyword',
+  },
+  dateRange: {
+    title: '创建日期',
+    type: 'date-picker',
+    props: {
+      type: 'daterange',
+      valueFormat: 'yyyy-MM-dd',
+      format: 'yyyy-MM-dd',
+      startPlaceholder: "开始日期",
+      endPlaceholder: "结束日期"
+    }
+  },
+  asrID: {
+    title: '选择公司',
+    type: 'select',
+    options: [],
+    optionKey: {
+      value: 'asrID',
+      label: 'asName'
+    },
+    visible: false
+  }
+})
+/**
+ * 初始化列表字段配置
+ */
+const initTableColumns = () => ([
+  { title: '序号', type: 'index', width: 70 },
+  {
+    title: '联系人',
+    dataIndex: 'realName',
+    minWidth: 120,
+  },
+  {
+    title: '职位',
+    dataIndex: 'position',
+    minWidth: 120,
+  },
+  {
+    title: '手机号码',
+    dataIndex: 'phone',
+    minWidth: 120,
+  },
+  {
+    title: '公司名称',
+    dataIndex: 'cName',
+    minWidth: 200,
+  },
+  {
+    title: '所在城市',
+    dataIndex: 'rName',
+    minWidth: 120,
+  },
+  {
+    title: '公司品牌',
+    minWidth: 220,
+    slot: 'brandName',
+  },
+  {
+    title: '所有人',
+    dataIndex: 'puName',
+    minWidth: 120,
+    props: {
+      filters: [],
+      filterMethod: (value, row) => row.puName.indexOf(value) !== -1,
+      filterMultiple: true,
+    }
+  },
+  {
+    title: '创建日期',
+    dataIndex: 'joinTime',
+    minWidth: 160,
+    slot: 'joinTime',
+    props: {
+      sortable: 'custom',
+    }
+  },
+  {
+    title: '操作',
+    key: 'action',
+    slot: 'action',
+    fixed: 'right',
+    width: 140,
+  }
+])
+/**
+ * 初始化列表分页数据
+ */
+ const initPagination = () => ({
+  // 请求的时候，分页字段名配置
+  keyConfig: {
+    page: 'pageNo',
+    pageSize: 'pageSize'
+  }
+})
 
 export default {
-    name: "customList",
-    components: {
-        noSearchResult,
-        elRow: Row,
-        elInput: Input,
-        elButton: Button,
-        elTable: Table,
-        elTableColumn: TableColumn,
-        elDatePicker: DatePicker,
-        elSelect: Select,
-        elOption: Option,
-    },
-    data() {
-        return {
-            // 公司列表
-            companyArr: [],
-            // 分页信息
-            paginationShow: true,
-            pageSize: 10,
-            pageSizes: [10, 20, 50],
-            currPage: 1,
-            totalPage: 0,
-            totalNum: 0,
-            // 登录信息
-            sessionData:{},
-            //加载中
-            loading: true,
-            showNewBtn: true,
-            searchInfo: {
-                select: '1',
-                keyword: '',
-                date: '',
-                company: '',
-                // 按照啥排序
-                orderby: '',
-                // 升序降序0/1
-                desc: "",
-            },
-            // 表格数据
-            currentPlan: [],
-            isSearch: true,
-            isReset: true,
-            //过滤所有人
-            filterRealName: [],
-            isPay: 0
-        };
-    },
-    mounted: function() {
-      this.sessionData = sessFun.getSess();
-      this.requestIsPay();
-      if(!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)){
-          this.getCompany();
-      }else{
-          this.getSubSaleList()
-      }
-      this.searchFun();
-
-    },
-    methods: {
-        //获取下级销售列表
-        getSubSaleList() {
-            api.getApi(this.apiVar.Advertisement + '/GetSubSaleList').then(res => {
-                console.log(res.data);
-                if (res.data.SysCode == 200200) {
-                    this.filterRealName = filterFormat(res.data.data, "realName",'uID');
-
-                } else {
-                    this.messageFun('warning', res.data.MSG);
-                }
-            });
-        },
-        filterRealNameFun(value, row) {
-            // console.log(row, value);
-            return row.puName === value;
-        },
-        // 切换页码
-        changePage(page) {
-            this.currPage = page;
-            console.log('page----', page);
-            this.searchFun();
-        },
-        // 每页条数切换
-        sizeChange(val) {
-            this.pageSize = val;
-            this.currPage = 1;
-            this.searchFun();
-        },
-        // 获取公司
-        getCompany(){
-            let sess = this.sessionData;
-            let info = {
-                uid: sess.uID,
-                token: sess.token,
-            };
-            api.getApi(this.apiVar.UCAPI + '/GetDirectAscr', info).then(res =>{
-                console.log(res);
-                if(!res.data.SysCode){
-                    let result = [];
-                    for(let data of res.data){
-                        let obj = {
-                            label: data.asName,
-                            value: data.asrID,
-                        };
-                        result.push(obj);
-                    }
-                    this.companyArr = result;
-                } else if(res.data.SysCode == 100403) {
-                    console.error('获取公司', res.data.MSG)
-                } else{
-                    Message.warning(res.data.MSG);
-                }
-            }).catch(err =>{
-                console.log(err);
-            });
-        },
-
-        requestIsPay() {
-          api.getApi('/addsp/api/v1/company/isPay', {
-              asrID: this.sessionData.asrID
-          }).then(res => {
-              if (res.data.SysCode === 200200 && res.data.data === true) {
-                this.isPay = 1;
-              }
-              this.getRole()
-          })
-        },
-
-        // 判断角色是否有新建按钮(销售有)
-        getRole() {
-            if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
-                this.showNewBtn = false;
-            }
-            // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
-            if (['ADN_BD_KA'].includes(this.sessionData.uType) && this.isPay) {
-              this.showNewBtn = false
-            }
-        },
-        // 搜索数据格式化
-        searchFormat(){
-            console.log('currpage--', this.currPage);
-            let session = this.sessionData;
-            let info = {
-                uid: session.uID,
-                token: session.token,
-                pageNo: this.currPage,
-                pageSize: this.pageSize
-            };
-            let { date, select, keyword, company, orderby, desc } = this.searchInfo;
-            info = {
-                ...info,
-                ...(date && {beginTime: date[0], endTime: date[1]+' 23:59:59'}),
-                ...(keyword && (select=='1' && {brandName: keyword}) || (select=='2' && {companyName: keyword}) || (select=='3' && {contactName: keyword})),
-                ...(company && { asrID: company}),
-                ...(orderby && {orderby}),
-                ...(desc!=='' && desc>=0 &&{desc})
-            };
-            return info;
-        },
-        searchFun(){
-            this.paginationShow = false;
-            this.loading = true;
-            let info = this.searchFormat();
-            this.getData(info);
-            this.$nextTick(function () {
-                this.paginationShow = true;
-            });
-        },
-        // 滚动加载获取数据(无搜索数据)
-        getData(params){
-            api.getApi(this.apiVar.Advertisement+'/GetCustomer', params).then(res =>{
-                console.log(res.data);
-                if(!res.data.SysCode){
-                    let dataInfo = res.data.page;
-                    this.totalNum = dataInfo.total;
-                    let dataArr = dataInfo.list;
-                    this.currentPlan = this.funcData(dataArr);
-                    this.loading = false;
-                    if (dataInfo.totalSize == 0) {
-                        this.$Message.warning('暂无数据');
-                    }
-                    if(dataInfo.totalPage == 0){
-                        Message.warning('暂无数据');
-                    }
-                }else{
-                    Message.warning(res.data.MSG);
-                }
-            });
-        },
-        // 数据处理
-        funcData(dataArr){
-            let result = [];
-            for(let data of dataArr){
-                let tmpObj = '';
-                tmpObj = this.setTableData(data);
-                result.push(tmpObj);
-            }
-            return result;
-        },
-        // 搜索(优化)
-        search(){
-            let { date, select, keyword, company } = this.searchInfo;
-            this.isSearch = false;
-            let timer = setTimeout(()=>{
-                this.isSearch = true;
-                clearTimeout(timer);
-            }, 1000);
-            if(date || keyword || company){
-                this.currentPlan = [];
-                this.loading = true;
-                this.currPage = 1;
-                this.searchFun()
-            }else{
-                this.$message.warning('请输入搜索条件');
-            }
-        },
-        // 设置表格数据
-        setTableData(item){
-            let obj = {
-                cBrand: item.cBrand || '--',
-                cID: item.cID || '',
-                cName: item.cName || '--',
-                crID: item.crID || '',
-                iID: item.iID || '',
-                joinTime: item.joinTime || '',
-                phone: item.phone || '',
-                position: item.position || '--',
-                puName: item.puName || '--',
-                rID: item.rID || '',
-                rName: item.rName || '--',
-                realName: item.realName || '',
-                sName: item.sName || '',
-                uID: item.uID || '',
-                cAddress: item.cAddress || '',
-                cRemark: item.cRemark || ''
-            };
-            return obj;
-        },
-        // 时间格式化
-        formatTime(time) {
-            return dateFormat.toDate(time, '/');
-        },
-        // 重置
-        reset(){
-            this.searchInfo = {
-                select: '1',
-                keyword: '',
-                date: '',
-                company: '',
-            };
-            this.currPage = 1;
-            this.currentPlan = [];
-            this.isReset = false;
-            let timer = setTimeout(()=>{
-                this.isReset = true;
-                clearTimeout(timer);
-            }, 1000);
-            this.searchFun();
-        },
-        // 新建按钮
-        newClient() {
-            this.$router.push("./createClient");
-        },
-        // 查看按钮
-        showDetail(data) {
-            sessionStorage.setItem("customerId", data.uID);
-            this.$router.push("./clientDetail");
-        },
-        // 时间排序(请求后台接口进行排序)
-        sortChange(column){
-            console.log('columm---', column);
-            if(column.order == "ascending"){
-                this.searchInfo.orderby = column.prop;
-                this.searchInfo.desc = 0;
-            }else if(column.order == "descending"){
-                this.searchInfo.orderby = column.prop;
-                this.searchInfo.desc = 1;
-            }
-            this.currPage = 1;
-            this.searchFun();
-        },
+  name: "customerMonitoringList",
+  mixins: [searchTableMixin],
+  components: {
+    TableList,
+    TableAction,
+    TableSearch,
+    PointState,
+  },
+  data () {
+    return {
+      pageLoading: false,
+      // 登录信息
+      sessionData: {},
+      // 预加载数据
+      preparedData: {
+        // customerCompanyOptions: [],
+      },
+      apiModel: {
+        list: this.$api.advertisement.getCustomer
+      },
+      showNewBtn: true,
+      isPay: 0
+    };
+  },
+  computed: {
+    displaySearchFileds() {
+      return Object.keys(this.searchFileds).reduce((pre, cur) => {
+        if (this.searchFileds[cur].visible || !this.searchFileds[cur].hasOwnProperty('visible')) {
+          pre[cur] = this.searchFileds[cur]
+        }
+        return pre
+      }, {})
     }
+  },
+  methods: {
+    /**
+     * 时间格式化
+     */
+    formatTime(time) {
+      return dateFormat.toDate(time, '/');
+    },
+
+    /**
+     * 获取公司下拉数据
+     */
+    async getCompanyOptions() {
+      try {
+        const { token, uID: uid } = this.sessionData
+        const res = await this.$api.UCAPI.getDirectAscr({ uid, token })
+        // const { SysCode: code, MSG: message, data = [] } = res.data || {}
+        // if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        if (typeof res.data === 'string') throw new Error(res.data || '获取公司下拉数据失败')
+        this.searchFileds.asrID.options = res.data || []
+      } catch (err) {
+        this.$message.error(String(err) || '获取公司下拉数据失败')
+        console.error('getCompanyOptions error:', err)
+      }
+    },
+
+    /**
+     * 查询是否开通数字化公司
+     */
+    async getIsPay() {
+      try {
+        const res = await this.$api.company.isPay({
+          asrID: this.sessionData.asrID
+        })
+        const { SysCode: code, MSG: message, data } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.isPay = data ? 1 : 0
+        this.getRole()
+      } catch (err) {
+        this.$message.error(String(err) || '获取数据失败')
+        console.error('getIsPay error:', err)
+      }
+    },
+
+    /**
+     * 判断角色是否有新建按钮(销售有)
+     */
+    getRole() {
+      if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+        this.showNewBtn = false;
+      }
+      // 判断KA销售权限+数字化公司，隐藏新建功能和编辑功能
+      if (['ADN_BD_KA'].includes(this.sessionData.uType) && this.isPay) {
+        this.showNewBtn = false
+      }
+    },
+
+    /**
+     * 获取下级销售列表
+     */
+     async getSubSaleList() {
+      try {
+        const res = await this.$api.advertisement.getSubSaleList()
+        const { SysCode: code, MSG: message, data = [] } = res.data || {}
+        if (code !== 200200) return this.$message.error(message || '获取数据失败')
+        this.tableColumns.find(v => v.dataIndex === 'puName').props.filters = filterFormat(data, "realName",'uID')
+      } catch (err) {
+        this.$message.error(String(err) || '获取下级销售列表数据失败')
+        console.error('getSubSaleList error:', err)
+      }
+    },
+
+    /**
+     * 处理列表接口请求的参数
+     */
+     handleTableListRequestParam(params) {
+      const [beginTime = '', endTime = ''] = this.searchData.dateRange || []
+      switch(this.searchData.select) {
+        case 1:
+          params.brandName = this.searchData.keyword
+          break
+        case 2:
+          params.companyName = this.searchData.keyword
+          break
+        case 3:
+          params.contactName = this.searchData.keyword
+          break
+      }
+      return {
+        ...params,
+        uid: this.sessionData.uID,
+        token: this.sessionData.token,
+        beginTime: beginTime ? beginTime + ' 00:00:00' : '',
+        endTime: endTime ? endTime + ' 23:59:59' : '',
+      }
+    },
+
+    /**
+     * 处理列表接口返回的数据
+     */
+     handleTableListResponse(res) {
+      // console.log('handleTableListResponse res ===', res);
+      // const { SysCode: code, MSG: message, data } = res.data || {}
+      if (typeof res.data === 'string') throw new Error(res.data || '获取列表数据失败')
+      let newList = [], total = 0
+      if (res.data) {
+        total = res.data.page.total
+        newList = res.data.page.list.map(item => {
+          return {
+            ...item,
+            brandNameList: getTagList(item.cBrand, ',')
+          }
+        })
+      }
+      return { list: newList, total }
+    },
+
+    /**
+     * 新建
+     */
+    handleCreate () {
+      this.$router.push("./createClient")
+    },
+
+    /**
+     * 跳转详情页
+     */
+    goDetailPage (id) {
+      this.$router.push({
+        path: '/media/nationalOrderDetail',
+        query: { id }
+      })
+    },
+
+    openOrderTableDialog (row) {
+      this.$refs.orderTableDialogRef && this.$refs.orderTableDialogRef.open(row.id)
+    },
+
+    // 时间排序(请求后台接口进行排序)
+    sortChange({ column, prop, order }){
+      if (order === "ascending"){
+        this.searchData.orderby = prop
+        this.searchData.desc = 0
+      } else if (order === "descending"){
+        this.searchData.orderby = prop
+        this.searchData.desc = 1
+      }
+      this.handleSearch();
+    },
+
+    /**
+     * 列表操作按钮组
+     */
+     getActionList(row) {
+      return [
+        {
+          text: '查看',
+          single: true,
+          onClick: () => {
+            sessionStorage.setItem("customerId", row.uID)
+            this.$router.push("./clientDetail")
+          }
+        },
+        {
+          text: '订单管理',
+          onClick: () => {
+            this.openOrderTableDialog(row)
+          }
+        },
+      ]
+    },
+
+  },
+  created() {
+    this.sessionData = sessFun.getSess()
+    this.initSearchTableMixin({ initSearchData, initSearchFileds, initPagination, initTableColumns })
+    this.handleSearch()
+    this.getIsPay()
+    if (!['ADN_BD_KA', 'ADN_BD'].includes(this.sessionData.uType)) {
+      this.searchFileds.asrID.visible = true
+      this.getCompanyOptions()
+    } else {
+      this.getSubSaleList()
+    }
+  },
 };
 </script>
 
-<style scoped>
-/*筛选*/
-.el-checkbox + .el-checkbox {
-    margin-left: 0;
-}
-.flex_box{
-    display: flex;
-    flex-wrap: wrap;
-}
-.marginR{
-    margin-right: 6px;
-}
-.el-button+.el-button{
-    margin-left: 0;
-}
-.typeBox p {
-    height: 30px;
-    font-size: 12px;
-    text-align: center;
-    line-height: 30px;
-    border-top: 1px solid #cccccc;
+<style scoped lang="scss">
+.search_bar {
+  padding: 24px 24px 8px;
 }
 
-/deep/ .el-checkbox__label {
-    font-size: 10px;
-    color: #8a8a8a;
+.nav-text{
+  margin-right: 16px;
+  font-size: 14px;
+  color: #1890FF;
+  line-height: 20px;
+  font-weight: 400;
+  cursor: pointer;
 }
 
-/*日期控件*/
-.block {
+.tag_wraper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  // flex-wrap: wrap;
+  .tag_box {
     display: inline-block;
-    margin-left: 2px;
-    position: relative;
-}
-
-/deep/ .el-range-separator {
-    position: relative;
-    top: -3px;
-}
-
-/* /deep/ .el-input__inner {
-    width: 260px;
-} */
-
-/deep/ .el-date-editor i,
-/deep/ .el-date-editor input,
-/deep/ .el-date-editor span {
-    float: left;
-    position: relative;
-}
-
-.el-input {
-    width: 240px;
-    border-radius: 4px;
-}
-
-/*下拉搜索框*/
-/deep/ .el-input-group__prepend {
-    width: 64px;
-    background-color: #fff;
-}
-
-/deep/ .el-input-group--prepend .el-select .el-input__inner {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-
-    width: 104px;
-}
-
-/deep/ .el-input-group--prepend .el-input__inner {
-    width: 185px;
-}
-
-.mediaList_head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.mediaList_head .nav-text{
-    margin-right: 16px;
-    font-size: 14px;
+    white-space: nowrap;
+    overflow: visible;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    padding: 0 8px;
+    background: linear-gradient(0deg, #E6F7FF, #E6F7FF),linear-gradient(0deg, #91D5FF, #91D5FF);
+    border: 1px solid #91D5FF ;
+    font-size: 12px;
     color: #1890FF;
-    line-height: 20px;
-    cursor: pointer;
+    border-radius: 4px;
+    & + .tag_box {
+      margin-left: 8px;
+    }
+  }
 }
 </style>
+

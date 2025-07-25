@@ -42,3 +42,43 @@ export function getCityAscrList({
 }) {
   return request.getApi("/advertisement/GetCityAscrList", { uid, token, suID, cityIds })
 }
+
+/**
+ * 获取下级销售列表
+ */
+export function getSubSaleList() {
+  return request.getApi("/advertisement/GetSubSaleList")
+}
+
+/**
+ * 获取权限下的城市列表
+ */
+export function getCustomer({
+  uid,
+  token,
+  pageNo,
+  pageSize,
+  beginTime,
+  endTime,
+  asrID,
+  orderby,
+  desc,
+  brandName,
+  companyName,
+  contactName
+}) {
+  return request.getApi("/advertisement/GetCustomer", {
+    uid,
+    token,
+    pageNo,
+    pageSize,
+    beginTime,
+    endTime,
+    asrID,
+    orderby,
+    desc,
+    brandName,
+    companyName,
+    contactName
+  })
+}

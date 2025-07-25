@@ -29,10 +29,11 @@
         :key="tableKey"
         :size="tableSize"
         :row-key="rowKey ? rowKey : null"
-        element-loading-text="玩命加载中..."
+        element-loading-text="拼命加载中..."
         element-loading-spinner="el-icon-loading"
         highlight-current-row
         tooltip-effect="dark"
+        @sort-change="e => $emit('sortChange', e)"
       >
         <template v-for="col in tableColumns">
           <el-table-column
@@ -65,9 +66,11 @@
 
           <el-table-column
             v-else-if="col.slot"
+            v-bind="col.props || null"
             :label="col.title"
             :key="col.key || col.dataIndex"
             :column-key="col.key || col.dataIndex"
+            :prop="col.dataIndex || col.slot"
             :width="col.width || null"
             :min-width="col.minWidth || null"
             :fixed="col.fixed || null"
@@ -83,6 +86,7 @@
 
           <el-table-column
             v-else
+            v-bind="col.props || null"
             :label="col.title"
             :key="col.key || col.dataIndex"
             :column-key="col.key || col.dataIndex"
@@ -103,7 +107,7 @@
                 </span>
               </div>
               <!-- 默认样式 -->
-              <span v-else>{{ scope.row[col.dataIndex] }}</span>
+              <span v-else>{{ formatValue(scope.row[col.dataIndex]) }}</span>
             </template>
           </el-table-column>
         </template>
@@ -193,7 +197,7 @@
 
  */
 
-import { deserialize } from '@/utils/common'
+import { deserialize, isNotEmpty } from '@/utils/common'
 import NoSearchResult from "@/components/common/components/noSearchResult.vue";
 import TableSetting from "@/components/common/components/TableSetting/index.vue";
 
@@ -254,7 +258,7 @@ export default {
       default: ''
     }
   },
-  emits: ['refreshTable', 'selectionChange'],
+  emits: ['refreshTable', 'selectionChange', 'sortChange'],
   data () {
     return {
       // 表格行距
@@ -270,12 +274,14 @@ export default {
       return this.$route.path.split('/').pop()
     },
     tableColumns() {
+      // console.log('this.totalColumns ===', this.totalColumns)
       return this.totalColumns.filter(item => item.isChecked)
     }
   },
   watch: {
     columns: {
       handler(val) {
+        // console.log('watch columns ===', val)
         this.totalColumns = val.map(item => {
           let { title: label, dataIndex: prop, isChecked = true, fixed = null, type } = item
           if (['index', 'selection'].includes(type)) {
@@ -299,6 +305,10 @@ export default {
     }
   },
   methods: {
+    formatValue(val) {
+      return isNotEmpty(val) ? val : '--'
+    },
+
     /**
      * 点击列表全选
      */

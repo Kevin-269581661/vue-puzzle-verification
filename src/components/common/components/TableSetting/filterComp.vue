@@ -77,6 +77,8 @@
 import { addLocalCache, getLocalCache } from "@/utils/user.js";
 //导入draggable组件
 import draggable from 'vuedraggable'
+import { cloneDeep } from 'lodash'
+
 export default {
 //注册draggable组件
     components: {
@@ -166,15 +168,15 @@ export default {
             const initRightList = this.columns.filter(v => v.fix === 'right')
 
             // 备份初始设置
-            this.initList = JSON.parse(JSON.stringify(initList))
-            this.initLeftList = JSON.parse(JSON.stringify(initLeftList))
-            this.initRightList = JSON.parse(JSON.stringify(initRightList))
+            this.initList = cloneDeep(initList)
+            this.initLeftList = cloneDeep(initLeftList)
+            this.initRightList = cloneDeep(initRightList)
 
             // 更新列字段
             const updateColumns = () => {
-                this.notFixList = JSON.parse(JSON.stringify(initList))
-                this.leftFixList = JSON.parse(JSON.stringify(initLeftList))
-                this.rightFixList = JSON.parse(JSON.stringify(initRightList))
+                this.notFixList = cloneDeep(initList)
+                this.leftFixList = cloneDeep(initLeftList)
+                this.rightFixList = cloneDeep(initRightList)
                 addLocalCache(`${this.cacheKey}-notFixList`, this.notFixList)
                 addLocalCache(`${this.cacheKey}-leftFixList`, this.leftFixList)
                 addLocalCache(`${this.cacheKey}-rightFixList`, this.rightFixList)
@@ -212,9 +214,9 @@ export default {
             addLocalCache(`${this.cacheKey}-leftFixList`, this.initLeftList)
             this.$nextTick(() => {
                 // 初始化列展示弹窗
-                this.notFixList = JSON.parse(JSON.stringify(this.initList))
-                this.leftFixList = JSON.parse(JSON.stringify(this.initLeftList))
-                this.rightFixList = JSON.parse(JSON.stringify(this.initRightList))
+                this.notFixList = cloneDeep(this.initList)
+                this.leftFixList = cloneDeep(this.initLeftList)
+                this.rightFixList = cloneDeep(this.initRightList)
                 this.isCheckAll()
             })
         },

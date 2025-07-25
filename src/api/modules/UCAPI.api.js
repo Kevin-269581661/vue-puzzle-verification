@@ -68,3 +68,10 @@ export function wxQrCodeBind({ code }) {
 export function wxBindRemind({ uType }) {
   return request.getApi("/UCAPI/wxBindRemind", { uType })
 }
+
+/**
+ * 获取公司
+ */
+export function getDirectAscr({ uid, token }) {
+  return request.getApi("/UCAPI/GetDirectAscr", { uid, token })
+}

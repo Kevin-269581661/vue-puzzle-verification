@@ -12,3 +12,12 @@ export function listMultiPermissions(keyword) {
   })
 }
 
+/**
+ * 查询是否开通数字化公司
+ */
+export function isPay({ asrID }) {
+  return request.getApi("/addsp/api/v1/company/isPay", {
+    asrID
+  })
+}
+

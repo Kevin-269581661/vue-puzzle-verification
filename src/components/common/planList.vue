@@ -190,7 +190,7 @@
                   class="marginR"
                   @click.native.prevent="openVacancyDownloadDialog"
                 >
-                  空位导出
+                  导出空位
                 </el-button>
               <!-- </template> -->
 
@@ -603,6 +603,24 @@
                           拆单
                         </el-dropdown-item>
 
+                        <!-- <el-dropdown-item
+                          @click.native.prevent="pply(scope.row)"
+                        >
+                          空刊申请
+                        </el-dropdown-item>
+
+                        <el-dropdown-item
+                          @click.native.prevent="handleClearLockApply(scope.row)"
+                        >
+                          标记空刊
+                        </el-dropdown-item>
+
+                        <el-dropdown-item
+                          @click.native.prevent="handleClearLockApply(scope.row)"
+                        >
+                          取消空刊
+                        </el-dropdown-item> -->
+
                         <!-- apState 方案状态：0已完成；1进行中；2未投放；3投放中；5强制结束，(-1待配点） -->
                         <!-- 地方媒介不可删除KA销售创建的方案 -->
                         <el-dropdown-item
@@ -718,7 +736,7 @@
 
     <!--周边小区导出-->
     <el-dialog :visible.sync="isResExport" :close-on-click-modal="false"
-      custom-class="Import_dialog" :show-close="false" width="448px">
+      custom-class="Import_dialog" :show-close="false" width="560px">
 
       <template slot="title">
         <div style="position: relative">
@@ -747,6 +765,7 @@
             value-format="yyyy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
           </el-date-picker>
         </li>
+
         <li>
           <span>媒体类型：</span>
           <el-select size="small" class="m_ehicle_class" multiple collapse-tags v-model="exportInfo.mediaTypeIds"
@@ -755,12 +774,23 @@
             </el-option>
           </el-select>
         </li>
+
         <li>
           <span>匹配范围：</span>
           <el-input size="small" class="radius_input" placeholder="请输入1 ~ 10000的整数" v-model="exportInfo.radius">
             <template slot="append">米</template>
           </el-input>
         </li>
+
+        <li>
+          <span>是否包含空刊客户点位：</span>
+          <el-radio-group v-model="exportInfo.showEmptyPublish">
+            <el-radio v-for="item in preparedData.showEmptyPublishOptions" :label="item.value" :key="item.value">
+              {{ item.label }}
+            </el-radio>
+          </el-radio-group>
+        </li>
+
         <li>
           <span>导出模板：</span>
           <el-select v-model="exportInfo.type" size="small" filterable placeholder="请选择导出类型">
@@ -782,7 +812,7 @@
           <div class="el-upload__text">点击或将文件拖拽到这里上传</div>
         </el-upload>
       </div>
-      <div slot="footer">
+      <div slot="footer" style="margin-top: 14px">
         <el-button size="small" plain @click="isResExport = false">取 消</el-button>
         <el-button size="small" plain v-show="exportResStep > 1"
           @click="exportResStep > 1 ? exportResStep-- : (exportResStep = 1)">上一步</el-button>
@@ -854,6 +884,14 @@ import { fastLerp } from "echarts-wordcloud/dist/echarts-wordcloud";
 import { isEmpty, isNotEmpty } from '@/utils/common'
 import settings from '@/settings'
 import Aegis from 'aegis-web-sdk';
+
+const initExportInfo = () => ({
+  date: "",
+  mediaTypeIds: "",
+  radius: "",
+  type: "",
+  showEmptyPublish: 0
+})
 
 export default {
   name: "projectList",
@@ -955,12 +993,7 @@ export default {
       // 当前步骤
       exportAction: "/image/GetCenterPointRes",
       exportResStep: 1,
-      exportInfo: {
-        date: "",
-        mediaTypeIds: "",
-        radius: "",
-        type: "",
-      },
+      exportInfo: initExportInfo(),
       // 导出时到提示标签
       isShowExportTag: true,
       // 上传的文件
@@ -1003,6 +1036,12 @@ export default {
 
       // 媒体类型筛选字段
       mediaTypeFilterList: [],
+      preparedData: {
+        showEmptyPublishOptions: [
+          { label: '是', value: 1 },
+          { label: '否', value: 0 },
+        ]
+      }
     };
   },
   created() {
@@ -1025,6 +1064,7 @@ export default {
   },
 
   methods: {
+
     /**
      * 埋点初始化
      */
@@ -2297,12 +2337,7 @@ export default {
     exportRes() {
       // 数据初始化
       this.exportResStep = 1;
-      this.exportInfo = {
-        date: "",
-        mediaTypeIds: "",
-        radius: "",
-        type: "",
-      };
+      this.exportInfo = initExportInfo()
       this.exportFileData = [];
       this.isResExport = true;
       getAllMediaTypes()
@@ -2388,6 +2423,7 @@ export default {
       formData.append("startDate", this.exportInfo.date[0]);
       formData.append("endDate", this.exportInfo.date[1]);
       formData.append("type", this.exportInfo.type);
+      formData.append("showEmptyPublish", this.exportInfo.showEmptyPublish);
       formData.append("mediaTypeIds", this.exportInfo.mediaTypeIds.join(","));
       if (
         this.sessionData.uType == "ADN_MD" ||
@@ -2799,7 +2835,7 @@ a {
   font-weight: 400;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.65);
-  margin-bottom: 16px;
+  margin:  16px 0;
 }
 
 .info_box /deep/ .el-icon-close {
@@ -2929,7 +2965,7 @@ a {
       }
 
       &>span {
-        width: 70px;
+        width: 170px;
         text-align: right;
         display: inline-block;
       }

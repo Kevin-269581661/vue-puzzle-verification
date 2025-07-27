@@ -215,6 +215,7 @@
                 </div>
             </div>
         </div>
+
         <!--顶部过滤条件-->
         <div class="top_filter_box">
             <!--QADN区域-->
@@ -236,6 +237,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--QFAD城市筛选-->
             <el-cascader
                 v-if="systemSource === 1"
@@ -286,6 +288,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--楼盘价格-->
             <el-popover
                 placement="bottom-start"
@@ -340,6 +343,7 @@
                     ></i>
                 </el-button>
             </el-popover>
+
             <!--住户数量-->
             <el-popover
                 placement="bottom-start"
@@ -392,6 +396,7 @@
                     <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.hNum"></i>
                 </el-button>
             </el-popover>
+
             <!--入住年份-->
             <el-popover
                 placement="bottom-start"
@@ -439,6 +444,7 @@
                     <i class="el-icon-arrow-up icon_arrow" v-show="popoverShow.lYear"></i>
                 </el-button>
             </el-popover>
+
             <!--广告限制-->
             <el-select
                 v-if="systemSource === 0"
@@ -458,6 +464,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--所在商圈-->
             <el-select
                 placeholder="所在商圈"
@@ -476,6 +483,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--终端型号-->
             <el-select
                 v-if="systemSource === 1"
@@ -497,6 +505,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--排除同行-->
             <el-select
                 placeholder="排除同行"
@@ -510,6 +519,7 @@
                 <el-option label="排除同行小区" value="1"></el-option>
                 <el-option label="排除同行点位" value="2"></el-option>
             </el-select>
+
             <!--设备类型-->
             <el-select
                 v-if="systemSource === 0"
@@ -529,6 +539,7 @@
                 >
                 </el-option>
             </el-select>
+
             <!--媒介载体-->
             <el-select
                 v-if="systemSource === 0"
@@ -542,6 +553,7 @@
             >
                 <el-option v-for="item in mediaTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
+
             <!--媒体等级-->
             <el-select
                 v-if="systemSource === 0"
@@ -557,6 +569,21 @@
                 <el-option label="B级" value="B"></el-option>
                 <el-option label="C级" value="C"></el-option>
             </el-select>
+
+            <!-- 是否包含空刊客户点位 -->
+            <el-select
+              v-show="showMore"
+              v-model="showEmptyPublish"
+              placeholder="是否包含空刊客户点位"
+              size="small"
+              clearable
+              @clear="transfersFun()"
+              @change="filterShowEmptyPublish"
+            >
+              <el-option label="包含" :value="1"></el-option>
+              <el-option label="不包含" :value="0"></el-option>
+            </el-select>
+
             <el-button
                 size="small"
                 plain
@@ -564,14 +591,9 @@
                 class="top_filter_btn"
             >
                 {{ showMore ? '收起' : '更多' }}
-                <i
-                    :class="showMore ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"
-                ></i>
+                <i :class="showMore ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"></i>
             </el-button>
-            <el-button size="small" plain @click="clearFilter" class="top_filter_btn"
-            >清空条件
-            </el-button
-            >
+            <el-button size="small" plain @click="clearFilter" class="top_filter_btn">清空条件</el-button>
         </div>
         <!--底部左侧选中-->
         <div class="bottom_left_active">
@@ -1476,6 +1498,7 @@
                 selectMediaType: null,
                 // 媒体等级
                 selectMediaLevel: "",
+                showEmptyPublish: null,
                 // 终端类型列表
                 machineTypeList: [],
                 // 所选终端类型
@@ -2026,6 +2049,7 @@
         // mediaTypeId: this.queryMediaType ? this.queryMediaTypeId : this.selectMediaType,
         mediaTypeId: this.queryMediaTypeId ? this.queryMediaTypeId : this.selectMediaType,
         grade: this.selectMediaLevel,
+        showEmptyPublish: this.showEmptyPublish,
         groupByDistrict: 1, // 1按地区分组
         distance: null, // 半径,
       };
@@ -3930,6 +3954,13 @@
                     this.transfersFun();
                 }
             },
+
+            filterShowEmptyPublish() {
+              // if (this.showEmptyPublish) {
+                this.transfersFun();
+              // }
+            },
+
             // 终端类型
             // filterMachineType() {
             //         this.transfersFun()
@@ -3963,6 +3994,7 @@
                 this.liveYear = ["", ""];
                 this.selectDoorType = "";
                 this.selectMediaType = null;
+                this.showEmptyPublish = null;
                 this.selectMediaLevel = "";
                 this.selectMachineType = [];
                 this.selectLimits = [];
@@ -4929,7 +4961,7 @@
         top: 20px;
         right: 16px;
         height: 42px;
-        max-width: 905px;
+        max-width: 1050px;
     }
 
     .top_filter_box /deep/ .el-button {
@@ -4937,13 +4969,13 @@
     }
 
     .top_filter_box /deep/ .el-select {
-        width: 164px;
+        width: 200px;
         margin-bottom: 8px;
         box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.12);
     }
 
     .top_filter_box /deep/ .el-cascader {
-        width: 164px;
+        width: 200px;
         margin-bottom: 8px;
         box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.12);
     }
@@ -5008,6 +5040,7 @@
         position: relative;
         text-align: left;
         padding: 0 30px 0 15px;
+        width: 200px !important;
     }
 
     .top_btn /deep/ .icon_arrow {

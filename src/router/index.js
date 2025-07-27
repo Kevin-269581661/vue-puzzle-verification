@@ -27,14 +27,14 @@ const emptyPoint = () => import(/* webpackChunkName: "downEmptyPoint" */ '../com
 const mediaInput = () => import(/* webpackChunkName: "mediaInput" */ '../components/common/mediaInput.vue')
 const mediaDetail = () => import(/* webpackChunkName: "mediaDetail" */ '../components/common/mediaDetail.vue')
 const mediaList = () => import(/* webpackChunkName: "mediaList" */ '../components/common/mediaList.vue')
-const clientList = () => import(/* webpackChunkName: "clientList" */ '../components/common/clientList.vue')
+const clientList = () => import(/* webpackChunkName: "clientList" */ '../components/common/client/clientList/index.vue')
+const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/client/clientDetail/index.vue')
 const planList = () => import(/* webpackChunkName: "planList" */ '../components/common/planList.vue')
 const publishPriceList = () => import(/* webpackChunkName: "publishPriceList" */ '../components/common/publishPriceList.vue')
 const createAccount = () => import(/* webpackChunkName: "createAccount" */ '../components/common/createAccount.vue')
 const accountList = () => import(/* webpackChunkName: "accountList" */ '../components/common/accountList.vue')
 const orderList = () => import(/* webpackChunkName: "orderList" */ '../components/common/orderList.vue')
 const countryOrderList = () => import(/* webpackChunkName: "countryOrderList" */ '../components/common/countryOrderList.vue')
-const clientDetail = () => import(/* webpackChunkName: "clientDetail" */ '../components/common/clientDetail.vue')
 // 新全国单流程
 const NationalOrderList = () => import(/* webpackChunkName: "NationalOrderList" */ '../components/common/order/nationalOrderList.vue')
 // 客户监播列表

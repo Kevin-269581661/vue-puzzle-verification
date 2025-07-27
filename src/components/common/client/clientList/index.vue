@@ -77,15 +77,22 @@
 
             <!-- 客户品牌 -->
             <template slot="brandName" slot-scope="slotProps">
-              <div class="tag_wraper">
-                <span
-                  v-for="(item, i) in slotProps.row.brandNameList"
-                  class="tag_box"
-                  :key="i"
-                >
-                  {{ item }}
-                </span>
-              </div>
+              <el-tooltip effect="dark" placement="top">
+                <template slot="content">
+                  <div v-for="(item, i) in slotProps.row.brandNameList" style="line-height: 20px" :key="i">
+                    {{ `${item}` }}
+                  </div>
+                </template>
+                <div class="tag_wraper">
+                  <span
+                    v-for="(item, i) in slotProps.row.brandNameList"
+                    class="tag_box"
+                    :key="i"
+                  >
+                    {{ item }}
+                  </span>
+                </div>
+              </el-tooltip>
             </template>
 
             <!-- 操作列 -->
@@ -121,8 +128,8 @@ import TableAction from "@/components/common/components/TableAction/index.vue"
 import TableSearch from "@/components/common/components/TableSearch/index.vue"
 import PointState from '@/components/common/components/pointState.vue'
 import { getLabel, getTagList, isEmpty, isNotEmpty } from '@/utils/common'
-import dateFormat from "../../commonFun/timeFormat.js";
-import filterFormat from "../../commonFun/filterTableData.js";
+import dateFormat from "@/commonFun/timeFormat.js";
+import filterFormat from "@/commonFun/filterTableData.js";
 
 /**
  * 初始化搜索绑定数据
@@ -410,10 +417,6 @@ export default {
       })
     },
 
-    openOrderTableDialog (row) {
-      this.$refs.orderTableDialogRef && this.$refs.orderTableDialogRef.open(row.id)
-    },
-
     // 时间排序(请求后台接口进行排序)
     sortChange({ column, prop, order }){
       if (order === "ascending"){
@@ -440,7 +443,7 @@ export default {
           }
         },
         {
-          text: '订单管理',
+          text: '空刊申请',
           onClick: () => {
             this.openOrderTableDialog(row)
           }

@@ -4145,7 +4145,7 @@
             },
             // 导出exc
             exportExcel() {
-                console.log(this.selectResList, 'this.selectResList----')
+                // console.log(this.selectResList, 'this.selectResList----')
                 if (this.selectResList.length) {
                     let time = timeFormat.toDateTime(new Date(), "").split(" ");
                     let timeString = time[0] + time[1].split(":").join("");
@@ -4202,6 +4202,8 @@
                             lat: data.lat,
                             description: data.description,
                             liftType: data.liftType,
+                            emptyPublishSpaceNum: data.emptyPublishSpaceNum,
+                            emptyPublishBrandNames: data.emptyPublishBrandNames,
                             timeRange: this.timeRange
                         };
                         if (this.systemSource === 0) {
@@ -4347,9 +4349,17 @@
                                 tHeader.push("归属公司");
                                 filterVal.push("asNames");
                             }
+                            // 是否包含空刊客户点位
+                            if (this.showEmptyPublish === 1) {
+                              tHeader.push("空刊客户所占点位数");
+                              filterVal.push("emptyPublishSpaceNum");
+                              tHeader.push("空刊客户");
+                              filterVal.push("emptyPublishBrandNames");
+                            }
 
           }
           const list = resultArr;
+          // console.log('resultArr ===', resultArr)
           const data = this.formatJson(filterVal, list);
           export_json_to_excel(tHeader, data, name);
           this.isDown = false;

@@ -579,6 +579,7 @@
                   class="input-with-select"
                 ></el-input>
               </el-col>
+
               <el-col class="el-col-box">
                 <span>媒体位ID：</span>
                 <el-select
@@ -594,6 +595,7 @@
                     </el-option>
                 </el-select>
               </el-col>
+
               <el-col class="el-col-box">
                 <span>媒体名称：</span>
                 <el-select
@@ -609,6 +611,7 @@
                     </el-option>
                 </el-select>
               </el-col>
+
               <el-col class="el-col-box">
                 <span>设备型号：</span>
                 <el-select
@@ -624,6 +627,7 @@
                     </el-option>
                 </el-select>
               </el-col>
+
               <el-col class="el-col-box">
                 <span>位置朝向：</span>
                 <el-select
@@ -639,6 +643,7 @@
                     </el-option>
                 </el-select>
               </el-col>
+
               <el-col class="el-col-box" style="width: 300px;">
                 <el-button
                   type="primary"
@@ -659,14 +664,20 @@
                     v-if="handleType === 1"
                     plain
                     @click="changePointPlayDateRange"
-                    >更改排期</el-button
                   >
-                  <el-button
-                    v-else-if="handleType === 2"
-                    plain
-                    @click="stopPoint('stop')"
-                    >终止点位
+                    更改排期
                   </el-button>
+
+                  <template v-else-if="handleType === 2">
+                    <el-button plain @click="importSelection">
+                      导入选中
+                    </el-button>
+
+                    <el-button plain @click="stopPoint('stop')">
+                      终止点位
+                    </el-button>
+                  </template>
+
                   <el-select
                     v-else-if="handleType === 3"
                     size="mini"
@@ -1252,6 +1263,12 @@
     <!-- 订单/方案详情-导出点位明细-弹框组件 -->
     <ExportPointDetailDialog ref="exportPointDetailDialogRef" />
 
+    <!-- 更换点位-弹框组件 -->
+    <!-- <ChangePointDialog ref="changePointDialogRef" /> -->
+
+    <!-- 终止点位-导入选中 -->
+    <ImportStopPointSelectionDialog ref="importStopPointSelectionDialogRef" @submitSuccess="handleImportSelection" />
+
   </div>
 </template>
 
@@ -1282,6 +1299,8 @@ import audioList from "./components/audioList.vue";
 import OrderImgAuditDialog from './components/orderImgAuditDialog.vue'
 import MarkFinishDialog from './components/orderDetail/markFinishDialog.vue'
 import ExportPointDetailDialog from '@/components/common/components/point/exportPointDetailDialog.vue'
+// import ChangePointDialog from '@/components/common/components/orderDetail/changePointDialog.vue'
+import ImportStopPointSelectionDialog from '@/components/common/components/orderDetail/importStopPointSelectionDialog.vue'
 
 
 export default {
@@ -1301,7 +1320,9 @@ export default {
     audioList,
     OrderImgAuditDialog,
     MarkFinishDialog,
-    ExportPointDetailDialog
+    ExportPointDetailDialog,
+    // ChangePointDialog,
+    ImportStopPointSelectionDialog,
   },
   data () {
     return {
@@ -1575,6 +1596,21 @@ export default {
     }
   },
   methods: {
+    /**
+     * 导入选中结果
+     */
+     handleImportSelection(lIds) {
+      if (!lIds.length) return
+      lIds.forEach(lId => {
+        const item = this.tempSetPointArr.find(v => v.lID === lId)
+        if (item && !this.isHaveFun(this.changePointInfo.stopPointlist, item)) {
+          this.changePointInfo.stopPointlist.push(item);
+          // 当前列表勾选选中
+          this.$refs.multipleTable && this.$refs.multipleTable.toggleRowSelection(item, true);
+        }
+      })
+    },
+
     refreshList() {
       switch(this.planPanel) {
         case 'forth':
@@ -2322,7 +2358,7 @@ export default {
     },
     // 选择一条
     handleSelect (selection, row) {
-      // console.log(selection, row, 'selection -row ');
+      // console.log('handleSelect selection ===', selection)
       // 选中
       if (this.isHaveFun(selection, row)) {
         for (let data of selection) {
@@ -2374,7 +2410,7 @@ export default {
       }
     },
     selectioUpdate () {
-      console.log('是否勾选', this.changePointInfo.stopPointlist);
+      // console.log('是否勾选 this.changePointInfo.stopPointlist ====', this.changePointInfo.stopPointlist);
       let timer = setTimeout(() => {
         for (let data of this.changePointInfo.stopPointlist) {
           for (let item of this.changePointArr) {
@@ -2413,6 +2449,7 @@ export default {
     //   if(this.sessionData.uType === 'ADN_MD') {
     //     _setpointArr = _setpointArr.filter(item => item.mVehicle !== '单元门禁灯箱')
     //   }
+    // console.log('_setpointArr ===', _setpointArr);
       let pageNum = this.pointCurrPage
       let pageSize = this.pointPageSize
       let totalPage = 0
@@ -2601,6 +2638,13 @@ export default {
       })
     },
 
+    /**
+     * 更换点位-导入选中
+     */
+    importSelection () {
+      this.$refs.importStopPointSelectionDialogRef && this.$refs.importStopPointSelectionDialogRef.open(this.apId)
+    },
+
     // 媒体类型筛选
     filterMType (value, row) {
         return row.mediaTypeName === value
@@ -2672,6 +2716,11 @@ export default {
       this.changePointInfo.addPointlist = []
       this.isHandleChange = false
       this.getSetPoint('change')
+
+      // this.handleTime = new Date().getTime()
+      // this.$refs.changePointDialogRef && this.$refs.changePointDialogRef.open({
+      //   handleType
+      // })
     },
     //显示添加点位的模态框
     showAddPointDialog () {

@@ -3744,6 +3744,7 @@ export default {
           chooseNum: key.chooseNum || 0,
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
+          emptyPublishSpaceNum: key.emptyPublishSpaceNum,
         };
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;

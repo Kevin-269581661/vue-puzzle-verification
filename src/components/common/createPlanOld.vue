@@ -4708,7 +4708,8 @@ export default {
           unitCount: key.unitCount || "--",
           site: key.site || "--",
           siteOrientation: key.siteOrientation || "--",
-          openDoorCount: key.openDoorCount !==null ? key.openDoorCount : '--'
+          openDoorCount: key.openDoorCount !==null ? key.openDoorCount : '--',
+          emptyPublishSpaceNum: key.emptyPublishSpaceNum,
         };
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;

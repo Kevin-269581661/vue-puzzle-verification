@@ -1290,6 +1290,7 @@
                     <el-table-column
                       class-name="el-table-column-resName"
                       v-if="item.isChecked"
+                      :key="item.prop"
                       :label="item.label"
                       :prop="item.prop"
                       :min-width="item.width"
@@ -1304,6 +1305,7 @@
                       class-name="el-table-column-mediaName"
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1321,6 +1323,7 @@
                           getAdsParamsData.chooseType === 2)
                       "
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1333,6 +1336,7 @@
                       class-name="el-table-column-mediaName"
                       v-if="item.isChecked && getAdsParamsData.chooseType === 1"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1345,6 +1349,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1361,6 +1366,7 @@
                       class-name="el-table-column-mediaRemark"
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1376,6 +1382,7 @@
                       class-name="el-table-column-mediaRemark"
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1396,6 +1403,7 @@
                         getAdsParamsData.chooseType === 0
                       "
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1416,6 +1424,7 @@
                         getAdsParamsData.chooseType === 0
                       "
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1436,6 +1445,7 @@
                         getAdsParamsData.chooseType === 0
                       "
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1451,6 +1461,7 @@
                     <el-table-column
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1466,6 +1477,7 @@
                     <el-table-column
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1485,6 +1497,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1500,6 +1513,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1516,6 +1530,7 @@
                       class="tar"
                       v-if="item.isChecked && getAdsParamsData.chooseType === 0"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1529,6 +1544,7 @@
                       align="right"
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1544,6 +1560,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1560,6 +1577,7 @@
                       align="right"
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -1577,6 +1595,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :min-width="item.width"
+                      :key="item.prop"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix === 'left' ? true : false"
@@ -1592,6 +1611,7 @@
                       v-if="item.isChecked && getAdsParamsData.chooseType !== 0"
                       :label="item.label"
                       :min-width="item.width"
+                      :key="item.prop"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
@@ -1607,6 +1627,7 @@
                       v-if="item.isChecked"
                       :label="item.label"
                       :min-width="item.width"
+                      :key="item.prop"
                       :prop="item.prop"
                       :show-overflow-tooltip="item.showTooltip"
                       :fixed="item.fix"
@@ -1618,6 +1639,7 @@
                     <el-table-column
                       v-if="item.isChecked"
                       :label="item.label"
+                      :key="item.prop"
                       :prop="item.prop"
                       :min-width="item.width"
                       :show-overflow-tooltip="item.showTooltip"
@@ -4710,6 +4732,7 @@ export default {
           siteOrientation: key.siteOrientation || "--",
           openDoorCount: key.openDoorCount !==null ? key.openDoorCount : '--',
           emptyPublishSpaceNum: key.emptyPublishSpaceNum,
+          // emptyPublishBrandNames: key.emptyPublishBrandNames || '--',
         };
         if (key.asPrice !== null && key.asPrice !== undefined) {
           adObj.adPrice = key.asPrice / 700;
